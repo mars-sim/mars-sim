@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -252,6 +252,11 @@ implements Serializable {
                 }
                 else {
                     rate = process.getMaxOutputResourceRate(resource);
+                    double storageCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
+                            resource, true, false);
+                    if (rate > storageCapacity) {
+                        rate = storageCapacity;
+                    }
                 }
                 result += (value * rate);
             }
