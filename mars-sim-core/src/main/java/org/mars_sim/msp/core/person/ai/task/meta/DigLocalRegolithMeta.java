@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -38,6 +38,9 @@ public class DigLocalRegolithMeta implements MetaTask {
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
     
+    /** Regolith value probability modifier. */
+    private static double REGOLITH_VALUE_MODIFIER = 10D;
+    
     @Override
     public String getName() {
         return NAME;
@@ -62,8 +65,10 @@ public class DigLocalRegolithMeta implements MetaTask {
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource regolithResource = AmountResource.findAmountResource("regolith");
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-                result = value;
-                if (result > 100D) result = 100D;
+                result = value * REGOLITH_VALUE_MODIFIER;
+                if (result > 100D) {
+                    result = 100D;
+                }
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error checking good value of regolith.");
@@ -71,11 +76,15 @@ public class DigLocalRegolithMeta implements MetaTask {
             
             // Check at least one EVA suit at settlement.
             int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
-            if (numSuits == 0) result = 0D;
+            if (numSuits == 0) {
+                result = 0D;
+            }
             
             // Check if at least one empty bag at settlement.
             int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
-            if (numEmptyBags == 0) result = 0D;
+            if (numEmptyBags == 0) {
+                result = 0D;
+            }
 
             // Check if an airlock is available
             if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
@@ -85,19 +94,24 @@ public class DigLocalRegolithMeta implements MetaTask {
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates()))
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                     result = 0D;
+                }
             } 
             
             // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) result *= 2D;
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
             
             // Job modifier.
             Job job = person.getMind().getJob();
-            if (job != null) result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
+            }
         }
     
         return result;

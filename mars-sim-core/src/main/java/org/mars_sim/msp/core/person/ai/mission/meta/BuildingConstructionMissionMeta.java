@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 
 /**
@@ -72,12 +74,32 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                 
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                    ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+                    
+                    // Check if enough construction materials are available for new construction site.
                     if (BuildingConstructionMission.hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
-                        ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                         double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                        result = constructionProfit;
+                        if (constructionProfit > 0D) {
+                            System.out.println(person.getName() + " construction profit: " + constructionProfit);
+                        }
+                        result += constructionProfit;
                         if (result > 10D) {
                             result = 10D;
+                        }
+                    }
+                    
+                    // Check if enough construction materials are available for an existing construction site.
+                    ConstructionManager manager = settlement.getConstructionManager();
+                    Iterator<ConstructionSite> j = manager.getConstructionSitesNeedingConstructionMission().iterator();
+                    while (j.hasNext()) {
+                        ConstructionSite site = j.next();
+                        if (BuildingConstructionMission.hasExistingSiteConstructionMaterials(site, constructionSkill, 
+                                settlement)) {
+                            double constructionProfit = values.getConstructionSiteProfit(site, constructionSkill);
+                            result += constructionProfit;
+                            if (result > 10D) {
+                                result = 10D;
+                            }
                         }
                     }
                 }

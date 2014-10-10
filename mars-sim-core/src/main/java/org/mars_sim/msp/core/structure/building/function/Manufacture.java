@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -438,7 +438,7 @@ implements Serializable {
             Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
-                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
+                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
                     if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
@@ -446,7 +446,7 @@ implements Serializable {
                         double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
-                            logger.severe("Not enough storage capacity to store " + overAmount + " of " + 
+                            logger.fine("Not enough storage capacity to store " + overAmount + " of " + 
                                     item.getName() + " from " + process.getInfo().getName() + " at " + 
                                     settlement.getName());
                             amount = capacity;
@@ -506,7 +506,7 @@ implements Serializable {
             Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
-                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
+                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, false) > 0D) {
                     if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());

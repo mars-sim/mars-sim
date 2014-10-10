@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.07 2014-09-17
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -139,7 +139,7 @@ implements Serializable {
                     ConstructionSite site = i.next();
                     double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
                     if ((siteProfit > topSiteProfit) && 
-                            hasExistingSiteConstructionMaterials(site, constructionSkill)) {
+                            hasExistingSiteConstructionMaterials(site, constructionSkill, settlement)) {
                         constructionSite = site;
                         topSiteProfit = siteProfit;
                     }
@@ -741,7 +741,6 @@ implements Serializable {
      * @param skill the construction skill.
      * @param settlement the settlement to check.
      * @return true if enough construction materials.
-     * @throws Exception if error checking construction materials.
      */
     public static boolean hasAnyNewSiteConstructionMaterials(int skill, Settlement settlement) {
         boolean result = false;
@@ -759,10 +758,11 @@ implements Serializable {
      * Checks if settlement has enough construction materials to work on an existing site.
      * @param site the construction site to check.
      * @param skill the construction skill.
+     * @param settlement the settlement to check.
      * @return true if enough construction materials.
-     * @throws Exception if error checking site.
      */
-    private boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill) {
+    public static boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill, 
+            Settlement settlement) {
         boolean result = true;
         
         if (!site.hasUnfinishedStage()) {

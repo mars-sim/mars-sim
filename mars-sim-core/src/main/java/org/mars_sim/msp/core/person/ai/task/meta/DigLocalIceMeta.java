@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIceMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -38,6 +38,9 @@ public class DigLocalIceMeta implements MetaTask {
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
     
+    /** Ice value probability modifier. */
+    private static double ICE_VALUE_MODIFIER = 10D;
+    
     @Override
     public String getName() {
         return NAME;
@@ -62,7 +65,7 @@ public class DigLocalIceMeta implements MetaTask {
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource iceResource = AmountResource.findAmountResource("ice");
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-                result = value;
+                result = value * ICE_VALUE_MODIFIER;
                 if (result > 100D) {
                     result = 100D;
                 }

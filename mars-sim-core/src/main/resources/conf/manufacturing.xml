@@ -2324,12 +2324,15 @@
 	</process>
 	
 	<!-- Pumping carbon dioxide in from the ambient atmosphere. -->
+	<!-- Note: Commenting out for now due to over use and limited value. - Scott -->
+	<!-- 
 	<process name="co2 pumping" tech="1" skill="0" work-time="10" process-time="100" power-required="4.0">
 		<inputs />
 		<outputs>
 			<resource name="carbon dioxide" amount="10.0" />
 		</outputs>
 	</process>
+	-->
 	
 	<!-- Electrolyzing water into oxygen and hydrogen. -->
 	<process name="water electrolyzing" tech="1" skill="1" work-time="10" process-time="100" power-required="10.0">
