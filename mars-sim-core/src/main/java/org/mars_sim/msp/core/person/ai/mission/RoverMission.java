@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -399,7 +399,9 @@ extends VehicleMission {
                 else {
                     logger.severe(person + " unable to walk to building " + destinationBuilding);
                     logger.severe(person + " emergency moved to building " + destinationBuilding);
-                    getRover().getInventory().retrieveUnit(person);
+                    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                        person.getVehicle().getInventory().retrieveUnit(person);
+                    }
                     disembarkSettlement.getInventory().storeUnit(person);
                     BuildingManager.addPersonToBuilding(person, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
                 }

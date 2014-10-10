@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -117,36 +117,53 @@ implements Serializable {
 
             Vehicle vehicle = person.getVehicle();
 
-            // Check if person has a good EVA suit available if in a rover.
-            boolean goodEVASuit = true;
-            if (vehicle instanceof Rover) {
-                boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
-                boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
-                goodEVASuit = roverSuit || wearingSuit;
-            }
-
             // If no mission and vehicle is at a settlement location, enter settlement.
-            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null) && goodEVASuit) {
+            boolean walkToSettlement = false;
+            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
 
                 Settlement settlement = vehicle.getSettlement();
-
-                // If not a rover, retrieve person from vehicle.
-                if (!(vehicle instanceof Rover)) {
+                
+                // Check if vehicle is in garage.
+                Building garageBuilding = BuildingManager.getBuilding(vehicle);
+                if (garageBuilding != null) {
+                    
+                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
+                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                            interiorPos.getX(), interiorPos.getY(), garageBuilding);
+                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                            adjustedInteriorPos.getY(), garageBuilding);
+                    walkToSettlement = true;
+                }
+                else if (vehicle instanceof Rover) {
+                    
+                    // Check if person has a good EVA suit available if in a rover.
+                    boolean goodEVASuit = true;
+                    boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
+                    boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
+                    goodEVASuit = roverSuit || wearingSuit;
+                    if (goodEVASuit) {
+                        
+                        // Walk to nearest emergency airlock in settlement.
+                        Airlock airlock = settlement.getClosestAvailableAirlock(person);
+                        if (airlock != null) {
+                            LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
+                            Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
+                            Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                                    interiorPos.getX(), interiorPos.getY(), entity);
+                            walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                                    adjustedInteriorPos.getY(), entity);
+                            walkToSettlement = true;
+                        }
+                    }
+                    
+                }
+                else {
+                    // If not a rover, retrieve person from vehicle.
                     vehicle.getInventory().retrieveUnit(person);
                 }
-
-                // Walk to nearest emergency airlock in settlement.
-                Airlock airlock = settlement.getClosestAvailableAirlock(person);
-                if (airlock != null) {
-                    LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
-                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
-                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                            interiorPos.getX(), interiorPos.getY(), entity);
-                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
-                            adjustedInteriorPos.getY(), entity);
-                }
             }
-            else {
+            
+            if (!walkToSettlement) {
 
                 // Walk to random location within rover.
                 if (person.getVehicle() instanceof Rover) {

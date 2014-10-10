@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.07 2014-09-17
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 
@@ -381,6 +381,7 @@ implements Serializable {
                     disembarkSettlement.getInventory().storeUnit(crewmember);
                     BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
                     crewmember.setAssociatedSettlement(disembarkSettlement);
+                    crewmember.getMind().getTaskManager().clearTask();
                     logger.info(crewmember.getName() + " rescued.");
                     HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RESCUE_PERSON);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);

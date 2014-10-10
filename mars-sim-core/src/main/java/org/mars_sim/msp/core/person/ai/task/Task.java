@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -122,6 +122,11 @@ implements Serializable, Comparable<Task> {
      */
     public void endTask() {
 
+        // End subtask.
+        if (getSubTask() != null) {
+            getSubTask().endTask();
+        }
+        
         done = true;
         person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 

@@ -1,13 +1,16 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.core.person.ai.task.Task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -364,9 +367,27 @@ public abstract class Airlock implements Serializable {
                     logger.severe("Airlock operator " + operatorName +
                             " is dead.  Deactivating airlock of " + getEntityName());
                 }
+                else {
+                    // Check if airlock operator still has a task involving the airlock.
+                    boolean hasAirlockTask = false;
+                    Task task = operator.getMind().getTaskManager().getTask();
+                    while (task != null) {
+                        if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)) {
+                            hasAirlockTask = true;
+                        }
+                        task = task.getSubTask();
+                    }
+                    
+                    if (!hasAirlockTask) {
+                        String operatorName = operator.getName();
+                        deactivateAirlock();
+                        logger.severe("Airlock operator " + operatorName + " is no longer " +
+                                "operating the airlock.  Deactivating airlock of " + getEntityName());
+                    }
+                }
             }
             else {
-                // If not operator, deactivate airlock.
+                // If no operator, deactivate airlock.
                 deactivateAirlock();
                 logger.severe("Airlock has no operator.  Deactivating airlock of " + getEntityName());
             }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -195,7 +196,15 @@ implements Serializable {
         }
         else {
         	vehicle.setReservedForMaintenance(false);
-            garage.removeVehicle(vehicle);
+        	if (vehicle instanceof Crewable) {
+        	    Crewable crewableVehicle = (Crewable) vehicle;
+        	    if (crewableVehicle.getCrewNum() == 0) {
+        	        garage.removeVehicle(vehicle);
+        	    }
+        	}
+        	else {
+        	    garage.removeVehicle(vehicle);
+        	}
             endTask();
 			return time;
 		}
@@ -220,7 +229,15 @@ implements Serializable {
         if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
             // logger.info(person.getName() + " finished " + description);
             vehicle.setReservedForMaintenance(false);
-            garage.removeVehicle(vehicle);
+            if (vehicle instanceof Crewable) {
+                Crewable crewableVehicle = (Crewable) vehicle;
+                if (crewableVehicle.getCrewNum() == 0) {
+                    garage.removeVehicle(vehicle);
+                }
+            }
+            else {
+                garage.removeVehicle(vehicle);
+            }
             endTask();
         }
 
