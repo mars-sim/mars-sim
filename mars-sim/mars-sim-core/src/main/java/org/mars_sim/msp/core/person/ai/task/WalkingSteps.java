@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkingSteps.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 
@@ -568,7 +568,7 @@ implements Serializable {
             buildingWalkState.xLoc = initialWalkState.xLoc;
             buildingWalkState.yLoc = initialWalkState.yLoc;
             
-            determineBuildingInteriorToBuildingInteriorWalkingSteps(buildingWalkState, 
+            determineBuildingInteriorToOutsideWalkingSteps(buildingWalkState, 
                     destinationWalkState);
         }
         else {
