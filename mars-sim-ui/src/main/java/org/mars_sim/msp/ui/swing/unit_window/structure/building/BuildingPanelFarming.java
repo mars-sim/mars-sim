@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -84,7 +84,8 @@ extends BuildingFunctionPanel {
 
 		// Create scroll panel for crop table
 		JScrollPane cropScrollPanel = new JScrollPane();
-		cropScrollPanel.setPreferredSize(new Dimension(200, 100));
+		// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
+		cropScrollPanel.setPreferredSize(new Dimension(200, 130));
 		add(cropScrollPanel, BorderLayout.CENTER);
 
 		// Prepare crop table model
@@ -94,9 +95,11 @@ extends BuildingFunctionPanel {
 		JTable cropTable = new JTable(cropTableModel);
 		cropTable.setCellSelectionEnabled(false);
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-		cropTable.getColumnModel().getColumn(1).setPreferredWidth(90);
+		cropTable.getColumnModel().getColumn(1).setPreferredWidth(60);
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		// 2014-10-10 mkung: added column 4 showing the crop's category
+		cropTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		cropScrollPanel.setViewportView(cropTable);
 	}
 
@@ -146,8 +149,9 @@ extends BuildingFunctionPanel {
 			return crops.size();
 		}
 
+		// 2014-10-10 mkung: change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -156,14 +160,18 @@ extends BuildingFunctionPanel {
 			else if (columnIndex == 1) dataType = String.class;
 			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;
+			// 2014-10-10 mkung: added column 4 showing the crop's category
+			else if (columnIndex == 4) dataType = String.class;			
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "C";
+			if (columnIndex == 0) return "Health";
 			else if (columnIndex == 1) return "Crop";
 			else if (columnIndex == 2) return "Phase";
 			else if (columnIndex == 3) return "Growth";
+			// 2014-10-10 mkung: added column 4 showing the crop's category
+			else if (columnIndex == 4) return "Category";			
 			else return null;
 		}
 
@@ -171,6 +179,8 @@ extends BuildingFunctionPanel {
 
 			Crop crop = crops.get(row);
 			String phase = crop.getPhase();
+			// 2014-10-10 mkung: added the crop's category
+			String category = crop.getCategory();
 
 			if (column == 0) {
 				double condition = crop.getCondition();
@@ -189,6 +199,8 @@ extends BuildingFunctionPanel {
 				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED)) growth = 100;
 				return String.valueOf(growth) + "%";
 			}
+			// 2014-10-10 mkung: added column 4 showing the crop's category
+			else if (column == 4) return category;
 			else return null;
 		}
 

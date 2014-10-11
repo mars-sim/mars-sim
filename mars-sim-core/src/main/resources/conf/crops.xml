@@ -4,10 +4,13 @@
 
 <crop-list>
     <crop name="Strawberry" growing-time="100.0" crop-category="fruits" ppf="400.0" photoperiod="12.0" harvest-index=".33"/>
-    <crop name="Lettuce" growing-time="76.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".90"/>
+    <crop name="Lettuce" growing-time="76.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".95"/>
     <crop name="Wheat" growing-time="80.0" crop-category="grains" ppf="750.0" photoperiod="24.0" harvest-index=".50"/>
     <crop name="Soybean" growing-time="80.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Onion" growing-time="80.0" crop-category="vegetables" ppf="1000.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Carrot" growing-time="80.0" crop-category="vegetables" ppf="1000.0" photoperiod="12.0" harvest-index=".50"/>
     <crop name="Sweet Potato" growing-time="90.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".70"/>
+    <crop name="Potato" growing-time="90.0" crop-category="vegetables" ppf="1000.0" photoperiod="12.0" harvest-index=".70"/>
     <crop name="Peanut" growing-time="80.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".50"/>
     <crop name="Rice" growing-time="76.0" crop-category="grains" ppf="750.0" photoperiod="12.0" harvest-index=".50"/>
     <crop name="Bean" growing-time="30.0" crop-category="vegetables" ppf="350.0" photoperiod="18.0" harvest-index=".50"/>

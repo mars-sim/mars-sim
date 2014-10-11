@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-10
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -174,7 +174,9 @@ implements TableModelListener, ActionListener {
 		);
 
 		// Have to define a starting size
-		setSize(new Dimension(600, 300));
+		// 2014-10-10 mkung: changed the horizontal resolution from 600 to 800 to accommodate the addition
+		// of 3 columns (Grains, Fruits, Vegetables)
+		setSize(new Dimension(800, 300));
 	}
 
 	/**
