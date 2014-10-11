@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2014-10-08
+ * @version 3.07 2014-10-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -121,10 +121,22 @@ implements Serializable {
 	 * Gets the phase of the crop.
 	 * @return phase
 	 */
+	// Called by BuildingPanelFarming.java to retrieve the phase of the crop
 	public String getPhase() {
 		return phase;
 	}
 
+
+	/**
+	 * Gets the crop category
+	 * @return category
+	 * 2014-10-10 by mkung: added this method for UI to show crop category
+	 */
+	// Called by BuildingPanelFarming.java to retrieve the crop category
+	public String getCategory() {
+		return cropType.getCropCategory();
+	}
+	
 	/**
 	 * Gets the maximum possible food harvest for crop.
 	 * @return food harvest (kg.)
@@ -153,9 +165,10 @@ implements Serializable {
 
 	/**
 	 * Gets the overall health condition of the crop.
-	 *
+	 * 
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
+	// Called by BuildingPanelFarming.java to retrieve the health condition status
 	public double getCondition() {
 		double result = 0D;
 
