@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryResearchMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -111,6 +112,11 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                     }
                 }
             }
+        }
+        
+        // Check if person is in a moving rover.
+        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+            result = 0D;
         }
         
         // Effort-driven task modifier.
