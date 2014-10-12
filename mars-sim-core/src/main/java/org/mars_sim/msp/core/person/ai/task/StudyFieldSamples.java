@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -114,6 +114,11 @@ implements ResearchScientificStudy, Serializable {
         }
         else {
             logger.info("study could not be determined");
+            endTask();
+        }
+        
+        // Check if person is in a moving rover.
+        if (inMovingRover(person)) {
             endTask();
         }
 
@@ -489,6 +494,11 @@ implements ResearchScientificStudy, Serializable {
                 endTask();
             }
         }
+        
+        // Check if person is in a moving rover.
+        if (inMovingRover(person)) {
+            endTask();
+        }
 
         if (isDone()) {
             return time;
@@ -660,6 +670,32 @@ implements ResearchScientificStudy, Serializable {
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Checks if the person is in a moving vehicle.
+     * @param person the person.
+     * @return true if person is in a moving vehicle.
+     */
+    public static boolean inMovingRover(Person person) {
+        
+        boolean result = false;
+        
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            Vehicle vehicle = person.getVehicle();
+            if (vehicle.getStatus().equals(Vehicle.MOVING)) {
+                result = true;
+            }
+            else if (vehicle.getStatus().equals(Vehicle.TOWED)) {
+                Vehicle towingVehicle = vehicle.getTowingVehicle();
+                if (towingVehicle.getStatus().equals(Vehicle.MOVING) ||
+                        towingVehicle.getStatus().equals(Vehicle.TOWED)) {
+                    result = false;
+                }
+            }
+        }
+        
         return result;
     }
 

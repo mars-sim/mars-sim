@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -46,7 +46,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-double result = 0D;
+        double result = 0D;
         
         // Create list of experimental sciences.
         List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
@@ -118,6 +118,11 @@ double result = 0D;
                     }
                 }
             }
+        }
+        
+        // Check if person is in a moving rover.
+        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+            result = 0D;
         }
         
         // Effort-driven task modifier.
