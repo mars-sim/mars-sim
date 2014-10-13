@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -23,7 +23,8 @@ import java.util.Iterator;
 abstract class UnitMapLayer implements MapLayer {
 
     // Domain data
-    private boolean blinkFlag;
+    private static boolean blinkFlag;
+    private static long blinkTime = 0L;
     private Collection<Unit> unitsToDisplay;
 
     public UnitMapLayer() {
@@ -79,7 +80,11 @@ abstract class UnitMapLayer implements MapLayer {
             }
         }
 
-        blinkFlag = !blinkFlag;
+        long currentTime = System.currentTimeMillis();
+        if ((currentTime - blinkTime) > 1000L) {
+            blinkFlag = !blinkFlag;
+            blinkTime = currentTime;
+        }
     }
 
     /**
