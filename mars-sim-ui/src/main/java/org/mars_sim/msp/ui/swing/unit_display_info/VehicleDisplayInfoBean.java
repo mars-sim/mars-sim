@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDisplayInfoBean.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-12
  * @author Scott Davis
  */
 
@@ -49,6 +49,11 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         
         Vehicle vehicle = (Vehicle) unit;
         if (vehicle.isSalvaged()) result = false;
+        
+        // Do not display towed vehicle on map.
+        if (vehicle.getStatus().equals(Vehicle.TOWED)) {
+            result = false;
+        }
         
         return result;
     }

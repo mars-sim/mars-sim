@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * UnitLabelMapLayer.java
+ * @version 3.07 2014-10-13
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Graphics;
@@ -36,14 +43,14 @@ public class UnitLabelMapLayer extends UnitMapLayer {
         	
         g.setFont(displayInfo.getMapLabelFont());
         
-        if (!displayInfo.isMapBlink(unit) || (displayInfo.isMapBlink(unit) && getBlinkFlag())) {
+        if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
         	g.drawString(unit.getName(), 
         	labelLocation.getiX(), labelLocation.getiY());
         }
 	}
 	
     /** 
-     * Gets the label draw postion on map panel.
+     * Gets the label draw position on map panel.
      * @param unitPosition the unit display position.
      * @param unitIcon unit's map image icon.
      * @return draw position for unit label.
