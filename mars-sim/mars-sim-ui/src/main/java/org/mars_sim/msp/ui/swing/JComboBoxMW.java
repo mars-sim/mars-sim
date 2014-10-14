@@ -8,7 +8,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
- * a combobox that is mousewheel-enabled.
+ * A Combobox that is mousewheel-enabled.
+ * @version 3.07 2014-10-14
  * @author stpa
  * 2014-01-29
  */
@@ -37,7 +38,7 @@ implements MouseWheelListener {
 	}
 
 	/**
-	 * constructor.
+	 * Constructor.
 	 * @param model {@link ComboBoxModel}<T>
 	 */
 	public JComboBoxMW(ComboBoxModel<T> model) {
@@ -46,7 +47,7 @@ implements MouseWheelListener {
 	}
 
 	/**
-	 * constructor.
+	 * Constructor.
 	 * @param items T[]
 	 */
 	public JComboBoxMW(T[] items) {
@@ -54,7 +55,7 @@ implements MouseWheelListener {
 		this.addMouseWheelListener(this);
 	}
 
-	/** use mouse wheel to cycle through items if any. */
+	/** Use mouse wheel to cycle through items if any. */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (getItemCount() > 0) {
