@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 3.07 2014-08-21
+ * @version 3.07 2014-10-14
  * @author Scott Davis
  */
 
@@ -153,8 +153,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             Iterator<Resource> iAmount = keys.iterator();
             while (iAmount.hasNext()) {
                 AmountResource resource = (AmountResource) iAmount.next();
-                resources.put(resource, inventory.getAmountResourceStored(resource, true));
-                capacity.put(resource, inventory.getAmountResourceCapacity(resource, true));
+                resources.put(resource, inventory.getAmountResourceStored(resource, false));
+                capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
             }
 
             Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
@@ -218,8 +218,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         		Iterator<Resource> i = newResourceKeys.iterator();
         		while (i.hasNext()) {
         			AmountResource resource = (AmountResource) i.next();
-        			newResources.put(resource, inventory.getAmountResourceStored(resource, true));
-        			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, true));
+        			newResources.put(resource, inventory.getAmountResourceStored(resource, false));
+        			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
         		}
         		
         		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();

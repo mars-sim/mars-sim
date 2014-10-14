@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -205,7 +205,7 @@ extends TabPanel {
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
 
-			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel") + building.getName() + ": " + process.getProcessName()); //$NON-NLS-1$
+			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", building.getName(), process.getProcessName())); //$NON-NLS-1$
 			add(label);
 
 			// Load green and red dots.
