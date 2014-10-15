@@ -3,6 +3,6 @@
 <!ATTLIST crop name CDATA #REQUIRED>
 <!ATTLIST crop growing-time CDATA #REQUIRED>
 <!ATTLIST crop crop-category CDATA #REQUIRED>
-<!ATTLIST crop ppf CDATA #REQUIRED>
-<!ATTLIST crop photoperiod CDATA #REQUIRED>
-<!ATTLIST crop harvest-index CDATA #REQUIRED>
+<!ATTLIST crop edible-biomass CDATA #REQUIRED>
+<!ATTLIST crop edible-water-content CDATA #REQUIRED>
+<!ATTLIST crop inedible-biomass CDATA #REQUIRED>

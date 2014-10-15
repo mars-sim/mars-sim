@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2014-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -40,6 +40,7 @@ implements Serializable {
 	// TODO Crop phases should be an internationalizable enum.
 	public static final String PLANTING = "Planting";
 	public static final String GROWING = "Growing";
+	// TODO: add FLOWERING phase
 	public static final String HARVESTING = "Harvesting";
 	public static final String FINISHED = "Finished";
 
@@ -59,7 +60,7 @@ implements Serializable {
 	private double plantingWorkRequired;
 	/** Required work time to tend crop daily (millisols). */
 	private double dailyTendingWorkRequired;
-	/** Required work time to for harvesting (millisols). */
+	/** Required work time for harvesting (millisols). */
 	private double harvestingWorkRequired;
 	/** Completed work time in current phase (millisols). */
 	private double currentPhaseWorkCompleted;
@@ -77,34 +78,38 @@ implements Serializable {
 	 * @param farm - Farm crop being grown in.
 	 * @param settlement - the settlement the crop is located at.
 	 * @param newCrop - true if this crop starts in it's planting phase.
+	 * called by Farming.java constructor and timePassing()
 	 */
 	public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement, boolean newCrop) {
 		this.cropType = cropType;
-				//System.out.println("Crop.java : constructor : new crop is " + cropType.getName());
+				logger.info("constructor : the new crop is " + cropType.getName());
 		this.maxHarvest = maxHarvest;
 		this.farm = farm;
 		this.settlement = settlement;
 
 		// Determine work required.
+		// TODO: need further debugging !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		plantingWorkRequired = maxHarvest;
 		dailyTendingWorkRequired = maxHarvest;
-		harvestingWorkRequired = maxHarvest * 5D;
-				//System.out.println("Crop.java : constructor :"
-				//		+ " maxHarvest/dailyTendingWorkRequired/plantingWorkRequired is " + maxHarvest);
-				//System.out.println("Crop.java : constructor :"
-				//		+ " harvestingWorkRequired is " + harvestingWorkRequired);
+		harvestingWorkRequired = maxHarvest * 3D; // old default is 5. why?
+				logger.info("constructor :"
+						+ " maxHarvest/dailyTendingWorkRequired/plantingWorkRequired is " + Math.round(maxHarvest));
+				logger.info("constructor :"
+						+ " harvestingWorkRequired is " + Math.round(harvestingWorkRequired));
 		if (newCrop) {
 			phase = PLANTING;
+			logger.info("constructor : this new crop is in Planting phase");
 			actualHarvest = 0D;
 		}
 		else {
 			phase = GROWING;
 			// set up a crop's "initial" percentage of growth when the simulation gets started
 			growingTimeCompleted = RandomUtil.getRandomDouble(cropType.getGrowingTime());
-				//	System.out.println("Crop.java : constructor : growingTime is " + cropType.getGrowingTime() );
-				//	System.out.println("Crop.java : constructor : growingTimeCompleted is " + growingTimeCompleted );
+					logger.info("constructor : the crop is in Growing phase");
+					logger.info("constructor : Growing-time is " + Math.round(cropType.getGrowingTime()/1000) );
+					logger.info("constructor : # of days completed (in random) is " + Math.round(growingTimeCompleted/1000));
 			actualHarvest = maxHarvest * (growingTimeCompleted / cropType.getGrowingTime());
-				//	System.out.println("Crop.java : constructor : actualHarvest is " + actualHarvest );
+					logger.info("constructor : work completed so far is " + Math.round(actualHarvest));
 		}
 	}
 
@@ -154,6 +159,8 @@ implements Serializable {
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
+		//logger.info("currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
+		//logger.info("dailyTendingWorkRequired is " + dailyTendingWorkRequired);
 		boolean result = false;
 		if (phase.equals(PLANTING) || phase.equals(HARVESTING)) result = true;
 		if (phase.equals(GROWING)) {
@@ -170,8 +177,9 @@ implements Serializable {
 	 */
 	// Called by BuildingPanelFarming.java to retrieve the health condition status
 	public double getCondition() {
+		// O:bad, 1:good
 		double result = 0D;
-
+			
 		if (phase.equals(PLANTING)) result = 1D;
 		else if (phase.equals(GROWING)) {
 			if ((maxHarvest == 0D) || (growingTimeCompleted == 0D)) result = 1D;
@@ -183,6 +191,9 @@ implements Serializable {
 
 		if (result > 1D) result = 1D;
 		else if (result < 0D) result = 0D;
+		
+		//logger.info("getCondition() : crop's condition is "+ result);
+				
 		return result;
 	}
 
@@ -191,12 +202,14 @@ implements Serializable {
 	 * @param workTime - Work time to be added (millisols)
 	 * @return workTime remaining after working on crop (millisols)
 	 * @throws Exception if error adding work.
-	 */
+	 */ 
+	//called by Farming.java's addWork()
 	// 2014-10-07 by mkung: see below for changes when calling addHarvest()
 	public double addWork(double workTime) {
 		double remainingWorkTime = workTime;
 
 		if (phase.equals(PLANTING)) {
+			logger.info("addWork() : crop is in Planting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= plantingWorkRequired) {
 				remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
@@ -210,6 +223,7 @@ implements Serializable {
 		}
 
 		if (phase.equals(GROWING)) {
+			//logger.info("addWork() : crop is in Growing phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= dailyTendingWorkRequired) {
 				remainingWorkTime = currentPhaseWorkCompleted - dailyTendingWorkRequired;
@@ -221,24 +235,29 @@ implements Serializable {
 		}
 
 		if (phase.equals(HARVESTING)) {
+				logger.info("addWork() : crop is in Harvesting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= harvestingWorkRequired) {
 				// Harvest is over. Close out this phase
-					///System.out.println("Crop.java : addWork() : done harvesting. remainingWorkTime is " + remainingWorkTime);
+					logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
 				double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
-				// 2014-10-07 mkung: modified addHarvest parameter list to include cropType.getCropCategory()
-				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired, cropType.getCropCategory());
-					//System.out.println("Crop.java : addWork() : last harvest amount is " + actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
+				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
+				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired,
+						cropType.getName(), cropType.getCropCategory());
+					logger.info("addWork() : last actualHarvest amount is " + Math.round(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired));
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
 
 			}
-			else {
-				// 2014-10-07 mkung: modified addHarvest parameter list to include cropType.getCropCategory()
-				// Still harvesting
-					//System.out.println("Crop.java : addWork() : still harvesting.... harvest ( = actualHarvest * workTime / harvestingWorkRequired) is " + actualHarvest * workTime / harvestingWorkRequired);
-					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, cropType.getCropCategory());
+			else { 	// continue the harvesting process
+				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
+					logger.info("addWork() : still harvesting.... calculating actualHarvest");
+					logger.info("addWork() : actualHarvest is " + Math.round(actualHarvest * workTime / harvestingWorkRequired));
+					logger.info("addWork() : calling Farming.java's addHarvest() now");
+					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, 
+							cropType.getName(), cropType.getCropCategory());
 				remainingWorkTime = 0D;
+				logger.info("addWork() : done. remainingWorkTime is " + remainingWorkTime);
 			}
 		}
 
@@ -277,38 +296,50 @@ implements Serializable {
 					double sunlight = surface.getSurfaceSunlight(settlement.getCoordinates());
 					harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
 
+					// TODO mkung: Modify harvest modifier by amount of artificial light available to the greenhouse
+					
 					Inventory inv = settlement.getInventory();
 
 					// Determine harvest modifier by amount of waste water available.
 					double wasteWaterRequired = maxPeriodHarvest * WASTE_WATER_NEEDED;
 					AmountResource wasteWater = AmountResource.findAmountResource("waste water");
-					AmountResource water = AmountResource.findAmountResource("water");
 					double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater, false);
 					double wasteWaterUsed = wasteWaterRequired;
-					if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
-					double waterAmount = wasteWaterUsed * .8D;
-					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
-					if (waterAmount > waterCapacity) waterAmount = waterCapacity;
+					if (wasteWaterUsed > wasteWaterAvailable) 
+						wasteWaterUsed = wasteWaterAvailable;
 					inv.retrieveAmountResource(wasteWater, wasteWaterUsed);
-					inv.storeAmountResource(water, waterAmount, false);
 					harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
 
+					
+					// Determine harvest modifier by amount of water available.				
+					double waterAmount = wasteWaterUsed * .8D;
+					AmountResource water = AmountResource.findAmountResource("water");
+					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
+					if (waterAmount > waterCapacity) 
+						waterAmount = waterCapacity;
+					inv.storeAmountResource(water, waterAmount, false);
+					
+					
 					// Determine harvest modifier by amount of carbon dioxide available.
 					AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-					AmountResource oxygen = AmountResource.findAmountResource("oxygen");
 					double carbonDioxideRequired = maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
 					double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide, false);
 					double carbonDioxideUsed = carbonDioxideRequired;
 					if (carbonDioxideUsed > carbonDioxideAvailable) {
 						carbonDioxideUsed = carbonDioxideAvailable;
 					}
+					inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
+					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
+							.5D) + .5D);
+
+					
+					// Determine harvest modifier by amount of oxygen available.							
+					AmountResource oxygen = AmountResource.findAmountResource("oxygen");
 					double oxygenAmount = carbonDioxideUsed * .9D;
 					double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false, false);
 					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
-					inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
 					inv.storeAmountResource(oxygen, oxygenAmount, false);
-					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
-							.5D) + .5D);
+					
 
 					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
