@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.06 2014-10-08
+ * @version 3.07 2014-10-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -283,7 +283,7 @@ implements Serializable {
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
 			if (foodAvailable < .5D) {
-				consumeGrains(amount, container, "grains");
+				consumeGrains(amount, container, "Grain Group");
 				throw new IllegalStateException("No more " + foodType + " available.");
 			}
 
@@ -314,7 +314,7 @@ implements Serializable {
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
 			if (foodAvailable < .5D) {
-				consumeVegetables(amount, container, "vegetables");
+				consumeVegetables(amount, container, "Vegetable Group");
 				throw new IllegalStateException("No more " + foodType + " available.");
 			}
 
@@ -345,33 +345,33 @@ implements Serializable {
     	
     	switch (choice) {
     	
-    	case 0:    	// 1/6 probability of choosing fruits
+    	case 0:    	//  16.7% probability choosing fruits
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 0"); 
-			consumeFruits(amount, container, "fruits");
+			consumeFruits(amount, container, "Fruit Group");
     		break;
     		
-    	case 1: 	// 1/6 probability of choosing vegetables
+    	case 1: 	//   16.7% probability choosing vegetables
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 1");
-			consumeVegetables(amount, container, "vegetables");
+			consumeVegetables(amount, container, "Vegetable Group");
     		break;
     		
-    	case 2:  	// 1/6 probability of choosing grains
+    	case 2:  	//     16.7% probability choosing grains
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 2");
-			consumeGrains(amount, container, "grains");	
+			consumeGrains(amount, container, "Grain Group");	
     		break;
     		
     	case 3:
     	case 4:
     	case 5:
-    		// 3/6 (or 50%) probability of choosing packed food
+    		//  50% probability choosing packed food
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 3, 4 & 5");
 	    	AmountResource food = AmountResource.findAmountResource("food");
 	    	double foodEaten = amount;
 	        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 	        
 	        if (foodAvailable < 0.5D) {
-				consumeFruits(amount, container, "fruits");
-				throw new IllegalStateException("No more dry food available.");
+				consumeFruits(amount, container, "Fruit Group");
+				throw new IllegalStateException("No more packaged food available.");
 	        }
 		
 			// if container has less than enough food, finish up all food in the container

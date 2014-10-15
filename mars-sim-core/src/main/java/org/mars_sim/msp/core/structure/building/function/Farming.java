@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-10-08
+ * @version 3.07 2014-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
@@ -28,22 +29,28 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * The Farming class is a building function for greenhouse farming.
  */
+// 2014-10-14 mkung: implemented new way of calculating amount of food in kg, 
+// Crop Yield or Edible Biomass based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
 public class Farming
 extends Function
 implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    /** default logger. */
+	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
+    
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
+    // HARVEST_MULTIPLIER has been the conversion parameter set for all crops 
     public static final double HARVEST_MULTIPLIER = 10D;
 
     private int cropNum;
     private double powerGrowingCrop;
     private double powerSustainingCrop;
     private double growingArea;
-    private double maxHarvest;
+    private double maxHarvestinKg;
     private List<Crop> crops;
 
     /**
@@ -65,18 +72,30 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getFarmingActivitySpots(building.getName()));
 
-        // Determine maximum harvest.
-        maxHarvest = growingArea * HARVEST_MULTIPLIER;
+        // [DEPRECATED by mkung]
+        // Determine maximum harvest 
+        //maxHarvest = growingArea * HARVEST_MULTIPLIER;
 
+        
         // Create initial crops.
         crops = new ArrayList<Crop>();
         Settlement settlement = building.getBuildingManager().getSettlement();
+        
         for (int x=0; x < cropNum; x++) {
-            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum),
-                    this, settlement, false);
+       // 2014-10-14 mkung: implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop 
+        	CropType cropType = Crop.getRandomCropType();
+        	// edibleBiomass is in  [ gram / m^2 / day ]
+        	double edibleBiomass = cropType.getEdibleBiomass();
+        	// growing-time is in millisol vs. growingDay is in sol
+        	double growingDay = cropType.getGrowingTime() / 1000 ;
+        	// maxHarvest is in kg
+        	maxHarvestinKg = edibleBiomass * growingDay * (growingArea / (double) cropNum)/1000;
+        	      logger.info("constructor :  maxHarvest is "+ Math.round(maxHarvestinKg) + " kg");
+            Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, false);
             crops.add(crop);
-            building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+            building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
         }
+        
     }
 
     /**
@@ -86,6 +105,7 @@ implements Serializable {
      * @param settlement the settlement.
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
+     * Called by BuildingManager.java getBUildingValue() 
      */
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
@@ -112,18 +132,26 @@ implements Serializable {
             }
         }
 
-        // Add food in settlement inventory to supply.
+        // TODO: investigating if other food group besides food should be added as well
+        return  addSupply(supply, demand, settlement, buildingName);        
+    }
+
+    public static double addSupply(double supply, double demand, Settlement settlement, String buildingName) {
         AmountResource food = AmountResource.findAmountResource("food");
         supply += settlement.getInventory().getAmountResourceStored(food, false);
 
         double growingAreaValue = demand / (supply + 1D);
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double growingArea = config.getCropGrowingArea(buildingName);
-
+        double growingArea = config.getCropGrowingArea(buildingName);   
+        
+        //logger.info("addSupply() : growingArea is " + growingArea);
+        //logger.info("addSupply() : growingAreaValue is " + growingAreaValue);
+        
         return growingArea * growingAreaValue;
     }
 
+    
     /**
      * Gets the farm's current crops.
      * @return collection of crops
@@ -188,40 +216,45 @@ implements Serializable {
     }
 
     /**
-     * Adds the crop harvest (vegetables/grains/fruits) to the farm.
-     * @param harvest harvested food to add (kg.)
-     * @param foodCategory
-     * 2014-10-08 mkung : add String foodCategory to the param list to differentiate 3 type of crop harvest: vegetables/grains/fruits
+     * Adds the crop harvest to the farm.
+     * @param harvest: harvested food to add (kg.)
+     * @param cropCategory
+     * 2014-10-14 mkung : add String cropCategory to the param list, added getBiomassRatio 
+     * Note: this method was called by Crop.java's addWork()
      */    
-    public void addHarvest(double harvest, String foodCategory) {
+    public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
 
-            try {
-                Inventory inv = getBuilding().getInventory();
-                AmountResource food = AmountResource.findAmountResource(foodCategory);
-                double remainingCapacity = inv.getAmountResourceRemainingCapacity(food, false, false);
-                 // System.out.println("Farming.java : addHarvest() : remainingCapacity is " + remainingCapacity);
+    	//String harvestCropStr = getBiomassRatio(cropCategory);
+    	
+    	try {
+    		Inventory inv = getBuilding().getInventory();
+            //AmountResource harvestCrop = AmountResource.findAmountResource(cropName);
+            
+            AmountResource harvestCropCategory = AmountResource.findAmountResource(cropCategory);
+            
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropCategory, false, false);
+            
+                 logger.info("addHarvest() : remaining Capacity is " + Math.round(remainingCapacity));
                 
-                  double amountResourceStored = inv.getAmountResourceStored(food, false);
-                 // System.out.println("Farming.java : addHarvest() : amountResourceStored is " + amountResourceStored);
-                     
-                  double amountResourceCapacityNoContainers = inv.getAmountResourceCapacityNoContainers(food);
-                 // System.out.println("Farming.java : addHarvest() : amountResourceCapacityNoContainers is " + amountResourceCapacityNoContainers);
-                   
-                  double amountResourceCapacity = inv.getAmountResourceCapacity(food, false);
-                 // System.out.println("Farming.java : addHarvest() : amountResourceCapacity is " + amountResourceCapacity);          
-                  
-                  // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-                if (remainingCapacity < harvest) {
-                  harvest = remainingCapacity;
-                 // System.out.println("Farming.java : addHarvest() : storage is full. max capacity is " + remainingCapacity);
-
+            /*// look up on the following three attributes. Sanity check only.
+            double amountResourceStored = inv.getAmountResourceStored(harvestCrop, false);
+                 // logger.info("addHarvest() : amountResourceStored is " + amountResourceStored);             
+            double amountResourceCapacityNoContainers = inv.getAmountResourceCapacityNoContainers(harvestCrop);
+                 // logger.info("addHarvest() : amountResourceCapacityNoContainers is " + amountResourceCapacityNoContainers);               
+            double amountResourceCapacity = inv.getAmountResourceCapacity(harvestCrop, false);
+                 // logger.info("addHarvest() : amountResourceCapacity is " + amountResourceCapacity);                
+            */
+            
+            if (remainingCapacity < harvestAmount) {
+                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+            	harvestAmount = remainingCapacity;
+                 logger.info("addHarvest() : storage is full!");
                 }
-                // if the remaining capacity is larger than the harvested amount, add the harvest to the remaining capacity
-                inv.storeAmountResource(food, harvest, false);
-                 // System.out.println("Farming : addHarvest() : just added harvest to storage. harvest was " + harvest);
-
-            }
-            catch (Exception e) {}
+                // add the harvest to the remaining capacity
+            //inv.storeAmountResource(harvestCrop, harvestAmount, false);
+            inv.storeAmountResource(harvestCropCategory, harvestAmount, false);
+                 logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
+            }  catch (Exception e) {}
     }
 
     /**
@@ -275,8 +308,18 @@ implements Serializable {
         // Add any new crops.
         Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         for (int x=0; x < newCrops; x++) {
-            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum),
-                    this, settlement, true);
+        	
+        	CropType cropType = Crop.getRandomCropType();
+        	double edibleBiomassPerDay = cropType.getEdibleBiomass();
+        	double growingDay = cropType.getGrowingTime() / 1000 ;
+        	maxHarvestinKg = edibleBiomassPerDay * growingDay * (growingArea / (double) cropNum) /1000;
+        	      logger.info("timePassing : seedng a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
+            
+        	// Note: the last param of Crop must be set to TRUE
+        	Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, true);
+
+           //Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), this, settlement, true);
+
             crops.add(crop);
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
@@ -338,7 +381,7 @@ implements Serializable {
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;
-        return maxHarvest * aveGrowingCyclesPerOrbit;
+        return maxHarvestinKg * aveGrowingCyclesPerOrbit;
     }
 
     @Override

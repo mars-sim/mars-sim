@@ -239,6 +239,7 @@
 		<person-name value="Lucinda Offer" gender="female" />
 		<person-name value="Lyn Abelar" gender="female" />
 		<person-name value="Madonna Makinson" gender="female" />
+		<person-name value="Manny Kung" gender="male" />		
 		<person-name value="Marc Benoit" gender="male" />
 		<person-name value="Marina Plavnick" gender="female" />
 		<person-name value="Mark Chiappetta" gender="male" />
@@ -317,7 +318,7 @@
 	</person-name-list>
 
 	<!-- List of configured people -->
-	<alpha-team>
+	<person-list>
 
 		<!-- Configured person -->
 		<!-- name: the person's name (required) -->
@@ -412,6 +413,6 @@
                 <relationship person-name="Leonardo DaVinci" opinion="100"/>
             </relationship-list>
         </person>
-	</alpha-team>
+	</person-list>
 
 </people-configuration>

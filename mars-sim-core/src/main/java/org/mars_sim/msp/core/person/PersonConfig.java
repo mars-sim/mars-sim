@@ -45,8 +45,9 @@ implements Serializable {
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
-	// 2014-10-07 mkung: changed the people.xml element from "person-list" to "alpha-team", from personList to alphaTeam
+	// 2014-10-14 mkung: changed element from "alpha-team" to "person-list" , from alphaTeam to personList
 	private static final String ALPHA_TEAM = "alpha-team";
+	private static final String PERSON_LIST = "person-list";
 	private static final String PERSON = "person";
 	private static final String NAME = "name";
 	private static final String PERSONALITY_TYPE = "personality-type";
@@ -276,8 +277,8 @@ implements Serializable {
 	 */
 	public int getNumberOfConfiguredPeople() {
 		Element root = personDoc.getRootElement();
-		Element alphaTeam = root.getChild(ALPHA_TEAM);
-		List personNodes = alphaTeam.getChildren(PERSON);
+		Element personList = root.getChild(PERSON_LIST);
+		List personNodes = personList.getChildren(PERSON);
 		if (personNodes != null) return personNodes.size();
 		else return 0;
 	}
@@ -342,8 +343,8 @@ implements Serializable {
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
-		Element alphaTeam = root.getChild(ALPHA_TEAM);
-		Element personElement = (Element) alphaTeam.getChildren(PERSON).get(index);
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
 
 		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.size() > 0)) {
@@ -362,8 +363,8 @@ implements Serializable {
 
 	private String getValueAsString(int index, String param){
 		Element root = personDoc.getRootElement();
-		Element alphaTeam = root.getChild(ALPHA_TEAM);
-		Element personElement = (Element) alphaTeam.getChildren(PERSON).get(index);
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		return personElement.getAttributeValue(param);
 	}
 
@@ -385,8 +386,8 @@ implements Serializable {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
 		// 2014-10-07 mkung: changed the people.xml element from "person-list" to "alpha-team"
-		Element alphaTeam = root.getChild(ALPHA_TEAM);
-		Element personElement = (Element) alphaTeam.getChildren(PERSON).get(index);
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
 			Element skillList = skillListNodes.get(0);
@@ -412,8 +413,8 @@ implements Serializable {
 	public Map<String, Integer> getRelationshipMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
-		Element alphaTeam = root.getChild(ALPHA_TEAM);
-		Element personElement = (Element) alphaTeam.getChildren(PERSON).get(index);
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
 			Element relationshipList = relationshipListNodes.get(0);
