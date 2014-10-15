@@ -3,6 +3,54 @@
 <!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
 
 <crop-list>
+	<crop name="Cabbage" 
+    	growing-time="85.0" 
+    	crop-category="Vegetable Group" 
+    	edible-biomass="75.78"
+    	edible-water-content=".92"
+    	inedible-biomass="6.74" 
+    	/>
+    	
+	<crop name="Carrot" 
+    	growing-time="74.83" 
+    	crop-category="Vegetable Group" 
+    	edible-biomass="74.83"
+    	edible-water-content=".88"
+    	inedible-biomass="59.87" 
+    	/>
+
+	<crop name="Chard" 
+    	growing-time="45.0" 
+    	crop-category="Vegetable Group" 
+    	edible-biomass="87.50"
+    	edible-water-content=".92"
+    	inedible-biomass="37.69" 
+    	/>
+    	
+	<crop name="Celery" 
+    	growing-time="75.0" 
+    	crop-category="Vegetable Group" 
+    	edible-biomass="103.27"
+    	edible-water-content=".90"
+    	inedible-biomass="11.47" 
+    	/>
+
+    <crop name="Kidney Bean" 
+    	growing-time="85.0" 
+    	crop-category="Legume Group" 
+    	edible-biomass="11.11" 
+    	edible-water-content=".10"
+    	inedible-biomass="150.0" 
+    	/>
+    	    	    	
+    <crop name="Green Onion" 
+    	growing-time="50.0" 
+    	crop-category="Spice Group" 
+    	edible-biomass="81.82" 
+    	edible-water-content=".89"
+    	inedible-biomass="10.0" 
+    	/>
+    	
     <crop name="Lettuce" 
     	growing-time="28.0" 
     	crop-category="Vegetable Group" 
@@ -10,5 +58,46 @@
     	edible-water-content=".95"
     	inedible-biomass="7.3" 
     	/>
-
+    	
+    <crop name="Onion" 
+    	growing-time="50.0" 
+    	crop-category="Spice Group" 
+    	edible-biomass="81.82" 
+    	edible-water-content=".89"
+    	inedible-biomass="22.50" 
+    	/>
+    	
+    <crop name="Peas"
+        growing-time="75.0" 
+    	crop-category="Legume Group" 
+    	edible-biomass="12.20" 
+    	edible-water-content=".12"
+    	inedible-biomass="161.00" 
+    	/>    	
+    	
+    <crop name="Peanut"
+        growing-time="104.0" 
+    	crop-category="Legume Group" 
+    	edible-biomass="5.96" 
+    	edible-water-content="5.6"
+    	inedible-biomass="168.75" 
+    	/>  
+    	    	
+     <crop name="Rice"
+        growing-time="85.0" 
+    	crop-category="Grain Group" 
+    	edible-biomass="10.3" 
+    	edible-water-content=".12"
+    	inedible-biomass="211.58" 
+    	/>	
+    	   	
+     <crop name="Soybean"
+        growing-time="97.0" 
+    	crop-category="Legume Group" 
+    	edible-biomass="5.04" 
+    	edible-water-content=".10"
+    	inedible-biomass="68.04" 
+    	/>	
+    	
+    	
 </crop-list>
