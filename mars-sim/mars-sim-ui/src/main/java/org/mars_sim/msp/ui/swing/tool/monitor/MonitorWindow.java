@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 3.06 2014-10-10
+ * @version 3.06 2014-10-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -156,6 +156,9 @@ implements TableModelListener, ActionListener {
 		addTab(new UnitTab(this,new PersonTableModel(unitManager), true));
 		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
 		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
+		// 2014-10-14 mkung: added FoodTableModel
+		addTab(new UnitTab(this,new FoodTableModel(unitManager), true));
+		
 		addTab(new MissionTab(this));
 		eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager()));
 		addTab(eventsTab);
