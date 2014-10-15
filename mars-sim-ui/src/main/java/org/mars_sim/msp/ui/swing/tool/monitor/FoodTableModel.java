@@ -1,14 +1,15 @@
 /**
  * Mars Simulation Project
- * SettlementTableModel.java
- * @version 3.06 2014-10-14
- * @author Barry Evans
+ * FoodTableModel.java
+ * @version 3.07 2014-10-15
+ * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
@@ -22,20 +23,22 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Farming;
+
 
 /**
- * The SettlementTableModel that maintains a list of Settlement objects.
- * It maps key attributes of the Settlement into Columns.
+ * The FoodTableModel that maintains a list of Food related objects.
+ * It maps food related info into Columns.
  */
-// 2014-10-14 mkung: moved all food related columns to FoodTableModel.java
-public class SettlementTableModel
+// 2014-10-14 mkung 
+// Relocated all food related objects from SettlementTableModel Class to here
+// Incorporated five major food groups into MSP
+public class FoodTableModel
 extends UnitTableModel {
 
 	/** default serial id. */
@@ -43,22 +46,19 @@ extends UnitTableModel {
 
 	// Column indexes
 	private final static int NAME = 0;
-	private final static int POPULATION = 1;
-	private final static int PARKED = 2;
-	private final static int POWER = 3;
+	private final static int GREENHOUSES = 1;
+	private final static int CROPS = 2;
 	
-	private final static int MALFUNCTION = 4;
-	private final static int OXYGEN = 5;
-	private final static int HYDROGEN = 6;
-	private final static int CO2 = 7;
-	private final static int METHANE = 8;
+	private final static int FOOD = 3;
+	private final static int FRUITS = 4;
+	private final static int GRAINS = 5;
+	private final static int LEGUMES = 6;
+	private final static int SPICES = 7;
+	private final static int VEGETABLES = 8;
+
 	
-	private final static int WATER = 9;
-	private final static int WASTE_WATER = 10;
-	private final static int ROCK_SAMPLES = 11;
-	private final static int ICE = 12;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 13;
+	private final static int COLUMNCOUNT = 9;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -69,30 +69,22 @@ extends UnitTableModel {
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = "Name";
 		columnTypes[NAME] = String.class;
-		columnNames[POPULATION] = "Total Population";
-		columnTypes[POPULATION] = Integer.class;
-		columnNames[PARKED] = "Parked Vehicles";
-		columnTypes[PARKED] = Integer.class;
-		columnNames[POWER] = "Power (kW)";
-		columnTypes[POWER] = Integer.class;
-		columnNames[MALFUNCTION] = "Malfunction";
-		columnTypes[MALFUNCTION] = String.class;
-		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Integer.class;
-		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Integer.class;
-		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Integer.class;
-		columnNames[ROCK_SAMPLES] = "Rock Samples";
-		columnTypes[ROCK_SAMPLES] = Integer.class;
-		columnNames[HYDROGEN] = "Hydrogen";
-		columnTypes[HYDROGEN] = Integer.class;
-		columnNames[WASTE_WATER] = "Waste Water";
-		columnTypes[WASTE_WATER] = Integer.class;
-		columnNames[CO2] = "CO2";
-		columnTypes[CO2] = Integer.class;
-		columnNames[ICE] = "Ice";
-		columnTypes[ICE] = Integer.class;
+		columnNames[GREENHOUSES] = "Greenhouses";
+		columnTypes[GREENHOUSES] = Integer.class;
+		columnNames[CROPS] = "Crops";
+		columnTypes[CROPS] = Integer.class;
+		columnNames[FOOD] = "Food";
+		columnTypes[FOOD] = Integer.class;
+		columnNames[FRUITS] = "Fruits";
+		columnTypes[FRUITS] = Integer.class;
+		columnNames[GRAINS] = "Grains";
+		columnTypes[GRAINS] = Integer.class;
+		columnNames[VEGETABLES] = "Vegetables";
+		columnTypes[VEGETABLES] = Integer.class;
+		columnNames[LEGUMES] = "Legumes";
+		columnTypes[LEGUMES] = Integer.class;
+		columnNames[SPICES] = "Spices";
+		columnTypes[SPICES] = Integer.class;
 	};
 
 	// Data members
@@ -100,14 +92,14 @@ extends UnitTableModel {
 	private Map<Unit, Map<AmountResource, Integer>> resourceCache;
 
 	/**
-	 * Constructs a SettlementTableModel model that displays all Settlements
+	 * Constructs a FoodTableModel model that displays all Settlements
 	 * in the simulation.
 	 *
 	 * @param unitManager Unit manager that holds settlements.
 	 */
-	public SettlementTableModel(UnitManager unitManager) {
+	public FoodTableModel(UnitManager unitManager) {
 		super(
-			"All Settlements",
+			"Food Production ",
 			"SettlementTableModel.countingSettlements", //$NON-NLS-1$
 			columnNames,
 			columnTypes
@@ -135,77 +127,63 @@ extends UnitTableModel {
 				// Invoke the appropriate method, switch is the best solution
 				// althought disliked by some
 				switch (columnIndex) {
+				
 				case NAME : {
 					result = settle.getName();
 				} break;
 
-				case WATER : {
+
+				case GREENHOUSES : {
+					int greenhouses = bMgr.getBuildings(BuildingFunction.FARMING).size();
+					result = greenhouses;
+				} break;
+				
+				case FOOD : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource("water"));
+							AmountResource.findAmountResource("food"));
 				} break;
 
-
-				case OXYGEN : {
+				case FRUITS : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource("oxygen"));
+							AmountResource.findAmountResource("Fruit Group"));
 				} break;
 
-				case METHANE : {
+				case GRAINS : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource("methane"));
+							AmountResource.findAmountResource("Grain Group"));
 				} break;
 
-				case ROCK_SAMPLES : {
+				case VEGETABLES : {
 					result = resourceMap.get(
-						AmountResource.findAmountResource("rock samples"));
+							AmountResource.findAmountResource("Vegetable Group"));
 				} break;
 
-				case MALFUNCTION: {
-					int severity = 0;
-					Malfunction malfunction = null;
-					Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();
+				case LEGUMES: {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Legume Group"));
+				} break;
+
+				case SPICES : {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Spice Group"));
+				} break;
+				
+				case CROPS : {
+					int crops = 0;
+					List<Building> greenhouses = bMgr.getBuildings(BuildingFunction.FARMING);
+					Iterator<Building> i = greenhouses.iterator();
 					while (i.hasNext()) {
-						Building building = i.next();
-						Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
-						if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
-							malfunction = tempMalfunction;
-							severity = tempMalfunction.getSeverity();
+						try {
+							Building greenhouse = i.next();
+							Farming farm = (Farming) greenhouse.getFunction(BuildingFunction.FARMING);
+							crops += farm.getCrops().size();
 						}
+						catch (Exception e) {}
 					}
-					if (malfunction != null) result = malfunction.getName();
+
+					result = crops;
 				} break;
 
-				case POPULATION : {
-					result = settle.getAllAssociatedPeople().size();
-				} break;
-
-				case PARKED : {
-					result = settle.getParkedVehicleNum();
-				} break;
-
-				case POWER : {
-					result = (int) settle.getPowerGrid().getGeneratedPower();
-				} break;
-
-				case HYDROGEN : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("hydrogen"));
-				} break;
-
-				case WASTE_WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("waste water"));
-				} break;
-
-				case CO2 : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("carbon dioxide"));
-				} break;
-
-				case ICE : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("ice"));
-				} break;
 				}
 			}
 			catch (Exception e) {}
@@ -226,34 +204,29 @@ extends UnitTableModel {
 
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
-		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
-				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-			if (target instanceof Person) columnNum = POPULATION;
-			else if (target instanceof Vehicle) columnNum = PARKED;
+		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			if (target instanceof Farming) columnNum = GREENHOUSES;
 		}
-		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER;
-		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
+		else if (eventType == UnitEventType.CROP_EVENT) columnNum = CROPS;
+
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			try {
-				int tempColumnNum = -1;
-
-				if (target.equals(AmountResource.findAmountResource("oxygen"))) 
-					tempColumnNum = OXYGEN;
-				else if (target.equals(AmountResource.findAmountResource("hydrogen"))) 
-					tempColumnNum = HYDROGEN;
-				else if (target.equals(AmountResource.findAmountResource("carbon dioxide"))) 
-					tempColumnNum = CO2;
-				else if (target.equals(AmountResource.findAmountResource("methane"))) 
-					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource("water"))) 
-					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("waste water"))) 
-					tempColumnNum = WASTE_WATER;
-				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
-					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(AmountResource.findAmountResource("ice"))) 
-					tempColumnNum = ICE;
-
+				int tempColumnNum = -1;			
+				if (target.equals(AmountResource.findAmountResource("food"))) 
+					tempColumnNum = FOOD;
+				else if (target.equals(AmountResource.findAmountResource("Fruit Group"))) 
+					tempColumnNum = FRUITS;
+				else if (target.equals(AmountResource.findAmountResource("Grain Group"))) 
+					tempColumnNum = GRAINS;
+				else if (target.equals(AmountResource.findAmountResource("Vegetable Group"))) 
+					tempColumnNum = VEGETABLES;
+				else if (target.equals(AmountResource.findAmountResource("Grain Group"))) 
+					tempColumnNum = GRAINS;
+				else if (target.equals(AmountResource.findAmountResource("Legume Group"))) 
+					tempColumnNum = LEGUMES;
+				else if (target.equals(AmountResource.findAmountResource("Spice Group"))) 
+					tempColumnNum = SPICES;
+				
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
 					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
@@ -269,7 +242,7 @@ extends UnitTableModel {
 		}
 
 		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new SettlementTableCellUpdater(unitIndex, columnNum));
+			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));
 		}
 	}
 
@@ -290,22 +263,19 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
-				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
-				AmountResource water = AmountResource.findAmountResource("water");
-				resourceMap.put(water, getResourceStored(newUnit, water));
-				AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
-				resourceMap.put(hydrogen, getResourceStored(newUnit, hydrogen));
-				AmountResource methane = AmountResource.findAmountResource("methane");
-				resourceMap.put(methane, getResourceStored(newUnit, methane));
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
-				AmountResource wasteWater = AmountResource.findAmountResource("waste water");
-				resourceMap.put(wasteWater, getResourceStored(newUnit, wasteWater));
-				AmountResource ice = AmountResource.findAmountResource("ice");
-				resourceMap.put(ice, getResourceStored(newUnit, ice));
-				AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-				resourceMap.put(carbonDioxide, getResourceStored(newUnit, carbonDioxide));
+				AmountResource food = AmountResource.findAmountResource("food");
+				resourceMap.put(food, getResourceStored(newUnit, food));
+				AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
+				resourceMap.put(fruits, getResourceStored(newUnit, fruits));
+				AmountResource grains = AmountResource.findAmountResource("Grain Group");
+				resourceMap.put(grains, getResourceStored(newUnit, grains));
+				AmountResource vegetables = AmountResource.findAmountResource("Vegetable Group");
+				resourceMap.put(vegetables, getResourceStored(newUnit, vegetables));
+				AmountResource legumes = AmountResource.findAmountResource("Legume Group");
+				resourceMap.put(legumes, getResourceStored(newUnit, legumes));
+				AmountResource spices = AmountResource.findAmountResource("Spice Group");
+				resourceMap.put(spices, getResourceStored(newUnit, spices));
+				
 				resourceCache.put(newUnit, resourceMap);
 			}
 			catch (Exception e) {}
@@ -356,12 +326,12 @@ extends UnitTableModel {
 		resourceCache = null;
 	}
 
-	private class SettlementTableCellUpdater implements Runnable {
+	private class FoodTableCellUpdater implements Runnable {
 
 		private int row;
 		private int column;
 
-		private SettlementTableCellUpdater(int row, int column) {
+		private FoodTableCellUpdater(int row, int column) {
 			this.row = row;
 			this.column = column;
 		}
