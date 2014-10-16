@@ -1,8 +1,11 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2014-10-15
  * @author Scott Davis
+ * 2014-10-15 mkung: Added 5 new food groups to getFarmingDemand() method 
+ * 					 Enabled trading on these five amount resources 
+
  */
 package org.mars_sim.msp.core.structure.goods;
 
@@ -411,14 +414,28 @@ implements Serializable {
      * @return demand (kg) for the resource.
      * @throws Exception if error determining demand.
      */
+    // 2014-10-15 mkung: added 5 new food groups to enable them to be traded
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
         AmountResource wasteWater = AmountResource.findAmountResource("waste water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
         AmountResource food = AmountResource.findAmountResource("food");
+        // 2014-10-15 mkung: added 5 new food groups
+        AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
+        AmountResource legumes = AmountResource.findAmountResource("Legume Group");
+        AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
+        AmountResource spices = AmountResource.findAmountResource("Spice Group");
+        AmountResource grains = AmountResource.findAmountResource("Grain Group");
+                     
         if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
             double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
-
+            // 2014-10-15 mkung: added 5 new food groups
+            double vegValue = getGoodValuePerItem(GoodsUtil.getResourceGood(veg));
+            double legumesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(legumes));
+            double fruitsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(fruits));
+            double spicesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(spices));
+            double grainsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(grains));
+                        
             Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
             while (i.hasNext()) {
                 Building building = i.next();
@@ -432,6 +449,13 @@ implements Serializable {
                         amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
                     demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
+                    // 2014-10-15 mkung: added 5 new food groups
+                    demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
+                    demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
+                    demand += (farm.getEstimatedHarvestPerOrbit() * fruitsValue) / amountNeeded;
+                    demand += (farm.getEstimatedHarvestPerOrbit() * spicesValue) / amountNeeded;
+                    demand += (farm.getEstimatedHarvestPerOrbit() * grainsValue) / amountNeeded;
+
                 }
             }
         }
