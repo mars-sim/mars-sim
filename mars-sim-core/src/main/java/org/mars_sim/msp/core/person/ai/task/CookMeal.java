@@ -1,8 +1,10 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-10-15
  * @author Scott Davis
+ * 
+ * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -89,13 +91,25 @@ implements Serializable {
         }
         else endTask();
 
-        // Add task phase
-        addPhase(COOKING);
-        setPhase(COOKING);
-
-        String jobName = person.getMind().getJob().getName(person.getGender());
-        logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
-                " in " + person.getSettlement());
+        //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
+        double foodAvailable = kitchen.checkAmountOfFood();
+        
+        logger.info("constructor : foodAvailble is " + foodAvailable);
+        
+        if (foodAvailable < 0.5) {
+            logger.info("constructor : calling endTask() and not to initiate cooking");
+            
+        	endTask();
+        } else  {
+                
+	        // Add task phase
+	        addPhase(COOKING);
+	        setPhase(COOKING);
+	
+	        String jobName = person.getMind().getJob().getName(person.getGender());
+	        logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
+	                " in " + person.getSettlement());
+        }
     }
     
     @Override

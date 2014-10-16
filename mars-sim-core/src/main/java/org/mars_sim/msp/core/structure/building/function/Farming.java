@@ -1,8 +1,11 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-10-14
+ * @version 3.07 2014-10-15
  * @author Scott Davis
+ * 2014-10-15 mkung: Fixed the crash by checking if there is any food available
+ * 	Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
+ *  see if new crop harvest comes in.
  */
 package org.mars_sim.msp.core.structure.building.function;
 
@@ -90,7 +93,7 @@ implements Serializable {
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	// maxHarvest is in kg
         	maxHarvestinKg = edibleBiomass * growingDay * (growingArea / (double) cropNum)/1000;
-        	      logger.info("constructor :  maxHarvest is "+ Math.round(maxHarvestinKg) + " kg");
+        	      logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
             Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, false);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       

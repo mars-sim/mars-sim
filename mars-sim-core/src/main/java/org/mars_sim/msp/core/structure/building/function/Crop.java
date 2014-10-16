@@ -98,7 +98,7 @@ implements Serializable {
 						+ " harvestingWorkRequired is " + Math.round(harvestingWorkRequired));
 		if (newCrop) {
 			phase = PLANTING;
-			logger.info("constructor : this new crop is in Planting phase");
+			logger.info("constructor : a new crop is in Planting phase");
 			actualHarvest = 0D;
 		}
 		else {
@@ -257,7 +257,7 @@ implements Serializable {
 					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, 
 							cropType.getName(), cropType.getCropCategory());
 				remainingWorkTime = 0D;
-				logger.info("addWork() : done. remainingWorkTime is " + remainingWorkTime);
+				logger.info("addWork() : just set remainingWorkTime to " + remainingWorkTime);
 			}
 		}
 

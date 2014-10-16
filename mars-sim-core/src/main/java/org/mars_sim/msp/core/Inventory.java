@@ -341,7 +341,7 @@ implements Serializable {
             throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
         }
 
-        if (amount > 0D) {
+        if (amount > 0D ) {
 
             if (amount <= getAmountResourceStored(resource, false)) {
 
