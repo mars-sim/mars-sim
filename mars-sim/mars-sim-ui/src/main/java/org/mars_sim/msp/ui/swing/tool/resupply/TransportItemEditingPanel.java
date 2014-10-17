@@ -13,38 +13,42 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 /**
  * An abstract panel for editing a transport item.
  */
-public abstract class TransportItemEditingPanel extends JPanel {
+public abstract class TransportItemEditingPanel
+extends JPanel {
 
-    // Data members
-    private Transportable transportItem;
-    
-    /**
-     * Constructor.
-     * @param transportItem the transport item to edit.
-     */
-    public TransportItemEditingPanel(Transportable transportItem) {
-        // Use JPanel constructor
-        super();
-        
-        // Initialize data members.
-        this.transportItem = transportItem;
-    }
-    
-    /**
-     * Gets the transport item.
-     * @return transport item.
-     */
-    public Transportable getTransportItem() {
-        return transportItem;
-    }
-    
-    /**
-     * Modifies the transport item with the editing panel information.
-     */
-    public abstract boolean modifyTransportItem();
-    
-    /**
-     * Creates the transport item with the editing panel information.
-     */
-    public abstract boolean createTransportItem();
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	private Transportable transportItem;
+
+	/**
+	 * Constructor.
+	 * @param transportItem the transport item to edit.
+	 */
+	public TransportItemEditingPanel(Transportable transportItem) {
+		// Use JPanel constructor
+		super();
+
+		// Initialize data members.
+		this.transportItem = transportItem;
+	}
+
+	/**
+	 * Gets the transport item.
+	 * @return transport item.
+	 */
+	public Transportable getTransportItem() {
+		return transportItem;
+	}
+
+	/**
+	 * Modifies the transport item with the editing panel information.
+	 */
+	public abstract boolean modifyTransportItem();
+
+	/**
+	 * Creates the transport item with the editing panel information.
+	 */
+	public abstract boolean createTransportItem();
 }

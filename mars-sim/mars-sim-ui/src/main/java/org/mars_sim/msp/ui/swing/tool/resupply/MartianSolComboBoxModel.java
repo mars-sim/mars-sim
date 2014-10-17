@@ -13,47 +13,48 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A combo box model for Martian sols.
  */
-public class MartianSolComboBoxModel extends DefaultComboBoxModel<Integer> {
+public class MartianSolComboBoxModel
+extends DefaultComboBoxModel<Integer> {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** Data members. */
-    private int maxSolNum;
+	private int maxSolNum;
 
-    /**
-     * Constructor.
-     * @param month {@link Integer} the Martian month number.
-     * @param orbit {@link Integer} the Martian orbit number.
-     */
-    public MartianSolComboBoxModel(int month, int orbit) {
-        maxSolNum = MarsClock.getSolsInMonth(month, orbit);
+	/**
+	 * Constructor.
+	 * @param month {@link Integer} the Martian month number.
+	 * @param orbit {@link Integer} the Martian orbit number.
+	 */
+	public MartianSolComboBoxModel(int month, int orbit) {
+		maxSolNum = MarsClock.getSolsInMonth(month, orbit);
 
-        for (int x = 1; x <= maxSolNum; x++) {
-            addElement(x);
-        }
-    }
+		for (int x = 1; x <= maxSolNum; x++) {
+			addElement(x);
+		}
+	}
 
-    /**
-     * Update the items based on the number of sols in the month.
-     * @param month the Martian month number.
-     * @param orbit the Martian orbit number.
-     */
-    public void updateSolNumber(int month, int orbit) {
-        int newMaxSolNum = MarsClock.getSolsInMonth(month, orbit);
-        if (newMaxSolNum != maxSolNum) {
-            int oldSelectedSol = (Integer) getSelectedItem();
+	/**
+	 * Update the items based on the number of sols in the month.
+	 * @param month the Martian month number.
+	 * @param orbit the Martian orbit number.
+	 */
+	public void updateSolNumber(int month, int orbit) {
+		int newMaxSolNum = MarsClock.getSolsInMonth(month, orbit);
+		if (newMaxSolNum != maxSolNum) {
+			int oldSelectedSol = (Integer) getSelectedItem();
 
-            if (newMaxSolNum < maxSolNum) {
-                removeElementAt(maxSolNum - 1);
-                if (oldSelectedSol == maxSolNum) {
-                    setSelectedItem(newMaxSolNum);
-                }
-            }
-            else {
-                addElement(newMaxSolNum);
-            }
+			if (newMaxSolNum < maxSolNum) {
+				removeElementAt(maxSolNum - 1);
+				if (oldSelectedSol == maxSolNum) {
+					setSelectedItem(newMaxSolNum);
+				}
+			}
+			else {
+				addElement(newMaxSolNum);
+			}
 
-            maxSolNum = newMaxSolNum;
-        }
-    }
+			maxSolNum = newMaxSolNum;
+		}
+	}
 }
