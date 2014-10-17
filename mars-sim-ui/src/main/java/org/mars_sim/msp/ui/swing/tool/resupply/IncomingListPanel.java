@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.EventType;
 
 /**
  * A panel showing a list of all incoming transport items.
+ * TODO externalize strings
  */
 public class IncomingListPanel
 extends JPanel

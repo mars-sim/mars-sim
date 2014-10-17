@@ -49,7 +49,7 @@ implements ClockListener, HistoricalEventListener {
 	private JLabel populationValueLabel;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public ArrivingSettlementDetailPanel() {
 

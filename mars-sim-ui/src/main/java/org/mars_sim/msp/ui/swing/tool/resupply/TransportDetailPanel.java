@@ -20,64 +20,70 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 
 /**
  * A panel showing a selected transport details.
+ * TODO externalize strings
  */
-public class TransportDetailPanel extends JPanel implements ListSelectionListener {
+public class TransportDetailPanel
+extends JPanel
+implements ListSelectionListener {
 
-    // Panel key strings.
-    private static final String RESUPPLY = "resupply";
-    private static final String SETTLEMENT = "settlement";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members.
-    private CardLayout cardLayout;
-    private ResupplyDetailPanel resupplyPanel;
-    private ArrivingSettlementDetailPanel arrivingSettlementPanel;
+	// Panel key strings.
+	private static final String RESUPPLY = "resupply";
+	private static final String SETTLEMENT = "settlement";
 
-    /**
-     * Constructor
-     */
-    public TransportDetailPanel() {
+	// Data members.
+	private CardLayout cardLayout;
+	private ResupplyDetailPanel resupplyPanel;
+	private ArrivingSettlementDetailPanel arrivingSettlementPanel;
 
-        // Use JPanel constructor.
-        super();
+	/**
+	 * Constructor.
+	 */
+	public TransportDetailPanel() {
 
-        cardLayout = new CardLayout();
-        setLayout(cardLayout);
-        setPreferredSize(new Dimension(300, 300));
+		// Use JPanel constructor.
+		super();
 
-        // Add resupply detail panel.
-        resupplyPanel = new ResupplyDetailPanel();
-        add(resupplyPanel, RESUPPLY);
+		cardLayout = new CardLayout();
+		setLayout(cardLayout);
+		setPreferredSize(new Dimension(300, 300));
 
-        // Add arriving settlement detail panel.
-        arrivingSettlementPanel = new ArrivingSettlementDetailPanel();
-        add(arrivingSettlementPanel, SETTLEMENT);
+		// Add resupply detail panel.
+		resupplyPanel = new ResupplyDetailPanel();
+		add(resupplyPanel, RESUPPLY);
 
-        // Set resupply panel as initial panel displayed.
-        cardLayout.show(this, RESUPPLY);
-    }
+		// Add arriving settlement detail panel.
+		arrivingSettlementPanel = new ArrivingSettlementDetailPanel();
+		add(arrivingSettlementPanel, SETTLEMENT);
 
-    @Override
-    public void valueChanged(ListSelectionEvent evt) {
+		// Set resupply panel as initial panel displayed.
+		cardLayout.show(this, RESUPPLY);
+	}
 
-        JList transportList = (JList) evt.getSource();
-        if (!transportList.getValueIsAdjusting()) {
-            Transportable newTransportable = (Transportable) transportList.getSelectedValue();
-            if (newTransportable instanceof Resupply) {
-                resupplyPanel.setResupply((Resupply) newTransportable);
-                cardLayout.show(this, RESUPPLY);
-            }
-            else if (newTransportable instanceof ArrivingSettlement) {
-                arrivingSettlementPanel.setArrivingSettlement((ArrivingSettlement) newTransportable);
-                cardLayout.show(this, SETTLEMENT);
-            }
-        }
-    }
+	@Override
+	public void valueChanged(ListSelectionEvent evt) {
 
-    /**
-     * Prepares the panel for deletion.
-     */
-    public void destroy() {
-        resupplyPanel.destroy();
-        arrivingSettlementPanel.destroy();
-    }
+		JList<?> transportList = (JList<?>) evt.getSource();
+		if (!transportList.getValueIsAdjusting()) {
+			Transportable newTransportable = (Transportable) transportList.getSelectedValue();
+			if (newTransportable instanceof Resupply) {
+				resupplyPanel.setResupply((Resupply) newTransportable);
+				cardLayout.show(this, RESUPPLY);
+			}
+			else if (newTransportable instanceof ArrivingSettlement) {
+				arrivingSettlementPanel.setArrivingSettlement((ArrivingSettlement) newTransportable);
+				cardLayout.show(this, SETTLEMENT);
+			}
+		}
+	}
+
+	/**
+	 * Prepares the panel for deletion.
+	 */
+	public void destroy() {
+		resupplyPanel.destroy();
+		arrivingSettlementPanel.destroy();
+	}
 }
