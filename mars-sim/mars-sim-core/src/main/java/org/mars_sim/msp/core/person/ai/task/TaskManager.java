@@ -52,268 +52,255 @@ implements Serializable {
 	 * @param mind the mind that uses this task manager.
 	 */
 	public TaskManager(Mind mind) {
-        // Initialize data members
-        this.mind = mind;
-        currentTask = null;
+		// Initialize data members
+		this.mind = mind;
+		currentTask = null;
 
-        // Initialize cache values.
-        timeCache = null;
-        taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
-        totalProbCache = 0D;
-    }
+		// Initialize cache values.
+		timeCache = null;
+		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		totalProbCache = 0D;
+	}
 
-    /** Returns true if person has an active task.
-     *  @return true if person has an active task
-     */
-    public boolean hasActiveTask() {
-        return (currentTask != null) && !currentTask.isDone();
-    }
+	/**
+	 * Returns true if person has an active task.
+	 * @return true if person has an active task
+	 */
+	public boolean hasActiveTask() {
+		return (currentTask != null) && !currentTask.isDone();
+	}
 
-    /** Returns true if person has a task (may be inactive).
-     *  @return true if person has a task
-     */
-    public boolean hasTask() {
-        return currentTask != null;
-    }
+	/**
+	 * Returns true if person has a task (may be inactive).
+	 * @return true if person has a task
+	 */
+	public boolean hasTask() {
+		return currentTask != null;
+	}
 
-    /** Returns the name of the current task for UI purposes.
-     *  Returns a blank string if there is no current task.
-     *  @return name of the current task
-     */
-    public String getTaskName() {
-        if (currentTask != null) {
-            return currentTask.getName();
-        } else {
-            return "";
-        }
-    }
+	/**
+	 * Returns the name of the current task for UI purposes.
+	 * Returns a blank string if there is no current task.
+	 * @return name of the current task
+	 */
+	public String getTaskName() {
+		if (currentTask != null) {
+			return currentTask.getName();
+		} else {
+			return "";
+		}
+	}
 
-    /** Returns a description of current task for UI purposes.
-     *  Returns a blank string if there is no current task.
-     *  @return a description of the current task
-     */
-    public String getTaskDescription() {
-        if (currentTask != null) {
-            return currentTask.getDescription();
-        } else {
-            return "";
-        }
-    }
+	/**
+	 * Returns a description of current task for UI purposes.
+	 * Returns a blank string if there is no current task.
+	 * @return a description of the current task
+	 */
+	public String getTaskDescription() {
+		if (currentTask != null) {
+			return currentTask.getDescription();
+		} else {
+			return "";
+		}
+	}
 
-    /** Returns the current task phase if there is one.
-     *  Returns null if current task has no phase.
-     *  Returns null if there is no current task.
-     *  @return the current task phase
-     */
-    public TaskPhase getPhase() {
-        if (currentTask != null) {
-            return currentTask.getPhase();
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Returns the current task phase if there is one.
+	 * Returns null if current task has no phase.
+	 * Returns null if there is no current task.
+	 * @return the current task phase
+	 */
+	public TaskPhase getPhase() {
+		if (currentTask != null) {
+			return currentTask.getPhase();
+		} else {
+			return null;
+		}
+	}
 
-    /** Returns the current task.
-     *  Return null if there is no current task.
-     *  @return the current task
-     */
-    public Task getTask() {
-        return currentTask;
-    }
+	/**
+	 * Returns the current task.
+	 * Return null if there is no current task.
+	 * @return the current task
+	 */
+	public Task getTask() {
+		return currentTask;
+	}
 
-    /**
-     * Sets the current task to null.
-     */
-    public void clearTask() {
-        currentTask.endTask();
-        currentTask = null;
-        mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT);
-    }
+	/**
+	 * Sets the current task to null.
+	 */
+	public void clearTask() {
+		currentTask.endTask();
+		currentTask = null;
+		mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT);
+	}
 
-    /** Adds a task to the stack of tasks.
-     *  @param newTask the task to be added
-     */
-    public void addTask(Task newTask) {
-        if (hasActiveTask()) {
-            currentTask.addSubTask(newTask);
-        } else {
-            currentTask = newTask;
-        }
-        mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
-    }
+	/**
+	 * Adds a task to the stack of tasks.
+	 * @param newTask the task to be added
+	 */
+	public void addTask(Task newTask) {
+		if (hasActiveTask()) {
+			currentTask.addSubTask(newTask);
+		} else {
+			currentTask = newTask;
+		}
+		mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+	}
 
-    /** 
-     * Perform the current task for a given amount of time.
-     * @param time amount of time to perform the action
-     * @param efficiency The performance rating of person performance task.
-     * @return remaining time.
-     * @throws Exception if error in performing task.
-     */
-    public double performTask(double time, double efficiency) {
-        double remainingTime = 0D;
+	/** 
+	 * Perform the current task for a given amount of time.
+	 * @param time amount of time to perform the action
+	 * @param efficiency The performance rating of person performance task.
+	 * @return remaining time.
+	 * @throws Exception if error in performing task.
+	 */
+	public double performTask(double time, double efficiency) {
+		double remainingTime = 0D;
+		if (currentTask != null) {
+			// For effort driven task, reduce the effective time based on efficiency.
+			if (efficiency < .1D) {
+				efficiency = .1D;
+			}
+			if (currentTask.isEffortDriven()) {
+				time *= efficiency;
+			}
+			checkForEmergency();
+			remainingTime = currentTask.performTask(time);
+		}
+		return remainingTime;
+	}
 
-        if (currentTask != null) {
-            // For effort driven task, reduce the effective time based on efficiency.
-            if (efficiency < .1D) {
-                efficiency = .1D;
-            }
-            if (currentTask.isEffortDriven()) {
-                time *= efficiency;
-            }
-            checkForEmergency();
+	/**
+	 * Checks if any emergencies are happening in the person's local.
+	 * Adds an emergency task if necessary.
+	 * @throws Exception if error checking for emergency.
+	 */
+	private void checkForEmergency() {
+		// Check for emergency malfunction.
+		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
+			boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+					instanceof RepairEmergencyMalfunction));
+			boolean hasAirlockTask = false;
+			Task task = currentTask;
+			while (task != null) {
+				if ((task instanceof EnterAirlock) && (task instanceof ExitAirlock)) {
+					hasAirlockTask = true;
+				}
+				task = task.getSubTask();
+			}
+			if (!hasEmergencyRepair && !hasAirlockTask) {
+				logger.fine(mind.getPerson() + " cancelling task " + currentTask + 
+						" due to emergency repairs.");
+				clearTask();
+				addTask(new RepairEmergencyMalfunction(mind.getPerson()));
+			}
+		}
+	}
 
-            remainingTime = currentTask.performTask(time);
-        }
+	/** 
+	 * Gets a new task for the person based on tasks available.
+	 * @return new task
+	 */
+	public Task getNewTask() {
+		Task result = null;
+		// If cache is not current, calculate the probabilities.
+		if (!useCache()) {
+			calculateProbability();
+		}
+		// Get a random number from 0 to the total weight
+		double totalProbability = getTotalTaskProbability(true);
+		if (totalProbability == 0D) {
+			throw new IllegalStateException(mind.getPerson() + 
+					" has zero total task probability weight.");
+		}
+		double r = RandomUtil.getRandomDouble(totalProbability);
+		// Determine which task is selected.
+		MetaTask selectedMetaTask = null;
+		Iterator<MetaTask> i = taskProbCache.keySet().iterator();
+		while (i.hasNext() && (selectedMetaTask == null)) {
+			MetaTask metaTask = i.next();
+			double probWeight = taskProbCache.get(metaTask);
+			if (r <= probWeight) {
+				selectedMetaTask = metaTask;
+			} 
+			else {
+				r -= probWeight;
+			}
+		}
+		if (selectedMetaTask == null) {
+			throw new IllegalStateException(mind.getPerson() + 
+					" could not determine a new task.");
+		}
+		// Construct the task
+		result = selectedMetaTask.constructInstance(mind.getPerson());
+		// Clear time cache.
+		timeCache = null;
+		return result;
+	}
 
-        return remainingTime;
-    }
+	/** 
+	 * Determines the total probability weight for available tasks.
+	 * @return total probability weight
+	 */
+	public double getTotalTaskProbability(boolean useCache) {
+		// If cache is not current, calculate the probabilities.
+		if (!useCache) {
+			calculateProbability();
+		}
+		return totalProbCache;
+	}
 
-    /**
-     * Checks if any emergencies are happening in the person's local.
-     * Adds an emergency task if necessary.
-     * @throws Exception if error checking for emergency.
-     */
-    private void checkForEmergency() {
+	/**
+	 * Calculates and caches the probabilities.
+	 */
+	private void calculateProbability() {
+		if (taskProbCache == null) {
+			taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		}
+		// Clear total probabilities.
+		totalProbCache = 0D;
+		// Determine probabilities.
+		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+		while (i.hasNext()) {
+			MetaTask metaTask = i.next();
+			double probability = metaTask.getProbability(mind.getPerson());
+			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				taskProbCache.put(metaTask, probability);
+				totalProbCache += probability;
+			}
+			else {
+				taskProbCache.put(metaTask, 0D);
+				logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
+						" probability: " + probability);
+			}
+		}
+		// Set the time cache to the current time.
+		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	}
 
-        // Check for emergency malfunction.
-        if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
-            boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
-                    instanceof RepairEmergencyMalfunction));
-            
-            boolean hasAirlockTask = false;
-            Task task = currentTask;
-            while (task != null) {
-                if ((task instanceof EnterAirlock) && (task instanceof ExitAirlock)) {
-                    hasAirlockTask = true;
-                }
-                task = task.getSubTask();
-            }
+	/**
+	 * Checks if task probability cache should be used.
+	 * @return true if cache should be used.
+	 */
+	private boolean useCache() {
+		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		return currentTime.equals(timeCache);
+	}
 
-            if (!hasEmergencyRepair && !hasAirlockTask) {
-                logger.fine(mind.getPerson() + " cancelling task " + currentTask + 
-                        " due to emergency repairs.");
-                clearTask();
-                addTask(new RepairEmergencyMalfunction(mind.getPerson()));
-            }
-        }
-    }
-    
-    /** 
-     * Gets a new task for the person based on tasks available.
-     * @return new task
-     */
-    public Task getNewTask() {
-
-        Task result = null;
-
-        // If cache is not current, calculate the probabilities.
-        if (!useCache()) {
-            calculateProbability();
-        }
-        
-        // Get a random number from 0 to the total weight
-        double totalProbability = getTotalTaskProbability(true);
-
-        if (totalProbability == 0D) {
-            throw new IllegalStateException(mind.getPerson() + 
-                    " has zero total task probability weight.");
-        }
-
-        double r = RandomUtil.getRandomDouble(totalProbability);
-
-        // Determine which task is selected.
-        MetaTask selectedMetaTask = null;
-        Iterator<MetaTask> i = taskProbCache.keySet().iterator();
-        while (i.hasNext() && (selectedMetaTask == null)) {
-            MetaTask metaTask = i.next();
-            double probWeight = taskProbCache.get(metaTask);
-            if (r <= probWeight) {
-                selectedMetaTask = metaTask;
-            } 
-            else {
-                r -= probWeight;
-            }
-        }
-
-        if (selectedMetaTask == null) {
-            throw new IllegalStateException(mind.getPerson() + 
-                    " could not determine a new task.");
-        }
-
-        // Construct the task
-        result = selectedMetaTask.constructInstance(mind.getPerson());
-
-        // Clear time cache.
-        timeCache = null;
-
-        return result;
-    }
-
-    /** 
-     * Determines the total probability weight for available tasks.
-     * @return total probability weight
-     */
-    public double getTotalTaskProbability(boolean useCache) {
-
-        // If cache is not current, calculate the probabilities.
-        if (!useCache) {
-            calculateProbability();
-        }
-
-        return totalProbCache;
-    }
-    
-    /**
-     * Calculates and caches the probabilities.
-     */
-    private void calculateProbability() {
-
-        if (taskProbCache == null) {
-            taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
-        }
-        
-        // Clear total probabilities.
-        totalProbCache = 0D;
-
-        // Determine probabilities.
-        Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
-        while (i.hasNext()) {
-            MetaTask metaTask = i.next();
-            double probability = metaTask.getProbability(mind.getPerson());
-            if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-                taskProbCache.put(metaTask, probability);
-                totalProbCache += probability;
-            }
-            else {
-                taskProbCache.put(metaTask, 0D);
-                logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
-                        " probability: " + probability);
-            }
-        }
-
-        // Set the time cache to the current time.
-        timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-    }
-
-    /**
-     * Checks if task probability cache should be used.
-     * @return true if cache should be used.
-     */
-    private boolean useCache() {
-        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        return currentTime.equals(timeCache);
-    }
-
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        if (currentTask != null) {
-            currentTask.destroy();
-        }
-        mind = null;
-        timeCache = null;
-        taskProbCache.clear();
-        taskProbCache = null;
-    }
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		if (currentTask != null) {
+			currentTask.destroy();
+		}
+		mind = null;
+		timeCache = null;
+		if (taskProbCache != null) {
+			taskProbCache.clear();
+			taskProbCache = null;
+		}
+	}
 }
