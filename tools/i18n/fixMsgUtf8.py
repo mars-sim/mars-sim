@@ -46,20 +46,21 @@ for f in os.listdir(folder):
                 text = text.replace('\\u00C3\\u00B8','ø')
                 # replace esperanto characters
                 text = text.replace('\\u00C4\\u0089','ĉ')
-                text = text.replace('\\u00C4\\u0088u','Ĉ') \
-                # text = text.replace('','ĥ') \
-                # text = text.replace('','Ĥ') \
+                text = text.replace('\\u00C4\\u0088','Ĉ')
+                # text = text.replace('','ĥ')
+                # text = text.replace('','Ĥ')
                 text = text.replace('\\u00C4\\u00B5','ĵ')
-                # text = text.replace('','Ĵ') \
+                # text = text.replace('','Ĵ')
                 text = text.replace('\\u00C5\\u009D','ŝ')
-                # text = text.replace('','Ŝ') \
+                # text = text.replace('','Ŝ')
                 text = text.replace('\\u00C4\\u009D','ĝ')
-                # text = text.replace('','Ĝ') \
+                # text = text.replace('','Ĝ')
                 text = text.replace('\\u00C5\\u00AD','ŭ')
-                # text = text.replace('','Ŭ') \
-                # text = text.replace('','') \
-                # text = text.replace('','') \
+                # text = text.replace('','Ŭ')
+                # text = text.replace('','')
+                # text = text.replace('','')
                 # write changed contents back to file
                 fo = open(f,"w")
                 fo.write(text)
+                fo.close()
 print "all done"
