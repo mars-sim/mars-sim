@@ -19,15 +19,14 @@ extends EventObject {
 	private Unit unit;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param unitManager the unit manager throwing this event.
 	 * @param eventType the type of event.
 	 * @param unit the target of the event.
 	 */
-	UnitManagerEvent(UnitManager unitManager, UnitManagerEventType eventType, Unit unit) {
+	public UnitManagerEvent(UnitManager unitManager, UnitManagerEventType eventType, Unit unit) {
 		// User EventObject constructor.
 		super(unitManager);
-
 		this.eventType = eventType;
 		this.unit = unit;
 	}
