@@ -46,9 +46,11 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
 
 	// Data members
-	private JViewport viewPort; // The view port for the text pane
+	/** The view port for the text pane. */
+	private JViewport viewPort;
 
-	private HTMLContentPane htmlPane; // our HTML content pane
+	/** our HTML content pane. */
+	private HTMLContentPane htmlPane;
 
 	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
 	//        "help" + File.separator + "userguide.html");
@@ -64,7 +66,6 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	 * @param desktop the desktop pane
 	 */
 	public GuideWindow(MainDesktopPane desktop) {
-
 		// Use TableWindow constructor
 		super(NAME, desktop);
 		/* [landrus, 27.11.09]: use classloader compliant paths */
@@ -144,7 +145,8 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		htmlPane.goToURL(getClass().getResource(fileloc));
 	}
 
-	// Implementing ActionListener method
+	/** Implementing ActionListener method. */
+	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
 		if (source == this.homeButton) {
@@ -159,9 +161,13 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		}
 	}
 
-	// Implement ComponentListener interface.
-	// Make sure the text is scrolled to the top.
-	// Need to find a better way to do this <Scott>
+	/**
+	 * Implement ComponentListener interface.
+	 * Make sure the text is scrolled to the top.
+	 * Need to find a better way to do this
+	 * @author Scott
+	 */
+	@Override
 	public void componentResized(ComponentEvent e) {
 		viewPort.setViewPosition(new Point(0, 0));
 	}
@@ -178,6 +184,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	/**
 	 * Prepare tool window for deletion.
 	 */
+	@Override
 	public void destroy() {
 	}
 }
