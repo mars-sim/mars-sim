@@ -406,17 +406,23 @@ public class MissionManager implements Serializable {
         }
     }
 
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        missions.clear();
-        missions = null;
-        listeners.clear();
-        listeners = null;
-        personCache = null;
-        timeCache = null;
-        missionProbCache.clear();
-        missionProbCache = null;
-    }
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		if (missions != null) {
+			missions.clear();
+			missions = null;
+		}
+		if (listeners != null) {
+			listeners.clear();
+			listeners = null;
+		}
+		personCache = null;
+		timeCache = null;
+		if (missionProbCache != null) {
+			missionProbCache.clear();
+			missionProbCache = null;
+		}
+	}
 }
