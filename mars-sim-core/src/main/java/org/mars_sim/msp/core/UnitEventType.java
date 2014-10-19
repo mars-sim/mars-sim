@@ -1,7 +1,11 @@
 package org.mars_sim.msp.core;
 
 /**
+ * Mars Simulation Project
+ * UnitEventType.java
+ * @version 3.07 2014-10-17 
  * @author stpa
+ * 
  */
 public enum UnitEventType {
 
@@ -80,8 +84,16 @@ public enum UnitEventType {
 	STORED_POWER_EVENT				("stored power"),
 	STORED_POWER_CAPACITY_EVENT		("stored power capacity"),
 	REQUIRED_POWER_EVENT			("required power"),
-	POWER_VALUE_EVENT				("power value");
+	POWER_VALUE_EVENT				("power value"),
 
+	//2014-10-17 mkung: Added HeatingSystem.java
+	HEAT_MODE_EVENT					("heat mode"),
+	GENERATED_HEAT_EVENT			("generated heat"),
+	STORED_HEAT_EVENT				("stored heat"),
+	STORED_HEAT_CAPACITY_EVENT		("stored heat capacity"),
+	REQUIRED_HEAT_EVENT				("required heat"),
+	HEAT_VALUE_EVENT				("heat value");
+	
 	private String name;
 
 	private UnitEventType(String name) {

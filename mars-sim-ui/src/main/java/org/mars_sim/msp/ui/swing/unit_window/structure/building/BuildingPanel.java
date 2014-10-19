@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -176,6 +177,24 @@ extends JPanel {
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
+//            }
+//            catch (BuildingException e) {}
+        }
+        
+        //2014-10-17 mkung: Added Heating Panel
+        // Prepare heating panel.
+        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
+        functionPanels.add(heatPanel);
+        functionListPanel.add(heatPanel);
+        
+        //2014-10-17 mkung: Added Heating Storage 
+        // Prepare heating storage panel if building has heating storage.
+        if (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) {
+//            try {
+                ThermalStorage storage = (ThermalStorage) building.getFunction(BuildingFunction.THERMAL_STORAGE);
+                BuildingFunctionPanel heatStoragePanel = new BuildingPanelThermalStorage(storage, desktop);
+                functionPanels.add(heatStoragePanel);
+                functionListPanel.add(heatStoragePanel);
 //            }
 //            catch (BuildingException e) {}
         }

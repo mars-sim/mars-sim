@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -41,6 +41,9 @@ implements Serializable {
 	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
+    //2014-10-17 mkung: Added the heating requirement
+	private double heatRequired;
+	
 	private Collection<Person> occupants;
 
 	/**
@@ -61,6 +64,11 @@ implements Serializable {
 
 		// Set life support power required.
 		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
+
+	    //2014-10-17 mkung: Added the heating requirement
+		// Set life support heating required.
+		//heatRequired = config.getLifeSupportHeatRequirement(building.getName());
+
 	}
 
 	/**
@@ -255,7 +263,7 @@ implements Serializable {
 	 * Gets the amount of power required when function is at power down level.
 	 * @return power (kW)
 	 */
-	public double getPowerDownPowerRequired() {
+	public double getPoweredDownPowerRequired() {
 		return 0;
 	}
 
@@ -270,5 +278,17 @@ implements Serializable {
 
 		occupants.clear();
 		occupants = null;
+	}
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

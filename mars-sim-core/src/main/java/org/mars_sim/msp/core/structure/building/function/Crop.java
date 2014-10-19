@@ -82,7 +82,7 @@ implements Serializable {
 	 */
 	public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement, boolean newCrop) {
 		this.cropType = cropType;
-				logger.info("constructor : the new crop is " + cropType.getName());
+				//logger.info("constructor : the new crop is " + cropType.getName());
 		this.maxHarvest = maxHarvest;
 		this.farm = farm;
 		this.settlement = settlement;
@@ -92,24 +92,24 @@ implements Serializable {
 		plantingWorkRequired = maxHarvest;
 		dailyTendingWorkRequired = maxHarvest;
 		harvestingWorkRequired = maxHarvest * 3D; // old default is 5. why?
-				logger.info("constructor :"
-						+ " maxHarvest/dailyTendingWorkRequired/plantingWorkRequired is " + Math.round(maxHarvest));
-				logger.info("constructor :"
-						+ " harvestingWorkRequired is " + Math.round(harvestingWorkRequired));
+				//logger.info("constructor :"
+				//		+ " maxHarvest/dailyTendingWorkRequired/plantingWorkRequired is " + Math.round(maxHarvest));
+				//logger.info("constructor :"
+				//		+ " harvestingWorkRequired is " + Math.round(harvestingWorkRequired));
 		if (newCrop) {
 			phase = PLANTING;
-			logger.info("constructor : a new crop is in Planting phase");
+				//logger.info("constructor : a new crop is in Planting phase");
 			actualHarvest = 0D;
 		}
 		else {
 			phase = GROWING;
 			// set up a crop's "initial" percentage of growth when the simulation gets started
 			growingTimeCompleted = RandomUtil.getRandomDouble(cropType.getGrowingTime());
-					logger.info("constructor : the crop is in Growing phase");
-					logger.info("constructor : Growing-time is " + Math.round(cropType.getGrowingTime()/1000) );
-					logger.info("constructor : # of days completed (in random) is " + Math.round(growingTimeCompleted/1000));
+					//logger.info("constructor : the crop is in Growing phase");
+					//logger.info("constructor : Growing-time is " + Math.round(cropType.getGrowingTime()/1000) );
+					//logger.info("constructor : # of days completed (in random) is " + Math.round(growingTimeCompleted/1000));
 			actualHarvest = maxHarvest * (growingTimeCompleted / cropType.getGrowingTime());
-					logger.info("constructor : work completed so far is " + Math.round(actualHarvest));
+					//logger.info("constructor : work completed so far is " + Math.round(actualHarvest));
 		}
 	}
 
@@ -209,7 +209,7 @@ implements Serializable {
 		double remainingWorkTime = workTime;
 
 		if (phase.equals(PLANTING)) {
-			logger.info("addWork() : crop is in Planting phase");
+				//logger.info("addWork() : crop is in Planting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= plantingWorkRequired) {
 				remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
@@ -235,29 +235,29 @@ implements Serializable {
 		}
 
 		if (phase.equals(HARVESTING)) {
-				logger.info("addWork() : crop is in Harvesting phase");
+				//logger.info("addWork() : crop is in Harvesting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= harvestingWorkRequired) {
 				// Harvest is over. Close out this phase
-					logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
+					//logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
 				double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
 				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
 				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired,
 						cropType.getName(), cropType.getCropCategory());
-					logger.info("addWork() : last actualHarvest amount is " + Math.round(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired));
+					//logger.info("addWork() : last actualHarvest amount is " + Math.round(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired));
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
 
 			}
 			else { 	// continue the harvesting process
 				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
-					logger.info("addWork() : still harvesting.... calculating actualHarvest");
-					logger.info("addWork() : actualHarvest is " + Math.round(actualHarvest * workTime / harvestingWorkRequired));
-					logger.info("addWork() : calling Farming.java's addHarvest() now");
+					//logger.info("addWork() : still harvesting.... calculating actualHarvest");
+					//logger.info("addWork() : actualHarvest is " + Math.round(actualHarvest * workTime / harvestingWorkRequired));
+					//logger.info("addWork() : calling Farming.java's addHarvest() now");
 					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, 
 							cropType.getName(), cropType.getCropCategory());
 				remainingWorkTime = 0D;
-				logger.info("addWork() : just set remainingWorkTime to " + remainingWorkTime);
+				//logger.info("addWork() : just set remainingWorkTime to " + remainingWorkTime);
 			}
 		}
 

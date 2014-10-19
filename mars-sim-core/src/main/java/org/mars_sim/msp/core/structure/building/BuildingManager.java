@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-07-30
+ * @version 3.07 2014-10-17
  * @author Scott Davis
  */
 
@@ -41,6 +41,8 @@ import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -755,6 +757,12 @@ implements Serializable {
                 result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasGroundVehicleMaintenance(buildingName))
                 result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
+            //2014-10-17 mkung: Added the effect of heating requirement
+            if (config.hasThermalGeneration(buildingName)) 
+                result += ThermalGeneration.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasThermalStorage(buildingName))
+                result += ThermalStorage.getFunctionValue(buildingName, newBuilding, settlement);
+ 
             if (config.hasLifeSupport(buildingName))
                 result += LifeSupport.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasLivingAccommodations(buildingName))
@@ -789,6 +797,8 @@ implements Serializable {
             // Multiply value.
             result *= 1000D;
 
+            // TODO: mkung: Subtract heating costs per Sol???
+            
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingName);
             double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;

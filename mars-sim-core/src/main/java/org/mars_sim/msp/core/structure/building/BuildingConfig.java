@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-08-22
+ * @version 3.07 2014-10-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -15,16 +15,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
+import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
@@ -39,15 +44,16 @@ public class BuildingConfig implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    private static final Logger logger = Logger.getLogger(BuildingConfig.class.getName());
+
+    
 	// Element and attribute names
 	private static final String BUILDING = "building";
 	private static final String NAME = "name";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String BASE_LEVEL = "base-level";
-	private static final String POWER_REQUIRED = "power-required";
-	private static final String BASE_POWER = "base-power";
-	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
+
 	private static final String FUNCTIONS = "functions";
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String CAPACITY = "capacity";
@@ -65,7 +71,12 @@ public class BuildingConfig implements Serializable {
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
 	private static final String RESOURCE_PROCESSING = "resource-processing";
+	
+	private static final String POWER_REQUIRED = "power-required";
+	private static final String BASE_POWER = "base-power";
+	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 	private static final String POWER_DOWN_LEVEL = "power-down-level";
+	
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
@@ -76,8 +87,6 @@ public class BuildingConfig implements Serializable {
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
-	private static final String POWER_GENERATION = "power-generation";
-	private static final String POWER_SOURCE = "power-source";
 	private static final String TYPE = "type";
 	private static final String POWER = "power";
 	private static final String MEDICAL_CARE = "medical-care";
@@ -100,7 +109,7 @@ public class BuildingConfig implements Serializable {
 	private static final String FUEL_TYPE = "fuel-type";
 	private static final String COMSUMPTION_RATE = "consumption-rate";
 	private static final String TOGGLE = "toggle";
-    private static final String POWER_STORAGE = "power-storage";
+
     private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
     private static final String EARTH_RETURN = "earth-return";
     private static final String CREW_CAPACITY = "crew-capacity";
@@ -110,8 +119,26 @@ public class BuildingConfig implements Serializable {
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String ADMINISTRATION = "administration";
+  
+	// 2014-10-17 mkung: Added heat source and heat related types
+	private static final String HEAT_REQUIRED = "heat-required";
+	private static final String BASE_HEAT = "base-heat";
+	private static final String BASE_POWER_DOWN_HEAT = "base-power-down-heat";
+	//private static final String HEAT_DOWN_LEVEL = "heat-down-level";
+	private static final String HEAT_SOURCE = "heat-source";
+	private static final String THERMAL_GENERATION = "thermal-generation";
+    private static final String THERMAL_STORAGE = "thermal-storage";
+
+	private static final String ELECTRIC_HEAT_SOURCE = "Electric Heat Source";
+	private static final String SOLAR_HEAT_SOURCE = "Solar Heat Source";
+
     
+	
 	// Power source types
+	private static final String POWER_GENERATION = "power-generation";
+	private static final String POWER_SOURCE = "power-source";
+    private static final String POWER_STORAGE = "power-storage";
+
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
 	private static final String SOLAR_POWER_SOURCE = "Solar Power Source";
     private static final String SOLAR_THERMAL_POWER_SOURCE = "Solar Thermal Power Source";
@@ -183,7 +210,9 @@ public class BuildingConfig implements Serializable {
      */
     public double getWidth(String buildingName) {
         Element buildingElement = getBuildingElement(buildingName);
-        return Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
+        double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
+        	//logger.info("calling getWidth() : width is "+ width); 
+        return width;
     }
     
     /**
@@ -194,7 +223,9 @@ public class BuildingConfig implements Serializable {
      */
     public double getLength(String buildingName) {
         Element buildingElement = getBuildingElement(buildingName);
-        return Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+        double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+        	//logger.info("calling getLength() : length is "+ length); 
+        return length;
     }
     
     /**
@@ -207,6 +238,31 @@ public class BuildingConfig implements Serializable {
         return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
 	
+	/**
+	 * Gets the base heat requirement for the building.
+	 * @param buildingName the name of the building
+	 * @return base heat requirement (J)
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	public double getBaseHeatRequirement(String buildingName) {
+        Element buildingElement = getBuildingElement(buildingName);
+        Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
+        return Double.parseDouble(heatElement.getAttributeValue(BASE_HEAT));
+	}
+	
+	/**
+	 * Gets the base heat-down heat requirement for the building.
+	 * @param buildingName the name of the building
+	 * @return base heat-down heat (J)
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	public double getBasePowerDownHeatRequirement(String buildingName) {
+        Element buildingElement = getBuildingElement(buildingName);
+        Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
+        return Double.parseDouble(heatElement.getAttributeValue(BASE_POWER_DOWN_HEAT));
+	}
+	
+    
 	/**
 	 * Gets the base power requirement for the building.
 	 * @param buildingName the name of the building
@@ -260,6 +316,18 @@ public class BuildingConfig implements Serializable {
 	public double getLifeSupportPowerRequirement(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
 	}
+	
+
+	/**
+	 * Gets the heat required for life support.
+	 * @param buildingName the name of the building
+	 * @return heat required (J)
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	*/
+	public double getLifeSupportHeatRequirement(String buildingName) {
+		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,HEAT_REQUIRED);
+	}
+	 
 	
 	/**
 	 * Checks if the building provides living accommodations.
@@ -589,10 +657,79 @@ public class BuildingConfig implements Serializable {
 	 * @return true if power generation
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
+	public boolean hasThermalGeneration(String buildingName) {
+		return hasElements(buildingName,FUNCTIONS,THERMAL_GENERATION);
+	}
+	
+	/**
+	 * Gets a list of the building's heat sources.
+	 * @param buildingName the name of the building.
+	 * @return list of heat sources
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+    @SuppressWarnings("unchecked")
+	public List<HeatSource> getHeatSources(String buildingName) {
+		List<HeatSource> heatSourceList = new ArrayList<HeatSource>();
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
+			//logger.info("getHeatSources() : just finished reading heat-generation");
+		List<Element> heatSourceNodes = thermalGenerationElement.getChildren(HEAT_SOURCE);	
+			//logger.info("getHeatSources() : just finished reading heat-source");
+		for (Element heatSourceElement : heatSourceNodes) {
+			String type = heatSourceElement.getAttributeValue(TYPE);			
+				//logger.info("getHeatSources() : finished reading type");
+			double heat = Double.parseDouble(heatSourceElement.getAttributeValue(CAPACITY));			
+				//logger.info("getHeatSources() : finished reading capacity");
+			HeatSource heatSource = null;
+			if (type.equalsIgnoreCase(ELECTRIC_HEAT_SOURCE)) {
+				heatSource = new ElectricHeatSource(heat);	
+				//logger.info("getHeatSources() : just called ElectricHeatSource");
+			} else if (type.equalsIgnoreCase(SOLAR_HEAT_SOURCE)) {
+				heatSource = new SolarHeatSource(heat);
+				//logger.info("getHeatSources() : just called SolarHeatSource");
+			} else throw new IllegalStateException("Heat source: " + type + " not a valid heat source.");
+				//logger.info("getHeatSources() : finished reading electric heat source and solar heat source");
+			heatSourceList.add(heatSource); 
+				//logger.info("getHeatSources() : just added that heatSource");
+		}
+		return heatSourceList;
+	}
+    
+    
+    /**
+     * Checks if building has heat storage capability.
+     * @param buildingName the name of the building
+     * @return true if heat storage
+     * @throws Exception if building name cannot be found or XML parsing error.
+     */
+    public boolean hasThermalStorage(String buildingName) {
+    	return hasElements(buildingName,FUNCTIONS,THERMAL_STORAGE);
+    }
+    
+    /**
+     * Gets the heat storage capacity of the building.
+     * @param buildingName the name of the building.
+     * @return heat storage capacity (kW hr).
+     * @throws Exception if building name cannot be found or XML parsing error.
+     */
+    public double getThermalStorageCapacity(String buildingName) {
+    	return getValueAsDouble(buildingName,FUNCTIONS,POWER_STORAGE,CAPACITY);
+    }
+	
+
+    
+	/**
+	 * Checks if building has heat generation capability.
+	 * @param buildingName the name of the building
+	 * @return true if heat generation
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
 	public boolean hasPowerGeneration(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,POWER_GENERATION);
 	}
 	
+
 	/**
 	 * Gets a list of the building's power sources.
 	 * @param buildingName the name of the building.
@@ -611,6 +748,7 @@ public class BuildingConfig implements Serializable {
 			double power = Double.parseDouble(powerSourceElement.getAttributeValue(POWER));
 			PowerSource powerSource = null;
 			if (type.equalsIgnoreCase(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
+
 			else if (type.equalsIgnoreCase(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
             else if (type.equalsIgnoreCase(SOLAR_THERMAL_POWER_SOURCE)) powerSource = new SolarThermalPowerSource(power);
 			else if (type.equalsIgnoreCase(FUEL_POWER_SOURCE)) {
@@ -625,10 +763,12 @@ public class BuildingConfig implements Serializable {
 			powerSourceList.add(powerSource); 
 		}
 		return powerSourceList;
+
 	}
     
+    
     /**
-     * Checks if building has power storage capability.
+     * Checks if building has heat storage capability.
      * @param buildingName the name of the building
      * @return true if power storage
      * @throws Exception if building name cannot be found or XML parsing error.

@@ -105,4 +105,16 @@ implements Serializable {
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -192,7 +192,7 @@ implements Serializable {
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
      */
-    public double getPowerDownPowerRequired() {
+    public double getPoweredDownPowerRequired() {
         return 0D;
     }
 
