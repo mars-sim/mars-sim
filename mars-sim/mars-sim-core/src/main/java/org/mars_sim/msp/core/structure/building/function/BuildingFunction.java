@@ -1,11 +1,11 @@
 package org.mars_sim.msp.core.structure.building.function;
-
-import org.mars_sim.msp.core.Msg;
-
 /**
  * @author stpa
- * 2014-03-14
+ * 2014-10-17
  */
+import org.mars_sim.msp.core.Msg;
+
+
 public enum BuildingFunction {
 
     ADMINISTRATION              (Msg.getString("BuildingFunction.administration")), //$NON-NLS=1$
@@ -19,6 +19,10 @@ public enum BuildingFunction {
 	EXERCISE					(Msg.getString("BuildingFunction.exercise")), //$NON-NLS-1$
 	FARMING						(Msg.getString("BuildingFunction.farming")), //$NON-NLS-1$
 	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("BuildingFunction.groundVehicleMaintenance")), //$NON-NLS-1$
+//2014-10-17 mkung: Added 2 Thermal strings
+	THERMAL_GENERATION			(Msg.getString("BuildingFunction.thermalGeneration")), //$NON-NLS-1$
+	THERMAL_STORAGE				(Msg.getString("BuildingFunction.thermalStorage")), //$NON-NLS-1$
+
 	LIFE_SUPPORT				(Msg.getString("BuildingFunction.lifeSupport")), //$NON-NLS-1$
 	LIVING_ACCOMODATIONS		(Msg.getString("BuildingFunction.livingAccomodations")), //$NON-NLS-1$
 	MANAGEMENT					(Msg.getString("BuildingFunction.management")), //$NON-NLS-1$

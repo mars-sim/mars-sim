@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * PowerGeneration.java
- * @version 3.06 2014-03-08
- * @author Scott Davis
+ * ThermalStorage.java
+ * @version 3.06 2014-10-17
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.PowerGrid;
+import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -18,9 +18,9 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The PowerStorage class is a building function for storing power.
+ * The ThermalStorage class is a building function for storing heat.
  */
-public class PowerStorage
+public class ThermalStorage
 extends Function
 implements Serializable {
 
@@ -28,24 +28,24 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Building function name.
-	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_STORAGE;
+	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_STORAGE;
 
 	// Data members.
-	private double powerStorageCapacity;
-	private double powerStored;
+	private double heatStorageCapacity;
+	private double heatStored;
 
 	/**
 	 * Constructor.
 	 * @param building the building with the function.
 	 * @throws BuildingException if error parsing configuration.
 	 */
-	public PowerStorage(Building building) {
+	public ThermalStorage(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		powerStorageCapacity = config.getPowerStorageCapacity(building.getName());
+		heatStorageCapacity = config.getThermalStorageCapacity(building.getName());
 	}
 
 	/**
@@ -59,64 +59,64 @@ implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
 
-		PowerGrid grid = settlement.getPowerGrid();
+		ThermalSystem grid = settlement.getThermalSystem();
 
 		double hrInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-		double demand = grid.getRequiredPower() * hrInSol;
+		double demand = grid.getRequiredHeat() * hrInSol;
 
 		double supply = 0D;
-		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(PowerStorage.FUNCTION).iterator();
+		Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(ThermalStorage.FUNCTION).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
-			PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.FUNCTION);
+			ThermalStorage store = (ThermalStorage) building.getFunction(ThermalStorage.FUNCTION);
 			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-			supply += store.powerStorageCapacity * wearModifier;
+			supply += store.heatStorageCapacity * wearModifier;
 		}
 
-		double existingPowerStorageValue = demand / (supply + 1D);
+		double existingThermalStorageValue = demand / (supply + 1D);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double powerStorage = config.getPowerStorageCapacity(buildingName);
+		double heatStorage = config.getThermalStorageCapacity(buildingName);
 
-		double value = powerStorage * existingPowerStorageValue / hrInSol;
+		double value = heatStorage * existingThermalStorageValue / hrInSol;
 		if (value > 10D) value = 10D;
 
 		return value;
 	}
 
 	/**
-	 * Gets the building's power storage capacity.
-	 * @return capacity (kW hr).
+	 * Gets the building's heat storage capacity.
+	 * @return capacity (J).
 	 */
-	public double getPowerStorageCapacity() {
-		return powerStorageCapacity;
+	public double getThermalStorageCapacity() {
+		return heatStorageCapacity;
 	}
 
 	/**
-	 * Gets the building's stored power.
-	 * @return power (kW hr).
+	 * Gets the building's stored heat.
+	 * @return heat (J).
 	 */
-	public double getPowerStored() {
-		return powerStored;
+	public double getHeatStored() {
+		return heatStored;
 	}
 
 	/**
-	 * Sets the power stored in the building.
-	 * @param powerStored the stored power (kW hr).
+	 * Sets the heat stored in the building.
+	 * @param heatStored the stored heat (J).
 	 */
-	public void setPowerStored(double powerStored) {
-		if (powerStored > powerStorageCapacity) powerStored = powerStorageCapacity;
-		else if (powerStored < 0D) powerStored = 0D;
-		this.powerStored = powerStored;
+	public void setHeatStored(double heatStored) {
+		if (heatStored > heatStorageCapacity) heatStored = heatStorageCapacity;
+		else if (heatStored < 0D) heatStored = 0D;
+		this.heatStored = heatStored;
 	}
 
 	@Override
-	public double getFullPowerRequired() {
+	public double getFullHeatRequired() {
 		return 0;
 	}
 
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getPoweredDownHeatRequired() {
 		return 0;
 	}
 
@@ -127,17 +127,17 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return powerStorageCapacity / 5D;
+		return heatStorageCapacity / 5D;
 	}
 
 	@Override
-	public double getFullHeatRequired() {
+	public double getFullPowerRequired() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getPoweredDownHeatRequired() {
+	public double getPoweredDownPowerRequired() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

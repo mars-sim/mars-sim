@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-17
  * @author Scott Davis
  */
 
@@ -41,6 +41,8 @@ public class SettlementWindow extends UnitWindow {
         addTabPanel(new TabPanelVehicles(settlement, desktop));
         addTabPanel(new InventoryTabPanel(settlement, desktop));
         addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+    	//2014-10-17 mkung: Added TabPanelHeatingSystem        
+        addTabPanel(new TabPanelThermalSystem(settlement, desktop));
         addTabPanel(new TabPanelBuildings(settlement, desktop));
         addTabPanel(new TabPanelGoods(settlement, desktop));
         addTabPanel(new TabPanelCredit(settlement, desktop));

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -74,6 +75,11 @@ implements LifeSupport {
     protected ConstructionManager constructionManager;
     /** The settlement's building power grid. */
     protected PowerGrid powerGrid;
+    
+    //2014-10-17 mkung: Added heating system
+    /** The settlement's heating system. */
+    protected ThermalSystem thermalSystem;
+    
     /** The settlement template name. */
     private String template;
     /** Override flag for mission creation at settlement. */
@@ -131,6 +137,11 @@ implements LifeSupport {
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
+        
+        //2014-10-17 mkung: Added heating system
+        // Initialize heating system
+        thermalSystem = new ThermalSystem(this);
+        
 
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
@@ -305,14 +316,17 @@ implements LifeSupport {
      */
     public double getTemperature() {
         double result = NORMAL_TEMP;
+        /*
         double ambient = Simulation.instance().getMars().getWeather()
                 .getTemperature(getCoordinates());
         if (result < ambient)
             return ambient;
         else
             return result;
+        */
+        return result;
     }
-
+     
     /**
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
@@ -331,18 +345,22 @@ implements LifeSupport {
             }
         }
 
-        // If no current population at settlement for one sol, power down buildings.
+        // If no current population at settlement for one sol, power down the building and turn the heat off.
         if (getCurrentPopulationNum() == 0) {
             zeroPopulationTime += time;
             if (zeroPopulationTime > 1000D) {
                 powerGrid.setPowerMode(PowerMode.POWER_DOWN);
+                thermalSystem.setHeatMode(HeatMode.POWER_DOWN);
             }
         } else {
             zeroPopulationTime = 0D;
             powerGrid.setPowerMode(PowerMode.POWER_UP);
+            thermalSystem.setHeatMode(HeatMode.POWER_UP); 
         }
 
         powerGrid.timePassing(time);
+        
+        thermalSystem.timePassing(time);
 
         buildingManager.timePassing(time);
 
@@ -537,6 +555,15 @@ implements LifeSupport {
     }
 
     /**
+     * Gets the settlement's heating system.
+     * @return thermalSystem.
+     */
+    public ThermalSystem getThermalSystem() {
+        return thermalSystem;
+    }
+
+    
+    /**
      * Gets the settlement template.
      * @return template as string.
      */
@@ -729,6 +756,12 @@ implements LifeSupport {
             powerGrid.destroy();
         }
         powerGrid = null;
+        
+        if (thermalSystem != null) {
+        	thermalSystem.destroy();
+        }
+        thermalSystem = null;
+        
         template = null;
         if (scientificAchievement != null) {
             scientificAchievement.clear();

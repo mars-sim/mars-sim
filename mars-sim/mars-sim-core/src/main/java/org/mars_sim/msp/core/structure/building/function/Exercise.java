@@ -144,7 +144,7 @@ implements Serializable {
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
      */
-    public double getPowerDownPowerRequired() {
+    public double getPoweredDownPowerRequired() {
         return 0D;
     }
 
@@ -152,4 +152,16 @@ implements Serializable {
     public double getMaintenanceTime() {
         return exerciserCapacity * 5D;
     }
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

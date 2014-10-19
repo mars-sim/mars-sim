@@ -11,7 +11,7 @@
 communication?, cooking?, dining?, earth-return?, EVA?, exercise?, farming?, 
 ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
 management?, medical-care?, power-generation?, power-storage?, recreation?, research?, 
-resource-processing?, storage? )>
+resource-processing?, storage?, thermal-generation?, thermal-storage? )>
 <!ELEMENT administration (activity?)>
 <!ATTLIST administration population-support CDATA #REQUIRED>
 <!ELEMENT astronomical-observation (activity?)>
@@ -46,6 +46,17 @@ resource-processing?, storage? )>
 <!ELEMENT parking-location EMPTY>
 <!ATTLIST parking-location xloc CDATA #REQUIRED>
 <!ATTLIST parking-location yloc CDATA #REQUIRED>
+
+<!ELEMENT thermal-generation (heat-source+)>
+<!ELEMENT heat-source EMPTY>
+<!ATTLIST heat-source type CDATA #REQUIRED>
+<!ATTLIST heat-source toggle (true|false) #IMPLIED>
+<!ATTLIST heat-source capacity CDATA #REQUIRED>
+<!ATTLIST heat-source fuel-type CDATA #IMPLIED>
+<!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
+<!ELEMENT thermal-storage EMPTY>
+<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
+
 <!ELEMENT life-support EMPTY>
 <!ATTLIST life-support capacity CDATA #REQUIRED>
 <!ATTLIST life-support power-required CDATA #REQUIRED>

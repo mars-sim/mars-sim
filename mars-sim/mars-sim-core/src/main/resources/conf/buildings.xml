@@ -61,7 +61,7 @@
 					<activity-spot xloc="2.6" yloc="-.04" />
 				</activity>
 			</exercise>
-		
+	
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
@@ -103,7 +103,7 @@
 				<!-- A solar cell on top of the lander hab. -->
 				<!-- type: the type of power source. -->
 				<!-- power: the maximum power (kW) produced by the power source. -->
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="50.0" />
 			</power-generation>
 		
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
@@ -182,6 +182,7 @@
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
+				
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
 				<resource-storage resource="Grain Group" capacity="500.0" />
@@ -196,16 +197,25 @@
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
-				<resource-initial resource="Food" amount="100.0" />
+				<resource-initial resource="Food" amount="150.0" />
+
 				<resource-initial resource="Fruit Group" amount="50.0" />
 				<resource-initial resource="Vegetable Group" amount="50.0" />
 				<resource-initial resource="Grain Group" amount="50.0" />
 				<resource-initial resource="Legume Group" amount="50.0" />
 				<resource-initial resource="Spice Group" amount="50.0" />				
 		
-
 			</storage>
 			
+			<!-- The building is capable of producing heat. -->
+			<thermal-generation>
+				<!-- Heat Source -->
+				<!-- type: the type of heat source. -->
+				<!-- capacity: the maximum energy capacity (kJ/s) produced by the heat source. -->
+				<heat-source type="Solar Heat Source" capacity="2.0" />
+				<heat-source type="Electric Heat Source" capacity="5.0" />
+			</thermal-generation>
+	
 		</functions>
 		
 	</building>
@@ -221,7 +231,7 @@
 			<!-- power-sustaining-crop: the minimum power (kW) required for each crop just to keep it 
 			     alive. -->
 			<!-- growing-area: the total area (square meters) for growing crops. -->
-			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="100.0" >
+			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="50.0" >
 				<activity>
 					<activity-spot xloc="0.0" yloc="2.0" />
 					<activity-spot xloc="0.0" yloc="0.0" />
@@ -252,15 +262,18 @@
 				<resource-storage resource="Water" capacity="500.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
 				<resource-storage resource="Grain Group" capacity="500.0" />
 				<resource-storage resource="Legume Group" capacity="500.0" />		
 				<resource-storage resource="Spice Group" capacity="500.0" />										
-
-				
 			</storage>
-			
+					
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="2.0" />
+				<heat-source type="Electric Heat Source" capacity="5.0" />
+			</thermal-generation>
 		</functions>
 	</building>
 	
@@ -627,9 +640,7 @@
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
 				<resource-storage resource="Food" capacity="500.0" />
-				<resource-storage resource="Fruit Group" capacity="500.0" />
-				<resource-storage resource="Vegetable Group" capacity="500.0" />
-				<resource-storage resource="Grain Group" capacity="500.0" />
+
 			</storage>				
 		</functions>
 	</building>
@@ -1004,9 +1015,7 @@
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="2500.0" />
-				<resource-storage resource="Fruit Group" capacity="2500.0" />
-				<resource-storage resource="Grain Group" capacity="2500.0" />
-				<resource-storage resource="Vegetable Group" capacity="2500.0" />
+
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
 			</storage>
@@ -1186,9 +1195,7 @@
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Methane" capacity="2000.0" />
 				<resource-storage resource="Food" capacity="2000.0" />
-				<resource-storage resource="Fruit Group" capacity="2000.0" />
-				<resource-storage resource="Vegetable Group" capacity="2000.0" />
-				<resource-storage resource="Grain Group" capacity="2000.0" />
+
 			</storage>
 		</functions>
 	</building>
@@ -1270,9 +1277,7 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Food" capacity="500.0" />
-				<resource-storage resource="Fruit Group" capacity="500.0" />
-				<resource-storage resource="Vegetable Group" capacity="500.0" />
-				<resource-storage resource="Grain Group" capacity="500.0" />
+
 			</storage>	
 		</functions>
 	</building>

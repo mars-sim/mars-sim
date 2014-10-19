@@ -238,7 +238,6 @@ implements Serializable {
      *  				is more than 0.5 kg, 
      */
     public void addWork(double workTime) {
-
         //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime);
         //logger.info("addWork() : workTime is " + workTime);
     	cookingWorkTime += workTime;       
@@ -318,9 +317,9 @@ implements Serializable {
 	        double spicesFraction = foodAmount * spicesAvailable / totalAvailable;
 	        double vegFraction = foodAmount * vegAvailable / totalAvailable;
 	        
-	        logger.info("cookingChoice() : total Food Available is " + Math.round(totalAvailable) + " kg");
+	        //logger.info("cookingChoice() : total Food Available is " + Math.round(totalAvailable) + " kg");
 	
-	        logger.info("cookingChoice() : amount to cook is " + foodAmount + " kg");
+	        //logger.info("cookingChoice() : amount to cook is " + foodAmount + " kg");
 	
 	        
 	        getBuilding().getInventory().retrieveAmountResource(fruits, fruitsFraction);
@@ -328,7 +327,7 @@ implements Serializable {
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
 	        meals.add(new CookedMeal(mealQuality, time));
 	        
-	        logger.info("cookingChoice() : meals.size() is " + meals.size() );
+	        //logger.info("cookingChoice() : meals.size() is " + meals.size() );
 	        
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
@@ -408,7 +407,7 @@ implements Serializable {
                             food, false, false);
                     if (foodAmount > foodCapacity) 
                     	foodAmount = foodCapacity;
-                			logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
+                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
                 			// Turned 1 cooked meal unit into 1 food unit
                     getBuilding().getInventory().storeAmountResource(food, foodAmount , false);
                     i.remove();
@@ -435,7 +434,7 @@ implements Serializable {
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
      */
-    public double getPowerDownPowerRequired() {
+    public double getPoweredDownPowerRequired() {
         return 0;
     }
 
@@ -451,4 +450,16 @@ implements Serializable {
         meals.clear();
         meals = null;
     }
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

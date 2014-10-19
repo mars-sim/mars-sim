@@ -80,18 +80,29 @@ implements Serializable {
      */
     public abstract void timePassing(double time) ;
 
+    /*
+     * Gets the amount of heat required when function is at full heat.
+     * @return heat (kJ/s)
+    */
+    //2014-10-17 mkung: Added getFullHeatRequired()
+    public abstract double getFullHeatRequired();
     /**
+     * Gets the amount of heat required when function is at heat down level.
+     * @return heat (kJ/s)
+*/
+    //2014-10-17 mkung: Added getHeatDownHeatRequired()
+    public abstract double getPoweredDownHeatRequired();
+     /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)
-     */
+*/
     public abstract double getFullPowerRequired();
-
-    /**
+     /**  
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
-     */
-    public abstract double getPowerDownPowerRequired();
-
+  */
+    public abstract double getPoweredDownPowerRequired();
+   
     /**
      * Perform any actions needed when removing this building function from
      * the settlement.

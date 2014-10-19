@@ -93,7 +93,7 @@ implements Serializable {
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	// maxHarvest is in kg
         	maxHarvestinKg = edibleBiomass * growingDay * (growingArea / (double) cropNum)/1000;
-        	      logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
+        	      //logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
             Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, false);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
@@ -237,7 +237,7 @@ implements Serializable {
             
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropCategory, false, false);
             
-                 logger.info("addHarvest() : remaining Capacity is " + Math.round(remainingCapacity));
+                 //logger.info("addHarvest() : remaining Capacity is " + Math.round(remainingCapacity));
                 
             /*// look up on the following three attributes. Sanity check only.
             double amountResourceStored = inv.getAmountResourceStored(harvestCrop, false);
@@ -251,12 +251,12 @@ implements Serializable {
             if (remainingCapacity < harvestAmount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	harvestAmount = remainingCapacity;
-                 logger.info("addHarvest() : storage is full!");
+                 	//logger.info("addHarvest() : storage is full!");
                 }
                 // add the harvest to the remaining capacity
             //inv.storeAmountResource(harvestCrop, harvestAmount, false);
             inv.storeAmountResource(harvestCropCategory, harvestAmount, false);
-                 logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
+                 //logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
             }  catch (Exception e) {}
     }
 
@@ -316,7 +316,7 @@ implements Serializable {
         	double edibleBiomassPerDay = cropType.getEdibleBiomass();
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	maxHarvestinKg = edibleBiomassPerDay * growingDay * (growingArea / (double) cropNum) /1000;
-        	      logger.info("timePassing : seedng a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
+        	      //logger.info("timePassing : seedng a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
             
         	// Note: the last param of Crop must be set to TRUE
         	Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, true);
@@ -351,7 +351,7 @@ implements Serializable {
      * Gets the amount of power required when function is at power down level.
      * @return power (kW)
      */
-    public double getPowerDownPowerRequired() {
+    public double getPoweredDownPowerRequired() {
 
         // Get power required for occupant life support.
         double powerRequired = 0D;
@@ -401,4 +401,16 @@ implements Serializable {
             i.next().destroy();
         }
     }
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

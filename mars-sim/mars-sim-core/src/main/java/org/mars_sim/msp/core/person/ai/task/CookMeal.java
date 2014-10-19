@@ -94,10 +94,10 @@ implements Serializable {
         //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
         double foodAvailable = kitchen.checkAmountOfFood();
         
-        logger.info("constructor : foodAvailble is " + foodAvailable);
+        //logger.info("constructor : foodAvailble is " + foodAvailable);
         
-        if (foodAvailable < 0.5) {
-            logger.info("constructor : calling endTask() and not to initiate cooking");
+        if (foodAvailable < 2.0) {
+            logger.severe("constructor : less than 2 kg of fresh food left. cannot cooking meal");
             
         	endTask();
         } else  {

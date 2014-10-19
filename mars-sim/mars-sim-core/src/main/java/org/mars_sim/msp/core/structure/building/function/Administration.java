@@ -101,7 +101,19 @@ public class Administration extends Function implements Serializable {
     }
 
     @Override
-    public double getPowerDownPowerRequired() {
+    public double getPoweredDownPowerRequired() {
         return 0;
     }
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
