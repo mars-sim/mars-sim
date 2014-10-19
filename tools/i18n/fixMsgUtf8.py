@@ -42,6 +42,8 @@ for f in os.listdir(folder):
                 # replace danish characters
                 text = text.replace('\\u00C3\\u00A6','æ')
                 text = text.replace('\\u00C3\\u0098','Ø')
+                text = text.replace('\\u00C3\\u0086','Æ')
+                text = text.replace('\\u00C3\\u0085','Å')
                 text = text.replace('\\u00C3\\u00A5','å')
                 text = text.replace('\\u00C3\\u00B8','ø')
                 # replace esperanto characters
