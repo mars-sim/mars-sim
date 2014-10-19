@@ -80,7 +80,7 @@ implements UnitListener {
     protected Map<Class, Integer> equipmentNeededCache;
 
     /**
-     * Constructor
+     * Constructor.
      * @param name the name of the mission.
      * @param startingPerson the person starting the mission
      * @param minPeople the minimum number of mission members allowed

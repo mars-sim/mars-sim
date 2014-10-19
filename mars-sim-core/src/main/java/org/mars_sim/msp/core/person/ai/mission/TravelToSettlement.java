@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to another randomly selected one within range
  * of an available rover.
+ * TODO externalize strings
  */
 public class TravelToSettlement
 extends RoverMission
@@ -64,8 +65,7 @@ implements Serializable {
     private Settlement destinationSettlement;
 
     /**
-     * Constructs a TravelToSettlement object with destination settlement randomly determined.
-     * 
+     * Constructor with destination settlement randomly determined.
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error constructing mission.
      */
@@ -125,7 +125,6 @@ implements Serializable {
 
     /**
      * Constructor with explicit data.
-     * 
      * @param members collection of mission members.
      * @param startingSettlement the starting settlement.
      * @param destinationSettlement the destination settlement.
@@ -173,9 +172,9 @@ implements Serializable {
 
     /**
      * Determines a new phase for the mission when the current phase has ended.
-     * 
      * @throws MissionException if problem setting a new phase.
      */
+    @Override
     protected void determineNewPhase() {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
@@ -195,7 +194,6 @@ implements Serializable {
 
     /**
      * Sets the destination settlement.
-     * 
      * @param destinationSettlement the new destination settlement.
      */
     private void setDestinationSettlement(Settlement destinationSettlement) {
@@ -205,7 +203,6 @@ implements Serializable {
 
     /**
      * Gets the destination settlement.
-     * 
      * @return destination settlement
      */
     public final Settlement getDestinationSettlement() {
@@ -214,7 +211,6 @@ implements Serializable {
 
     /**
      * Determines a random destination settlement other than current one.
-     * 
      * @param person the person searching for a settlement.
      * @param startingSettlement the settlement the mission is starting at.
      * @return randomly determined settlement
@@ -240,7 +236,6 @@ implements Serializable {
 
     /**
      * Gets all possible and desirable destination settlements.
-     * 
      * @param person the person searching for a settlement.
      * @param startingSettlement the settlement the mission is starting at.
      * @param range the range (km) that can be travelled.
@@ -270,7 +265,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Checks if a settlement is the destination of a current travel to settlement mission.
      * @param settlement the settlement.
@@ -296,7 +291,6 @@ implements Serializable {
 
     /**
      * Gets the desirability of the destination settlement.
-     * 
      * @param person the person looking at the settlement.
      * @param startingSettlement the settlement the person is already at.
      * @param destinationSettlement the new settlement.
@@ -368,10 +362,10 @@ implements Serializable {
 
     /**
      * Checks to see if a person is capable of joining a mission.
-     * 
      * @param person the person to check.
      * @return true if person could join mission.
      */
+    @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -386,11 +380,11 @@ implements Serializable {
      * Gets the mission qualification value for the person. Person is qualified and interested in joining the mission if
      * the value is larger than 0. The larger the qualification value, the more likely the person will be picked for the
      * mission. Qualification values of zero or negative will not join missions.
-     * 
      * @param person the person to check.
      * @return mission qualification value.
      * @throws MissionException if problem finding mission qualification.
      */
+    @Override
     protected double getMissionQualification(Person person) {
         double result = 0D;
 
@@ -435,9 +429,9 @@ implements Serializable {
 
     /**
      * Recruits new people into the mission.
-     * 
      * @param startingPerson the person starting the mission.
      */
+    @Override
     protected void recruitPeopleForMission(Person startingPerson) {
         super.recruitPeopleForMission(startingPerson);
 
@@ -463,16 +457,15 @@ implements Serializable {
 
     /**
      * Gets the settlement associated with the mission.
-     * 
      * @return settlement or null if none.
      */
+    @Override
     public Settlement getAssociatedSettlement() {
         return destinationSettlement;
     }
 
     /**
      * Gets the number and types of equipment needed for the mission.
-     * 
      * @param useBuffer use time buffer in estimation if true.
      * @return map of equipment class and Integer number.
      * @throws MissionException if error determining needed equipment.
@@ -490,7 +483,6 @@ implements Serializable {
 
     /**
      * Compares the quality of two vehicles for use in this mission. (This method should be added to by children)
-     * 
      * @param firstVehicle the first vehicle to compare
      * @param secondVehicle the second vehicle to compare
      * @return -1 if the second vehicle is better than the first vehicle, 0 if vehicle are equal in quality, and 1 if
@@ -498,6 +490,7 @@ implements Serializable {
      * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
      * @throws MissionException if error comparing vehicles.
      */
+    @Override
     protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
         int result = super.compareVehicles(firstVehicle, secondVehicle);
 
@@ -530,7 +523,6 @@ implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-
         destinationSettlement = null;
     }
 }

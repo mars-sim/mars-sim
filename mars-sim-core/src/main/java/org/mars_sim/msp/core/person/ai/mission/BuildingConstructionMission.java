@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Mission for construction a stage for a settlement building.
+ * TODO externalize strings
  */
 public class BuildingConstructionMission
 extends Mission

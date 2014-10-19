@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission for trading between two settlements.
+ * TODO externalize strings
  */
 public class Trade
 extends RoverMission

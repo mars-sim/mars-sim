@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /** 
  * A mission to do biology research at a remote field location for a
  * scientific study.
+ * TODO externalize strings
  */
 public class BiologyStudyFieldMission
 extends RoverMission 
@@ -49,7 +50,8 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyStudyFieldMission.class.getName());
 
 	/** Default description. */
