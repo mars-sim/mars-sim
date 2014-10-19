@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A mission that involves traveling along a series of navpoints.
+ * TODO externalize strings
  */
 public abstract class TravelMission
 extends Mission {

@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Mission for salvaging a construction stage at a building construction site.
+ * TODO externalize strings
  */
 public class BuildingSalvageMission
 extends Mission
@@ -87,7 +88,7 @@ implements Serializable {
 	private double wearCondition;
 
     /**
-     * Constructor
+     * Constructor.
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error creating mission.
      */

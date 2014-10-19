@@ -34,9 +34,10 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
- * The RescueSalvageRover class is a mission to rescue the crew of a vehicle 
+ * This class is a mission to rescue the crew of a vehicle 
  * that has an emergency beacon on and tow the vehicle back, or to simply tow 
  * the vehicle back if the crew is already dead.
+ * TODO externalize strings
  */
 public class RescueSalvageVehicle
 extends RoverMission
@@ -611,6 +612,7 @@ implements Serializable {
      * @return mission qualification value.
      * @throws MissionException if problem finding mission qualification.
      */
+    @Override
     protected double getMissionQualification(Person person) {
         double result = 0D;
 
@@ -631,6 +633,7 @@ implements Serializable {
      * @param person the person to check.
      * @return true if person could join mission.
      */
+    @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -684,6 +687,7 @@ implements Serializable {
      * Recruits new people into the mission.
      * @param startingPerson the person starting the mission.
      */
+    @Override
     protected void recruitPeopleForMission(Person startingPerson) {
         super.recruitPeopleForMission(startingPerson);
 

@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission for delivering emergency supplies from one settlement to another.
+ * TODO externalize strings
  */
 public class EmergencySupplyMission
 extends RoverMission
