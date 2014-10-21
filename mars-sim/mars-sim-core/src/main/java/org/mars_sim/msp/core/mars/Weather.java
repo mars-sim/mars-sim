@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-21
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -78,7 +78,7 @@ implements Serializable {
 			// if sun full we will get -40D the avg, if night or twilight we will get 
 			// a smooth temperature change and in the night -120D
 
-			temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 0.629921D;
+		    temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 80D;
 
 			// not correct but guess: - (elevation * 5)
 
@@ -89,16 +89,16 @@ implements Serializable {
 			// guess, but could work, later we can implement real physics
 
 			double piHalf = Math.PI / 2.0;
-			double degrees = 0;
+			double angle = 0;
 			double phi = location.getPhi();
 
 			if (phi < piHalf) {
-				degrees = ((piHalf - phi) / piHalf);
+			    angle = ((piHalf - phi) / piHalf);
 			} else if (phi > piHalf){
-				degrees = ((phi - piHalf) / piHalf);
+			    angle = ((phi - piHalf) / piHalf);
 			}
 
-			temperature = temperature - (20 * degrees) ;
+			temperature = temperature - (20 * angle) ;
 
 		}
 
