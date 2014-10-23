@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-23
  * @author Scott Davis
  */
 
@@ -13,6 +13,8 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -21,9 +23,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -38,15 +43,22 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
+	 /** default logger.   */
+	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
+	   
 	private JPanel locationCoordsPanel;
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
-	private Coordinates locationCache;
-	private JButton centerMapButton;
 	private JPanel locationLabelPanel;
 	private JButton locationButton;
+	
+	private JLabel locationLabel;
 	private JLabel locationTextLabel;
+	
+	private Coordinates locationCache;
+	private JButton centerMapButton;
 
+	DecimalFormat fmt = new DecimalFormat("###.#"); 
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -64,23 +76,22 @@ implements ActionListener {
         // Create location label panel
         locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
-
+         
         // Prepare location coordinates panel
         locationCoordsPanel = new JPanel();
         locationLabelPanel.add(locationCoordsPanel);
         locationCoordsPanel.setLayout(new BorderLayout(0, 0));
-
+        
         // Create center map button
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate in Mars Navigator (center map on location)");
         locationLabelPanel.add(centerMapButton);
-        
-        // Create location label
-        JLabel locationLabel = new JLabel("@", JLabel.CENTER);
+
+        locationLabel = new JLabel("@", JLabel.CENTER); 
         locationLabelPanel.add(locationLabel);
-        
+         
         // Create location button
         locationButton = new JButton();
         locationButton.addActionListener(this);
@@ -95,12 +106,9 @@ implements ActionListener {
             addLocationButton();
         }
         else {
-            locationTextLabel.setText("Outside");
-            if (unit instanceof Person) {
-                Person person = (Person) unit;
-                if (person.getLocationSituation() == LocationSituation.BURIED) 
-                    locationTextLabel.setText("Buried Outside");
-            }
+         	// 2014-10-23 mkung: Called new method checkOutsideReading()
+        	checkOutsideReading();
+
             addLocationTextLabel();
         }   
 
@@ -118,6 +126,66 @@ implements ActionListener {
         locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
     }
 
+    /** 
+     * Check the type of unit and its location 
+     * Obtain temperature and pressure reading if the unit is outside the settlement
+     * 
+     * @param calling setText to update the locationTextLabel
+     */
+ 	// 2014-10-23 mkung: Created new method checkOutsideReading()
+	public void checkOutsideReading() {   
+		locationTextLabel.setText("Outside");
+ 
+		if (unit instanceof Settlement) {
+			Settlement settlement = (Settlement) unit;
+			String outsideReading = getOutsideReading();	
+				locationTextLabel.setText(outsideReading);
+		}
+        
+        if (unit instanceof Person) {
+            Person person = (Person) unit;           
+			if (person.getLocationSituation() == LocationSituation.OUTSIDE) {			
+				String outsideReading = getOutsideReading();	
+				locationTextLabel.setText(outsideReading);
+			}				
+			if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				locationTextLabel = new JLabel("In Vehicle", JLabel.LEFT);
+			}
+	        
+			if (person.getLocationSituation() == LocationSituation.BURIED) 
+				locationTextLabel.setText("Buried Outside");
+        }
+        
+        if (unit instanceof Vehicle) {
+        	Vehicle vehicle = (Vehicle) unit;
+      		// TODO: is a vehicle in malfunction always outside or during an excursion
+        	if (vehicle.getStatus() == "Moving" ||
+        			vehicle.getStatus() == "Towed" ||
+        			vehicle.getStatus() == "Malfunction") {      
+				String outsideReading = getOutsideReading();
+				locationTextLabel.setText(outsideReading);
+        	}
+        	
+        }
+	}
+
+    /** 
+     * Obtain the temperature and pressure reading if the unit is outside the settlement
+     * 
+     * @param return a string showing outside Temperature and Air Pressure
+     */
+ 	// 2014-10-23 mkung: Created getOutsideReading() method
+	public String getOutsideReading() {
+	
+		double outsideTemp = Simulation.instance().getMars().getWeather().getTemperature(unit.getCoordinates());
+	    double outsideAirPressure = Simulation.instance().getMars().getWeather()
+		            .getAirPressure(unit.getCoordinates());
+		return fmt.format(outsideAirPressure) + " mbars    "
+					+ fmt.format(outsideTemp) + " °C";
+	
+	}
+	
+	
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
 	}
@@ -125,7 +193,7 @@ implements ActionListener {
 	private String getLongitudeString() {
 		return locationCache.getFormattedLongitudeString();
 	}
-    
+	
     /** 
      * Action event occurs.
      *
@@ -160,14 +228,12 @@ implements ActionListener {
         if (container != null) {
             locationButton.setText(container.getName());
             addLocationButton();
+			locationLabel.setText("@");
         }
         else {
-            locationTextLabel.setText("Outside");
-            if (unit instanceof Person) {
-                Person person = (Person) unit;
-                if (person.getLocationSituation() == LocationSituation.BURIED) 
-                    locationTextLabel.setText("Buried Outside");
-            }
+         	// 2014-10-23 mkung: Called new method checkOutsideReading()
+        	checkOutsideReading();
+			locationLabel.setText("");
             addLocationTextLabel();
         }   
     }
