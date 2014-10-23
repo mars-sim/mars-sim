@@ -11,22 +11,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 /**
  * The HeatGeneration class handles how the buildings of a settlement  
  * generate heat and how the Thermal Control behaves

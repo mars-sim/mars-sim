@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;

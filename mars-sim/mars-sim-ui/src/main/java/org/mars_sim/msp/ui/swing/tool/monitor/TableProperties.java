@@ -18,7 +18,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;

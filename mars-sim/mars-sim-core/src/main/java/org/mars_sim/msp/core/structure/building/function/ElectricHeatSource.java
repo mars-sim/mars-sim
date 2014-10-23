@@ -10,11 +10,8 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 /**
  * An electric heat source is a type of electric furnace.
