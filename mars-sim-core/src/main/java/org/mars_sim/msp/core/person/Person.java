@@ -451,7 +451,7 @@ implements VehicleOperator, Serializable {
 
     /**
      * Gets the birthplace of the person
-     * @return the gender
+     * @return the birthplace
      * @deprecated
      * TODO internationalize the place of birth for display in user interface.
      */
