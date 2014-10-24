@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectionUtils.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-24
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;
@@ -112,9 +112,14 @@ public class CollectionUtils {
 	public synchronized static Settlement getRandomSettlement(
 		Collection<Settlement> collection
 	) {
+	    Settlement result = null;
 		Object[] array = collection.toArray();
-		int r = RandomUtil.getRandomInt(collection.size() - 1);
-		return (Settlement) array[r];
+		if (collection.size() > 0) {
+		    int r = RandomUtil.getRandomInt(collection.size() - 1);
+		    result = (Settlement) array[r];
+		}
+		
+		return result;
 	}
 
 	public synchronized static Settlement getRandomRegressionSettlement(
