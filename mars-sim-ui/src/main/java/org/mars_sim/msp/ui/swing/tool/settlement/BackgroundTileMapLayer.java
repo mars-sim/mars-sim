@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BackgroundTileMapLayer.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -56,7 +56,7 @@ implements SettlementMapLayer {
 		AffineTransform saveTransform = g2d.getTransform();
 
 		// Clear background tile image if settlement has changed.
-		if (!settlement.equals(currentSettlement)) {
+		if ((settlement != null) && !settlement.equals(currentSettlement)) {
 			backgroundTileImage = null;
 			currentSettlement = settlement;
 		}
@@ -73,16 +73,16 @@ implements SettlementMapLayer {
 		double diagonal = Math.hypot(mapWidth, mapHeight);
 
 		if (backgroundTileImage == null) {
-			ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
-			double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-			int imageWidth = (int) (backgroundTileIcon.getIconWidth() * imageScale);
-			int imageHeight = (int) (backgroundTileIcon.getIconHeight() * imageScale);
+		    ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
+		    double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
+		    int imageWidth = (int) (backgroundTileIcon.getIconWidth() * imageScale);
+		    int imageHeight = (int) (backgroundTileIcon.getIconHeight() * imageScale);
 
-			backgroundTileImage = resizeImage(
-				backgroundTileIcon.getImage(), 
-				backgroundTileIcon.getImageObserver(),
-				imageWidth, imageHeight
-			);
+		    backgroundTileImage = resizeImage(
+		            backgroundTileIcon.getImage(), 
+		            backgroundTileIcon.getImageObserver(),
+		            imageWidth, imageHeight
+		            );
 		}
 
 		if (backgroundTileImage != null) {
@@ -221,7 +221,7 @@ implements SettlementMapLayer {
 			String backgroundImageName = settlementBackgroundMap.get(settlement);
 			result = ImageLoader.getIcon(backgroundImageName, "jpg");
 		}
-		else {
+		else if (settlement != null) {
 			int count = 1;
 			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
 			while (i.hasNext()) {
@@ -235,6 +235,9 @@ implements SettlementMapLayer {
 					count = 1;
 				}
 			}
+		}
+		else {
+            result = ImageLoader.getIcon("settlement_map_tile1", "jpg");
 		}
 
 		return result;
