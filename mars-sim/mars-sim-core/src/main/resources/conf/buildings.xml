@@ -213,7 +213,7 @@
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum energy capacity (kJ/s) produced by the heat source. -->
 				<heat-source type="Solar Heat Source" capacity="2.0" />
-				<heat-source type="Electric Heat Source" capacity="5.0" />
+				<heat-source type="Electric Heat Source" capacity="10.0" />
 			</thermal-generation>
 	
 		</functions>
@@ -272,8 +272,9 @@
 					
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="2.0" />
-				<heat-source type="Electric Heat Source" capacity="5.0" />
+				<heat-source type="Electric Heat Source" capacity="10.0" />
 			</thermal-generation>
+			
 		</functions>
 	</building>
 	
