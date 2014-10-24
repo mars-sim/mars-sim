@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -68,7 +67,7 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	private static Logger logger = Logger.getLogger(Building.class.getName());
+	//private static Logger logger = Logger.getLogger(Building.class.getName());
 	 
 	DecimalFormat fmt = new DecimalFormat("###.####"); 
 	
@@ -77,25 +76,13 @@ LocalBoundedObject, InsidePathLocation {
 	private static final double WEAR_LIFETIME = 3340000D;
 	/** Base amount of maintenance time for building. */
 	private static final double BASE_MAINTENANCE_TIME = 50D;
-	
-	//2014-10-17 mkung: Added initial temperature (celsius) */
-    private static final double INITIAL_TEMP = 22D;
-    // thermostat's allowance temperature setting
-    // furnace ON when 3 deg below INITIAL_TEMP
-    // furnace OFF when 3 deg above INITIAL_TEMP
-    private static final double ALLOWED_TEMP = 2D;
-    
-    // How often to check on temperature change
-    private static int tally;
-    private static final int CYCLE = 5;
-    
-    
+
     // Data members
 	protected BuildingManager manager; 
 	protected int id;
 	protected String name;
-	protected double width=0;
-	protected double length=0;
+	protected double width;
+	protected double length;
 	protected int baseLevel;
 	protected double xLoc;
 	protected double yLoc;
@@ -104,17 +91,23 @@ LocalBoundedObject, InsidePathLocation {
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
 	
-	//2014-10-17 mkung: Added heating function to the buliding
+
+	//2014-10-23 mkung: Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
-	protected double shc;
-	protected double blc;
+	// Specific Heat Capacity = 4.0 for a typical U.S. house
+	protected double SHC = 4.0; 
+	protected double BLC = 1.0; 
 	protected double floorArea;
 	protected double currentTemperature;
 	protected double deltaTemperature ;
+    private static final double INITIAL_TEMPERATURE = 22.5D;
+     
 	protected ThermalGeneration furnace;
 	private static int count;
+	
+	
 	protected MalfunctionManager malfunctionManager;
 	protected List<Function> functions;
 	
@@ -128,25 +121,11 @@ LocalBoundedObject, InsidePathLocation {
 		this(template.getID(), template.getType(), template.getWidth(), 
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
 				template.getFacing(), manager);
-		//2014-10-17 mkung: Added currentTemperature and deltaTemperature
-		//logger.info("constructor1 : In building ID < " + template.getID() + " >");
-		//logger.info("constructor1 : no purple width ");	
-		//logger.info("constructor1 : no purple length ");
-		count++;
+		//count++;
 		//logger.info("constructor1 : count is " + count);
-		this.currentTemperature = INITIAL_TEMP;
-		deltaTemperature = 0;
-		//shc = 12.6178; // in J/s/m2/F 
-		//blc = 3.1544; // in J/s/m2/F
-		shc = 4.0;
-		blc = 1.0;
-		//floorArea = template.getLength() * template.getWidth() ;
-		//logger.info("constructor1 : template.getLength() is " + template.getLength() 
-		//		+ ", template.getWidth() is " + template.getWidth());
-		//floorArea = this.length * this.width ;
-		//logger.info("constructor1 : blue width is " + width);
-		//logger.info("constructor1 : blue length is " + length);
-		//.info("constructor1 : end of constructor1");
+		
+		this.currentTemperature = INITIAL_TEMPERATURE;
+
 	}
 
 	/**
@@ -174,16 +153,13 @@ LocalBoundedObject, InsidePathLocation {
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-		//2014-10-17 mkung: Added thermal control calculation
-			//logger.info("constructor2 : In building < " + name + " >");
-		count++;
+
+		//count++;
 			//logger.info("constructor2 : count is " + count);
-		heatMode = HeatMode.FULL_POWER;	
-		this.currentTemperature = INITIAL_TEMP;
-		deltaTemperature = 0;
-		shc = 4.0; // in [btu/ft2/F] 
-		blc = 1.0; // in [btu/ft2/hr/F]
-		
+	
+		this.currentTemperature = INITIAL_TEMPERATURE;
+	
+			
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 	// Get building's dimensions.
 		if (width != -1D) {
@@ -208,10 +184,6 @@ LocalBoundedObject, InsidePathLocation {
 
 		baseLevel = config.getBaseLevel(name);
 		
-		//2014-10-17 mkung: Added floorArea for thermal control	calculation	
-		floorArea = this.length * this.width ;
-			//logger.info("constructor2 : " + name + " is " + this.length + " * " + this.width);
-
 		// Get the building's functions
 		functions = determineFunctions();
 
@@ -249,74 +221,39 @@ LocalBoundedObject, InsidePathLocation {
 	/** Empty constructor. */
 	protected Building() {}
 
-
+	/**
+     * Gets the initial temperature of a building.
+     * @return temperature (deg C)
+     */
+	//2014-10-23 mkung: Added getInitialTemperature()
+    public double getInitialTemperature() {
+            return INITIAL_TEMPERATURE;
+    }
+	
     /**
      * Gets the temperature of a building.
-     * @return temperature (degrees C)
+     * @return temperature (deg C)
      */
 	//2014-10-17 mkung: Added getTemperature()
     public double getTemperature() {
             return currentTemperature;
     }
     /**
-     * sets the chage of temperature of a building due to heat gain
-     * @return temperature (degrees C)
+     * Sets the current temperature of a building due to heat gain
+     * @return temperature (deg C)
      */
-	//2014-10-17 mkung: Added setDeltaTemperature()
-    public void setDeltaTemperature(double t) {
-        deltaTemperature = t;
+    public void setTemperature(double t) {
+        currentTemperature = t;
     }
-
-	/**
-	 * Relate the change in heat to change in temperature 
-	 * @return none. save result as deltaTemperature 
-	 */
-	//2014-10-17 mkung: Added edetermineDeltaTemperature() 
-	public void determineDeltaTemperature() {
-		//logger.info("determineDeltaTermperature() : In building < " + name + " >");
-		//TODO: compute elapsedTime using MarsClock.getTimeDiff(clock1, clock2)
-		//double heatLoss = 0;
-		double meter2Feet = 10.764;
-		double interval = Simulation.instance().getMasterClock().getTimePulse() ;
-		// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
-		// 1 sol on Mars has 88740 secs
-		// 1 sol has 1000 milisol
-		double marsSeconds = 1000.0/88740.0*interval; 
-		double secPerHr = 1.0/3600.0;
-		//logger.info("interval : " + fmt.format(interval));
-		//logger.info("marsSeconds : " + fmt.format(marsSeconds));
-		//logger.info("secPerHr : " + fmt.format(secPerHr )); 
-		//logger.info("getCurrentHeat() : TimePulse is " + interval);
-		// TODO: the outside Temperature varies from morning to evening
-		double outsideTemperature = Simulation.instance().getMars().getWeather().
-        		getTemperature(manager.getSettlement().getCoordinates());	
-			//logger.info("determineDeltaTermperature() : outsideTemperature is " + outsideTemperature);
-		// heatGain and heatLoss are [in Joules]
-		double heatGain = 0;
-		if (heatMode == HeatMode.FULL_POWER) {
-			heatGain = manager.getSettlement().getThermalSystem().getGeneratedHeat();
-		}
-		else {
-			heatGain = 0;
-		}
-		//logger.info("determineDeltaTermperature() : heatMode is " + heatMode);
-		//logger.info("determineDeltaTermperature() : heatGain is " + fmt.format(heatGain));	
-
-		double TinF =  (currentTemperature - outsideTemperature)*1.8; //-32 drops out			
-			//logger.info("determineDeltaTermperature() : blc is " + blc);
-			//logger.info("determineDeltaTermperature() : TinF is " + fmt.format(TinF));
-			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-			//logger.info("determineDeltaTermperature() : elapsedTimeinHrs is " + elapsedTimeinHrs);
-		//floorArea = this.length * this.width ;
-			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-		double heatLoss = (double)CYCLE * blc * floorArea * meter2Feet * marsSeconds * secPerHr * TinF;
-			//logger.info("determineDeltaTermperature() : heatLoss is " + fmt.format(heatLoss));
-		double deltaTinF = ( heatGain - heatLoss) / (shc * floorArea); 
-			//logger.info("determineDeltaTermperature() : deltaTinF is " + fmt.format(deltaTinF));
-		double deltaTinC = (deltaTinF) *5.0/9.0; // -32 drops out
-			//logger.info("determineDeltaTermperature() : deltaTinC is " + fmt.format(deltaTinC));		
-		setDeltaTemperature(deltaTinC);
-	}
+	//2014-10-17 mkung: Added getSHC() and getBLC()
+    public double getSHC() {
+    	return SHC;
+    }
+    public double getBLC() {
+    	return BLC;
+    }
+    
+    
 
 	/**
 	 * Determines the building functions.
@@ -549,7 +486,7 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	/**
-	 * Gets the heat this building currently requires for full-heat mode.
+	 * Gets the heat this building currently requires for full-power mode.
 	 * @return heat in kJ/s.
 	 */
 	//2014-10-17 mkung: Added heat mode
@@ -564,8 +501,8 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	/**
-	 * Gets the heat the building requires for heat-down mode.
-	 * @return power in kJ/s.
+	 * Gets the heat the building requires for power-down mode.
+	 * @return heat in kJ/s.
 	*/
 	//2014-10-17 mkung: Added heat mode
 	public double getPoweredDownHeatRequired() {
@@ -671,53 +608,14 @@ LocalBoundedObject, InsidePathLocation {
 		return name.compareToIgnoreCase(o.name);
 	}
 	
-	// Turn heat source off if reaching pre-setting temperature 
-	public void turnOnOffHeat() {
-		double t = INITIAL_TEMP + ALLOWED_TEMP;
-			//logger.info("t is " + t);
-		// ALLOWED_TEMP is thermostat's allowance temperature setting
-	    // If 3 deg above INITIAL_TEMP, turn off furnace
-		if (currentTemperature > t) {
-			//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(currentTemperature));
-			setHeatMode(HeatMode.POWER_DOWN);
-		// If 3 deg below INITIAL_TEMP, turn on furnace 
-		} else { 
-			setHeatMode(HeatMode.FULL_POWER);
-			//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(currentTemperature));
-		}
-	}
-	// Adjust the current temperature 
-	public void updateTemperature() {
-		currentTemperature += deltaTemperature;
-			//logger.info("timePassing() : updated currentTemp is "+ fmt.format(currentTemperature));
-			//logger.info("timePassing() : updated deltaTemperature is "+ fmt.format(deltaTemperature));		
-	}
-
 	
 	/**
 	 * Time passing for building.
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	// 2014-10-18 Added Thermal Control (3 parts) to timePassing()
+
 	public void timePassing(double time) {
-		double miliSolElapsed = Simulation.instance().getMasterClock().getTimePulse() ;
-		//logger.info("getCurrentHeat() : TimePulse is " + interval);
-		tally++;
-		if (tally == CYCLE) {
-		// Turn heat source off if reaching pre-setting temperature 
-		// Part 1 of Thermal Control
-		turnOnOffHeat();
-		// Detect temperature change based on heat gain and heat loss  
-		// Part 2 of Thermal Control
-		determineDeltaTemperature();
-		// Adjust the current termperature 
-		// Part 3 of Thermal Control
-		updateTemperature();
-	
-		tally = 0;
-		}
-		
 			// Check for valid argument.
 		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
 

@@ -2,8 +2,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 /**
  * Mars Simulation Project
- * HeatGeneration.java
- * @version 3.07 2014-10-17
+ * ThermalGeneration.java
+ * @version 3.07 2014-10-23
  * @author Manny Kung
  */
 import java.io.Serializable;
@@ -11,13 +11,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.function.HeatMode;
+
 /**
  * The HeatGeneration class handles how the buildings of a settlement  
  * generate heat and how the Thermal Control behaves
@@ -30,27 +30,21 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
+	//private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
-	DecimalFormat fmt = new DecimalFormat("#.#####"); 
+	DecimalFormat fmt = new DecimalFormat("#.#######"); 
 	
 	/** TODO Name of the building function needs to be internationalized. */
 	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_GENERATION;
 
-
 	// Data members.
 	private List<HeatSource> heatSources;
-
-	//private double capacity;
-	//private double efficiency;
-	//private boolean heating;
 	private Building building;
-	
-	private HeatMode heatMode;
-	private double heatRequired;
+	//private double heatRequired;
 	private boolean sufficientHeat;
 	//private static int count;
-
+		
+  	protected HeatMode heatMode;
 	/**
 	 * Constructor
 	 */
@@ -64,58 +58,32 @@ implements Serializable {
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
 		heatSources = config.getHeatSources(building.getName());
+		
 	}
 
-	
+
 	/**
-	 * Switch on or off the heating system
-	 * @param true if it's on
-	
-	public void setHeating(boolean isOn) {
-		heating = isOn;
-	}
- */
-	/**
-	 * get the state of the heating system
-	 * @param true if it's on  
-	
-	public boolean isHeating() {
-		return heating;
-	}
+	 * Gets the building's power mode.
 	 */
-	/**
-	 * Gets the capacity of the furnace.
-	 * @return heat in J
-	 
-	public double getCapacity() {
-		return capacity;
+	//2014-10-17 mkung: Added heat mode
+	public HeatMode getHeatMode() {
+		return heatMode;
 	}
-*/
-	/**
-	 * Gets the efficiency
-	 * @return between 0 to 1 
-	
-	public double getEfficiency() {
-		return efficiency;
-	}
- */
 
 	/**
-	 * Gets the heat required from the grid.
-	 * @return heat in J
-	 
-	public double getRequiredHeat() {
-		return heatRequired;
+	 * Sets the building's heat mode.
+	 */
+	//2014-10-17 mkung: Added heat mode
+	public void setHeatMode(HeatMode heatMode) {
+		this.heatMode = heatMode;
 	}
-*/
-
 
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
-	 * @return value (VP) of building function.
+	 * @return value) (VP) of building function.
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName,
@@ -210,6 +178,7 @@ implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
+
 		for (HeatSource source : heatSources) {
 			/*
 			if (source instanceof FuelHeatSource) {
@@ -220,9 +189,7 @@ implements Serializable {
 			}
 			*/
 		}
-		
 	}
-
 
 	/**
 	 * Gets the amount of heat required when function is at full power.
@@ -298,6 +265,48 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	/**
+	 * Switch on or off the heating system
+	 * @param true if it's on
+	
+	public void setHeating(boolean isOn) {
+		heating = isOn;
+	}
+ */
+	/**
+	 * get the state of the heating system
+	 * @param true if it's on  
+	
+	public boolean isHeating() {
+		return heating;
+	}
+	 */
+	/**
+	 * Gets the capacity of the furnace.
+	 * @return heat in J
+	 
+	public double getCapacity() {
+		return capacity;
+	}
+*/
+	/**
+	 * Gets the efficiency
+	 * @return between 0 to 1 
+	
+	public double getEfficiency() {
+		return efficiency;
+	}
+ */
+
+	/**
+	 * Gets the heat required from the grid.
+	 * @return heat in J
+	 
+	public double getRequiredHeat() {
+		return heatRequired;
+	}
+*/
+
 
 
 }
