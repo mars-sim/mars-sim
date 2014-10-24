@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -144,7 +145,7 @@ implements ActionListener {
 		// Prepare content pane
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
 		// Prepare top layout panes
