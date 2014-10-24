@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -314,10 +316,8 @@ implements Runnable {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		// Paint black background
-		g.setColor(Color.black);
-		g.fillRect(0, 0, width, height);
-
+		Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
+		g.drawImage(starfield, 0, 0, Color.black, null);
 		// Draw real or topo globe
 		MarsGlobe globe = topo ? topoSphere : marsSphere;
 
