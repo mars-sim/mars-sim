@@ -19,6 +19,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ThermalStorage class is a building function for storing heat.
+ * see 
+ * 1. http://en.wikipedia.org/wiki/Thermal_energy_storage
+ * 2. http://www.energysavingtrust.org.uk/Generating-energy/Choosing-a-renewable-technology/Thermal-stores/How-thermal-stores-work
  */
 public class ThermalStorage
 extends Function

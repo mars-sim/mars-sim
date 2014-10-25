@@ -45,6 +45,7 @@ implements MouseListener, ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+
 	private JLabel populationNumLabel;
 	private JLabel populationCapLabel;
 	private PopulationListModel populationListModel;
@@ -70,10 +71,11 @@ implements MouseListener, ActionListener {
 		Settlement settlement = (Settlement) unit;
 
 		// Create population count panel
-		JPanel populationCountPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+		JPanel populationCountPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 		populationCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationCountPanel);
 
+	
 		// Create population num label
 		populationNumCache = settlement.getCurrentPopulationNum();
 		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population", 

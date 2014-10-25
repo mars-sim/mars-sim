@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -53,15 +53,17 @@ implements Serializable {
 	//2014-10-23 mkung: Added temperature setting */
     // How often to check on temperature change
     private static int tally; 
-    // CAUTION: DO NOT SET TICKS_PER_UPDATE to a multiple of n if there are n building with life-support
-    private static final double TICKS_PER_UPDATE = 4.0; // USE CAUTION: may skip update of certain buildings  
+    // CAUTION: DO NOT SET TICKS_PER_UPDATE to a multiple of N if there are N buildings with life-support function
+    // set TICKS_PER_UPDATE to a default of 5 for a MD1 base. 
+    // The bigger the number, the more erratic (and the less frequent) the temperature update
+    private static final int TICKS_PER_UPDATE = 5; 
   	private static int count;
     // thermostat's allowance temperature setting
     // if T_SENSITIVITY is set to 2.0, 
   	// furnace ON when 2 deg below INITIAL_TEMP
     // furnace OFF when 2 deg above INITIAL_TEMP
-    private static final double T_SENSITIVITY = 2D; 
-  	protected HeatMode heatMode;
+    private static final double T_SENSITIVITY = 1D; 
+  	//protected HeatMode heatMode;
   	protected double baseHeatRequirement;
   	protected double basePowerDownHeatRequirement;
   	private double length;
@@ -104,7 +106,7 @@ implements Serializable {
 		count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
-		heatMode = HeatMode.NO_POWER;	
+		//heatMode = HeatMode.NO_POWER;	
 		deltaTemperature = 0;
 
 		length = getBuilding().getLength();
@@ -135,7 +137,7 @@ implements Serializable {
 		count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
-		heatMode = HeatMode.NO_POWER;	
+		//heatMode = HeatMode.NO_POWER;	
 		deltaTemperature = 0;
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
@@ -145,28 +147,30 @@ implements Serializable {
 
 	}
 
-
-	// Turn heat source off if reaching pre-setting temperature 
+	/** Turn heat source off if reaching pre-setting temperature 
+	 * @return none. set heatMode
+	 */
 	public void turnOnOffHeat() {
+		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 		double t = building.getInitialTemperature();
 			//logger.info("t is " + t);
 		// ALLOWED_TEMP is thermostat's allowance temperature setting
 	    // If 3 deg above INITIAL_TEMP, turn off furnace
 		if (building.getTemperature() > (t + T_SENSITIVITY )) {
-			//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(currentTemperature));
-			setHeatMode(HeatMode.POWER_DOWN);
+			//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(building.getTemperature() ));
+			building.setHeatMode(HeatMode.POWER_DOWN);
 		// If 3 deg below INITIAL_TEMP, turn on furnace 
 		} else if (building.getTemperature() < (t - T_SENSITIVITY)) { 
-			setHeatMode(HeatMode.FULL_POWER);
-			//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(currentTemperature));
+			building.setHeatMode(HeatMode.FULL_POWER);
+			//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(building.getTemperature() ));
 		}
 	}
 	
 	/**Adjust the current temperature in response to the delta temperature
 	 * @return none. update currentTemperature
 	 */
-	// 
 	public void updateTemperature() {
+		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 		//currentTemperature += deltaTemperature;
 		building.setTemperature(building.getTemperature()+deltaTemperature);
 			//logger.info("timePassing() : updated currentTemp is "+ fmt.format(building.getTemperature()));
@@ -178,51 +182,52 @@ implements Serializable {
 	 * Relate the change in heat to change in temperature 
 	 * @return none. save result as deltaTemperature 
 	 */
-	//2014-10-17 mkung: Added edetermineDeltaTemperature() 
-	@SuppressWarnings("deprecation")
+	//2014-10-17 mkung: Added determineDeltaTemperature() 
+
 	public void determineDeltaTemperature() {
-		//logger.info("determineDeltaTermperature() : In building < " + building.getName() + " >");
-		//TODO: compute elapsedTime using MarsClock.getTimeDiff(clock1, clock2)
-		//double heatLoss = 0;
+		//logger.info("determineDeltaTermperature() : In < " + building.getName() + " >");
 		double meter2Feet = 10.764;
 		double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 		// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
 		// 1 sol on Mars has 88740 secs
 		// 1 sol has 1000 milisol
-		double marsSeconds = 1000.0/88740.0*interval; 
-		double secPerHr = 1.0/3600.0;
+		double marsSeconds = 1000.0/88740.0 * interval; 
+		double hrPerSec = 1.0/3600.0;
 		//logger.info("interval : " + fmt.format(interval));
 		//logger.info("marsSeconds : " + fmt.format(marsSeconds));
-		//logger.info("secPerHr : " + fmt.format(secPerHr )); 
+		//logger.info("hrPerSec : " + fmt.format(hrPerSec)); 
 
 		// TODO: the outside Temperature varies from morning to evening
 		double outsideTemperature = Simulation.instance().getMars().getWeather().
         		getTemperature(building.getBuildingManager().getSettlement().getCoordinates());	
 			//logger.info("determineDeltaTermperature() : outsideTemperature is " + outsideTemperature);
-		// heatGain and heatLoss are [in Joules]
-		double heatGain;
-		if (heatMode == HeatMode.FULL_POWER) {
-			heatGain =  building.getBuildingManager().getSettlement().getThermalSystem().getGeneratedHeat();
-			heatGain = heatGain * TICKS_PER_UPDATE;
-		}
-		else {
+		// heatGain and heatLoss are kJ
+		double heatGain; // in BTU
+		double heatGenerated; //in kJ/s
+		if (building.getHeatMode() == HeatMode.FULL_POWER) {
+			// HeatGenerated in kW 
+			// Note: 1 kW = 3413 BTU/hr
+			heatGenerated =  building.getBuildingManager().getSettlement().getThermalSystem().getGeneratedHeat();
+			heatGain = heatGenerated * 3413; // in BTU/hr
+			heatGain = heatGain * (double)TICKS_PER_UPDATE * marsSeconds * hrPerSec;		
+		} else if (building.getHeatMode() == HeatMode.POWER_DOWN) 
 			heatGain = 0;
-		}
-		//logger.info("determineDeltaTermperature() : heatMode is " + heatMode);
-		//logger.info("determineDeltaTermperature() : heatGain is " + fmt.format(heatGain));	
-
+		else 
+			heatGain = 0;
+			//logger.info("determineDeltaTermperature() : heatMode is " + building.getHeatMode());
+			//logger.info("determineDeltaTermperature() : heatGain is " + fmt.format(heatGain));	
 		double TinF =  (building.getTemperature() - outsideTemperature)*1.8; //-32 drops out			
 			//logger.info("determineDeltaTermperature() : BLC is " + building.getBLC());
 			//logger.info("determineDeltaTermperature() : TinF is " + fmt.format(TinF));
 			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-			//logger.info("determineDeltaTermperature() : timefactor is " + fmt.format(marsSeconds * secPerHr));
-		//floorArea = this.length * this.width ;
+			//logger.info("determineDeltaTermperature() : timefactor is " + fmt.format(marsSeconds * hrPerSec));
+			//floorArea = this.length * this.width ;
 			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-		double heatLoss = TICKS_PER_UPDATE * building.getBLC() * floorArea * meter2Feet * marsSeconds * secPerHr * TinF;
+		double heatLoss = (double)TICKS_PER_UPDATE * building.getBLC() * floorArea * meter2Feet * marsSeconds * hrPerSec * TinF;
 			//logger.info("determineDeltaTermperature() : heatLoss is " + fmt.format(heatLoss));
 		double deltaTinF = ( heatGain - heatLoss) / (building.getSHC() * floorArea); 
 			//logger.info("determineDeltaTermperature() : deltaTinF is " + fmt.format(deltaTinF));
-		double deltaTinC = (deltaTinF) *5.0/9.0; // -32 drops out
+		double deltaTinC = (deltaTinF) *5.0/9.0; // the difference between deg F and deg C (namely -32) got cancelled out 
 			//logger.info("determineDeltaTermperature() : deltaTinC is " + fmt.format(deltaTinC));		
 		setDeltaTemperature(deltaTinC);
 	}
@@ -246,20 +251,20 @@ implements Serializable {
 
 	/**
 	 * Gets the building's power mode.
-	 */
+	 
 	//2014-10-17 mkung: Added heat mode
 	public HeatMode getHeatMode() {
 		return heatMode;
 	}
-
+*/
 	/**
 	 * Sets the building's heat mode.
-	 */
+	
 	//2014-10-17 mkung: Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
 		this.heatMode = heatMode;
 	}
-	
+	 */
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
@@ -424,24 +429,44 @@ implements Serializable {
 			}
 		}	
 
-		double miliSolElapsed = Simulation.instance().getMasterClock().getTimePulse() ;
-		//logger.info("timePassing() : TimePulse is " + miliSolElapsed);
-		tally++;
-		// TICKS_PER_UPDATE denote how frequent in updating the delta temperature
-		if (tally == (int)TICKS_PER_UPDATE) {
-			//logger.info("timePassing() : building is " + building.getName());
-			// Turn heat source off if reaching pre-setting temperature 
-			// Step 1 of Thermal Control
-			turnOnOffHeat();
-			// Detect temperature change based on heat gain and heat loss  
-			// Step 2 of Thermal Control
-			determineDeltaTemperature();
-			// Adjust the current termperature 
-			// Step 3 of Thermal Control
-			updateTemperature();
-			tally = 0;
+		
+		// skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
+		if (!building.getName().equals("Hallway")) 
+			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
+			adjustThermalControl();
+	
+	}
+	/**
+	 * Notify thermal control subsystem for the temperature change and power up and power down 
+	 * via 3 steps (this method houses the main thermal control codes)
+	 * @return power (kW)
+	 */
+	// 2014-10-25 Added adjustThermalControl()
+	public void adjustThermalControl() {
+		if (!building.getName().equals("Hallway")) {
+			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
+			double miliSolElapsed = Simulation.instance().getMasterClock().getTimePulse() ;
+			//logger.info("timePassing() : TimePulse is " + miliSolElapsed);
+			tally++;
+			// TICKS_PER_UPDATE denote how frequent in updating the delta temperature
+			if (tally == TICKS_PER_UPDATE) {
+				//logger.info("timePassing() : building is " + building.getName());
+				
+				// Turn heat source off if reaching pre-setting temperature 
+				// Step 1 of Thermal Control
+				turnOnOffHeat();			
+				// Detect temperature change based on heat gain and heat loss  
+				// Step 2 of Thermal Control
+				determineDeltaTemperature();
+				// Adjust the current termperature 
+				// Step 3 of Thermal Control
+				updateTemperature();
+
+				tally = 0;
+			}
 		}
 	}
+	
 
 	/**
 	 * Gets the amount of power required when function is at full power.
@@ -450,7 +475,7 @@ implements Serializable {
 	public double getFullPowerRequired() {
 		return powerRequired;
 	}
-
+	
 	/**
 	 * Gets the amount of power required when function is at power down level.
 	 * @return power (kW)

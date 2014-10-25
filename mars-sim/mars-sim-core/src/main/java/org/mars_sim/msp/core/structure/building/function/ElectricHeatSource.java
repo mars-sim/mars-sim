@@ -27,9 +27,9 @@ implements Serializable {
 
 	DecimalFormat fmt = new DecimalFormat("#.#######"); 
 
-	private double maxHeat;
+	private double maxCapacity;
 	private double efficiency =.95;
-	private double secPerHour = 3600;
+
 	//private static int count;
 	
 	public ElectricHeatSource(double maxHeat) {
@@ -38,7 +38,7 @@ implements Serializable {
 		//logger.info("constructor : maxHeat is " + maxHeat); 
 		//count++;
 		//logger.info("constructor : count is " + count);
-		this.maxHeat = maxHeat;	
+		this.maxCapacity = maxHeat;	
 		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		//String name = config.getBuildingNames();
 	}
@@ -50,19 +50,21 @@ implements Serializable {
 	 * Called by ThermalGeneration.java
 	 */
 	public double getCurrentHeat(Building building) {
-		double HeatGenerated = 0;
+		double HeatGenerated;
 		// TODO: adjust secPerTick according to the MarsClock
-		double secPerTick; 
-		double secPerHour = 0.000277778;
+		//double secPerTick; 
+		// Note: 1/60/60 =.000277778 hr
+		//double hourPerSec = 0.000277778; 
 		//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 			//logger.info("getCurrentHeat() : TimePulse is " + fmt.format(interval));
 			//System.out.println(fmt.format(interval));
 		//	logger.info(fmt.format(interval));
 		//logger.info("getCurrentHeat() : maxHeat is " +maxHeat);
 		
-		// maxHeat is the capacity of the Electric Furnace [in kW]
+		// maxCapacity is the capacity of the Electric Furnace [in kW]
 		// HeatGenerated is the Heat Gain of a room [in BTU]
-		HeatGenerated = 3400.0 * maxHeat * efficiency * secPerHour;
+		// Note: 1 kW = 3413 BTU / hr
+		HeatGenerated =  maxCapacity * efficiency ;
 		
 		//logger.info("getCurrentHeat() : HeatGenerated is "+  fmt.format(HeatGenerated));
 		

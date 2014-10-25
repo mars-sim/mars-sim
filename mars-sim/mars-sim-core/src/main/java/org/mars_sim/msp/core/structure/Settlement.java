@@ -58,7 +58,9 @@ implements LifeSupport {
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;
     /** Normal temperature (celsius) */
-    private static final double NORMAL_TEMP = 25D;
+    private static final double NORMAL_TEMP = 22.5D;
+    // minimal acceptable temperature for living space (arbitrary)
+    private static final double MIN_TEMP = 10.0D;
 
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
@@ -238,7 +240,7 @@ implements LifeSupport {
             result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
-        if (getTemperature() != NORMAL_TEMP)
+        if (getTemperature() < MIN_TEMP)
             result = false;
 
         return result;
@@ -314,8 +316,11 @@ implements LifeSupport {
      * Gets the temperature of the life support system.
      * @return temperature (degrees C)
      */
+    //TODO: what is the use of this method
     public double getTemperature() {
         double result = NORMAL_TEMP;
+        //double result = getLifeSupport().getTemperature();
+        
         /*
         double ambient = Simulation.instance().getMars().getWeather()
                 .getTemperature(getCoordinates());

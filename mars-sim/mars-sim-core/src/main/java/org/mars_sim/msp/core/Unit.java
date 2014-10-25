@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -64,6 +64,14 @@ implements Serializable, Comparable<Unit> {
 		this.inventory.setCoordinates(location);
 	}
 
+	/**
+	 * Change the unit's name
+	 * @param name new name
+	 */
+	public final void changeName(String name) {
+		this.name = name;
+	}
+	
 	/** 
 	 * Gets the unit's UnitManager 
 	 * @return {@link UnitManager} the unit's unit manager

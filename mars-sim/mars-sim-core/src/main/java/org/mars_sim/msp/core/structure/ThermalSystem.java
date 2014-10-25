@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalSystem.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-23
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -25,7 +25,8 @@ import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The ThermalSystem class is the settlement's Heating Distribution and Storage Subsystem.
+ * The ThermalSystem class is the settlement's Thermal Control, Distribution and Storage Subsystem.
+ * This class will only have one and only one instance 
  */
 public class ThermalSystem
 implements Serializable {
@@ -41,6 +42,7 @@ implements Serializable {
 	// Data members
 	private HeatMode heatMode;
 	private double heatGenerated;
+	private double heatGenerationCapacity;
 	private double heatStored;
 	private double thermalStorageCapacity;
 	private double heatRequired;
@@ -48,6 +50,8 @@ implements Serializable {
 	private Settlement settlement;
 	private double heatValue;
 
+	private ThermalGeneration generator;
+	
 	private int count=0;
 	/**
 	 * Constructor.
@@ -65,16 +69,16 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the heat grid mode.
-	 * @return heat grid mode
+	 * Gets the heat mode.
+	 * @return heat mode
 	 */
 	public HeatMode getHeatMode() {
 		return heatMode;
 	}
 
 	/**
-	 * Sets the heat grid mode.
-	 * @param newHeatMode the new heat grid mode.
+	 * Sets the heat mode.
+	 * @param newHeatMode the new heat mode.
 	 */
 	public void setHeatMode(HeatMode newHeatMode) {
 		if (heatMode != newHeatMode) {
@@ -83,10 +87,19 @@ implements Serializable {
 			settlement.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
 		}
 	}
-
+	
 	/**
-	 * Gets the generated heat in the grid.
-	 * @return heat [in Joules]
+	 * Gets the total max possible generated heat in the heating system.
+	 * @return heat in kJ/s
+	 */
+	public double getGeneratedCapacity() {
+		//logger.info("getGeneratedCapacity() : heatGenerated is " + fmt.format(heatGenerationCapacity) ); 
+		return heatGenerationCapacity;
+	}
+	
+	/**
+	 * Gets the total max possible generated heat in the heating system.
+	 * @return heat in kJ/s
 	 */
 	public double getGeneratedHeat() {
 		//logger.info("getGeneratedHeat() : heatGenerated is " + fmt.format(heatGenerated) ); 
@@ -94,8 +107,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Sets the generated heat in the grid.
-	 * @param newGeneratedHeat the new generated heat (kW).
+	 * Sets the total max possible generated heat in the heating system.
+	 * @param newGeneratedHeat the new generated heat (kJ/s).
 	 */
 	private void setGeneratedHeat(double newGeneratedHeat) {
 		if (heatGenerated != newGeneratedHeat) {
@@ -105,16 +118,16 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the stored heat in the grid.
-	 * @return stored heat in kW hr.
+	 * Gets the stored heat in the heating system.
+	 * @return stored heat in kJ/s.
 	 */
 	public double getStoredHeat() {
 		return heatStored;
 	}
 
 	/**
-	 * Sets the stored heat in the grid.
-	 * @param newHeatStored the new stored heat (kW hr).
+	 * Sets the stored heat in the 
+	 * @param newHeatStored the new stored heat (kJ).
 	 */
 	public void setStoredHeat(double newHeatStored) {
 		if (heatStored != newHeatStored) {
@@ -124,16 +137,16 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the stored heat capacity in the grid.
-	 * @return stored heat capacity in kW hr.
+	 * Gets the stored thermal capacity in the heating system.
+	 * @return stored thermal capacity in kJ.
 	 */
 	public double getStoredHeatCapacity() {
 		return thermalStorageCapacity;
 	}
 
 	/**
-	 * Sets the stored heat capacity in the grid.
-	 * @param newThermalStorageCapacity the new stored heat capacity (kW hr).
+	 * Sets the stored thermal capacity in the heating system.
+	 * @param newThermalStorageCapacity the new stored thermal capacity (kJ).
 	 */
 	public void setStoredHeatCapacity(double newThermalStorageCapacity) {
 		if (thermalStorageCapacity != newThermalStorageCapacity) {
@@ -143,17 +156,19 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the heat required from the grid.
-	 * @return heat in kW
+	 * Gets the heat required from the heating system.
+	 * @return heat in kJ/s
 	 */
+	// NOT USED FOR THE TIME BEING. always return ZERO 
 	public double getRequiredHeat() {
 		return heatRequired;
 	}
 
 	/**
-	 * Sets the required heat in the grid.
-	 * @param newRequiredHeat the new required heat (kW).
+	 * Sets the required heat in the heating system.
+	 * @param newRequiredHeat the new required heat (kJ/s).
 	 */
+
 	private void setRequiredHeat(double newRequiredHeat) {
 		if (heatRequired != newRequiredHeat) {
 			heatRequired = newRequiredHeat;
@@ -172,7 +187,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Time passing for heat grid.
+	 * Time passing for heat heating system.
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
@@ -186,16 +201,16 @@ implements Serializable {
 			);
 		}
 
-		// update the total heat generated in the grid.
+		// update the total heat generated in the heating system.
 		updateTotalHeatGenerated();
 
-		// Update the total heat stored in the grid.
+		// Update the total heat stored in the heating system.
 		updateTotalStoredHeat();
 
-		// Update the total heat storage capacity in the grid.
+		// Update the total heat storage capacity in the heating system.
 		updateTotalThermalStorageCapacity();
 
-		// Determine total heat required in the grid.
+		// Determine total heat required in the heating system.
 		updateTotalRequiredHeat();
 
 		// Check if there is enough heat generated to fully supply each building.
@@ -268,7 +283,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total heat generated in the grid.
+	 * Updates the total heat generated in the heating system.
 	 * @throws BuildingException if error determining total heat generated.
 	 */
 	private void updateTotalHeatGenerated() {
@@ -296,7 +311,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total heat stored in the grid.
+	 * Updates the total heat stored in the heating system.
 	 * @throws BuildingException if error determining total heat stored.
 	 */
 	private void updateTotalStoredHeat() {
@@ -321,7 +336,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total heat required in the grid.
+	 * Updates the total heat required in the heating system.
 	 * @throws BuildingException if error determining total heat required.
 	 */
 	private void updateTotalRequiredHeat() {
@@ -373,8 +388,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total heat storage capacity in the grid.
-	 * @throws BuildingException if error determining total heat storage capacity.
+	 * Updates the total heat storage capacity in the heating system.
+	 * @throws BuildingException if error determining total thermal storage capacity.
 	 */
 	private void updateTotalThermalStorageCapacity() {
 		double tempThermalStorageCapacity = 0D;
@@ -422,8 +437,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Stores any excess grid heat in heat storage buildings if possible.
-	 * @param excessHeat excess grid heat (in kW hr).
+	 * Stores any excess heat in heat storage buildings if possible.
+	 * @param excessHeat excess heat (in kJ/s).
 	 * @throws BuildingException if error storing excess heat.
 	 */
 	private void storeExcessHeat(double excessHeat) {
@@ -443,9 +458,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Retrieves stored heat for the grid.
-	 * @param neededHeat the heat needed (kW hr).
-	 * @return stored heat retrieved (kW hr).
+	 * Retrieves stored heat for the heating system..
+	 * @param neededHeat the heat needed (kJ/s).
+	 * @return stored heat retrieved (kJ/s).
 	 * @throws BuildingException if error retrieving heat.
 	 */
 	private double retrieveStoredHeat(double neededHeat) {
@@ -465,15 +480,14 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the value of electrical heat at the settlement.
-	 * @return value of heat (VP per kw h).
-	 */
+	 * Gets the value of heat at the settlement.
+	 * @return value of heat (VP per kJ/s).
 	public double getHeatValue() {
 		return heatValue;
 	}
 
 	/**
-	 * Determines the value of electrical heat at the settlement.
+	 * Determines the value of heat energy at the settlement.
 	 */
 	private void determineHeatValue() {
 		double demand = heatRequired;
