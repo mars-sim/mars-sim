@@ -103,7 +103,7 @@
 				<!-- A solar cell on top of the lander hab. -->
 				<!-- type: the type of power source. -->
 				<!-- power: the maximum power (kW) produced by the power source. -->
-				<power-source type="Solar Power Source" power="50.0" />
+				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 		
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
@@ -212,8 +212,8 @@
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum energy capacity (kJ/s) produced by the heat source. -->
-				<heat-source type="Solar Heat Source" capacity="2.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="30.0" />
 			</thermal-generation>
 	
 		</functions>
@@ -271,8 +271,8 @@
 			</storage>
 					
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="2.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="30.0" />
 			</thermal-generation>
 			
 		</functions>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-25
  * @author Scott Davis
  */
 
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -105,7 +105,9 @@ LocalBoundedObject, InsidePathLocation {
     private static final double INITIAL_TEMPERATURE = 22.5D;
      
 	protected ThermalGeneration furnace;
-	private static int count;
+	//private static int count;
+	
+	private LifeSupport lifeSupport ;
 	
 	
 	protected MalfunctionManager malfunctionManager;
@@ -125,6 +127,12 @@ LocalBoundedObject, InsidePathLocation {
 		//logger.info("constructor1 : count is " + count);
 		
 		this.currentTemperature = INITIAL_TEMPERATURE;
+
+		// Do I need this?
+		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
+			 lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+			
+		heatMode = HeatMode.POWER_DOWN;
 
 	}
 
@@ -158,7 +166,7 @@ LocalBoundedObject, InsidePathLocation {
 			//logger.info("constructor2 : count is " + count);
 	
 		this.currentTemperature = INITIAL_TEMPERATURE;
-	
+		heatMode = HeatMode.POWER_DOWN;
 			
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 	// Get building's dimensions.
@@ -402,6 +410,16 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Gets the building's name.
 	 * @return building's name as a String.
+	 * 2014-10-25 mkung: Called by TabPanelBuilding.java for building name change
+	 */
+	public void setName(String name) {
+		//System.out.println("input name is " + name);
+		this.name = name;
+		//System.out.println("new name is " + this.name);
+	}
+	/**
+	 * Gets the building's name.
+	 * @return building's name as a String.
 	 * @deprecated
 	 * TODO internationalize building names for display in user interface.
 	 */
@@ -494,8 +512,8 @@ LocalBoundedObject, InsidePathLocation {
 		double result = baseHeatRequirement;
 
 		// Determine heat required for each function.
-		//Iterator<Function> i = functions.iterator();
-		//while (i.hasNext()) result += i.next().getFullHeatRequired();
+		Iterator<Function> i = functions.iterator();
+		while (i.hasNext()) result += i.next().getFullHeatRequired();
 
 		return result;
 	}
@@ -509,8 +527,8 @@ LocalBoundedObject, InsidePathLocation {
 		double result = basePowerDownHeatRequirement;
 
 		// Determine heat required for each function.
-		//Iterator<Function> i = functions.iterator();
-		//while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
+		Iterator<Function> i = functions.iterator();
+		while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
 
 		return result;
 	}

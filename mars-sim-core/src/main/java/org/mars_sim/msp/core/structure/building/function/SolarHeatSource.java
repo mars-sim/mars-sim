@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
- * This class accounts for the effect of temperature by direct solar heating .
+ * This class accounts for the effect of temperature by passive solar heating .
  */
 public class SolarHeatSource
 extends HeatSource
@@ -41,9 +41,16 @@ implements Serializable {
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 		double sunlight = surface.getSurfaceSunlight(location);
 
+			//System.out.println("sunlight is " + sunlight);
+		//TODO: calculate the amount of heat produced by passive solar heat
+		
+		return sunlight * getMaxHeat();
+		
 		// Solar thermal mirror only works in direct sunlight.
-		if (sunlight == 1D) return getMaxHeat();
-		else return 0D;
+		//if (sunlight == 1D) return getMaxHeat();
+		//else return 0D;
+		
+		
 	}
 
 	@Override

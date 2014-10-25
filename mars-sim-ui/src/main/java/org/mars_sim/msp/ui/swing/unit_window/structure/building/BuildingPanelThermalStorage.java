@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelThermalStorage.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-24
  * @author Manny Kung
  */
 
@@ -56,7 +56,7 @@ extends BuildingFunctionPanel {
 
 		// Create stored label.
 		storedCache = storage.getHeatStored();
-		storedLabel = new JLabel("Energy Stored: " + formatter.format(storedCache) + 
+		storedLabel = new JLabel("Heat Stored: " + formatter.format(storedCache) + 
 				" kJ", JLabel.CENTER);
 		add(storedLabel);
 	}
@@ -78,7 +78,7 @@ extends BuildingFunctionPanel {
 		double newStored = storage.getHeatStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
-			storedLabel.setText("Energy Stored: " + formatter.format(storedCache) + " kJ");
+			storedLabel.setText("Heat Stored: " + formatter.format(storedCache) + " kJ");
 		}    
 	}
 }

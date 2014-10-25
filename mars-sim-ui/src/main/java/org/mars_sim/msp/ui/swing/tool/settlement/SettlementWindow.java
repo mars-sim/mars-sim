@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-02-09
+ * @version 3.06 2014-10-25
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -24,7 +24,9 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -36,6 +38,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -55,6 +58,13 @@ public class SettlementWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
+	//private JLabel settlementNameLabel;
+	private String settlementNewName;
+	private JButton settlementNameChangeBtn;
+	private Settlement settlement;
+	/** The main desktop. */
+	private MainDesktopPane desktop;
+	
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
@@ -87,6 +97,8 @@ public class SettlementWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
+		this.desktop = desktop;
+		
 		// Set the tool window to be maximizable.
 		setMaximizable(true);
 
@@ -146,9 +158,24 @@ public class SettlementWindow extends ToolWindow {
 
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
-			mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
+			settlement = (Settlement) settlementListBox.getSelectedItem();
+			// 2014-10-25 mkung: obtained settlement object
+			mapPane.setSettlement(settlement);
+			setCurrentSettlement(settlement);
+				//System.out.println("settlement is "+ settlement);
 		}
 
+		// 2014-10-25 mkung: Added Rename button for settlement name change
+		settlementNameChangeBtn = new JButton("Rename");
+		settlementNameChangeBtn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+				renameSettlement();
+			}
+		});
+		widgetPane.add(settlementNameChangeBtn);
+	
+		
+		
 		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
 		zoomLabel = new JLabel(Msg.getString("SettlementWindow.zoom"), JLabel.CENTER); //$NON-NLS-1$
@@ -262,6 +289,37 @@ public class SettlementWindow extends ToolWindow {
 		pack();
 	}
 
+	/**
+	 * Change the name of the Settlement
+	 * @return pop up jDialog
+	 */
+	// 2014-10-25 mkung: Added renameSettlement()
+	private void renameSettlement() {
+		JDialog.setDefaultLookAndFeelDecorated(true);
+		String settlementNewName = null;
+		try {
+			do 	{
+				settlementNewName = JOptionPane
+					.showInputDialog(desktop, 
+							Msg.getString("SettlementWindow.JDialog.changeSettlementName.Input"),
+							Msg.getString("SettlementWindow.JDialog.changeSettlementName.Title"),
+					        JOptionPane.QUESTION_MESSAGE);
+			} while (settlementNewName.equals(null));
+		} catch (Exception e1){
+		    JOptionPane.showInputDialog(desktop, 
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.Input"),
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.Title"),
+			        JOptionPane.QUESTION_MESSAGE);
+		}
+		settlement.changeName(settlementNewName);
+		// desktop.clearDesktop();
+		desktop.closeToolWindow(SettlementWindow.NAME);
+		desktop.openToolWindow(SettlementWindow.NAME);	
+	}
+	
+	public void setCurrentSettlement(Settlement settlement) {
+		this.settlement = settlement;
+	}
 	/**
 	 * Create the labels popup menu.
 	 * @return popup menu.

@@ -43,8 +43,11 @@ implements Serializable {
 	//private double heatRequired;
 	private boolean sufficientHeat;
 	//private static int count;
-		
-  	protected HeatMode heatMode;
+
+	// 2014-10-25 Added heatSource
+	private HeatSource heatSource;
+	
+  	//protected HeatMode heatMode;
 	/**
 	 * Constructor
 	 */
@@ -58,26 +61,26 @@ implements Serializable {
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
 		heatSources = config.getHeatSources(building.getName());
+		this.building = building;
 		
 	}
 
-
 	/**
 	 * Gets the building's power mode.
-	 */
+	 
 	//2014-10-17 mkung: Added heat mode
 	public HeatMode getHeatMode() {
 		return heatMode;
 	}
-
+*/
 	/**
 	 * Sets the building's heat mode.
-	 */
+	
 	//2014-10-17 mkung: Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
 		this.heatMode = heatMode;
 	}
-
+ */
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
@@ -153,23 +156,44 @@ implements Serializable {
 		return sufficientHeat;
 	}
 
-	/**
-	 * Gets the amount of heat generated.
-	 * @return heat generated [in Joules]
+
+	/** 	
+	 * Gets the total amount of heat that this building is capable of producing (regardless malfunctions).
+	 * @return heat generated in kJ/s (heat flow rate)
 	 */
 	// get heat from HeatSource.java
+	//2014-10-24 mkung: added getGeneratedCapacity()
+	// Note: NOT affected by HeatMode.POWER_DOWN
+	public double getGeneratedCapacity() {
+		double result = 0D;	
+			Iterator<HeatSource> i = heatSources.iterator();
+			while (i.hasNext()) {
+				result += i.next().getCurrentHeat(getBuilding());
+			}
+			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
+		return result;
+	}
+	
+	/**
+	 * Gets the total amount of heat that this building is CURRENTLY producing 
+	 * @return heat generated in kJ/s (heat flow rate)
+	 */
+	// get heat from HeatSource.java
+	// //2014-10-24 mkung: Modified getGeneratedHeat() to be TURNED OFF if heatMode = HeatMode.POWER_DOWN
 	public double getGeneratedHeat() {
-		double result = 0D;
+		double result = 0D; 
+		HeatMode heatMode = building.getHeatMode();
 		
 		// Building should only produce heat if it has no current malfunctions.
-		if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+		if (!getBuilding().getMalfunctionManager().hasMalfunction() 
+				&& heatMode == HeatMode.FULL_POWER) {
 			Iterator<HeatSource> i = heatSources.iterator();
 			while (i.hasNext()) {
 				result += i.next().getCurrentHeat(getBuilding());
 			}
 		}
 			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
-		return result;
+		return result; // thus result = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
 	
 	/**
@@ -220,6 +244,15 @@ implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets the heat sources for the building.
+	 * @return list of heat sources.
+	 */
+	public HeatSource getHeatSource() {
+		return heatSource;
+	}
+	
+	
 	/**
 	 * Gets the heat sources for the building.
 	 * @return list of heat sources.
