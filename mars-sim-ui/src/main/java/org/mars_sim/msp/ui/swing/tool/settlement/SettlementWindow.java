@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-10-25
+ * @version 3.06 2014-10-26
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -151,6 +151,9 @@ public class SettlementWindow extends ToolWindow {
 				// Set settlement to draw map for.
 				Settlement settlement = (Settlement) event.getItem();
 				mapPane.setSettlement(settlement);
+				// 2014-10-26 mkung: obtained settlement object
+				setCurrentSettlement(settlement);
+				
 				// Note: should we recenter map each time we change settlements?
 			} 
 		});
@@ -278,7 +281,11 @@ public class SettlementWindow extends ToolWindow {
 		openInfoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				Settlement settlement = mapPane.getSettlement();
+				
 				if (settlement != null) {
+					// 2014-10-26 mkung: obtained settlement object
+					setCurrentSettlement(settlement);
+					
 					getDesktop().openUnitWindow(settlement, false);
 				}
 			}
@@ -288,30 +295,33 @@ public class SettlementWindow extends ToolWindow {
 		// Pack window.
 		pack();
 	}
-
 	/**
-	 * Change the name of the Settlement
+	 * Ask for a new Settlement name
 	 * @return pop up jDialog
 	 */
-	// 2014-10-25 mkung: Added renameSettlement()
+	// 2014-10-26 mkung: Added askNameDialog()
+	public String askNameDialog() {
+		return JOptionPane
+			.showInputDialog(desktop, 
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"),
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"),
+			        JOptionPane.QUESTION_MESSAGE);
+	}
+	/**
+	 * Change and validate the new name of the Settlement
+	 * @return call Dialog popup
+	 */
+	// 2014-10-26 mkung: Modified renameSettlement()
 	private void renameSettlement() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		String settlementNewName = null;
-		try {
-			do 	{
-				settlementNewName = JOptionPane
-					.showInputDialog(desktop, 
-							Msg.getString("SettlementWindow.JDialog.changeSettlementName.Input"),
-							Msg.getString("SettlementWindow.JDialog.changeSettlementName.Title"),
-					        JOptionPane.QUESTION_MESSAGE);
-			} while (settlementNewName.equals(null));
-		} catch (Exception e1){
-		    JOptionPane.showInputDialog(desktop, 
-					Msg.getString("SettlementWindow.JDialog.changeSettlementName.Input"),
-					Msg.getString("SettlementWindow.JDialog.changeSettlementName.Title"),
-			        JOptionPane.QUESTION_MESSAGE);
+		String nameCache = settlement.getName();
+		String settlementNewName = askNameDialog();
+				
+		if (settlementNewName.trim().equals(null) || (settlementNewName.trim().length() == 0))
+			settlementNewName = askNameDialog();
+		else {
+			settlement.changeName(settlementNewName);
 		}
-		settlement.changeName(settlementNewName);
 		// desktop.clearDesktop();
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		desktop.openToolWindow(SettlementWindow.NAME);	
@@ -427,6 +437,9 @@ public class SettlementWindow extends ToolWindow {
 
 			Settlement selectedSettlement = (Settlement) getSelectedItem();
 
+			// 2014-10-26 mkung: obtained settlement object
+			setCurrentSettlement(selectedSettlement);
+			
 			removeAllElements();
 
 			UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -440,6 +453,8 @@ public class SettlementWindow extends ToolWindow {
 
 			if (selectedSettlement != null) {
 				setSelectedItem(selectedSettlement);
+				// 2014-10-26 mkung: obtained settlement object
+				setCurrentSettlement(selectedSettlement);
 			}
 		}
 
