@@ -1,33 +1,27 @@
 /**
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @version 3.07 2014-10-25
+ * @version 3.07 2014-10-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
-import javax.swing.JList;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.HeatSource;
-import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * The BuildingPanelThermal class is a building function panel representing 
- * the heat production and use of a settlement building.
+ * the heat production of a settlement building.
  */
 //TODO: list individual power source in building tab and the power generated from that source
 public class BuildingPanelThermal
@@ -55,19 +49,16 @@ extends BuildingFunctionPanel {
 	/** The heat production cache. */
 	private double productionCache;
 	/** The heat used cache. */
-	//private double usedCache;
 	
 	// 2014-10-25 Added heat sources to the building tab
-	private ThermalGeneration generator;
-	private List<HeatSource> heatSources;
-	private JList list;
-	private HeatSourceType heatSourceType;
+	private ThermalGeneration furnace;
+
 	/**
 	 * Constructor.
 	 * @param The panel for the Heating System
 	 * @param The main desktop
 	 */
-	@SuppressWarnings("unchecked")
+	//2014-10-28 mkung: Modified the structure of the constructor 
 	public BuildingPanelThermal(Building building, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
@@ -75,25 +66,27 @@ extends BuildingFunctionPanel {
 
 		this.building = building;
 		
+		furnace = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
+			
 		// Check if the building is a heat producer.
 		isProducer = building.hasFunction(BuildingFunction.THERMAL_GENERATION);
 
 		// Set the layout
 		if (isProducer) setLayout(new GridLayout(3, 1, 0, 0));
-		else setLayout(new GridLayout(2, 1, 0, 0));
-
-		// Prepare heat status label.
-		heatStatusCache = building.getHeatMode();
-		heatStatusLabel = new JLabel(
-			Msg.getString("BuildingPanelThermal.heatStatus", heatStatusCache.getName()), //$NON-NLS-1$
-			JLabel.CENTER
-		);
-		add(heatStatusLabel);
+		//else setLayout(new GridLayout(, 1, 0, 0));
 
 		// If heat producer, prepare heat producer label.
 		if (isProducer) {
-			ThermalGeneration generator = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
-			productionCache = generator.getGeneratedHeat();		
+			
+			// Prepare heat status label.
+			heatStatusCache = building.getHeatMode();
+			heatStatusLabel = new JLabel(
+				Msg.getString("BuildingPanelThermal.heatStatus", heatStatusCache.getName()), //$NON-NLS-1$
+				JLabel.CENTER
+			);
+			add(heatStatusLabel);	
+				
+			productionCache = furnace.getGeneratedHeat();		
 			productionLabel = new JLabel(	
 				Msg.getString("BuildingPanelThermal.heatProduced", formatter.format(productionCache)), //$NON-NLS-1$
 				JLabel.CENTER
@@ -103,23 +96,24 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Update this panel
+	 * Update this panel with latest Heat Mode status and amount of heat produced
 	 */
-	//TODO: to update the heat flow rate from each individual power source in this building 
-	//2014-10-24 Updated by querying HeatMode again
+	//TODO: still need to extract power that generate heat
+	//2014-10-28 mkung: Modified the structure of update() 
 	public void update() {	
-		// Update heat status if necessary.
-		if (!heatStatusCache.equals(building.getHeatMode())) {
-				//System.out.println("BuildingPanelThermal : update() : new heatMode is "+ heatStatusCache);						
-			heatStatusCache = building.getHeatMode();			
-			heatStatusLabel.setText(Msg.getString("BuildingPanelThermal.heatStatus", heatStatusCache.getName())); //$NON-NLS-1$
-		}
 
 		// Update heat production if necessary.
 		if (isProducer) {
-			// see if productionCache has been changed
-			if (productionCache != generator.getGeneratedHeat()) {
-				productionCache = generator.getGeneratedHeat();
+			
+			// Update heat status if necessary.
+			if (!heatStatusCache.equals(building.getHeatMode())) {
+				heatStatusCache = building.getHeatMode();			
+				heatStatusLabel.setText(Msg.getString("BuildingPanelThermal.heatStatus", heatStatusCache.getName())); //$NON-NLS-1$
+			}
+
+			double newProductionCache = furnace.getGeneratedHeat();
+			if (productionCache != newProductionCache) {
+				productionCache = furnace.getGeneratedHeat();
 				productionLabel.setText(Msg.getString("BuildingPanelThermal.heatProduced", formatter.format(productionCache))); //$NON-NLS-1$
 			}
 		}
