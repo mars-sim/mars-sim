@@ -437,11 +437,11 @@ implements ActionListener {
 		optionsMenu.add(dayNightItem);
 
 		// Create USGS menu item.
-		usgsItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.zoom"), USGSMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
-		usgsItem.addActionListener(this);
+		//usgsItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.zoom"), USGSMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
+		//usgsItem.addActionListener(this);
 		// Disabling this option due to problems with USGS Map-a-planet website.
-		usgsItem.setEnabled(false);
-		optionsMenu.add(usgsItem);
+		//usgsItem.setEnabled(false);
+		//optionsMenu.add(usgsItem);
 
 		// Create vehicle trails menu item.
 		trailItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), map.hasMapLayer(trailLayer)); //$NON-NLS-1$
