@@ -68,12 +68,8 @@ abstract class UnitMapLayer implements MapLayer {
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
             if (displayInfo.isMapDisplayed(unit)) {
-                double angle = 0D;
-                if (USGSMarsMap.TYPE.equals(mapType)) {
-                    angle = USGSMarsMap.HALF_MAP_ANGLE;
-                } else {
-                    angle = CannedMarsMap.HALF_MAP_ANGLE;
-                }
+                double angle = CannedMarsMap.HALF_MAP_ANGLE;
+
                 if (mapCenter.getAngle(unit.getCoordinates()) < angle) {
                     displayUnit(unit, mapCenter, mapType, g);
                 }

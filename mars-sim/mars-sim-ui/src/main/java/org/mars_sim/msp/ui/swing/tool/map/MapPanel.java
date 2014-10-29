@@ -48,7 +48,6 @@ implements Runnable {
 	private String oldMapType;
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
-	private USGSMarsMap usgsMap;
 	private boolean update;
 	
 	public MapPanel() {
@@ -57,7 +56,6 @@ implements Runnable {
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
 		topoMap = new TopoMarsMap(this);
-		usgsMap = new USGSMarsMap(this);
 		surfMap = new SurfMarsMap(this);
 		map = surfMap;
 		mapError = false;
@@ -115,7 +113,6 @@ implements Runnable {
 		this.mapType = mapType;
 		if (SurfMarsMap.TYPE.equals(mapType)) map = surfMap;
 		else if (TopoMarsMap.TYPE.equals(mapType)) map = topoMap;
-		else if (USGSMarsMap.TYPE.equals(mapType)) map = usgsMap;
 		showMap(centerCoords);
 	}
 	
@@ -265,7 +262,6 @@ implements Runnable {
     	map = null;
     	surfMap = null;
     	topoMap = null;
-    	usgsMap = null;
     	update = false;
     }
 }

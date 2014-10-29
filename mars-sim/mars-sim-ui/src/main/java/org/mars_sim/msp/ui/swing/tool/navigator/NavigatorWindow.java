@@ -56,7 +56,6 @@ import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.USGSMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -381,14 +380,6 @@ implements ActionListener {
 				//usgsItem.setEnabled(true);
 			} 
 		}
-		else if (source == usgsItem) {
-			if (usgsItem.isSelected()) map.setMapType(USGSMarsMap.TYPE);
-			else map.setMapType(SurfMarsMap.TYPE);
-			globeNav.setUSGSMap(usgsItem.isSelected());
-			legend.setUSGSMode(usgsItem.isSelected());
-			legend.showMap();
-			topoItem.setEnabled(!usgsItem.isSelected());
-		} 
 		else if (source == dayNightItem) {
 			setMapLayer(dayNightItem.isSelected(), shadingLayer);
 			globeNav.setDayNightTracking(dayNightItem.isSelected());
@@ -530,9 +521,7 @@ implements ActionListener {
 		public void mouseClicked(MouseEvent event) {
 
 			if (map.getCenterLocation() != null) {
-				double rho;
-				if (USGSMarsMap.TYPE.equals(map.getMapType())) rho = USGSMarsMap.PIXEL_RHO;
-				else rho = CannedMarsMap.PIXEL_RHO;
+				double rho = CannedMarsMap.PIXEL_RHO;
 
 				Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
 						(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
@@ -549,7 +538,6 @@ implements ActionListener {
 						Coordinates unitCoords = unit.getCoordinates();
 						double clickRange = unitCoords.getDistance(clickedPosition);
 						double unitClickRange = displayInfo.getMapClickRange();
-						if (USGSMarsMap.TYPE.equals(map.getMapType())) unitClickRange *= .1257D;
 						if (clickRange < unitClickRange) {
 							openUnitWindow(unit);
 							unitsClicked = true;

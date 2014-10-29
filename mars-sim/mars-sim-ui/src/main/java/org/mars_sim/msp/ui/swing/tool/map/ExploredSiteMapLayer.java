@@ -102,9 +102,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 */
 	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, String mapType, 
 			Graphics g) {
-		double angle = 0D;
-		if (USGSMarsMap.TYPE.equals(mapType)) angle = USGSMarsMap.HALF_MAP_ANGLE;
-		else angle = CannedMarsMap.HALF_MAP_ANGLE;
+		double angle = CannedMarsMap.HALF_MAP_ANGLE;
 		
 		if (mapCenter.getAngle(site.getLocation()) < angle) {
 			

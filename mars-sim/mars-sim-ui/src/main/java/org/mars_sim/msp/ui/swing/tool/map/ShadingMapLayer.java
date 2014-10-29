@@ -56,9 +56,7 @@ public class ShadingMapLayer implements MapLayer {
 
         // Coordinates sunDirection = orbitInfo.getSunDirection();
 
-        double rho = 0D;
-        if (USGSMarsMap.TYPE.equals(mapType)) rho = USGSMarsMap.PIXEL_RHO;
-        else rho = CannedMarsMap.PIXEL_RHO;
+        double rho = CannedMarsMap.PIXEL_RHO;
 
         boolean nightTime = true;
         boolean dayTime = true;

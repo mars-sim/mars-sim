@@ -49,9 +49,7 @@ implements MapLayer {
 		Iterator<Landmark> i = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
 		while (i.hasNext()) {
 			Landmark landmark = (Landmark) i.next();
-			double angle = 0D;
-			if (USGSMarsMap.TYPE.equals(mapType)) angle = USGSMarsMap.HALF_MAP_ANGLE;
-			else angle = CannedMarsMap.HALF_MAP_ANGLE;
+			double angle = CannedMarsMap.HALF_MAP_ANGLE;
 			if (mapCenter.getAngle(landmark.getLandmarkLocation()) < angle)
 				displayLandmark(landmark, mapCenter, mapType, g);
 		}

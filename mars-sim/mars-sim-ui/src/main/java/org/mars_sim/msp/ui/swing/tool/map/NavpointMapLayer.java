@@ -113,9 +113,7 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param g graphics context of the map display.
 	 */
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
-		double angle = 0D;
-		if (USGSMarsMap.TYPE.equals(mapType)) angle = USGSMarsMap.HALF_MAP_ANGLE;
-		else angle = CannedMarsMap.HALF_MAP_ANGLE;
+		double angle = CannedMarsMap.HALF_MAP_ANGLE;
 		
 		if (mapCenter.getAngle(navpoint.getLocation()) < angle) {
 			

@@ -34,9 +34,7 @@ public class MapUtils {
      */
     public static IntPoint getRectPosition(Coordinates coords, Coordinates mapCenter, String mapType) {
 
-        int mapHeight = 0;        
-        if (USGSMarsMap.TYPE.equals(mapType)) mapHeight = USGSMarsMap.MAP_HEIGHT;
-        else mapHeight = CannedMarsMap.MAP_HEIGHT;
+        int mapHeight = CannedMarsMap.MAP_HEIGHT;
         
         double rho = mapHeight / Math.PI;
         int halfMap = mapHeight / 2;
@@ -47,9 +45,7 @@ public class MapUtils {
     }
     
     public static int getPixelDistance(double distance, String mapType) {
-        int mapWidth = 0;        
-        if (USGSMarsMap.TYPE.equals(mapType)) mapWidth = USGSMarsMap.MAP_WIDTH;
-        else mapWidth = CannedMarsMap.MAP_WIDTH;
+        int mapWidth = CannedMarsMap.MAP_WIDTH;
         double distancePerPixel = Mars.MARS_CIRCUMFERENCE / mapWidth;
         return (int) Math.round(distance / distancePerPixel);
     }

@@ -65,9 +65,7 @@ public class MineralMapLayer implements MapLayer {
 			int centerX = 150;
 			int centerY = 150;
         
-			double rho = 0D;
-			if (USGSMarsMap.TYPE.equals(mapType)) rho = USGSMarsMap.PIXEL_RHO;
-			else rho = CannedMarsMap.PIXEL_RHO;
+			double rho = CannedMarsMap.PIXEL_RHO;
         
 			MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 			java.util.Map<String, Color> mineralColors = getMineralColors();
