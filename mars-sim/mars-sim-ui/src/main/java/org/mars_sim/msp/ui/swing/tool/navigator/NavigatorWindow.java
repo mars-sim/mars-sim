@@ -108,8 +108,6 @@ implements ActionListener {
 	private JCheckBoxMenuItem unitLabelItem;
 	/** Day/night tracking menu item. */
 	private JCheckBoxMenuItem dayNightItem;
-	/** Show USGS map mode menu item. */
-	private JCheckBoxMenuItem usgsItem;
 	/** Show vehicle trails menu item. */
 	private JCheckBoxMenuItem trailItem;
 	/** Show landmarks menu item. */
@@ -371,13 +369,11 @@ implements ActionListener {
 				map.setMapType(TopoMarsMap.TYPE);
 				globeNav.showTopo();
 				legend.showColor();
-				//usgsItem.setEnabled(false);
 			}	 
 			else {
 				map.setMapType(SurfMarsMap.TYPE);
 				globeNav.showSurf();
 				legend.showMap();
-				//usgsItem.setEnabled(true);
 			} 
 		}
 		else if (source == dayNightItem) {
@@ -426,13 +422,6 @@ implements ActionListener {
 		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.dayNightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
 		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
-
-		// Create USGS menu item.
-		//usgsItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.zoom"), USGSMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
-		//usgsItem.addActionListener(this);
-		// Disabling this option due to problems with USGS Map-a-planet website.
-		//usgsItem.setEnabled(false);
-		//optionsMenu.add(usgsItem);
 
 		// Create vehicle trails menu item.
 		trailItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), map.hasMapLayer(trailLayer)); //$NON-NLS-1$
