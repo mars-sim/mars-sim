@@ -64,9 +64,7 @@ public class VehicleTrailMapLayer implements MapLayer {
     private void displayTrail(Vehicle vehicle, Coordinates mapCenter, String mapType, Graphics g) {
             
         // Get map angle.
-        double angle = 0D;
-        if (USGSMarsMap.TYPE.equals(mapType)) angle = USGSMarsMap.HALF_MAP_ANGLE;
-        else angle = CannedMarsMap.HALF_MAP_ANGLE;
+        double angle = CannedMarsMap.HALF_MAP_ANGLE;
             
         // Draw trail.
         IntPoint oldSpot = null;
