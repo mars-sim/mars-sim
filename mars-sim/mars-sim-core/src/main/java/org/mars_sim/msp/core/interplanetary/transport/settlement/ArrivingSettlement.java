@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.06 2014-04-23
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -244,6 +246,7 @@ implements Transportable, Serializable {
 	public void performArrival() {
 		// Create new settlement.
 		Settlement newSettlement = createNewSettlement();
+			//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
 
 		// Create new immigrants with arriving settlement.
 		createNewImmigrants(newSettlement);
@@ -268,7 +271,12 @@ implements Transportable, Serializable {
 
 		// Create new settlement with unit manager.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		Settlement newSettlement = new Settlement(name, template, landingLocation, populationNum);
+		// 2014-10-29 Computed sid
+		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+		int count = settlements.size();
+		int sid = count + 1;						
+			//System.out.println("ArrivingSettlement.java : createNewSettlement() : sid is " + sid);
+		Settlement newSettlement = new Settlement(name, sid, template, landingLocation, populationNum);
 		unitManager.addUnit(newSettlement);
 
 		// Add new settlement to credit manager.

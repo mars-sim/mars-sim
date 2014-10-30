@@ -749,7 +749,7 @@ implements Serializable, Comparable<ScientificStudy> {
 
 	/**
 	 * Fire a scientific study update event.
-	 * @param type the update type.
+	 * @param buildingType the update type.
 	 * @param researcher the researcher related to the event or null if none.
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {

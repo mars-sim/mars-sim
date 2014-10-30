@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 
@@ -77,7 +77,11 @@ implements Serializable {
 
     // Data members
     private Settlement settlement; // The manager's settlement.
-    private List<Building> buildings; // The settlement's buildings.
+    private List<Building> buildings; 
+    // 2014-10-29 Added buildingsNickNames
+    // A list of the settlement's buildings with their nicknames.
+    private List<Building> buildingsNickNames; 
+    
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private MarsClock lastBuildingValuesUpdateTime;
@@ -111,6 +115,7 @@ implements Serializable {
                 addBuilding(template, false);
             }
         }
+
 
         // Initialize building value caches.
         buildingValuesNewCache = new HashMap<String, Double>();
@@ -183,6 +188,17 @@ implements Serializable {
     }
 
     /**
+     * Gets the settlement's collection of buildings (in their nicknames)
+     *
+     * @return collection of buildings (in their nicknames)
+     */
+    public List<Building> getBuildingsNickNames() {
+        return new ArrayList<Building>(buildingsNickNames);
+    }
+
+    
+    
+    /**
      * Checks if the settlement contains a given building.
      * @param building the building.
      * @return true if settlement contains building.
@@ -253,20 +269,26 @@ implements Serializable {
     }
 
     /**
-     * Gets the buildings in the settlement with a given building name.
-     * @param buildingName the building name.
+     * Gets the buildings in the settlement with a given building type.
+     * @param buildingType the building type.
      * @return list of buildings.
      */
-    public List<Building> getBuildingsOfName(String buildingName) {
-        List<Building> nameBuildings = new ArrayList<Building>();
+    // 2014-10-27: Changed method name from getBuildingsOfName() to getBuildingsOfSameType()
+    // Called by Resupply.java and BuildingConstructionMission.java
+    // for putting new building next to the same building "type".
+    public List<Building> getBuildingsOfSameType(String buildingType) {
+        List<Building> typeOfBuildings = new ArrayList<Building>();
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (building.getName().equalsIgnoreCase(buildingName)){
-                nameBuildings.add(building);
+            // WARNING: do NOT change getName() below to getNickName()
+            // It is for comparing buildingType
+            if (building.getName().equalsIgnoreCase(buildingType)){
+            	typeOfBuildings.add(building);  
+                	//System.out.println("BuildingManager.java : getBuildingsOfSameType() : buildingType is " +buildingType);
             }
         }
-        return nameBuildings;
+        return typeOfBuildings;
     }
 
     /**
@@ -797,7 +819,7 @@ implements Serializable {
             // Multiply value.
             result *= 1000D;
 
-            // TODO: mkung: Subtract heating costs per Sol???
+            // TODO: mkung to subtract heating costs per Sol???
             
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingName);
@@ -841,14 +863,17 @@ implements Serializable {
      * @return building value (VP).
      * @throws Exception if error getting building value.
      */
+    // TODO: change getName() to getNickName() ?
     public double getBuildingValue(Building building) {
         double result = 0D;
-
+        // 2014-10-29 TODO: Should we change getName() to getNickName()?
         result = getBuildingValue(building.getName(), false);
-
+        
         // Modify building value by its wear condition.
         double wearCondition = building.getMalfunctionManager().getWearCondition();
         result *= (wearCondition / 100D) * .75D + .25D;
+
+        logger.info("getBuildingValue() : value is " + result);
 
         return result;
     }
@@ -902,11 +927,13 @@ implements Serializable {
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
+            // 2014-10-29 TODO: determine if getName() needed to be changed to getNickName()
             ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(building.getName());
             if (buildingStageInfo != null) {
                 ConstructionStageInfo frameStageInfo = ConstructionUtil.getPrerequisiteStage(buildingStageInfo);
                 if (frameStageInfo != null) {
-                    if (frameStageInfo.getName().equals(frameName)) {
+                    // 2014-10-29 TODO: determine if getName() needed to be changed to getNickName()
+                	if (frameStageInfo.getName().equals(frameName)) {
                         result = true;
                         break;
                     }
@@ -951,6 +978,26 @@ implements Serializable {
 
         return largestID + 1;
     }
+    /**
+     * Gets a unique nick name for a new building
+     * @return a unique nick name 
+     */
+    // 2014-10-29 Added getBuildingNickName()
+    public String getBuildingNickName(String buildingType) {
+      	int bid = getUniqueBuildingIDNumber();
+    	int sid = getSettlement().getID();    	
+    	String settlementID = getCharForNumber(sid + 1);
+		String buildingID = bid + "";		
+		String buildingNickName = buildingType + " " + settlementID + buildingID;
+    	return buildingNickName;
+    }
+    
+	// 2014-10-29 Added getCharForNumber()
+	private String getCharForNumber(int i) {
+		// NOTE: i must be > 1, if i = 0, return null
+	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+	}
+	
 
     /**
      * Prepare object for garbage collection.

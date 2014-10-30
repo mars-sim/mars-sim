@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.07 2014-09-01
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -260,7 +260,7 @@ implements Serializable, Transportable {
     @Override
     public String toString() {
         StringBuffer buff = new StringBuffer();
-        buff.append(getSettlement().getName());
+        buff.append(getSettlement().getName());   
         buff.append(": ");
         buff.append(getArrivalDate().getDateString());
         return buff.toString();
@@ -342,7 +342,7 @@ implements Serializable, Transportable {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
                 
-                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), width, 
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), template.getNickName(), width, 
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
                 
                 buildingManager.addBuilding(correctedTemplate,  true);
@@ -484,7 +484,7 @@ implements Serializable, Transportable {
         }
         else {
             // Try to put building next to the same building type.
-            List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfName(buildingType);
+            List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
             Collections.shuffle(sameBuildings);
             Iterator<Building> j = sameBuildings.iterator();
             while (j.hasNext()) {
@@ -528,7 +528,10 @@ implements Serializable, Transportable {
                 
                 // If no buildings at settlement, position new building at 0,0 with random facing.
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-                newPosition = new BuildingTemplate(buildingID, buildingType, width, length, 0D, 0D, 
+                // TODO : 2014-10-29 Added buildingNickName
+                String buildingNickName = settlement.getBuildingManager().getBuildingNickName(buildingType);                
+                
+                newPosition = new BuildingTemplate(buildingID, buildingType, buildingNickName, width, length, 0D, 0D, 
                         RandomUtil.getRandomDouble(360D));
             }
         }
@@ -796,8 +799,15 @@ implements Serializable, Transportable {
             if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
-                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-                newPosition = new BuildingTemplate(buildingID, newBuildingType, width, length, rectCenterX, 
+               // 2014-10-29 Added a dummy newBuildingType parameter
+                // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
+                int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+            	int sid = settlement.getID();
+            	System.out.println("Resupply.java : positionNextToBuilding() : sid/getID() is "+ sid); 
+                String settlementID = getCharForNumber(sid+1);
+				String buildingID = bid + "";					
+				String buildingNickName = newBuildingType + " " + settlementID + buildingID;
+                newPosition = new BuildingTemplate(bid, newBuildingType, buildingNickName, width, length, rectCenterX, 
                         rectCenterY, rectRotation);
                 break;
             }
@@ -805,6 +815,19 @@ implements Serializable, Transportable {
         
         return newPosition;
     }
+    
+	/**
+	 * Maps a number to an alphabet
+	 * @param a number
+	 * @return a String
+	 */
+	// 2014-10-29 Added getCharForNumber()
+	private String getCharForNumber(int i) {
+		// NOTE: i must be > 1, if i = 0, return null
+	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+	}
+	
+    
     
     /**
      * Determine the position and length (for variable length) for a connector building between two existing
@@ -870,8 +893,17 @@ implements Serializable, Transportable {
             double centerY = (p1.getY() + p2.getY()) / 2D;
             double newLength = p1.distance(p2);
             double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
-            int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-            newPosition = new BuildingTemplate(buildingID, newBuildingType, width, newLength, centerX, 
+ 
+            // Set the new building here.
+            // 2014-10-29 Added a dummy newBuildingType parameter
+             // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
+            int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+         	int sid = settlement.getID();
+        	System.out.println("Resupply.java : positionConnectorBetweenTwoBuildings : sid/getID() is "+ sid); 
+            String settlementID = getCharForNumber(sid+1);
+			String buildingID = bid + "";					
+			String buildingNickName = newBuildingType + " " + settlementID + buildingID;
+            newPosition = new BuildingTemplate(bid, newBuildingType, buildingNickName, width, newLength, centerX, 
                     centerY, facingDegrees);
         }
         

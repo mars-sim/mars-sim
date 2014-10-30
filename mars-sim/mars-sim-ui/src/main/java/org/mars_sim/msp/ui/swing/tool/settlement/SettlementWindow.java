@@ -58,10 +58,9 @@ public class SettlementWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	//private JLabel settlementNameLabel;
-	private String settlementNewName;
 	private JButton settlementNameChangeBtn;
 	private Settlement settlement;
+	
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	
@@ -314,7 +313,7 @@ public class SettlementWindow extends ToolWindow {
 	// 2014-10-26 mkung: Modified renameSettlement()
 	private void renameSettlement() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		String nameCache = settlement.getName();
+		//String nameCache = settlement.getType();
 		String settlementNewName = askNameDialog();
 				
 		if (settlementNewName.trim().equals(null) || (settlementNewName.trim().length() == 0))

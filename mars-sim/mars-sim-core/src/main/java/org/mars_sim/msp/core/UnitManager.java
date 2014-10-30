@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -311,7 +311,9 @@ implements Serializable {
 
                 int populationNumber = config.getInitialSettlementPopulationNumber(x);
 
-                addUnit(new Settlement(name, template, location, populationNumber));
+                // 2014-10-29 Added settlement's id called sid
+                int sid = 0; // for the initial settlement
+                addUnit(new Settlement(name, sid, template, location, populationNumber));
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.06 2014-02-09
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -119,7 +119,11 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				Building building = i.next();
 				drawLabel(
-					g2d, building.getName(), building.getXLocation(), building.getYLocation(), 
+			// TODO: Need to change getName() to getNickName()
+			// but when doing resupply mission, the change will cause "Null string passed to TextLayout constructor"
+			// with getName(), the label will show only buildingType, not building's nickName
+			// five more .getName() in getConstructionLabel()
+						g2d, building.getNickName(), building.getXLocation(), building.getYLocation(), 
 					BUILDING_LABEL_COLOR, BUILDING_LABEL_OUTLINE_COLOR
 				);
 			}

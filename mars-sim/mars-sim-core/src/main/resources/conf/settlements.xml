@@ -10,7 +10,7 @@
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
 		<!-- See http://www.nw.net/mars/ for more info. -->
 		<!-- default-population: the default population capacity for the template. -->
-		<template name="Mars Direct Base (phase 1)" default-population="4">
+		<template id="0" name="Mars Direct Base (phase 1)" default-population="4">
 		
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
@@ -87,7 +87,7 @@
 			</resupply>
 		</template>
 	
-		<template name="Mars Direct Base (phase 2)" default-population="8">
+		<template id="1" name="Mars Direct Base (phase 2)" default-population="8">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -151,7 +151,7 @@
 			</resupply>
 		</template>
 		
-		<template name="Mars Direct Base (phase 3)" default-population="12">
+		<template id="2" name="Mars Direct Base (phase 3)" default-population="12">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0"> 
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -242,7 +242,7 @@
 			</resupply>
 		</template>
 		
-		<template name="Alpha Base (MD phase 4)" default-population="24">
+		<template id="3" name="Alpha Base (MD phase 4)" default-population="24">
 			
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0"> 
 				<connection-list>
@@ -431,7 +431,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 		
-		<template name="Trading Outpost" default-population="4">
+		<template id="4" name="Trading Outpost" default-population="4">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -558,7 +558,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 		
-		<template name="Mining Outpost" default-population="4">
+		<template id="5" name="Mining Outpost" default-population="4">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -700,7 +700,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 
-        <template name="Alpha Basis" default-population="12">
+        <template id="6" name="Alpha Basis" default-population="12">
             <building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0"> 
                 <connection-list>
                     <connection id="1" x-location="0.0" y-location="4.5" />

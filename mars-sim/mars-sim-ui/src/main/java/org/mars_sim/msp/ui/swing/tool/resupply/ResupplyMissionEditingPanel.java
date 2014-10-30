@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyMissionEditingPanel.java
- * @version 3.06 2014-04-17
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -538,8 +538,12 @@ extends TransportItemEditingPanel {
 				if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
 					int num = item.number.intValue();
 					for (int x = 0; x < num; x++) {
-						String type = item.type.trim();
-						BuildingTemplate template = new BuildingTemplate(0, type, -1D, -1D, 
+						String type = item.type.trim();						
+					   // 2014-10-29 Added a dummy type parameter
+		                // TODO: currently building id = 0 
+						// May need to assemble the buildingNickName 
+						//by obtaining the next building id and settlement id
+						BuildingTemplate template = new BuildingTemplate(0, type, type, -1D, -1D, 
 								-0D, 0D, 0D);
 						newBuildings.add(template);
 					}
@@ -653,8 +657,12 @@ extends TransportItemEditingPanel {
 				if (num > existingNum) {
 					// Add new building templates.
 					int diff = num - existingNum;
-					for (int x = 0; x < diff; x++) {
-						newBuildings.add(new BuildingTemplate(0, type, -1D, -1D, -0D, 0D, 0D));
+					for (int x = 0; x < diff; x++) {				
+						   // 2014-10-29 Added a dummy type parameter
+			                // TODO: currently building id = 0 
+							// May need to assemble the buildingNickName 
+							//by obtaining the next building id and settlement id
+						newBuildings.add(new BuildingTemplate(0, type, type, -1D, -1D, -0D, 0D, 0D));
 					}
 				}
 				else if (num < existingNum) {

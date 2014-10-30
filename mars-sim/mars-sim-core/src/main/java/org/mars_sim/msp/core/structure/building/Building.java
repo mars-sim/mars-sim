@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-10-25
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-//import java.util.logging.Logger;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -67,7 +67,7 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	//private static Logger logger = Logger.getLogger(Building.class.getName());
+	private static Logger logger = Logger.getLogger(Building.class.getName());
 	 
 	DecimalFormat fmt = new DecimalFormat("###.####"); 
 	
@@ -78,9 +78,7 @@ LocalBoundedObject, InsidePathLocation {
 	private static final double BASE_MAINTENANCE_TIME = 50D;
 
     // Data members
-	protected BuildingManager manager; 
-	protected int id;
-	protected String name;
+	protected BuildingManager manager; 	
 	protected double width;
 	protected double length;
 	protected int baseLevel;
@@ -90,56 +88,57 @@ LocalBoundedObject, InsidePathLocation {
 	protected PowerMode powerMode;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	
+	protected MalfunctionManager malfunctionManager;
+	protected List<Function> functions;
+	protected int id;
 
-	//2014-10-23 mkung: Modified thermal control parameters in the building */
+	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
-	// Specific Heat Capacity = 4.0 for a typical U.S. house
+	// Specific Heat Capacity = 4.0 for a typical house
 	protected double SHC = 4.0; 
+	// Building Loss Coefficient = 1.0 for a typical house
 	protected double BLC = 1.0; 
 	protected double floorArea;
 	protected double currentTemperature;
 	protected double deltaTemperature ;
     private static final double INITIAL_TEMPERATURE = 22.5D;
-     
+	private static int count;
+    
+	// 2014-10-28  changed variable's name from "name" to "buildingType"
+	protected String buildingType;
+	protected String nickName;
 	protected ThermalGeneration furnace;
-	//private static int count;
+
 	
-	private LifeSupport lifeSupport ;
-	
-	
-	protected MalfunctionManager malfunctionManager;
-	protected List<Function> functions;
-	
-	/**
+	/** Constructor 1
 	 * Constructs a Building object.
 	 * @param template the building template.
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
+	//2014-10-27  Added getNickName() 
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getType(), template.getWidth(), 
+		this(template.getID(), template.getType(), template.getNickName(), template.getWidth(), 
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
-				template.getFacing(), manager);
-		//count++;
-		//logger.info("constructor1 : count is " + count);
+				template.getFacing(), manager);		
 		
 		this.currentTemperature = INITIAL_TEMPERATURE;
-
-		// Do I need this?
+		// TODO: what do we need this for?
+		LifeSupport lifeSupport;
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
-			 lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			
+			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
 		heatMode = HeatMode.POWER_DOWN;
-
+		count++;
+		//Logger.info("constructor 1 : count is " + count);
 	}
 
-	/**
+	/** Constructor 2
 	 * Constructs a Building object.
 	 * @param id the building's unique ID number.
-	 * @param name the building's name.
+	 * @param buildingType the building Type.
+	 * @param nickName the building's nick name.	  
 	 * @param width the width (meters) of the building or -1 if not set.
 	 * @param length the length (meters) of the building or -1 if not set.
 	 * @param xLoc the x location of the building in the settlement.
@@ -148,22 +147,23 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String name, double width, double length, 
+	//2014-10-27  changed variable "name" to "buildingType"
+	public Building(int id, String buildingType, String nickName, double width, double length, 
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 		//logger.info("constructor2 : purple width is " + width);	
 		//logger.info("constructor2 : purple length is " + length);	
 		//logger.info("constructor2 : blue width is " + this.width);
 		//logger.info("constructor2 : blue length is " + this.length);
 		this.id = id;
-		this.name = name;
+		this.buildingType = buildingType;
+		this.nickName = nickName;
 		this.manager = manager;
 		powerMode = PowerMode.FULL_POWER;
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-
-		//count++;
-			//logger.info("constructor2 : count is " + count);
+		count++;
+		//logger.info("constructor2 : count is " + count);
 	
 		this.currentTemperature = INITIAL_TEMPERATURE;
 		heatMode = HeatMode.POWER_DOWN;
@@ -174,34 +174,34 @@ LocalBoundedObject, InsidePathLocation {
 			this.width = width;
 			}
 		else {
-			this.width = config.getWidth(name);
+			this.width = config.getWidth(buildingType);
 			}
 		if (this.width <= 0D) {
-			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + name);
+			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
 		}
 
 		if (length != -1D) {
 			this.length = length;
 		}
 		else {
-			this.length = config.getLength(name);
+			this.length = config.getLength(buildingType);
 		}
 		if (this.length <= 0D) {
-			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + name);
+			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
 
-		baseLevel = config.getBaseLevel(name);
+		baseLevel = config.getBaseLevel(buildingType);
 		
 		// Get the building's functions
 		functions = determineFunctions();
 
 		// Get base power requirements.
-		basePowerRequirement = config.getBasePowerRequirement(name);
-		basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
+		basePowerRequirement = config.getBasePowerRequirement(buildingType);
+		basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(buildingType);
 
-		//2014-10-17 mkung: Added base heat requirements.
-		//baseHeatRequirement = config.getBaseHeatRequirement(name);
-		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(name);
+		// TODO: determine the benefit of adding base heat requirements.
+		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
+		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
 
 		// Determine total maintenance time.
 		double totalMaintenanceTime = BASE_MAINTENANCE_TIME;
@@ -223,17 +223,27 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 		}
-		//logger.info("constructor2 : end of constructor2");
+		//logger.info("constructor 2 : end of constructor 2");
 	}
 
+	//Constructor 3
 	/** Empty constructor. */
 	protected Building() {}
 
 	/**
+	 * Sets building nickname
+	 * @return none
+	 */
+	// 2014-10-28  Added setBuildingNickName()
+    public void setBuildingNickName(String nickName) {
+        this.nickName = nickName;
+    }
+    
+	/**
      * Gets the initial temperature of a building.
      * @return temperature (deg C)
      */
-	//2014-10-23 mkung: Added getInitialTemperature()
+	//2014-10-23  Added getInitialTemperature()
     public double getInitialTemperature() {
             return INITIAL_TEMPERATURE;
     }
@@ -242,10 +252,11 @@ LocalBoundedObject, InsidePathLocation {
      * Gets the temperature of a building.
      * @return temperature (deg C)
      */
-	//2014-10-17 mkung: Added getTemperature()
+	//2014-10-17  Added getTemperature()
     public double getTemperature() {
             return currentTemperature;
     }
+    
     /**
      * Sets the current temperature of a building due to heat gain
      * @return temperature (deg C)
@@ -253,7 +264,8 @@ LocalBoundedObject, InsidePathLocation {
     public void setTemperature(double t) {
         currentTemperature = t;
     }
-	//2014-10-17 mkung: Added getSHC() and getBLC()
+    
+	//2014-10-17  Added getSHC() and getBLC()
     public double getSHC() {
     	return SHC;
     }
@@ -274,77 +286,77 @@ LocalBoundedObject, InsidePathLocation {
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Set power generation function.
-		if (config.hasPowerGeneration(name)) buildingFunctions.add(new PowerGeneration(this));
+		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
 		//2014-10-17 mkung 
 		// Added thermal generation function.
-		if (config.hasThermalGeneration(name)) buildingFunctions.add(new ThermalGeneration(this));
+		if (config.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
 
 		// Set life support function.
-		if (config.hasLifeSupport(name)) buildingFunctions.add(new LifeSupport(this));
+		if (config.hasLifeSupport(buildingType)) buildingFunctions.add(new LifeSupport(this));
 
 		// Set living accommodations function.
-		if (config.hasLivingAccommodations(name)) buildingFunctions.add(new LivingAccommodations(this));
+		if (config.hasLivingAccommodations(buildingType)) buildingFunctions.add(new LivingAccommodations(this));
 
 		// Set research function.
-		if (config.hasResearchLab(name)) buildingFunctions.add(new Research(this));
+		if (config.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
 
 		// Set communication function.
-		if (config.hasCommunication(name)) buildingFunctions.add(new Communication(this));
+		if (config.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
 
 		// Set EVA function.
-		if (config.hasEVA(name)) buildingFunctions.add(new EVA(this));
+		if (config.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
 
 		// Set recreation function.
-		if (config.hasRecreation(name)) buildingFunctions.add(new Recreation(this));
+		if (config.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
 
 		// Set dining function.
-		if (config.hasDining(name)) buildingFunctions.add(new Dining(this));
+		if (config.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
 
 		// Set resource processing function.
-		if (config.hasResourceProcessing(name)) buildingFunctions.add(new ResourceProcessing(this));
+		if (config.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
 
 		// Set storage function.
-		if (config.hasStorage(name)) buildingFunctions.add(new Storage(this));
+		if (config.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
 
 		// Set medical care function.
-		if (config.hasMedicalCare(name)) buildingFunctions.add(new MedicalCare(this));
+		if (config.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
 
 		// Set farming function.
-		if (config.hasFarming(name)) buildingFunctions.add(new Farming(this));
+		if (config.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
 
 		// Set exercise function.
-		if (config.hasExercise(name)) buildingFunctions.add(new Exercise(this));
+		if (config.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
 
 		// Set ground vehicle maintenance function.
-		if (config.hasGroundVehicleMaintenance(name)) buildingFunctions.add(new GroundVehicleMaintenance(this));
+		if (config.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
 
 		// Set cooking function.
-		if (config.hasCooking(name)) buildingFunctions.add(new Cooking(this));
+		if (config.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
 
 		// Set manufacture function.
-		if (config.hasManufacture(name)) buildingFunctions.add(new Manufacture(this));
+		if (config.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
 
 		// Set power storage function.
-		if (config.hasPowerStorage(name)) buildingFunctions.add(new PowerStorage(this));
+		if (config.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));
 
-		//2014-10-17 mkung: Added and imported ThermalStorage
+		//2014-10-17  Added and imported ThermalStorage
 		// Set thermal storage function.
-		if (config.hasThermalStorage(name)) buildingFunctions.add(new ThermalStorage(this));
+		if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
 		
 		// Set astronomical observation function
-		if (config.hasAstronomicalObservation(name)) buildingFunctions.add(new AstronomicalObservation(this));
+		if (config.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
 
 		// Set management function.
-		if (config.hasManagement(name)) buildingFunctions.add(new Management(this));
+		if (config.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
 
 		// Set Earth return function.
-		if (config.hasEarthReturn(name)) buildingFunctions.add(new EarthReturn(this));
+		if (config.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
 
 		// Set building connection function.
-		if (config.hasBuildingConnection(name)) buildingFunctions.add(new BuildingConnection(this));
+		if (config.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
 
 		// Set administration function.
-		if (config.hasAdministration(name)) buildingFunctions.add(new Administration(this));
+		if (config.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
 		
 		return buildingFunctions;
 	}
@@ -377,7 +389,7 @@ LocalBoundedObject, InsidePathLocation {
 			if (function.getFunction() == functionType) result = function;
 		}
 		if (result != null) return result;
-		else throw new IllegalStateException(name + " does not have " + functionType);
+		else throw new IllegalStateException(buildingType + " does not have " + functionType);
 	}
 
 	/**
@@ -408,26 +420,48 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	/**
-	 * Gets the building's name.
-	 * @return building's name as a String.
-	 * 2014-10-25 mkung: Called by TabPanelBuilding.java for building name change
+	 * Sets the building's nickName
+	 * @return none
+	 * 2014-10-27  Called by TabPanelBuilding.java for building nickname change
 	 */
-	public void setName(String name) {
-		//System.out.println("input name is " + name);
-		this.name = name;
-		//System.out.println("new name is " + this.name);
+	public void setNickName(String nickName) {
+		//System.out.println("input nickName is " + nickName);
+		this.nickName = nickName;
+		//System.out.println("new nickName is " + this.nickName);
 	}
 	/**
-	 * Gets the building's name.
-	 * @return building's name as a String.
+	 * Gets the building's nickName
+	 * @return building's nickName as a String
+	 * 2014-10-27  Called by TabPanelBuilding.java for building nickname change
+	 */
+	public String getNickName() {
+		return nickName;
+	}
+	
+	/**
+	 * Gets the building type.
+	 * @return building type as a String.
 	 * @deprecated
 	 * TODO internationalize building names for display in user interface.
 	 */
-	@Override
+	// 2014-10-28 change data field from "name" to "buildingType"  
+	// TODO: change getName() to getBuildingType()
+	// getName() has 120 occurrences in MSP 
+	// will retain its name for the time being
 	public String getName() {
-		return name;
+		return buildingType;
 	}
-
+	/**
+	 * Sets the building's type (formerly name)
+	 * @return none
+	 * "buildingType" was formerly "name"
+	 * 2014-10-28  Called by TabPanelBuilding.java for generating a building list
+	 */
+	public void setType(String type) {
+		System.out.println("input nickName is " + nickName);
+		this.buildingType = type;
+		System.out.println("new buildingType is " + this.buildingType);
+	}
 	@Override
 	public double getWidth() {
 		return width;
@@ -507,7 +541,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the heat this building currently requires for full-power mode.
 	 * @return heat in kJ/s.
 	 */
-	//2014-10-17 mkung: Added heat mode
+	//2014-10-17  Added heat mode
 	public double getFullHeatRequired()  {
 		double result = baseHeatRequirement;
 
@@ -522,7 +556,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the heat the building requires for power-down mode.
 	 * @return heat in kJ/s.
 	*/
-	//2014-10-17 mkung: Added heat mode
+	//2014-10-17  Added heat mode
 	public double getPoweredDownHeatRequired() {
 		double result = basePowerDownHeatRequirement;
 
@@ -536,7 +570,7 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Gets the building's power mode.
 	 */
-	//2014-10-17 mkung: Added heat mode
+	//2014-10-17  Added heat mode
 	public HeatMode getHeatMode() {
 		return heatMode;
 	}
@@ -544,7 +578,7 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Sets the building's heat mode.
 	 */
-	//2014-10-17 mkung: Added heat mode
+	//2014-10-17  Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
 		this.heatMode = heatMode;
 	}
@@ -610,10 +644,13 @@ LocalBoundedObject, InsidePathLocation {
 
 	/**
 	 * String representation of this building.
-	 * @return The settlement and building name.
+	 * @return The settlement and building's nickName.
 	 */
+	// TODO: To prevent crash, check which classes still rely on toString() to return buildingType
+	// 2014-10-29 change buildingType to nickName
 	public String toString() {
-		return name;
+//		return buildingType;
+		return nickName;	
 	}
 
 	/**
@@ -622,8 +659,9 @@ LocalBoundedObject, InsidePathLocation {
 	 * @return a negative integer, zero, or a positive integer as this object is less than, 
 	 * equal to, or greater than the specified object.
 	 */
+	// TODO: find out if we should use nickName vs. buildingType 
 	public int compareTo(Building o) {
-		return name.compareToIgnoreCase(o.name);
+		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
 	
 	
@@ -646,7 +684,7 @@ LocalBoundedObject, InsidePathLocation {
 		malfunctionManager.timePassing(time);
 		// If powered up, active time passing.
 		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);	
-		//2014-10-17 mkung: Added HeatMode
+		//2014-10-17  Added HeatMode
 		// If heat is on, active time passing.
 		if (heatMode == HeatMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
 
@@ -658,7 +696,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		name = null;
+		buildingType = null;
 		manager = null;
 		powerMode = null;
 		heatMode = null;

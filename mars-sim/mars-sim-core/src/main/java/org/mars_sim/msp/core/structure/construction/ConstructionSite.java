@@ -326,8 +326,11 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
     public Building createBuilding(BuildingManager manager) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
         
+        // 2014-10-27 mkung: Added uniqueName 
         int id = manager.getUniqueBuildingIDNumber();
-        Building newBuilding = new Building(id, buildingStage.getInfo().getName(), width, length, 
+        String buildingType = buildingStage.getInfo().getName();
+        String uniqueName = manager.getBuildingNickName(buildingType);
+        Building newBuilding = new Building(id, buildingType, uniqueName, width, length, 
                 xLocation, yLocation, facing, manager);
         manager.addBuilding(newBuilding, true);
         
