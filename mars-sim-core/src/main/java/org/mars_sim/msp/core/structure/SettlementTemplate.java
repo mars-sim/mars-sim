@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+//import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -19,12 +20,17 @@ import org.mars_sim.msp.core.resource.Part;
 /**
  * A settlement template information.
  */
+// TODO: delete count if not useful
+//Called by ConstructionConfig.java and ResupplyConfig.java 
 public class SettlementTemplate
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	 
+	//* default logger.
+	//private static Logger logger = Logger.getLogger(SettlementTemplate.class.getName());
+	 
 	// Data members.
 	private String name;
 	private int defaultPopulation;
@@ -35,10 +41,16 @@ implements Serializable {
 	private Map<Part, Integer> parts;
 	private List<ResupplyMissionTemplate> resupplies;
 
+    // 2014-10-28 Added settlement scenarioID
+	private int scenarioID;
+	//private static int count;
+
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 */
-	public SettlementTemplate(String name, int defaultPopulation) {
+	// 2014-10-28 Added count++
+	// TODO: pending for deletion (use constructor 2 instead)
+  	public SettlementTemplate(String name, int defaultPopulation) {
 		this.name = name;
 		this.defaultPopulation = defaultPopulation;
 		buildings = new ArrayList<BuildingTemplate>();
@@ -47,6 +59,25 @@ implements Serializable {
 		resources = new HashMap<AmountResource, Double>();
 		parts = new HashMap<Part, Integer>();
 		resupplies = new ArrayList<ResupplyMissionTemplate>();
+		//count++;
+        //logger.info("constructor 1 : scenarioID is " + scenarioID + "; count is "+ count);
+	}
+	/**
+	 * Constructor 2.
+	 */
+    // 2014-10-28 Added constructor 2, added id, added count++
+	public SettlementTemplate(String name, int scenarioID, int defaultPopulation) {
+		this.name = name;
+		this.scenarioID = scenarioID;
+		this.defaultPopulation = defaultPopulation;
+		buildings = new ArrayList<BuildingTemplate>();
+		vehicles = new HashMap<String, Integer>();
+		equipment = new HashMap<String, Integer>();
+		resources = new HashMap<AmountResource, Double>();
+		parts = new HashMap<Part, Integer>();
+		resupplies = new ArrayList<ResupplyMissionTemplate>();
+		//count++;
+        //logger.info("constructor 2 : id is " + scenarioID + "; count is "+ count);
 	}
 
 	/**
@@ -57,6 +88,20 @@ implements Serializable {
 		return name;
 	}
 
+	/**
+	 * Gets the template's unique ID.
+	 * @return ID number.
+	 */
+    // 2014-10-27 Added settlement id
+	public int getID() {
+//		if (scenarioID == count) return scenarioID;
+//		else {
+//			logger.info("SettlementTemplate.java : getID() : warning: scenarioID is not assigned correctly");
+//			scenarioID = count;
+			return scenarioID;
+//		}
+	}
+	
 	/**
 	 * Gets the default population capacity of the template.
 	 * @return population capacity.

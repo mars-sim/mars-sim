@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.06 2014-10-17
+ * @version 3.06 2014-10-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -181,12 +181,15 @@ extends JPanel {
 //            catch (BuildingException e) {}
         }
         
-        //2014-10-17 mkung: Added Heating Panel
-        // Prepare heating panel.
-        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
-        functionPanels.add(heatPanel);
-        functionListPanel.add(heatPanel);
-        
+        //2014-10-27 mkung: Modified Heating Panel
+        if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+//          try {
+		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
+		        functionPanels.add(heatPanel);
+		        functionListPanel.add(heatPanel);
+//        }
+//      catch (BuildingException e) {}
+  }
         //2014-10-17 mkung: Added Heating Storage 
         // Prepare heating storage panel if building has heating storage.
         if (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.07 2014-08-28
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -111,6 +111,8 @@ public class StructureMapLayer implements SettlementMapLayer {
     private void drawBuilding(Building building, Graphics2D g2d) {
 
         // Use SVG image for building if available.
+		// 2014-10-29 : Need to STAY getName(), NOT changing to getNickName()
+    	// or else svg for the building won't load up
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName().toLowerCase());
         if (svg != null) {
 

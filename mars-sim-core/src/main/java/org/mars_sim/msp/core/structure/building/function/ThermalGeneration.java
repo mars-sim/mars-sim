@@ -179,7 +179,7 @@ implements Serializable {
 	 * @return heat generated in kJ/s (heat flow rate)
 	 */
 	// get heat from HeatSource.java
-	// //2014-10-24 mkung: Modified getGeneratedHeat() to be TURNED OFF if heatMode = HeatMode.POWER_DOWN
+	// 2014-10-24 mkung: Modified getGeneratedHeat() to be TURNED OFF if heatMode = HeatMode.POWER_DOWN
 	public double getGeneratedHeat() {
 		double result = 0D; 
 		HeatMode heatMode = building.getHeatMode();
@@ -189,6 +189,10 @@ implements Serializable {
 				&& heatMode == HeatMode.FULL_POWER) {
 			Iterator<HeatSource> i = heatSources.iterator();
 			while (i.hasNext()) {
+				/// 2014-10-27 mkung: for testing
+				//HeatSource heatSource = i.next();
+			    //System.out.println(heatSource.toString());
+			    ///
 				result += i.next().getCurrentHeat(getBuilding());
 			}
 		}

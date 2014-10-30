@@ -4,6 +4,7 @@ initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
 <!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, 
 part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
+<!ATTLIST template id CDATA #REQUIRED>
 <!ATTLIST template default-population CDATA #REQUIRED>
 <!ELEMENT building (connection-list?)>
 <!ATTLIST building id CDATA #REQUIRED>

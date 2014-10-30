@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
@@ -52,9 +53,9 @@ implements LifeSupport {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    /* default logger.
+    /* default logger.*/
 	private static Logger logger = Logger.getLogger(Settlement.class.getName());
-     */
+     
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;
     /** Normal temperature (celsius) */
@@ -78,7 +79,7 @@ implements LifeSupport {
     /** The settlement's building power grid. */
     protected PowerGrid powerGrid;
     
-    //2014-10-17 mkung: Added heating system
+    //2014-10-17 Added heating system
     /** The settlement's heating system. */
     protected ThermalSystem thermalSystem;
     
@@ -99,29 +100,47 @@ implements LifeSupport {
     /** The initial population of the settlement. */
     private int initialPopulation;
 
+    // 2014-10-27 Added settlement id
+    // TODO: implement settlement id
+    private int id;
+    private static int count;
+    
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
      * @param location the settlement's location
      */
+    // constructor 1
+    // TODO: pending for deletion (use constructor 2 instead)
     protected Settlement(String name, Coordinates location) {
         // Use Structure constructor.
         super(name, location);
+        count++;
+        //logger.info("constructor 1 : count is " + count);
     }
 
-    /**
-     * Constructs a Settlement object at a given location
-     * @param name the settlement's name
-     * @param template for the settlement
-     * @param location the settlement's location
-     * @param populationNumber the settlement's initial population.
-     */
-    public Settlement(String name, String template, Coordinates location, int populationNumber) {
+    // constructor 2
+    // 2014-10-28 Added settlement id
+    protected Settlement(String name, int id, Coordinates location) {
+        // Use Structure constructor.
+        super(name, location);
+        count++;
+        //logger.info("constructor 2 : count is " + count);
+    }
+
+    // constructor 3
+    // 2014-10-29 Added settlement id
+    // Called by UnitManager.java when users create the initial settlement
+    // Called by ArrivingSettlement.java when users create a brand new settlement
+    public Settlement(String name, int id, String template, Coordinates location, int populationNumber) {
         // Use Structure constructor
         super(name, location);
 
         this.template = template;
-
+        
+        count++;
+        //logger.info("constructor 3 : count is " + count);
+        
         // Set inventory total mass capacity.
         getInventory().addGeneralCapacity(Double.MAX_VALUE);
 
@@ -140,18 +159,36 @@ implements LifeSupport {
         // Initialize power grid
         powerGrid = new PowerGrid(this);
         
-        //2014-10-17 mkung: Added heating system
-        // Initialize heating system
-        thermalSystem = new ThermalSystem(this);
-        
+        //2014-10-17 Added thermal control system
+        thermalSystem = new ThermalSystem(this);       
 
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         // Initialize the initial population.
         initialPopulation = populationNumber;
+        
+
     }
 
+
+	/**
+	 * Gets the settlement template's unique ID.
+	 * @return ID number.
+	 */
+    // 2014-10-29 Added settlement id
+	public int getID() {
+		return id;
+	}
+	
+	/**
+	 * Gets the how many times the settlement class has been called .
+	 * @return count.
+	 */
+    // 2014-10-29 Added count
+	public int getCount() {
+		return count;
+	}
     /**
      * Gets the population capacity of the settlement
      * @return the population capacity
@@ -238,8 +275,10 @@ implements LifeSupport {
         AmountResource water = AmountResource.findAmountResource("water");
         if (getInventory().getAmountResourceStored(water, false) <= 0D)
             result = false;
+        // TODO: check against indoor air pressure
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
+        // TODO: check against temperature
         if (getTemperature() < MIN_TEMP)
             result = false;
 

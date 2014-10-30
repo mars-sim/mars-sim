@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * BuildingsTabPanel.java
- * @version 3.06 2014-01-29
+ * TabPanelBuildings.java
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 
@@ -17,6 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
@@ -47,6 +50,10 @@ implements ActionListener {
 	private List<BuildingPanel> buildingPanels;
 	private int count;
 
+	//2014-10-29 Added renameBtn
+	private JButton renameBtn;
+	private Building building;
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -73,15 +80,29 @@ implements ActionListener {
 		// Create building combo box model.
 		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
 		buildingsCache = new ArrayList<Building>(buildings);
+			System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
 		Iterator<Building> i = buildingsCache.iterator();
-		while (i.hasNext()) buildingComboBoxModel.addElement(i.next());
-
+		while (i.hasNext()) {
+			Building b = i.next();
+			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
+			// b.setType(b.getNickName());
+	    	buildingComboBoxModel.addElement(b);
+		}
 		// Create building list.
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxModel);
 		buildingComboBox.addActionListener(this);
 		buildingComboBox.setMaximumRowCount(10);
-		buildingSelectPanel.add(buildingComboBox);
+		buildingSelectPanel.add(buildingComboBox);		
 
+		//2014-10-29  Added renameBtn for renaming a building
+		renameBtn = new JButton("Rename");
+		renameBtn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+				renameBuilding();
+			}
+		});
+		buildingSelectPanel.add(renameBtn);
+		
 		// Create building display panel.
 		buildingDisplayPanel = new JPanel();
 		buildingLayout = new CardLayout();
@@ -102,6 +123,49 @@ implements ActionListener {
 	}
 
 	/**
+	 * Ask for a new building name
+	 * @return pop up jDialog
+	 */
+	// 2014-10-29  Added askNameDialog()
+	public String askNameDialog() {
+		return JOptionPane
+			.showInputDialog(desktop, 
+					Msg.getString("TabPanelBuildings.JDialog.renameBuilding.input"),
+					Msg.getString("TabPanelBuildings.JDialog.renameBuilding.title"),
+			        JOptionPane.QUESTION_MESSAGE);
+	}
+	/**
+	 * Change and validate the new name of a Building
+	 * @return call Dialog popup
+	 */
+	// 2014-10-29  Added renameBuilding()
+	private void renameBuilding() {
+		JDialog.setDefaultLookAndFeelDecorated(true);
+		String oldName = building.getNickName();
+			System.out.println("TabPanelBuildings.java : renameBuilding() : old name is " + oldName);
+		String newName = askNameDialog();
+				
+		if (newName.trim().equals(null) || (newName.trim().length() == 0))
+			newName = askNameDialog();
+		else {
+			building.setNickName(newName);
+			System.out.println("TabPanelBuildings.java : renameBuilding() : new name is " + newName);
+		}
+		//Settlement settlement = buildingDisplayPanel.getSettlement();
+		//if (settlement != null) getDesktop().openUnitWindow(settlement, false);
+        //desktop.disposeUnitWindow(unit.getContainerUnit());
+		//desktop.openUnitWindow(unit.getContainerUnit(), false);
+	}
+	
+	/** Set the new name of a Building
+	 * @return none
+	 */
+	// 2014-10-29 Added setCurrentBuilding()
+	public void setCurrentBuilding(Building building) {
+		this.building = building;
+	}
+		
+	/**
 	 * Updates the info on this panel.
 	 */
 	@Override
@@ -120,6 +184,7 @@ implements ActionListener {
 					BuildingPanel panel = new BuildingPanel(String.valueOf(count), building, desktop);
 					buildingPanels.add(panel);
 					buildingDisplayPanel.add(panel, panel.getPanelName());
+					// TODO: Modify to load building's nickName instead of buildingType
 					buildingComboBoxModel.addElement(building);
 					count++;
 				}
@@ -155,8 +220,9 @@ implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		Building building = (Building) buildingComboBox.getSelectedItem();
 		BuildingPanel panel = getBuildingPanel(building);
+		
 		if (panel != null) buildingLayout.show(buildingDisplayPanel, panel.getPanelName());
-		else System.err.println(Msg.getString("TabPanelBuildings.err.cantFindPanelForBuilding", building.getName())); //$NON-NLS-1$
+		else System.err.println(Msg.getString("TabPanelBuildings.err.cantFindPanelForBuilding", building.getNickName())); //$NON-NLS-1$
 	}
 
 	/**
@@ -169,7 +235,13 @@ implements ActionListener {
 		Iterator<BuildingPanel> i = buildingPanels.iterator();
 		while (i.hasNext()) {
 			BuildingPanel panel = i.next();
-			if (panel.getBuilding() == building) result = panel;
+			if (panel.getBuilding() == building) {
+				
+				// 2014-10-29 Set as current building object
+				setCurrentBuilding(building);
+	
+				result = panel;
+			}
 		}
 
 		return result;

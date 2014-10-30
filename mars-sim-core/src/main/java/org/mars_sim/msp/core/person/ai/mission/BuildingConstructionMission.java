@@ -851,7 +851,7 @@ implements Serializable {
             }
             else {
                 // Try to put building next to the same building type.
-                List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfName(buildingType);
+                List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
                 Collections.shuffle(sameBuildings);
                 Iterator<Building> j = sameBuildings.iterator();
                 while (j.hasNext()) {

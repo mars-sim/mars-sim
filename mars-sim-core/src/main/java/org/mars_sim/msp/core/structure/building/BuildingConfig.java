@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-10-17
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import org.jdom.DataConversionException;
 import org.jdom.Document;
@@ -43,11 +43,13 @@ public class BuildingConfig implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(BuildingConfig.class.getName());
+    //private static final Logger logger = Logger.getLogger(BuildingConfig.class.getName());
 
     
 	// Element and attribute names
 	private static final String BUILDING = "building";
+	//2014-10-27 mkung: Added nickName 	
+	private static final String NICKNAME = "nickName";	
 	private static final String NAME = "name";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";

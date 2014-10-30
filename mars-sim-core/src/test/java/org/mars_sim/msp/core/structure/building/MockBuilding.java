@@ -13,7 +13,7 @@ public class MockBuilding extends Building {
     }
     
 	public MockBuilding(BuildingManager manager)  {
-		name = "Mock Building";
+		buildingType = "Mock Building";
 		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
@@ -24,8 +24,8 @@ public class MockBuilding extends Building {
 	    this.id = id;
 	}
 	
-	public void setName(String name) {
-	    this.name = name;
+	public void setName(String type) {
+	    this.buildingType = type;
 	}
 	
 	public void setXLocation(double xLoc) {

@@ -30,7 +30,7 @@ extends BuildingFunctionPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
-	private static Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
+	//private static Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
 
 	/** Is the building a heat producer? */
 	private boolean isProducer;

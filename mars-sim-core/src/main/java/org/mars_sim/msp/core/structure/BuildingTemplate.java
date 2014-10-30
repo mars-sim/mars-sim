@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+//import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 
@@ -21,9 +22,12 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	// default logger.
+	//private static Logger logger = Logger.getLogger(BuildingTemplate.class.getName());
+
 	// Data members
 	private int id;
-	private String type;
+	private String type;	
 	private double width;
 	private double length;
 	private double xLoc;
@@ -31,21 +35,31 @@ implements Serializable {
 	private double facing;
 	private List<BuildingConnectionTemplate> connectionList;
 
-	/** constructor. */
-	public BuildingTemplate(int id, String type,
+
+   // 2014-10-28 Added nickName and count
+	private String nickName;
+	//private static int count;
+		
+	/** constructor 1. */
+	// Called by ResupplyConfig.java as soon as the first group of buildings of the settlement arrived
+	// 2014-10-27 mkung: Added a new constructor with building nickName
+	public BuildingTemplate(int id, String type, String nickName,
 		double width, double length, double xLoc, 
 		double yLoc, double facing) {
-	    
+		    
 		this.id = id;
 		this.type = type;
+		this.nickName = nickName;
 		this.width = width;
 		this.length = length;
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
 		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
+		//count++;
+		//logger.info("const 1 : count is "+ count);
 	}
-
+	
 	/**
 	 * Gets the building's unique ID.
 	 * @return ID number.
@@ -58,8 +72,18 @@ implements Serializable {
 	 * Gets the building type.
 	 * @return building type.
 	 */
+	//2014-10-27 mkung: Switched from "name" to "type"
 	public String getType() {
 		return type;
+	}
+
+	/**
+	 * Gets the building nickname.
+	 * @return building nickname.
+	 */
+	//2014-10-27 mkung: Added getNickName() 
+	public String getNickName() {
+		return nickName;
 	}
 
 	/**
