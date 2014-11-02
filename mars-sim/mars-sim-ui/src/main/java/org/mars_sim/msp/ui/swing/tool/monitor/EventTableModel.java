@@ -6,19 +6,34 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.tool.NotificationBox;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -64,6 +79,11 @@ implements MonitorModel, HistoricalEventListener {
 	private boolean displayMission = false;
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
+	
+	final JFrame frame = new JFrame();
+
+	private static int count;
+	
 
 	/**
 	 * constructor.
@@ -80,11 +100,15 @@ implements MonitorModel, HistoricalEventListener {
 		manager.addListener(this);
 	}
 
+
 	private void updateCachedEvents() {
 
+		//System.out.println("EventTableModel.java : just called updateCachedEvents()");
+		
 		// Clean out cached events.
 		cachedEvents = new ArrayList<HistoricalEvent>();
 
+		
 		// Filter events based on category.
 		for (int x = 0; x < manager.size(); x++) {
 			HistoricalEvent event = manager.getEvent(x);
@@ -109,9 +133,11 @@ implements MonitorModel, HistoricalEventListener {
 		// Update all table listeners.
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				
 				fireTableDataChanged();
 			}
 		});
+		
 	}
 
 	/**
@@ -195,34 +221,47 @@ implements MonitorModel, HistoricalEventListener {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
+		//if (rowIndex == 0 && columnIndex == 2)
+		// check if event.getCategory() == MEDICAL or MALFUNCTION
+		//	System.out.println("getValueAt() : rowIndex is " + rowIndex + ", columnIndex is " + columnIndex);
+		
 		if (rowIndex < cachedEvents.size()) {
 			HistoricalEvent event = cachedEvents.get(rowIndex);
 
 			if (event != null) {
 				// Invoke the appropriate method, switch is the best solution
-				// althought disliked by some
+				// although disliked by some
 				switch (columnIndex) {
 				case TIMESTAMP : {
 					result = event.getTimestamp().getTimeStamp();
+					//System.out.println("getValueAt() : timestamp is " + result);
 				} break;
 
 				case CATEGORY: {
 					result = event.getCategory();
+					//System.out.println("getValueAt() : category is " + result);
+
 				} break;
 
 				case ACTOR: {
 					result = event.getSource();
+					//System.out.println("getValueAt() : actor is " + result);
+
 				} break;
 
 				case DESC : {
 					result = event.getDescription();
+					//System.out.println("getValueAt() : description is " + result);
+
 				} break;
 
 				case TYPE : {
 					result = event.getType();
+					//System.out.println("getValueAt() : type is " + result);
+
 				} break;
 				}
-			}
+			} // end of if event
 		}
 
 		return result;
@@ -244,13 +283,19 @@ implements MonitorModel, HistoricalEventListener {
 	 * @param index Index of new event in the manager.
 	 * @param event The new event added.
 	 */
+	// include any kind of event, including ai.task.TaskEvent
 	public void eventAdded(int index, HistoricalEvent event) {
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
+		
+		//System.out.println("EventTableModel.java : eventAdded() : index is " + index + ", event is " + event);
+		if (index == 0)
+			//NotificationBox nbox = 
+			new NotificationBox(event);
 	}
 
 	/**
-	 * A consequective sequence of events have been removed from the manager.
+	 * A consecutive sequence of events have been removed from the manager.
 	 *
 	 * @param startIndex First exclusive index of the event to be removed.
 	 * @param endIndex Last exclusive index of the event to be removed..

@@ -21,6 +21,10 @@
 
 	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
 
+	<resource name="soybean" phase="solid" life-support="true">Soybean seeds.</resource>
+	<resource name="soy milk" phase="liquid" life-support="true">a plant milk produced by soaking dry soybeans and grinding them with water.</resource>
+	<resource name="soybean oil" phase="liquid" life-support="true">Represents general freeze dried food.</resource>
+
 	<resource name="Grain Group" phase="solid" life-support="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
 		Small hard dry seeds, with or without attached hulls or fruit layers</resource>
 	<resource name="Fruit Group" phase="solid" life-support="true">

@@ -180,6 +180,8 @@ implements TableModelListener, ActionListener {
 		// 2014-10-10 mkung: changed the horizontal resolution from 600 to 800 to accommodate the addition
 		// of 3 columns (Grains, Fruits, Vegetables)
 		setSize(new Dimension(800, 300));
+		
+		
 	}
 
 	/**

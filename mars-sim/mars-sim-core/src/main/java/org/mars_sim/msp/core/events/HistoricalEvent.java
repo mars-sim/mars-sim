@@ -10,10 +10,10 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * This class represents a time based event that has occuried in the simulation.
+ * This class represents a time based event that has occurred in the simulation.
  * It is aimed at being subclassed to reflect the real simulation specific
  * events.
- * An event consists of a time stamp when it occured, a description, an
+ * An event consists of a time stamp when it occurred, a description, an
  * optional Unit that is the source of the event and an optional Object that has
  * triggered the event.
  */
@@ -29,7 +29,7 @@ public abstract class HistoricalEvent {
 	private EventType type;
 	/** TODO Long description of historical events should be internationalizable. */
 	private String description;
-	/** Time event occuried. */
+	/** Time event occurred. */
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
@@ -49,6 +49,7 @@ public abstract class HistoricalEvent {
 		this.type = type;
 		this.source = source;
 		this.description = description;
+		// need count++ next time: System.out.println("HistoricalEvent.java constructor");
 	}
 
 	/**
