@@ -39,6 +39,8 @@ implements Salvagable {
 	private boolean isSalvaged;
 	private SalvageInfo salvageInfo;
 
+	//private String name;
+	
 	/** Constructs an Equipment object
 	 *  @param name the name of the unit
 	 *  @param location the unit's location
@@ -46,6 +48,7 @@ implements Salvagable {
 	Equipment(String name, Coordinates location) {
 		super(name, location);
 
+		//this.name = name;
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
@@ -90,6 +93,9 @@ implements Salvagable {
 		return isSalvaged;
 	}
 
+	//public String getName() {
+	//	return name;
+	//}
 	/**
 	 * Indicate the start of a salvage process on the item.
 	 * @param info the salvage process info.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-10-31
  * @author Barry Evans
  */
 
@@ -37,13 +37,15 @@ public class HistoricalEventManager {
 	private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
 	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
 	private MarsClock mainClock;
-
+	//private static int count;
 	/**
 	 * Create a new EventManager that represents a particular simulation.
 	 */
 	public HistoricalEventManager() {
 		// The main clock is not initialized until the simulation start
 		this.mainClock = null;
+		//count++;
+		//System.out.println("HistoricalEventManager.java : constructor : count is " + count);	
 	}
 
 	/**
@@ -76,8 +78,14 @@ public class HistoricalEventManager {
 	 * time stamped with the current clock time and inserted at position zero.
 	 * @param newEvent The event to register.
 	 */
+	// include any kind of events
 	public void registerNewEvent(HistoricalEvent newEvent) {
 
+		MarsClock timestamp;
+
+		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent); 
+		// check if event is MALFUNCTION or MEDICAL, save it for notification box display	
+		
 		// Make space for the new event.
 		if (events.size() >= TRANSIENT_EVENTS) {
 			int excess = events.size() - (TRANSIENT_EVENTS - 1);
@@ -87,13 +95,16 @@ public class HistoricalEventManager {
 		MasterClock masterClock = Simulation.instance().getMasterClock();
 		if (masterClock != null) {
 			if (mainClock == null) mainClock = masterClock.getMarsClock();
-			newEvent.setTimestamp((MarsClock) mainClock.clone());
+			 timestamp = (MarsClock) mainClock.clone();
+			newEvent.setTimestamp(timestamp);
 		}
 
+				
 		events.add(0, newEvent);
 
 		Iterator<HistoricalEventListener> iter = listeners.iterator();
 		while (iter.hasNext()) iter.next().eventAdded(0, newEvent);
+		
 	}
 
 	/**

@@ -80,7 +80,7 @@ implements ActionListener {
 		// Create building combo box model.
 		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
 		buildingsCache = new ArrayList<Building>(buildings);
-			System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
+			//System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
 		Iterator<Building> i = buildingsCache.iterator();
 		while (i.hasNext()) {
 			Building b = i.next();

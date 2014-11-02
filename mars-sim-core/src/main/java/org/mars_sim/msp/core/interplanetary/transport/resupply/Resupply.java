@@ -803,7 +803,7 @@ implements Serializable, Transportable {
                 // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
                 int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
             	int sid = settlement.getID();
-            	System.out.println("Resupply.java : positionNextToBuilding() : sid/getID() is "+ sid); 
+            		//System.out.println("Resupply.java : positionNextToBuilding() : sid/getID() is "+ sid); 
                 String settlementID = getCharForNumber(sid+1);
 				String buildingID = bid + "";					
 				String buildingNickName = newBuildingType + " " + settlementID + buildingID;
@@ -899,7 +899,7 @@ implements Serializable, Transportable {
              // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
             int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
          	int sid = settlement.getID();
-        	System.out.println("Resupply.java : positionConnectorBetweenTwoBuildings : sid/getID() is "+ sid); 
+         	//System.out.println("Resupply.java : positionConnectorBetweenTwoBuildings : sid/getID() is "+ sid); 
             String settlementID = getCharForNumber(sid+1);
 			String buildingID = bid + "";					
 			String buildingNickName = newBuildingType + " " + settlementID + buildingID;

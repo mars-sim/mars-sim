@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chef.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-11-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.MakeSoy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -44,6 +45,8 @@ implements Serializable {
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
+		// 2014-11-02 Added MakeSoy
+		jobTasks.add(MakeSoy.class);
 
 		// Add chef-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
@@ -67,6 +70,9 @@ implements Serializable {
 
 		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
 		result = cookingSkill;
+
+		//int foodProcessingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.FOODPROCESSING);
+		//result = foodProcessingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);

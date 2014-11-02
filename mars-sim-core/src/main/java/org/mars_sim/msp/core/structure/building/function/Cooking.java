@@ -1,14 +1,12 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-10-15
- * @author Scott Davis
- *
- * 2014-10-15 mkung: Fixed the crash by checking if there is any food available
- * 	Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
- *  see if new crop harvest comes in.
- *  				
+ * @version 3.07 2014-11-01
+ * @author Scott Davis 				
  */
+// 2014-10-15 mkung: Fixed the crash by checking if there is any food available
+//  Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
+//  see if new crop harvest comes in.
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
@@ -51,7 +49,8 @@ implements Serializable {
     public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
 
     // Data members
-    private boolean foodisAvailable = true;
+    private boolean foodIsAvailable = true;
+    private boolean soyIsAvailable = true;
     private int cookCapacity;
     private List<CookedMeal> meals;
     private double cookingWorkTime;
@@ -238,19 +237,17 @@ implements Serializable {
      *  				is more than 0.5 kg, 
      */
     public void addWork(double workTime) {
-        //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime);
-        //logger.info("addWork() : workTime is " + workTime);
     	cookingWorkTime += workTime;       
         //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime);
         //logger.info("addWork() : workTime is " + workTime);
         
-    	// check if there are new harvest, if it does, set foodisAvailable to true
+    	// check if there are new harvest, if it does, set foodIsAvailable to true
     	double foodAvailable = checkAmountOfFood();
     	
     	if (foodAvailable >= 0.5) 
-    		foodisAvailable = true;
+    		foodIsAvailable = true;
     	
-     	while ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (foodisAvailable) ){      	
+     	while ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (foodIsAvailable) ){      	
             cookingChoice();
         } // end of while
      } // end of void addWork()
@@ -379,7 +376,7 @@ implements Serializable {
 	        //logger.info("cookingChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
         } 
         else { 
-        	foodisAvailable = false;
+        	foodIsAvailable = false;
          	   logger.info("cookingChoice() : no more fresh food available for meal! Wait until the next harvest");        	
         }
     }
