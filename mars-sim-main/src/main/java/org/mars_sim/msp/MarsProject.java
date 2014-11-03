@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
-import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 import javax.swing.*;
 
@@ -191,7 +191,7 @@ public class MarsProject {
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
-                TempSimulationConfigEditor editor = new TempSimulationConfigEditor(null, 
+                SimulationConfigEditor editor = new SimulationConfigEditor(null, 
                         SimulationConfig.instance());
                 editor.setVisible(true);
             }
