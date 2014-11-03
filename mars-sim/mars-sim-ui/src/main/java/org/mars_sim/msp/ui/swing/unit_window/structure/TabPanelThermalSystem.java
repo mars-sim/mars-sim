@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @version 3.07 2014-10-25
+ * @version 3.07 2014-11-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -11,6 +11,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -28,6 +31,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -35,6 +39,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 /** 
  * This is a tab panel for settlement's Thermal System information.
@@ -45,10 +50,10 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
-	private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
+	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 
 	// Data Members
-	// 2014-10-25 mkung: Changed label name to heatGenCapacityLabel
+	// 2014-10-25  Changed label name to heatGenCapacityLabel
 	/** The total heat generated label. */
 	private JLabel heatGenCapacityLabel;
 	/** The total heat used label. */
@@ -62,15 +67,15 @@ extends TabPanel {
 	/** The settlement's Heating System */
 	private ThermalSystem thermalSystem;
 
-	private Building building ;
+	//private Building building ;
 	//private HeatMode heatMode ;
 	
 	// Data cache
 	/** The total heat generated cache. */
-	// 2014-10-25 mkung: Changed names of variables to heatGenCapacityCache, heatGenCache
+	// 2014-10-25  Changed names of variables to heatGenCapacityCache, heatGenCache
 	private double heatGenCapacityCache;
 	/** The total heat used cache. */
-	private double heatGenCache;
+	//private double heatGenCache;
 	/** The total thermal storage capacity cache. */
 	private double thermalStorageCapacityCache;
 	/** The total heat stored cache. */
@@ -168,7 +173,7 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		// NOT working ThermalGeneration generator = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();	
 		//System.out.println("TabPanelThermalSystem : update() : old heatGenCapacityCache is "+ heatGenCapacityCache);	
 		//heatGenCapacityCache = thermalSystem.getGeneratedCapacity();
@@ -232,21 +237,55 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private Settlement settlement;
-		private java.util.List<Building> buildings;
+		// Make sure it's from java.util.List, not java.awt.List
+		private List<Building> buildings; // java.util.List, not java.awt.List
+		private List<Building> buildingsWithThermal = new ArrayList<Building>();;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
+		//private int n;
 
 		private HeatTableModel(Settlement settlement) {
 			this.settlement = settlement;
-			buildings = settlement.getBuildingManager().getBuildings();
+			
+			//2014-11-02 Included only buildings having Thermal control system
+			selectBuildings();
+			
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
 		}
+		
+		//2014-11-02 Created selectBuildings() 
+		// Included only buildings having Thermal control system
+		public void selectBuildings() {
+				BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+			buildings = settlement.getBuildingManager().getBuildings();
+			Iterator<Building> i = buildings.iterator();
+			//buildingsWithThermal.clear();
+			//System.out.println("buildingsWithThermal.clear() : " + buildingsWithThermal.size());
+			buildingsWithThermal.removeAll(buildingsWithThermal);
+				//System.out.println("buildingsWithThermal.removeAll() : " + buildingsWithThermal.size());
 
+			//n = 0;
+			while (i.hasNext()) {
+				Building b = i.next();
+				String buildingType = b.getBuildingType();
+					//System.out.println("buildingType is " + buildingType);
+				if (config.hasThermalGeneration(buildingType)) {
+					//n++;
+					buildingsWithThermal.add(b);
+					//System.out.println("buildingsWithThermal.size() : " + buildingsWithThermal.size());
+				}
+			}
+	
+		}
+		
+		//2014-11-02 Included only buildings having Thermal control system
 		public int getRowCount() {
-			return buildings.size();
+			//return buildings.size();
+				//System.out.println("getRowCount() : returning buildingsWithThermal.size() : " + buildingsWithThermal.size());
+			return buildingsWithThermal.size();
 		}
 
 		public int getColumnCount() {
@@ -275,7 +314,7 @@ extends TabPanel {
 
 		public Object getValueAt(int row, int column) {
 
-			Building building = buildings.get(row);
+			Building building = buildingsWithThermal.get(row);
 			HeatMode heatMode = building.getHeatMode();
 			//System.out.println("TabPanelThermalSystem : getValueAt() : heatMode is "+ heatMode);	
 			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -294,14 +333,14 @@ extends TabPanel {
 					}
 					else return null;
 				}
-				else if (column == 1) return buildings.get(row);
+				else if (column == 1) return buildingsWithThermal.get(row);
 				else if (column == 2) {
 					double generatedCapacity = 0D;
 					if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 						try {
-							ThermalGeneration generator = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-							// 2014-10-25 mkung: Changed to calling getGeneratedCapacity()
-							generatedCapacity = generator.getGeneratedCapacity();
+							ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+							// 2014-10-25  Changed to calling getGeneratedCapacity()
+							generatedCapacity = heater.getGeneratedCapacity();
 						}
 						catch (Exception e) {}
 					}
@@ -315,8 +354,8 @@ extends TabPanel {
 						
 						if (heatMode == HeatMode.FULL_POWER) { 
 							try {
-								ThermalGeneration generator = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-								generated = generator.getGeneratedHeat();
+								ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+								generated = heater.getGeneratedHeat();
 							}
 							catch (Exception e) {}	
 								//System.out.println("TabPanelThermalSystem : getValueAt() : getGeneratedHeat() is "+ generated);
@@ -344,9 +383,13 @@ extends TabPanel {
 		}
 
 		public void update() {
-			if (!buildings.equals(settlement.getBuildingManager().getBuildings())) 
-				buildings = settlement.getBuildingManager().getBuildings();
-
+			//List<Building> b = settlement.getBuildingManager().getBuildings();
+			//2014-11-02 Included only buildings having Thermal control system
+			List<Building> cache = buildingsWithThermal;
+			selectBuildings();
+			//buildingsWithThermal just got updated
+			if (!buildingsWithThermal.equals(cache)) 
+				buildingsWithThermal = cache;
 			fireTableDataChanged();
 		}
 	}

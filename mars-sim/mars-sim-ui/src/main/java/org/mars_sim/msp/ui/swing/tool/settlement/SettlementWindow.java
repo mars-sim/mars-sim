@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-10-26
+ * @version 3.06 2014-11-02
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -57,7 +57,9 @@ public class SettlementWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
+	public static final String RENAMEBTN = Msg.getString("SettlementWindow.renameSettlement.renameButton");
 
+	
 	private JButton settlementNameChangeBtn;
 	private Settlement settlement;
 	
@@ -150,7 +152,7 @@ public class SettlementWindow extends ToolWindow {
 				// Set settlement to draw map for.
 				Settlement settlement = (Settlement) event.getItem();
 				mapPane.setSettlement(settlement);
-				// 2014-10-26 mkung: obtained settlement object
+				// 2014-10-26 obtained settlement object
 				setCurrentSettlement(settlement);
 				
 				// Note: should we recenter map each time we change settlements?
@@ -161,14 +163,14 @@ public class SettlementWindow extends ToolWindow {
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
 			settlement = (Settlement) settlementListBox.getSelectedItem();
-			// 2014-10-25 mkung: obtained settlement object
+			// 2014-10-25 obtained settlement object
 			mapPane.setSettlement(settlement);
 			setCurrentSettlement(settlement);
 				//System.out.println("settlement is "+ settlement);
 		}
 
-		// 2014-10-25 mkung: Added Rename button for settlement name change
-		settlementNameChangeBtn = new JButton("Rename");
+		// 2014-10-25 Added Rename button for settlement name change
+		settlementNameChangeBtn = new JButton(RENAMEBTN);
 		settlementNameChangeBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				renameSettlement();
@@ -282,7 +284,7 @@ public class SettlementWindow extends ToolWindow {
 				Settlement settlement = mapPane.getSettlement();
 				
 				if (settlement != null) {
-					// 2014-10-26 mkung: obtained settlement object
+					// 2014-10-26 obtained settlement object
 					setCurrentSettlement(settlement);
 					
 					getDesktop().openUnitWindow(settlement, false);
@@ -298,7 +300,7 @@ public class SettlementWindow extends ToolWindow {
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
 	 */
-	// 2014-10-26 mkung: Added askNameDialog()
+	// 2014-10-26 Added askNameDialog()
 	public String askNameDialog() {
 		return JOptionPane
 			.showInputDialog(desktop, 
@@ -310,7 +312,7 @@ public class SettlementWindow extends ToolWindow {
 	 * Change and validate the new name of the Settlement
 	 * @return call Dialog popup
 	 */
-	// 2014-10-26 mkung: Modified renameSettlement()
+	// 2014-10-26 Modified renameSettlement()
 	private void renameSettlement() {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		//String nameCache = settlement.getType();
@@ -436,7 +438,7 @@ public class SettlementWindow extends ToolWindow {
 
 			Settlement selectedSettlement = (Settlement) getSelectedItem();
 
-			// 2014-10-26 mkung: obtained settlement object
+			// 2014-10-26 obtained settlement object
 			setCurrentSettlement(selectedSettlement);
 			
 			removeAllElements();
@@ -452,7 +454,7 @@ public class SettlementWindow extends ToolWindow {
 
 			if (selectedSettlement != null) {
 				setSelectedItem(selectedSettlement);
-				// 2014-10-26 mkung: obtained settlement object
+				// 2014-10-26 obtained settlement object
 				setCurrentSettlement(selectedSettlement);
 			}
 		}

@@ -53,7 +53,8 @@ public class NotificationBox extends JDialog {
 	/** The name of the tool the window is for. */
 	protected String name;
 	
-	public static final String NAME = Msg.getString("NotificationWindow.title"); //$NON-NLS-1$
+	public static final String MSGTITLE = Msg.getString("NotificationBox.message.title"); //$NON-NLS-1$
+	//public static final String MSG = Msg.getString("NotificationBox.msg"); //$NON-NLS-1$
 
 	/** The main desktop. */
 	//protected MainDesktopPane desktop;
@@ -273,7 +274,7 @@ public class NotificationBox extends JDialog {
 	
 	public void popUp(String labelText) {
 		
-		String header = "<html><h2>Notification</h2></html>";
+		String header = "<html><h2>" + MSGTITLE + "</h2></html>";
 	
 			setSize(220,100);
 			//setUndecorated(true);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 //import java.util.logging.Logger;
 
+
 import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
+import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -132,7 +134,7 @@ public class BuildingConfig implements Serializable {
 
 	private static final String ELECTRIC_HEAT_SOURCE = "Electric Heat Source";
 	private static final String SOLAR_HEAT_SOURCE = "Solar Heat Source";
-
+	private static final String FUEL_HEAT_SOURCE = "Fuel Heat Source";
     
 	
 	// Power source types
@@ -689,6 +691,11 @@ public class BuildingConfig implements Serializable {
 			} else if (type.equalsIgnoreCase(SOLAR_HEAT_SOURCE)) {
 				heatSource = new SolarHeatSource(heat);
 				//logger.info("getHeatSources() : just called SolarHeatSource");
+			} else if (type.equalsIgnoreCase(FUEL_HEAT_SOURCE)) {
+				    boolean toggleStafe = Boolean.parseBoolean(heatSourceElement.getAttributeValue(TOGGLE));
+				    String fuelType = heatSourceElement.getAttributeValue(FUEL_TYPE);
+				    double consumptionSpeed = Double.parseDouble(heatSourceElement.getAttributeValue(COMSUMPTION_RATE));
+				    heatSource = new FuelHeatSource(heat ,toggleStafe, fuelType, consumptionSpeed);
 			} else throw new IllegalStateException("Heat source: " + type + " not a valid heat source.");
 				//logger.info("getHeatSources() : finished reading electric heat source and solar heat source");
 			heatSourceList.add(heatSource); 

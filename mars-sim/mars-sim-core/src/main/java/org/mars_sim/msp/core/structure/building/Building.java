@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-02
  * @author Scott Davis
  */
 
@@ -94,6 +94,10 @@ LocalBoundedObject, InsidePathLocation {
 
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
+	
+	// 2014-11-02 Added HeatModeCache
+	protected HeatMode heatModeCache;
+	
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
 	// Specific Heat Capacity = 4.0 for a typical house
@@ -102,7 +106,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected double BLC = 1.0; 
 	protected double floorArea;
 	protected double currentTemperature;
-	protected double deltaTemperature ;
+	//protected double deltaTemperature ;
     private static final double INITIAL_TEMPERATURE = 22.5D;
 	private static int count;
     
@@ -111,6 +115,9 @@ LocalBoundedObject, InsidePathLocation {
 	protected String nickName;
 	protected ThermalGeneration furnace;
 
+	// 2014-11-02 Added heatGenerated
+	private double heatGenerated = 0; // the initial value is zero 
+	private double heatGeneratedCache = 0; // the initial value is zero 
 	
 	/** Constructor 1
 	 * Constructs a Building object.
@@ -129,6 +136,9 @@ LocalBoundedObject, InsidePathLocation {
 		LifeSupport lifeSupport;
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
+		
+		this.manager = manager;
+		
 		heatMode = HeatMode.POWER_DOWN;
 		count++;
 		//Logger.info("constructor 1 : count is " + count);
@@ -451,6 +461,10 @@ LocalBoundedObject, InsidePathLocation {
 	public String getName() {
 		return buildingType;
 	}
+	//2014-11-02  Added getBuildingType()
+	public String getBuildingType() {
+		return buildingType;
+	}
 	/**
 	 * Sets the building's type (formerly name)
 	 * @return none
@@ -499,6 +513,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the power this building currently requires for full-power mode.
 	 * @return power in kW.
 	 */
+	//2014-11-02  Modified getFullPowerRequired()
 	public double getFullPowerRequired()  {
 		double result = basePowerRequirement;
 
@@ -506,6 +521,9 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) result += i.next().getFullPowerRequired();
 
+		//2014-11-02 Added getFullHeatRequired()
+		result = result + getFullHeatRequired();
+		
 		return result;
 	}
 
@@ -541,17 +559,27 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the heat this building currently requires for full-power mode.
 	 * @return heat in kJ/s.
 	 */
-	//2014-10-17  Added heat mode
+	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
-		double result = baseHeatRequirement;
-
+		//double result = baseHeatRequirement;	
+		if ( heatGeneratedCache != heatGenerated) {
+			// if heatGeneratedCache is different from the its last value
+			heatGeneratedCache = heatGenerated;
+		//logger.info("getFullHeatRequired() : heatGenerated is updated to " + 
+				//heatGenerated + " kW");	
+		}
 		// Determine heat required for each function.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) result += i.next().getFullHeatRequired();
-
-		return result;
+		//TODO: should I add power requirement inside
+		// thermal generation function instead?
+		//Iterator<Function> i = functions.iterator();
+		//while (i.hasNext()) result += i.next().getFullHeatRequired();
+		return heatGenerated;
 	}
-
+	//2014-11-02 Added setHeatGenerated()
+	public void setHeatGenerated(double heatGenerated) {
+		this.heatGenerated = heatGenerated;
+	}
+	
 	/**
 	 * Gets the heat the building requires for power-down mode.
 	 * @return heat in kJ/s.
@@ -580,9 +608,14 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	//2014-10-17  Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
-		this.heatMode = heatMode;
+		//logger.info("setHeatMode() : heatMode was " + heatMode);		
+		if ( heatModeCache != heatMode) {
+			// if heatModeCache is different from the its last value
+			heatModeCache = heatMode;
+			this.heatMode = heatMode;
+			//logger.info("setHeatMode() : heatMode is now " + heatMode);
+		}
 	}
-
 	
 	/**
 	 * Gets the entity's malfunction manager.
