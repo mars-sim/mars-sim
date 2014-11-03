@@ -11,8 +11,7 @@ public enum HeatMode {
 	FULL_POWER (Msg.getString("HeatMode.fullPower")), //$NON-NLS-1$
 	POWER_DOWN (Msg.getString("HeatMode.powerDown")), //$NON-NLS-1$
 	NO_POWER (Msg.getString("HeatMode.noPower")), //$NON-NLS-1$
-	POWER_UP ("Power up");
-	//OPERATIONAL ("Operational");
+	POWER_UP ("Power up"); // meaning "OPERATIONAL" 
 
 	private String name;
 		

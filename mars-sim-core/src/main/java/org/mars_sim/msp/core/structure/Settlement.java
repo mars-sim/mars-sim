@@ -399,7 +399,9 @@ implements LifeSupport {
         } else {
             zeroPopulationTime = 0D;
             powerGrid.setPowerMode(PowerMode.POWER_UP);
-            thermalSystem.setHeatMode(HeatMode.POWER_UP); 
+            // TODO: check if POWER_UP is necessary
+            // Question: is POWER_UP a prerequisite of FULL_POWER ?
+            //thermalSystem.setHeatMode(HeatMode.POWER_UP); 
         }
 
         powerGrid.timePassing(time);

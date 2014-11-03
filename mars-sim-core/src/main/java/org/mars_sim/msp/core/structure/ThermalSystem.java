@@ -40,7 +40,11 @@ implements Serializable {
 	DecimalFormat fmt = new DecimalFormat("#.####"); 
 	
 	// Data members
+	// Q: is NO_POWER being used ?
+    // Question: Is POWER_UP a prerequisite of FULL_POWER ?
+	// Answer: Yes. See how heatUp is used in ThermalSystem.java
 	private HeatMode heatMode;
+	private HeatMode heatModeCache;
 	private double heatGenerated;
 	private double heatGenerationCapacity;
 	private double heatStored;
@@ -50,7 +54,7 @@ implements Serializable {
 	private Settlement settlement;
 	private double heatValue;
 
-	private ThermalGeneration generator;
+	//private ThermalGeneration heater;
 	
 	private int count=0;
 	/**
@@ -348,7 +352,10 @@ implements Serializable {
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
 			if (heatUp) {
-				building.setHeatMode(HeatMode.FULL_POWER);
+				// 2014-11-02 Comment out setHeatMode() below
+				// TODO: find out any side effect of commenting out this setter
+				//building.setHeatMode(HeatMode.FULL_POWER);
+				//logger.info("updateTotalRequiredHeat() : heatUp is TRUE");
 				tempHeatRequired += building.getFullHeatRequired();
 				if(logger.isLoggable(Level.FINE)) {
 					logger.fine(
@@ -361,7 +368,17 @@ implements Serializable {
 				}
 			}
 			else {
-				building.setHeatMode(HeatMode.POWER_DOWN);
+				heatMode = HeatMode.POWER_DOWN;
+				
+				logger.info("setHeatMode() : heatMode was " + heatModeCache);		
+				if ( heatModeCache != heatMode) {
+					// if heatModeCache is different from the its last value
+					heatModeCache = heatMode;
+					building.setHeatMode(heatMode);
+					logger.info("setHeatMode() : heatMode is now " + heatMode);
+				}
+				
+
 				tempHeatRequired += building.getPoweredDownHeatRequired();
 
 				if(logger.isLoggable(Level.FINE)) {

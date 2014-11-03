@@ -211,7 +211,7 @@
 			<thermal-generation>
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
-				<!-- capacity: the maximum energy capacity (kJ/s) produced by the heat source. -->
+				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heat Source" capacity="10.0" />
 				<heat-source type="Electric Heat Source" capacity="30.0" />
 			</thermal-generation>
@@ -641,8 +641,11 @@
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
 				<resource-storage resource="Food" capacity="500.0" />
-
-			</storage>				
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="30.0" />
+			</thermal-generation>					
 		</functions>
 	</building>
 
@@ -666,7 +669,11 @@
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
 				<resource-storage resource="Food" capacity="500.0" />
-			</storage>				
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="30.0" />
+			</thermal-generation>								
 		</functions>
 	</building>
 	-->
@@ -1280,6 +1287,10 @@
 				<resource-storage resource="Food" capacity="500.0" />
 
 			</storage>	
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="30.0" />
+			</thermal-generation>			
 		</functions>
 	</building>
 	

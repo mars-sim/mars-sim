@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-02
  * @author Scott Davis
  */
 
@@ -42,6 +42,8 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String RENAME = Msg.getString("TabPanelBuildings.renameBuilding.renameButton"); //$NON-NLS-1$
+	
 	private DefaultComboBoxModel<Building> buildingComboBoxModel;
 	private JComboBoxMW<Building> buildingComboBox;
 	private List<Building> buildingsCache;
@@ -95,7 +97,7 @@ implements ActionListener {
 		buildingSelectPanel.add(buildingComboBox);		
 
 		//2014-10-29  Added renameBtn for renaming a building
-		renameBtn = new JButton("Rename");
+		renameBtn = new JButton(RENAME);
 		renameBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				renameBuilding();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.07 2014-10-25
+ * @version 3.07 2014-11-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -46,11 +46,11 @@ implements Serializable {
 	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
-    //2014-10-17 mkung: Added the heating requirement
-	//private double heatRequired;
+    //2014-10-17 Added the heating requirement
+	private double heatRequired;
 	
 	
-	//2014-10-23 mkung: Added temperature setting */
+	//2014-10-23 Added temperature setting */
     // How often to check on temperature change
     private static int tally; 
     // CAUTION: DO NOT SET TICKS_PER_UPDATE to a multiple of N if there are N buildings with life-support function
@@ -63,7 +63,6 @@ implements Serializable {
   	// furnace ON when 2 deg below INITIAL_TEMP
     // furnace OFF when 2 deg above INITIAL_TEMP
     private static final double T_SENSITIVITY = 1D; 
-  	//protected HeatMode heatMode;
   	protected double baseHeatRequirement;
   	protected double basePowerDownHeatRequirement;
   	private double length;
@@ -95,18 +94,18 @@ implements Serializable {
 		// Set occupant capacity.
 		occupantCapacity = config.getLifeSupportCapacity(building.getName());
 
-		// Set life support power required.
-		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
-
-	    //2014-10-17 mkung: Added the heating requirement
+		//2014-10-17 Added the heating requirement
 		// Set life support heating required.
 		//heatRequired = config.getLifeSupportHeatRequirement(building.getName());
 
-		//2014-10-23 mkung: new initial values */
+		// Set life support power required.
+		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
+
+	    
+		//2014-10-23 new initial values */
 		count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
-		//heatMode = HeatMode.NO_POWER;	
 		deltaTemperature = 0;
 
 		length = getBuilding().getLength();
@@ -133,11 +132,10 @@ implements Serializable {
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 		
-		//2014-10-23 mkung: new initial values */
+		//2014-10-23 new initial values */
 		count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
-		//heatMode = HeatMode.NO_POWER;	
 		deltaTemperature = 0;
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
@@ -150,20 +148,34 @@ implements Serializable {
 	/** Turn heat source off if reaching pre-setting temperature 
 	 * @return none. set heatMode
 	 */
+	// 2014-11-02 Added checking if PowerMode.POWER_DOWN
+	// TODO: also set up a time sensitivity value
 	public void turnOnOffHeat() {
 		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
-		double t = building.getInitialTemperature();
-			//logger.info("t is " + t);
-		// ALLOWED_TEMP is thermostat's allowance temperature setting
-	    // If 3 deg above INITIAL_TEMP, turn off furnace
-		if (building.getTemperature() > (t + T_SENSITIVITY )) {
-			//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(building.getTemperature() ));
-			building.setHeatMode(HeatMode.POWER_DOWN);
-		// If 3 deg below INITIAL_TEMP, turn on furnace 
-		} else if (building.getTemperature() < (t - T_SENSITIVITY)) { 
-			building.setHeatMode(HeatMode.FULL_POWER);
-			//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(building.getTemperature() ));
+		double T_INITIAL = building.getInitialTemperature();
+		double T_NOW = building.getTemperature();
+		//logger.info("turnOnOffHeat() : T_NOW is " + T_NOW);
+		//logger.info("turnOnOffHeat() : HeatMode is " + building.getHeatMode());
+		// if building has no power, power down the heating system
+		if (building.getPowerMode() == PowerMode.POWER_DOWN)
+			building.setHeatMode(HeatMode.POWER_DOWN);	
+		else if (building.getPowerMode() == PowerMode.FULL_POWER) {			
+			// ALLOWED_TEMP is thermostat's allowance temperature setting
+		    // If T_SENSITIVITY deg above INITIAL_TEMP, turn off furnace
+			if (T_NOW > (T_INITIAL + T_SENSITIVITY )) {
+				//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(building.getTemperature() ));
+				//logger.info("turnOnOffHeat() : TOO HOT. HeatMode is set to " + building.getHeatMode());
+				building.setHeatMode(HeatMode.POWER_DOWN);
+			// If T_SENSITIVITY deg below INITIAL_TEMP, turn on furnace 
+			} else if (T_NOW < (T_INITIAL - T_SENSITIVITY)) { 
+				//logger.info("turnOnOffHeat() : TOO COLD. HeatMode is set to " + building.getHeatMode());
+				building.setHeatMode(HeatMode.FULL_POWER);
+				//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(building.getTemperature() ));
+			} else ; // do nothing to change the HeatMode
+			//logger.info("turnOnOffHeat() : do nothing to HeatMode at " + building.getHeatMode());
 		}
+		//logger.info("turnOnOffHeat() : updated HeatMode is " + building.getHeatMode());
+
 	}
 	
 	/**Adjust the current temperature in response to the delta temperature
@@ -172,9 +184,9 @@ implements Serializable {
 	public void updateTemperature() {
 		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 		//currentTemperature += deltaTemperature;
-		building.setTemperature(building.getTemperature()+deltaTemperature);
-			//logger.info("timePassing() : updated currentTemp is "+ fmt.format(building.getTemperature()));
-			//logger.info("timePassing() : updated deltaTemperature is "+ fmt.format(deltaTemperature));		
+		building.setTemperature(building.getTemperature() + deltaTemperature);
+		//logger.info("updateTemperature() : updated currentTemp is "+ fmt.format(building.getTemperature()));
+			//logger.info("updateTemperature() : updated deltaTemperature is "+ fmt.format(deltaTemperature));		
 	}
 
 	
@@ -182,7 +194,7 @@ implements Serializable {
 	 * Relate the change in heat to change in temperature 
 	 * @return none. save result as deltaTemperature 
 	 */
-	//2014-10-17 mkung: Added determineDeltaTemperature() 
+	//2014-10-17 Added determineDeltaTemperature() 
 
 	public void determineDeltaTemperature() {
 		//logger.info("determineDeltaTermperature() : In < " + building.getName() + " >");
@@ -243,28 +255,11 @@ implements Serializable {
 	 * Sets the chage of temperature of a building due to heat gain
 	 * @return temperature (degrees C)
 	 */
-	//2014-10-17 mkung: Added setDeltaTemperature()
+	//2014-10-17 Added setDeltaTemperature()
 	public void setDeltaTemperature(double t) {
 	    deltaTemperature = t;
 	}
-
-
-	/**
-	 * Gets the building's power mode.
-	 
-	//2014-10-17 mkung: Added heat mode
-	public HeatMode getHeatMode() {
-		return heatMode;
-	}
-*/
-	/**
-	 * Sets the building's heat mode.
 	
-	//2014-10-17 mkung: Added heat mode
-	public void setHeatMode(HeatMode heatMode) {
-		this.heatMode = heatMode;
-	}
-	 */
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
@@ -403,8 +398,8 @@ implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
+	// 2014-10-25 Currently skip calling for thermal control for Hallway 
 	public void timePassing(double time) {
-
 		//logger.info("timePassing() : building is " + building.getName());
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
@@ -431,6 +426,7 @@ implements Serializable {
 
 		
 		// skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
+		// make sure it calls out buildingType, NOT calling out getNickName()
 		if (!building.getName().equals("Hallway")) 
 			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 			adjustThermalControl();
@@ -443,6 +439,7 @@ implements Serializable {
 	 */
 	// 2014-10-25 Added adjustThermalControl()
 	public void adjustThermalControl() {
+		// Skip Hallway
 		if (!building.getName().equals("Hallway")) {
 			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 			double miliSolElapsed = Simulation.instance().getMasterClock().getTimePulse() ;
@@ -473,7 +470,7 @@ implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return powerRequired;
+		return (powerRequired + heatRequired);
 	}
 	
 	/**

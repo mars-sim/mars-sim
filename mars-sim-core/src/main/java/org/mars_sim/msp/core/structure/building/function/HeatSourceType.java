@@ -12,7 +12,7 @@ public enum HeatSourceType {
 	//SOLAR ("Solar Power Source"),
 	//AREAOTHERMAL ("Areothermal Power Source"),
 	ELECTRIC ("Electric Heat Source"),
-	//FUEL ("Fuel Power Source"),
+	FUEL ("Fuel Heat Source"),
 	SOLAR_HEAT ("Solar Heat Source");
 
 	private String string;

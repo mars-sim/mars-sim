@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -30,7 +32,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
+	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
 	DecimalFormat fmt = new DecimalFormat("#.#######"); 
 	
@@ -40,7 +42,12 @@ implements Serializable {
 	// Data members.
 	private List<HeatSource> heatSources;
 	private Building building;
-	//private double heatRequired;
+	
+	// 2014-11-02 Created heatGenerated and heatGeneratedCache
+	private double heatGenerated;
+	private double heatGeneratedCache;
+
+	
 	private boolean sufficientHeat;
 	//private static int count;
 
@@ -65,22 +72,6 @@ implements Serializable {
 		
 	}
 
-	/**
-	 * Gets the building's power mode.
-	 
-	//2014-10-17 mkung: Added heat mode
-	public HeatMode getHeatMode() {
-		return heatMode;
-	}
-*/
-	/**
-	 * Sets the building's heat mode.
-	
-	//2014-10-17 mkung: Added heat mode
-	public void setHeatMode(HeatMode heatMode) {
-		this.heatMode = heatMode;
-	}
- */
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
@@ -179,26 +170,43 @@ implements Serializable {
 	 * @return heat generated in kJ/s (heat flow rate)
 	 */
 	// get heat from HeatSource.java
-	// 2014-10-24 mkung: Modified getGeneratedHeat() to be TURNED OFF if heatMode = HeatMode.POWER_DOWN
+	// 2014-10-24 Modified getGeneratedHeat()
 	public double getGeneratedHeat() {
+		if ( heatGeneratedCache != heatGenerated) {
+			// if heatGeneratedCache is different from the its last value
+			heatGeneratedCache = heatGenerated;
+		logger.info("heatGenerated is " + heatGenerated);
+			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
+		}
+		return heatGenerated; // = 0.0 if heatMode == HeatMode.POWER_DOWN
+	}
+	
+	/**
+	 * Calculate the total amount of heat that this building is CURRENTLY producing 
+	 * @return heat generated in kW
+	 */
+	// 2014-11-02 Created calculateGeneratedHeat()
+	public void calculateGeneratedHeat() {
+		
 		double result = 0D; 
 		HeatMode heatMode = building.getHeatMode();
-		
-		// Building should only produce heat if it has no current malfunctions.
-		if (!getBuilding().getMalfunctionManager().hasMalfunction() 
-				&& heatMode == HeatMode.FULL_POWER) {
-			Iterator<HeatSource> i = heatSources.iterator();
-			while (i.hasNext()) {
-				/// 2014-10-27 mkung: for testing
-				//HeatSource heatSource = i.next();
-			    //System.out.println(heatSource.toString());
-			    ///
-				result += i.next().getCurrentHeat(getBuilding());
-			}
+	
+	// Building should only produce heat if it has no current malfunctions.
+	if (!getBuilding().getMalfunctionManager().hasMalfunction() 
+			&& heatMode == HeatMode.FULL_POWER) {
+		// No heat if heatMode = HeatMode.POWER_DOWN
+		Iterator<HeatSource> i = heatSources.iterator();
+		while (i.hasNext()) {
+			/// 2014-10-27 mkung: for testing
+			//HeatSource heatSource = i.next();
+		    //System.out.println(heatSource.toString());
+		    ///
+			result += i.next().getCurrentHeat(getBuilding());
 		}
-			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
-		return result; // thus result = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
+	// store new result in heatGenerated 
+	heatGenerated = result;
+}
 	
 	/**
 	 * Time passing for the building.
@@ -207,6 +215,16 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
+		// 2014-11-02 Added calculateGeneratedHeat()
+		// Set heatGenerated at the building the furnace belongs
+		calculateGeneratedHeat();
+				
+		if ( heatGeneratedCache != heatGenerated) {
+			// if heatGeneratedCache is different from the its last value
+			heatGeneratedCache = heatGenerated;
+			building.setHeatGenerated(heatGenerated);
+		}
+			
 		for (HeatSource source : heatSources) {
 			/*
 			if (source instanceof FuelHeatSource) {
@@ -223,8 +241,11 @@ implements Serializable {
 	 * Gets the amount of heat required when function is at full power.
 	 * @return heat (J)
 	 */
+	// 2014-11-02: temporarily set getFullHeatRequired() = heatGenerated
+	// thus getGeneratedHeat() = getFullHeatRequired() 
+	// will consolidate them into one in near future
 	public double getFullHeatRequired() {
-		return 0D;
+		return heatGenerated;
 	}
 
 	/**
@@ -290,9 +311,8 @@ implements Serializable {
 	}
 
 
-	@Override
 	public double getFullPowerRequired() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
