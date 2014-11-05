@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * A settlement map layer for displaying people.
@@ -72,8 +73,9 @@ public class PersonMapLayer implements SettlementMapLayer {
 	}
 
 	@Override
+	// 2014-11-04 Added building parameter
 	public void displayLayer(
-		Graphics2D g2d, Settlement settlement,
+		Graphics2D g2d, Settlement settlement, Building building,
 		double xPos, double yPos, int mapWidth, int mapHeight,
 		double rotation, double scale
 	) {

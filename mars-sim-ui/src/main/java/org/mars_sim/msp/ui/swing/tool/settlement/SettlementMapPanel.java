@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.06 2014-02-09
+ * @version 3.06 2014-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
 
 import javax.swing.JPanel;
@@ -53,8 +54,11 @@ implements ClockListener {
 	private boolean showVehicleLabels;
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
+	
+	// 2014-11-04 Added building
+	private Building building;
 
-	/**
+	/** Constructor 1
 	 * A panel for displaying a settlement map.
 	 */
 	public SettlementMapPanel() {
@@ -91,7 +95,46 @@ implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 	}
+	
+	/** Constructor 2
+	 * A panel for displaying a settlement map.
+	 */
+	// 2014-11-04 Added this constructor for loading an svg image
+	// for the selected building in unit window's building tab
+	public SettlementMapPanel(Settlement settlement, Building building) {
+		// Use JPanel constructor.
+		super();
 
+		// Initialize data members.
+		xPos = 0D;
+		yPos = 0D;
+		rotation = 0D;
+		scale = DEFAULT_SCALE;
+		this.settlement = settlement;
+		this.building = building;
+		showBuildingLabels = false;
+		showConstructionLabels = false;
+		showPersonLabels = false;
+		showVehicleLabels = false;
+		selectedPerson = new HashMap<Settlement, Person>();
+
+		mapLayers = new ArrayList<SettlementMapLayer>(1);
+		
+		StructureMapLayer layer = new StructureMapLayer(this);		
+	    
+		mapLayers.add(layer);
+
+		// Set preferred size.
+		setPreferredSize(new Dimension(100, 100));
+
+		// Set foreground and background colors.
+		setOpaque(true);
+		setBackground(Color.WHITE);
+		setForeground(Color.WHITE);
+
+		Simulation.instance().getMasterClock().addClockListener(this);
+	}
+	
 	/**
 	 * Gets the settlement currently displayed.
 	 * @return settlement or null if none.
@@ -341,7 +384,13 @@ implements ClockListener {
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
-			i.next().displayLayer(g2d, settlement, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+				//System.out.println("SettlementMapPanel.java : paintComponent() : calling displayLayer()");
+			// 2014-11-04 Added building parameter
+			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+				//System.out.println("xPos is " + xPos);
+				//System.out.println("yPos is " + yPos);
+				//System.out.println("rotation is " +rotation);
+				//System.out.println("scale is " + rotation);
 		}
 
 //		long endTime = System.nanoTime();

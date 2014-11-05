@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -64,7 +65,8 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement,
+	// 2014-11-04 Added building parameter
+	public void displayLayer(Graphics2D g2d, Settlement settlement,Building building,
 			double xPos, double yPos, int mapWidth, int mapHeight,
 			double rotation, double scale) {
 
