@@ -1,24 +1,27 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.06 2014-11-04
+ * @version 3.07 2014-11-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 //import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -100,14 +103,16 @@ extends JPanel {
 	        	//System.out.println("BuildingPanel constructor : building is "+ building);
 	    		//System.out.println("BuildingPanel constructor : buildingType is "+ buildingType);	
 	        SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);
-
+	        
 	        svgPanel.setPreferredSize(expectedDimension);
 	        svgPanel.setMaximumSize(expectedDimension);
 	        svgPanel.setMinimumSize(expectedDimension);
-		    
+	        
 	        Box box = new Box(BoxLayout.Y_AXIS);
 	        box.add(Box.createVerticalGlue());
 	        box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+	        // 2014-11-05 Added setBorder()
+	        box.setBorder(BorderFactory.createLineBorder(Color.black));
 	        box.add(svgPanel);
 	        box.add(Box.createVerticalGlue());
 
