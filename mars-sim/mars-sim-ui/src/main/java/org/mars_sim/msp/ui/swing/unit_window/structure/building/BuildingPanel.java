@@ -1,21 +1,26 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.06 2014-10-27
+ * @version 3.06 2014-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+//import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
+import org.apache.batik.gvt.GraphicsNode;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -31,6 +36,9 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.settlement.SVGMapUtil;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.settlement.StructureMapLayer;
 
 /**
  * The BuildingPanel class is a panel representing a settlement building.
@@ -48,19 +56,26 @@ extends JPanel {
 	/** The function panels. */
 	private List<BuildingFunctionPanel> functionPanels;
 
+	private String buildingType;
+	
+
 	/**
 	 * Constructor
 	 *
 	 * @param panelName the name of the panel.
 	 * @param building the building this panel is for.
 	 * @param desktop the main desktop.
+	 * @throws MalformedURLException 
 	 */
 	public BuildingPanel(String panelName, Building building, MainDesktopPane desktop) {
 		super();
 
         // Initialize data members
         this.panelName = panelName;
+	        //System.out.println("panelName is "+panelName );
         this.building = building;
+        buildingType = building.getBuildingType();
+
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
         
         // Set layout
@@ -76,7 +91,29 @@ extends JPanel {
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
         functionScrollPanel.setViewportView(functionListPanel);
         
-        // Prepare inhabitable panel if building has lifesupport.
+        // 2014-11-04 Added SVG Image loading for the building
+        //JPanel SVGImagePanel = new JPanel(new BorderLayout());
+	        Dimension expectedDimension = new Dimension(100, 100);
+	        GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType); 
+	        Settlement settlement = building.getBuildingManager().getSettlement();
+	        	// Conclusion: this panel is called only once per opening the unit window session.
+	        	//System.out.println("BuildingPanel constructor : building is "+ building);
+	    		//System.out.println("BuildingPanel constructor : buildingType is "+ buildingType);	
+	        SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);
+
+	        svgPanel.setPreferredSize(expectedDimension);
+	        svgPanel.setMaximumSize(expectedDimension);
+	        svgPanel.setMinimumSize(expectedDimension);
+		    
+	        Box box = new Box(BoxLayout.Y_AXIS);
+	        box.add(Box.createVerticalGlue());
+	        box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+	        box.add(svgPanel);
+	        box.add(Box.createVerticalGlue());
+
+	        functionListPanel.add(box);
+	        
+        // Prepare inhabitable panel if building has lifeSupport.
         if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 //        	try {
         		LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -236,7 +273,9 @@ extends JPanel {
         functionPanels.add(maintenancePanel);
         functionListPanel.add(maintenancePanel);
     }
-    
+
+
+	  
     /**
      * Gets the panel's name.
      * @return panel name

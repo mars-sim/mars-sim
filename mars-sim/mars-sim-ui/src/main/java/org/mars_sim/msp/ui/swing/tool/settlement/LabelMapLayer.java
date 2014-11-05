@@ -67,8 +67,9 @@ implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(
-		Graphics2D g2d, Settlement settlement,
+	// 2014-11-04 Added building parameter
+	public void displayLayer(		
+		Graphics2D g2d, Settlement settlement, Building building,
 		double xPos, double yPos, int mapWidth, int mapHeight,
 		double rotation, double scale
 	) {

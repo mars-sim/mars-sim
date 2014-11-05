@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
@@ -49,7 +50,8 @@ implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Graphics2D g2d, Settlement settlement, double xPos, 
+	// 2014-11-04 Added building parameter
+	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building, double xPos, 
 			double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
 
 		// Save original graphics transforms.
