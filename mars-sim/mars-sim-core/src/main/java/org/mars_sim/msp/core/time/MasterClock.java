@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-11-05
  * @author Scott Davis
  */
 
@@ -227,7 +227,6 @@ public class MasterClock implements Runnable, Serializable {
         } 
         else timePulse = 1D;
 
-        totalPulses++;
         return timePulse;
     }
 
@@ -285,6 +284,9 @@ public class MasterClock implements Runnable, Serializable {
                 // Get the time pulse length in millisols.
                 double timePulse = getTimePulse();
                 
+                // Incrementing total time pulse number.
+                totalPulses++;
+                
                 long startTime = System.nanoTime();
 
                 // Add time pulse length to Earth and Mars clocks.
@@ -298,7 +300,7 @@ public class MasterClock implements Runnable, Serializable {
                 long endTime = System.nanoTime();
                 lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
 
-                logger.finest("time: " + lastTimeDiff + " ms");
+                logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
             }
             
             if (saveSimulation) {
