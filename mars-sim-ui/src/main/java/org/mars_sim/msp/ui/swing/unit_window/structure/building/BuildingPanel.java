@@ -18,11 +18,9 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-//import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
@@ -39,9 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.settlement.SVGMapUtil;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
-import org.mars_sim.msp.ui.swing.tool.settlement.StructureMapLayer;
 
 /**
  * The BuildingPanel class is a panel representing a settlement building.
@@ -75,7 +71,6 @@ extends JPanel {
 
         // Initialize data members
         this.panelName = panelName;
-	        //System.out.println("panelName is "+panelName );
         this.building = building;
         buildingType = building.getBuildingType();
 
@@ -95,26 +90,23 @@ extends JPanel {
         functionScrollPanel.setViewportView(functionListPanel);
         
         // 2014-11-04 Added SVG Image loading for the building
-        //JPanel SVGImagePanel = new JPanel(new BorderLayout());
-	        Dimension expectedDimension = new Dimension(100, 100);
-	        GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType); 
-	        Settlement settlement = building.getBuildingManager().getSettlement();
-	        	// Conclusion: this panel is called only once per opening the unit window session.
-	        	//System.out.println("BuildingPanel constructor : building is "+ building);
-	    		//System.out.println("BuildingPanel constructor : buildingType is "+ buildingType);	
-	        SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);
+  	    Dimension expectedDimension = new Dimension(100, 100);
+	        //GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType); 
+	    Settlement settlement = building.getBuildingManager().getSettlement();
+	        // Conclusion: this panel is called only once per opening the unit window session.
+	    SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);
 	        
-	        svgPanel.setPreferredSize(expectedDimension);
-	        svgPanel.setMaximumSize(expectedDimension);
-	        svgPanel.setMinimumSize(expectedDimension);
+	    svgPanel.setPreferredSize(expectedDimension);
+	    svgPanel.setMaximumSize(expectedDimension);
+	    svgPanel.setMinimumSize(expectedDimension);
 	        
-	        Box box = new Box(BoxLayout.Y_AXIS);
-	        box.add(Box.createVerticalGlue());
-	        box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+	    Box box = new Box(BoxLayout.Y_AXIS);
+	    box.add(Box.createVerticalGlue());
+	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	        // 2014-11-05 Added setBorder()
-	        box.setBorder(BorderFactory.createLineBorder(Color.black));
-	        box.add(svgPanel);
-	        box.add(Box.createVerticalGlue());
+	    box.setBorder(BorderFactory.createLineBorder(Color.black));
+	    box.add(svgPanel);
+	    box.add(Box.createVerticalGlue());
 
 	        functionListPanel.add(box);
 	        
