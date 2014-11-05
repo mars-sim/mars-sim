@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.07 2014-11-04
+ * @version 3.07 2014-11-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -100,16 +100,20 @@ public class StructureMapLayer implements SettlementMapLayer {
     	Graphics2D g2d0 = g2d;
     	// value of scale came from paintComponent() in SettlementMapPanel.java
         this.scale = scale;
+        this.building = building;
+       
         
-        double width = building.getWidth();
-        double length = building.getLength();
-        
-        //2014-11-04 Added adjustScaleFactor()
+        //2014-11-05 Added adjustScaleFactor()
         // discard the old scale value, compute a new value of scale.
-        scale = adjustScaleFactor(width, length);    
-
-    	System.out.println("width is "+ width);
-      	System.out.println("length is "+ length);
+    	//System.out.println("StructureMapLayer.java : displayLayer() : building is " + building);
+        if (building != null) {
+        	// Displaying a svg image for one single building
+	        double width = building.getWidth();
+	        double length = building.getLength();
+	        scale = adjustScaleFactor(width, length);    
+	    	//System.out.println("StructureMapLayer.java : displayLayer() : width is "+ width);
+	      	//System.out.println("StructureMapLayer.java : displayLayer() : length is "+ length);
+        }
 
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
@@ -125,15 +129,16 @@ public class StructureMapLayer implements SettlementMapLayer {
         // Rotate map from North.
         g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
-     	// 2014-11-04 Added if then else clause for loading 
+     	// 2014-11-05 Added if then else clause for loading 
         // an svg image for one building ONLY
-        if (!building.equals(null)) {
-        	//System.out.println("calling drawBuilding() only");
+        if (building != null) {
+        	// Displaying a svg image for one single building
+        	//System.out.println("StructureMapLayer.java : displayLayer() : calling drawBuilding() only");
         	//System.out.println("building is " + building);
         	drawOneBuilding(building, g2d0);
         }
         
-        else {
+        else {  // Displaying svg images of all buildings in the entire settlement 
 	        // Draw all buildings.
 	        drawBuildings(g2d, settlement);
 	
@@ -392,7 +397,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 		double largerValue = 0;	
 		if (x >= y ) largerValue = x;
 		else largerValue = y;	
-		scale = 100.0/largerValue;
+		scale = 100.0/largerValue * 0.9;
 
 		return scale;
 	}
