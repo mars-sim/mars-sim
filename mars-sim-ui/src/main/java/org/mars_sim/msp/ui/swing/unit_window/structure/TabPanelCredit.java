@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-11-05
  * @author Scott Davis
  */
 
@@ -86,8 +86,8 @@ extends TabPanel {
 		creditTable.setCellSelectionEnabled(false);
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		creditTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-		creditTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
 		creditTablePanel.add(creditTable, BorderLayout.CENTER);
 	}

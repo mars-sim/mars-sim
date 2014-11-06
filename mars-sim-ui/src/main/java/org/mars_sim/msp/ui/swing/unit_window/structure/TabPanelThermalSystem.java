@@ -162,8 +162,8 @@ extends TabPanel {
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(25);
 		heatTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(70);
-		heatTable.getColumnModel().getColumn(3).setPreferredWidth(70);
+		heatTable.getColumnModel().getColumn(2).setPreferredWidth(60);
+		heatTable.getColumnModel().getColumn(3).setPreferredWidth(60);
 		heatTable.getColumnModel().getColumn(4).setPreferredWidth(55);
 		heatTablePanel.add(heatTable.getTableHeader(), BorderLayout.NORTH);
 		heatTablePanel.add(heatTable, BorderLayout.CENTER);

@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +31,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
 	// Column indexes
 	/** Type column. */
@@ -282,7 +285,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			case TRAVELLED_DISTANCE : {
 				if (mission instanceof TravelMission) {
 					TravelMission travelMission = (TravelMission) mission;
-					result = (int) travelMission.getTotalDistanceTravelled();
+					result = decFormatter.format(travelMission.getTotalDistanceTravelled());
 				}
 				else result = 0;
 			} break;
@@ -291,7 +294,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 				if (mission instanceof TravelMission) {
 					TravelMission travelMission = (TravelMission) mission;
 					try {
-						result = (int) travelMission.getTotalRemainingDistance();
+						result = decFormatter.format(travelMission.getTotalRemainingDistance());
 					}
 					catch (Exception e) {}
 				}

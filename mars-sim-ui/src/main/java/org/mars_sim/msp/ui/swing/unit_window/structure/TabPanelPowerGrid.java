@@ -145,8 +145,8 @@ extends TabPanel {
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-		powerTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		powerTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		powerTable.getColumnModel().getColumn(3).setPreferredWidth(70);
 		powerTablePanel.add(powerTable.getTableHeader(), BorderLayout.NORTH);
 		powerTablePanel.add(powerTable, BorderLayout.CENTER);
 	}

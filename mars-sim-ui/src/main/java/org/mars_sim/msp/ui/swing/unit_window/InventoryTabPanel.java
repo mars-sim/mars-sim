@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 3.07 2014-10-14
+ * @version 3.07 2014-11-05
  * @author Scott Davis
  */
 
@@ -85,10 +85,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create resources table
         JTable resourcesTable = new JTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.setCellSelectionEnabled(false);
-        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
         resourcesPanel.setViewportView(resourcesTable);
         
         // Create equipment panel
@@ -141,7 +141,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> resources;
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
-		private DecimalFormat decFormatter = new DecimalFormat("0.0");
+		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
         
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -199,12 +199,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	if (resource instanceof AmountResource) {
             		double amount = (Double) resources.get(resource);
             		result = decFormatter.format(amount);
+            		//result = amount + "";
             	}
             	return result;
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
             	return (number == null) ? "-" : decFormatter.format(number);
+            	//return (number == null) ? "-" : number;
             }
             else return "unknown";
         }

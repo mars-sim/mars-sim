@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * FoodTableModel.java
- * @version 3.07 2014-10-15
+ * @version 3.07 2014-11-05
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +44,8 @@ extends UnitTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
 	// Column indexes
 	private final static int NAME = 0;
@@ -139,33 +142,33 @@ extends UnitTableModel {
 				} break;
 				
 				case FOOD : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("food"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("food")));
 				} break;
 
 				case FRUITS : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("Fruit Group"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("Fruit Group")));
 				} break;
 
 				case GRAINS : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("Grain Group"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("Grain Group")));
 				} break;
 
 				case VEGETABLES : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("Vegetable Group"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("Vegetable Group")));
 				} break;
 
 				case LEGUMES: {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("Legume Group"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("Legume Group")));
 				} break;
 
 				case SPICES : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("Spice Group"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("Spice Group")));
 				} break;
 				
 				case CROPS : {
