@@ -61,7 +61,7 @@ extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane goodsScrollPane = new JScrollPane();
-		goodsScrollPane.setPreferredSize(new Dimension(220, 280));
+		goodsScrollPane.setPreferredSize(new Dimension(250, 300));
 		// increase vertical mousewheel scrolling speed for this one
 		goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		centerContentPanel.add(goodsScrollPane);
@@ -82,7 +82,8 @@ extends TabPanel {
 		JTable goodsTable = new JTable(goodsTableModel);
 		goodsTable.setCellSelectionEnabled(false);
 		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
-		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
+		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
 		goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
 	}

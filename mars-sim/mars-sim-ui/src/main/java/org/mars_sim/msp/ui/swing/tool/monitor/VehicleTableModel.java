@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +51,8 @@ extends UnitTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
 	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
@@ -183,23 +186,23 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = resourceMap.get(AmountResource.findAmountResource("water"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("water")));
 				} break;
 
 				case FOOD : {
-					result = resourceMap.get(AmountResource.findAmountResource("food"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("food")));
 				} break;
 
 				case OXYGEN : {
-					result = resourceMap.get(AmountResource.findAmountResource("oxygen"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("oxygen")));
 				} break;
 
 				case METHANE : {
-					result = resourceMap.get(AmountResource.findAmountResource("methane"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = resourceMap.get(AmountResource.findAmountResource("rock samples"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
 				} break;
 
 				case SPEED : {
@@ -285,7 +288,7 @@ extends UnitTableModel {
 				} break;
 
 				case ICE : {
-					result = resourceMap.get(AmountResource.findAmountResource("ice"));
+					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
 				} break;
 				}
 			}

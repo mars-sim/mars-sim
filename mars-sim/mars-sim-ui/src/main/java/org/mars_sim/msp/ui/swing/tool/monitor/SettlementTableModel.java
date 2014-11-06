@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.06 2014-10-14
+ * @version 3.07 2014-11-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +42,8 @@ extends UnitTableModel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
+	 
 	// Column indexes
 	private final static int NAME = 0;
 	private final static int POPULATION = 1;
@@ -140,24 +143,24 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("water"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("water")));
 				} break;
 
 
 				case OXYGEN : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("oxygen"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("oxygen")));
 				} break;
 
 				case METHANE : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("methane"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("methane")));
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = resourceMap.get(
-						AmountResource.findAmountResource("rock samples"));
+					result = decFormatter.format(resourceMap.get(
+						AmountResource.findAmountResource("rock samples")));
 				} break;
 
 				case MALFUNCTION: {
@@ -188,23 +191,23 @@ extends UnitTableModel {
 				} break;
 
 				case HYDROGEN : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("hydrogen"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("hydrogen")));
 				} break;
 
 				case WASTE_WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("waste water"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("waste water")));
 				} break;
 
 				case CO2 : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("carbon dioxide"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("carbon dioxide")));
 				} break;
 
 				case ICE : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("ice"));
+					result = decFormatter.format(resourceMap.get(
+							AmountResource.findAmountResource("ice")));
 				} break;
 				}
 			}
