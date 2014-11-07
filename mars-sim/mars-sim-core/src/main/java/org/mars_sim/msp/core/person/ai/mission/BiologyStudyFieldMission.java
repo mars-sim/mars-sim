@@ -56,11 +56,11 @@ implements Serializable {
 
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString(
-            "Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+			"Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
 
 	/** Mission phase. */
 	final public static MissionPhase RESEARCH_SITE = new MissionPhase(Msg.getString(
-            "Mission.phase.researchingFieldSite")); //$NON-NLS-1$
+			"Mission.phase.researchingFieldSite")); //$NON-NLS-1$
 
 	/** Minimum number of people to do mission. */
 	public final static int MIN_PEOPLE = 2;
@@ -128,8 +128,9 @@ implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
-                getStartingSettlement().getName())); //$NON-NLS-1$
+		setPhaseDescription(Msg.getString(
+				"Mission.phase.embarking.description" //$NON-NLS-1$
+				,getStartingSettlement().getName()));
 	}
 
 	/**
@@ -174,8 +175,9 @@ implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
-                getStartingSettlement().getName())); //$NON-NLS-1$
+		setPhaseDescription(Msg.getString(
+				"Mission.phase.embarking.description" //$NON-NLS-1$
+				,getStartingSettlement().getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) 
@@ -399,26 +401,30 @@ implements Serializable {
 		if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
-                    getNextNavpoint().getDescription())); //$NON-NLS-1$
+			setPhaseDescription(Msg.getString(
+					"Mission.phase.travelling.description" //$NON-NLS-1$
+					,getNextNavpoint().getDescription()));
 		}
 		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
-                        getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
+				setPhaseDescription(Msg.getString(
+						"Mission.phase.disembarking.description" //$NON-NLS-1$
+						,getCurrentNavpoint().getSettlement().getName()));
 			}
 			else {
 				setPhase(RESEARCH_SITE);
-				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description", 
-                        getCurrentNavpoint().getDescription())); //$NON-NLS-1$
+				setPhaseDescription(Msg.getString(
+						"Mission.phase.researchingFieldSite.description" //$NON-NLS-1$
+						,getCurrentNavpoint().getDescription()));
 			}
 		}
 		else if (RESEARCH_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
-                    getNextNavpoint().getDescription())); //$NON-NLS-1$
+			setPhaseDescription(Msg.getString(
+					"Mission.phase.travelling.description" //$NON-NLS-1$
+					,getNextNavpoint().getDescription()));
 		}
 		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
 	}

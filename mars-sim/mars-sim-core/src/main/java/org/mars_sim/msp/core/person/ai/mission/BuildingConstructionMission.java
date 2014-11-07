@@ -228,8 +228,9 @@ implements Serializable {
         
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description", 
-                settlement.getName())); //$NON-NLS-1$
+        setPhaseDescription(Msg.getString(
+        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+                ,settlement.getName()));
     }
     
     /**
@@ -338,8 +339,9 @@ implements Serializable {
         
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description", 
-                settlement.getName())); //$NON-NLS-1$
+        setPhaseDescription(Msg.getString(
+        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$ 
+                ,settlement.getName()));
     }
     
     /**
@@ -461,8 +463,9 @@ implements Serializable {
     protected void determineNewPhase() {
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(CONSTRUCTION_PHASE);
-            setPhaseDescription(Msg.getString("Mission.phase.construction.description", 
-                    constructionStage.getInfo().getName())); //$NON-NLS-1$
+            setPhaseDescription(Msg.getString(
+            		"Mission.phase.construction.description" //$NON-NLS-1$
+                    ,constructionStage.getInfo().getName()));
         }
         else if (CONSTRUCTION_PHASE.equals(getPhase())) {
             endMission("Successfully ended construction");

@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
- * TODO externalize strings
+ * TODO externalize life support strings
  */
 public abstract class RoverMission
 extends VehicleMission {
@@ -332,7 +332,7 @@ extends VehicleMission {
 							getVehicle().getInventory().storeUnit(suit);
 						}
 						else {
-							endMission(Msg.getString("RoverMission.log.cannotBeLoaded",suit.getName(),getVehicle().getName())); //$NON-NLS-2$
+							endMission(Msg.getString("RoverMission.log.cannotBeLoaded",suit.getName(),getVehicle().getName())); //$NON-NLS-1$
 							return;
 						}
 					}
@@ -421,7 +421,7 @@ extends VehicleMission {
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
 					Person crewmember = i.next();
-					logger.severe(Msg.getString("RoverMission.emergencyEnterSettlement",crewmember.getName(),disembarkSettlement.getName())); //$NON-NLS-1$
+					logger.severe(Msg.getString("RoverMission.log.emergencyEnterSettlement",crewmember.getName(),disembarkSettlement.getName())); //$NON-NLS-1$
 					rover.getInventory().retrieveUnit(crewmember);
 					disembarkSettlement.getInventory().storeUnit(crewmember);
 					BuildingManager.addToRandomBuilding(crewmember,
