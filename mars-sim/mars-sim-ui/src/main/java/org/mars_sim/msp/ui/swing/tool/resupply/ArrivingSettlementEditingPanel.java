@@ -38,7 +38,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A panel for creating or editing an arriving settlement.
- * TODO externalize strings
  */
 public class ArrivingSettlementEditingPanel
 extends TransportItemEditingPanel {
@@ -56,7 +55,7 @@ extends TransportItemEditingPanel {
 	private JLabel timeUntilArrivalLabel;
 	private MartianSolComboBoxModel martianSolCBModel;
 	private JLabel solLabel;
-	private JComboBoxMW<Object> solCB;
+	private JComboBoxMW<?> solCB;
 	private JLabel monthLabel;
 	private JComboBoxMW<?> monthCB;
 	private JLabel orbitLabel;
@@ -205,7 +204,7 @@ extends TransportItemEditingPanel {
 
 		// Create sol combo box.
 		martianSolCBModel = new MartianSolComboBoxModel(arrivingTime.getMonth(), arrivingTime.getOrbit());
-		solCB = new JComboBoxMW(martianSolCBModel);
+		solCB = new JComboBoxMW<Integer>(martianSolCBModel);
 		solCB.setSelectedItem(arrivingTime.getSolOfMonth());
 		arrivalDateSelectionPane.add(solCB);
 
@@ -307,10 +306,6 @@ extends TransportItemEditingPanel {
 		latitudeTF.setHorizontalAlignment(JTextField.RIGHT);
 		latitudePane.add(latitudeTF);
 
-/*		// Create latitude degrees label.
-		JLabel latDegLabel = new JLabel(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		latitudePane.add(latDegLabel);
-*/
 		// pull the degree sign into the comboboxes so it looks more like mars navigator window
 		String deg = Msg.getString("direction.degreeSign");
 
@@ -345,10 +340,6 @@ extends TransportItemEditingPanel {
 		longitudeTF.setHorizontalAlignment(JTextField.RIGHT);
 		longitudePane.add(longitudeTF);
 
-/*		// Create longitude degrees label.
-		JLabel lonDegLabel = new JLabel(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		longitudePane.add(lonDegLabel);
-*/
 		// Create longitude direction combo box.
 		longitudeDirectionCB = new JComboBoxMW<String>();
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.westShort")); //$NON-NLS-1$
