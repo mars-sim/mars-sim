@@ -191,7 +191,8 @@ extends TabPanel {
 		Settlement settlement = (Settlement) getUnit();
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
 		String totalAchievementString = formatter.format(settlement.getTotalScientificAchievement());
-		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit") + totalAchievementString); //$NON-NLS-1$
+		//totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit") + totalAchievementString); //$NON-NLS-1$
+		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
 	}
 
 	/**

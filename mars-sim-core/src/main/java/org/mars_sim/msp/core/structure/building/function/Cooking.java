@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-11-01
+ * @version 3.07 2014-11-07
  * @author Scott Davis 				
  */
 // 2014-10-15 mkung: Fixed the crash by checking if there is any food available
@@ -274,14 +274,13 @@ implements Serializable {
     
     
     
-    /**
-     * Orders of cooking 
+    /** Deduct the amount of food at the same proportion across all 5 food group
      * @param none
-     * 2014-10-08 mkung: 1st choice: making vegetables soup / make salad bowl 
-     * 					 2nd cooked fry rice / high-fiber wheat bread sandwich
+     * 
+     * */
     // TODO: let the cook choose what kind of meal to cook based on his preference
-    // TODO: create a method to make the codes more compact 
-     */
+    // TODO: create a method to make the codes more compact
+    // 2014-11-07 Deducted the amount of soybeans in case of legumes
     public void  cookingChoice() {
     	
         int mealQuality = getBestCookSkill();
@@ -290,20 +289,22 @@ implements Serializable {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);   
        	
-        AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
-        double fruitsAvailable = getBuilding().getInventory().getAmountResourceStored(fruits, false);
-        AmountResource grains = AmountResource.findAmountResource("Grain Group");
-        double grainsAvailable = getBuilding().getInventory().getAmountResourceStored(grains, false);
-        AmountResource legumes = AmountResource.findAmountResource("Legume Group");
-        double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumes, false);
-        AmountResource spices = AmountResource.findAmountResource("Spice Group");
-        double spicesAvailable = getBuilding().getInventory().getAmountResourceStored(spices, false);
-        AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
-        double vegAvailable = getBuilding().getInventory().getAmountResourceStored(veg, false);
-        
-        double totalAvailable = fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
-       	
-        
+        AmountResource fruitsAR = AmountResource.findAmountResource("Fruit Group");
+        double fruitsAvailable = getBuilding().getInventory().getAmountResourceStored(fruitsAR, false);
+        AmountResource grainsAR = AmountResource.findAmountResource("Grain Group");
+        double grainsAvailable = getBuilding().getInventory().getAmountResourceStored(grainsAR, false);
+        AmountResource legumesAR = AmountResource.findAmountResource("Legume Group");
+        double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumesAR, false);
+        AmountResource spicesAR = AmountResource.findAmountResource("Spice Group");
+        double spicesAvailable = getBuilding().getInventory().getAmountResourceStored(spicesAR, false);
+        AmountResource vegAR = AmountResource.findAmountResource("Vegetable Group");
+        double vegAvailable = getBuilding().getInventory().getAmountResourceStored(vegAR, false);
+  
+        AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
+        //double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
+
+        double totalAvailable =  fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
+
         //double totalAvailable = checkAmountOfFood();
         
         // 2014-10-15 mkung: Checked if the total food available is more than 0.5 kg food in total
@@ -315,65 +316,52 @@ implements Serializable {
 	        double legumesFraction = foodAmount * legumesAvailable / totalAvailable;
 	        double spicesFraction = foodAmount * spicesAvailable / totalAvailable;
 	        double vegFraction = foodAmount * vegAvailable / totalAvailable;
-	        
+	        //double soybeansFraction = foodAmount * soybeansAvailable / totalAvailable;   
 	        //logger.info("cookingChoice() : total Food Available is " + Math.round(totalAvailable) + " kg");
-	
 	        //logger.info("cookingChoice() : amount to cook is " + foodAmount + " kg");
-	
-	        
-	        getBuilding().getInventory().retrieveAmountResource(fruits, fruitsFraction);
-	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
-	        
-	        //logger.info("cookingChoice() : meals.size() is " + meals.size() );
-	        
-	        if (logger.isLoggable(Level.FINEST)) {
+
+	        getBuilding().getInventory().retrieveAmountResource(fruitsAR, fruitsFraction);
+	        /*
+        	if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has prepared " + meals.size() + " delicious fruits (quality is " + mealQuality + ")");
 	        }
-	  
-	        getBuilding().getInventory().retrieveAmountResource(grains, grainsFraction);
-	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
+	  		*/
+	        getBuilding().getInventory().retrieveAmountResource(grainsAR, grainsFraction);
+	        /*
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has stir-fried or cooked " + meals.size() + " rice or pasta (quality is " + mealQuality + ")");
 	        }
-	  
-	        getBuilding().getInventory().retrieveAmountResource(legumes, legumesFraction);
-	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
-	        if (logger.isLoggable(Level.FINEST)) {
+	  		*/
+	        getBuilding().getInventory().retrieveAmountResource(legumesAR, legumesFraction);
+	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, legumesFraction);
+
+	        /*
+		        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has prepared a side dish with " + meals.size() + " beans and/or peas (quality is " + mealQuality + ")");
 	        }
-	  
-	        getBuilding().getInventory().retrieveAmountResource(spices, spicesFraction);
-	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
+	         */
+	        getBuilding().getInventory().retrieveAmountResource(spicesAR, spicesFraction);
+	        /*
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has seasoned the dish with " + meals.size() + " herbs and spices (quality is " + mealQuality + ")");
 	        }
-	  
-	        getBuilding().getInventory().retrieveAmountResource(veg, vegFraction);
+	  		*/
+	        getBuilding().getInventory().retrieveAmountResource(vegAR, vegFraction);
 	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
+	        
 	        meals.add(new CookedMeal(mealQuality, time));
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has mixed a salad bowl with " + meals.size() + " fresh vegetables (quality is " + mealQuality + ")");
+	        			" has " + meals.size() + " meals and quality is " + mealQuality + ")");
 	        }
-	 
 	        //logger.info("cookingChoice() : cookingWorkTime is " + cookingWorkTime);
 	        //logger.info("cookingChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
-	
 	        cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
-	        
 	        //logger.info("cookingChoice() : cookingWorkTime is " + cookingWorkTime);
 	        //logger.info("cookingChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
         } 

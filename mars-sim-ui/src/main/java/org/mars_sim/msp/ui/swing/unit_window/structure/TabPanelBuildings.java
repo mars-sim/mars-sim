@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.07 2014-11-02
+ * @version 3.07 2014-11-07
  * @author Scott Davis
  */
 
@@ -73,7 +73,12 @@ implements ActionListener {
 		Settlement settlement = (Settlement) unit;
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 		Collections.sort(buildings);
-
+		
+		// 2014-11-07 Set the first building object on the list 
+		// as the most current building object
+		building = buildings.get(0);
+		setCurrentBuilding(building);
+		
 		// Create building select panel.
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingSelectPanel.setBorder(new MarsPanelBorder());

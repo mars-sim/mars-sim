@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 3.07 2014-11-01
+ * @version 3.07 2014-11-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
@@ -48,30 +48,28 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * The NotificationBox class creates notification messages on the desktop
  * Events are based from HistoricalEvent.java
  */
+ //TODO: replace subclassing JDialog. load up in MainDesktopPane
 public class NotificationBox extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** The name of the tool the window is for. */
 	protected String name;
-	
-	public static final String MSGTITLE = Msg.getString("NotificationBox.message.title"); //$NON-NLS-1$
+	private String header;
 	//public static final String MSG = Msg.getString("NotificationBox.msg"); //$NON-NLS-1$
-
 	/** The main desktop. */
 	//protected MainDesktopPane desktop;
 	//private final JFrame frame = new JFrame();
-	private static int count;
-	private Timer timer;
-	private String msg;
-	
-	//private JLabel l;
-	
+	//private static int count;
 	//public NotificationBox(MainDesktopPane desktop, HistoricalEvent event) {
 	//	super(NAME, desktop);
 	//desktop = Simulation.instance.getMars().getSettlement().	;
 	//	this.desktop = desktop;
 	public NotificationBox(HistoricalEvent event) {
 		super();
-		
+				
 		String oldMsgCache = "";
 		String msg = pushNotification(event);
 		if (!msg.equals("")) {
@@ -83,7 +81,9 @@ public class NotificationBox extends JDialog {
 	}
 
 	public String pushNotification(HistoricalEvent event)  {
-		count++;	
+		//count++;
+		String typeOfNotification = ""; // = Medical or Malfunction
+			
 		setUndecorated(true);
 		setVisible(false);
 
@@ -98,17 +98,25 @@ public class NotificationBox extends JDialog {
 		String personName = "";
 		String locationName = "";
 		String unitName = "";
+		boolean willNotify = false;
 		
 		HistoricalEventCategory category = event.getCategory();
 
-		if (category.equals(HistoricalEventCategory.MALFUNCTION) 
-				 ||	category.equals(HistoricalEventCategory.MEDICAL) )	{
+		if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+			typeOfNotification = "Malfunction";
+			willNotify = true;
+		}
+		if (category.equals(HistoricalEventCategory.MEDICAL))	{
+			typeOfNotification = "Medical";
+			willNotify = true;
+		}
+		if (willNotify == true) {
 			// if the condition is true,
 			//prepare the notification box for displaying the message		
 			message = message + event.getDescription(); //.toUpperCase();	
 			//category = category + event.getCategory();		
 			Object source = event.getSource();
-		try {
+			try {
 			if (source instanceof Person) {
 				Person p =((Person) source);
 				personName = p.getName();
@@ -120,7 +128,7 @@ public class NotificationBox extends JDialog {
 	                		personName +
 							" had " + message + " " +
 							locationName + 
-	                		"</FONT></CENTER></html>";              
+	                		"</FONT></CENTER></html>"; 
 				} // for a person
 	            else if (container instanceof Settlement) {
 	                settlementName = p.getSettlement().getName();
@@ -267,14 +275,20 @@ public class NotificationBox extends JDialog {
 				System.err.println("Exception Caught. Check the try catch branch for reasons: " + e.getMessage());
 		};
 		
-		} // end of if (category.equals(HistoricalEventCategory.MALFUNCTION)
+		} // end of if (willNotify == true)
 		
+		//String title = Msg.getString("NotificationBox.message.title"); 
+
+		//typeOfNotification = "<html><h2>" + typeOfNotification + "</h2></html>";
+
+		header = Msg.getString(typeOfNotification, "NotificationBox.message.title"); //$NON-NLS-1$
+
 		return labelText;
 	}
 	
 	public void popUp(String labelText) {
 		
-		String header = "<html><h2>" + MSGTITLE + "</h2></html>";
+
 	
 			setSize(220,100);
 			//setUndecorated(true);
@@ -352,7 +366,7 @@ public class NotificationBox extends JDialog {
 		      }
 		    });
 		    */
-					new Thread(){
+				new Thread(){
 					@Override
 			      	public void run() {
 						// if (frame == null ) { return; } // working? 
@@ -365,12 +379,10 @@ public class NotificationBox extends JDialog {
 			        	   e.printStackTrace();
 			           }
 				      };
-					}.start();			
+				}.start();			
 			setShape(new java.awt.geom.RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20));  
 			setAlwaysOnTop(true);
 		    setResizable(false);
 			setVisible(true);
 		}
-			
-	
 }

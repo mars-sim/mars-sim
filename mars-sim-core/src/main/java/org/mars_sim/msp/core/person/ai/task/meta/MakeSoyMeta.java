@@ -32,7 +32,7 @@ public class MakeSoyMeta implements MetaTask {
     private static Logger logger = Logger.getLogger(MakeSoyMeta.class.getName());
     
     public MakeSoyMeta() {
-        logger.info("just called MakeSoyMeta's constructor");
+        //logger.info("just called MakeSoyMeta's constructor");
     }
     
     @Override
