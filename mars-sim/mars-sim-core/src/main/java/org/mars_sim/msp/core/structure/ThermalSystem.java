@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalSystem.java
- * @version 3.07 2014-10-23
+ * @version 3.07 2014-11-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -369,15 +369,13 @@ implements Serializable {
 			}
 			else {
 				heatMode = HeatMode.POWER_DOWN;
-				
-				logger.info("setHeatMode() : heatMode was " + heatModeCache);		
+				//logger.info("setHeatMode() : heatMode was " + heatModeCache);		
 				if ( heatModeCache != heatMode) {
 					// if heatModeCache is different from the its last value
 					heatModeCache = heatMode;
 					building.setHeatMode(heatMode);
-					logger.info("setHeatMode() : heatMode is now " + heatMode);
+					//logger.info("setHeatMode() : heatMode is now " + heatMode);
 				}
-				
 
 				tempHeatRequired += building.getPoweredDownHeatRequired();
 

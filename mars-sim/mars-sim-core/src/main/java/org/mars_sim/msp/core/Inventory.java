@@ -401,8 +401,8 @@ implements Serializable {
                 }
             } else {
                 throw new IllegalStateException("Insufficiant stored amount to retrieve " + 
-                        resource.getName() + ", stored: " + getAmountResourceStored(resource, false) + 
-                        ", attempted: " + amount);
+                        resource.getName() + ". Storage Amount : " + getAmountResourceStored(resource, false) + 
+                        " kg. Attempted Amount : " + amount + " kg");
             }
         }
     }

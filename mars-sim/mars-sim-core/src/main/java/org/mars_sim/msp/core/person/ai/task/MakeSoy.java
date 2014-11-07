@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MakeSoy.java
- * @version 3.07 2014-10-31
+ * @version 3.07 2014-11-06
  * @author Manny Kung
  * 
  *   
@@ -27,12 +27,14 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 
 /** 
  * The MakeSoy class is a task for making soy related food items 
- * in a building with the Cooking function.
+ * in a building with the MakingSoy function.
  */
+// 2014-11-06 Note that SkillType stays the same as COOKING
+// Only BuildingFunction is changed to MAKINGSOY
 public class MakeSoy
 extends Task
 implements Serializable {
@@ -45,25 +47,25 @@ implements Serializable {
 
 	/** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.cookMeal"); //$NON-NLS-1$
+            "Task.description.makeSoy"); //$NON-NLS-1$
 	
     /** Task phases. */
-    private static final TaskPhase COOKING = new TaskPhase(Msg.getString(
-            "Task.phase.cooking")); //$NON-NLS-1$
+    private static final TaskPhase MAKINGSOY = new TaskPhase(Msg.getString(
+            "Task.phase.makingSoy")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
 
-	// Starting meal times (millisol) for 0 degrees longitude.
-	private static final double AFTERNOON_START = 600D;
+	// Starting time (millisol) for making soy product in 0 degrees longitude.
+	private static final double AFTERNOON_START = 650D;
 
-	// Time (millisols) duration of meals.
-	private static final double DURATION = 100D;
+	// Time (millisols) duration.
+	private static final double DURATION = 50D;
 
 	// Data members
-	/** The kitchen the person is cooking at. */
-	private Cooking kitchen;
+	/** The kitchen the person is making soy product. */
+	private MakingSoy kitchen;
 
 	/**
 	 * Constructor.
@@ -74,14 +76,16 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
+        logger.info("just called MakeSoy's constructor");
+
         // Initialize data members
         setDescription(Msg.getString("Task.description.makeSoy.detail", 
-                getMealName())); //$NON-NLS-1$
+                getSoyProductName())); //$NON-NLS-1$
         
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
         if (kitchenBuilding != null) {
-            kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+            kitchen = (MakingSoy) kitchenBuilding.getFunction(BuildingFunction.MAKINGSOY);
 
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding);
@@ -89,7 +93,7 @@ implements Serializable {
         else endTask();
 
         //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-        double soyAvailable = kitchen.checkAmountOfFood();
+        double soyAvailable = kitchen.checkAmountOfSoybeans();
         
         //logger.info("constructor : soyAvailble is " + soyAvailable);
         
@@ -100,8 +104,8 @@ implements Serializable {
         } else  {
                 
 	        // Add task phase
-	        addPhase(COOKING);
-	        setPhase(COOKING);
+	        addPhase(MAKINGSOY);
+	        setPhase(MAKINGSOY);
 	
 	        String jobName = person.getMind().getJob().getName(person.getGender());
 	        logger.finest(jobName + " " + person.getName() + " making soy products in " + kitchen.getBuilding().getName() + 
@@ -111,7 +115,7 @@ implements Serializable {
     
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.COOKING;
+        return BuildingFunction.MAKINGSOY;
     }
 
     /**
@@ -121,10 +125,10 @@ implements Serializable {
      */
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+            throw new IllegalArgumentException("The MakingSoy task phase is null");
         }
-        else if (COOKING.equals(getPhase())) {
-            return cookingPhase(time);
+        else if (MAKINGSOY.equals(getPhase())) {
+            return soyMakingPhase(time);
         }
         else {
             return time;
@@ -132,11 +136,11 @@ implements Serializable {
     }
 
     /**
-     * Performs the cooking phase of the task.
-     * @param time the amount of time (millisol) to perform the cooking phase.
-     * @return the amount of time (millisol) left after performing the cooking phase.
+     * Performs the soy product making phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left after performing the phase.
      */
-    private double cookingPhase(double time) {
+    private double soyMakingPhase(double time) {
 
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -144,22 +148,23 @@ implements Serializable {
             return time;
         }
 
-        // If meal time is over, clean up kitchen and end task.
-        if (!isMealTime(person)) {
+        if (!isSoyTime(person)) {
             endTask();
             kitchen.cleanup();
-            // logger.info(person.getName() + " finished cooking.");
             return time;
         }
 
-        // Determine amount of effective work time based on "Cooking" skill.
+        // Determine amount of effective work time based on "MakingSoy" skill.
         double workTime = time;
-        int cookingSkill = getEffectiveSkillLevel();
-        if (cookingSkill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) cookingSkill);
+        int soyMakingSkill = getEffectiveSkillLevel();
+        if (soyMakingSkill == 0) workTime /= 2;
+        else workTime += workTime * (.2D * (double) soyMakingSkill);
 
+        // round off to 2 decimal places
+        double roundOffWorkTime = Math.round(workTime * 100.0) / 100.0;
+         
         // Add this work to the kitchen.
-        kitchen.addWork(workTime);
+        kitchen.addWork(roundOffWorkTime);
 
         // Add experience
         addExperience(time);
@@ -175,7 +180,7 @@ implements Serializable {
      * @param time the amount of time (ms) the person performed this task.
      */
     protected void addExperience(double time) {
-        // Add experience to "Cooking" skill
+        // Add experience to "MakingSoy" skill
         // (1 base experience point per 25 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
@@ -190,7 +195,7 @@ implements Serializable {
      * Gets the kitchen the person is cooking in.
      * @return kitchen
      */
-    public Cooking getKitchen() {
+    public MakingSoy getKitchen() {
         return kitchen;
     }
 
@@ -202,7 +207,7 @@ implements Serializable {
 
         double chance = .001D;
 
-        // Cooking skill modification.
+        // MakingSoy skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
@@ -217,11 +222,11 @@ implements Serializable {
     }	
 
     /**
-     * Checks if it is currently a meal time at the person's location.
+     * Checks if it is currently the time at the chef's location.
      * @param person the person to check for.
-     * @return true if meal time
+     * @return true if it is soy product making time
      */
-    public static boolean isMealTime(Person person) {
+    public static boolean isSoyTime(Person person) {
         boolean result = false;
 
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -232,29 +237,21 @@ implements Serializable {
         }
 
         if ((modifiedTime >= AFTERNOON_START) && (modifiedTime <= (AFTERNOON_START + DURATION))) {
-            result = true;
+        	//logger.info("isSoyTime() : Yes it's time for making soymilk!");
+        	result = true;
         }
 
+        
         return result;
     }
 
     /**
-     * Gets the name of the meal the person is cooking based on the time.
-     * @return mean name ("Breakfast", "Lunch" or "Dinner) or empty string if none.
+     * Gets the name of soy product the chef is making based on the time.
+     * @return "Soymilk"
      */
-    private String getMealName() {
-        String result = "";
-
-        double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
-        double modifiedTime = timeOfDay + timeDiff;
-        if (modifiedTime >= 1000D) {
-            modifiedTime -= 1000D;
-        }
-
-        if ((modifiedTime >= AFTERNOON_START) && (modifiedTime <= (AFTERNOON_START + DURATION))) {
-            result = "Soy products";
-        }
+    private String getSoyProductName() {
+        
+    	String result = "Soymilk";
         return result;
     }
 
@@ -269,7 +266,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.MAKINGSOY);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
@@ -297,7 +294,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+                MakingSoy kitchen = (MakingSoy) building.getFunction(BuildingFunction.MAKINGSOY);
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) result.add(building);
             }
         }

@@ -240,11 +240,38 @@ implements Serializable {
 	    }
     }
 
+	/**
+	* Person consumes given amount of Legumes
+	* @param amount amount of Legumes to consume (in kg).
+	* @param container unit to get Legumes from
+	* @throws Exception if error consuming Legumes.
+	*/
+    // 2014-11-06 Added consumeLegumes() 
+	// TODO: find a way to elegantly handle more one legume food in future
+	public void consumeLegumes(double amount, Unit container, String foodType) {
+
+		AmountResource foodAR = AmountResource.findAmountResource(foodType);
+		AmountResource soybeansAR = AmountResource.findAmountResource("soybeans");
+		
+		double foodEaten = amount;
+		double foodAvailable = container.getInventory().getAmountResourceStored(foodAR, false);
+		if (foodAvailable < 0.5D)
+			throw new IllegalStateException("No more " + foodType + " available.");
+
+		// if container has less than enough food, finish up all food in the container
+		if (foodEaten > foodAvailable)
+			foodEaten = foodAvailable;
+
+			// subtract food from container
+		container.getInventory().retrieveAmountResource(foodAR, foodEaten);
+		container.getInventory().retrieveAmountResource(soybeansAR, foodEaten);
+		logger.info("consumeLegumes() : Just consumed " + foodEaten + " kg of soybeans");
+	}
+	
 		/**
 		* Person consumes given amount of Grains
-		* @param amount amount of Graines to consume (in kg).
+		* @param amount amount of Grains to consume (in kg).
 		* @param container unit to get Grains from
-		* @param type of food
 		* @throws Exception if error consuming Grains.
 		* 	2014-10-08 mkung : the person decides to eat grains 
 		*  TODO: consolidate all four similar methods into one
@@ -254,9 +281,11 @@ implements Serializable {
 			AmountResource food = AmountResource.findAmountResource(foodType);
 			double foodEaten = amount;
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
-			if (foodAvailable < 0.5D)
+			if (foodAvailable < 0.5D) {
+				// look for Legumes
+				consumeLegumes(amount, container, "Legume Group");
 				throw new IllegalStateException("No more " + foodType + " available.");
-
+			}
 			// if container has less than enough food, finish up all food in the container
 			if (foodEaten > foodAvailable)
 				foodEaten = foodAvailable;
@@ -334,42 +363,43 @@ implements Serializable {
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
-     * @throws Exception if error consuming food.
-     *    2014-10-08 mkung : Toss a dice to decide what food category to eat
-     *    split this method into 4 parts with a switch statement. 
+     * @throws Exception if error consuming food.  
      */
+	// 2014-11-06 mkung : Toss a dice to decide what food category to eat
     public void consumeFood(double amount, Unit container) {
     	if (container == null) throw new IllegalArgumentException("container is null");
 
-    	int choice = RandomUtil.getRandomInt(5);
+    	int choice = RandomUtil.getRandomInt(6);
     	
     	switch (choice) {
     	
-    	case 0:    	//  16.7% probability choosing fruits
+    	case 0:    	
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 0"); 
 			consumeFruits(amount, container, "Fruit Group");
     		break;
     		
-    	case 1: 	//   16.7% probability choosing vegetables
+    	case 1: 	
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 1");
 			consumeVegetables(amount, container, "Vegetable Group");
     		break;
     		
-    	case 2:  	//     16.7% probability choosing grains
+    	case 2:  	
     		//System.out.println("PhysicalCondition.java : consumeFood() : case 2");
 			consumeGrains(amount, container, "Grain Group");	
     		break;
     		
     	case 3:
+    		consumeLegumes(amount, container, "Legume Group");	
+    		break;
     	case 4:
     	case 5:
-    		//  50% probability choosing packed food
-    		//System.out.println("PhysicalCondition.java : consumeFood() : case 3, 4 & 5");
+       	case 6:
 	    	AmountResource food = AmountResource.findAmountResource("food");
 	    	double foodEaten = amount;
 	        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 	        
 	        if (foodAvailable < 0.5D) {
+	        	// ORDER OF EATING: choose to eat fruits first
 				consumeFruits(amount, container, "Fruit Group");
 				throw new IllegalStateException("No more packaged food available.");
 	        }
@@ -430,12 +460,12 @@ implements Serializable {
     /**
      * This method checks the consume values of a resource. If the
      * actual is less than the required then a HealthProblem is
-     * generated. If the required amount is statisfied, then any problem
+     * generated. If the required amount is satisfied, then any problem
      * is recovered.
      *
      * @param actual The amount of resource provided.
-     * @param require The amount of resouce required.
-     * @param complaint Problem assocoiated to this resource.
+     * @param require The amount of resource required.
+     * @param complaint Problem associated to this resource.
      * @return Has a new problem been added.
      */
     private boolean checkResourceConsumption(double actual, double required,

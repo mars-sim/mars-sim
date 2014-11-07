@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodTableModel.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2014-11-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -36,9 +36,10 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
  * The FoodTableModel that maintains a list of Food related objects.
  * It maps food related info into Columns.
  */
-// 2014-10-14 mkung 
+// 2014-10-14
 // Relocated all food related objects from SettlementTableModel Class to here
 // Incorporated five major food groups into MSP
+// 2014-11-06 Added SOYBEANS and SOYMILK
 public class FoodTableModel
 extends UnitTableModel {
 
@@ -56,12 +57,18 @@ extends UnitTableModel {
 	private final static int FRUITS = 4;
 	private final static int GRAINS = 5;
 	private final static int LEGUMES = 6;
-	private final static int SPICES = 7;
-	private final static int VEGETABLES = 8;
+	
+	// 2014-11-06 Added SOYBEANS and SOYMILK
+	private final static int SOYBEANS = 7;
+	private final static int SOYMILK = 8;
+	
+	private final static int SPICES = 9;
+	private final static int VEGETABLES = 10;
 
 	
+	
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 9;
+	private final static int COLUMNCOUNT = 11;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -86,6 +93,10 @@ extends UnitTableModel {
 		columnTypes[VEGETABLES] = Integer.class;
 		columnNames[LEGUMES] = "Legumes";
 		columnTypes[LEGUMES] = Integer.class;
+		columnNames[SOYBEANS] = "Soybeans";
+		columnTypes[SOYBEANS] = Integer.class;
+		columnNames[SOYMILK] = "Soymilk";
+		columnTypes[SOYMILK] = Integer.class;		
 		columnNames[SPICES] = "Spices";
 		columnTypes[SPICES] = Integer.class;
 	};
@@ -142,33 +153,67 @@ extends UnitTableModel {
 				} break;
 				
 				case FOOD : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("food")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("food")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("food"));
+
 				} break;
 
 				case FRUITS : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("Fruit Group")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Fruit Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Fruit Group"));
+
 				} break;
 
 				case GRAINS : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("Grain Group")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Grain Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Grain Group"));
+
 				} break;
 
 				case VEGETABLES : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("Vegetable Group")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Vegetable Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Vegetable Group"));
+
 				} break;
 
 				case LEGUMES: {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("Legume Group")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Legume Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Legume Group"));
+
 				} break;
 
+				case SOYBEANS: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soybeans")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Soybeans"));
+
+				} break;
+				
+				case SOYMILK: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soymilk")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Soymilk"));
+
+				} break;
+				
 				case SPICES : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("Spice Group")));
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Spice Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Spice Group"));
+
 				} break;
 				
 				case CROPS : {
@@ -227,6 +272,10 @@ extends UnitTableModel {
 					tempColumnNum = GRAINS;
 				else if (target.equals(AmountResource.findAmountResource("Legume Group"))) 
 					tempColumnNum = LEGUMES;
+				else if (target.equals(AmountResource.findAmountResource("Soybeans"))) 
+					tempColumnNum = SOYBEANS;
+				else if (target.equals(AmountResource.findAmountResource("Soymilk"))) 
+					tempColumnNum = SOYMILK;
 				else if (target.equals(AmountResource.findAmountResource("Spice Group"))) 
 					tempColumnNum = SPICES;
 				
@@ -276,6 +325,10 @@ extends UnitTableModel {
 				resourceMap.put(vegetables, getResourceStored(newUnit, vegetables));
 				AmountResource legumes = AmountResource.findAmountResource("Legume Group");
 				resourceMap.put(legumes, getResourceStored(newUnit, legumes));
+				AmountResource soybeans = AmountResource.findAmountResource("Soybeans");
+				resourceMap.put(soybeans, getResourceStored(newUnit, soybeans));
+				AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+				resourceMap.put(soymilk, getResourceStored(newUnit, soymilk));
 				AmountResource spices = AmountResource.findAmountResource("Spice Group");
 				resourceMap.put(spices, getResourceStored(newUnit, spices));
 				
