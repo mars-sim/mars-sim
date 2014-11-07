@@ -48,7 +48,6 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Mission for salvaging a construction stage at a building construction site.
- * TODO externalize strings
  */
 public class BuildingSalvageMission
 extends Mission
