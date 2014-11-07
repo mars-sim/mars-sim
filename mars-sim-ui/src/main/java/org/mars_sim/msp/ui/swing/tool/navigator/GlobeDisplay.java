@@ -80,9 +80,9 @@ implements Runnable {
 	private boolean keepRunning;
 
 	/** stores the internationalized string for reuse in {@link #drawCrossHair(Graphics)}. */
-	private String longitude = Msg.getString("GlobeDisplay.longitude"); //$NON-NLS-1$
+	private String longitude = Msg.getString("direction.longitude"); //$NON-NLS-1$
 	/** stores the internationalized string for reuse in {@link #drawCrossHair(Graphics)}. */
-	private String latitude = Msg.getString("GlobeDisplay.latitude"); //$NON-NLS-1$
+	private String latitude = Msg.getString("direction.latitude"); //$NON-NLS-1$
 	/** stores the font for drawing lon/lat strings in {@link #drawCrossHair(Graphics)}. */
 	private Font positionFont = new Font("Helvetica", Font.PLAIN, 10);
 	/** measures the pixels needed to display text. */
