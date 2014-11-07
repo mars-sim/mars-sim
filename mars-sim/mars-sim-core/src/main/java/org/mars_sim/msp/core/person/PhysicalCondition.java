@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2014-10-14
+ * @version 3.07 2014-11-07
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -255,8 +255,17 @@ implements Serializable {
 		
 		double foodEaten = amount;
 		double foodAvailable = container.getInventory().getAmountResourceStored(foodAR, false);
-		if (foodAvailable < 0.5D)
-			throw new IllegalStateException("No more " + foodType + " available.");
+		double soybeansAvailable = container.getInventory().getAmountResourceStored(soybeansAR, false);
+
+		// NOTE: foodAvailable can be reported as ZERO if a person is in a vehicle outside
+		// and only food is available (not legumes)
+		//logger.info("consumeLegumes() : Legumes available : " + foodAvailable);
+		//logger.info("consumeLegumes() : Soybean available : " + soybeansAvailable);
+		
+		if (foodAvailable < 0.5D) {
+			consumePackedFood(amount, container, "food");
+			//throw new IllegalStateException("No more " + foodType + " available.");
+		}
 
 		// if container has less than enough food, finish up all food in the container
 		if (foodEaten > foodAvailable)
@@ -282,9 +291,9 @@ implements Serializable {
 			double foodEaten = amount;
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 			if (foodAvailable < 0.5D) {
-				// look for Legumes
-				consumeLegumes(amount, container, "Legume Group");
-				throw new IllegalStateException("No more " + foodType + " available.");
+				//consumeLegumes(amount, container, "Legume Group");
+				consumePackedFood(amount, container, "food");
+				//throw new IllegalStateException("No more " + foodType + " available.");
 			}
 			// if container has less than enough food, finish up all food in the container
 			if (foodEaten > foodAvailable)
@@ -312,8 +321,9 @@ implements Serializable {
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
 			if (foodAvailable < .5D) {
-				consumeGrains(amount, container, "Grain Group");
-				throw new IllegalStateException("No more " + foodType + " available.");
+				//consumeGrains(amount, container, "Grain Group");
+				consumePackedFood(amount, container, "food");
+				//throw new IllegalStateException("No more " + foodType + " available.");
 			}
 
 			// if container has less than enough food, finish up all food in the container
@@ -343,8 +353,9 @@ implements Serializable {
 			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
 			if (foodAvailable < .5D) {
-				consumeVegetables(amount, container, "Vegetable Group");
-				throw new IllegalStateException("No more " + foodType + " available.");
+				//consumeVegetables(amount, container, "Vegetable Group");
+				consumePackedFood(amount, container, "food");
+				//throw new IllegalStateException("No more " + foodType + " available.");
 			}
 
 			// if container has less than enough food, finish up all food in the container
@@ -366,10 +377,11 @@ implements Serializable {
      * @throws Exception if error consuming food.  
      */
 	// 2014-11-06 mkung : Toss a dice to decide what food category to eat
+	// Spice Group is excluded from the selection
     public void consumeFood(double amount, Unit container) {
     	if (container == null) throw new IllegalArgumentException("container is null");
 
-    	int choice = RandomUtil.getRandomInt(6);
+    	int choice = RandomUtil.getRandomInt(9);
     	
     	switch (choice) {
     	
@@ -394,7 +406,23 @@ implements Serializable {
     	case 4:
     	case 5:
        	case 6:
-	    	AmountResource food = AmountResource.findAmountResource("food");
+       	case 7:
+    	case 8:
+       	case 9: 	// 2014-11-07 Added consumePackedFood()
+       		consumePackedFood(amount, container, "food");
+       		break;
+    	}
+    }
+    	
+    /**
+     * Person consumes given amount of packed food
+     * @param amount amount of food to consume (in kg).
+     * @param container unit to get food from
+     * @throws Exception if error consuming food.  
+     */
+	// 2014-11-07 Added consumePackedFood()
+    	public void consumePackedFood(double amount, Unit container, String foodType) {
+	    	AmountResource food = AmountResource.findAmountResource(foodType);
 	    	double foodEaten = amount;
 	        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 	        
@@ -412,10 +440,7 @@ implements Serializable {
 	        container.getInventory().retrieveAmountResource(food, foodEaten);
 				//System.out.println("PhysicalCondition.java : consumeFood() : food Eaten is "
 				//	+ foodEaten +  ", food remaining is " + (foodAvailable-foodEaten));
-    	
-	        break;
-    	}
-    	
+  
     	
     }
 

@@ -18,14 +18,14 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class DrinkSoymilkMeta implements MetaTask {
   
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(DrinkSoymilkMeta.class.getName());
+	//private static Logger logger = Logger.getLogger(DrinkSoymilkMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.drinkSoymilk"); //$NON-NLS-1$
     
     public DrinkSoymilkMeta() {
-        logger.info("just called DrinkSoymilkMeta's constructor");
+       // logger.info("just called DrinkSoymilkMeta's constructor");
     }
     
     @Override

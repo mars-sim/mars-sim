@@ -76,7 +76,7 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
-        logger.info("just called MakeSoy's constructor");
+        //logger.info("just called MakeSoy's constructor");
 
         // Initialize data members
         setDescription(Msg.getString("Task.description.makeSoy.detail", 
@@ -192,7 +192,7 @@ implements Serializable {
     }
 
     /**
-     * Gets the kitchen the person is cooking in.
+     * Gets the kitchen the person is making soy products.
      * @return kitchen
      */
     public MakingSoy getKitchen() {
@@ -216,7 +216,7 @@ implements Serializable {
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident while cooking.");
+            // logger.info(person.getName() + " has accident while making soy products.");
             kitchen.getBuilding().getMalfunctionManager().accident();
         }
     }	
