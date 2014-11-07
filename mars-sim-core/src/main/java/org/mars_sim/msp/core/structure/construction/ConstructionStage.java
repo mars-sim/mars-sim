@@ -4,21 +4,24 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.construction;
 
 import java.io.Serializable;
 
 /**
  * A construction stage of a construction site.
+ * TODO externalize strings
  */
 public class ConstructionStage implements Serializable {
 
-    // Construction site events.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Construction site events.
     public static final String ADD_CONSTRUCTION_WORK_EVENT = "adding construction work";
     public static final String ADD_SALVAGE_WORK_EVENT = "adding salvage work";
     
-    // Work time modifier for salvaging a construction stage.
+    /** Work time modifier for salvaging a construction stage. */
     private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
     
     // Data members
@@ -28,7 +31,7 @@ public class ConstructionStage implements Serializable {
     private boolean isSalvaging;
     
     /**
-     * Constructor
+     * Constructor.
      * @param info the stage information.
      */
     public ConstructionStage(ConstructionStageInfo info, ConstructionSite site) {
