@@ -169,7 +169,7 @@ extends UnitTableModel {
 
 			try {
 				// Invoke the appropriate method, switch is the best solution
-				// althought disliked by some
+				// although disliked by some
 				switch (columnIndex) {
 				case NAME : {
 					result = vehicle.getName();
@@ -186,23 +186,28 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("water")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("water")));
+					result = resourceMap.get(AmountResource.findAmountResource("water"));
 				} break;
 
 				case FOOD : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("food")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("food")));
+					result = resourceMap.get(AmountResource.findAmountResource("food"));
 				} break;
 
 				case OXYGEN : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("oxygen")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("oxygen")));
+					result = resourceMap.get(AmountResource.findAmountResource("oxygen"));
 				} break;
 
 				case METHANE : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
+					result = resourceMap.get(AmountResource.findAmountResource("methane"));
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
+					result = resourceMap.get(AmountResource.findAmountResource("rock samples"));
 				} break;
 
 				case SPEED : {
@@ -288,7 +293,8 @@ extends UnitTableModel {
 				} break;
 
 				case ICE : {
-					result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
+					result = resourceMap.get(AmountResource.findAmountResource("ice"));
 				} break;
 				}
 			}

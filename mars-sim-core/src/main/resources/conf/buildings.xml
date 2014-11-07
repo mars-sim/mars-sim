@@ -182,7 +182,9 @@
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
-				
+				<resource-storage resource="Soybeans" capacity="500.0" />
+				<resource-storage resource="Soymilk" capacity="500.0" />
+												
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
 				<resource-storage resource="Grain Group" capacity="500.0" />
@@ -198,11 +200,13 @@
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 				<resource-initial resource="Food" amount="150.0" />
+				<resource-initial resource="Soybeans" amount="10.0" />
+				<resource-initial resource="Soymilk" amount="0.0" />
 
 				<resource-initial resource="Fruit Group" amount="50.0" />
 				<resource-initial resource="Vegetable Group" amount="50.0" />
 				<resource-initial resource="Grain Group" amount="50.0" />
-				<resource-initial resource="Legume Group" amount="50.0" />
+				<resource-initial resource="Legume Group" amount="10.0" />
 				<resource-initial resource="Spice Group" amount="50.0" />				
 		
 			</storage>

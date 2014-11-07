@@ -64,15 +64,17 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+        //logger.info("just called Cooking's constructor");
+        
         cookingWorkTime = 0D;
         meals = new ArrayList<CookedMeal>();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        this.cookCapacity = config.getCookCapacity(building.getName());
+        this.cookCapacity = config.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getCookingActivitySpots(building.getName()));
+        loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
     }
 
     /**

@@ -143,24 +143,24 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("water")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("water"));
 				} break;
 
 
 				case OXYGEN : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("oxygen")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("oxygen"));
 				} break;
 
 				case METHANE : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("methane")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("methane"));
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = decFormatter.format(resourceMap.get(
-						AmountResource.findAmountResource("rock samples")));
+					result = resourceMap.get(
+						AmountResource.findAmountResource("rock samples"));
 				} break;
 
 				case MALFUNCTION: {
@@ -196,18 +196,18 @@ extends UnitTableModel {
 				} break;
 
 				case WASTE_WATER : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("waste water")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("waste water"));
 				} break;
 
 				case CO2 : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("carbon dioxide")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("carbon dioxide"));
 				} break;
 
 				case ICE : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("ice")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("ice"));
 				} break;
 				}
 			}

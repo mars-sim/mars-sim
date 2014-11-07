@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-11-06
  * @author Scott Davis
  */
 
@@ -441,6 +441,21 @@ implements VehicleOperator, Serializable {
         }
     }
 
+    /**
+     * Person consumes given amount of water.
+     * @param amount the amount of water to consume (in kg)
+     * @param takeFromInv is water taken from local inventory?
+     
+    //2014-11-06 ****NOT USED **** Added consumeWater()
+    public void consumeLiquid(double amount, boolean takeFromInv) {
+        if (takeFromInv) {
+            health.consumeLiquid(amount, getContainerUnit());
+        }
+        else {
+            health.consumeLiquid(amount);
+        }
+    }
+    */
     /**
      * Gets the gender of the person.
      * @return the gender

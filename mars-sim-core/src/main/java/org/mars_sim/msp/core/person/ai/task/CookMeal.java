@@ -59,7 +59,7 @@ implements Serializable {
 	// Starting meal times (millisol) for 0 degrees longitude.
 	private static final double BREAKFAST_START = 300D;
 	private static final double LUNCH_START = 500D;
-	private static final double DINNER_START = 700D;
+	private static final double DINNER_START = 800D;
 
 	// Time (millisols) duration of meals.
 	private static final double MEALTIME_DURATION = 100D;
@@ -77,6 +77,8 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
+        //logger.info("just called CookMeal's constructor");
+        
         // Initialize data members
         setDescription(Msg.getString("Task.description.cookMeal.detail", 
                 getMealName())); //$NON-NLS-1$
@@ -124,7 +126,7 @@ implements Serializable {
      */
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+            throw new IllegalArgumentException("The Cooking task phase is null");
         }
         else if (COOKING.equals(getPhase())) {
             return cookingPhase(time);
@@ -151,7 +153,7 @@ implements Serializable {
         if (!isMealTime(person)) {
             endTask();
             kitchen.cleanup();
-            // logger.info(person.getName() + " finished cooking.");
+            //logger.info(person.getName() + " just finished cooking.");
             return time;
         }
 

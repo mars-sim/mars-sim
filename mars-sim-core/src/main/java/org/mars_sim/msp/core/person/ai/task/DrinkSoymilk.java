@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * EatMeal.java
- * @version 3.07 2014-09-22
- * @author Scott Davis
+ * DrinkSoymilk.java
+ * @version 3.07 2014-11-06
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -23,23 +23,22 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.meta.DrinkSoymilkMeta;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.CookedMeal;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.FreshSoymilk;
+import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * The EatMeal class is a task for eating a meal.
+ * The EatMeal class is a task for drinking soymilk.
  * The duration of the task is 40 millisols.
- * Note: Eating a meal reduces hunger to 0.
+ * Note: Drinking soymilk reduces hunger to 0 and reduce stress.
  */
-public class EatMeal 
+public class DrinkSoymilk 
 extends Task 
 implements Serializable {
 
@@ -47,33 +46,33 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+	private static Logger logger = Logger.getLogger(DrinkSoymilk.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.eatMeal"); //$NON-NLS-1$
+            "Task.description.drinkSoymilk"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase EATING = new TaskPhase(Msg.getString(
-            "Task.phase.eating")); //$NON-NLS-1$
+    private static final TaskPhase DRINKINGSOYMILK = new TaskPhase(Msg.getString(
+            "Task.phase.drinkingSoymilk")); //$NON-NLS-1$
 
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
 
     // Data members
-    private CookedMeal meal;
+    private FreshSoymilk freshSoymilk;
 
     /** 
      * Constructs a EatMeal object, hence a constructor.
      * @param person the person to perform the task
      */
-    public EatMeal(Person person) {
+    public DrinkSoymilk(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
                 RandomUtil.getRandomDouble(30D));
 
-        //logger.info("just called EatMeal's constructor");
-        
+        //logger.info("just called DrinkSoymilk's constructor");
+
         boolean walkSite = false;
 
         LocationSituation location = person.getLocationSituation();
@@ -87,13 +86,14 @@ implements Serializable {
                 walkSite = true;
             }
 
-            // If cooked meal in a local kitchen available, take it to eat.
-            Cooking kitchen = getKitchenWithFood(person);
+            // If fresh soymilk is available in a local kitchen, go there.
+            MakingSoy kitchen = getKitchenWithSoymilk(person);
             if (kitchen != null) {
-                meal = kitchen.getCookedMeal();
+                freshSoymilk = kitchen.getFreshSoymilk();
+                //TODO: check if soymilk is deleted from AmountResource                
             }
-            if (meal != null) {
-                setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
+            if (freshSoymilk != null) {
+                setDescription(Msg.getString("Task.description.drinkSoymilk.made")); //$NON-NLS-1$
             }
         }
         else if (location == LocationSituation.OUTSIDE) {
@@ -114,8 +114,8 @@ implements Serializable {
         }
 
         // Initialize task phase.
-        addPhase(EATING);
-        setPhase(EATING);
+        addPhase(DRINKINGSOYMILK);
+        setPhase(DRINKINGSOYMILK);
     }
 
     @Override
@@ -130,10 +130,10 @@ implements Serializable {
      */
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+            throw new IllegalArgumentException("The task phase 'Drinking Soymilk' is null");
         }
-        else if (EATING.equals(getPhase())) {
-            return eatingPhase(time);
+        else if (DRINKINGSOYMILK.equals(getPhase())) {
+            return drinkingPhase(time);
         }
         else {
             return time;
@@ -141,28 +141,29 @@ implements Serializable {
     }
 
     /**
-     * Performs the eating phase of the task.
-     * @param time the amount of time (millisol) to perform the eating phase.
-     * @return the amount of time (millisol) left after performing the eating phase.
+     * Performs the drinking phase of the task.
+     * @param time the amount of time (millisol) to perform the drinking phase.
+     * @return the amount of time (millisol) left after performing the drinking phase.
      */
-    private double eatingPhase(double time) {
+    private double drinkingPhase(double time) {
 
         PhysicalCondition condition = person.getPhysicalCondition();
 
-        // If person has a cooked meal, additional stress is reduced.
-        if (meal != null) {
+        // If person drinks fresh soymilk, additional stress is reduced.
+        if (freshSoymilk != null) {
             double stress = condition.getStress();
-            condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
+            condition.setStress(stress - (STRESS_MODIFIER * (freshSoymilk.getQuality() + 1D)));
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             try {
-                person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
+            	// TODO: determine if it should depend on FoodConsumptionRate
+                person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (freshSoymilk == null));
                 condition.setHunger(0D);
             }
             catch (Exception e) {
-                // If person can't obtain food from container, end the task.
+                // If person can't obtain soymilk from container, end the task.
                 endTask();
             }
         }
@@ -186,6 +187,7 @@ implements Serializable {
      * @return available dining building
      * @throws BuildingException if error finding dining building.
      */
+    //TODO: For now, get soymilk from refrigerator only from dining building  
     public static Building getAvailableDiningBuilding(Person person) {
 
         Building result = null;
@@ -209,22 +211,22 @@ implements Serializable {
     }
 
     /**
-     * Gets a kitchen in the person's settlement that currently has cooked meals.
+     * Gets a kitchen in the person's settlement that currently has fresh soymilk.
      * @param person the person to check for
      * @return the kitchen or null if none.
      */
-    public static Cooking getKitchenWithFood(Person person) {
-        Cooking result = null;
+    public static MakingSoy getKitchenWithSoymilk(Person person) {
+        MakingSoy result = null;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
-            List<Building> cookingBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            List<Building> cookingBuildings = manager.getBuildings(BuildingFunction.MAKINGSOY);
             Iterator<Building> i = cookingBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-                if (kitchen.hasCookedMeal()) result = kitchen;
+                MakingSoy kitchen = (MakingSoy) building.getFunction(BuildingFunction.MAKINGSOY);
+                if (kitchen.hasFreshSoymilk()) result = kitchen;
             }
         }
 
@@ -236,14 +238,14 @@ implements Serializable {
      * @param person the person to check.
      * @return true if food is available.
      */
-    public static boolean isFoodAvailable(Person person) {
+    public static boolean isSoyAvailable(Person person) {
         boolean result = false;
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
-                AmountResource food = AmountResource.findAmountResource("food");
-                if (inv.getAmountResourceStored(food, false) > 0D) result = true;;
+                AmountResource soymilk = AmountResource.findAmountResource("soymilk");
+                if (inv.getAmountResourceStored(soymilk, false) > 0D) result = true;;
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -267,6 +269,6 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        meal = null;
+        freshSoymilk = null;
     }
 }

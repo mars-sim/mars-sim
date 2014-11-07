@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-11-02
+ * @version 3.07 2014-11-06
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
@@ -342,6 +343,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set cooking function.
 		if (config.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
+		if (config.hasCooking(buildingType)) buildingFunctions.add(new MakingSoy(this));
 
 		// Set manufacture function.
 		if (config.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));

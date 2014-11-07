@@ -1,11 +1,8 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-10-15
+ * @version 3.07 2014-11-06
  * @author Scott Davis
- * 2014-10-15 mkung: Fixed the crash by checking if there is any food available
- * 	Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
- *  see if new crop harvest comes in.
  */
 package org.mars_sim.msp.core.structure.building.function;
 
@@ -32,8 +29,12 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * The Farming class is a building function for greenhouse farming.
  */
-// 2014-10-14 mkung: implemented new way of calculating amount of food in kg, 
-// Crop Yield or Edible Biomass based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
+// 2014-11-06 Added if clause to account for soybean harvest
+// 2014-10-15 Fixed the crash by checking if there is any food available
+// 	Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
+//  see if new crop harvest comes in.
+// 2014-10-14 Implemented new way of calculating amount of crop harvest in kg, 
+// Crop Yield or Edible Biomass, based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
 public class Farming
 extends Function
 implements Serializable {
@@ -222,23 +223,16 @@ implements Serializable {
      * Adds the crop harvest to the farm.
      * @param harvest: harvested food to add (kg.)
      * @param cropCategory
-     * 2014-10-14 mkung : add String cropCategory to the param list, added getBiomassRatio 
+     * 2014-10-14 mkung : add String cropCategory to the param list,
      * Note: this method was called by Crop.java's addWork()
      */    
     public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
 
-    	//String harvestCropStr = getBiomassRatio(cropCategory);
-    	
     	try {
     		Inventory inv = getBuilding().getInventory();
-            //AmountResource harvestCrop = AmountResource.findAmountResource(cropName);
-            
-            AmountResource harvestCropCategory = AmountResource.findAmountResource(cropCategory);
-            
+            AmountResource harvestCropCategory = AmountResource.findAmountResource(cropCategory);      
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropCategory, false, false);
-            
                  //logger.info("addHarvest() : remaining Capacity is " + Math.round(remainingCapacity));
-                
             /*// look up on the following three attributes. Sanity check only.
             double amountResourceStored = inv.getAmountResourceStored(harvestCrop, false);
                  // logger.info("addHarvest() : amountResourceStored is " + amountResourceStored);             
@@ -254,10 +248,17 @@ implements Serializable {
                  	//logger.info("addHarvest() : storage is full!");
                 }
                 // add the harvest to the remaining capacity
-            //inv.storeAmountResource(harvestCrop, harvestAmount, false);
-            inv.storeAmountResource(harvestCropCategory, harvestAmount, false);
-                 //logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
-            }  catch (Exception e) {}
+            // 2014-11-06 changed the last param from false to true
+            inv.storeAmountResource(harvestCropCategory, harvestAmount, true);
+            //logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
+
+            // 2014-11-06 Added if clause to account for soybean harvest
+            // note that crop name is Soybean (without 's')
+            if (cropName == "Soybean") {
+               AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
+        	   inv.storeAmountResource(soybeansAR, harvestAmount, true);
+           }
+        }  catch (Exception e) {}
     }
 
     /**
@@ -316,7 +317,7 @@ implements Serializable {
         	double edibleBiomassPerDay = cropType.getEdibleBiomass();
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	maxHarvestinKg = edibleBiomassPerDay * growingDay * (growingArea / (double) cropNum) /1000;
-        	      //logger.info("timePassing : seedng a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
+        	      //logger.info("timePassing : seeding a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
             
         	// Note: the last param of Crop must be set to TRUE
         	Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, true);

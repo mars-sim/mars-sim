@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MakingSoy.java
- * @version 3.07 2014-10-31
+ * @version 3.07 2014-11-06
  * @author Manny Kung				
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -28,7 +29,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * The MakingSoy class is a building function for making soy products.
+ * The MakingSoy class is a building function for making soymilk.
  */
 public class MakingSoy
 extends Function
@@ -40,17 +41,35 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MakingSoy.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
+    private static final BuildingFunction FUNCTION = BuildingFunction.MAKINGSOY;
 
-    /** The base amount of work time (makingSoy skill 0) to produce a cooked meal. */
-    public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
+    /** The base amount of work time (cooking skill 0) to produce fresh soymilk. */
+    public static final double FRESHSOYMILK_WORK_REQUIRED = 40D;
+   
+    // The number of sols the soymilk can be preserved
+    public static final double SOLS_SOYMILK_PRESERVED = 5D;
+    
+    // Assuming 200 g of soybeans mixed with 4 liter/kg of water
+    public static final double RATIO_WATER_TO_SOYBEAN = 20D;
+    // Assuming 1 kg of soybean can make 3 kg of Tofu
+    public static final double RATIO_TOFU_TO_SOYBEAN = 3D;
+    
+    // Assuming 1 serving/cup of soymilk is 500mL 
+    // it uses 25 kg of soybean
+    public static final double KG_PER_SERVING_SOYMILK = .025D;
+    
+    // Keep at least 2 kg of soybeans in storage
+    public static final double MINIMUM_SOYBEAN_TO_KEEP = 2D;
+    // Keep at least 2 kg of water in storage
+    public static final double MINIMUM_WATER_TO_KEEP = 50D;
 
     // Data members
-    private boolean soyIsAvailable = true;
     private int cookCapacity;
-    private List<CookedMeal> meals;
+    private List<FreshSoymilk> freshSoymilkList;
     private double makingSoyWorkTime;
 
+    private Building building;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -59,16 +78,19 @@ implements Serializable {
     public MakingSoy(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-
+        this.building = building;
+        
+        logger.info("just called MakingSoy's constructor");
+        
         makingSoyWorkTime = 0D;
-        meals = new ArrayList<CookedMeal>();
+        freshSoymilkList = new ArrayList<FreshSoymilk>();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        this.cookCapacity = config.getCookCapacity(building.getName());
+        this.cookCapacity = config.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getCookingActivitySpots(building.getName()));
+        loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -82,7 +104,8 @@ implements Serializable {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
-        // Demand is 1 makingSoy capacity for every five inhabitants.
+        // TODO: calibrate this demand
+    	// Demand is 1 makingSoy capacity for every five inhabitants.
         double demand = settlement.getAllAssociatedPeople().size() / 5D;
 
         double supply = 0D;
@@ -95,7 +118,7 @@ implements Serializable {
             }
             else {
                 MakingSoy makingSoyFunction = (MakingSoy) building.getFunction(FUNCTION);
-                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .25D + .25D;
                 supply += makingSoyFunction.cookCapacity * wearModifier;
             }
         }
@@ -142,7 +165,7 @@ implements Serializable {
      * Gets the skill level of the best cook using this facility.
      * @return skill level.
      */
-    public int getBestCookSkill() {
+    public int getBestSoySkill() {
         int result = 0;
 
         if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
@@ -165,52 +188,67 @@ implements Serializable {
     }
 
     /**
-     * Checks if there are any cooked meals in this facility.
-     * @return true if cooked meals
+     * Checks if there are any FreshSoymilkList in this facility.
+     * @return true if yes
      */
-    public boolean hasCookedMeal() {
-        return (meals.size() > 0);
+    public boolean hasFreshSoymilk() {
+        return (freshSoymilkList.size() > 0);
     }
 
     /**
-     * Gets the number of cooked meals in this facility.
-     * @return number of meals
+     * Gets the number of cups of fresh soymilk in this facility.
+     * @return number of freshSoymilkList
      */
-    public int getNumberOfCookedMeals() {
-        return meals.size();
+    public int getNumServingsFreshSoymilk() {
+        return freshSoymilkList.size();
     }
 
     /**
-     * Gets a cooked meal from this facility.
-     * @return the meal
+     * Gets freshSoymilk from this facility.
+     * @return freshSoymilk
      */
-    public CookedMeal getCookedMeal() {
-        CookedMeal bestMeal = null;
+    public FreshSoymilk getFreshSoymilk() {
+        FreshSoymilk bestSoymilk = null;
         int bestQuality = -1;
-        Iterator<CookedMeal> i = meals.iterator();
+        Iterator<FreshSoymilk> i = freshSoymilkList.iterator();
         while (i.hasNext()) {
-            CookedMeal meal = i.next();
-            if (meal.getQuality() > bestQuality) {
-                bestQuality = meal.getQuality();
-                bestMeal = meal;
+            FreshSoymilk freshSoymilk = i.next();
+            if (freshSoymilk.getQuality() > bestQuality) {
+                bestQuality = freshSoymilk.getQuality();
+                bestSoymilk = freshSoymilk;
             }
         }
 
-        if (bestMeal != null) meals.remove(bestMeal);
-
-        return bestMeal;
+        if (bestSoymilk != null) {
+        	freshSoymilkList.remove(bestSoymilk);
+        	// remove soymilk from amount resource 
+        	removeSoymilkFromAmountResource();
+         }
+        return bestSoymilk;
     }
-
+    
     /**
-     * Gets the quality of the best quality meal at the facility.
+     * Remove soymilk from its AmountResource container
+     * @return none
+     */
+    // 2014-11-06 Added removeSoymilkFromAmountResource()
+    public void removeSoymilkFromAmountResource() {
+       	double soybeansConsumed = KG_PER_SERVING_SOYMILK; 
+        double waterConsumed = soybeansConsumed * RATIO_WATER_TO_SOYBEAN;
+        AmountResource soymilkAR = AmountResource.findAmountResource("soymilk");
+        getBuilding().getInventory().retrieveAmountResource(soymilkAR, waterConsumed);
+    }
+    
+    /**
+     * Gets the quality of the best quality freshSoymilk at the facility.
      * @return quality
      */
-    public int getBestMealQuality() {
+    public int getBestSoymilkQuality() {
         int bestQuality = 0;
-        Iterator<CookedMeal> i = meals.iterator();
+        Iterator<FreshSoymilk> i = freshSoymilkList.iterator();
         while (i.hasNext()) {
-            CookedMeal meal = i.next();
-            if (meal.getQuality() > bestQuality) bestQuality = meal.getQuality();
+            FreshSoymilk freshSoymilk = i.next();
+            if (freshSoymilk.getQuality() > bestQuality) bestQuality = freshSoymilk.getQuality();
         }
 
         return bestQuality;
@@ -227,94 +265,116 @@ implements Serializable {
      * Adds makingSoy work to this facility. 
      * The amount of work is dependent upon the person's makingSoy skill.
      * @param workTime work time (millisols)
-     * 2014-10-08 mkung: rewrote this function to highlight the while loop. 
-     * 					moved remaining tasks into a new method makingSoyChoice()
-     * 2014-10-15 mkung: Fixed the no available food crash by checking if the total food available
-     *  				is more than 0.5 kg, 
-     */
+      */
     public void addWork(double workTime) {
-    	makingSoyWorkTime += workTime;       
-        //logger.info("addWork() : makingSoyWorkTime is " + makingSoyWorkTime);
-        //logger.info("addWork() : workTime is " + workTime);
+    	makingSoyWorkTime += workTime; 
+    	boolean enoughTime = false;
+    	if (makingSoyWorkTime >= FRESHSOYMILK_WORK_REQUIRED) 
+    		enoughTime = true;
+    	else 
+    		enoughTime = false;
+        logger.info("addWork() : makingSoyWorkTime is " + makingSoyWorkTime);
+        logger.info("addWork() : workTime is " + workTime);
+    	// TODO: check if this is proportional to the population
+        double size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
+        double maxCup = size * 4;
+    	//double soybeansConsumed;
         
     	// check if there are new harvest, if it does, set soyIsAvailable to true
     	double soybeansAvailable = checkAmountOfSoybeans();
+    	//double waterConsumed = soybeansConsumed * WATER_CONTENT_FACTOR;
+    	double waterAvailable = checkAmountOfWater();
     	
-    	if (soybeansAvailable >= 0.5) 
-    		soyIsAvailable = true;
+        logger.info("addWork() : " + freshSoymilkList.size() + " servings of fresh soymilk available");
     	
-     	while ((makingSoyWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (soyIsAvailable) ){      	
+        boolean soyIsAvailable = false;
+    	// TODO: check the population size. 
+    	// should NOT make more than pop size * 3 
+     	if (soybeansAvailable >= MINIMUM_SOYBEAN_TO_KEEP 
+     			&& waterAvailable > MINIMUM_WATER_TO_KEEP
+     			&& freshSoymilkList.size() < maxCup ) { 
+     		soyIsAvailable = true;
+     	}
+     	
+     	if (enoughTime && soyIsAvailable)
             makingSoyChoice();
-        } // end of while
+        
+     	logger.info("end of addWork()");
      } // end of void addWork()
     
     public double checkAmountOfSoybeans() {
-
-        AmountResource soybeans = AmountResource.findAmountResource("Soybean");
+        AmountResource soybeans = AmountResource.findAmountResource("Soybeans");
         double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeans, false);
-       
-        // totalAV  = vegAV + legumeAV +...
+        //logger.info("checkAmountOfSoybeans() : soybeansAvailable is " + soybeansAvailable);
         return soybeansAvailable ;
-   	
     }
     
-    
-    
+    public double checkAmountOfWater() {
+        AmountResource water = AmountResource.findAmountResource("water");
+        double waterAvailable = getBuilding().getInventory().getAmountResourceStored(water, false);
+        return waterAvailable ;
+    }
+ 
     /**
-     * Orders of makingSoy 
+     * Makes Soymilk and Tofu  
      * @param none
-     * 2014-10-08 mkung: 1st choice: making vegetables soup / make salad bowl 
-     * 					 2nd cooked fry rice / high-fiber wheat bread sandwich
-    // TODO: let the cook choose what kind of meal to cook based on his preference
-    // TODO: create a method to make the codes more compact 
      */
-    public void  makingSoyChoice() {
+    public void makingSoyChoice() {
     	
-        int mealQuality = getBestCookSkill();
+        int soymilkQuality = getBestSoySkill();
+        // TODO: how to use time ?
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        double soybeansAmount = config.getFoodConsumptionRate() * (1D / 3D);   
-       	
-        AmountResource soybeans = AmountResource.findAmountResource("Soybeans");
-        double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeans, false);
+        // TODO: 2014-11-06 need to calibrate soybeansConsumed
+        //double soybeansConsumed = config.getFoodConsumptionRate() * (1D / 40D);
+        double soybeansConsumed = KG_PER_SERVING_SOYMILK; 
+        double waterConsumed = soybeansConsumed * RATIO_WATER_TO_SOYBEAN;
+        logger.info("makingSoyChoice() : " + soybeansConsumed + " kg of soybeans will be consumed");
+        logger.info("makingSoyChoice() : " + waterConsumed + " kg of water will be consumed");
+         
+        AmountResource waterAR = AmountResource.findAmountResource("water");
+        double waterAvailable = getBuilding().getInventory().getAmountResourceStored(waterAR, false);
+        AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
+        double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
+        AmountResource legumesAR = AmountResource.findAmountResource("Legume Group");
+        double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumesAR, false);
         
-        double totalAvailable = soybeansAvailable;
-       	
-        if (totalAvailable > 0.5) { 
-        	//foodAvailable = true;
-       
-	        double soybeansFraction = soybeansAvailable;
-	        
-	        //logger.info("makingSoyChoice() : total Food Available is " + Math.round(totalAvailable) + " kg");
-	        //logger.info("makingSoyChoice() : amount to cook is " + foodAmount + " kg");
+        if ((soybeansAvailable > soybeansConsumed) 
+        		&& (waterAvailable > waterConsumed)
+        		&& (legumesAvailable > soybeansConsumed)) { 
+   
+	        logger.info("makingSoyChoice() : amount of soybeans available is " + soybeansAvailable + " kg");
 	
-	        getBuilding().getInventory().retrieveAmountResource(soybeans, soybeansFraction);
+	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansConsumed);
+	        getBuilding().getInventory().retrieveAmountResource(legumesAR, soybeansConsumed);
+	        getBuilding().getInventory().retrieveAmountResource(waterAR, waterConsumed);
+	    	        
 	        //	System.out.println("makingSoy.java : addWork() : makingSoy vegetables using "  
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
-	        //logger.info("makingSoyChoice() : meals.size() is " + meals.size() );
-	        
+	        freshSoymilkList.add(new FreshSoymilk(soymilkQuality, time));
+	        logger.info("makingSoyChoice() : 1 serving of fresh soymilk was just made");
+
+    		Inventory inv = getBuilding().getInventory();
+            AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");      
+            AmountResource tofuAR = AmountResource.findAmountResource("Tofu");
+            
+            double soymilkinKg = soybeansConsumed * RATIO_WATER_TO_SOYBEAN ; 
+            double tofuinKg = soybeansConsumed * RATIO_TOFU_TO_SOYBEAN;
+            		
+	       	inv.storeAmountResource(soymilkAR, soymilkinKg, true);
+	       	inv.storeAmountResource(tofuAR, tofuinKg, true);
+	        logger.info("makingSoyChoice() : total " + freshSoymilkList.size() + " servings of fresh soymilk is available now");
+	        logger.info("makingSoyChoice() : " + soymilkinKg + " liter(s) soymilk is just made");
+
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has prepared " + meals.size() + " delicious fruits (quality is " + mealQuality + ")");
+	        			" has prepared " + freshSoymilkList.size() + " servings of tasty soymilk (quality is " + soymilkQuality + ")");
 	        }
-	  
-	        getBuilding().getInventory().retrieveAmountResource(soybeans, soybeansFraction);
-	        //	System.out.println("makingSoy.java : addWork() : makingSoy vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
-	        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has mixed a salad bowl with " + meals.size() + " fresh vegetables (quality is " + mealQuality + ")");
-	        }	
-	        makingSoyWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
-	        //logger.info("makingSoyChoice() : makingSoyWorkTime is " + makingSoyWorkTime);
-	        //logger.info("makingSoyChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
-        } 
+        } // end of if ((soybeansAvailable > soybeansConsumed)...
         else { 
-        	soyIsAvailable = false;
-         	   logger.info("makingSoyChoice() : no more soybeans available for meal! Wait until the next harvest");        	
+        	//soyIsAvailable = false; // used in addWork()
+         	   logger.info("makingSoyChoice() : no more soybeans or water available for making fresh soymilk!");        	
         }
     }
 
@@ -322,36 +382,24 @@ implements Serializable {
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
-     * 2014-10-08: mkung - Packed expired meal into food (turned 1 meal unit into 1 food unit)
+     * 2014-10-08: mkung - Packed expired freshSoymilk into food (turned 1 freshSoymilk unit into 1 food unit)
      */
     public void timePassing(double time) {
-
-        // Move expired meals back to food again (refrigerate leftovers).
-   
-        Iterator<CookedMeal> i = meals.iterator();
+        // Toss away expired freshSoymilkList
+        Iterator<FreshSoymilk> i = freshSoymilkList.iterator();
         while (i.hasNext()) {
-            CookedMeal meal = i.next();
+            FreshSoymilk freshSoymilk = i.next();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-                try {
-                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    AmountResource food = AmountResource.findAmountResource("food");
-                    double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-                    double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(
-                            food, false, false);
-                    if (foodAmount > foodCapacity) 
-                    	foodAmount = foodCapacity;
-                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
-                			// Turned 1 cooked meal unit into 1 food unit
-                    getBuilding().getInventory().storeAmountResource(food, foodAmount , false);
-                    i.remove();
-
-                    if(logger.isLoggable(Level.FINEST)) {
-                        logger.finest("Cooked meal expiring at " + 
-                                getBuilding().getBuildingManager().getSettlement().getName());
-                    }
+            if (MarsClock.getTimeDiff(freshSoymilk.getExpirationTime(), currentTime) < 0D) {
+            	
+            	i.remove();
+               	// 2014-11-06 soymilk cannot be preserved after a certain number of sols           	 
+            	removeSoymilkFromAmountResource();
+            	
+                if(logger.isLoggable(Level.FINEST)) {
+                     logger.finest("Fresh soymilk has lost its freshness at " + 
+                     getBuilding().getBuildingManager().getSettlement().getName());
                 }
-                catch (Exception e) {}
             }
         }
     }
@@ -381,8 +429,8 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        meals.clear();
-        meals = null;
+        freshSoymilkList.clear();
+        freshSoymilkList = null;
     }
 
 	@Override

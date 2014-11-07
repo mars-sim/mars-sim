@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 import org.mars_sim.msp.core.structure.building.function.Dining;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
@@ -767,8 +768,11 @@ implements Serializable {
             BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
             if (config.hasCommunication(buildingName))
                 result += Communication.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasCooking(buildingName))
+            if (config.hasCooking(buildingName)) {
                 result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
+                // 2014-11-06 Added MakingSoy
+                result += MakingSoy.getFunctionValue(buildingName, newBuilding, settlement);                
+            }
             if (config.hasDining(buildingName))
                 result += Dining.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasEVA(buildingName))

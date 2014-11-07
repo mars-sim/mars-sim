@@ -1,11 +1,9 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2014-10-15
+ * @version 3.07 2014-11-06
  * @author Scott Davis
- * 2014-10-15 mkung: Added 5 new food groups to getFarmingDemand() method 
- * 					 Enabled trading on these five amount resources 
-
+ * 
  */
 package org.mars_sim.msp.core.structure.goods;
 
@@ -79,6 +77,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 /**
  * A manager for goods values at a settlement.
  */
+// 2014-11-06 Added soybeans and soymilk
 public class GoodsManager
 implements Serializable {
 
@@ -423,6 +422,9 @@ implements Serializable {
         // 2014-10-15 mkung: added 5 new food groups
         AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
         AmountResource legumes = AmountResource.findAmountResource("Legume Group");
+        // 2014-11-06 Added soybeans and soymilk
+        AmountResource soybeans = AmountResource.findAmountResource("soybeans");
+        AmountResource soymilk = AmountResource.findAmountResource("soymilk");       
         AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
         AmountResource spices = AmountResource.findAmountResource("Spice Group");
         AmountResource grains = AmountResource.findAmountResource("Grain Group");
@@ -432,6 +434,9 @@ implements Serializable {
             // 2014-10-15 mkung: added 5 new food groups
             double vegValue = getGoodValuePerItem(GoodsUtil.getResourceGood(veg));
             double legumesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(legumes));
+            // 2014-11-06 Added soybeans and soymilk
+            double soybeansValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soybeans));
+            double soymilkValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soymilk));
             double fruitsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(fruits));
             double spicesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(spices));
             double grainsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(grains));
@@ -449,9 +454,12 @@ implements Serializable {
                         amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
                     demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
-                    // 2014-10-15 mkung: added 5 new food groups
+                    // 2014-10-15 Added 5 new food groups
                     demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
+                    // 2014-11-06 Added soybeans and soymilk
+                    demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
+                    demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * fruitsValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * spicesValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * grainsValue) / amountNeeded;
