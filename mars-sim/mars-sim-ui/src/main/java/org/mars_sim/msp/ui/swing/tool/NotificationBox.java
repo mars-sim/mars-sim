@@ -103,11 +103,11 @@ public class NotificationBox extends JDialog {
 		HistoricalEventCategory category = event.getCategory();
 
 		if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
-			typeOfNotification = "Malfunction";
+			header = Msg.getString("NotificationBox.message.malfunction"); //$NON-NLS-1$
 			willNotify = true;
 		}
 		if (category.equals(HistoricalEventCategory.MEDICAL))	{
-			typeOfNotification = "Medical";
+			header = Msg.getString("NotificationBox.message.medical"); //$NON-NLS-1$
 			willNotify = true;
 		}
 		if (willNotify == true) {
@@ -177,7 +177,7 @@ public class NotificationBox extends JDialog {
 						} catch (Exception e1) { 
 							// No, the equipment does NOT have a location container
 							System.err.println("Exception Caught Successfully: equipment's container is" + e1.getMessage());
-							e1.printStackTrace();
+							//e1.printStackTrace();
 							unitName = "outside";
 							// TODO: in future test if the equipment belongs to a person
 							// Person p = e.getUnitManager().getPerson();
@@ -195,7 +195,7 @@ public class NotificationBox extends JDialog {
 				} catch (Exception e1) { 
 					// No, the equipment does NOT have a name
 					System.err.println("Exception Caught Successfully: equipment's name is " + e1.getMessage());
-					e1.printStackTrace();
+					//e1.printStackTrace();
 					equipmentName = "";
 					try { // test if the equipment has a location/person container
 						Unit u = e.getContainerUnit();
@@ -211,7 +211,7 @@ public class NotificationBox extends JDialog {
 					} catch (Exception e2) { 
 						// No, the equipment does NOT have a location container
 						System.err.println("Exception Caught Successfully : equipment's container is" + e2.getMessage());
-						e1.printStackTrace();
+						//e1.printStackTrace();
 						unitName = "outside";
 						System.out.println("Equipment malfunction : just had " + message + 
 							unitName);
@@ -245,7 +245,7 @@ public class NotificationBox extends JDialog {
 				} catch (Exception e) { 
 					// No, the Vehicle does NOT have a location container
 					System.err.println("Exception Caught Successfully : vehicle's container is " + e.getMessage());
-					e.printStackTrace();
+					//e.printStackTrace();
 				 	unitName = "outside";
 				 	System.out.println("Vehicle malfunction : " + vehicleName +
 							" had " + message + " " +
@@ -271,17 +271,14 @@ public class NotificationBox extends JDialog {
 						"</FONT></CENTER></html>";
 			} // end of Building
 		} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				System.err.println("Exception Caught. Check the try catch branch for reasons: " + e.getMessage());
 		};
 		
 		} // end of if (willNotify == true)
 		
 		//String title = Msg.getString("NotificationBox.message.title"); 
-
 		//typeOfNotification = "<html><h2>" + typeOfNotification + "</h2></html>";
-
-		header = Msg.getString(typeOfNotification, "NotificationBox.message.title"); //$NON-NLS-1$
 
 		return labelText;
 	}
@@ -301,7 +298,7 @@ public class NotificationBox extends JDialog {
 			constraints.insets = new Insets(5, 5, 5, 5);
 			constraints.fill = GridBagConstraints.BOTH;
 			JLabel headingLabel = new JLabel(header, JLabel.CENTER);
-			headingLabel.setFont(new Font("Courier New", Font.BOLD, 14));
+			headingLabel.setFont(new Font("Courier New", Font.BOLD, 17));
 			headingLabel.setForeground(Color.BLUE);
 			//headingLabel.setIcon(); 
 			//headingLabel.setOpaque(false);
@@ -316,7 +313,7 @@ public class NotificationBox extends JDialog {
 			//System.out.println(labelText);
 			JLabel messageLabel = new JLabel(labelText);
 			messageLabel.setForeground(Color.RED);
-			messageLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+			messageLabel.setFont(new Font("Verdana", Font.BOLD, 12));
 			add(messageLabel, constraints);
 			
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

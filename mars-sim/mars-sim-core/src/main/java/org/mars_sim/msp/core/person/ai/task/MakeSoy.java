@@ -60,8 +60,11 @@ implements Serializable {
 	// Starting time (millisol) for making soy product in 0 degrees longitude.
 	private static final double AFTERNOON_START = 650D;
 
+    private static final double MORNING_START = 400D;
+    
+ 
 	// Time (millisols) duration.
-	private static final double DURATION = 50D;
+	private static final double DURATION = 80D;
 
 	// Data members
 	/** The kitchen the person is making soy product. */
@@ -236,8 +239,11 @@ implements Serializable {
             modifiedTime -= 1000D;
         }
 
+        if ((modifiedTime >= MORNING_START) && (modifiedTime <= (MORNING_START + DURATION))) {
+            result = true;
+        }        
         if ((modifiedTime >= AFTERNOON_START) && (modifiedTime <= (AFTERNOON_START + DURATION))) {
-        	//logger.info("isSoyTime() : Yes it's time for making soymilk!");
+        	//logger.info("isSoyTime() : Yes it's time for making soy products!");
         	result = true;
         }
 
@@ -249,9 +255,9 @@ implements Serializable {
      * Gets the name of soy product the chef is making based on the time.
      * @return "Soymilk"
      */
-    private String getSoyProductName() {
-        
-    	String result = "Soymilk";
+    //TODO: May change to specific products such as Soymilk, Soybean oil and Tofu in near future
+    private String getSoyProductName() {        
+    	String result = "Soy Products";
         return result;
     }
 

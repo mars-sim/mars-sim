@@ -301,8 +301,9 @@ implements Serializable {
         double vegAvailable = getBuilding().getInventory().getAmountResourceStored(vegAR, false);
   
         AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
-        //double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
-
+        double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
+        double soybeansFraction = soybeansAvailable / legumesAvailable ;
+        
         double totalAvailable =  fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
 
         //double totalAvailable = checkAmountOfFood();
@@ -335,7 +336,9 @@ implements Serializable {
 	        }
 	  		*/
 	        getBuilding().getInventory().retrieveAmountResource(legumesAR, legumesFraction);
-	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, legumesFraction);
+	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeansFraction*legumesFraction
+	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
+	        
 
 	        /*
 		        if (logger.isLoggable(Level.FINEST)) {

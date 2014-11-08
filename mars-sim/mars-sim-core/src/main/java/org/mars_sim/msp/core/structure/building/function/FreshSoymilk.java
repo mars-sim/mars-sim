@@ -24,9 +24,9 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(FreshSoymilk.class.getName());
 
 	/** The time (millisols) between when the soymilk is made and when it expires. */
-	// Good for 3 sols (refrigeration included). 
+	// Good for 5 sols (refrigeration already included). 
 	// On Mars, no industrial quality vacuum sealing yet)
-	private static final double SHELF_LIFE = 3000D;
+	private static final double SHELF_LIFE = 5000D;
 
 	// Data members
 	private int quality;
@@ -42,7 +42,7 @@ implements Serializable {
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
 		
-	      logger.info("just called FreshSoymilk's constructor");
+	      //logger.info("just called FreshSoymilk's constructor");
 
 	}
 

@@ -38,7 +38,7 @@ public enum BuildingFunction {
 	STORAGE						(Msg.getString("BuildingFunction.storage")),  //$NON-NLS-1$
 // 2014-11-06 Added MAKINGSOY and DRINKINGSOY
 	MAKINGSOY					(Msg.getString("BuildingFunction.makingSoy")),  //$NON-NLS-1$
-	DRINKINGSOY					(Msg.getString("BuildingFunction.drinkingSoy")),  //$NON-NLS-1$
+	//DRINKINGSOY					(Msg.getString("BuildingFunction.drinkingSoy")),  //$NON-NLS-1$
 	;
 
 	private String name;

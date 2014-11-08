@@ -274,7 +274,7 @@ implements Serializable {
 			// subtract food from container
 		container.getInventory().retrieveAmountResource(foodAR, foodEaten);
 		container.getInventory().retrieveAmountResource(soybeansAR, foodEaten);
-		logger.info("consumeLegumes() : Just consumed " + foodEaten + " kg of soybeans");
+		//logger.info("consumeLegumes() : Just consumed " + foodEaten + " kg of soybeans");
 	}
 	
 		/**
