@@ -54,7 +54,7 @@ public class MarsProject {
         if (useGUI) {
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
-            splashWindow.show();
+            splashWindow.display();
             splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
             boolean newSim = initializeSimulation(args);
 
@@ -66,7 +66,7 @@ public class MarsProject {
             startSimulation();
         
             // Dispose the splash window.
-            splashWindow.hide();
+            splashWindow.remove();
         }
         else {
             // Initialize the simulation.
