@@ -53,9 +53,12 @@ implements Serializable {
             "Task.description.drinkSoymilk"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase DRINKINGSOYMILK = new TaskPhase(Msg.getString(
-            "Task.phase.drinkingSoymilk")); //$NON-NLS-1$
+    //private static final TaskPhase DRINKINGSOYMILK = new TaskPhase(Msg.getString(
+    //       "Task.phase.drinkingSoymilk")); //$NON-NLS-1$
 
+    private static final TaskPhase EATING = new TaskPhase(Msg.getString(
+            "Task.phase.eating")); //$NON-NLS-1$
+    
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
@@ -114,8 +117,8 @@ implements Serializable {
         }
 
         // Initialize task phase.
-        addPhase(DRINKINGSOYMILK);
-        setPhase(DRINKINGSOYMILK);
+        addPhase(EATING);
+        setPhase(EATING);
     }
 
     @Override
@@ -130,9 +133,9 @@ implements Serializable {
      */
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("The task phase 'Drinking Soymilk' is null");
+            throw new IllegalArgumentException("The task phase is null");
         }
-        else if (DRINKINGSOYMILK.equals(getPhase())) {
+        else if (EATING.equals(getPhase())) {
             return drinkingPhase(time);
         }
         else {

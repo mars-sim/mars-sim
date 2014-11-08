@@ -44,7 +44,7 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.MAKINGSOY;
 
     /** The base amount of work time (cooking skill 0) to produce fresh soymilk. */
-    public static final double FRESHSOYMILK_WORK_REQUIRED = 20D;
+    public static final double FRESHSOYMILK_WORK_REQUIRED = 5D;
    
     // The number of sols the soymilk can be preserved
     public static final double SOLS_SOYMILK_PRESERVED = 5D;
@@ -62,7 +62,9 @@ implements Serializable {
     public static final double MINIMUM_SOYBEAN_TO_KEEP = 2D;
     // Keep at least 2 kg of water in storage
     public static final double MINIMUM_WATER_TO_KEEP = 50D;
-
+    // the chef will make up to the maximum # 
+    // of serving of soymilk per person
+    public static final double MAX_SERVING_PER_PERSON = 4;
     // Data members
     private int cookCapacity;
     private List<FreshSoymilk> freshSoymilkList;
@@ -268,23 +270,24 @@ implements Serializable {
       */
     public void addWork(double workTime) {
     	makingSoyWorkTime += workTime; 
-        logger.info("addWork() : makingSoyWorkTime is " + makingSoyWorkTime);
-        logger.info("addWork() : workTime is " + workTime);
+        //logger.info("addWork() : makingSoyWorkTime is " + makingSoyWorkTime);
+        //logger.info("addWork() : workTime is " + workTime);
     	boolean enoughTime = false;
     	if (makingSoyWorkTime >= FRESHSOYMILK_WORK_REQUIRED) {
 	    	enoughTime = true;
 	    	// TODO: check if this is proportional to the population
 	        double size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
-	        // 5 is an arbitrary number. it prevents the chef from making too many servings of soymilk
-	        double maxServings = size * 5;
+	        // 4 is an arbitrary number. it prevents the chef from making too many servings of soymilk
+	        double maxServings = size * MAX_SERVING_PER_PERSON;
 	    	// check if there are new harvest, if it does, set soyIsAvailable to true
 	    	double soybeansAvailable = checkAmountOfSoybeans();
 	    	//double waterConsumed = soybeansConsumed * WATER_CONTENT_FACTOR;
 	    	double waterAvailable = checkAmountOfWater();
 	    	double numServings = freshSoymilkList.size();
-	    		logger.info("addWork() : " + numServings + " servings of fresh soymilk available");    	
-	        boolean soyIsAvailable = false;
-	     	if (soybeansAvailable >= MINIMUM_SOYBEAN_TO_KEEP 
+	    		//logger.info("addWork() : " + numServings + " servings of fresh soymilk available");    	
+	    		//logger.info("addWork() : " + freshSoymilkList.size() + " reshSoymilkList.size()");    	
+	    		boolean soyIsAvailable = false;
+	     	if (soybeansAvailable > MINIMUM_SOYBEAN_TO_KEEP 
 	     			&& waterAvailable > MINIMUM_WATER_TO_KEEP
 	     			&& numServings < maxServings ) { 
 	     		soyIsAvailable = true;
@@ -298,7 +301,7 @@ implements Serializable {
     	}
     	else { 
     		enoughTime = false;    	
-    		logger.info("end of addWork(). soy product not done yet. not enough makingSoyWorkTime : " + makingSoyWorkTime);
+    		//logger.info("end of addWork(). soy product not done yet. not enough makingSoyWorkTime : " + makingSoyWorkTime);
     	}
        	//logger.info("addWork() : makingSoyWorkTime is " + makingSoyWorkTime);
      } // end of void addWork()
@@ -331,8 +334,8 @@ implements Serializable {
         //double soybeansConsumed = config.getFoodConsumptionRate() * (1D / 40D);
         double soybeansConsumed = KG_PER_SERVING_SOYMILK; 
         double waterConsumed = soybeansConsumed * RATIO_WATER_TO_SOYBEAN;
-        logger.info("makingSoyChoice() : " + soybeansConsumed + " kg of soybeans will be consumed");
-        logger.info("makingSoyChoice() : " + waterConsumed + " kg of water will be consumed");
+        //logger.info("makingSoyChoice() : " + soybeansConsumed + " kg of soybeans will be consumed");
+        //logger.info("makingSoyChoice() : " + waterConsumed + " kg of water will be consumed");
          
         AmountResource waterAR = AmountResource.findAmountResource("water");
         double waterAvailable = getBuilding().getInventory().getAmountResourceStored(waterAR, false);
@@ -350,17 +353,15 @@ implements Serializable {
         		&& (waterAvailable > waterConsumed)
         		&& (legumesAvailable > soybeansConsumed)) { 
    
-	        logger.info("makingSoyChoice() : soybeans available : " + soybeansAvailable + " kg");
-	        logger.info("makingSoyChoice() : legumes available : " + legumesAvailable + " kg");
+	        //logger.info("makingSoyChoice() : soybeans available : " + soybeansAvailable + " kg");
+	        //logger.info("makingSoyChoice() : legumes available : " + legumesAvailable + " kg");
 	
 	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansConsumed);
 	        getBuilding().getInventory().retrieveAmountResource(legumesAR, soybeansConsumed);
 	        getBuilding().getInventory().retrieveAmountResource(waterAR, waterConsumed);
 	    	        
-	        //	System.out.println("makingSoy.java : addWork() : makingSoy vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
 	        freshSoymilkList.add(new FreshSoymilk(soymilkQuality, time));
-	        logger.info("makingSoyChoice() : 1 serving of fresh soymilk was just made");
+	        //logger.info("makingSoyChoice() : 1 serving of fresh soymilk was just made");
 
     		Inventory inv = getBuilding().getInventory();
             AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");      
@@ -371,8 +372,8 @@ implements Serializable {
             		
 	       	inv.storeAmountResource(soymilkAR, soymilkinKg, true);
 	       	inv.storeAmountResource(tofuAR, tofuinKg, true);
-	        logger.info("makingSoyChoice() : total " + freshSoymilkList.size() + " servings of fresh soymilk is available now");
-	        logger.info("makingSoyChoice() : " + soymilkinKg + " liter(s) soymilk is just made");
+	        //logger.info("makingSoyChoice() : total " + freshSoymilkList.size() + " servings of fresh soymilk is available now");
+	        //logger.info("makingSoyChoice() : " + soymilkinKg + " liter(s) soymilk is just made");
 
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
@@ -381,7 +382,7 @@ implements Serializable {
         } // end of if ((soybeansAvailable > soybeansConsumed)...
         else { 
         	//soyIsAvailable = false; // used in addWork()
-         	   logger.info("makingSoyChoice() : no more soybeans or water available for making fresh soymilk!");        	
+         	   //logger.info("makingSoyChoice() : no more soybeans or water available for making fresh soymilk!");        	
         }
     }
 
