@@ -96,11 +96,11 @@ extends JComponent {
 		window.setVisible(true);
 	}
 
-	public void show() {
+	public void display() {
 		window.setVisible(true);
 	}
 
-	public void hide() {
+	public void remove() {
 		window.dispose();
 	}
 
