@@ -6,12 +6,10 @@
   <landmark-list>
   	<landmark approvaldate="1973" diameter="3362.97" latitude="49.76 N" longitude="159.26 W" name="Acidalia Planitia" origin="From classical albedo feature at 44N, 21W." type="PL"/>
   	<landmark approvaldate="1982" diameter="853" latitude="35.7 N" longitude="105.12 E" name="Adamas Labyrinthus" origin="Classical albedo feature name; &quot;A River of Diamonds&quot;; today's River Sarbarnarekha in India." type="LB"/>
-  	<landmark approvaldate="1976" diameter="785.09" latitude="3.25 S" longitude="140.63 E" name="Aeolis Mensae" origin="Classical albedo feature name." type="MN"/>
   	<landmark approvaldate="2006" diameter="852.81" latitude="1.14 S" longitude="144.76 E" name="Aeolis Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1973" diameter="2072.02" latitude="49.39 N" longitude="73.18 W" name="Alba Fossae" origin="Classical albedo name." type="FO"/>
   	<landmark approvaldate="1973" diameter="2809.04" latitude="25.75 N" longitude="17.09 W" name="Amazonis Planitia" origin="Classical albedo feature name; home of the Amazons." type="PL"/>
   	<landmark approvaldate="2006" diameter="1330.5" latitude="16.23 N" longitude="114.52 E" name="Amenthes Cavi" origin="Classical albedo feature name." type="CB"/>
-  	<landmark approvaldate="1976" diameter="850" latitude="9.07 N" longitude="102.68 E" name="Amenthes Fossae" origin="Classical albedo feature name." type="FO"/>
   	<landmark approvaldate="1979" diameter="3873.48" latitude="60.2 S" longitude="82.95 W" name="Aonia Terra" origin="Classical albedo feature name." type="TA"/>
   	<landmark approvaldate="1979" diameter="4851.74" latitude="21.25 N" longitude="5.72 E" name="Arabia Terra" origin="Classical albedo feature name." type="TA"/>
   	<landmark approvaldate="2003" diameter="1952.65" latitude="55.9 N" longitude="42.44 W" name="Arcadia Dorsa" origin="Named for classical albedo feature at 45N, 120W." type="DO"/>
@@ -19,7 +17,6 @@
   	<landmark approvaldate="1973" diameter="1757.67" latitude="10.29 N" longitude="154.39 W" name="Ares Vallis" origin="Word for 'Mars' in Greek." type="VA"/>
   	<landmark approvaldate="2003" diameter="1370.64" latitude="72.49 S" longitude="118.33 W" name="Argentea Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1973" diameter="892.93" latitude="49.84 S" longitude="136.69 W" name="Argyre Planitia" origin="Classical albedo feature name." type="PL"/>
-  	<landmark approvaldate="1973" diameter="810.61" latitude="6.53 S" longitude="109.22 W" name="Candor Chasma" origin="Classical albedo feature name." type="CM"/>
   	<landmark approvaldate="1973" diameter="1471.56" latitude="8.27 S" longitude="137.93 W" name="Capri Chasma" origin="Classical albedo feature name." type="CM"/>
   	<landmark approvaldate="1973" diameter="1166.63" latitude="27 N" longitude="69.85 W" name="Ceraunius Fossae" origin="Classical albedo feature name" type="FO"/>
   	<landmark approvaldate="1997" diameter="1235" latitude="11.28 N" longitude="166.37 E" name="Cerberus Fossae" origin="From albedo feature at 10n, 212W. Changed from Cerberus Rupes." type="FO"/>
@@ -30,33 +27,25 @@
   	<landmark approvaldate="1973" diameter="958.31" latitude="13.37 S" longitude="119.26 W" name="Coprates Chasma" origin="Classical albedo feature name." type="CM"/>
   	<landmark approvaldate="1985" diameter="913.17" latitude="31.25 N" longitude="58.83 W" name="Cyane Fossae" origin="Classical albedo feature name." type="FO"/>
   	<landmark approvaldate="1985" diameter="1550.81" latitude="52.53 N" longitude="112.21 E" name="Cydnus Rupēs" origin="From albedo feature at 70N, 248W." type="RU"/>
-  	<landmark approvaldate="1976" diameter="764.96" latitude="34.56 N" longitude="167.67 W" name="Cydonia Mensae" origin="From albedo feature at 50N, 355W." type="MN"/>
   	<landmark approvaldate="1982" diameter="1922.02" latitude="18.35 S" longitude="54.05 W" name="Daedalia Planum" origin="Classical albedo feature name." type="PM"/>
-  	<landmark approvaldate="1979" diameter="794" latitude="37.61 S" longitude="88.89 E" name="Dao Vallis" origin="Word for &quot;star&quot; in Thai." type="VA"/>
   	<landmark approvaldate="1973" diameter="919.17" latitude="45.11 N" longitude="23.92 E" name="Deuteronilus Mensae" origin="From albedo feature at 35N, 355W." type="MN"/>
   	<landmark approvaldate="1973" diameter="1044" latitude="24.08 N" longitude="146.14 E" name="Elysium Fossae" origin="Classical albedo feature name." type="FO"/>
   	<landmark approvaldate="1973" diameter="3000.79" latitude="2.98 N" longitude="154.74 E" name="Elysium Planitia" origin="Classical albedo feature name." type="PL"/>
   	<landmark approvaldate="1973" diameter="1305.69" latitude="12.15 S" longitude="140.83 W" name="Eos Chasma" origin="Classical albedo feature name." type="CM"/>
-  	<landmark approvaldate="1982" diameter="811.67" latitude="35.66 N" longitude="5.02 W" name="Erebus Montes" origin="From albedo feature at 26N, 182W." type="MO"/>
   	<landmark approvaldate="Sep 22, 2010" diameter="1062.13" latitude="38.15 S" longitude="122.21 E" name="Eridania Planitia" origin="Classical albedo feature name." type="PL"/>
   	<landmark approvaldate="1979" diameter="1017.66" latitude="52.61 S" longitude="141.79 E" name="Eridania Scopulus" origin="Classical albedo feature name." type="SC"/>
-  	<landmark approvaldate="Apr 30, 2007" diameter="772.89" latitude="81.87 N" longitude="2.59 E" name="Gemina Lingula" origin="Classical albedo feature name." type="LN"/>
   	<landmark approvaldate="2006" diameter="1000.36" latitude="80.39 N" longitude="26.1 E" name="Gemini Scopuli" origin="Classical albedo feature name." type="SC"/>
-  	<landmark approvaldate="1982" diameter="777.78" latitude="30.58 N" longitude="129.97 E" name="Granicus Valles" origin="Ancient name for river in Turkey." type="VA"/>
   	<landmark approvaldate="1973" diameter="2299.16" latitude="42.43 S" longitude="70.5 E" name="Hellas Planitia" origin="Classical albedo feature name." type="PL"/>
   	<landmark approvaldate="2003" diameter="1707.44" latitude="23.54 N" longitude="114.9 E" name="Hephaestus Rupēs" origin="Named for classical albedo feature at 20N, 240W." type="RU"/>
-  	<landmark approvaldate="1991" diameter="818.25" latitude="22.8 S" longitude="113.16 E" name="Hesperia Dorsa" origin="Albedo feature name." type="DO"/>
   	<landmark approvaldate="1973" diameter="1601.73" latitude="21.42 S" longitude="109.89 E" name="Hesperia Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1985" diameter="974.4" latitude="38.17 N" longitude="135.91 E" name="Hrad Vallis" origin="Word for &quot;Mars&quot; in Armenian." type="VA"/>
   	<landmark approvaldate="2003" diameter="887.53" latitude="13.16 N" longitude="130.32 E" name="Hyblaeus Dorsa" origin="Named for albedo feature." type="DO"/>
   	<landmark approvaldate="1985" diameter="2115.45" latitude="48.09 S" longitude="54.84 W" name="Icaria Fossae" origin="From albedo feature at 44S, 130W." type="FO"/>
   	<landmark approvaldate="2003" diameter="1074.7" latitude="12.92 N" longitude="88.21 E" name="Isidis Dorsa" origin="Named for classical albedo feature at 25N, 270W." type="DO"/>
   	<landmark approvaldate="1973" diameter="1224.58" latitude="13.94 N" longitude="88.38 E" name="Isidis Planitia" origin="Classical albedo feature name." type="PL"/>
-  	<landmark approvaldate="1973" diameter="839.91" latitude="7.29 S" longitude="95.61 W" name="Ius Chasma" origin="Classical albedo feature name." type="CM"/>
   	<landmark approvaldate="1973" diameter="1580" latitude="25.14 N" longitude="117.12 W" name="Kasei Valles" origin="Word for &quot;Mars&quot; in Japanese." type="VA"/>
   	<landmark approvaldate="1985" diameter="1496.36" latitude="24.58 N" longitude="95.47 W" name="Labeatis Fossae" origin="Previously named feature at 30N, 75W; expanded coordinates." type="FO"/>
   	<landmark approvaldate="1979" diameter="1043.63" latitude="1.44 N" longitude="88.23 E" name="Libya Montes" origin="Classical albedo feature name." type="MO"/>
-  	<landmark approvaldate="1982" diameter="790" latitude="17.69 S" longitude="162.97 W" name="Loire Valles" origin="Modern river in France." type="VA"/>
   	<landmark approvaldate="1997" diameter="899.87" latitude="4.99 S" longitude="2.83 W" name="Lucus Planum" origin="Albedo feature name." type="PM"/>
   	<landmark approvaldate="1973" diameter="1817.66" latitude="10.79 N" longitude="114.49 W" name="Lunae Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1976" diameter="1350.61" latitude="28.14 N" longitude="35.53 W" name="Lycus Sulci" origin="Classical albedo feature name." type="SU"/>
@@ -77,7 +66,6 @@
   	<landmark approvaldate="1979" diameter="5519.45" latitude="50.41 S" longitude="174.84 W" name="Noachis Terra" origin="Classical albedo feature name." type="TA"/>
   	<landmark approvaldate="1973" diameter="1190.31" latitude="6.36 S" longitude="78.81 W" name="Noctis Labyrinthus" origin="Classical albedo feature name." type="LB"/>
   	<landmark approvaldate="1982" diameter="1425" latitude="6.62 S" longitude="77.11 E" name="Oenotria Scopuli" origin="Classical albedo feature name." type="SC"/>
-  	<landmark approvaldate="Mar 20, 2007" diameter="804.39" latitude="82.18 N" longitude="8.81 W" name="Olympia Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="Jul 25, 2007" diameter="1197.04" latitude="86.04 N" longitude="174.16 E" name="Olympia Rupēs" origin="Classical albedo feature name." type="RU"/>
   	<landmark approvaldate="2003" diameter="1507.96" latitude="81.16 N" longitude="178.48 E" name="Olympia Undae" origin="Classical albedo feature name." type="UN"/>
   	<landmark approvaldate="1976" diameter="1914.77" latitude="18.4 N" longitude="46.44 W" name="Olympus Rupes" origin="Classical albedo feature name." type="RU"/>
@@ -86,7 +74,6 @@
   	<landmark approvaldate="2003" diameter="2818.61" latitude="25.08 N" longitude="170.37 E" name="Phlegra Dorsa" origin="Named for classical albedo feature at 35N, 195W." type="DO"/>
   	<landmark approvaldate="1973" diameter="1350.65" latitude="40.4 N" longitude="163.71 E" name="Phlegra Montes" origin="Classical albedo feature name." type="MO"/>
   	<landmark approvaldate="1976" diameter="1429.87" latitude="83.35 S" longitude="157.7 E" name="Planum Australe" origin="Classical albedo feature." type="PM"/>
-  	<landmark approvaldate="2003" diameter="831.28" latitude="79.18 S" longitude="88.36 E" name="Promethei Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1976" diameter="1379.21" latitude="75.54 S" longitude="90.24 E" name="Promethei Rupes" origin="Classical albedo feature name." type="RU"/>
   	<landmark approvaldate="1979" diameter="3244.3" latitude="64.37 S" longitude="97 E" name="Promethei Terra" origin="Classical albedo feature name." type="TA"/>
   	<landmark approvaldate="1973" diameter="1033.97" latitude="43.87 N" longitude="48.86 E" name="Protonilus Mensae" origin="From albedo feature at 42N, 315W." type="MN"/>
@@ -100,10 +87,8 @@
   	<landmark approvaldate="1973" diameter="901.44" latitude="13.72 S" longitude="92.24 W" name="Sinai Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1973" diameter="2731.21" latitude="35.57 S" longitude="17.26 W" name="Sirenum Fossae" origin="Classical albedo feature name." type="FO"/>
   	<landmark approvaldate="2003" diameter="1032.87" latitude="69.64 S" longitude="6.41 E" name="Sisyphi Planum" origin="Classical albedo feature name." type="PM"/>
-  	<landmark approvaldate="1976" diameter="779.5" latitude="22.88 S" longitude="100.26 W" name="Solis Dorsa" origin="Classical albedo feature name." type="DO"/>
   	<landmark approvaldate="1973" diameter="1811.23" latitude="26.4 S" longitude="90.33 W" name="Solis Planum" origin="Classical albedo feature name." type="PM"/>
   	<landmark approvaldate="1973" diameter="1214.86" latitude="9.2 N" longitude="67.1 E" name="Syrtis Major Planum" origin="Albedo feature name; changed from Planitia to Planum." type="PM"/>
-  	<landmark approvaldate="1991" diameter="794.34" latitude="35.93 N" longitude="84.32 W" name="Tantalus Fluctus" origin="Albedo feature name." type="FL"/>
   	<landmark approvaldate="1973" diameter="2361.86" latitude="49.83 N" longitude="83.91 W" name="Tantalus Fossae" origin="From albedo feature at 35N, 110W." type="FO"/>
   	<landmark approvaldate="1985" diameter="1672.69" latitude="21.24 N" longitude="175.19 E" name="Tartarus Colles" origin="From albedo feature at 2N, 183W." type="CO"/>
   	<landmark approvaldate="1985" diameter="1086.46" latitude="15.46 N" longitude="167.54 E" name="Tartarus Montes" origin="Classical albedo feature name." type="MO"/>
@@ -114,14 +99,9 @@
   	<landmark approvaldate="1979" diameter="3635.18" latitude="39.49 S" longitude="25.85 W" name="Terra Sirenum" origin="Classical albedo feature name." type="TA"/>
   	<landmark approvaldate="1973" diameter="2058.91" latitude="1.57 N" longitude="67.42 W" name="Tharsis Montes" origin="Classical albedo feature name." type="MO"/>
   	<landmark approvaldate="1973" diameter="996.18" latitude="47.75 S" longitude="88.95 W" name="Thaumasia Fossae" origin="Classical albedo feature name." type="FO"/>
-  	<landmark approvaldate="1994" diameter="799.6" latitude="21.66 S" longitude="114.78 W" name="Thaumasia Planum" origin="Albedo feature at 30S, 75W." type="PM"/>
-  	<landmark approvaldate="1982" diameter="838" latitude="4.32 S" longitude="96.96 W" name="Tithoniae Fossae" origin="Classical albedo name." type="FO"/>
-  	<landmark approvaldate="1973" diameter="802.78" latitude="4.6 S" longitude="95.71 W" name="Tithonium Chasma" origin="Classical albedo feature name." type="CM"/>
   	<landmark approvaldate="1973" diameter="1720" latitude="16.23 N" longitude="145.14 W" name="Tiu Valles" origin="Word for &quot;Mars&quot; in old English (West Germanic)." type="VA"/>
   	<landmark approvaldate="1976" diameter="910.57" latitude="27 N" longitude="77.21 W" name="Tractus Catena" origin="Classical albedo feature name." type="CA"/>
-  	<landmark approvaldate="1991" diameter="779.4" latitude="24.2 S" longitude="115.72 E" name="Tyrrhena Dorsa" origin="Albedo feature name." type="DO"/>
   	<landmark approvaldate="1979" diameter="2470.14" latitude="11.9 S" longitude="88.84 E" name="Tyrrhena Terra" origin="Classical albedo feature name." type="TA"/>
-  	<landmark approvaldate="1985" diameter="849.94" latitude="9.95 N" longitude="56.93 W" name="Ulysses Fossae" origin="From albedo feature name." type="FO"/>
   	<landmark approvaldate="1973" diameter="3560.45" latitude="46.74 N" longitude="117.52 E" name="Utopia Planitia" origin="Classical albedo feature name." type="PL"/>
   	<landmark approvaldate="2003" diameter="2492.68" latitude="43.53 N" longitude="86.03 E" name="Utopia Rupēs" origin="Named for calssical albedo feature at 55N, 260W." type="RU"/>
   	<landmark approvaldate="1973" diameter="3761.28" latitude="14.01 S" longitude="121.41 W" name="Valles Marineris" origin="General name of the system of canyons honoring the scientific team of the Mariner 9 program." type="VA"/>
