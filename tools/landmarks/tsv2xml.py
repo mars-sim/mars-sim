@@ -1,16 +1,16 @@
 # coding=utf-8
 
 # Mars Simulation Project
-# Tab-separated landmark file importer script thingie
+# Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.06 2014-02-06
+# @version 3.07 2014-11-09
 # @author Lars Næsbye Christensen [lechimp]
 #
-# This script requires Python 2.4 or later and the 'SearchResults.tsv' file to be in the same
-# directory as the script file.
+# This script requires Python 2.4 or later and the 'SearchResults.tsv' file to be in the
+# same directory as the script file.
 #
-# Generate TSV file at http://planetarynames.wr.usgs.gov/AdvancedSearch
-# Select Target: Mars; Add column 'Feature Type Code'; Run Search
+# To generate TSV file at http://planetarynames.wr.usgs.gov/AdvancedSearch
+# Select System: MARS and target: Mars; Add column 'Feature Type Code'; Run Search
 # Scroll down and click 'TSV (tab separated values) for importing into other spread sheets' 
 # save the file as SearchResults.tsv in the same directory as this script.
 # Run : 'python tsv2xml.py' and the result file landmarks.xml is fit for use with MSP
@@ -22,11 +22,11 @@ from xml.dom.minidom import Document
 from decimal import Decimal
 
 # Preferences - should maybe be cmd-line parameters
-diameter_threshold = 750.0 #skip landmarks smaller than this size in km
+diameter_threshold = 850.0 #skip landmarks smaller than this size in km
 
 # Initialize types 
 xmldoc = Document()
-# in case we don't have a key line, assume some defaults
+# in case we don't have a key line (bad!), assume some defaults
 index_feature_name = 0
 index_target = 1
 index_diameter = 2
