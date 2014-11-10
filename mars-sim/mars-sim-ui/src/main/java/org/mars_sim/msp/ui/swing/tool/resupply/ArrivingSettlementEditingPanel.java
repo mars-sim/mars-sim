@@ -307,7 +307,7 @@ extends TransportItemEditingPanel {
 		latitudePane.add(latitudeTF);
 
 		// pull the degree sign into the comboboxes so it looks more like mars navigator window
-		String deg = Msg.getString("direction.degreeSign");
+		String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 
 		// Create latitude direction combo box.
 		latitudeDirectionCB = new JComboBoxMW<String>();
@@ -406,7 +406,7 @@ extends TransportItemEditingPanel {
 	 */
 	private boolean validateData() {
 		boolean result = true;
-		String errorString = "";
+		String errorString = new String();
 
 		// Validate settlement name.
 		if (nameTF.getText().trim().isEmpty()) {
