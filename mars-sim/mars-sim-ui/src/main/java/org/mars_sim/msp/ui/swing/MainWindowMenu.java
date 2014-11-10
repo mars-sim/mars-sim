@@ -74,6 +74,10 @@ implements ActionListener, MenuListener {
 	private JCheckBoxMenuItem scienceToolItem;
 	/** Resupply tool menu item. */
 	private JCheckBoxMenuItem resupplyToolItem;
+	/** Unit Bar menu item. */
+	private JCheckBoxMenuItem showUnitBarItem;
+	/** Tool Bar menu item. */
+	private JCheckBoxMenuItem showToolBarItem;
 	/** About Mars Simulation Project menu item. */
 	private JMenuItem aboutMspItem;
 	/** Tutorial menu item. */
@@ -208,7 +212,27 @@ implements ActionListener, MenuListener {
 		resupplyToolItem.addActionListener(this);
 		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
 		toolsMenu.add(resupplyToolItem);
+		
+		// Create settings menu 
+		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
+		settingsMenu.addMenuListener(this);
+		add(settingsMenu);
 
+		// Create Show Unit Bar menu item
+		showUnitBarItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.unitbar")); //$NON-NLS-1$
+		showUnitBarItem.addActionListener(this);
+		showUnitBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_DOWN_MASK, false));
+		showUnitBarItem.setToolTipText(Msg.getString("mainMenu.tooltip.unitbar")); //$NON-NLS-1$
+		settingsMenu.add(showUnitBarItem);
+		
+		// Create Show Tool Bar menu item
+		showToolBarItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.toolbar")); //$NON-NLS-1$
+		showToolBarItem.addActionListener(this);
+		showToolBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
+		showToolBarItem.setToolTipText(Msg.getString("mainMenu.tooltip.toolbar")); //$NON-NLS-1$
+		settingsMenu.add(showToolBarItem);
+		
+		
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
 		helpMenu.addMenuListener(this);
@@ -297,6 +321,10 @@ implements ActionListener, MenuListener {
 			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
 			else desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
+		if (selectedItem == showUnitBarItem) {
+			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());		}
+		if (selectedItem == showToolBarItem) {
+			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());		}
 
 		if (selectedItem == aboutMspItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
@@ -333,6 +361,8 @@ implements ActionListener, MenuListener {
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
+		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
+		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 	}
 
 	public void menuCanceled(MenuEvent event) {}

@@ -20,7 +20,6 @@ import javax.swing.event.ChangeListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -43,8 +42,6 @@ implements ActionListener {
 	private AudioPlayer soundPlayer;
 	private JSliderMW volumeSlider;
 	private JCheckBox checkMute;
-	private JCheckBox checkToolToolBar;
-	private JCheckBox checkUnitToolBar;
 
 	/**
 	 * Constructor
@@ -102,25 +99,6 @@ implements ActionListener {
 		uiPane.setBorder(new MarsPanelBorder());
 		mainPane.add(uiPane, BorderLayout.SOUTH);
 
-		final MainWindow theMainwindow = desktop.getMainWindow();
-
-		// Create Unit Toolbar Visibility checkbox.
-		boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
-		checkUnitToolBar = new JCheckBox(Msg.getString("PreferencesWindow.showUnitToolbar"), //$NON-NLS-1$
-				unitToolBarVisible);
-		checkUnitToolBar.setToolTipText(Msg.getString("PreferencesWindow.tooltip.showUnitToolbar")); //$NON-NLS-1$
-		checkUnitToolBar.addActionListener(this);
-
-		uiPane.add(checkUnitToolBar, BorderLayout.CENTER);
-
-		// Create Toolbar Visibility checkbox.
-		boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
-		checkToolToolBar = new JCheckBox(Msg.getString("PreferencesWindow.showToolbar"), toolToolBarVisible); //$NON-NLS-1$
-		checkToolToolBar.setToolTipText(Msg.getString("PreferencesWindow.tooltip.showToolbar")); //$NON-NLS-1$
-		checkToolToolBar.addActionListener(this);
-
-		uiPane.add(checkToolToolBar, BorderLayout.SOUTH);
-
 		// Pack window
 		pack();
 	}
@@ -136,11 +114,7 @@ implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source == this.checkToolToolBar) {
-			desktop.getMainWindow().getToolToolBar().setVisible(checkToolToolBar.isSelected());
-		} else if (source == checkUnitToolBar) {
-			desktop.getMainWindow().getUnitToolBar().setVisible(checkUnitToolBar.isSelected());
-		} else if (source == checkMute) {
+		if (source == checkMute) {
 			soundPlayer.setMute(checkMute.isSelected());
 			volumeSlider.setEnabled(!soundPlayer.isMute());
 		}
