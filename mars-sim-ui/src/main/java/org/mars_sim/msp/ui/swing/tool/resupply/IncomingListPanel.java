@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -31,7 +32,6 @@ import org.mars_sim.msp.core.person.EventType;
 
 /**
  * A panel showing a list of all incoming transport items.
- * TODO externalize strings
  */
 public class IncomingListPanel
 extends JPanel
@@ -53,7 +53,7 @@ implements ListSelectionListener {
 		super();
 
 		setLayout(new BorderLayout());
-		setBorder(new TitledBorder("Incoming Transport Items"));
+		setBorder(new TitledBorder(Msg.getString("IncomingListPanel.title"))); //$NON-NLS-1$
 		setPreferredSize(new Dimension(225, 200));
 
 		// Create incoming list.

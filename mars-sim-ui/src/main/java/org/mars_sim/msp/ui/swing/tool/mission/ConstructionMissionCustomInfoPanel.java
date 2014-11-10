@@ -33,6 +33,12 @@ implements ConstructionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	// snippets for constructing html-style tooltips
+	private static final String BR = "<br>"; //$NON-NLS-1$
+	private static final String NBSP = "&nbsp;"; //$NON-NLS-1$
+	private static final String START = "<html>"; //$NON-NLS-1$
+	private static final String STOP = "</html>"; //$NON-NLS-1$
+
 	// Data members.
 	private MainDesktopPane desktop;
 	private BuildingConstructionMission mission;
@@ -178,62 +184,62 @@ implements ConstructionListener {
 	 * Gets a tool tip string for the panel.
 	 */
 	private String getToolTipString() {
-		StringBuilder result = new StringBuilder("<html>");
+		StringBuilder result = new StringBuilder(START);
 
 		ConstructionStage stage = null;
 		if (site != null) stage = site.getCurrentConstructionStage();
 		if (stage != null) {
 			ConstructionStageInfo info = stage.getInfo();
-			result.append("Status: building ").append(info.getName()).append("<br>");
-			result.append("Stage Type: ").append(info.getType()).append("<br>");
-			if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
-			else result.append("Work Type: Construction<br>");
+			result.append("Status: building ").append(info.getName()).append(BR);
+			result.append("Stage Type: ").append(info.getType()).append(BR);
+			if (stage.isSalvaging()) result.append("Work Type: salvage").append(BR);
+			else result.append("Work Type: Construction").append(BR);
 			DecimalFormat formatter = new DecimalFormat("0.0");
 			String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
-			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
+			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(BR);
 			String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
-			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
-			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
+			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(BR);
+			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(BR);
 
 			// Add construction resources.
 			if (info.getResources().size() > 0) {
-				result.append("<br>Construction Resources:<br>");
+				result.append(BR).append("Construction Resources:").append(BR);
 				Iterator<AmountResource> i = info.getResources().keySet().iterator();
 				while (i.hasNext()) {
 					AmountResource resource = i.next();
 					double amount = info.getResources().get(resource);
-					result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(amount).append(" kg<br>");
+					result.append(NBSP).append(NBSP).append(resource.getName()).append(": ").append(amount).append(" kg").append(BR);
 				}
 			}
 
 			// Add construction parts.
 			if (info.getParts().size() > 0) {
-				result.append("<br>Construction Parts:<br>");
+				result.append(BR).append("Construction Parts:").append(BR);
 				Iterator<Part> j = info.getParts().keySet().iterator();
 				while (j.hasNext()) {
 					Part part = j.next();
 					int number = info.getParts().get(part);
-					result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
+					result.append(NBSP).append(NBSP).append(part.getName()).append(": ").append(number).append(BR);
 				}
 			}
 
 			// Add construction vehicles.
 			if (info.getVehicles().size() > 0) {
-				result.append("<br>Construction Vehicles:<br>");
+				result.append(BR).append("Construction Vehicles:").append(BR);
 				Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
 				while (k.hasNext()) {
 					ConstructionVehicleType vehicle = k.next();
-					result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
-					result.append("&nbsp;&nbsp;Attachment Parts:<br>");
+					result.append(NBSP).append(NBSP).append("Vehicle Type: ").append(vehicle.getVehicleType()).append(BR);
+					result.append(NBSP).append(NBSP).append("Attachment Parts:").append(BR);
 					Iterator<Part> l = vehicle.getAttachmentParts().iterator();
 					while (l.hasNext()) {
-						result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(l.next().getName()).append("<br>");
+						result.append(NBSP).append(NBSP).append(NBSP).append(NBSP).append(l.next().getName()).append(BR);
 					}
 				}
 			}
 		}
 
-		result.append("</html>");
+		result.append(STOP);
 
 		return result.toString();
 	}

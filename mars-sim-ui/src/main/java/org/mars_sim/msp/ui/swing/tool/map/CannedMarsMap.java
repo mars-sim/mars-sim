@@ -14,12 +14,12 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.mapdata.MapData;
 
 /** 
  * The CannedMarsMap class reads in data from files in the map_data
  * jar file in order to generate a map image.
- * TODO externalize strings
  */
 public abstract class CannedMarsMap
 implements Map {
@@ -67,7 +67,7 @@ implements Map {
 				mt.waitForID(0);
 			} 
 			catch (InterruptedException e) {
-				logger.log(Level.SEVERE,"MediaTracker interrupted " + e);
+				logger.log(Level.SEVERE,Msg.getString("CannedMarsMap.log.mediaTrackerInterrupted") + e); //$NON-NLS-1$
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);
