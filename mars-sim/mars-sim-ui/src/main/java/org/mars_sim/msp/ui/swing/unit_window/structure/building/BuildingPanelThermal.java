@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
