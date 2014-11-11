@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.preferences;
@@ -63,12 +63,12 @@ implements ActionListener {
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
-		// Create audio panel.
+		// Create audio pane.
 		JPanel audioPane = new JPanel(new BorderLayout());
 		audioPane.setBorder(new MarsPanelBorder());
 		mainPane.add(audioPane, BorderLayout.NORTH);
 
-		// Create audio label.
+		// Create volume label.
 		JLabel volumeLabel = new JLabel(Msg.getString("PreferencesWindow.volume"), JLabel.CENTER); //$NON-NLS-1$
 		audioPane.add(volumeLabel, BorderLayout.NORTH);
 
@@ -87,12 +87,6 @@ implements ActionListener {
 			}
 		});
 		audioPane.add(volumeSlider, BorderLayout.SOUTH);
-
-		// Create mute checkbox.
-		checkMute = new JCheckBox(Msg.getString("PreferencesWindow.mute"), soundPlayer.isMute()); //$NON-NLS-1$
-		checkMute.setToolTipText(Msg.getString("PreferencesWindow.tooltip.mute")); //$NON-NLS-1$
-		checkMute.addActionListener(this);
-		audioPane.add(checkMute);
 
 		// Create UI panel.
 		JPanel uiPane = new JPanel(new BorderLayout());

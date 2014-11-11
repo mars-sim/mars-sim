@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-11
  * @author Scott Davis
  */
 
@@ -78,6 +78,8 @@ implements ActionListener, MenuListener {
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
+	/** Mute menu item. */
+	private JCheckBoxMenuItem muteItem;
 	/** About Mars Simulation Project menu item. */
 	private JMenuItem aboutMspItem;
 	/** Tutorial menu item. */
@@ -228,11 +230,18 @@ implements ActionListener, MenuListener {
 		// Create Show Tool Bar menu item
 		showToolBarItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.toolbar")); //$NON-NLS-1$
 		showToolBarItem.addActionListener(this);
-		showToolBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
+		showToolBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK, false));
 		showToolBarItem.setToolTipText(Msg.getString("mainMenu.tooltip.toolbar")); //$NON-NLS-1$
 		settingsMenu.add(showToolBarItem);
-		
-		
+
+		settingsMenu.add(new JSeparator());
+
+		muteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute")); //$NON-NLS-1$
+		muteItem.addActionListener(this);
+		muteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
+		muteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute")); //$NON-NLS-1$
+		settingsMenu.add(muteItem);
+
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
 		helpMenu.addMenuListener(this);
@@ -265,8 +274,8 @@ implements ActionListener, MenuListener {
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
-		// This method always runs through an awful lot of if-then-else statements 
-		// when it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
+		// This method runs through an awful lot of if-then-else statements 
+		// and it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
 		JMenuItem selectedItem = (JMenuItem) event.getSource();
 
 		if (selectedItem == exitItem) mainWindow.exitSimulation();
@@ -323,8 +332,12 @@ implements ActionListener, MenuListener {
 		}
 		if (selectedItem == showUnitBarItem) {
 			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());		}
+
 		if (selectedItem == showToolBarItem) {
 			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());		}
+
+		if (selectedItem == muteItem) {
+			desktop.getSoundPlayer().setMute(muteItem.isSelected());		}
 
 		if (selectedItem == aboutMspItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
@@ -363,6 +376,7 @@ implements ActionListener, MenuListener {
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
+		muteItem.setSelected(desktop.getSoundPlayer().isMute());
 	}
 
 	public void menuCanceled(MenuEvent event) {}
