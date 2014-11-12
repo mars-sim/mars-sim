@@ -73,7 +73,7 @@ extends BuildingFunctionPanel {
 
 		// Prepare meal number label
 		servingsSoymilkCache = kitchen.getNumServingsFreshSoymilk();
-		servingsSoymilkLabel = new JLabel(Msg.getString("BuildingPanelMakingSoy.numberOfSoymilk", servingsSoymilkCache), JLabel.CENTER); //$NON-NLS-1$
+		servingsSoymilkLabel = new JLabel(Msg.getString("BuildingPanelMakingSoy.servingsOfSoymilk", servingsSoymilkCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsSoymilkLabel);
 
 		// Prepare meal quality label
