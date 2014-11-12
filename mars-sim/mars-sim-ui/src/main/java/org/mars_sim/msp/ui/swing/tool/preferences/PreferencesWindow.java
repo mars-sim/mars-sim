@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -65,10 +64,6 @@ implements ActionListener {
 		JPanel audioPane = new JPanel(new BorderLayout());
 		audioPane.setBorder(new MarsPanelBorder());
 		mainPane.add(audioPane, BorderLayout.NORTH);
-
-		// Create volume label.
-		JLabel volumeLabel = new JLabel(Msg.getString("PreferencesWindow.volume"), JLabel.CENTER); //$NON-NLS-1$
-		audioPane.add(volumeLabel, BorderLayout.NORTH);
 
 		// Create volume slider.
 		float volume = soundPlayer.getVolume();
