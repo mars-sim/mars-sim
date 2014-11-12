@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -41,7 +40,6 @@ implements ActionListener {
 	// Data members
 	private AudioPlayer soundPlayer;
 	private JSliderMW volumeSlider;
-	private JCheckBox checkMute;
 
 	/**
 	 * Constructor
@@ -107,10 +105,6 @@ implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == checkMute) {
-			soundPlayer.setMute(checkMute.isSelected());
-			volumeSlider.setEnabled(!soundPlayer.isMute());
+volumeSlider.setEnabled(!soundPlayer.isMute());
 		}
 	}
-}
