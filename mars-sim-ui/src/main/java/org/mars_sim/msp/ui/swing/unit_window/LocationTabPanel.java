@@ -203,6 +203,9 @@ implements ActionListener {
         	checkOutsideReading();
         	addOutsideReadingPanel();
         }
+        
+        // initialize containerCache
+        containerCache = unit.getContainerUnit();
     }
     
     // 2014-11-11 Modified temperature and pressure panel
@@ -332,7 +335,8 @@ implements ActionListener {
  
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
-        if (!containerCache.equals(container)) {
+        //if (!containerCache.equals(container)) {
+        if (containerCache != container) {
         	containerCache = container;
         	// the unit's container has changed
             if (container != null) {
