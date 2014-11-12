@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-11-02
+ * @version 3.06 2014-11-11
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -142,6 +142,23 @@ public class SettlementWindow extends ToolWindow {
 		});
 		mainPane.add(mapPane, BorderLayout.CENTER);
 
+		// Create open info button.
+		JButton openInfoButton = new JButton(Msg.getString("SettlementWindow.button.info")); //$NON-NLS-1$
+		openInfoButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.info")); //$NON-NLS-1$
+		openInfoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				Settlement settlement = mapPane.getSettlement();
+				
+				if (settlement != null) {
+					// 2014-10-26 obtained settlement object
+					setCurrentSettlement(settlement);
+					
+					getDesktop().openUnitWindow(settlement, false);
+				}
+			}
+		});
+		widgetPane.add(openInfoButton);
+		
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new JComboBoxMW(settlementCBModel);
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
@@ -176,8 +193,6 @@ public class SettlementWindow extends ToolWindow {
 			}
 		});
 		widgetPane.add(settlementNameChangeBtn);
-	
-		
 		
 		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
@@ -240,15 +255,6 @@ public class SettlementWindow extends ToolWindow {
 		});
 		buttonsPane.add(rotateClockwiseButton);
 
-		// Create rotate counter-clockwise button.
-		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
-		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.counterClockwise")); //$NON-NLS-1$
-		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
-			}
-		});
-		buttonsPane.add(rotateCounterClockwiseButton);
 
 		// Create recenter button.
 		JButton recenterButton = new JButton(Msg.getString("SettlementWindow.button.recenter")); //$NON-NLS-1$
@@ -260,6 +266,16 @@ public class SettlementWindow extends ToolWindow {
 			}
 		});
 		buttonsPane.add(recenterButton);
+
+		// Create rotate counter-clockwise button.
+		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
+		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.counterClockwise")); //$NON-NLS-1$
+		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
+			}
+		});
+		buttonsPane.add(rotateCounterClockwiseButton);
 
 		// Create labels button.
 		JButton labelsButton = new JButton(Msg.getString("SettlementWindow.button.labels")); //$NON-NLS-1$
@@ -274,24 +290,7 @@ public class SettlementWindow extends ToolWindow {
 			}
 		});
 		buttonsPane.add(labelsButton);
-
-		// Create open info button.
-		JButton openInfoButton = new JButton(Msg.getString("SettlementWindow.button.info")); //$NON-NLS-1$
-		openInfoButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.info")); //$NON-NLS-1$
-		openInfoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				Settlement settlement = mapPane.getSettlement();
-				
-				if (settlement != null) {
-					// 2014-10-26 obtained settlement object
-					setCurrentSettlement(settlement);
-					
-					getDesktop().openUnitWindow(settlement, false);
-				}
-			}
-		});
-		buttonsPane.add(openInfoButton);
-
+		
 		// Pack window.
 		pack();
 	}

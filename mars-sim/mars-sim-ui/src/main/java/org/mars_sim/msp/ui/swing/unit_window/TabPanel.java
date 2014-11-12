@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -30,6 +31,8 @@ public abstract class TabPanel extends JScrollPane {
 	protected Unit unit;
 	protected MainDesktopPane desktop;
 
+	private Color THEME_COLOR = Color.ORANGE;
+	
     /**
      * Constructor
      *
@@ -54,18 +57,22 @@ public abstract class TabPanel extends JScrollPane {
 
         // Create the view panel
         JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
+        //viewPanel.setBackground(THEME_COLOR);
         setViewportView(viewPanel);
         
         // Create top content panel
         topContentPanel = new JPanel();
+        //topContentPanel.setBackground(THEME_COLOR);
         topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
         topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(topContentPanel, BorderLayout.NORTH);
         
         // Create center content panel
         centerContentPanel = new JPanel(new BorderLayout(0, 0));
+        //centerContentPanel.setBackground(THEME_COLOR);
         centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);
+        
     }
     
     /**
