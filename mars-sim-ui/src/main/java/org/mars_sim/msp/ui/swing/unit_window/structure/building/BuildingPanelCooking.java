@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * CookingBuildingPanel.java
- * @version 3.06 2014-01-29
+ * BuildingPanelCooking.java
+ * @version 3.07 2014-11-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;

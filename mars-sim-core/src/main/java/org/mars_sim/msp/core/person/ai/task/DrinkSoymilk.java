@@ -56,7 +56,7 @@ implements Serializable {
     //private static final TaskPhase DRINKINGSOYMILK = new TaskPhase(Msg.getString(
     //       "Task.phase.drinkingSoymilk")); //$NON-NLS-1$
 
-    private static final TaskPhase EATING = new TaskPhase(Msg.getString(
+    private static final TaskPhase DRINKING = new TaskPhase(Msg.getString(
             "Task.phase.eating")); //$NON-NLS-1$
     
     // Static members
@@ -117,8 +117,8 @@ implements Serializable {
         }
 
         // Initialize task phase.
-        addPhase(EATING);
-        setPhase(EATING);
+        addPhase(DRINKING);
+        setPhase(DRINKING);
     }
 
     @Override
@@ -135,7 +135,7 @@ implements Serializable {
         if (getPhase() == null) {
             throw new IllegalArgumentException("The task phase is null");
         }
-        else if (EATING.equals(getPhase())) {
+        else if (DRINKING.equals(getPhase())) {
             return drinkingPhase(time);
         }
         else {

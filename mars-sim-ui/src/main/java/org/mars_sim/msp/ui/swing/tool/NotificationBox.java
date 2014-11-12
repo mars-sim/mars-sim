@@ -272,8 +272,6 @@ public class NotificationBox extends JDialog {
 	
 	public void popUp(String labelText) {
 		
-
-	
 			setSize(220,100);
 			//setUndecorated(true);
 			setLayout(new GridBagLayout());

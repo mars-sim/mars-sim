@@ -8,17 +8,21 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -41,6 +45,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	/** The center panel. */
 	private JTabbedPane centerPanel;
 
+	private Color THEME_COLOR = Color.ORANGE;
+	
     /**
      * Constructor
      *
@@ -57,22 +63,33 @@ public abstract class UnitWindow extends JInternalFrame {
         this.desktop = desktop;
         this.unit = unit;
         tabPanels = new ArrayList<TabPanel>();
+
         
         // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
-//        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+        // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
+        //getContentPane().setBackground(THEME_COLOR);
+
         
         // Create name panel
         namePanel = new JPanel(new BorderLayout(0, 0));
+        //namePanel.setBackground(THEME_COLOR);
+        //namePanel.setBorder(new MarsPanelBorder());
         mainPane.add(namePanel, BorderLayout.NORTH);
+        //mainPane.setBackground(THEME_COLOR);
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        JLabel nameLabel = new JLabel(unit.getName(), displayInfo.getButtonIcon(), SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(" " + unit.getName() + " ", displayInfo.getButtonIcon(), SwingConstants.CENTER);
+        nameLabel.setOpaque(true);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        namePanel.add(nameLabel, BorderLayout.EAST);
+        nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+        namePanel.setBorder(new MarsPanelBorder());
+        //namePanel.add(nameLabel, BorderLayout.EAST);
+        //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+        namePanel.add(nameLabel, BorderLayout.WEST);
         
         // Create description label if necessary.
         if (displayDescription) {
@@ -82,6 +99,8 @@ public abstract class UnitWindow extends JInternalFrame {
         
         // Create center panel
         centerPanel = new JTabbedPane();
+        mainPane.add(namePanel, BorderLayout.NORTH);
+        //centerPanel.setBackground(THEME_COLOR);
         mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
        

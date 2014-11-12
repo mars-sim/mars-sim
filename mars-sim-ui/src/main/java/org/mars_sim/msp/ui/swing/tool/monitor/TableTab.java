@@ -225,6 +225,9 @@ extends MonitorTab {
     		);
             sortedModel.addTableModelListener(table);
 
+            // 2014-11-11 Added auto resize
+    		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            
         	// Get the TableColumn header to display sorted column
         	JTableHeader theHeader = table.getTableHeader();
         	TableHeaderRenderer theRenderer =

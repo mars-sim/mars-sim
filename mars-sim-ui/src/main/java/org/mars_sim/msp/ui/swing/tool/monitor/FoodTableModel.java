@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodTableModel.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -57,18 +58,23 @@ extends UnitTableModel {
 	private final static int FRUITS = 4;
 	private final static int GRAINS = 5;
 	private final static int LEGUMES = 6;
+	private final static int SPICES = 7;
+	private final static int VEGETABLES = 8;
+
 	
 	// 2014-11-06 Added SOYBEANS and SOYMILK
-	private final static int SOYBEANS = 7;
-	private final static int SOYMILK = 8;
-	
-	private final static int SPICES = 9;
-	private final static int VEGETABLES = 10;
-
+	private final static int SOYBEANS = 9;
+	private final static int SOYMILK = 10;
+	// 2014-11-11 Added TOFU, SOY_FIBER, SOY_FLOUR, SOYBEAN OIL 
+	private final static int SOYBEAN_OIL = 11;
+	private final static int SOY_FIBER = 12;
+	private final static int SOY_FLOUR = 13;
+	private final static int SOY_PROTEIN = 14;
+	private final static int TOFU = 15;
 	
 	
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 11;
+	private final static int COLUMNCOUNT = 16;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -92,13 +98,23 @@ extends UnitTableModel {
 		columnNames[VEGETABLES] = "Vegetables";
 		columnTypes[VEGETABLES] = Integer.class;
 		columnNames[LEGUMES] = "Legumes";
-		columnTypes[LEGUMES] = Integer.class;
+		columnTypes[LEGUMES] = Integer.class;		
+		columnNames[SPICES] = "Spices";
+		columnTypes[SPICES] = Integer.class;
 		columnNames[SOYBEANS] = "Soybeans";
 		columnTypes[SOYBEANS] = Integer.class;
 		columnNames[SOYMILK] = "Soymilk";
-		columnTypes[SOYMILK] = Integer.class;		
-		columnNames[SPICES] = "Spices";
-		columnTypes[SPICES] = Integer.class;
+		columnTypes[SOYMILK] = Integer.class;
+		columnNames[SOYBEAN_OIL] = "Soybean Oil";
+		columnTypes[SOYBEAN_OIL] = Integer.class;
+		columnNames[SOY_FIBER] = "Soy Fiber";
+		columnTypes[SOY_FIBER] = Integer.class;
+		columnNames[SOY_FLOUR] = "Soy Flour";
+		columnTypes[SOY_FLOUR] = Integer.class;
+		columnNames[SOY_PROTEIN] = "Soy Flour";
+		columnTypes[SOY_PROTEIN] = Integer.class;
+		columnNames[TOFU] = "Tofu";
+		columnTypes[TOFU] = Integer.class;
 	};
 
 	// Data members
@@ -113,7 +129,7 @@ extends UnitTableModel {
 	 */
 	public FoodTableModel(UnitManager unitManager) {
 		super(
-			"Food Production ",
+			Msg.getString("FoodTableModel.tabName"), //$NON-NLS-1$
 			"SettlementTableModel.countingSettlements", //$NON-NLS-1$
 			columnNames,
 			columnTypes
@@ -192,6 +208,16 @@ extends UnitTableModel {
 
 				} break;
 
+				
+				case SPICES : {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Spice Group")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Spice Group"));
+
+				} break;
+				
+
 				case SOYBEANS: {
 					//result = decFormatter.format(resourceMap.get(
 					//		AmountResource.findAmountResource("Soybeans")));
@@ -208,14 +234,47 @@ extends UnitTableModel {
 
 				} break;
 				
-				case SPICES : {
+
+				case SOYBEAN_OIL: {
 					//result = decFormatter.format(resourceMap.get(
-					//		AmountResource.findAmountResource("Spice Group")));
+					//		AmountResource.findAmountResource("Soybeans")));
 					result = resourceMap.get(
-							AmountResource.findAmountResource("Spice Group"));
+							AmountResource.findAmountResource("Soybean Oil"));
 
 				} break;
 				
+				case SOY_FLOUR: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soymilk")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Soy Flour"));
+
+				} break;
+				
+
+				case SOY_FIBER: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soybeans")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Soy Fiber"));
+
+				} break;
+				
+				case SOY_PROTEIN: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soybeans")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Soy Protein"));
+
+				} break;
+				
+				case TOFU: {
+					//result = decFormatter.format(resourceMap.get(
+					//		AmountResource.findAmountResource("Soymilk")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("Tofu"));
+
+				} break;
 				case CROPS : {
 					int crops = 0;
 					List<Building> greenhouses = bMgr.getBuildings(BuildingFunction.FARMING);
@@ -272,12 +331,22 @@ extends UnitTableModel {
 					tempColumnNum = GRAINS;
 				else if (target.equals(AmountResource.findAmountResource("Legume Group"))) 
 					tempColumnNum = LEGUMES;
+				else if (target.equals(AmountResource.findAmountResource("Spice Group"))) 
+					tempColumnNum = SPICES;
 				else if (target.equals(AmountResource.findAmountResource("Soybeans"))) 
 					tempColumnNum = SOYBEANS;
 				else if (target.equals(AmountResource.findAmountResource("Soymilk"))) 
 					tempColumnNum = SOYMILK;
-				else if (target.equals(AmountResource.findAmountResource("Spice Group"))) 
-					tempColumnNum = SPICES;
+				else if (target.equals(AmountResource.findAmountResource("Soy Fiber"))) 
+					tempColumnNum = SOY_FIBER;
+				else if (target.equals(AmountResource.findAmountResource("Soy Flour"))) 
+					tempColumnNum = SOY_FLOUR;
+				else if (target.equals(AmountResource.findAmountResource("Soybean Oil"))) 
+					tempColumnNum = SOYBEAN_OIL;				
+				else if (target.equals(AmountResource.findAmountResource("Soy Protein"))) 
+						tempColumnNum = SOY_PROTEIN;
+				else if (target.equals(AmountResource.findAmountResource("Tofu"))) 
+						tempColumnNum = TOFU;
 				
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
@@ -325,12 +394,24 @@ extends UnitTableModel {
 				resourceMap.put(vegetables, getResourceStored(newUnit, vegetables));
 				AmountResource legumes = AmountResource.findAmountResource("Legume Group");
 				resourceMap.put(legumes, getResourceStored(newUnit, legumes));
+				AmountResource spices = AmountResource.findAmountResource("Spice Group");
+				resourceMap.put(spices, getResourceStored(newUnit, spices));
 				AmountResource soybeans = AmountResource.findAmountResource("Soybeans");
 				resourceMap.put(soybeans, getResourceStored(newUnit, soybeans));
 				AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
 				resourceMap.put(soymilk, getResourceStored(newUnit, soymilk));
-				AmountResource spices = AmountResource.findAmountResource("Spice Group");
-				resourceMap.put(spices, getResourceStored(newUnit, spices));
+				AmountResource soyFlour = AmountResource.findAmountResource("Soy Flour");
+				resourceMap.put(soyFlour, getResourceStored(newUnit, soyFlour));
+				AmountResource soybeanOil = AmountResource.findAmountResource("Soybean Oil");
+				resourceMap.put(soybeanOil, getResourceStored(newUnit, soybeanOil));
+				AmountResource soyFiber = AmountResource.findAmountResource("Soy Fiber");
+				resourceMap.put(soyFiber, getResourceStored(newUnit, soyFiber));
+				AmountResource soyProtein = AmountResource.findAmountResource("Soy Protein");
+				resourceMap.put(soyProtein, getResourceStored(newUnit, soyProtein));
+				AmountResource tofu = AmountResource.findAmountResource("Tofu");
+				resourceMap.put(tofu, getResourceStored(newUnit, tofu));
+
+
 				
 				resourceCache.put(newUnit, resourceMap);
 			}

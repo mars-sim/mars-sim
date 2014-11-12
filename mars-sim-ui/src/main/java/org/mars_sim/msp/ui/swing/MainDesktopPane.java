@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -686,14 +687,21 @@ implements ComponentListener {
 			// Open default windows on desktop.
 
 			// Open mars navigator tool.
-			openToolWindow(NavigatorWindow.NAME);
+//			openToolWindow(NavigatorWindow.NAME);
 			// Move mars navigator tool to upper left corner of desktop.
-			getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
+//			getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
 
 			// Open user guide tool.
-			openToolWindow(GuideWindow.NAME);
-			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+//			openToolWindow(GuideWindow.NAME);
+//			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+//			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+			
+			
+			openToolWindow(SettlementWindow.NAME);
+
+			//openUnitWindow(settlement, true);
+
+			
 		} else {
 			// Open windows in Z-order.
 			List<String> windowNames = config.getInternalWindowNames();

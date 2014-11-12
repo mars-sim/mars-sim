@@ -52,6 +52,7 @@ extends BuildingFunctionPanel {
 	// 2014-10-25 Added heat sources to the building tab
 	private ThermalGeneration furnace;
 
+	
 	/**
 	 * Constructor.
 	 * @param The panel for the Heating System

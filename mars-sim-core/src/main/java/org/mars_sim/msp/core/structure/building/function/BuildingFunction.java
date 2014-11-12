@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2014-11-08
  * @author stpa				
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -21,10 +21,9 @@ public enum BuildingFunction {
 	EXERCISE					(Msg.getString("BuildingFunction.exercise")), //$NON-NLS-1$
 	FARMING						(Msg.getString("BuildingFunction.farming")), //$NON-NLS-1$
 	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("BuildingFunction.groundVehicleMaintenance")), //$NON-NLS-1$
-//2014-10-17 Added 2 Thermal strings
+	//2014-10-17 Added 2 Thermal strings
 	THERMAL_GENERATION			(Msg.getString("BuildingFunction.thermalGeneration")), //$NON-NLS-1$
 	THERMAL_STORAGE				(Msg.getString("BuildingFunction.thermalStorage")), //$NON-NLS-1$
-
 	LIFE_SUPPORT				(Msg.getString("BuildingFunction.lifeSupport")), //$NON-NLS-1$
 	LIVING_ACCOMODATIONS		(Msg.getString("BuildingFunction.livingAccomodations")), //$NON-NLS-1$
 	MANAGEMENT					(Msg.getString("BuildingFunction.management")), //$NON-NLS-1$
@@ -36,9 +35,11 @@ public enum BuildingFunction {
 	RESEARCH					(Msg.getString("BuildingFunction.research")), //$NON-NLS-1$
 	RESOURCE_PROCESSING			(Msg.getString("BuildingFunction.resourceProcessing")), //$NON-NLS-1$
 	STORAGE						(Msg.getString("BuildingFunction.storage")),  //$NON-NLS-1$
-// 2014-11-06 Added MAKINGSOY and DRINKINGSOY
+	// 2014-11-06 Added MAKINGSOY and DRINKINGSOY
 	MAKINGSOY					(Msg.getString("BuildingFunction.makingSoy")),  //$NON-NLS-1$
-	//DRINKINGSOY					(Msg.getString("BuildingFunction.drinkingSoy")),  //$NON-NLS-1$
+	// 2014-11-08 Added	DRINKING and MAKINGCOFFEE
+	//DRINKING					(Msg.getString("BuildingFunction.drinking")),  //$NON-NLS-1$
+	SERVINGCOFFEE				(Msg.getString("BuildingFunction.servingCoffee")),  //$NON-NLS-1$	
 	;
 
 	private String name;
