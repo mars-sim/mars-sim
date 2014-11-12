@@ -17,11 +17,15 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -80,13 +84,21 @@ implements ActionListener, MenuListener {
 	private JCheckBoxMenuItem showToolBarItem;
 	/** Mute menu item. */
 	private JCheckBoxMenuItem muteItem;
+	/** Volume Up menu item. */
+	private JMenuItem volumeUpItem;
+	/** Volume Down menu item. */
+	private JMenuItem volumeDownItem;
+	/** Volume Slider menu item. */
+	private JSlider volumeItem;
 	/** About Mars Simulation Project menu item. */
 	private JMenuItem aboutMspItem;
 	/** Tutorial menu item. */
 	private JMenuItem tutorialItem;
 	/** User Guide menu item. */
-	private JMenuItem guideItem;
-
+	private JMenuItem guideItem;	
+	
+	
+	
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main window pane
@@ -236,12 +248,50 @@ implements ActionListener, MenuListener {
 
 		settingsMenu.add(new JSeparator());
 
+		// Create Volume slider menu item
+		
+		//MainDesktopPane desktop = mainWindow.getDesktop(); //needs fix
+		//final AudioPlayer soundPlayer = desktop.getSoundPlayer(); //needs fix
+		//float volume = soundPlayer.getVolume(); //needs fix
+		//int intVolume = Math.round(volume * 10F); //needs fix
+		int intVolume = 5;
+
+		volumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);; //$NON-NLS-1$
+		volumeItem.setMajorTickSpacing(1);
+		volumeItem.setPaintTicks(true);
+		volumeItem.setPaintLabels(true);
+		volumeItem.setPaintTrack(true);
+		volumeItem.setSnapToTicks(true);
+
+		volumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
+		volumeItem.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				float newVolume = (float) volumeItem.getValue() / 10F;
+				//soundPlayer.setVolume(newVolume); //needs fix
+			}		
+			});
+		settingsMenu.add(volumeItem);
+
+		// Create Volume Up menu item
+		volumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
+		volumeUpItem.addActionListener(this);
+		volumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_KP_UP, KeyEvent.CTRL_DOWN_MASK, false));
+		volumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
+		settingsMenu.add(volumeUpItem);
+		
+		// Create Volume Up menu item
+		volumeDownItem = new JMenuItem(Msg.getString("mainMenu.volumeDown")); //$NON-NLS-1$
+		volumeDownItem.addActionListener(this);
+		volumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_KP_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
+		volumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
+		settingsMenu.add(volumeDownItem);
+		
 		muteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute")); //$NON-NLS-1$
 		muteItem.addActionListener(this);
 		muteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
 		muteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute")); //$NON-NLS-1$
-		settingsMenu.add(muteItem);
-
+		settingsMenu.add(muteItem);	
+		
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
 		helpMenu.addMenuListener(this);
@@ -274,9 +324,10 @@ implements ActionListener, MenuListener {
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
-		// This method runs through an awful lot of if-then-else statements 
-		// and it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
+		// TODO:This runs through an awful lot of if-then-else statements 
+		// and we could save cycles by using a switch-case statement [lechimp 12/11/14]
 		JMenuItem selectedItem = (JMenuItem) event.getSource();
+		MainDesktopPane desktop = mainWindow.getDesktop();
 
 		if (selectedItem == exitItem) mainWindow.exitSimulation();
 		else if (selectedItem == newItem) mainWindow.newSimulation();
@@ -284,7 +335,6 @@ implements ActionListener, MenuListener {
 		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
 		else if (selectedItem == loadItem) mainWindow.loadSimulation();
 
-		MainDesktopPane desktop = mainWindow.getDesktop();
 
 		if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
@@ -331,13 +381,13 @@ implements ActionListener, MenuListener {
 			else desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
 		if (selectedItem == showUnitBarItem) {
-			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());		}
+			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());}
 
 		if (selectedItem == showToolBarItem) {
-			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());		}
+			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());}
 
 		if (selectedItem == muteItem) {
-			desktop.getSoundPlayer().setMute(muteItem.isSelected());		}
+			desktop.getSoundPlayer().setMute(muteItem.isSelected());}
 
 		if (selectedItem == aboutMspItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
