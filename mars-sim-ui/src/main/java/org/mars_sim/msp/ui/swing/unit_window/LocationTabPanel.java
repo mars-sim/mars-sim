@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -17,15 +16,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -210,7 +206,7 @@ implements ActionListener {
     
     // 2014-11-11 Modified temperature and pressure panel
     public String getTemperatureString() {
-		return fmt.format(getTemperature()) + " °C";
+		return fmt.format(getTemperature()) + " ï¿½C";
     }
     public double getTemperature() {
     	double outsideTemp = Simulation.instance().getMars().getWeather()
