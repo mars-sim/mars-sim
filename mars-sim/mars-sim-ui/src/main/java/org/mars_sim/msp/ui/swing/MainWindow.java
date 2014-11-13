@@ -79,6 +79,9 @@ public class MainWindow {
 		// Set look and feel of UI.
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
+		// Prepare desktop
+		desktop = new MainDesktopPane(this);
+
 		setLookAndFeel(false);
 
 		frame.addWindowListener(new WindowAdapter() {
@@ -108,8 +111,8 @@ public class MainWindow {
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
-		// Prepare desktop
-		desktop = new MainDesktopPane(this);
+		
+		// add mainpane
 		mainPane.add(desktop, BorderLayout.CENTER);
 
 		// Set frame size

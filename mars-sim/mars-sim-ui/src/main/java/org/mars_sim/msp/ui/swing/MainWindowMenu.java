@@ -30,7 +30,6 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
@@ -68,8 +67,6 @@ implements ActionListener, MenuListener {
 	private JCheckBoxMenuItem timeToolItem;
 	/** Monitor tool menu item. */
 	private JCheckBoxMenuItem monitorToolItem;
-	/** Prefs tool menu item. */
-	private JCheckBoxMenuItem prefsToolItem;
 	/** Mission tool menu item. */
 	private JCheckBoxMenuItem missionToolItem;
 	/** Settlement tool menu item. */
@@ -192,39 +189,33 @@ implements ActionListener, MenuListener {
 		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
 		toolsMenu.add(monitorToolItem);
 
-		// Create prefs tool menu item
-		ImageIcon prefsicon = new ImageIcon(getClass().getResource(Msg.getString("img.preferences"))); //$NON-NLS-1$
-		prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME, prefsicon);
-		prefsToolItem.addActionListener(this);
-		prefsToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
-		toolsMenu.add(prefsToolItem);
 
 		// Create mission tool menu item
 		ImageIcon missionicon = new ImageIcon(getClass().getResource(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
 		missionToolItem.addActionListener(this);
-		missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
+		missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
 		toolsMenu.add(missionToolItem);
 
 		// Create settlement map tool menu item
 		ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource(Msg.getString("img.settlementMapTool"))); //$NON-NLS-1$
 		settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME, settlementtoolicon);
 		settlementToolItem.addActionListener(this);
-		settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
+		settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
 		toolsMenu.add(settlementToolItem);
 
 		// Create science tool menu item
 		ImageIcon scienceicon = new ImageIcon(getClass().getResource(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME, scienceicon);
 		scienceToolItem.addActionListener(this);
-		scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
+		scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
 		toolsMenu.add(scienceToolItem);
 
 		// Create resupply tool menu item
 		ImageIcon resupplyicon = new ImageIcon(getClass().getResource(Msg.getString("img.resupply"))); //$NON-NLS-1$
 		resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME, resupplyicon);
 		resupplyToolItem.addActionListener(this);
-		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
+		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
 		toolsMenu.add(resupplyToolItem);
 		
 		// Create settings menu 
@@ -250,11 +241,10 @@ implements ActionListener, MenuListener {
 
 		// Create Volume slider menu item
 		
-		//MainDesktopPane desktop = mainWindow.getDesktop(); //needs fix
-		//final AudioPlayer soundPlayer = desktop.getSoundPlayer(); //needs fix
-		//float volume = soundPlayer.getVolume(); //needs fix
-		//int intVolume = Math.round(volume * 10F); //needs fix
-		int intVolume = 5;
+		MainDesktopPane desktop = mainWindow.getDesktop();
+		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
+		float volume = soundPlayer.getVolume();
+		int intVolume = Math.round(volume * 10F);
 
 		volumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);; //$NON-NLS-1$
 		volumeItem.setMajorTickSpacing(1);
@@ -267,7 +257,7 @@ implements ActionListener, MenuListener {
 		volumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) volumeItem.getValue() / 10F;
-				//soundPlayer.setVolume(newVolume); //needs fix
+				soundPlayer.setVolume(newVolume); //needs fix
 			}		
 			});
 		settingsMenu.add(volumeItem);
@@ -356,10 +346,6 @@ implements ActionListener, MenuListener {
 			else desktop.closeToolWindow(MonitorWindow.NAME);
 		}
 
-		if (selectedItem == prefsToolItem) {
-			if (prefsToolItem.isSelected()) desktop.openToolWindow(PreferencesWindow.NAME);
-			else desktop.closeToolWindow(PreferencesWindow.NAME);
-		}
 
 		if (selectedItem == missionToolItem) {
 			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
@@ -419,7 +405,6 @@ implements ActionListener, MenuListener {
 		searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
 		timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
 		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
-		prefsToolItem.setSelected(desktop.isToolWindowOpen(PreferencesWindow.NAME));
 		missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
