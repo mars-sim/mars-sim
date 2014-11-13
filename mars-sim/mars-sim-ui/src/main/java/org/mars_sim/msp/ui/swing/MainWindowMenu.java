@@ -257,7 +257,7 @@ implements ActionListener, MenuListener {
 		volumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) volumeItem.getValue() / 10F;
-				soundPlayer.setVolume(newVolume); //needs fix
+				soundPlayer.setVolume(newVolume);
 			}		
 			});
 		settingsMenu.add(volumeItem);
@@ -265,17 +265,18 @@ implements ActionListener, MenuListener {
 		// Create Volume Up menu item
 		volumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
 		volumeUpItem.addActionListener(this);
-		volumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_KP_UP, KeyEvent.CTRL_DOWN_MASK, false));
+		volumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
 		volumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
 		settingsMenu.add(volumeUpItem);
 		
-		// Create Volume Up menu item
+		// Create Volume Down menu item
 		volumeDownItem = new JMenuItem(Msg.getString("mainMenu.volumeDown")); //$NON-NLS-1$
 		volumeDownItem.addActionListener(this);
-		volumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_KP_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
+		volumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
 		volumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
 		settingsMenu.add(volumeDownItem);
 		
+		// Create Mute menu item
 		muteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute")); //$NON-NLS-1$
 		muteItem.addActionListener(this);
 		muteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
@@ -314,8 +315,6 @@ implements ActionListener, MenuListener {
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
-		// TODO:This runs through an awful lot of if-then-else statements 
-		// and we could save cycles by using a switch-case statement [lechimp 12/11/14]
 		JMenuItem selectedItem = (JMenuItem) event.getSource();
 		MainDesktopPane desktop = mainWindow.getDesktop();
 
@@ -372,6 +371,16 @@ implements ActionListener, MenuListener {
 		if (selectedItem == showToolBarItem) {
 			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());}
 
+		if (selectedItem == volumeUpItem) {
+			float oldvolume = desktop.getSoundPlayer().getVolume();
+			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+			}
+		
+		if (selectedItem == volumeDownItem) {
+			float oldvolume = desktop.getSoundPlayer().getVolume();
+			desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+			}
+		
 		if (selectedItem == muteItem) {
 			desktop.getSoundPlayer().setMute(muteItem.isSelected());}
 
@@ -411,6 +420,8 @@ implements ActionListener, MenuListener {
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
+		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getVolume() * 10F));
+		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute());
 		muteItem.setSelected(desktop.getSoundPlayer().isMute());
 	}
 
