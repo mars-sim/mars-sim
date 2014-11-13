@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -43,7 +42,6 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
@@ -221,12 +219,6 @@ implements ComponentListener {
 		try { monitorWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(monitorWindow);
-
-		// Prepare preferences tool window
-		PreferencesWindow prefsWindow = new PreferencesWindow(this);
-		try { prefsWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(prefsWindow);
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);

@@ -18,7 +18,6 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
@@ -137,15 +136,6 @@ implements ActionListener {
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
-
-		// Add prefs tool button
-		ToolButton prefsButton = new ToolButton(
-			PreferencesWindow.NAME,
-			Msg.getString("img.preferences") //$NON-NLS-1$
-		);
-		prefsButton.addActionListener(this);
-		add(prefsButton);
-		toolButtons.addElement(prefsButton);
 
 		// Add mission tool button
 		ToolButton missionButton = new ToolButton(MissionWindow.NAME, Msg.getString("img.mission")); //$NON-NLS-1$
