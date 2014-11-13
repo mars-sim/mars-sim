@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SplashWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -47,7 +47,7 @@ extends JComponent {
 	private int height;
 
 	/** stores the font for displaying {@link #VERSION_STRING}. */
-	private Font versionStringFont = new Font("SansSerif", Font.PLAIN, 12);
+	private Font versionStringFont = new Font("Serif", Font.BOLD, 15);
 	/** measures the pixels needed to display text. */
 	private FontMetrics positionMetrics = getFontMetrics(versionStringFont);
 	/** stores the displayed length of {@link #VERSION_STRING} in pixels. */
@@ -71,7 +71,7 @@ extends JComponent {
 				g2d.drawString(MSP_STRING, 30, 60);
 				g2d.setFont(versionStringFont);
 				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - 
-				        versionStringWidth - 10, 20);
+				        versionStringWidth - 12, 22);
 			}
 		};
 
