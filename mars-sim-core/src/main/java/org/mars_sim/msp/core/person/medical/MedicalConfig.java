@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * PersonConfig.java
- * @version 3.06 2014-01-29
+ * MedicalConfig.java
+ * @version 3.07 2014-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.medical;
@@ -21,6 +21,9 @@ import java.util.List;
  */
 public class MedicalConfig implements Serializable {
 	
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	// Element names
     private static final String NAME = "name";
     private static final String VALUE = "value";
@@ -31,6 +34,7 @@ public class MedicalConfig implements Serializable {
 	private static final String RECOVERY_TIME = "recovery-time";
 	private static final String PROBABILITY = "probability";
 	private static final String PERFORMANCE_PERCENT = "performance-percent";
+	private static final String BED_REST_RECOVERY = "bed-rest-recovery";
 	private static final String TREATMENT_TYPE = "treatment-type";
 	private static final String DEGRADE_COMPLAINT = "degrade-complaint";
 	private static final String TREATMENT_LIST = "treatment-list";
@@ -38,7 +42,7 @@ public class MedicalConfig implements Serializable {
 	private static final String SKILL = "skill";
 	private static final String MEDICAL_TECH_LEVEL = "medical-tech-level";
 	private static final String TREATMENT_TIME = "treatment-time";
-	private static final String RETAINAID = "retainaid";
+	private static final String SELF_ADMIN = "self-admin";
 	
 	private Document medicalDoc;
 	private List<Complaint> complaintList;
@@ -68,74 +72,71 @@ public class MedicalConfig implements Serializable {
 			
 			for (Element medicalComplaint : medicalComplaints) {
 				String complaintName = "";
-//				try {
 					
-					// Get name.
-					complaintName = medicalComplaint.getAttributeValue(NAME);
-				
-					// Get seriousness.
-					Element seriousnessElement = medicalComplaint.getChild(SERIOUSNESS);
-					int seriousness = Integer.parseInt(seriousnessElement.getAttributeValue(VALUE));
-				
-					// Get degrade time. (optional)
-					double degradeTime = 0D;
-		            Element degradeTimeElement = medicalComplaint.getChild(DEGRADE_TIME);
-		            
-		            if(degradeTimeElement != null)
-				    degradeTime = Double.parseDouble(degradeTimeElement.getAttributeValue(VALUE));
-				
-					// Get recovery time.
-					Element recoveryTimeElement = medicalComplaint.getChild(RECOVERY_TIME);
-					double recoveryTime = Double.parseDouble(recoveryTimeElement.getAttributeValue(VALUE));
-				
-					// Get probability.
-					Element probabilityElement = medicalComplaint.getChild(PROBABILITY);
-					double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
-				
-					// Get performance-percent.
-					Element performanceElement = medicalComplaint.getChild(PERFORMANCE_PERCENT);
-					double performance = Double.parseDouble(performanceElement.getAttributeValue(VALUE));
-				
-					// Get the treatment. (optional)
-					String treatmentStr = "";
-				    Element treatmentElement = medicalComplaint.getChild(TREATMENT_TYPE);
-				    
-				    if(treatmentElement != null)
-				    treatmentStr = treatmentElement.getAttributeValue(VALUE);
+				// Get name.
+				complaintName = medicalComplaint.getAttributeValue(NAME);
 
-					
-					Treatment treatment = null;
-					List<Treatment> treatmentList = getTreatmentList();
-					
-					for (Treatment tempTreatment : treatmentList) {
-						if (tempTreatment.getName().equals(treatmentStr)) {
-						    treatment = tempTreatment;
-						    break;
-						}
-					}
-					
-					if (treatmentStr.length() != 0 && (treatment == null))
-						throw new IllegalStateException("treatment: " + treatmentStr + " could not be found in treatment list");
+				// Get seriousness.
+				Element seriousnessElement = medicalComplaint.getChild(SERIOUSNESS);
+				int seriousness = Integer.parseInt(seriousnessElement.getAttributeValue(VALUE));
+
+				// Get degrade time. (optional)
+				double degradeTime = 0D;
+				Element degradeTimeElement = medicalComplaint.getChild(DEGRADE_TIME);
+
+				if(degradeTimeElement != null)
+				    degradeTime = Double.parseDouble(degradeTimeElement.getAttributeValue(VALUE));
+
+				// Get recovery time.
+				Element recoveryTimeElement = medicalComplaint.getChild(RECOVERY_TIME);
+				double recoveryTime = Double.parseDouble(recoveryTimeElement.getAttributeValue(VALUE));
+
+				// Get probability.
+				Element probabilityElement = medicalComplaint.getChild(PROBABILITY);
+				double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
+
+				// Get performance-percent.
+				Element performanceElement = medicalComplaint.getChild(PERFORMANCE_PERCENT);
+				double performance = Double.parseDouble(performanceElement.getAttributeValue(VALUE));
+
+				// Get bed rest recovery.
+				Element bedRestRecoveryElement = medicalComplaint.getChild(BED_REST_RECOVERY);
+				boolean bedRestRecovery = Boolean.parseBoolean(bedRestRecoveryElement.getAttributeValue(VALUE));
 				
-					// Get the degrade complaint. (optional)
-					String degradeComplaint = "";
-				
-				    Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
-				    
-				    if(degradeComplaintElement != null)
+				// Get the treatment. (optional)
+				String treatmentStr = "";
+				Element treatmentElement = medicalComplaint.getChild(TREATMENT_TYPE);
+
+				if (treatmentElement != null) {
+				    treatmentStr = treatmentElement.getAttributeValue(VALUE);
+				}
+
+				Treatment treatment = null;
+				List<Treatment> treatmentList = getTreatmentList();
+				for (Treatment tempTreatment : treatmentList) {
+				    if (tempTreatment.getName().equals(treatmentStr)) {
+				        treatment = tempTreatment;
+				        break;
+				    }
+				}
+
+				if (treatmentStr.length() != 0 && (treatment == null))
+				    throw new IllegalStateException("treatment: " + treatmentStr + " could not be found in treatment list");
+
+				// Get the degrade complaint. (optional)
+				String degradeComplaint = "";
+
+				Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
+
+				if (degradeComplaintElement != null) {
 				    degradeComplaint = degradeComplaintElement.getAttributeValue(VALUE);
-				
-				
-					Complaint complaint = new Complaint(complaintName, seriousness, 
-					                                    degradeTime * 1000D, recoveryTime * 1000D, 
-						                                probability, treatment, 
-						                                degradeComplaint, performance);
-					
-					complaintList.add(complaint);
-//				}
-//				catch (Exception e) {
-//					throw new IllegalStateException("Error parsing medical complaint: " + complaintName + ": " + e.getMessage());
-//				}
+				}
+
+				Complaint complaint = new Complaint(complaintName, seriousness, 
+				        degradeTime * 1000D, recoveryTime * 1000D, probability, 
+				        treatment, degradeComplaint, performance, bedRestRecovery);
+
+				complaintList.add(complaint);
 			}
 			
 			// Fill in degrade complaint objects based on complaint names.
@@ -198,20 +199,19 @@ public class MedicalConfig implements Serializable {
 				if(treatmentTimeElement != null)
 				treatmentTime = Double.parseDouble(treatmentTimeElement.getAttributeValue(VALUE));
 			
+				// Get self-admin. (optional)
+				boolean selfAdmin = false;
 				
-				// Get retainaid, optional
-				boolean retainaid = false;
-		
-			    Element retainaidElement = medicalTreatment.getChild(RETAINAID);
-			    
-			    if(retainaidElement != null) {
-				 String retainaidStr = retainaidElement.getAttributeValue(VALUE);
-				 retainaid = (retainaidStr.toLowerCase().equals("true"));
-			    }
+				Element selfAdminElement = medicalTreatment.getChild(SELF_ADMIN);
+				
+				if (selfAdminElement != null) {
+				    String selfAdminStr = selfAdminElement.getAttributeValue(VALUE);
+				    selfAdmin = (selfAdminStr.toLowerCase().equals("true"));
+				}
 				
 				
 				Treatment treatment = new Treatment(treatmentName, skill, 
-				                      treatmentTime, false, retainaid, medicalTechLevel);
+				                      treatmentTime, selfAdmin, medicalTechLevel);
 				
 				treatmentList.add(treatment);
 			}

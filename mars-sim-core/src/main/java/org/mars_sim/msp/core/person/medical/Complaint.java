@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Complaint.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-13
  * @author Barry Evans
  */
 
@@ -14,13 +14,14 @@ import java.io.Serializable;
  * effect a Person. The Complaint once effecting a Person can either
  * result in the Person entering a recovery period or developing a more serious
  * complaint or possibly death.
- *
- * I
  */
 public class Complaint implements Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /**
-     * The maximum probability rating. This allows the complaint to be specifed
+     * The maximum probability rating. This allows the complaint to be specified
      * to 1/10th of a percentage.
      */
     public final static double MAXPROBABILITY = 10000D;
@@ -30,8 +31,9 @@ public class Complaint implements Serializable {
     private int seriousness;                // Seriousness of this illness
     private double degradePeriod;           // Time before complaint degrades
     private double recoveryPeriod;          // Time before Person recovers
-    private double probability;             // Probability of occuring
+    private double probability;             // Probability of occurring
     private double performanceFactor;       // Factor effecting Person performance
+    private boolean bedRestRecovery;        // Does complaint require bed rest during recovery?
     private Treatment recoveryTreatment;    // Treatment needed for recovery
     Complaint nextPhase;                    // Next phase of this illness
     String nextPhaseStr;					// Temporary next phase complaint name.
@@ -47,22 +49,27 @@ public class Complaint implements Serializable {
      * @param recovery The time is takes for a Person to recover. If this value
      * is zero it means the complaint results in death unless treated. This
      * value is in sols.
-     * @param probability The probability of this illness occuring, this can be
+     * @param probability The probability of this illness occurring, this can be
      * between 0 and MAXPROBABILITY.
      * @param performance The percentage that a Persons performance is decreased.
+     * @param bedRestRecovery True if bed rest is required during recovery.
      * @param recoveryTreatment Any treatment that is needed for recovery.
      * @param next The complaint that this degrades into unless checked.
      */
     Complaint(String name, int seriousness,
-                             double degrade, double recovery,
+                             double degrade, 
+                             double recovery,
                              double probability,
                              double performance,
-                             Treatment recoveryTreatment, Complaint next) {
+                             boolean bedRestRecovery,
+                             Treatment recoveryTreatment, 
+                             Complaint next) {
         this.name = name;
         this.seriousness = seriousness;
         this.degradePeriod = degrade;
         this.recoveryPeriod = recovery;
         this.performanceFactor = (performance / 100D);
+        this.bedRestRecovery = bedRestRecovery;
         this.nextPhase = next;
         this.nextPhaseStr = "";
         if (next != null) this.nextPhaseStr = next.name;
@@ -80,16 +87,18 @@ public class Complaint implements Serializable {
      * @param recoveryTreatment treatment for recovery
      * @param nextStr next complaint name
      * @param performance performance factor
+     * @param bedRestRecovery True if bed rest is required during recovery.
      */
     Complaint(String name, int seriousness, double degrade, double recovery, 
     		double probability, Treatment recoveryTreatment, 
-    		String nextStr, double performance) {
+    		String nextStr, double performance, boolean bedRestRecovery) {
     	this.name = name;
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
 		this.recoveryPeriod = recovery;
 		this.performanceFactor = (performance / 100D);
 		this.probability = probability;
+		this.bedRestRecovery = bedRestRecovery;
 		this.recoveryTreatment = recoveryTreatment;
 		this.nextPhaseStr = nextStr; 
     }
@@ -143,8 +152,8 @@ public class Complaint implements Serializable {
     }
 
     /**
-     * Get the probabity of this complaint.
-     * @return Probabity from 0 to 100.
+     * Get the probability of this complaint.
+     * @return Probability from 0 to 100.
      */
     public double getProbability() {
         return probability;
@@ -165,6 +174,14 @@ public class Complaint implements Serializable {
     public double getRecoveryPeriod() {
         return recoveryPeriod;
     }
+    
+    /**
+     * Checks if recovery requires bed rest.
+     * @return true if bed rest required.
+     */
+    public boolean requiresBedRestRecovery() {
+        return bedRestRecovery;
+    }
 
     /**
      * Get the seriousness of this complaint.
@@ -175,7 +192,7 @@ public class Complaint implements Serializable {
     }
 
     /**
-     * Get a string respresentation.
+     * Get a string representation.
      * @return The name of the complaint.
      */
     public String toString() {

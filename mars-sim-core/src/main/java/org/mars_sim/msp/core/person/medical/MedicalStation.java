@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-11
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -13,20 +13,24 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 
 /**
  * This class represents a medical station.
- * It provides a number of Treatments to Persons, these are defined in the
+ * It provides a number of treatments to persons, these are defined in the
  * Medical.xml file.
  */
 public class MedicalStation
-implements MedicalAid, Serializable {
+        implements MedicalAid, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+    private static Logger logger = Logger.getLogger(MedicalStation.class.getName());
 
 	/** Treatment level of the facility. */
 	private int level;
@@ -36,6 +40,8 @@ implements MedicalAid, Serializable {
 	private List<HealthProblem> problemsBeingTreated;
 	/** List of health problems awaiting treatment. */
 	private List<HealthProblem> problemsAwaitingTreatment;
+	/** List of people resting to recover a health problem. */
+	private List<Person> restingRecoveryPeople;
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
 
@@ -49,26 +55,26 @@ implements MedicalAid, Serializable {
 		this.sickBeds = sickBeds;
 		problemsBeingTreated = new ArrayList<HealthProblem>();
 		problemsAwaitingTreatment = new ArrayList<HealthProblem>();
+		restingRecoveryPeople = new ArrayList<Person>();
 
 		// Get all supported treatments.
 		MedicalManager medManager = Simulation.instance().getMedicalManager();
 		supportedTreatments = medManager.getSupportedTreatments(level);
 	}
 
-	/**
-	 * Gets the health problems awaiting treatment at the medical station.
-	 * @return list of health problems
-	 */
+	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
 		return new ArrayList<HealthProblem>(problemsAwaitingTreatment);
 	}
 
-	/**
-	 * Gets the health problems currently being treated at the medical station.
-	 * @return list of health problems
-	 */
+	@Override
 	public List<HealthProblem> getProblemsBeingTreated() {
 		return new ArrayList<HealthProblem>(problemsBeingTreated);
+	}
+	
+	@Override
+	public List<Person> getRestingRecoveryPeople() {
+	    return new ArrayList<Person>(restingRecoveryPeople);
 	}
 
 	/**
@@ -93,27 +99,34 @@ implements MedicalAid, Serializable {
 	 */
 	public Collection<Person> getPatients() {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		
+		// Add patients being treated for health problems.
 		Iterator<HealthProblem> i = problemsBeingTreated.iterator();
 		while (i.hasNext()) {
 			Person patient = i.next().getSufferer();
-			if (!result.contains(patient)) result.add(patient);
+			if (!result.contains(patient)) {
+			    result.add(patient);
+			}
 		}
 
+		// Add patients that are resting to recover from health problems.
+		Iterator<Person> j = restingRecoveryPeople.iterator();
+		while (j.hasNext()) {
+		    Person patient = j.next();
+		    if (!result.contains(patient)) {
+		        result.add(patient);
+		    }
+		}
+		
 		return result;
 	}
 
-	/**
-	 * Get a list of supported Treatments at this SickBay.
-	 */
+	@Override
 	public List<Treatment> getSupportedTreatments() {
 		return new ArrayList<Treatment>(supportedTreatments);
 	}
 
-	/**
-	 * Checks if a health problem can be treated at this medical station.
-	 * @param problem The health problem to check treatment.
-	 * @return true if problem can be treated.
-	 */
+	@Override
 	public boolean canTreatProblem(HealthProblem problem) {
 		if (problem == null) return false;
 		else {
@@ -133,57 +146,61 @@ implements MedicalAid, Serializable {
 		}
 	}
 
-	/**
-	 * Add a health problem to the queue of problems awaiting treatment at this
-	 * medical station.
-	 * @param problem The health problem to await treatment.
-	 * @throws Exception if health problem cannot be treated here.
-	 */
+	@Override
 	public void requestTreatment(HealthProblem problem) {
 
-		if (problem == null) throw new IllegalArgumentException("problem is null");
+		if (problem == null) {
+		    throw new IllegalArgumentException("Health problem is null");
+		}
 
 		// Check if treatment is supported here.
 		if (canTreatProblem(problem)) {
 
-			// If the patient can administer the treatment themselves then
-			// start the treatment.
-			Treatment treatment = problem.getIllness().getRecoveryTreatment();
-			if (treatment.getSelfAdminister() && (getPatientNum() < sickBeds)) {
-				problem.startTreatment(treatment.getDuration());
-				problemsBeingTreated.add(problem);
-			}
-			else {
-				// Otherwise add the problem to the waiting queue.
-				problemsAwaitingTreatment.add(problem);
-			}
+		    // Add the problem to the waiting queue.
+		    problemsAwaitingTreatment.add(problem);
 		}
-		else throw new IllegalStateException("Health problem cannot be treated at this facility.");
+		else {
+		    logger.severe("Health problem " + problem.getIllness() + 
+		            " cannot be treated at this facility.");
+		}
 	}
+	
+    @Override
+    public void cancelRequestTreatment(HealthProblem problem) {
+        
+        if (problem == null) {
+            throw new IllegalArgumentException("Health problem is null");
+        }
+        
+        // Check if problem is being treated here.
+        if (problemsAwaitingTreatment.contains(problem)) {
+            problemsAwaitingTreatment.remove(problem);
+        }
+        else {
+            logger.severe("Health problem " + problem.getIllness() + 
+                    " request cannot be canceled as it is not awaiting response.");
+        }
+    }
 
-	/**
-	 * Starts the treatment of a health problem in the waiting queue.
-	 * @param problem the health problem to start treating.
-	 * @param treatmentDuration the time required to perform the treatment.
-	 * @throws Exception if treatment cannot be started.
-	 */
+	@Override
 	public void startTreatment(HealthProblem problem, double treatmentDuration) {
 
-		if (problem == null) throw new IllegalArgumentException("problem is null");
+		if (problem == null) {
+		    throw new IllegalArgumentException("Health problem is null");
+		}
 
 		if (problemsAwaitingTreatment.contains(problem)) {
-			problem.startTreatment(treatmentDuration);
+			problem.startTreatment(treatmentDuration, this);
 			problemsBeingTreated.add(problem);
 			problemsAwaitingTreatment.remove(problem);
 		}
-		else throw new IllegalStateException("Health problem not in medical station's waiting queue.");
+		else {
+		    logger.severe("Health problem " + problem.getIllness() + 
+                    " cannot be treated as it is not in medical station's waiting queue.");
+		}
 	}
 
-	/**
-	 * Stop a previously started treatment.
-	 * @param problem Health problem stopping treatment on.
-	 * @throws Exception if health problem is not being treated.
-	 */
+	@Override
 	public void stopTreatment(HealthProblem problem) {
 
 		if (problemsBeingTreated.contains(problem)) {
@@ -192,9 +209,36 @@ implements MedicalAid, Serializable {
 			boolean cured = problem.getCured();
 			boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
 			boolean recovering = problem.getRecovering();
-			if (!cured && !dead && !recovering) problemsAwaitingTreatment.add(problem);
+			if (!cured && !dead && !recovering) {
+			    problemsAwaitingTreatment.add(problem);
+			}
 		}
-		else throw new IllegalStateException("Health problem not currently being treated.");
+		else {
+		    logger.severe("Health problem " + problem.getIllness() + 
+                    " not currently being treated.");
+		}
+	}
+	
+	@Override
+	public void startRestingRecovery(Person person) {
+	    
+	    if (!restingRecoveryPeople.contains(person)) {
+	        restingRecoveryPeople.add(person);
+	    }
+	    else {
+	        logger.severe(person + " already resting at medical station.");
+	    }
+	}
+
+	@Override
+	public void stopRestingRecovery(Person person) {
+	    
+	    if (restingRecoveryPeople.contains(person)) {
+	        restingRecoveryPeople.remove(person);
+	    }
+	    else {
+	        logger.severe(person + " isn't resting at medical station.");
+	    }
 	}
 
 	/**

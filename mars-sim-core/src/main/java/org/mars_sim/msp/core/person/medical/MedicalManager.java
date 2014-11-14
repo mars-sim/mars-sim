@@ -1,15 +1,13 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-13
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.medical;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 
 import java.io.Serializable;
@@ -49,7 +47,7 @@ implements Serializable {
 
 	/** The name of the suffocation complaint. */
 	public final static String SUFFOCATION = Msg.getString("MedicalManager.suffocation"); //$NON-NLS-1$
-	/** The name of the Dehydration complaint. */
+	/** The name of the dehydration complaint. */
 	public final static String DEHYDRATION = Msg.getString("MedicalManager.dehydration"); //$NON-NLS-1$
 	/** The name of the starvation complaint. */
 	public final static String STARVATION = Msg.getString("MedicalManager.starvation"); //$NON-NLS-1$
@@ -62,8 +60,7 @@ implements Serializable {
 
 	/**
 	 * Construct a new {@link MedicalManager}. This also constructs all the pre-defined Complaints and the user-defined ones in
-	 * the XML propery file.
-	 * @throws Exception if unable to construct.
+	 * the XML configuration file.
 	 */
 	public MedicalManager() {
 		initMedical();
@@ -121,25 +118,25 @@ implements Serializable {
 	}
 
 	/**
-	 * Create an environment related Complaint. These are started by the simulation and not via randonmness. The all
+	 * Create an environment related Complaint. These are started by the simulation and not via randomness. The all
 	 * result in death hence have no next phase and no recovery period, when the environment changes, the complaint is
 	 * resolved.
 	 */
 	private Complaint createEnvironmentComplaint(String name, int seriousness,
-			double degrade, int performance) {
-		return new Complaint(name, seriousness, degrade, 0D, 0, performance,
-				null, null);
+			double degrade, double performance) {
+		return new Complaint(name, seriousness, degrade, 0D, 0D, performance,
+				false, null, null);
 	}
 
 	/**
 	 * Package friendly factory method.
 	 */
 	void createComplaint(String name, int seriousness, double degrade,
-			double recovery, double probability, int performance,
-			Treatment recoveryTreatment, Complaint next) {
+			double recovery, double probability, double performance,
+			boolean bedRest, Treatment recoveryTreatment, Complaint next) {
 
 		Complaint complaint = new Complaint(name, seriousness, degrade,
-				recovery, probability, performance, recoveryTreatment, next);
+				recovery, probability, performance, bedRest, recoveryTreatment, next);
 		// Add an entry keyed on name.
 		complaints.put(name, complaint);
 	}
@@ -166,7 +163,7 @@ implements Serializable {
 	void createTreatment(String name, int skill, double duration,
 			boolean selfHeal, boolean retainAid, int level) {
 		Treatment newTreatment = new Treatment(name, skill, duration, selfHeal,
-				retainAid, level);
+				level);
 		treatments.put(name, newTreatment);
 	}
 
@@ -185,54 +182,17 @@ implements Serializable {
 			)
 		);
 	}
-
+	
 	/**
-	 * Select a probable complaint to strike the Person down. This uses a random factor to select the complaint based on
-	 * the probability rating. The physical characteristics of the Person are taken into account.
-	 * 
-	 * @param person The person that may have a complaint.
-	 * @param time the time passing (millisols).
-	 * @return Possible Complaint, this maybe null.
+	 * Gets a list of all medical complaints.
+	 * @return list of complaints.
 	 */
-	public Complaint getProbableComplaint(Person person, double time) {
-		Complaint complaint = null;
-
-		// Get a random number from 0 to the total probability weight.
-		double r = RandomUtil.getRandomDouble(Complaint.MAXPROBABILITY);
-
-		// Take into account the time passing (compared to one sol).
-		r *= (1000D / time);
-
-		// Get the list of possible Complaints, find all Medical complaints
-		// that have a probability higher that the calculated, i.e.
-		// possible complaints.
-		// THis need improving.
-		ArrayList<Complaint> possibles = null;
-		Iterator<Complaint> items = complaints.values().iterator();
-		while (items.hasNext()) {
-			Complaint next = items.next();
-
-			// Found a match
-			if (next.getProbability() > r) {
-				if (possibles == null) {
-					possibles = new ArrayList<Complaint>();
-				}
-				possibles.add(next);
-			}
-		}
-
-		// Found any possibles complaint that have a lower probability
-		// than the random value
-		if (possibles != null) {
-			// Just take one of the possibles at random
-			int index = RandomUtil.getRandomInt(possibles.size() - 1);
-			complaint = possibles.get(index);
-		}
-		return complaint;
+	public List<Complaint> getAllMedicalComplaints() {
+	    return new ArrayList<Complaint>(complaints.values());
 	}
 
 	/**
-	 * This is a finder method that returns a Meidcal Complaint matching the specified name.
+	 * This is a finder method that returns a Medical Complaint matching the specified name.
 	 * @param name Name of the complaint to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
@@ -241,7 +201,7 @@ implements Serializable {
 	}
 
 	/**
-	 * This is a finder method that returns a Meidcal Treatment matching the specified name.
+	 * This is a finder method that returns a Medical Treatment matching the specified name.
 	 * @param name Name of the treatment to retrieve.
 	 * @return Matched Treatment, if none is found then a null.
 	 */
@@ -289,7 +249,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a Stavation complaint.
+	 * Return the pre-defined Medical Complaint that signifies a starvation complaint.
 	 * @return Medical complaint for shortage of oxygen.
 	 */
 	public Complaint getStarvation() {
@@ -297,7 +257,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Return the pre-defined Medical Complaint that signifies a Decompression conplaint.
+	 * Return the pre-defined Medical Complaint that signifies a Decompression complaint.
 	 * @return Medical complaint for decompression.
 	 */
 	public Complaint getDecompression() {

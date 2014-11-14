@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -147,122 +147,73 @@ implements MedicalAid, Serializable {
         return result;
     }
 
-    /**
-     * Gets the health problems awaiting treatment at the medical station.
-     *
-     * @return list of health problems
-     */
+    @Override
     public List<HealthProblem> getProblemsAwaitingTreatment() {
         return medicalStation.getProblemsAwaitingTreatment();
     }
 
-    /**
-     * Gets the health problems currently being treated at the medical station.
-     *
-     * @return list of health problems
-     */
+    @Override
     public List<HealthProblem> getProblemsBeingTreated() {
         return medicalStation.getProblemsBeingTreated();
     }
 
-    /**
-     * Get a list of supported Treatments at this medical aid.
-     *
-     * @return List of treatments.
-     */
+    @Override
     public List<Treatment> getSupportedTreatments() {
         return medicalStation.getSupportedTreatments();
     }
 
-    /**
-     * Checks if a health problem can be treated at this medical aid.
-     *
-     * @param problem The health problem to check treatment.
-     * @return true if problem can be treated.
-     */
+    @Override
     public boolean canTreatProblem(HealthProblem problem) {
         return medicalStation.canTreatProblem(problem);	
     }
 
-    /**
-     * Add a health problem to the queue of problems awaiting treatment at this
-     * medical aid.
-     *
-     * @param problem The health problem to await treatment.
-     * @throws Exception if health problem cannot be treated here.
-     */
+    @Override
     public void requestTreatment(HealthProblem problem) {
         medicalStation.requestTreatment(problem);
-
-        // TODO: Replace with task for sufferer to walk to medical building and stay there until treated.
-        //		// Add person to building if possible.
-        //		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-        //			// TODO: Replace with walk to building task.
-        //			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-        //					getBuilding());
-        //		}
+    }
+    
+    @Override
+    public void cancelRequestTreatment(HealthProblem problem) {
+        medicalStation.cancelRequestTreatment(problem);
     }
 
-    /**
-     * Starts the treatment of a health problem in the waiting queue.
-     *
-     * @param problem the health problem to start treating.
-     * @param treatmentDuration the time required to perform the treatment.
-     * @throws Exception if treatment cannot be started.
-     */
+    @Override
     public void startTreatment(HealthProblem problem, double treatmentDuration) {
         medicalStation.startTreatment(problem, treatmentDuration);
-
-        // TODO: Replace with task for sufferer to walk to medical building and stay there until treated.
-        //		// Add person to building if possible.
-        //		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-        //			// TODO: Try to walk to this location.
-        //			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-        //					getBuilding());
-        //		}
     }
 
-    /**
-     * Stop a previously started treatment.
-     *
-     * @param problem Health problem stopping treatment on.
-     * @throws Exception if health problem is not being treated.
-     */
+    @Override
     public void stopTreatment(HealthProblem problem) {
         medicalStation.stopTreatment(problem);
     }
-
-    /**
-     * Time passing for the building.
-     * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
-     */
-    public void timePassing(double time) {
-
-        /*
-		String name = getBuilding().getBuildingManager().getSettlement().getName();
-		if (getProblemsBeingTreated().size() > 0) {
-			Iterator i = getProblemsBeingTreated().iterator();
-			while (i.hasNext()) {
-				HealthProblem problem = (HealthProblem) i.next();
-				logger.info(name + ": " + problem.toString() + " - cured: " + problem.getCured());
-			}
-		}
-         */
+    
+    @Override
+    public List<Person> getRestingRecoveryPeople() {
+        return medicalStation.getRestingRecoveryPeople();
+    }
+    
+    @Override
+    public void startRestingRecovery(Person person) {
+        medicalStation.startRestingRecovery(person);
+    }
+    
+    @Override
+    public void stopRestingRecovery(Person person) {
+        medicalStation.stopRestingRecovery(person);
     }
 
-    /**
-     * Gets the amount of power required when function is at full power.
-     * @return power (kW)
-     */
+    @Override
+    public void timePassing(double time) {
+
+        // Do nothing.
+    }
+
+    @Override
     public double getFullPowerRequired() {
         return 0D;
     }
 
-    /**
-     * Gets the amount of power required when function is at power down level.
-     * @return power (kW)
-     */
+    @Override
     public double getPoweredDownPowerRequired() {
         return 0D;
     }
