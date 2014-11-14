@@ -334,7 +334,7 @@ public class TestCoordinates extends TestCase {
         String lonString1 = loc1.getFormattedLongitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        assertEquals("0" + decimalPoint + "0" + Msg.getString("direction.degreeSign") + "E", lonString1);
+        assertEquals("0" + decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "E", lonString1);
     }
     
     /**
@@ -346,6 +346,6 @@ public class TestCoordinates extends TestCase {
         String latString1 = loc1.getFormattedLatitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        assertEquals("90"+ decimalPoint + "0" + Msg.getString("direction.degreeSign") + "N", latString1);
+        assertEquals("90"+ decimalPoint + "0 " + Msg.getString("direction.degreeSign") + "N", latString1);
     }
 }
