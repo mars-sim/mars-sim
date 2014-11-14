@@ -396,7 +396,7 @@ implements Serializable {
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 
-		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
+		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
 	}
 
 	/** Converts spherical coordinates to rectangular coordinates.
