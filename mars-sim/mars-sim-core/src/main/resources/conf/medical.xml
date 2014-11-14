@@ -29,6 +29,9 @@
 			<!-- Values: 0.0 (bedridden) to 100.0 (normal fitness) -->
 			<performance-percent value="10.0" />
 			
+			<!--  Does recovery require bed rest at a medical aid? -->
+			<bed-rest-recovery value="true" />
+			
 			<!-- Treatment to cure the illness (see treatment list below). (optional) -->
 			<!-- If no treatment is listed, then illness immediately goes to recovery.  -->
 			<treatment-type value="Minor Operation" />
@@ -49,10 +52,11 @@
 			<recovery-time value="14.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Major Operation" />
 		</medical-complaint>
 		
-		<!-- Meningitis is an inflamation of the membranes covering the brain and spinal cord. -->
+		<!-- Meningitis is an inflammation of the membranes covering the brain and spinal cord. -->
 		<!-- If left untreated, it will cause death. -->
 		<!-- It requires antibiotics to treat it. -->
 		<medical-complaint name="Meningitis">
@@ -61,6 +65,7 @@
 			<recovery-time value="10.0" />
 			<probability value="0.1" />
 			<performance-percent value="0.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Antibiotics" />
 		</medical-complaint>
 		
@@ -71,6 +76,7 @@
 			<recovery-time value="2.0" />
 			<probability value="40.0" />
 			<performance-percent value="70.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>
 		
 		<!-- A cold is a minor and common medical complaint. -->
@@ -80,6 +86,7 @@
 			<recovery-time value="12.0" />
 			<probability value="20.0" />
 			<performance-percent value="80.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>
 		
 		<!-- A flu is more serious than a cold but has a shorter duration. -->
@@ -88,6 +95,7 @@
 			<recovery-time value="3.0" />
 			<probability value="5.0" />
 			<performance-percent value="30.0" />
+			<bed-rest-recovery value="true" />
 		</medical-complaint>
 		
 		<!-- A fever doesn't last long but reduces a person's performance quite a bit.  -->
@@ -96,6 +104,7 @@
 			<recovery-time value="1.0" />
 			<probability value="5.0" />
 			<performance-percent value="20.0" />
+			<bed-rest-recovery value="true" />
 		</medical-complaint>
 		
 		<!-- A broken bone can result in gangrene if left untreated. -->
@@ -105,6 +114,7 @@
 			<recovery-time value="14.0" />
 			<probability value="8.0" />
 			<performance-percent value="10.0" />
+			<bed-rest-recovery value="false" />
 			<treatment-type value="Plaster Cast" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
@@ -116,6 +126,7 @@
 			<recovery-time value="2.0" />
 			<probability value="14.0" />
 			<performance-percent value="60.0" />
+			<bed-rest-recovery value="false" />
 			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
@@ -128,6 +139,7 @@
 			<recovery-time value="15.0" />
 			<probability value="0.0" />
 			<performance-percent value="10.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Antibiotics" />
 		</medical-complaint>
 
@@ -137,6 +149,7 @@
 			<recovery-time value="10.0" />
 			<probability value="10.0" />
 			<performance-percent value="75.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>
 		
 		<!-- Burns are very painful but will not cause death. -->
@@ -146,6 +159,7 @@
 			<recovery-time value="20.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
 		</medical-complaint>
 		
@@ -157,6 +171,7 @@
 			<recovery-time value="40.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Skin Graft" />
 		</medical-complaint>	
 		
@@ -167,6 +182,7 @@
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="80.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>		
 		
 		<!-- Frostbite is damaged tissue due to exposure to freezing conditions -->
@@ -178,19 +194,21 @@
 			<recovery-time value="10.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
+			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>			
 		
 		<!-- An anxiety attack happens when a person is at maximum stress for too long. -->
 		<!-- It is a mental breakdown, reducing the person's performance on activities -->
-		<!-- to minimal and forcing them to relax and destress.  The effects do not last -->
+		<!-- to minimal and forcing them to relax and distress.  The effects do not last -->
 		<!-- long, however. (See "stress-breakdown-chance" in person.xml.) -->
 		<medical-complaint name="Anxiety Attack">
 			<seriousness value="30" />
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>	
 
 	</medical-complaint-list>
@@ -213,9 +231,9 @@
             <!-- Time required for the treatment. (millisols) (optional) -->
             <treatment-time value="40.0" />
 
-			<!-- Is the medical facility required during recovery process? (optional) -->
-            <!-- Values: True or False -->
-            <retainaid value="false" />
+			<!--  Can the treatment be self administered? (optional) -->
+			<!--  Values: true or false -->
+			<self-admin value="false" />
 
         </treatment>
         
@@ -224,7 +242,7 @@
         	<skill value="1" />
         	<medical-tech-level value="1" />
         	<treatment-time value="5.0" />
-        	<retainaid value="false" />
+        	<self-admin value="true" />
         </treatment>
 	
 		<!-- Dressing a wound. -->
@@ -232,7 +250,7 @@
 			<skill value="0" />
 			<medical-tech-level value="1" />
 			<treatment-time value="10.0" />
-			<retainaid value="false" />
+			<self-admin value="true" />
 		</treatment>
 		
 		<!-- A relatively simple surgical operation. -->
@@ -240,7 +258,7 @@
 			<skill value="3" />
 			<medical-tech-level value="3" />
 			<treatment-time value="80.0" />
-			<retainaid value="true" />
+			<self-admin value="false" />
 		</treatment>
 		
 		<!-- A complex surgical operation. -->
@@ -248,15 +266,15 @@
 			<skill value="4" />
 			<medical-tech-level value="4" />
 			<treatment-time value="160.0" />
-			<retainaid value="true" />
+			<self-admin value="false" />
 		</treatment>
 		
-		<!-- Extended bedrest in the care of a medical facility. -->
+		<!-- Extended bed rest in the care of a medical facility. -->
 		<treatment name="Hospitalization">
 			<skill value="3" />
 			<medical-tech-level value="3" />
-			<treatment-time value="1000.0" />
-			<retainaid value="true" />
+			<treatment-time value="500.0" />
+			<self-admin value="false" />
 		</treatment>
 		
 		<!-- Skin graft for extensive, third-degree burns. -->
@@ -264,7 +282,7 @@
 			<skill value="5" />
 			<medical-tech-level value="5" />
 			<treatment-time value="500.0" />
-			<retainaid value="true" />
+			<self-admin value="false" />
 		</treatment>
 	
 	</treatment-list>

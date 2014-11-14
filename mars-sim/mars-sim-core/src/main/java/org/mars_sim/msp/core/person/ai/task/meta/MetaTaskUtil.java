@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -50,7 +50,6 @@ public class MetaTaskUtil {
         metaTasks.add(new MaintenanceMeta());
         metaTasks.add(new ManufactureConstructionMaterialsMeta());
         metaTasks.add(new ManufactureGoodMeta());
-        metaTasks.add(new MedicalAssistanceMeta());
         metaTasks.add(new ObserveAstronomicalObjectsMeta());
         metaTasks.add(new PeerReviewStudyPaperMeta());
         metaTasks.add(new PerformLaboratoryExperimentMeta());
@@ -61,16 +60,20 @@ public class MetaTaskUtil {
         metaTasks.add(new RelaxMeta());
         metaTasks.add(new RepairEVAMalfunctionMeta());
         metaTasks.add(new RepairMalfunctionMeta());
+        metaTasks.add(new RequestMedicalTreatmentMeta());
         metaTasks.add(new RespondToStudyInvitationMeta());
+        metaTasks.add(new RestingMedicalRecoveryMeta());
         metaTasks.add(new ReturnLightUtilityVehicleMeta());
         metaTasks.add(new SalvageBuildingMeta());
         metaTasks.add(new SalvageGoodMeta());
+        metaTasks.add(new SelfTreatHealthProblemMeta());
         metaTasks.add(new SleepMeta());
         metaTasks.add(new StudyFieldSamplesMeta());
         metaTasks.add(new TeachMeta());
         metaTasks.add(new TendGreenhouseMeta());
         metaTasks.add(new ToggleFuelPowerSourceMeta());
         metaTasks.add(new ToggleResourceProcessMeta());
+        metaTasks.add(new TreatMedicalPatientMeta());
         metaTasks.add(new UnloadVehicleEVAMeta());
         metaTasks.add(new UnloadVehicleGarageMeta());
         metaTasks.add(new WalkMeta());

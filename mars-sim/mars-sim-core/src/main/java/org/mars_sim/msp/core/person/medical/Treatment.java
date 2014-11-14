@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Treatment.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-13
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.medical;
@@ -25,8 +25,6 @@ implements Serializable, Comparable<Treatment> {
 	private int facilityLevel;
 	/** Length of treatment. */
 	private double duration;
-	/** Continue to use Aid after Treatment. */
-	private boolean retainAid;
 	/** Can perform the treatment on oneself or not. */
 	private boolean selfAdmin;
 
@@ -35,14 +33,14 @@ implements Serializable, Comparable<Treatment> {
 	 * @param name The unique name.
 	 * @param skill Required Medical skill.
 	 * @param duration The duration of treatment in millisols.
-	 * @param retainAid Does the recovery after treatment require the medical aid
+	 * @param selfAdmin Can the treatment be self-administered.
+	 * @param facilityLevel Required medical aid tech level.
 	 */
 	public Treatment(String name, int skill, double duration,
-			boolean selfAdmin, boolean retainAid, int facilityLevel) {
+			boolean selfAdmin, int facilityLevel) {
 		this.name = name;
 		this.requiredSkill = skill;
 		this.selfAdmin = selfAdmin;
-		this.retainAid = retainAid;
 		this.facilityLevel = facilityLevel;
 		if (duration < 0D) {
 			// Negative duration means, the treatment takes as long as recovery
@@ -91,7 +89,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Return the theoritical duration of this treatment.
+	 * Return the theoretical duration of this treatment.
 	 * @return The duration to apply this Treatment.
 	 */
 	public double getDuration() {
@@ -113,16 +111,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Does this Treatment require the sufferer to continue to use
-	 * any MedicalAids.
-	 * @return boolean flag.
-	 */
-	public boolean getRetainAid() {
-		return retainAid;
-	}
-
-	/**
-	 * Return the Medical skill requried for this treatment.
+	 * Return the Medical skill required for this treatment.
 	 */
 	public int getSkill() {
 		return requiredSkill;
@@ -136,7 +125,7 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Hash code vlaue for this object.
+	 * Hash code value for this object.
 	 * @return hash code.
 	 */
 	public int hashCode() {

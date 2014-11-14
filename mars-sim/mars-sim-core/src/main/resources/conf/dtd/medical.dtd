@@ -1,7 +1,7 @@
 <!ELEMENT medical (medical-complaint-list, treatment-list)>
 <!ELEMENT medical-complaint-list (medical-complaint*)>
 <!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability, 
-performance-percent, treatment-type?, degrade-complaint?)>
+performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?)>
 <!ATTLIST medical-complaint name CDATA #REQUIRED>
 <!ELEMENT seriousness EMPTY>
 <!ATTLIST seriousness value CDATA #REQUIRED>
@@ -15,10 +15,12 @@ performance-percent, treatment-type?, degrade-complaint?)>
 <!ATTLIST performance-percent value CDATA #REQUIRED>
 <!ELEMENT treatment-type EMPTY>
 <!ATTLIST treatment-type value CDATA #REQUIRED>
+<!ELEMENT bed-rest-recovery EMPTY>
+<!ATTLIST bed-rest-recovery value (true|false) #REQUIRED>
 <!ELEMENT degrade-complaint EMPTY>
 <!ATTLIST degrade-complaint value CDATA #REQUIRED>
 <!ELEMENT treatment-list (treatment*)>
-<!ELEMENT treatment (skill?, medical-tech-level?, treatment-time?, retainaid?)> 
+<!ELEMENT treatment (skill?, medical-tech-level?, treatment-time?, self-admin?)> 
 <!ATTLIST treatment name CDATA #REQUIRED>
 <!ELEMENT skill EMPTY>
 <!ATTLIST skill value CDATA #REQUIRED>
@@ -26,5 +28,5 @@ performance-percent, treatment-type?, degrade-complaint?)>
 <!ATTLIST medical-tech-level value CDATA #REQUIRED>
 <!ELEMENT treatment-time EMPTY>
 <!ATTLIST treatment-time value CDATA #REQUIRED>
-<!ELEMENT retainaid EMPTY>
-<!ATTLIST retainaid value (true|false) #REQUIRED>
+<!ELEMENT self-admin EMPTY>
+<!ATTLIST self-admin value (true|false) #REQUIRED>

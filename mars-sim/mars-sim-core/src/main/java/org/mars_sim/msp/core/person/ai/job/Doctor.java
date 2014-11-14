@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-11-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
-import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -58,7 +58,6 @@ implements Serializable {
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
 		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(MedicalAssistance.class);
 		jobTasks.add(PeerReviewStudyPaper.class);
 		jobTasks.add(PerformLaboratoryExperiment.class);
 		jobTasks.add(PerformLaboratoryResearch.class);
@@ -66,6 +65,7 @@ implements Serializable {
 		jobTasks.add(ProposeScientificStudy.class);
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
+		jobTasks.add(TreatMedicalPatient.class);
 
 		// Add doctor-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

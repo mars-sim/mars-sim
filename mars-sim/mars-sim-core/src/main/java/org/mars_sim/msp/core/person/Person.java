@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-13
  * @author Scott Davis
  */
 
@@ -234,10 +234,6 @@ implements VehicleOperator, Serializable {
      */
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);
-
-        MedicalAid aid = getAccessibleAid();
-        if ((aid != null) && (health.canTreatProblems(aid)))
-            health.requestAllTreatments(aid);
     }
 
     /**

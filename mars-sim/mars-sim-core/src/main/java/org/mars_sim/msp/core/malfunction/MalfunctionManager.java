@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -515,11 +515,12 @@ implements Serializable {
 						double amountDepleted = amount * time;
 						Inventory inv = entity.getInventory();
 						double amountStored = inv.getAmountResourceStored(resource, false);
-						if (amountStored < amountDepleted) amountDepleted = amountStored;
-						//                        try {
-							if(amountDepleted >= 0)inv.retrieveAmountResource(resource, amountDepleted);
-							//                        }
-						//                        catch (InventoryException e) {}
+						if (amountStored < amountDepleted) {
+						    amountDepleted = amountStored;
+						}
+						if(amountDepleted >= 0) {
+						    inv.retrieveAmountResource(resource, amountDepleted);
+						}
 					}
 				}
 			}
@@ -533,7 +534,7 @@ implements Serializable {
 
 		logger.info(entity.getName() + " accident()");
 
-		// Multiple malfunctions may have occured.
+		// Multiple malfunctions may have occurred.
 		// 50% one malfunction, 25% two etc.
 		boolean done = false;
 		double chance = 100D;
@@ -542,7 +543,9 @@ implements Serializable {
 				addMalfunction();
 				chance /= 2D;
 			}
-			else done = true;
+			else {
+			    done = true;
+			}
 		}
 
 		// Add stress to people affected by the accident.
