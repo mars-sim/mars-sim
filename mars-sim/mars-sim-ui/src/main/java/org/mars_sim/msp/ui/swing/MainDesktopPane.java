@@ -665,7 +665,7 @@ implements ComponentListener {
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
 			SwingUtilities.updateComponentTreeUI(toolWindow);
-			toolWindow.pack();
+//			toolWindow.pack();
 		}
 	}
 
