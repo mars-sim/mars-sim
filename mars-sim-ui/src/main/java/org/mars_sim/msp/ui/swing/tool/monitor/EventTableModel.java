@@ -1,16 +1,16 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2014-11-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
+//import java.util.logging.Logger;
 
 import javax.swing.JFrame;
-
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -21,7 +21,8 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.ui.swing.tool.NotificationBox;
+
+import org.mars_sim.msp.ui.swing.tool.NotificationManager;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -34,6 +35,9 @@ implements MonitorModel, HistoricalEventListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	 /** default logger.   */
+	//private static Logger logger = Logger.getLogger(EventTableModel.class.getName());
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -70,9 +74,10 @@ implements MonitorModel, HistoricalEventListener {
 	
 	final JFrame frame = new JFrame();
 
-	private static int count;
+	// 2014-11-15 Added NotificationManager
+	private NotificationManager notificationMgr;
+	//private static int count;
 	
-
 	/**
 	 * constructor.
 	 * Create a new Event model based on the specified event manager.
@@ -80,12 +85,17 @@ implements MonitorModel, HistoricalEventListener {
 	 */
 	public EventTableModel(HistoricalEventManager manager) {
 		this.manager = manager;
-
+		//count++;
 		// Update the cached events.
 		updateCachedEvents();
 
 		// Add this model as an event listener.
 		manager.addListener(this);
+		
+		// 2014-11-15 Added notificationManager 
+		//logger.info("count is " + count);
+		notificationMgr = new NotificationManager();
+
 	}
 
 
@@ -278,8 +288,12 @@ implements MonitorModel, HistoricalEventListener {
 		
 		//System.out.println("EventTableModel.java : eventAdded() : index is " + index + ", event is " + event);
 		if (index == 0)
-			//NotificationBox nbox = 
-			new NotificationBox(event);
+			if (event != null) {
+			
+			// 2014-11-15 Added notificationMgr and fire sendAlert()
+			notificationMgr.validateMsg(event);
+				
+			}
 	}
 
 	/**
