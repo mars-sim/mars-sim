@@ -134,7 +134,7 @@ extends MissionCustomInfoPanel {
 		 * @return the value Object at the specified cell.
 		 */
 		public Object getValueAt(int row, int column) {
-			Object result = Msg.getString("EmergencySupplyMissionCustomInfoPanel.unknown"); //$NON-NLS-1$
+			Object result = Msg.getString("unknown"); //$NON-NLS-1$
 
 			if (row < goodsList.size()) {
 				Good good = goodsList.get(row); 

@@ -53,6 +53,7 @@ extends JDialog {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
 
 	// Data members.
@@ -429,18 +430,19 @@ extends JDialog {
 		private List<SettlementInfo> settlements;
 
 		/**
-		 * Constructor
+		 * Hidden Constructor.
 		 */
 		private SettlementTableModel() {
 			super();
 
 			// Add table columns.
-			columns = new String[] { Msg.getString("SimulationConfigEditor.column.name"), 
-			        Msg.getString("SimulationConfigEditor.column.template"), 
-			        Msg.getString("SimulationConfigEditor.column.population"), 
-			        Msg.getString("SimulationConfigEditor.column.latitude"), 
-			        Msg.getString("SimulationConfigEditor.column.longitude") 
-			        }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			columns = new String[] {
+				Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
+			};
 
 			// Load default settlements.
 			settlements = new ArrayList<SettlementInfo>();
@@ -492,7 +494,7 @@ extends JDialog {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			Object result = Msg.getString("SimulationConfigEditor.log.unknown"); //$NON-NLS-1$
+			Object result = Msg.getString("unknown"); //$NON-NLS-1$
 
 			if ((row > -1) && (row < getRowCount())) {
 				SettlementInfo info = settlements.get(row);
