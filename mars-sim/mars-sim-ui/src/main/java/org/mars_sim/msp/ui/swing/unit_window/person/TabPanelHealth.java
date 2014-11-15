@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -40,7 +40,8 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
+	private DecimalFormat formatter = new DecimalFormat(
+	        Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 	private JLabel fatigueLabel;
 	private JLabel hungerLabel;
 	private JLabel stressLabel;
@@ -90,7 +91,8 @@ extends TabPanel {
 
 		// Prepare fatigue label
 		fatigueCache = condition.getFatigue();
-		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.millisols",formatter.format(fatigueCache)), JLabel.RIGHT); //$NON-NLS-1$
+		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(fatigueCache)), JLabel.RIGHT); 
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
@@ -99,7 +101,8 @@ extends TabPanel {
 
 		// Prepare hunger label
 		hungerCache = condition.getHunger();
-		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.millisols",formatter.format(hungerCache)), JLabel.RIGHT); //$NON-NLS-1$
+		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+		        formatter.format(hungerCache)), JLabel.RIGHT); 
 		conditionPanel.add(hungerLabel);
 
 		// Prepare streses name label
@@ -108,7 +111,8 @@ extends TabPanel {
 
 		// Prepare stress label
 		stressCache = condition.getStress();
-		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage",formatter.format(stressCache)), JLabel.RIGHT); //$NON-NLS-1$
+		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		        formatter.format(stressCache)), JLabel.RIGHT); 
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
@@ -117,7 +121,8 @@ extends TabPanel {
 
 		// Performance rating label
 		performanceCache = person.getPerformanceRating() * 100D;
-		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage",formatter.format(performanceCache)), JLabel.RIGHT); //$NON-NLS-1$
+		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+		        formatter.format(performanceCache)), JLabel.RIGHT); 
 		conditionPanel.add(performanceLabel);
 
 		// Prepare table panel.
@@ -180,25 +185,29 @@ extends TabPanel {
 		// Update fatigue if necessary.
 		if (fatigueCache != condition.getFatigue()) {
 			fatigueCache = condition.getFatigue();
-			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols",formatter.format(fatigueCache))); //$NON-NLS-1$
+			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+			        formatter.format(fatigueCache))); 
 		}
 
 		// Update hunger if necessary.
 		if (hungerCache != condition.getHunger()) {
 			hungerCache = condition.getHunger();
-			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols",formatter.format(hungerCache))); //$NON-NLS-1$
+			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
+			        formatter.format(hungerCache))); 
 		}
 
 		// Update stress if necessary.
 		if (stressCache != condition.getStress()) {
 			stressCache = condition.getStress();
-			stressLabel.setText(Msg.getString("TabPanelHealth.percentage",formatter.format(stressCache))); //$NON-NLS-1$
+			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+			        formatter.format(stressCache))); 
 		}
 
 		// Update performance cache if necessary.
 		if (performanceCache != (person.getPerformanceRating() * 100D)) {
 			performanceCache = person.getPerformanceRating() * 100D;
-			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage",formatter.format(performanceCache))); //$NON-NLS-1$
+			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
+			        formatter.format(performanceCache))); 
 		}
 
 		// Update medication table model.
@@ -235,15 +244,25 @@ extends TabPanel {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = String.class;
+			if (columnIndex == 0) {
+			    dataType = String.class;
+			}
+			if (columnIndex == 1) {
+			    dataType = String.class;
+			}
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelHealth.column.problem"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelHealth.column.condition"); //$NON-NLS-1$
-			else return null;
+			if (columnIndex == 0) {
+			    return Msg.getString("TabPanelHealth.column.problem"); //$NON-NLS-1$
+			}
+			else if (columnIndex == 1) {
+			    return Msg.getString("TabPanelHealth.column.condition"); //$NON-NLS-1$
+			}
+			else {
+			    return null;
+			}
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -253,27 +272,39 @@ extends TabPanel {
 				int count = 0;
 				while (i.hasNext()) {
 					HealthProblem prob = (HealthProblem) i.next();
-					if (count == row) problem = prob;
+					if (count == row) {
+					    problem = prob;
+					}
 					count++;
 				}
 			}
 
 			if (problem != null) {
-				if (column == 0) return problem.getIllness().getName();
+				if (column == 0) {
+				    return problem.getIllness().getName();
+				}
 				else if (column == 1) {
 					String conditionStr = problem.getStateString();
-					if (!condition.isDead()) conditionStr = Msg.getString("TabPanelHealth.healthRating",conditionStr,Integer.toString(problem.getHealthRating())); //$NON-NLS-1$
+					if (!condition.isDead()) {
+					    conditionStr = Msg.getString("TabPanelHealth.healthRating", //$NON-NLS-1$
+					            conditionStr, Integer.toString(problem.getHealthRating())); 
+					}
 					return conditionStr;
 				}
-				else return null;
+				else {
+				    return null;
+				}
 			}
-			else return null;
+			else {
+			    return null;
+			}
 		}
 
 		public void update() {
 			// Make sure problems cache is current.
-			if (!problemsCache.equals(condition.getProblems()))
+			if (!problemsCache.equals(condition.getProblems())) {
 				problemsCache = condition.getProblems();
+			}
 
 			fireTableDataChanged();
 		}
@@ -306,30 +337,45 @@ extends TabPanel {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Double.class;
+			if (columnIndex == 0) {
+			    dataType = String.class;
+			}
+			else if (columnIndex == 1) {
+			    dataType = Double.class;
+			}
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelHealth.column.medication"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelHealth.column.duration"); //$NON-NLS-1$
-			else return null;
+			if (columnIndex == 0) {
+			    return Msg.getString("TabPanelHealth.column.medication"); //$NON-NLS-1$
+			}
+			else if (columnIndex == 1) {
+			    return Msg.getString("TabPanelHealth.column.duration"); //$NON-NLS-1$
+			}
+			else {
+			    return null;
+			}
 		}
 
 		public Object getValueAt(int row, int column) {
 			Object result = null;
 			if (row < getRowCount()) {
-				if (column == 0) result = medicationCache.get(row).getName(); 
-				else if (column == 1) result = medicationCache.get(row).getDuration();
+				if (column == 0) {
+				    result = medicationCache.get(row).getName(); 
+				}
+				else if (column == 1) {
+				    result = medicationCache.get(row).getDuration();
+				}
 			}
 			return result;
 		}
 
 		public void update() {
 			// Make sure medication cache is current.
-			if (!medicationCache.equals(condition.getMedicationList()))
+			if (!medicationCache.equals(condition.getMedicationList())) {
 				medicationCache = condition.getMedicationList();
+			}
 
 			fireTableDataChanged();
 		}
