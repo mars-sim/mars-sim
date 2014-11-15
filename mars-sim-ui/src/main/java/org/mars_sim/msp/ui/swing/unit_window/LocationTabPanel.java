@@ -206,7 +206,7 @@ implements ActionListener {
     
     // 2014-11-11 Modified temperature and pressure panel
     public String getTemperatureString() {
-		return fmt.format(getTemperature()) + " �C";
+		return fmt.format(getTemperature()) + " °C"; //2 b localized?
     }
     public double getTemperature() {
     	double outsideTemp = Simulation.instance().getMars().getWeather()
@@ -216,7 +216,7 @@ implements ActionListener {
     
     // 2014-11-07 Added temperature and pressure panel    
     public String getAirPressureString() {
-    	return fmt.format(getAirPressure()) + " mbars";
+    	return fmt.format(getAirPressure()) + " mbars"; //2 b localized?
     }
     public double getAirPressure() {
     	double outsideAirPressure = Simulation.instance().getMars().getWeather()
