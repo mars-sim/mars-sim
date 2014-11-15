@@ -155,7 +155,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
 		}
-		return Msg.getString("MissionTableModel.unknown"); //$NON-NLS-1$
+		return Msg.getString("unknown"); //$NON-NLS-1$
 	}
 
 	/**

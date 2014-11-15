@@ -28,6 +28,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -68,9 +69,9 @@ implements ListSelectionListener, MissionListener {
 	private JTable navpointTable;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
-	NavpointPanel() {
+	protected NavpointPanel() {
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -99,7 +100,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
 		// Create the north button.
-		JButton northButton = new JButton(ImageLoader.getIcon("NavpointNorth"));
+		JButton northButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
 		northButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Recenter the map to the north by a half map.
@@ -115,7 +116,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(northButton, BorderLayout.NORTH);
 		
 		// Create the west button.
-		JButton westButton = new JButton(ImageLoader.getIcon("NavpointWest"));
+		JButton westButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.west"))); //$NON-NLS-1$
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -132,7 +133,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(westButton, BorderLayout.WEST);
 		
 		// Create the east button.
-		JButton eastButton = new JButton(ImageLoader.getIcon("NavpointEast"));
+		JButton eastButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.east"))); //$NON-NLS-1$
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -149,7 +150,7 @@ implements ListSelectionListener, MissionListener {
 		mapDisplayPane.add(eastButton, BorderLayout.EAST);
 		
 		// Create the south button.
-		JButton southButton = new JButton(ImageLoader.getIcon("NavpointSouth"));
+		JButton southButton = new JButton(ImageLoader.getIcon(Msg.getString("img.navpoint.south"))); //$NON-NLS-1$
 		southButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Recenter the map to the south by a half map.
@@ -313,10 +314,10 @@ implements ListSelectionListener, MissionListener {
 		 * @return the name of the column.
 		 */
 		public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "Name";
-            else if (columnIndex == 1) return "Location";
-            else if (columnIndex == 2) return "Description";
-            else return "";
+            if (columnIndex == 0) return Msg.getString("NavpointPanel.column.name"); //$NON-NLS-1$
+            else if (columnIndex == 1) return Msg.getString("NavpointPanel.column.location"); //$NON-NLS-1$
+            else if (columnIndex == 2) return Msg.getString("NavpointPanel.column.description"); //$NON-NLS-1$
+            else return ""; //$NON-NLS-1$
         }
 		
 		/**
@@ -328,12 +329,12 @@ implements ListSelectionListener, MissionListener {
 		public Object getValueAt(int row, int column) {
             if (row < navpoints.size()) {
             	NavPoint navpoint = navpoints.get(row);
-            	if (column == 0) return "Navpoint " + (row + 1);
+            	if (column == 0) return Msg.getString("NavpointPanel.column.navpoint") + (row + 1); //$NON-NLS-1$
             	else if (column == 1) return navpoint.getLocation().getFormattedString();
             	else if (column == 2) return navpoint.getDescription();
-            	else return "unknown";
+            	else return Msg.getString("unknown"); //$NON-NLS-1$
             }   
-            else return "unknown";
+            else return Msg.getString("unknown"); //$NON-NLS-1$
         }
 		
 		/**

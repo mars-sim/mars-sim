@@ -10,7 +10,7 @@ public enum PersonGender {
 
 	MALE (Msg.getString("PersonGender.male")), //$NON-NLS-1$
 	FEMALE (Msg.getString("PersonGender.female")), //$NON-NLS-1$
-	UNKNOWN (Msg.getString("PersonGender.unknown")); //$NON-NLS-1$
+	UNKNOWN (Msg.getString("unknown")); //$NON-NLS-1$
 
 	private String name;
 

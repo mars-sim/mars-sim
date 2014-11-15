@@ -167,7 +167,7 @@ implements MonitorModel, HistoricalEventListener {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
 		}
-		return Msg.getString("EventTableModel.unknown"); //$NON-NLS-1$
+		return Msg.getString("unknown"); //$NON-NLS-1$
 	}
 
 	/**

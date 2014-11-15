@@ -37,7 +37,7 @@ extends ToolWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = "Mission Tool";	
+	public static final String NAME = "Mission Tool";
 
 	// Private members
 	private JList<Mission> missionList;
@@ -111,12 +111,13 @@ extends ToolWindow {
 					}
 				});
 		missionList.addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						// Enable button if mission is selected in list.
-						editButton.setEnabled(missionList.getSelectedValue() != null);
-					}
-				});
+			new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					// Enable button if mission is selected in list.
+					editButton.setEnabled(missionList.getSelectedValue() != null);
+				}
+			}
+		);
 		buttonPane.add(editButton);
 
 		// Create the end mission button.
