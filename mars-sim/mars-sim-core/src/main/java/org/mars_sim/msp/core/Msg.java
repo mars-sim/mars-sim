@@ -44,6 +44,12 @@ public class Msg {
 		,new UTF8Control()
 	);
 
+	// snippets for constructing html-style tooltips
+	public static final String BR = "<br>"; //$NON-NLS-1$
+	public static final String NBSP = "&nbsp;"; //$NON-NLS-1$
+	public static final String HTML_START = "<html>"; //$NON-NLS-1$
+	public static final String HTML_STOP = "</html>"; //$NON-NLS-1$
+
 	/** hidden constructor. */
 	private Msg() {
 	}
@@ -61,12 +67,12 @@ public class Msg {
 		}
 	}
 
-	/**
+	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @return {@link String}
-	 */
+	 *
 	public static String getString(
 		final String key,
 		final String param1
@@ -74,13 +80,13 @@ public class Msg {
 		return getString(key)
 		.replace("{0}",param1);
 	}
-
-	/**
+*/
+	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link Integer}
 	 * @return {@link String}
-	 */
+	 *
 	public static String getString(
 		final String key,
 		final int param1
@@ -88,13 +94,33 @@ public class Msg {
 		return getString(key)
 		.replace("{0}",Integer.toString(param1));
 	}
-
+*/
 	/**
+	 * replaces all occurances of "{n}" (with n an integer)
+	 * with the 
+	 * @param key
+	 * @param args
+	 * @return
+	 */
+	public static String getString(final String key, final Object... args) {
+		String s = getString(key);
+		int i = 0;
+		for (Object arg : args) {
+			s = s.replaceAll(
+				"{" + i + "}",
+				arg.toString()
+			);
+			i++;
+		}
+		return "";
+	}
+
+	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link Double}
 	 * @return {@link String}
-	 */
+	 *
 	public static String getString(
 		final String key,
 		final double param1
@@ -102,15 +128,15 @@ public class Msg {
 		return getString(key)
 		.replace("{0}",Double.toString(param1));
 	}
-
-	/**
+*/
+	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * replaces all occurrences of "{1}" with the given second parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @param param2 {@link String}
 	 * @return {@link String}
-	 */
+	 *
 	public static String getString(
 		final String key,
 		final String param1,
@@ -120,7 +146,7 @@ public class Msg {
 		.replace("{0}",param1)
 		.replace("{1}",param2);
 	}
-
+*/
 	public static boolean getBool(String key) {
 		try {
 			return Boolean.parseBoolean(RESOURCE_BUNDLE.getString(key));
