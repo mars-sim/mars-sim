@@ -6,21 +6,34 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+
+import javax.swing.BoundedRangeModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.*;
+import org.mars_sim.msp.core.structure.construction.ConstructionEvent;
+import org.mars_sim.msp.core.structure.construction.ConstructionListener;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.Iterator;
 
 /**
  * A panel for displaying construction custom mission information.
@@ -32,12 +45,6 @@ implements ConstructionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	// snippets for constructing html-style tooltips
-	private static final String BR = "<br>"; //$NON-NLS-1$
-	private static final String NBSP = "&nbsp;"; //$NON-NLS-1$
-	private static final String START = "<html>"; //$NON-NLS-1$
-	private static final String STOP = "</html>"; //$NON-NLS-1$
 
 	// Data members.
 	private MainDesktopPane desktop;
@@ -184,62 +191,62 @@ implements ConstructionListener {
 	 * Gets a tool tip string for the panel.
 	 */
 	private String getToolTipString() {
-		StringBuilder result = new StringBuilder(START);
+		StringBuilder result = new StringBuilder(Msg.HTML_START);
 
 		ConstructionStage stage = null;
 		if (site != null) stage = site.getCurrentConstructionStage();
 		if (stage != null) {
 			ConstructionStageInfo info = stage.getInfo();
-			result.append("Status: building ").append(info.getName()).append(BR);
-			result.append("Stage Type: ").append(info.getType()).append(BR);
-			if (stage.isSalvaging()) result.append("Work Type: salvage").append(BR);
-			else result.append("Work Type: Construction").append(BR);
+			result.append("Status: building ").append(info.getName()).append(Msg.BR);
+			result.append("Stage Type: ").append(info.getType()).append(Msg.BR);
+			if (stage.isSalvaging()) result.append("Work Type: salvage").append(Msg.BR);
+			else result.append("Work Type: Construction").append(Msg.BR);
 			DecimalFormat formatter = new DecimalFormat("0.0");
 			String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
-			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(BR);
+			result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(Msg.BR);
 			String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
-			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(BR);
-			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(BR);
+			result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(Msg.BR);
+			result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 
 			// Add construction resources.
 			if (info.getResources().size() > 0) {
-				result.append(BR).append("Construction Resources:").append(BR);
+				result.append(Msg.BR).append("Construction Resources:").append(Msg.BR);
 				Iterator<AmountResource> i = info.getResources().keySet().iterator();
 				while (i.hasNext()) {
 					AmountResource resource = i.next();
 					double amount = info.getResources().get(resource);
-					result.append(NBSP).append(NBSP).append(resource.getName()).append(": ").append(amount).append(" kg").append(BR);
+					result.append(Msg.NBSP).append(Msg.NBSP).append(resource.getName()).append(": ").append(amount).append(" kg").append(Msg.BR);
 				}
 			}
 
 			// Add construction parts.
 			if (info.getParts().size() > 0) {
-				result.append(BR).append("Construction Parts:").append(BR);
+				result.append(Msg.BR).append("Construction Parts:").append(Msg.BR);
 				Iterator<Part> j = info.getParts().keySet().iterator();
 				while (j.hasNext()) {
 					Part part = j.next();
 					int number = info.getParts().get(part);
-					result.append(NBSP).append(NBSP).append(part.getName()).append(": ").append(number).append(BR);
+					result.append(Msg.NBSP).append(Msg.NBSP).append(part.getName()).append(": ").append(number).append(Msg.BR);
 				}
 			}
 
 			// Add construction vehicles.
 			if (info.getVehicles().size() > 0) {
-				result.append(BR).append("Construction Vehicles:").append(BR);
+				result.append(Msg.BR).append("Construction Vehicles:").append(Msg.BR);
 				Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
 				while (k.hasNext()) {
 					ConstructionVehicleType vehicle = k.next();
-					result.append(NBSP).append(NBSP).append("Vehicle Type: ").append(vehicle.getVehicleType()).append(BR);
-					result.append(NBSP).append(NBSP).append("Attachment Parts:").append(BR);
+					result.append(Msg.NBSP).append(Msg.NBSP).append("Vehicle Type: ").append(vehicle.getVehicleType()).append(Msg.BR);
+					result.append(Msg.NBSP).append(Msg.NBSP).append("Attachment Parts:").append(Msg.BR);
 					Iterator<Part> l = vehicle.getAttachmentParts().iterator();
 					while (l.hasNext()) {
-						result.append(NBSP).append(NBSP).append(NBSP).append(NBSP).append(l.next().getName()).append(BR);
+						result.append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(l.next().getName()).append(Msg.BR);
 					}
 				}
 			}
 		}
 
-		result.append(STOP);
+		result.append(Msg.HTML_STOP);
 
 		return result.toString();
 	}
