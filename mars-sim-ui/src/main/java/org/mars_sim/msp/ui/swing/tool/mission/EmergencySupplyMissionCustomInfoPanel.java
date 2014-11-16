@@ -124,7 +124,7 @@ extends MissionCustomInfoPanel {
 		 */
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("EmergencySupplyMissionCustomInfoPanel.column.good"); //$NON-NLS-1$
-			else return Msg.getString("EmergencySupplyMissionCustomInfoPanel.column.ammount"); //$NON-NLS-1$
+			else return Msg.getString("EmergencySupplyMissionCustomInfoPanel.column.amount"); //$NON-NLS-1$
 		}
 
 		/**
