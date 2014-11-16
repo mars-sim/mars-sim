@@ -3,7 +3,7 @@
 # Mars Simulation Project
 # Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.07 2014-11-09
+# @version 3.07 2014-11-16
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.4 or later and the 'SearchResults.tsv' file to be in the
@@ -12,8 +12,10 @@
 # To generate TSV file at http://planetarynames.wr.usgs.gov/AdvancedSearch
 # Select System: MARS and target: Mars; Add column 'Feature Type Code'; Run Search
 # Scroll down and click 'TSV (tab separated values) for importing into other spread sheets' 
-# save the file as SearchResults.tsv in the same directory as this script.
-# Run : 'python tsv2xml.py' and the result file landmarks.xml is fit for use with MSP
+# save the file as SearchResults.tsv in the same directory as this script. You may need
+# to add the .tsv suffix afterwards.
+# Run : 'python tsv2xml.py' and the resulting file landmarks.xml is fit for use with MSP
+# when put in the correct directory
 
 # TODO: 
 # Insert doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd"> 
@@ -60,7 +62,7 @@ tsvlinelist = f.readlines() # fill a list with TSV lines
 # Main parsing loop
 for tsvline in tsvlinelist: 
 	if tsvline == "\n":
-		print "Skipped empty line"  # ignore empty lines
+		print "Skipped empty line..."  # ignore empty lines
 	elif "Feature_Name" in tsvline:
 		print "Found key line, parsing..." # first line of TSV, names of keys
 		paramlist = tsvline.split("\t") # explode into a list of keys
@@ -72,9 +74,9 @@ for tsvline in tsvlinelist:
 		index_feature_type = paramlist.index('Feature_Type_Code')
 		index_origin = paramlist.index('Origin')
 	elif "Dropped" in tsvline:
-		print "Skipped dropped name" # ignore dropped (unapproved) names
+		print "Skipped unapproved name..." # ignore dropped (unapproved) names
 	elif "Mars" not in tsvline:
-		print "Skipped non-Mars target" # ignore features not on Mars
+		print "Skipped non-Mars target..." # ignore features not on Mars
 	else:
 		print "Found data line, parsing..." #ready to move data into XML DOM
 		valuelist = tsvline.split("\t") # explode into a list of values
