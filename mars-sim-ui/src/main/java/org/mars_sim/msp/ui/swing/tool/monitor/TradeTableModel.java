@@ -1,10 +1,12 @@
 /**
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
+
+//import org.apache.commons.lang.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,7 +91,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return goodsList.size() + " trade goods";
+		return goodsList.size() + " Trade Goods";
 	}
 
 	/**
@@ -129,7 +131,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) return "Trade Good";
 		else if (columnIndex == 1) return "Category";
-		else return settlements.get(columnIndex - 2).getName();
+		else {
+			// 2014-11-16 Added "VP at "
+			String columnName = "VP at " + settlements.get(columnIndex - 2).getName();
+			return columnName;
+		}
 	}
 
 	/**
@@ -151,7 +157,10 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (columnIndex == 0) return goodsList.get(rowIndex).getName();
+		if (columnIndex == 0) {
+			return goodsList.get(rowIndex).getName();
+		}
+	
 		else if (columnIndex == 1) return (getGoodCategoryName(goodsList.get(rowIndex)));
 		else {
 			try {
