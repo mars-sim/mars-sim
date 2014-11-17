@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -667,6 +667,15 @@ implements ComponentListener {
 			SwingUtilities.updateComponentTreeUI(toolWindow);
 //			toolWindow.pack();
 		}
+	}
+	
+	/**
+	 * Updates the look & feel of the announcement window.
+	 */
+	void updateAnnouncementWindowLF() {
+	    if (announcementWindow != null) {
+	        SwingUtilities.updateComponentTreeUI(announcementWindow);
+	    }
 	}
 
 	/**

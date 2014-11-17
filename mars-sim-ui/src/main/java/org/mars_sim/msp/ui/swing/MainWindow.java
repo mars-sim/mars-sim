@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-17
  * @author Scott Davis
  */
 
@@ -426,6 +426,7 @@ public class MainWindow {
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 			}
+			desktop.updateAnnouncementWindowLF();
 		}
 	}
 
