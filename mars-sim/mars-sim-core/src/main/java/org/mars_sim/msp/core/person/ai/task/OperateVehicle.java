@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -65,7 +65,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 			boolean hasDuration, double duration) {
 		
 		// Use Task constructor
-		super(name, person, true, false, stressModifier, hasDuration, duration);
+		super(name, person, false, false, stressModifier, hasDuration, duration);
 		
 		// Check for valid parameters.
 		if (vehicle == null) {
