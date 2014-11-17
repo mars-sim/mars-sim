@@ -1,12 +1,12 @@
 /**
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 3.07 2014-11-16
+ * @version 3.07 2014-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-//import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -158,15 +158,22 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) {
-			return goodsList.get(rowIndex).getName();
+			// 2014-11-17 Capitalized Resource Names
+			Object result =  goodsList.get(rowIndex).getName();
+			return WordUtils.capitalize(result.toString());
 		}
 	
-		else if (columnIndex == 1) return (getGoodCategoryName(goodsList.get(rowIndex)));
+		else if (columnIndex == 1) {
+			// 2014-11-17 Capitalized Category Names
+			Object result = getGoodCategoryName(goodsList.get(rowIndex));
+			return WordUtils.capitalize(result.toString());
+		}
+			
 		else {
 			try {
 				Settlement settlement = settlements.get(columnIndex - 2);
 				Good good = goodsList.get(rowIndex);
-				double result = settlement.getGoodsManager().getGoodValuePerItem(good);
+				Object result = settlement.getGoodsManager().getGoodValuePerItem(good);
 				return result;
 			}
 			catch (Exception e) {
