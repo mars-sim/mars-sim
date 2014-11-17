@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 3.07 2014-11-15
+ * @version 3.07 2014-11-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JDialog;
 
@@ -14,7 +15,6 @@ import org.jtelegraph.Telegraph;
 import org.jtelegraph.TelegraphConfig;
 import org.jtelegraph.TelegraphPosition;
 import org.jtelegraph.TelegraphQueue;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -42,12 +42,12 @@ public class NotificationManager extends JDialog {
 	protected String name;
 	//TODO: need to create an array of two element with name 
 	// as array[0] and header as array[1]
-	private String header;
+	//private String header;
 	private Telegraph telegraph;
 	private TelegraphConfig telegraphConfig ;
 	private TelegraphQueue queue;
 	private boolean willNotify= false;
-	private String message = "";		
+	//private String message = "";		
 	private String matchedWord1 = "fixed";
 	private String matchedWord2 = "recovering";
 	private String oldMsgCache = "";
@@ -58,25 +58,34 @@ public class NotificationManager extends JDialog {
 	}
 	
 	// 2014-11-15 Created sendAlert()
-	public void sendAlert(HistoricalEvent event) {
+	public void sendAlert(HistoricalEvent event, String message, String header) {
 
-		String msg = generateMsg(event);	
+		Color GREEN_CYAN = new Color(0, 255, 128);
+		Color PURPLE_BLUE = new Color(39, 16, 167);		
+		Color BLUE_CYAN = new Color(0, 128, 255);
+		Color BURGANDY = new Color(148, 28, 10);
+		//Color ORANGE = new Color(255, 128, 0);
+		Color ORANGE = new Color(255, 176, 13);
+		String msg = generateMsg(event, message);	
 
 			if (!oldMsgCache.equals(msg)) {		
-				header = "<html><CENTER><FONT COLOR=BLUE><b><h2>" 
-						+ header + "</h2></b></FONT></CENTER></html>";
+				header = "<html><CENTER><I><b><h1>" 
+						+ header + "</h1></b></I></CENTER></html>";
 				//System.out.println("sendAlert() : msg is "+ msg);
 				//System.out.println("sendAlert() : header is "+ header);
 				telegraphConfig = new TelegraphConfig();
 				
-				telegraphConfig.setBackgroundColor(Color.ORANGE);
-				//telegraphConfig.setDescriptionFont();
-				telegraphConfig.setTitleColor(Color.BLUE);
+				telegraphConfig.setBackgroundColor(ORANGE);
+				telegraphConfig.setTitleColor(BURGANDY);
 				//telegraphConfig.setTitleFont(font);
+				telegraphConfig.setDescriptionColor(Color.DARK_GRAY);
+				//telegraphConfig.setDescriptionFont(Font.SERIF);
+				telegraphConfig.setAudioEnabled(false);
+				//telegraphConfig.setAudioInputStream(null);
 				//telegraphConfig.setButtonEnabled(true);
 				telegraphConfig.setDuration(3000);
 				telegraphConfig.setBorderColor(Color.YELLOW);
-				telegraphConfig.setBorderThickness(3);
+				telegraphConfig.setBorderThickness(5);
 				telegraphConfig.setTelegraphPosition(TelegraphPosition.BOTTOM_RIGHT);
 		
 				telegraph = new Telegraph(
@@ -92,7 +101,8 @@ public class NotificationManager extends JDialog {
 	
 	public void validateMsg(HistoricalEvent event)  {
 		
-		message = event.getDescription(); //.toUpperCase();
+		String header = "";
+		String message = event.getDescription(); //.toUpperCase();
 		// reset willNotify to false
 		willNotify = false;
 		
@@ -109,12 +119,12 @@ public class NotificationManager extends JDialog {
 				HistoricalEventCategory category = event.getCategory();
 
 				if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
-					header = Msg.getString("NotificationBox.message.malfunction"); //$NON-NLS-1$
+					header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 					willNotify = true;
 				}
 				
 				if (category.equals(HistoricalEventCategory.MEDICAL))	{
-					header = Msg.getString("NotificationBox.message.medical"); //$NON-NLS-1$
+					header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
 					willNotify = true;
 				}
 	
@@ -123,11 +133,45 @@ public class NotificationManager extends JDialog {
 		}
 
 		if (willNotify == true)
-			sendAlert(event);
+			sendAlert(event, message, header);
+		
+	}
+	
+	// 2014-11-16 Added modifyMsg()
+	public String parseMsg(String msg) {
+		
+		msg = msg.toUpperCase();
+		msg = msg.replaceAll("OCCURRED", "");
+
+		/*
+		message = message.replaceAll("COLD", "a COLD");
+		message = message.replaceAll("FLU", "a FLU");
+		message = message.replaceAll("NAVIGATION", "a NAVIGATION");
+		message = message.replaceAll("MAJOR", "a MAJOR");
+		message = message.replaceAll("MINOR", "a MINOR");
+		message = message.replaceAll("FUEL", "a FUEL");
+		 */
+		msg = "<html><i><b>" 
+				+ msg + "</b></i></html>";
+		
+		msg = "a " + msg;
+		msg = msg.replaceAll("a AIRLEAK", "an AIRLEAK");
+		msg = msg.replaceAll("a ELECTRICAL", "an ELECTRICAL");
+		
+		msg = msg.replaceAll("a FOOD", "FOOD");
+		msg = msg.replaceAll("a WATER", "WATER");
+		msg = msg.replaceAll("a NAVIGATION", "NAVIGATION");
+		msg = msg.replaceAll("a BROKEN", "BROKEN");
+		msg = msg.replaceAll("a MINOR BURNS", "MINOR BURNS");
+		msg = msg.replaceAll("a GENERATOR", "GENERATOR");
+		
+
+		
+		return msg;
 	}
 	
 	//prepare the notification box for displaying the message
-	public String generateMsg(HistoricalEvent event)  {
+	public String generateMsg(HistoricalEvent event, String msg)  {
 		//count++;
 
 		String name = "";
@@ -136,15 +180,11 @@ public class NotificationManager extends JDialog {
 		String settlementName = "";
 		String equipmentName = "";
 		String vehicleName = "";
-		String labelText = "";
+		String message = parseMsg(msg);
 		String personName = "";
 		String locationName = "";
 		String unitName = "";
-		
-		message = message.replaceAll("occurred", "");
-		message = message.replaceAll("Occurred", "");
-		
-		message = "<html><b>" + message + "</b></html>";
+	
 		
 		if (willNotify == true) {
 			// if the condition is true,
@@ -159,7 +199,7 @@ public class NotificationManager extends JDialog {
 				// test if the person has a valid container
 				if (container == null) {
 	                locationName = "outside";
-	                labelText = "<html><CENTER><FONT COLOR=RED>" + 
+	                message = "<html><CENTER><FONT COLOR=RED>" + 
 	                		personName +
 							" had " + message + " " +
 							locationName + 
@@ -169,20 +209,16 @@ public class NotificationManager extends JDialog {
 	                settlementName = p.getSettlement().getName();
 	                BuildingManager bm = p.getSettlement().getBuildingManager();
 	                buildingName = bm.getBuilding(p).getNickName();
-	                labelText = "<html><CENTER><FONT COLOR=RED>" + 
-	                		personName +
+	                message = personName +
 							" had " + message + 
 							" at " + buildingName + 
-							" in " + settlementName + 
-							"</FONT></CENTER></html>";
+							" in " + settlementName;
 	            } // for a person
 	            else if (container instanceof Vehicle) {
 	                vehicleName = p.getVehicle().getName();
-	                labelText = "<html><CENTER><FONT COLOR=RED>" + 
-	                		personName +
+	                message = personName +
 							" had " + message + 
-							" in " + vehicleName + 
-							"</FONT></CENTER></html>";
+							" in " + vehicleName ;
 				} // for a person
 				
 		}// end of Person
@@ -204,11 +240,9 @@ public class NotificationManager extends JDialog {
 							System.out.println("Equipment malfunction : " + equipmentName +
 									" had " + message + 
 									" in " + unitName);
-							labelText = "<html><CENTER><FONT COLOR=RED>" +
-									equipmentName + 
+							message = equipmentName + 
 									" had " + message + 
-									" in " + unitName +
-									"</FONT></CENTER></html>";
+									" in " + unitName ;
 						} catch (Exception e1) { 
 							// No, the equipment does NOT have a location container
 							System.err.println("Exception Caught Successfully: equipment's container is" + e1.getMessage());
@@ -219,11 +253,9 @@ public class NotificationManager extends JDialog {
 							System.out.println("Equipment malfunction : " + equipmentName +
 									" had " + message + " " +
 									unitName);
-							labelText = "<html><CENTER><FONT COLOR=RED>" +
-									equipmentName + 
+							message = equipmentName + 
 									" had " + message + 
-									" " + unitName +
-									"</FONT></CENTER></html>";	
+									" " + unitName ;	
 							} // end of 2nd try for Equipment
 					} // end of if  (equipmentName != "null")
 
@@ -238,10 +270,8 @@ public class NotificationManager extends JDialog {
 						// yes the equipment does have a location/person container
 						System.out.println("Equipment malfunction : just had " + message + 
 								" in " + unitName);
-						labelText = "<html><CENTER><FONT COLOR=RED>" +
-								" Just had " + message + 
-								" in " + unitName + 
-								"</FONT></CENTER></html>";
+						message = "Just had " + message + 
+								" in " + unitName;
 						
 					} catch (Exception e2) { 
 						// No, the equipment does NOT have a location container
@@ -250,10 +280,8 @@ public class NotificationManager extends JDialog {
 						unitName = "outside";
 						System.out.println("Equipment malfunction : just had " + message + 
 							unitName);
-						labelText = "<html><CENTER><FONT COLOR=RED>" +
-							" Just had " + message + 
-							" " + unitName + 
-							"</FONT></CENTER></html>";
+						message = "Just had " + message + 
+							" " + unitName;
 					} // end of test if the equipment has a location/person container
 				} // end of catch for No the equipment does NOT have a name
 		} // end of Equipment
@@ -271,11 +299,9 @@ public class NotificationManager extends JDialog {
 					System.out.println("Vehicle malfunction : " + vehicleName +
 							" had " + message + 
 							 " at " + unitName + "\n");
-					labelText = "<html><CENTER><FONT COLOR=RED>" +
-							 vehicleName + 
+					message = vehicleName + 
 							 " had " + message + 
-							 " at " + unitName +
-							 "</FONT></CENTER></html>";
+							 " at " + unitName ;
 					}
 				} catch (Exception e) { 
 					// No, the Vehicle does NOT have a location container
@@ -285,11 +311,9 @@ public class NotificationManager extends JDialog {
 				 	System.out.println("Vehicle malfunction : " + vehicleName +
 							" had " + message + " " +
 							 unitName + "\n");
-					labelText = "<html><CENTER><FONT COLOR=RED>" +
-							 vehicleName + 
+					message = vehicleName + 
 							 " had " + message + 
-							 "  " + unitName +
-							 "</FONT></CENTER></html>";
+							 "  " + unitName;
 				}
 				
 		} // end of Vehicle
@@ -299,19 +323,20 @@ public class NotificationManager extends JDialog {
 				//System.out.println("buildingName is " + buildingName);
 				Settlement s = b.getBuildingManager().getSettlement();
 				settlementName = s.getName();
-				labelText = "<html><CENTER><FONT COLOR=RED>" +
-						buildingName + 
+				message = buildingName + 
 						" had " + message + 
-						" in " + settlementName + 
-						"</FONT></CENTER></html>";
+						" in " + settlementName ;
 			} // end of Building
 		} catch (Exception e) {
 				//e.printStackTrace();
-				System.err.println("Exception Caught. Check the try catch branch for reasons: " + e.getMessage());
+				System.err.println("Exception Caught. Reasons: " + e.getMessage());
 		};
 		
 		} // end of if (willNotify == true)
 
-		return labelText;
+		message = "<html><CENTER><FONT COLOR=RED>" + message + "</FONT COLOR=RED></CENTER></html>";
+
+		// 2014-11-16 Added modifyMsg()
+		return message;
 	}
 }
