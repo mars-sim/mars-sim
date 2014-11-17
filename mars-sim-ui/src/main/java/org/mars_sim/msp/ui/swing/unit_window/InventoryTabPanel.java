@@ -29,7 +29,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -185,14 +187,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "resource";
-            else if (columnIndex == 1) return "# or kg";
-            else if (columnIndex == 2) return "capacity";
+			// 2014-11-17 Internationalized and capitalized column headers 
+            if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Resource.header.name");
+            else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Resource.header.quantity");
+            else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Resource.header.capacity");
             else return "unknown";
         }
         
         public Object getValueAt(int row, int column) {
-            if (column == 0) return keys.get(row);
+            if (column == 0) {
+    			// 2014-11-17 Capitalize Resource Names
+            	Object result = keys.get(row);
+            	return WordUtils.capitalize(result.toString());
+            }
             else if (column == 1) {
             	Resource resource = keys.get(row);
             	String result = resources.get(resource).toString();
@@ -299,8 +306,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "equipment";
-			else if (columnIndex == 1) return "empty";
+			// 2014-11-17 Internationalize and Capitalize names
+			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.name"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.status"); //$NON-NLS-1$
 			else return "unknown";
 		}
 
