@@ -78,6 +78,16 @@ implements Serializable {
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
 
+    //2014-11-16 Added boolean values
+    private boolean noMoreFruits;
+    private boolean noMoreVeggies;
+    private boolean noMoreLegumes;
+    //private boolean noMoreSpices;
+    private boolean noMoreGrains;
+    private boolean noMorePackedFood;
+    
+    
+    
     /**
      * Constructor.
      * @param newPerson The person requiring a physical presence.
@@ -277,6 +287,7 @@ implements Serializable {
 		//logger.info("consumeLegumes() : Soybean available : " + soybeansAvailable);
 		
 		if (foodAvailable < 0.5D) {
+			noMoreLegumes = true;
 			consumePackedFood(amount, container, "food");
 			//throw new IllegalStateException("No more " + foodType + " available.");
 		}
@@ -305,6 +316,7 @@ implements Serializable {
         double foodEaten = amount;
         double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 			if (foodAvailable < 0.5D) {
+				noMoreGrains = true;
 				//consumeLegumes(amount, container, "Legume Group");
 				consumePackedFood(amount, container, "food");
 				//throw new IllegalStateException("No more " + foodType + " available.");
@@ -335,6 +347,7 @@ implements Serializable {
         double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
         if (foodAvailable < .5D) {
+			noMoreVeggies= true;
 				//consumeGrains(amount, container, "Grain Group");
 				consumePackedFood(amount, container, "food");
 				//throw new IllegalStateException("No more " + foodType + " available.");
@@ -367,6 +380,7 @@ implements Serializable {
         double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
         if (foodAvailable < .5D) {
+			noMoreFruits = true;
 				//consumeVegetables(amount, container, "Vegetable Group");
 				consumePackedFood(amount, container, "food");
 				//throw new IllegalStateException("No more " + foodType + " available.");
@@ -435,14 +449,22 @@ implements Serializable {
      * @throws Exception if error consuming food.  
      */
 	// 2014-11-07 Added consumePackedFood()
+    //
     	public void consumePackedFood(double amount, Unit container, String foodType) {
 	    	AmountResource food = AmountResource.findAmountResource(foodType);
             double foodEaten = amount;
             double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
             if (foodAvailable < 0.5D) {
-	        	// ORDER OF EATING: choose to eat fruits first
-                consumeFruits(amount, container, "Fruit Group");
+    			noMorePackedFood = true;
+    		//2014-11-16 Added if then else clauses
+    			if (noMoreLegumes != false) consumeLegumes(amount, container, "Legume Group");
+    			else if (noMoreFruits != false) consumeFruits(amount, container, "Fruit Group");
+    			else if (noMoreVeggies != false) consumeVegetables(amount, container, "Vegetable Group");
+       			else if (noMoreGrains != false) consumeGrains(amount, container, "Grain Group");
+       			//else if (noMoreSpices != false) consumeSpices(amount, container, "Spice Group");
+    			
+    			
                 throw new IllegalStateException("No more packaged food available.");
             }
 
