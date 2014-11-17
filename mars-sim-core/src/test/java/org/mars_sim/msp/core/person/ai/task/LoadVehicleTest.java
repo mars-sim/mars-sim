@@ -13,6 +13,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttribute;
@@ -38,8 +39,8 @@ extends TestCase {
         SimulationConfig.loadConfig();
     }
 
-    private static final String OXYGEN = "oxygen";
-	private static final String WATER = "water";
+    private static final String OXYGEN = LifeSupport.OXYGEN;
+	private static final String WATER = LifeSupport.WATER;
 	private static final String METHANE = "methane";
 	private static final String FOOD = "food";
 

@@ -143,7 +143,7 @@ public class LivingAccommodations extends Function implements Serializable {
         double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
 
         Inventory inv = getBuilding().getInventory();
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterUsed = waterUsageBuilding;
         double waterAvailable = inv.getAmountResourceStored(water, false);
         if (waterUsed > waterAvailable)

@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -101,8 +102,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(AmountResource.findAmountResource("water"), 40D);
-            requiredResources.put(AmountResource.findAmountResource("oxygen"), 10D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupport.WATER), 40D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupport.OXYGEN), 10D);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -231,8 +232,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource("water"), false);
-                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource("oxygen"), false);
+                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupport.WATER), false);
+                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupport.OXYGEN), false);
                             if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
                                 result.add(rover);
                             }
@@ -898,8 +899,8 @@ implements Serializable {
         double tripTimeSols = tripTime / 1000D;
 
         // Only life support resources are required at settlement at this time.
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         AmountResource food = AmountResource.findAmountResource("food");
         if (resource.equals(oxygen)) {
             amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();

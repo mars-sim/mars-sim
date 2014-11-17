@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -614,9 +615,9 @@ implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
-            AmountResource water = AmountResource.findAmountResource("water");
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
             AmountResource food = AmountResource.findAmountResource("food");
             if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
@@ -699,7 +700,7 @@ implements Serializable {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         
         // Determine oxygen amount needed.
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double oxygenAmountNeeded = config.getOxygenConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
         oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygen);
@@ -712,7 +713,7 @@ implements Serializable {
         }
         
         // Determine water amount needed.
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(water, false);
         waterAmountAvailable += getResourcesOnMissions(settlement, water);

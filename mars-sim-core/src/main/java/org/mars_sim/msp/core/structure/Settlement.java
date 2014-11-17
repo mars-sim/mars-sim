@@ -269,10 +269,10 @@ implements LifeSupport {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
             result = false;
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         if (getInventory().getAmountResourceStored(water, false) <= 0D)
             result = false;
         // TODO: check against indoor air pressure
@@ -300,7 +300,7 @@ implements LifeSupport {
      * @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) {
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double oxygenTaken = amountRequested;
         double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
@@ -327,7 +327,7 @@ implements LifeSupport {
      * @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested) {
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterTaken = amountRequested;
         double waterLeft = getInventory().getAmountResourceStored(water, false);
         if (waterTaken > waterLeft)

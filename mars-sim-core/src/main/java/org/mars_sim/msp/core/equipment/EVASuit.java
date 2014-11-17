@@ -73,9 +73,9 @@ implements LifeSupport, Serializable, Malfunctionable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource("oxygen"),
+		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource(LifeSupport.OXYGEN),
 				OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource("water"),
+		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource(LifeSupport.WATER),
 				WATER_CAPACITY);
 	}
 
@@ -97,12 +97,12 @@ implements LifeSupport, Serializable, Malfunctionable {
 		boolean result = true;
 
 		if (getInventory().getAmountResourceStored(
-				AmountResource.findAmountResource("oxygen"), false) <= 0D) {
+				AmountResource.findAmountResource(LifeSupport.OXYGEN), false) <= 0D) {
 			logger.info("bad oxygen");
 			result = false;
 		}
 		if (getInventory().getAmountResourceStored(
-				AmountResource.findAmountResource("water"), false) <= 0D) {
+				AmountResource.findAmountResource(LifeSupport.WATER), false) <= 0D) {
 			logger.info("bad water");
 			result = false;
 		}
@@ -142,7 +142,7 @@ implements LifeSupport, Serializable, Malfunctionable {
 	 */
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
-		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
@@ -161,7 +161,7 @@ implements LifeSupport, Serializable, Malfunctionable {
 	 */
 	public double provideWater(double amountRequested)  {
 		double waterTaken = amountRequested;
-		AmountResource water = AmountResource.findAmountResource("water");
+		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		double waterLeft = getInventory().getAmountResourceStored(water, false);
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
@@ -210,13 +210,13 @@ implements LifeSupport, Serializable, Malfunctionable {
 	public boolean isFullyLoaded() {
 		boolean result = true;
 
-		AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
+		AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 		double oxygen = getInventory().getAmountResourceStored(oxygenResource, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
-		AmountResource waterResource = AmountResource.findAmountResource("water");
+		AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
 		double water = getInventory().getAmountResourceStored(waterResource, false);
 		if (water != WATER_CAPACITY) {
 			result = false;

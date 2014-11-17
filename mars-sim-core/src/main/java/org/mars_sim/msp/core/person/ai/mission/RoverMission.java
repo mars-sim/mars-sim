@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -592,14 +593,14 @@ extends VehicleMission {
 				* timeSols * crewNum;
 		if (useBuffer)
 			oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 		result.put(oxygen, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
 			waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource water = AmountResource.findAmountResource("water");
+		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		result.put(water, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
@@ -651,11 +652,11 @@ extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
-			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+			AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 			if (inv.getAmountResourceStored(oxygen, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource water = AmountResource.findAmountResource("water");
+			AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 			if (inv.getAmountResourceStored(water, false) < 50D) {
 				hasBasicResources = false;
 			}

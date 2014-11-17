@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryException;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -336,9 +337,9 @@ implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
-            AmountResource water = AmountResource.findAmountResource("water");
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
             AmountResource food = AmountResource.findAmountResource("food");
             if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
@@ -357,7 +358,7 @@ implements Serializable {
      * @throws Exception if error getting potable water usage demand.
      */
     private double getPotableWaterUsageDemand(AmountResource resource) {
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         if (resource.equals(water)) {
             double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -1913,14 +1914,14 @@ implements Serializable {
 
         // Check water capacity as range limit.
         double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-        double waterCapacity = v.getCargoCapacity("water");
+        double waterCapacity = v.getCargoCapacity(LifeSupport.WATER);
         double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
         double waterRange = distancePerSol * waterSols / 3D;
         if (waterRange < range) range = waterRange;
 
         // Check oxygen capacity as range limit.
         double oxygenConsumptionRate = personConfig.getOxygenConsumptionRate();
-        double oxygenCapacity = v.getCargoCapacity("oxygen");
+        double oxygenCapacity = v.getCargoCapacity(LifeSupport.OXYGEN);
         double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
         double oxygenRange = distancePerSol * oxygenSols / 3D;
         if (oxygenRange < range) range = oxygenRange;

@@ -14,6 +14,9 @@ package org.mars_sim.msp.core;
  */
 public interface LifeSupport {
 
+	public static final String OXYGEN = "oxygen";
+	public static final String WATER = "water";
+
 	/** 
 	 * Returns true if life support is working properly and is not out
 	 * of oxygen or water.

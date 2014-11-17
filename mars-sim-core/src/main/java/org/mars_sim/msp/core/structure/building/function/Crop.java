@@ -313,7 +313,7 @@ implements Serializable {
 					
 					// Determine harvest modifier by amount of water available.				
 					double waterAmount = wasteWaterUsed * .8D;
-					AmountResource water = AmountResource.findAmountResource("water");
+					AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
 					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
 					if (waterAmount > waterCapacity) 
 						waterAmount = waterCapacity;
@@ -334,7 +334,7 @@ implements Serializable {
 
 					
 					// Determine harvest modifier by amount of oxygen available.							
-					AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+					AmountResource oxygen = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.OXYGEN);
 					double oxygenAmount = carbonDioxideUsed * .9D;
 					double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false, false);
 					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;

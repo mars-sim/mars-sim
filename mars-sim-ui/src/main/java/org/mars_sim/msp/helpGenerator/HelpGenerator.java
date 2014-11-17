@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
@@ -313,9 +314,9 @@ public class HelpGenerator {
 		helpFileHeader(content,"vehicles");
 		helpFileFooter(content);
 		generateFile(getPathVehicles(),content);
-		
+
 		// second loop over vehicle types to generate a help file for each one
-		String[] cargoArray = new String[] {"hydrogen","methane","oxygen","water","food","rock samples","ice"};
+		String[] cargoArray = new String[] {"hydrogen","methane",LifeSupport.OXYGEN,LifeSupport.WATER,"food","rock samples","ice"};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
 			VehicleDescription v = config.getVehicleDescription(vehicle);
