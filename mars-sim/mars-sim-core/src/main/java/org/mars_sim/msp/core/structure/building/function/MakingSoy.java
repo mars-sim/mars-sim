@@ -314,7 +314,7 @@ implements Serializable {
     }
     
     public double checkAmountOfWater() {
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterAvailable = getBuilding().getInventory().getAmountResourceStored(water, false);
         return waterAvailable ;
     }
@@ -337,7 +337,7 @@ implements Serializable {
         //logger.info("makingSoyChoice() : " + soybeansConsumed + " kg of soybeans will be consumed");
         //logger.info("makingSoyChoice() : " + waterConsumed + " kg of water will be consumed");
          
-        AmountResource waterAR = AmountResource.findAmountResource("water");
+        AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterAvailable = getBuilding().getInventory().getAmountResourceStored(waterAR, false);
         waterAvailable = Math.round(waterAvailable * 100.0) / 100.0;
  

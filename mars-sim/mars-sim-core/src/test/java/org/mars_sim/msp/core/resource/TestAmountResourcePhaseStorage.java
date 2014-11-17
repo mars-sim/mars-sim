@@ -1,14 +1,15 @@
 package org.mars_sim.msp.core.resource;
 
-import org.mars_sim.msp.core.SimulationConfig;
-
 import junit.framework.TestCase;
+
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestAmountResourcePhaseStorage extends TestCase {
 
 	private static final String HYDROGEN = "hydrogen";
-	private static final String OXYGEN = "oxygen";
-	private static final String WATER = "water";
+	private static final String OXYGEN = LifeSupport.OXYGEN;
+	private static final String WATER = LifeSupport.WATER;
 	
     @Override
     public void setUp() throws Exception {

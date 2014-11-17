@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -713,14 +714,14 @@ public final class TradeUtil {
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 		Good oxygenGood = GoodsUtil.getResourceGood(oxygen);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource water = AmountResource.findAmountResource("water");
+		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		neededResources.put(waterGood, (int) waterAmount);
 

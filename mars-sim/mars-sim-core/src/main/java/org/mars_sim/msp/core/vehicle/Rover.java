@@ -88,10 +88,10 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		// Set inventory resource capacities.
 		AmountResource methane = AmountResource.findAmountResource("methane");
 		inv.addAmountResourceTypeCapacity(methane, config.getCargoCapacity(description, "methane"));
-		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-		inv.addAmountResourceTypeCapacity(oxygen, config.getCargoCapacity(description, "oxygen"));
-		AmountResource water = AmountResource.findAmountResource("water");
-		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, "water"));
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+		inv.addAmountResourceTypeCapacity(oxygen, config.getCargoCapacity(description, LifeSupport.OXYGEN));
+		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, LifeSupport.WATER));
 		AmountResource food = AmountResource.findAmountResource("food");
 		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, "food"));
 		AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
@@ -188,9 +188,9 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         if (getInventory().getAmountResourceStored(oxygen, false) <= 0D) result = false;
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         if (getInventory().getAmountResourceStored(water, false) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
@@ -213,7 +213,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
      *  @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) {
-    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
@@ -228,7 +228,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
      *  @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested) {
-    	AmountResource water = AmountResource.findAmountResource("water");
+    	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
     	double waterTaken = amountRequested;
     	double waterLeft = getInventory().getAmountResourceStored(water, false);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
@@ -397,7 +397,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	if (foodRange < range) range = foodRange;
     		
     	// Check water capacity as range limit.
-    	AmountResource water = AmountResource.findAmountResource("water");
+    	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = getInventory().getAmountResourceCapacity(water, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
@@ -405,7 +405,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
-    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
     	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);

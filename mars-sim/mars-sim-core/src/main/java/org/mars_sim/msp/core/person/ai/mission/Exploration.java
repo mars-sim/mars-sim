@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -499,14 +500,14 @@ implements Serializable {
         int crewNum = getPeopleNumber();
 
         // Determine life support supplies needed for trip.
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
                 * timeSols * crewNum;
         if (result.containsKey(oxygen))
             oxygenAmount += (Double) result.get(oxygen);
         result.put(oxygen, oxygenAmount);
 
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()
                 * timeSols * crewNum;
         if (result.containsKey(water))
@@ -614,7 +615,7 @@ implements Serializable {
             timeLimit = foodTimeLimit;
 
         // Check water capacity as time limit.
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();
         double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
@@ -623,7 +624,7 @@ implements Serializable {
             timeLimit = waterTimeLimit;
 
         // Check oxygen capacity as time limit.
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double oxygenConsumptionRate = config.getOxygenConsumptionRate();
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity

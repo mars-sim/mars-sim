@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -526,7 +527,7 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
         double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
         // Make sure there is enough extra oxygen for everyone else.
@@ -534,7 +535,7 @@ implements Serializable {
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
         double availableWater = entityInv.getAmountResourceStored(water, false);
         // Make sure there is enough extra water for everyone else.
@@ -554,7 +555,7 @@ implements Serializable {
         Inventory entityInv = person.getContainerUnit().getInventory();
 
         // Fill oxygen in suit from entity's inventory. 
-        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
         double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
         double takenOxygen = neededOxygen;
@@ -566,7 +567,7 @@ implements Serializable {
         catch (Exception e) {}
 
         // Fill water in suit from entity's inventory.
-        AmountResource water = AmountResource.findAmountResource("water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
         double availableWater = entityInv.getAmountResourceStored(water, false);
         double takenWater = neededWater;

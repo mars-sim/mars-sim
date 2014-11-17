@@ -7,8 +7,29 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -23,16 +44,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A wizard panel for selecting the mission's starting settlement.
@@ -223,11 +234,11 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2) 
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
-						AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+						AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 						result = (int) inv.getAmountResourceStored(oxygen, false);
 					}
 					else if (column == 4) {
-						AmountResource water = AmountResource.findAmountResource("water");
+						AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 						result = (int) inv.getAmountResourceStored(water, false);
 					}
 					else if (column == 5) {
@@ -312,11 +323,11 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
 				}
 				else if (column == 3) {
-					AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+					AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 					if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
 				}
 				else if (column == 4) {
-					AmountResource water = AmountResource.findAmountResource("water");
+					AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 					if (inv.getAmountResourceStored(water, false) < 100D) result = true;
 				}
 				else if (column == 5) {

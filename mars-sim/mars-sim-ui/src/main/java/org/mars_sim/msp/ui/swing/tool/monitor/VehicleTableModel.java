@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -186,8 +187,8 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("water")));
-					result = resourceMap.get(AmountResource.findAmountResource("water"));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
+					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER));
 				} break;
 
 				case FOOD : {
@@ -196,8 +197,8 @@ extends UnitTableModel {
 				} break;
 
 				case OXYGEN : {
-					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("oxygen")));
-					result = resourceMap.get(AmountResource.findAmountResource("oxygen"));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
+					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN));
 				} break;
 
 				case METHANE : {
@@ -334,13 +335,13 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource("oxygen"))) 
+				if (target.equals(AmountResource.findAmountResource(LifeSupport.OXYGEN))) 
 					tempColumnNum = OXYGEN;
 				else if (target.equals(AmountResource.findAmountResource("methane"))) 
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource("food"))) 
 					tempColumnNum = FOOD;
-				else if (target.equals(AmountResource.findAmountResource("water"))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
 					tempColumnNum = ROCK_SAMPLES;
@@ -387,9 +388,9 @@ extends UnitTableModel {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
 				AmountResource food = AmountResource.findAmountResource("food");
 				resourceMap.put(food, getResourceStored(newUnit, food));
-				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
-				AmountResource water = AmountResource.findAmountResource("water");
+				AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 				resourceMap.put(water, getResourceStored(newUnit, water));
 				AmountResource methane = AmountResource.findAmountResource("methane");
 				resourceMap.put(methane, getResourceStored(newUnit, methane));
