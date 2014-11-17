@@ -28,5 +28,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/notification/JCarrierPigeon-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/notification/jtelegraph-2.1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/notification/trident-7.2.1-swing.jar"/>
+	<classpathentry kind="lib" path="lib/notification/TimingFramework-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/notification/trident-7.2.1-base.jar"/>
+	<classpathentry kind="lib" path="lib/notification/miglayout-swing-4.3-20121116.151626-3.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
