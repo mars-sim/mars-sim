@@ -607,7 +607,7 @@ extends VehicleMission {
 				* timeSols * crewNum;
 		if (useBuffer)
 			foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource food = AmountResource.findAmountResource("food");
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		result.put(food, foodAmount);
 
 		return result;
@@ -660,7 +660,7 @@ extends VehicleMission {
 			if (inv.getAmountResourceStored(water, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource food = AmountResource.findAmountResource("food");
+			AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 			if (inv.getAmountResourceStored(food, false) < 50D) {
 				hasBasicResources = false;
 			}

@@ -141,7 +141,7 @@ implements Serializable {
     }
 
     public static double addSupply(double supply, double demand, Settlement settlement, String buildingName) {
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
         supply += settlement.getInventory().getAmountResourceStored(food, false);
 
         double growingAreaValue = demand / (supply + 1D);

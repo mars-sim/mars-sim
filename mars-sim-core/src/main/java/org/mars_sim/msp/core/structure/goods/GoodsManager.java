@@ -341,7 +341,7 @@ implements Serializable {
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource("food");
+            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
             if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -419,7 +419,7 @@ implements Serializable {
         double demand = 0D;
         AmountResource wasteWater = AmountResource.findAmountResource("waste water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         // 2014-10-15 mkung: added 5 new food groups
         AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
         AmountResource legumes = AmountResource.findAmountResource("Legume Group");
@@ -1907,7 +1907,7 @@ implements Serializable {
 
         // Check food capacity as range limit.
         double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-        double foodCapacity = v.getCargoCapacity("food");
+        double foodCapacity = v.getCargoCapacity(LifeSupport.FOOD);
         double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
         double foodRange = distancePerSol * foodSols / 3D;
         if (foodRange < range) range = foodRange;

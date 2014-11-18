@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -61,7 +62,7 @@ public class CookMealMeta implements MetaTask {
                     // Check if there is enough food available to cook.
                     PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                     double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    AmountResource food = AmountResource.findAmountResource("food");
+                    AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
                     double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(
                             food, false);
                     if (foodAvailable < foodRequired) result = 0D;

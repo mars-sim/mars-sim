@@ -901,7 +901,7 @@ implements Serializable {
         // Only life support resources are required at settlement at this time.
         AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         if (resource.equals(oxygen)) {
             amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
         }

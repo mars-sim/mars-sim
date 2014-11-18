@@ -38,7 +38,7 @@ extends TestCase {
     public void testUnloadingPhase() throws Exception {
 		
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-		AmountResource food = AmountResource.findAmountResource("food");
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		AmountResource methane = AmountResource.findAmountResource("methane");
 

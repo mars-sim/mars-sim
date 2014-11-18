@@ -242,7 +242,7 @@ class StartingSettlementPanel extends WizardPanel {
 						result = (int) inv.getAmountResourceStored(water, false);
 					}
 					else if (column == 5) {
-						AmountResource food = AmountResource.findAmountResource("food");
+						AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 						result = (int) inv.getAmountResourceStored(food, false);
 					}
 					else if (column == 6) {
@@ -331,7 +331,7 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.getAmountResourceStored(water, false) < 100D) result = true;
 				}
 				else if (column == 5) {
-					AmountResource food = AmountResource.findAmountResource("food");
+					AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
 				}
 				else if (column == 6) {

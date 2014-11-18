@@ -391,7 +391,7 @@ implements Serializable {
             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
                 try {
                     PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    AmountResource food = AmountResource.findAmountResource("food");
+                    AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
                     double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
                     double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(
                             food, false, false);

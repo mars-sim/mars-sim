@@ -314,7 +314,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				String buildingName = j.next();
 				int num = buildingMap.get(buildingName);
-				Vector<Comparable> rowData = new Vector<Comparable>(2);
+				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				rowData.add(buildingName);
 				rowData.add(num);
 				tableModel.addRow(rowData);
@@ -380,7 +380,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				String vehicleName = j.next();
 				int num = vehicleMap.get(vehicleName);
-				Vector<Comparable> rowData = new Vector<Comparable>(2);
+				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				rowData.add(vehicleName);
 				rowData.add(num);
 				tableModel.addRow(rowData);
@@ -432,7 +432,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				String equipmentType = j.next();
 				int num = equipment.get(equipmentType);
-				Vector<Comparable> rowData = new Vector<Comparable>(2);
+				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				rowData.add(equipmentType);
 				rowData.add(num);
 				tableModel.addRow(rowData);
@@ -484,7 +484,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				AmountResource resourceType = j.next();
 				double amount = resources.get(resourceType);
-				Vector<Comparable> rowData = new Vector<Comparable>(2);
+				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				rowData.add(resourceType);
 				rowData.add(amount);
 				tableModel.addRow(rowData);
@@ -536,7 +536,7 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				Part partType = j.next();
 				int num = parts.get(partType);
-				Vector<Comparable> rowData = new Vector<Comparable>(2);
+				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				rowData.add(partType);
 				rowData.add(num);
 				tableModel.addRow(rowData);

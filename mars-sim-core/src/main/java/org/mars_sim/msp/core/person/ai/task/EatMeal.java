@@ -241,7 +241,7 @@ implements Serializable {
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
-                AmountResource food = AmountResource.findAmountResource("food");
+                AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
                 if (inv.getAmountResourceStored(food, false) > 0D) result = true;;
             }
             catch (Exception e) {

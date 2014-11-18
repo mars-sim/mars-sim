@@ -353,7 +353,7 @@ public class EmergencySupplyPanel extends WizardPanel {
         List<AmountResource> result = new ArrayList<AmountResource>(4);
         result.add(AmountResource.findAmountResource(LifeSupport.OXYGEN));
         result.add(AmountResource.findAmountResource(LifeSupport.WATER));
-        result.add(AmountResource.findAmountResource("food"));
+        result.add(AmountResource.findAmountResource(LifeSupport.FOOD));
         result.add(AmountResource.findAmountResource("methane"));
 
         return result;

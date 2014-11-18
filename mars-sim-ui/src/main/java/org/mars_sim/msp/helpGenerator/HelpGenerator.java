@@ -30,6 +30,7 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
  * run of the simulation.
  * @author stpa
  * 2014-01-29
+ * TODO make the generated help files internationalizable.
  */
 public class HelpGenerator {
 
@@ -316,7 +317,15 @@ public class HelpGenerator {
 		generateFile(getPathVehicles(),content);
 
 		// second loop over vehicle types to generate a help file for each one
-		String[] cargoArray = new String[] {"hydrogen","methane",LifeSupport.OXYGEN,LifeSupport.WATER,"food","rock samples","ice"};
+		String[] cargoArray = new String[] {
+			"hydrogen",
+			"methane",
+			LifeSupport.OXYGEN,
+			LifeSupport.WATER,
+			LifeSupport.FOOD,
+			"rock samples",
+			"ice"
+		};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
 			VehicleDescription v = config.getVehicleDescription(vehicle);

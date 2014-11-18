@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -170,9 +171,9 @@ extends UnitTableModel {
 				
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(
-					//		AmountResource.findAmountResource("food")));
+					//		AmountResource.findAmountResource(LifeSupport.FOOD)));
 					result = resourceMap.get(
-							AmountResource.findAmountResource("food"));
+							AmountResource.findAmountResource(LifeSupport.FOOD));
 
 				} break;
 
@@ -319,7 +320,7 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			try {
 				int tempColumnNum = -1;			
-				if (target.equals(AmountResource.findAmountResource("food"))) 
+				if (target.equals(AmountResource.findAmountResource(LifeSupport.FOOD))) 
 					tempColumnNum = FOOD;
 				else if (target.equals(AmountResource.findAmountResource("Fruit Group"))) 
 					tempColumnNum = FRUITS;
@@ -384,7 +385,7 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
-				AmountResource food = AmountResource.findAmountResource("food");
+				AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 				resourceMap.put(food, getResourceStored(newUnit, food));
 				AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
 				resourceMap.put(fruits, getResourceStored(newUnit, fruits));

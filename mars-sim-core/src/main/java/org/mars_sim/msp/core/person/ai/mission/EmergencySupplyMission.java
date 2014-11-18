@@ -619,7 +619,7 @@ implements Serializable {
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource("food");
+            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
             if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_IN_MONTH_LONG * 3D);
@@ -726,7 +726,7 @@ implements Serializable {
         }
         
         // Determine food amount needed.
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(food, false);
         foodAmountAvailable += getResourcesOnMissions(settlement, food);

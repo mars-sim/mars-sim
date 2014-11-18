@@ -728,7 +728,7 @@ public final class TradeUtil {
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource food = AmountResource.findAmountResource("food");
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		Good foodGood = GoodsUtil.getResourceGood(food);
 		neededResources.put(foodGood, (int) foodAmount);
 

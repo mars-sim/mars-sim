@@ -219,7 +219,7 @@ class RendezvousVehiclePanel extends WizardPanel {
                 		result = (int) inv.getAmountResourceStored(water, false);
                 	}
                 	else if (column == 5) { 
-                		AmountResource food = AmountResource.findAmountResource("food");
+                		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
                 		result = (int) inv.getAmountResourceStored(food, false);
                 	}
                 	else if (column == 6) {

@@ -130,7 +130,7 @@ implements Serializable {
 		}
 
 		// Multiply by food value at settlement.
-		//Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
+		//Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource(LifeSupport.FOOD));
 		//double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 		//result *= foodValue;
 

@@ -42,7 +42,7 @@ extends TestCase {
     private static final String OXYGEN = LifeSupport.OXYGEN;
 	private static final String WATER = LifeSupport.WATER;
 	private static final String METHANE = "methane";
-	private static final String FOOD = "food";
+	private static final String FOOD = LifeSupport.FOOD;
 
 	private static final String resourceName = "hammer";
 	private static final String description = "a tool";
