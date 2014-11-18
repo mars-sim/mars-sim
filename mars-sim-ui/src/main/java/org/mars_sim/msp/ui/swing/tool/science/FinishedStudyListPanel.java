@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -52,7 +53,7 @@ extends JPanel {
 
 		setLayout(new BorderLayout());
 
-		JLabel titleLabel = new JLabel("Finished Scientific Studies", JLabel.CENTER);
+		JLabel titleLabel = new JLabel(Msg.getString("FinishedStudyListPanel.finishedScientificStudies"), JLabel.CENTER); //$NON-NLS-1$
 		add(titleLabel, BorderLayout.NORTH);
 
 		// Create list scroll pane.
@@ -154,9 +155,9 @@ extends JPanel {
 
 		@Override
 		public String getColumnName(int column) {
-			String result = "";
-			if (column == 0) result = "Study";
-			else if (column == 1) result = "Status";
+			String result = new String();
+			if (column == 0) result = Msg.getString("FinishedStudyListPanel.column.study"); //$NON-NLS-1$
+			else if (column == 1) result = Msg.getString("FinishedStudyListPanel.column.status"); //$NON-NLS-1$
 			return result;
 		}
 
@@ -177,7 +178,7 @@ extends JPanel {
 		 * @return the value Object at the specified cell
 		 */
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			String result = "";
+			String result = new String();
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
 				if (columnIndex == 0) result = study.toString();
