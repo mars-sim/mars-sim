@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -27,6 +27,9 @@ public class LandmarkConfig implements Serializable {
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
     private static final String DIAMETER = "diameter";
+    private static final String APPROVALDATE = "approvaldate";
+    private static final String ORIGIN = "origin";
+    private static final String TYPE = "type";
 
     private Document landmarkDoc;
     private List<Landmark> landmarkList;
@@ -77,8 +80,15 @@ public class LandmarkConfig implements Serializable {
                 // Create location coordinate.
                 Coordinates location = new Coordinates(latitude, longitude);
 
+                // Get origin (we don't want this to be uppercase).
+                String origin = landmark.getAttributeValue(ORIGIN);
+
+                // Get type.
+                String type = landmark.getAttributeValue(TYPE).toUpperCase();
+
+                
                 // Create landmark.
-                landmarkList.add(new Landmark(name, location,diameter));
+                landmarkList.add(new Landmark(name, location,diameter,origin, type));
             }
         }
 
