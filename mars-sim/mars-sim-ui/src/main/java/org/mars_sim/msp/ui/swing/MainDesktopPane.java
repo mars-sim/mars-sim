@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2014-11-17
+ * @version 3.07 2014-11-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -687,22 +687,11 @@ implements ComponentListener {
 
 			// Open default windows on desktop.
 
-			// Open mars navigator tool.
-//			openToolWindow(NavigatorWindow.NAME);
-			// Move mars navigator tool to upper left corner of desktop.
-//			getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
-
 			// Open user guide tool.
-//			openToolWindow(GuideWindow.NAME);
-//			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-//			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-			
-			
-			openToolWindow(SettlementWindow.NAME);
+			openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
-			//openUnitWindow(settlement, true);
-
-			
 		} else {
 			// Open windows in Z-order.
 			List<String> windowNames = config.getInternalWindowNames();
