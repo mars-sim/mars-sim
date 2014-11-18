@@ -56,15 +56,14 @@ public class SettlementWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
-	public static final String RENAMEBTN = Msg.getString("SettlementWindow.renameSettlement.renameButton");
+	public static final String RENAMEBTN = Msg.getString("SettlementWindow.renameSettlement.renameButton"); //$NON-NLS-1$
 
-	
 	private JButton settlementNameChangeBtn;
 	private Settlement settlement;
-	
+
 	/** The main desktop. */
 	private MainDesktopPane desktop;
-	
+
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
@@ -302,8 +301,8 @@ public class SettlementWindow extends ToolWindow {
 	public String askNameDialog() {
 		return JOptionPane
 			.showInputDialog(desktop, 
-					Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"),
-					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"),
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"), //$NON-NLS-1$
+					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
 			        JOptionPane.QUESTION_MESSAGE);
 	}
 	/**
