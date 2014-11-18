@@ -192,8 +192,8 @@ extends UnitTableModel {
 				} break;
 
 				case FOOD : {
-					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("food")));
-					result = resourceMap.get(AmountResource.findAmountResource("food"));
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
+					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD));
 				} break;
 
 				case OXYGEN : {
@@ -339,7 +339,7 @@ extends UnitTableModel {
 					tempColumnNum = OXYGEN;
 				else if (target.equals(AmountResource.findAmountResource("methane"))) 
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource("food"))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupport.FOOD))) 
 					tempColumnNum = FOOD;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
@@ -386,7 +386,7 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
-				AmountResource food = AmountResource.findAmountResource("food");
+				AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 				resourceMap.put(food, getResourceStored(newUnit, food));
 				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));

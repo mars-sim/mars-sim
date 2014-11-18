@@ -16,6 +16,7 @@ public interface LifeSupport {
 
 	public static final String OXYGEN = "oxygen";
 	public static final String WATER = "water";
+	public static final String FOOD = "food";
 
 	/** 
 	 * Returns true if life support is working properly and is not out

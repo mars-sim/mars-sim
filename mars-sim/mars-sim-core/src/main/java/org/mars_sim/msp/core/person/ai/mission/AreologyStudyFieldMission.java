@@ -267,7 +267,7 @@ implements Serializable {
 		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
-		AmountResource food = AmountResource.findAmountResource("food");
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		double foodConsumptionRate = config.getFoodConsumptionRate();
 		double foodCapacity = vInv.getAmountResourceCapacity(food, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
@@ -633,7 +633,7 @@ implements Serializable {
 		}
 		result.put(water, waterAmount);
 
-		AmountResource food = AmountResource.findAmountResource("food");
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(food)) {
 			foodAmount += (Double) result.get(food);

@@ -428,7 +428,7 @@ implements Serializable {
         }
         result.put(water, waterAmount);
 
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
@@ -730,7 +730,7 @@ implements Serializable {
         result.put(oxygen, inv.getAmountResourceCapacity(oxygen, false));
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         result.put(water, inv.getAmountResourceCapacity(water, false));
-        AmountResource food = AmountResource.findAmountResource("food");
+        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         result.put(food, inv.getAmountResourceCapacity(food, false));
 
         // Get parts too.

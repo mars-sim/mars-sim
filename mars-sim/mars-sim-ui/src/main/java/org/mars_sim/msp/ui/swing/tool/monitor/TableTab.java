@@ -176,21 +176,24 @@ extends MonitorTab {
 
             // Create scrollable table window
             table = new JTable(sortedModel) {
-            	/**
+            	/** default serial id. */
+				private static final long serialVersionUID = 1L;
+
+				/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
             	public void tableChanged(TableModelEvent e) {
             	
             		if (e.getType() == TableModelEvent.DELETE) {
             			// Store selected row objects.
-            			List selected = getSelection();
+            			List<Object> selected = getSelection();
             			
             			// Call super implementation to remove row and clear selection.
     					super.tableChanged(e);
     					
     					// Reselect rows if row objects still around.
     					MonitorModel model = (MonitorModel) getModel();
-    					Iterator i = selected.iterator();
+    					Iterator<Object> i = selected.iterator();
     					while (i.hasNext()) {
     						Object selectedObject = i.next();
     						for (int x = 0; x < model.getRowCount(); x++) {
@@ -248,22 +251,23 @@ extends MonitorTab {
         else {
             // Simple JTable
             table = new JTable(model) {
-            	
-            	/**
+            	/** default serial id. */
+				private static final long serialVersionUID = 1L;
+				/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
             	public void tableChanged(TableModelEvent e) {
             	
             		if (e.getType() == TableModelEvent.DELETE) {
             			// Store selected row objects.
-            			List selected = getSelection();
+            			List<Object> selected = getSelection();
             			
             			// Call super implementation to remove row and clear selection.
     					super.tableChanged(e);
     					
     					// Reselect rows if row objects still around.
     					MonitorModel model = (MonitorModel) getModel();
-    					Iterator i = selected.iterator();
+    					Iterator<Object> i = selected.iterator();
     					while (i.hasNext()) {
     						Object selectedObject = i.next();
     						for (int x = 0; x < model.getRowCount(); x++) {
@@ -312,7 +316,7 @@ extends MonitorTab {
      *
      * @return array of row indexes.
      */
-    protected List getSelection() {
+    protected List<Object> getSelection() {
         MonitorModel target = (sortedModel != null ? sortedModel : getModel());
 
         int indexes[] = {};

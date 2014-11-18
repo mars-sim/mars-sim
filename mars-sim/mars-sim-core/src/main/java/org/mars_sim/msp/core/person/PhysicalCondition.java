@@ -288,7 +288,7 @@ implements Serializable {
 		
 		if (foodAvailable < 0.5D) {
 			noMoreLegumes = true;
-			consumePackedFood(amount, container, "food");
+			consumePackedFood(amount, container, LifeSupport.FOOD);
 			//throw new IllegalStateException("No more " + foodType + " available.");
 		}
 
@@ -318,7 +318,7 @@ implements Serializable {
 			if (foodAvailable < 0.5D) {
 				noMoreGrains = true;
 				//consumeLegumes(amount, container, "Legume Group");
-				consumePackedFood(amount, container, "food");
+				consumePackedFood(amount, container, LifeSupport.FOOD);
 				//throw new IllegalStateException("No more " + foodType + " available.");
 			}
         // if container has less than enough food, finish up all food in the container
@@ -349,7 +349,7 @@ implements Serializable {
         if (foodAvailable < .5D) {
 			noMoreVeggies= true;
 				//consumeGrains(amount, container, "Grain Group");
-				consumePackedFood(amount, container, "food");
+				consumePackedFood(amount, container, LifeSupport.FOOD);
 				//throw new IllegalStateException("No more " + foodType + " available.");
         }
 
@@ -382,7 +382,7 @@ implements Serializable {
         if (foodAvailable < .5D) {
 			noMoreFruits = true;
 				//consumeVegetables(amount, container, "Vegetable Group");
-				consumePackedFood(amount, container, "food");
+				consumePackedFood(amount, container, LifeSupport.FOOD);
 				//throw new IllegalStateException("No more " + foodType + " available.");
         }
 
@@ -437,7 +437,7 @@ implements Serializable {
        	case 7:
     	case 8:
        	case 9: 	// 2014-11-07 Added consumePackedFood()
-       		consumePackedFood(amount, container, "food");
+       		consumePackedFood(amount, container, LifeSupport.FOOD);
        		break;
     	}
     }

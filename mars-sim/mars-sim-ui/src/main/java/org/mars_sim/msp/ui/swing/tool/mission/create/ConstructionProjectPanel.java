@@ -231,6 +231,8 @@ extends WizardPanel {
 		materialsTable.setRowSelectionAllowed(false);
 		materialsTable.setDefaultRenderer(Object.class,
 				new DefaultTableCellRenderer() {
+					/** default serial id. */
+					private static final long serialVersionUID = 1L;
 					public Component getTableCellRendererComponent(
 							JTable table, Object value, boolean isSelected,
 							boolean hasFocus, int row, int column) {
@@ -523,15 +525,17 @@ extends WizardPanel {
 	/**
 	 * A table model for construction materials.
 	 */
-	private class MaterialsTableModel extends AbstractTableModel {
+	private class MaterialsTableModel
+	extends AbstractTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
 		// Data members.
 		private ConstructionStageInfo info = null;
 		private List<ConstructionMaterial> materialsList;
 
-		/**
-		 * Constructor.
-		 */
+		/** Constructor. */
 		private MaterialsTableModel() {
 			// Use AbstractTableModel constructor.
 			super();

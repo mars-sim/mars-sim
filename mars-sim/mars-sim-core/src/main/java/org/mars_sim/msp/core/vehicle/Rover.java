@@ -92,8 +92,8 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(oxygen, config.getCargoCapacity(description, LifeSupport.OXYGEN));
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, LifeSupport.WATER));
-		AmountResource food = AmountResource.findAmountResource("food");
-		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, "food"));
+		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, LifeSupport.FOOD));
 		AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 		inv.addAmountResourceTypeCapacity(rockSamples, config.getCargoCapacity(description, "rock samples"));
 		AmountResource ice = AmountResource.findAmountResource("ice");
@@ -389,7 +389,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     		
     	// Check food capacity as range limit.
-    	AmountResource food = AmountResource.findAmountResource("food");
+    	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = getInventory().getAmountResourceCapacity(food, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
