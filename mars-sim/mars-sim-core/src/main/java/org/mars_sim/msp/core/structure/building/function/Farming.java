@@ -86,7 +86,7 @@ implements Serializable {
         Settlement settlement = building.getBuildingManager().getSettlement();
         
         for (int x=0; x < cropNum; x++) {
-       // 2014-10-14 mkung: implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop 
+        	// 2014-10-14 Implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop 
         	CropType cropType = Crop.getRandomCropType();
         	// edibleBiomass is in  [ gram / m^2 / day ]
         	double edibleBiomass = cropType.getEdibleBiomass();
@@ -147,8 +147,7 @@ implements Serializable {
         double growingAreaValue = demand / (supply + 1D);
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double growingArea = config.getCropGrowingArea(buildingName);   
-        
+        double growingArea = config.getCropGrowingArea(buildingName);       
         //logger.info("addSupply() : growingArea is " + growingArea);
         //logger.info("addSupply() : growingAreaValue is " + growingAreaValue);
         
@@ -223,9 +222,10 @@ implements Serializable {
      * Adds the crop harvest to the farm.
      * @param harvest: harvested food to add (kg.)
      * @param cropCategory
-     * 2014-10-14 mkung : add String cropCategory to the param list,
-     * Note: this method was called by Crop.java's addWork()
-     */    
+     
+     */
+    // 2014-10-14 Added String cropCategory to the param list,
+    // Note: this method was called by Crop.java's addWork()
     public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
 
     	try {
@@ -250,8 +250,7 @@ implements Serializable {
                 // add the harvest to the remaining capacity
             // 2014-11-06 changed the last param from false to true
             inv.storeAmountResource(harvestCropCategory, harvestAmount, true);
-            //logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
-
+            // logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
             // 2014-11-06 Added if clause to account for soybean harvest
             // note that crop name is Soybean (without 's')
             if (cropName == "Soybean") {
@@ -317,13 +316,10 @@ implements Serializable {
         	double edibleBiomassPerDay = cropType.getEdibleBiomass();
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	maxHarvestinKg = edibleBiomassPerDay * growingDay * (growingArea / (double) cropNum) /1000;
-        	      //logger.info("timePassing : seeding a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");
-            
+        	// logger.info("timePassing : seeding a new crop with maxHarvest "+ Math.round(maxHarvestinKg) + " kg");          
         	// Note: the last param of Crop must be set to TRUE
         	Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, true);
-
-           //Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), this, settlement, true);
-
+            //Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), this, settlement, true);
             crops.add(crop);
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
@@ -334,7 +330,6 @@ implements Serializable {
      * @return power (kW)
      */
     public double getFullPowerRequired() {
-
         // Power (kW) required for normal operations.
         double powerRequired = 0D;
 
