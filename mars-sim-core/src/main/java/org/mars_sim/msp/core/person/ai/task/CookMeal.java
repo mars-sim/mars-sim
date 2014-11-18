@@ -99,7 +99,7 @@ implements Serializable {
         //logger.info("constructor : foodAvailble is " + foodAvailable);
         
         if (foodAvailable < 2.0) {
-            logger.severe("constructor : less than 2 kg of fresh food left. cannot cooking meal");
+            logger.severe("< 2 kg total fresh food (not packed food) remaining. No meal cooking");
             
         	endTask();
         } else  {

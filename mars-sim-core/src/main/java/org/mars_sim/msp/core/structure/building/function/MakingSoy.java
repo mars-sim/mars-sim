@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MakingSoy.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-17
  * @author Manny Kung				
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -50,12 +50,23 @@ implements Serializable {
     public static final double SOLS_SOYMILK_PRESERVED = 5D;
     
     // Assuming 200 g of soybeans mixed with 4 liter/kg of water
-    public static final double RATIO_WATER_TO_SOYBEAN = 20D;
-    // Assuming 1 kg of soybean can make 3 kg of Tofu
-    public static final double RATIO_TOFU_TO_SOYBEAN = 3D;
+    public static final double SOYMILK_RATIO_WATER_TO_SOYBEAN = 20D;
+    // Assuming 1 kg of soybean can make .3 kg of Tofu
+    public static final double RATIO_TOFU_TO_SOYBEAN = .4D;
+    
+    // 2014-11-17 Added soybean oil, soy flour and soy fiber, soy protein
+    //seed contains about 38% protein, 18% oil, 15% soluble carbohydrates, 15% insoluble carbohydrates, and 14% moisture/ash/other.
+    //http://www.nsrl.uiuc.edu/aboutsoy/production02.html
+    public static final double RATIO_SOYBEANOIL_TO_SOYBEAN = .18D;
+    public static final double RATIO_SOYFLOUR_TO_SOYBEAN = .29D;
+    public static final double RATIO_SOYFIBER_TO_SOYBEAN = .15D;
+    public static final double RATIO_SOYPROTEIN_TO_SOYBEAN = .38D;
+    // 1 L of water is needed to extract soy products other than soymilk & tofu
+    public static final double WATER_NEEDED_BY_OTHERSOY = 1D;
+    
     
     // Assuming 1 serving/cup of soymilk is 500mL 
-    // it uses 25 kg of soybean
+    // it uses 25 mg of soybean
     public static final double KG_PER_SERVING_SOYMILK = .025D;
     
     // Keep at least 2 kg of soybeans in storage
@@ -80,8 +91,7 @@ implements Serializable {
     public MakingSoy(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-        this.building = building;
-        
+        this.building = building; 
         //logger.info("just called MakingSoy's constructor");
         
         makingSoyWorkTime = 0D;
@@ -103,11 +113,12 @@ implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
+    //TODO: make the demand for soymilk user-selectable
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
         // TODO: calibrate this demand
-    	// Demand is 1 makingSoy capacity for every five inhabitants.
+    	// Demand is 1 makingSoy capacity for every 5 inhabitants.
         double demand = settlement.getAllAssociatedPeople().size() / 5D;
 
         double supply = 0D;
@@ -236,7 +247,7 @@ implements Serializable {
     // 2014-11-06 Added removeSoymilkFromAmountResource()
     public void removeSoymilkFromAmountResource() {
        	double soybeansConsumed = KG_PER_SERVING_SOYMILK; 
-        double waterConsumed = soybeansConsumed * RATIO_WATER_TO_SOYBEAN;
+        double waterConsumed = soybeansConsumed * SOYMILK_RATIO_WATER_TO_SOYBEAN; // currently, waterConsumed = 500mL
         AmountResource soymilkAR = AmountResource.findAmountResource("soymilk");
         getBuilding().getInventory().retrieveAmountResource(soymilkAR, waterConsumed);
     }
@@ -323,6 +334,7 @@ implements Serializable {
      * Makes Soymilk and Tofu  
      * @param none
      */
+    // 2014-11-17 Added soybean oil, soy flour and soy fiber, soy protein
     public void makingSoyChoice() {
     	
         int soymilkQuality = getBestSoySkill();
@@ -333,57 +345,121 @@ implements Serializable {
         // TODO: 2014-11-06 need to calibrate soybeansConsumed
         //double soybeansConsumed = config.getFoodConsumptionRate() * (1D / 40D);
         double soybeansConsumed = KG_PER_SERVING_SOYMILK; 
-        double waterConsumed = soybeansConsumed * RATIO_WATER_TO_SOYBEAN;
+        soybeansConsumed = Math.round(soybeansConsumed * 1000.0) / 1000.0;
+        double waterConsumedinSoymilk = soybeansConsumed * SOYMILK_RATIO_WATER_TO_SOYBEAN;
+        waterConsumedinSoymilk = Math.round(waterConsumedinSoymilk * 1000.0) / 1000.0;  
+        
+        // 2014-11-17 Added waterConsumedinOtherSoy, water4OtherSoyAvailable
+        double waterConsumedinOtherSoy = soybeansConsumed * WATER_NEEDED_BY_OTHERSOY;
+        waterConsumedinOtherSoy = Math.round(waterConsumedinOtherSoy * 1000.0) / 1000.0; 
+        
         //logger.info("makingSoyChoice() : " + soybeansConsumed + " kg of soybeans will be consumed");
         //logger.info("makingSoyChoice() : " + waterConsumed + " kg of water will be consumed");
          
         AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterAvailable = getBuilding().getInventory().getAmountResourceStored(waterAR, false);
-        waterAvailable = Math.round(waterAvailable * 100.0) / 100.0;
- 
+        waterAvailable = Math.round(waterAvailable * 1000.0) / 1000.0;
+                
         AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
         double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
-        soybeansAvailable = Math.round(soybeansAvailable * 100.0) / 100.0;
+        soybeansAvailable = Math.round(soybeansAvailable * 1000.0) / 1000.0;
 
         AmountResource legumesAR = AmountResource.findAmountResource("Legume Group");
         double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumesAR, false);
-        legumesAvailable = Math.round(legumesAvailable * 100.0) / 100.0;
+        legumesAvailable = Math.round(legumesAvailable * 1000.0) / 1000.0;
         
-        if ((soybeansAvailable > soybeansConsumed) 
-        		&& (waterAvailable > waterConsumed)
-        		&& (legumesAvailable > soybeansConsumed)) { 
-   
-	        //logger.info("makingSoyChoice() : soybeans available : " + soybeansAvailable + " kg");
-	        //logger.info("makingSoyChoice() : legumes available : " + legumesAvailable + " kg");
+        
+        // 2014-11-17 50% chance for soymilk production, 50% other soy products
+        boolean soymilkProduction = false;
+        boolean otherSoyProduction = false;
+        double r = Math.random();
+   		//logger.info("makingSoyChoice() : r is "+ r);
+        if (r < .5) { 
+        	soymilkProduction = true;
+        	otherSoyProduction = false;	
+        } else {
+        	soymilkProduction = false;
+        	otherSoyProduction = true;	
+        }
+        
+        if (soymilkProduction == true) {
+        	if ((soybeansAvailable > soybeansConsumed) 
+        		&& (waterAvailable > waterConsumedinSoymilk)) {
+        		// && (legumesAvailable > soybeansConsumed)) { 
+	       		//logger.info("makingSoyChoice() : making soymilk");
+		        //logger.info("makingSoyChoice() : soybeans available : " + soybeansAvailable + " kg");
+		        //logger.info("makingSoyChoice() : legumes available : " + legumesAvailable + " kg");
+		        getBuilding().getInventory().retrieveAmountResource(waterAR, waterConsumedinSoymilk);
+		        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansConsumed);
+		        getBuilding().getInventory().retrieveAmountResource(legumesAR, soybeansConsumed);        
+		        
+		        freshSoymilkList.add(new FreshSoymilk(soymilkQuality, time));
+		        //logger.info("makingSoyChoice() : 1 serving of fresh soymilk was just made");
 	
-	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansConsumed);
-	        getBuilding().getInventory().retrieveAmountResource(legumesAR, soybeansConsumed);
-	        getBuilding().getInventory().retrieveAmountResource(waterAR, waterConsumed);
-	    	        
-	        freshSoymilkList.add(new FreshSoymilk(soymilkQuality, time));
-	        //logger.info("makingSoyChoice() : 1 serving of fresh soymilk was just made");
+	    		Inventory inv = getBuilding().getInventory();
+	            AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");      
+	            AmountResource tofuAR = AmountResource.findAmountResource("Tofu");      
+	            
+	            double soymilk_inKg = soybeansConsumed * SOYMILK_RATIO_WATER_TO_SOYBEAN ; 
+	            soymilk_inKg = Math.round(soymilk_inKg * 1000.0) / 1000.0;
+	            double tofu_inKg = soybeansConsumed * RATIO_TOFU_TO_SOYBEAN;
+	            tofu_inKg = Math.round(tofu_inKg * 10000.0) / 10000.0;
+	            		
+		       	inv.storeAmountResource(soymilkAR, soymilk_inKg, true);
+		       	inv.storeAmountResource(tofuAR, tofu_inKg, true);
+		        //logger.info("makingSoyChoice() : total " + freshSoymilkList.size() + " servings of fresh soymilk is available now");
+		        //logger.info("makingSoyChoice() : " + soymilk_inKg + "L of soymilk is just made");
+		        //logger.info("makingSoyChoice() : " + tofu_inKg + " kg of tofu is just made");
+	
+		        if (logger.isLoggable(Level.FINEST)) {
+		        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+		        			" has prepared " + freshSoymilkList.size() + " servings of tasty soymilk (quality is " + soymilkQuality + ")");
+		        }
+        	} // end of if ((soybeansAvailable > soybeansConsumed)...
 
-    		Inventory inv = getBuilding().getInventory();
-            AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");      
-            AmountResource tofuAR = AmountResource.findAmountResource("Tofu");
-            
-            double soymilkinKg = soybeansConsumed * RATIO_WATER_TO_SOYBEAN ; 
-            double tofuinKg = soybeansConsumed * RATIO_TOFU_TO_SOYBEAN;
-            		
-	       	inv.storeAmountResource(soymilkAR, soymilkinKg, true);
-	       	inv.storeAmountResource(tofuAR, tofuinKg, true);
-	        //logger.info("makingSoyChoice() : total " + freshSoymilkList.size() + " servings of fresh soymilk is available now");
-	        //logger.info("makingSoyChoice() : " + soymilkinKg + " liter(s) soymilk is just made");
-
-	        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has prepared " + freshSoymilkList.size() + " servings of tasty soymilk (quality is " + soymilkQuality + ")");
-	        }
-        } // end of if ((soybeansAvailable > soybeansConsumed)...
-        else { 
         	//soyIsAvailable = false; // used in addWork()
          	   //logger.info("makingSoyChoice() : no more soybeans or water available for making fresh soymilk!");        	
+        } // end of if (soymilkProduction == true) 
+        // 2014-11-17 Added the production of soybean oil, soy flour and soy fiber, soy protein
+        if (otherSoyProduction == true) {
+        	if ((soybeansAvailable > soybeansConsumed) 
+        		&& (waterAvailable > waterConsumedinOtherSoy ) ) {
+        
+        		//logger.info("makingSoyChoice() : making other soy products");
+        		
+    	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansConsumed);
+    	        getBuilding().getInventory().retrieveAmountResource(legumesAR, soybeansConsumed);
+    	        getBuilding().getInventory().retrieveAmountResource(waterAR, waterConsumedinOtherSoy);
+		    	        
+        		Inventory inv = getBuilding().getInventory();
+        		
+		        AmountResource soybeanOilAR = AmountResource.findAmountResource("Soybean Oil");      
+		        AmountResource soyFlourAR = AmountResource.findAmountResource("Soy Flour");
+		        AmountResource soyFiberAR = AmountResource.findAmountResource("Soy Fiber");      
+		        AmountResource soyProteinAR = AmountResource.findAmountResource("Soy Protein");
+		
+		        double soybeanOil_inKg = soybeansConsumed * RATIO_SOYBEANOIL_TO_SOYBEAN;
+		        soybeanOil_inKg = Math.round(soybeanOil_inKg * 10000.0) / 10000.0;
+		        double soyFlour_inKg = soybeansConsumed * RATIO_SOYFLOUR_TO_SOYBEAN;
+		        soyFlour_inKg = Math.round(soyFlour_inKg * 10000.0) / 10000.0;
+		        double soyFiber_inKg = soybeansConsumed * RATIO_SOYFIBER_TO_SOYBEAN;
+		        soyFiber_inKg = Math.round(soyFiber_inKg * 10000.0) / 10000.0;
+		        double soyProtein_inKg = soybeansConsumed * RATIO_SOYPROTEIN_TO_SOYBEAN;
+		        soyProtein_inKg = Math.round(soyProtein_inKg * 10000.0) / 10000.0;
+    	
+		       	inv.storeAmountResource(soybeanOilAR, soybeanOil_inKg, true);
+		       	inv.storeAmountResource(soyFlourAR, soyFlour_inKg, true);
+		       	inv.storeAmountResource(soyFiberAR, soyFiber_inKg, true);
+		       	inv.storeAmountResource(soyProteinAR, soyProtein_inKg, true);
+
+	       		logger.info("makingSoyChoice() : soybeanOil_inKg is " + soybeanOil_inKg);
+	       		logger.info("makingSoyChoice() : soyFlour_inKg is " + soyFlour_inKg);
+	       		logger.info("makingSoyChoice() : soyFiber_inKg is " + soyFiber_inKg);
+	       		logger.info("makingSoyChoice() : soyProtein_inKg is " + soyProtein_inKg);
+
+        	}
         }
+        
     }
 
     /**
