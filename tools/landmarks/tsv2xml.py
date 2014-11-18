@@ -3,17 +3,16 @@
 # Mars Simulation Project
 # Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.07 2014-11-16
+# @version 3.07 2014-11-18
 # @author Lars Næsbye Christensen [lechimp]
 #
-# This script requires Python 2.4 or later and the 'SearchResults.tsv' file to be in the
+# This script requires Python 2.4 or later and the 'SearchResults' file to be in the
 # same directory as the script file.
 #
 # To generate TSV file at http://planetarynames.wr.usgs.gov/AdvancedSearch
 # Select System: MARS and target: Mars; Add column 'Feature Type Code'; Run Search
 # Scroll down and click 'TSV (tab separated values) for importing into other spread sheets' 
-# save the file as SearchResults.tsv in the same directory as this script. You may need
-# to add the .tsv suffix afterwards.
+# save the file as SearchResults in the same directory as this script. 
 # Run : 'python tsv2xml.py' and the resulting file landmarks.xml is fit for use with MSP
 # when put in the correct directory
 
@@ -22,9 +21,6 @@
 
 from xml.dom.minidom import Document
 from decimal import Decimal
-
-# Preferences - should maybe be cmd-line parameters
-diameter_threshold = 850.0 #skip landmarks smaller than this size in km
 
 # Initialize types 
 xmldoc = Document()
@@ -55,7 +51,7 @@ landmarks = xmldoc.createElement("landmark-list")
 xmldoc.appendChild(landmarks)
 
 # Open and parse the search results file (TSV), get the data key and data
-f = open('SearchResults.tsv')
+f = open('SearchResults')
 
 tsvlinelist = f.readlines() # fill a list with TSV lines
 
@@ -81,30 +77,29 @@ for tsvline in tsvlinelist:
 		print "Found data line, parsing..." #ready to move data into XML DOM
 		valuelist = tsvline.split("\t") # explode into a list of values
 		
-		if float(valuelist[index_diameter]) > float(diameter_threshold): # threshold
-			landmark = xmldoc.createElement("landmark")
-		
-			namestring = valuelist[index_feature_name]
-			namestring = namestring.replace('[', '')
-			namestring = namestring.replace(']', '')
-			landmark.setAttribute("name", namestring) # Feature_Name
-		
-			landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
+		landmark = xmldoc.createElement("landmark")
+	
+		namestring = valuelist[index_feature_name]
+		namestring = namestring.replace('[', '')
+		namestring = namestring.replace(']', '')
+		landmark.setAttribute("name", namestring) # Feature_Name
+	
+		landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
 # Center_Longitude
-			if Decimal(valuelist[index_long]) > 180:
+		if Decimal(valuelist[index_long]) > 180:
 				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])-180))+" W") 
-			else:
+		else:
 				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])))+" E") 
 # Center_Latitude
-			if Decimal(valuelist[index_lat]) < 0:
-				landmark.setAttribute("latitude", str(abs(Decimal(valuelist[index_lat])))+" S")
-			else:
-				landmark.setAttribute("latitude", str(Decimal(valuelist[index_lat]))+" N")
+		if Decimal(valuelist[index_lat]) < 0:
+			landmark.setAttribute("latitude", str(abs(Decimal(valuelist[index_lat])))+" S")
+		else:
+			landmark.setAttribute("latitude", str(Decimal(valuelist[index_lat]))+" N")
 
-			landmark.setAttribute("approvaldate", valuelist[index_approval]) # Approval Date string
-			landmark.setAttribute("origin", valuelist[index_origin]) # Origin of name
-			landmark.setAttribute("type", valuelist[index_feature_type]) # Type of feature
-			landmarks.appendChild(landmark)
+		landmark.setAttribute("approvaldate", valuelist[index_approval]) # Approval Date string
+		landmark.setAttribute("origin", valuelist[index_origin]) # Origin of name
+		landmark.setAttribute("type", valuelist[index_feature_type]) # Type of feature
+		landmarks.appendChild(landmark)
 
 
 # Add data for artificial objects (from Google Mars and Wikipedia)
