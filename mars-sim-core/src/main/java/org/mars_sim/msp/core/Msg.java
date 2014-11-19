@@ -96,7 +96,7 @@ public class Msg {
 	}
 */
 	/**
-	 * replaces all occurances of "{n}" (with n an integer)
+	 * replaces all occurrences of "{n}" (with n an integer)
 	 * with the 
 	 * @param key
 	 * @param args
@@ -106,13 +106,13 @@ public class Msg {
 		String s = getString(key);
 		int i = 0;
 		for (Object arg : args) {
-			s = s.replaceAll(
+			s = s.replace(
 				"{" + i + "}",
 				arg.toString()
 			);
 			i++;
 		}
-		return "";
+		return s;
 	}
 
 	/*
