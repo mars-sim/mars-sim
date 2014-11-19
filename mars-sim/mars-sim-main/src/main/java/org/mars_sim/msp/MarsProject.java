@@ -9,6 +9,7 @@ package org.mars_sim.msp;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
@@ -16,8 +17,11 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import javax.swing.*;
 
 import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -39,6 +43,7 @@ public class MarsProject {
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
 
+    public final static String IMAGE_DIR = "/images/";
     /**
      * Constructor.
      * @param args command line arguments.
@@ -61,7 +66,19 @@ public class MarsProject {
             // Create the main desktop window.
             MainWindow w = new MainWindow(newSim);
             w.getFrame().setVisible(true);
-     
+            
+    		// 2014-11-18 Added MSP Logo Icon
+            String fullImageName = "LanderHab.png";
+            String fileName = fullImageName.startsWith("/") ?
+                	fullImageName :
+                	IMAGE_DIR + fullImageName;
+            URL resource = ImageLoader.class.getResource(fileName);
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			Image img = kit.createImage(resource);
+			w.getFrame().setIconImage(img);
+			
+            /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+	          
             // Start simulation
             startSimulation();
         
