@@ -43,7 +43,10 @@ public class MarsProject {
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
 
-    public final static String IMAGE_DIR = "/images/";
+	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
+    private Image img;
+    private final static String IMAGE_DIR = "/images/";
+    
     /**
      * Constructor.
      * @param args command line arguments.
@@ -59,6 +62,17 @@ public class MarsProject {
         if (useGUI) {
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
+            
+       		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
+            String fullImageName = "LanderHab.png";
+            String fileName = fullImageName.startsWith("/") ?
+                	fullImageName :
+                	IMAGE_DIR + fullImageName;
+            URL resource = ImageLoader.class.getResource(fileName);
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			img = kit.createImage(resource);
+			splashWindow.getJFrame().setIconImage(img);
+			
             splashWindow.display();
             splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
             boolean newSim = initializeSimulation(args);
@@ -67,14 +81,7 @@ public class MarsProject {
             MainWindow w = new MainWindow(newSim);
             w.getFrame().setVisible(true);
             
-    		// 2014-11-18 Added MSP Logo Icon
-            String fullImageName = "LanderHab.png";
-            String fileName = fullImageName.startsWith("/") ?
-                	fullImageName :
-                	IMAGE_DIR + fullImageName;
-            URL resource = ImageLoader.class.getResource(fileName);
-			Toolkit kit = Toolkit.getDefaultToolkit();
-			Image img = kit.createImage(resource);
+       		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
 			w.getFrame().setIconImage(img);
 			
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
@@ -210,6 +217,9 @@ public class MarsProject {
             if (useGUI) {
                 SimulationConfigEditor editor = new SimulationConfigEditor(null, 
                         SimulationConfig.instance());
+
+         		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
+    			editor.setIconImage(img);
                 editor.setVisible(true);
             }
             Simulation.createNewSimulation();
