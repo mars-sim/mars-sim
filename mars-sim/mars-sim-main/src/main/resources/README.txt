@@ -40,7 +40,10 @@ mars-sim-developers@lists.sourceforge.net
 
 ** Credits **
 
-A full list of contributors is available from the Help menu within the application. The credits can also be viewed by opening the file source/mars-sim-ui/src/main/resources/docs/help/about.html in a web browser.
+A full list of contributors is available from the Help menu within 
+the application. The credits can also be viewed by opening the file 
+source/mars-sim-ui/src/main/resources/docs/help/about.html in a web 
+browser.
 
 ---------------------------------------------------------------------
 
