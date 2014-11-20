@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2014-11-10
+ * @version 3.07 2014-11-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -295,7 +295,9 @@ implements Serializable {
 		// if container has less than enough food, finish up all food in the container
 		if (foodEaten > foodAvailable)
 			foodEaten = foodAvailable;
-
+		
+        //2014-11-19 Truncated foodEaten to 4 decimal places
+        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
 			// subtract food from container
 		container.getInventory().retrieveAmountResource(foodAR, foodEaten);
 		container.getInventory().retrieveAmountResource(soybeansAR, foodEaten);
@@ -325,6 +327,8 @@ implements Serializable {
         if (foodEaten > foodAvailable)
             foodEaten = foodAvailable;
 
+        //2014-11-19 Truncated foodEaten to 4 decimal places
+        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
         // subtract food from container
         container.getInventory().retrieveAmountResource(food, foodEaten);
         //System.out.println("PhysicalCondition.java : consumeGrains() : Grains Eaten is " 
@@ -357,6 +361,8 @@ implements Serializable {
         if (foodEaten > foodAvailable)
             foodEaten = foodAvailable;
 
+        //2014-11-19 Truncated foodEaten to 4 decimal places
+        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
         // subtract food from container
         container.getInventory().retrieveAmountResource(food, foodEaten);
         //System.out.println("PhysicalCondition.java : consumeVegetables() :  Vegetables Eaten is "
@@ -390,6 +396,9 @@ implements Serializable {
         if (foodEaten > foodAvailable)
             foodEaten = foodAvailable;
 
+        //2014-11-19 Truncated foodEaten to 4 decimal places
+        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
+        
         // subtract food from container
         container.getInventory().retrieveAmountResource(food, foodEaten);
         //System.out.println("PhysicalCondition.java : consumeFruits() : fruit Eaten is "
@@ -457,21 +466,21 @@ implements Serializable {
 
             if (foodAvailable < 0.5D) {
     			noMorePackedFood = true;
-    		//2014-11-16 Added if then else clauses
-    			if (noMoreLegumes != false) consumeLegumes(amount, container, "Legume Group");
-    			else if (noMoreFruits != false) consumeFruits(amount, container, "Fruit Group");
-    			else if (noMoreVeggies != false) consumeVegetables(amount, container, "Vegetable Group");
-       			else if (noMoreGrains != false) consumeGrains(amount, container, "Grain Group");
-       			//else if (noMoreSpices != false) consumeSpices(amount, container, "Spice Group");
-    			
-    			
-                throw new IllegalStateException("No more packaged food available.");
+    		//2014-11-19 Fixed endless loop with the following if-then-else clauses
+    			if (!noMoreLegumes) consumeLegumes(amount, container, "Legume Group");
+    			else if (!noMoreFruits) consumeFruits(amount, container, "Fruit Group");
+    			else if (!noMoreVeggies) consumeVegetables(amount, container, "Vegetable Group");
+       			else if (!noMoreGrains) consumeGrains(amount, container, "Grain Group");
+       			//else if (!noMoreSpices) consumeSpices(amount, container, "Spice Group");
+                throw new IllegalStateException("No more packaged food available.");   
             }
 
             // if container has less than enough food, finish up all food in the container
             if (foodEaten > foodAvailable)
                 foodEaten = foodAvailable;
 
+            //2014-11-19 Truncated foodEaten to 4 decimal places
+            foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
             // subtract food from container
             container.getInventory().retrieveAmountResource(food, foodEaten);
             //System.out.println("PhysicalCondition.java : consumeFood() : food Eaten is "

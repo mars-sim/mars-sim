@@ -305,68 +305,32 @@ implements Serializable {
         double soybeansFraction = soybeansAvailable / legumesAvailable ;
         
         double totalAvailable =  fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
-
-        //double totalAvailable = checkAmountOfFood();
         
         // 2014-10-15 mkung: Checked if the total food available is more than 0.5 kg food in total
         if (totalAvailable > 0.5) { 
         	//foodAvailable = true;
-       
-	        double fruitsFraction = foodAmount * fruitsAvailable / totalAvailable;
-	        double grainsFraction = foodAmount * grainsAvailable / totalAvailable;
-	        double legumesFraction = foodAmount * legumesAvailable / totalAvailable;
-	        double spicesFraction = foodAmount * spicesAvailable / totalAvailable;
-	        double vegFraction = foodAmount * vegAvailable / totalAvailable;
+	        //Use Math.round( xxx * 10000.0) / 10000.0 to truncate excessive decimal
+	        double fruitsFraction = Math.round(foodAmount * fruitsAvailable / totalAvailable* 10000.0) / 10000.0;
+	        double grainsFraction = Math.round(foodAmount * grainsAvailable / totalAvailable* 10000.0) / 10000.0;
+	        double legumesFraction = Math.round(foodAmount * legumesAvailable / totalAvailable* 10000.0) / 10000.0;
+	        double spicesFraction = Math.round(foodAmount * spicesAvailable / totalAvailable* 10000.0) / 10000.0;
+	        double vegFraction = Math.round(foodAmount * vegAvailable / totalAvailable* 10000.0) / 10000.0;
 	        //double soybeansFraction = foodAmount * soybeansAvailable / totalAvailable;   
-	        //logger.info("cookingChoice() : total Food Available is " + Math.round(totalAvailable) + " kg");
-	        //logger.info("cookingChoice() : amount to cook is " + foodAmount + " kg");
-
 	        getBuilding().getInventory().retrieveAmountResource(fruitsAR, fruitsFraction);
-	        /*
-        	if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has prepared " + meals.size() + " delicious fruits (quality is " + mealQuality + ")");
-	        }
-	  		*/
 	        getBuilding().getInventory().retrieveAmountResource(grainsAR, grainsFraction);
-	        /*
-	        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has stir-fried or cooked " + meals.size() + " rice or pasta (quality is " + mealQuality + ")");
-	        }
-	  		*/
 	        getBuilding().getInventory().retrieveAmountResource(legumesAR, legumesFraction);
 	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeansFraction*legumesFraction
 	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
-	        
-
-	        /*
-		        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has prepared a side dish with " + meals.size() + " beans and/or peas (quality is " + mealQuality + ")");
-	        }
-	         */
 	        getBuilding().getInventory().retrieveAmountResource(spicesAR, spicesFraction);
-	        /*
-	        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has seasoned the dish with " + meals.size() + " herbs and spices (quality is " + mealQuality + ")");
-	        }
-	  		*/
 	        getBuilding().getInventory().retrieveAmountResource(vegAR, vegFraction);
 	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        
 	        meals.add(new CookedMeal(mealQuality, time));
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has " + meals.size() + " meals and quality is " + mealQuality + ")");
 	        }
-	        //logger.info("cookingChoice() : cookingWorkTime is " + cookingWorkTime);
-	        //logger.info("cookingChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
 	        cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
-	        //logger.info("cookingChoice() : cookingWorkTime is " + cookingWorkTime);
-	        //logger.info("cookingChoice() : COOKED_MEAL_WORK_REQUIRED is " + COOKED_MEAL_WORK_REQUIRED);
         } 
         else { 
         	foodIsAvailable = false;
@@ -399,6 +363,7 @@ implements Serializable {
                     	foodAmount = foodCapacity;
                 			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
                 			// Turned 1 cooked meal unit into 1 food unit
+                    foodAmount = Math.round( foodAmount * 1000.0) / 1000.0;
                     getBuilding().getInventory().storeAmountResource(food, foodAmount , false);
                     i.remove();
 
