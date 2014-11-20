@@ -69,7 +69,7 @@ public class MainWindow {
 
 		// Note: this setting causes the application to close before it
 		// saves the default.sim file.
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Load UI configuration.
 		if (!cleanUI) {

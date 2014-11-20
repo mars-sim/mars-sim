@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 /**
@@ -56,7 +57,7 @@ extends JPanel {
 	/** The function panels. */
 	private List<BuildingFunctionPanel> functionPanels;
 
-	private String buildingType;
+	//private String buildingType;
 	
 
 	/**
@@ -73,7 +74,7 @@ extends JPanel {
         // Initialize data members
         this.panelName = panelName;
         this.building = building;
-        buildingType = building.getBuildingType();
+        //buildingType = building.getBuildingType();
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
         
@@ -96,7 +97,7 @@ extends JPanel {
 	    Settlement settlement = building.getBuildingManager().getSettlement();
 	        // Conclusion: this panel is called only once per opening the unit window session.
 	    SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);
-	        
+        
 	    svgPanel.setPreferredSize(expectedDimension);
 	    svgPanel.setMaximumSize(expectedDimension);
 	    svgPanel.setMinimumSize(expectedDimension);

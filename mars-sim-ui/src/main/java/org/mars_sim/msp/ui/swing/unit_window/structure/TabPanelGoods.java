@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -142,7 +143,8 @@ extends TabPanel {
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
-				if (column == 0) return good.getName();
+				// 2014-11-20  Capitalized good's names
+				if (column == 0) return WordUtils.capitalize(good.getName());
 				else if (column == 1) {
 					try {
 						return manager.getGoodValuePerItem(good);
