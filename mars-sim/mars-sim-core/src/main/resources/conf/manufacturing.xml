@@ -1418,6 +1418,21 @@
 		</outputs>
 	</process>
 	
+	<!-- 2014-11-19 Added water tank -->
+	<process name="water tank manufacturing" tech="2" skill="3" work-time="200" process-time="200" 
+			power-required="7.0">
+		<inputs>
+			<part name="steel sheet" number="2" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="plastic tubing" number="1" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="water tank" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="fuel pump manufacturing" tech="4" skill="4" work-time="200" process-time="100" 
 			power-required="10.0">
 		<inputs>
@@ -1443,6 +1458,21 @@
 		</inputs>
 		<outputs>
 			<part name="oxygen pump" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- 2014-11-19 Added carbon dioxide pump -->	
+	<process name="carbon dioxide pump manufacturing" tech="4" skill="4" work-time="200" process-time="100" 
+			power-required="10.0">
+		<inputs>
+			<part name="iron ingot" number="3" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="carbon dioxide pump" number="5" />
 		</outputs>
 	</process>
 
@@ -2368,6 +2398,154 @@
 		</outputs>
 	</process>
 	
+	<!-- 2014-11-19 Added Manufacturing a small water pump. -->
+	<process name="small water pump manufacturing" tech="4" skill="4" work-time="200" process-time="50" 
+			power-required="5.0">
+		<inputs>
+			<part name="iron ingot" number="1" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="3" />
+		</inputs>
+		<outputs>
+			<part name="water pump" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- 2014-11-19 Added Manufacturing an air compressor. -->
+	<process name="air compressor manufacturing" tech="4" skill="4" work-time="200" process-time="50" 
+			power-required="5.0">
+		<inputs>
+			<part name="aluminum wire" number="1" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="3" />
+			<part name="small electric motor" number="1" />
+		</inputs>
+		<outputs>
+			<part name="air compressor" number="1" />
+		</outputs>
+	</process>
+		
+	<!-- 2014-11-19 Added manufacturing a food blender. -->
+	<process name="food blender manufacturing" tech="4" skill="4" work-time="400" process-time="50" 
+			power-required="2.0">
+		<inputs>
+			<part name="aluminum wire" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="5" />
+			<part name="plastic sheet" number="1" />
+			<part name="small electric motor" number="1" />			
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+		</outputs>
+	</process>
+
+	<!-- 2014-11-19 Added Manufacturing an oven. -->
+	<process name="oven manufacturing" tech="4" skill="4" work-time="500" process-time="50" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="5" />
+			<part name="plastic sheet" number="1" />
+			<part name="valve" number="4" />	
+			<part name="steel pipe" number="3" />		
+		</inputs>
+		<outputs>
+			<part name="oven" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- 2014-11-19 Added Manufacturing a microwave. -->
+	<process name="microwave manufacturing" tech="4" skill="4" work-time="500" process-time="20" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="5" />
+			<part name="plastic sheet" number="1" />
+			<part name="microcontroller" number="1" />	
+			<part name="small transformer" number="1" />				
+			<part name="magnetron tube" number="1" />
+			<part name="steel pipe" number="1" />		
+		</inputs>
+		<outputs>
+			<part name="oven" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- 2014-11-19 Added Manufacturing a ventilation fan. -->
+	<process name="ventilation fan manufacturing" tech="4" skill="4" work-time="100" process-time="20" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="3" />
+			<part name="plastic sheet" number="1" />
+			<part name="small electric motor" number="1" />			
+		</inputs>
+		<outputs>
+			<part name="ventilation fan" number="1" />
+		</outputs>
+	</process>	
+	
+	<!-- 2014-11-19 Added Manufacturing a kitchen stove. -->
+	<process name="kitchen stove manufacturing" tech="4" skill="4" work-time="300" process-time="20" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="2" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="6" />
+			<part name="plastic sheet" number="1" />
+			<part name="electric heating element" number="4" />	
+		</inputs>
+		<outputs>
+			<part name="stove" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- 2014-11-19 Added Manufacturing a refrigerator. -->
+	<process name="refrigerator manufacturing" tech="4" skill="4" work-time="700" process-time="50" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="2" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="6" />
+			<part name="plastic sheet" number="2" />
+			<part name="small water pump" number="4" />	
+		</inputs>
+		<outputs>
+			<part name="stove" number="1" />
+		</outputs>
+	</process>
+
+	<!-- 2014-11-19 Added Manufacturing an autoclave. -->
+	<process name="autoclave manufacturing" tech="4" skill="4" work-time="700" process-time="50" 
+			power-required="3.0">
+		<inputs>
+			<part name="aluminum wire" number="2" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="6" />
+			<part name="plastic sheet" number="2" />
+			<part name="small water pump" number="4" />	
+			<part name="electric heating element" number="4" />	
+			<part name="microcontroller" number="1" />							
+		</inputs>
+		<outputs>
+			<part name="stove" number="1" />
+		</outputs>
+	</process>
+
+
+		
 	<!-- Salvage process for an EVA suit. -->
 	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
 		<part-salvage name="eva helmet" number="1" />

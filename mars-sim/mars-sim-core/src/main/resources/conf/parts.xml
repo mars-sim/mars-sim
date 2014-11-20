@@ -23,7 +23,7 @@
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="4" />
 			<entity name="farming" probability="60" max-number="6" />
-			<entity name="living accomodations" probability="30" max-number="4" />
+			<entity name="living accommodations" probability="30" max-number="4" />
 			<entity name="manufacture" probability="60" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="settlement" probability="15" max-number="2" />
@@ -35,7 +35,7 @@
 		<maintenance-entity-list>
 			<entity name="rover" probability="20" max-number="2" />
 			<entity name="farming" probability="30" max-number="3" />
-			<entity name="living accomodations" probability="15" max-number="2" />
+			<entity name="living accommodations" probability="15" max-number="2" />
 			<entity name="manufacture" probability="30" max-number="3" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="settlement" probability="10" max-number="1" />
@@ -47,7 +47,7 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="50" max-number="6" />
 			<entity name="farming" probability="80" max-number="12" />
-			<entity name="living accomodations" probability="40" max-number="4" />
+			<entity name="living accommodations" probability="40" max-number="4" />
 			<entity name="manufacture" probability="80" max-number="6" />
 			<entity name="eva suit" probability="20" max-number="1" />
 			<entity name="settlement" probability="20" max-number="4" />
@@ -155,7 +155,7 @@
 	
 	<part name="plastic pipe" mass="1.0">
 		<maintenance-entity-list>
-			<entity name="living accomodations" probability="10" max-number="2" />
+			<entity name="living accommodations" probability="10" max-number="2" />
 			<entity name="farming" probability="20" max-number="4" />
 			<entity name="manufacture" probability="20" max-number="2" />
 			<entity name="rover" probability="5" max-number="1" />
@@ -183,7 +183,7 @@
 	
 	<part name="copper pipe" mass="5.0">
 		<maintenance-entity-list>
-			<entity name="living accomodations" probability="10" max-number="1" />
+			<entity name="living accommodations" probability="10" max-number="1" />
 			<entity name="farming" probability="20" max-number="2" />
 			<entity name="manufacture" probability="10" max-number="2" />
 			<entity name="settlement" probability="5" max-number="1" />
@@ -529,4 +529,82 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<!-- 2014-11-19 Added a small water pump for greenhouse. -->
+	<part name="small water pump" mass="1.0" >
+		<maintenance-entity-list>
+			<entity name="farming" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- 2014-11-19 Added carbon dioxide pump for greenhouse. -->
+	<part name="carbon dioxide pump" mass="1.0" >
+		<maintenance-entity-list>
+			<entity name="farming" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<!-- 2014-11-19 Added water tank for greenhouse. -->	
+	<part name="water tank" mass="2.0" >
+	 	<maintenance-entity-list>
+			<entity name="farming" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- 2014-11-19 Added an air compressor. -->	
+	<part name="air compressor" mass="2.0" >
+	 	<maintenance-entity-list>
+			<entity name="farming" probability="5" max-number="1" />
+			<entity name="cooking" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<!-- 2014-11-19 Added a magnetron tube. -->	
+	<part name="magnetron tube" mass="0.5" >
+	</part>	
+	
+	<!-- 2014-11-19 Added a microcontroller. -->	
+	<part name="microcontroller" mass="0.1" >
+	</part>	
+	
+		<!-- 2014-11-19 Added a small transformer. -->	
+	<part name="small transformer" mass="0.5" >
+	</part>	
+	
+	<!-- 2014-11-19 Added 7 kitchen equipment below -->
+	<part name="blender" mass="2.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	<part name="oven" mass="10.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>	
+	<part name="microwave" mass="3.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>	
+	<part name="ventilation fan" mass="0.2">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>	
+	<part name="stove" mass="20.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>	
+	<part name="refrigerator" mass="70.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>		
+	<part name="autoclave" mass="20.0">
+		 	<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>	
+
 </part-list>

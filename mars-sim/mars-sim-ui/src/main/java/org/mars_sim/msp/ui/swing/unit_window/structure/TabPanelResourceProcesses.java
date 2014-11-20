@@ -204,8 +204,8 @@ extends TabPanel {
 			});
 			toggleButton.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.toggleButton")); //$NON-NLS-1$
 			add(toggleButton);
-
-			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", building.getName(), process.getProcessName())); //$NON-NLS-1$
+			// 2014-11-17 Changed building.getName() to building.getNickName()
+			label = new JLabel(Msg.getString("TabPanelResourceProcesses.processLabel", building.getNickName(), process.getProcessName())); //$NON-NLS-1$
 			add(label);
 
 			// Load green and red dots.
@@ -222,7 +222,8 @@ extends TabPanel {
 		private String getToolTipString(Building building) {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append("Resource Process: ").append(process.getProcessName()).append("<br>");
-			result.append("Building: ").append(building.getName()).append("<br>");
+			// 2014-11-17 Changed building.getName() to building.getNickName()
+			result.append("Building: ").append(building.getNickName()).append("<br>");
 			result.append("Power Required: ").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
 			result.append("Process Inputs:<br>");
 			Iterator<AmountResource> i = process.getInputResources().iterator();

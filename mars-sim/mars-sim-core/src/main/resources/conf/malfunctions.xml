@@ -76,6 +76,8 @@
 			<entity name="life support" />
 			<entity name="rover" />
 			<entity name="eva suit" />	
+			<!-- 2014-11-19 Added cooking -->
+			<entity name="cooking" />				
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
@@ -258,7 +260,7 @@
 		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="rover" />
-			<entity name="living accomodations" />
+			<entity name="living accommodations" />
 			<entity name="farming" />
 			<entity name="manufacture" />
 			<entity name="eva suit" />
@@ -273,6 +275,9 @@
 			<part name="plastic tubing" number="2" probability="20" />
 			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="copper pipe" number="1" probability="10" />
+		<!-- 2014-11-19 Added water tank and small water pump --> 
+			<part name="water tank" number="1" probability="5" />
+			<part name="small water pump" number="1" probability="5" />			
 		</repair-parts-list>
 	</malfunction>
 	
@@ -445,6 +450,125 @@
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
 			<part name="water pump" number="1" probability="30" />
+			<part name="lubricant bottle" number="1" probability="30" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
+	<malfunction name="Carbon Dioxide Failure">
+		<severity value="40" />
+		<probability value="5.0" />
+		<repair-time value="100.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="farming" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="carbon dioxide pump" number="1" probability="30" />
+		</repair-parts-list>
+	</malfunction>
+
+	<!-- 2014-11-19 Added Kitchen Food Blender Failure. -->
+	<malfunction name="Kitchen Food Blender Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="1" probability="20" />
+			<part name="wire connector" number="1" probability="20" />
+			<part name="blender" number="1" probability="10" />
+			<part name="lubricant bottle" number="1" probability="30" />			
+		</repair-parts-list>
+	</malfunction>
+
+	<!-- 2014-11-19 Added Kitchen Oven Failure. -->
+	<malfunction name="Kitchen Oven Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="oven" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2014-11-19 Added Kitchen Ventilation Fan Failure. -->
+	<malfunction name="Kitchen Ventilation Fan Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="ventilation fan" number="1" probability="10" />
+			<part name="lubricant bottle" number="1" probability="30" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2014-11-19 Added Kitchen Stove Failure. -->
+	<malfunction name="Kitchen Stove Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="gasket" number="1" probability="10" />			
+			<part name="stove" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2014-11-19 Added Kitchen Autoclave Failure. -->
+	<malfunction name="Kitchen Autoclave Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="autoclave" number="1" probability="10" />	
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2014-11-19 Added Kitchen Refrigerator Failure. -->
+	<malfunction name="Kitchen Refrigerator Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="refrigerator" number="1" probability="10" />
+			<part name="valve" number="3" probability="10" />
+			<part name="air compressor" number="1" probability="10" />		
+			<part name="lubricant bottle" number="1" probability="30" />								
 		</repair-parts-list>
 	</malfunction>
 

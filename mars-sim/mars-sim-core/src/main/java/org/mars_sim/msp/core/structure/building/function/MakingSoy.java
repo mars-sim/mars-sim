@@ -452,10 +452,10 @@ implements Serializable {
 		       	inv.storeAmountResource(soyFiberAR, soyFiber_inKg, true);
 		       	inv.storeAmountResource(soyProteinAR, soyProtein_inKg, true);
 
-	       		logger.info("makingSoyChoice() : soybeanOil_inKg is " + soybeanOil_inKg);
-	       		logger.info("makingSoyChoice() : soyFlour_inKg is " + soyFlour_inKg);
-	       		logger.info("makingSoyChoice() : soyFiber_inKg is " + soyFiber_inKg);
-	       		logger.info("makingSoyChoice() : soyProtein_inKg is " + soyProtein_inKg);
+	       		//logger.info("makingSoyChoice() : soybeanOil_inKg is " + soybeanOil_inKg);
+	       		//logger.info("makingSoyChoice() : soyFlour_inKg is " + soyFlour_inKg);
+	       		//logger.info("makingSoyChoice() : soyFiber_inKg is " + soyFiber_inKg);
+	       		//logger.info("makingSoyChoice() : soyProtein_inKg is " + soyProtein_inKg);
 
         	}
         }

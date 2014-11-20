@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
@@ -82,12 +83,14 @@ public class ManufacturePanel extends JPanel {
         	name = " " + firstLetter + name.substring(1);
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
-        JLabel nameLabel = new JLabel(name, JLabel.CENTER);
+		// 2014-11-19 Capitalized process names
+        JLabel nameLabel = new JLabel(WordUtils.capitalize(name), JLabel.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
         	// Prepare building name label.
-        	String buildingName = process.getWorkshop().getBuilding().getName();
+        	// 2014-11-19 Changed from getName() to getNickName()
+        	String buildingName = process.getWorkshop().getBuilding().getNickName();
         	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
         	add(buildingNameLabel);
         }
@@ -162,8 +165,9 @@ public class ManufacturePanel extends JPanel {
     public static String getToolTipString(ManufactureProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("Manufacturing Process: ").append(info.getName()).append("<br>");
-    	if (building != null) result.append("Manufacture Building: ").append(building.getName()).append("<br>");
+        result.append("Manufacturing Process: ").append(WordUtils.capitalize(info.getName())).append("<br>");
+    	// 2014-11-19 Changed from getName() to getNickName()
+    	if (building != null) result.append("Manufacture Building: ").append(building.getNickName()).append("<br>");
         result.append("Effort Time Required: ").append(info.getWorkTimeRequired()).append(" millisols<br>");
         result.append("Process Time Required: ").append(info.getProcessTimeRequired()).append(" millisols<br>");
         result.append("Power Required: ").append(info.getPowerRequired()).append(" kW<br>");
@@ -175,7 +179,8 @@ public class ManufacturePanel extends JPanel {
     	Iterator<ManufactureProcessItem> i = info.getInputList().iterator();
     	while (i.hasNext()) {
     		ManufactureProcessItem item = i.next();
-            result.append("&nbsp;&nbsp;").append(item.getName()).append(": ").append(getItemAmountString(item)).append("<br>");
+    		// 2014-11-19 Capitalized process names
+            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
     	}
     	
     	// Add process outputs.
@@ -183,7 +188,8 @@ public class ManufacturePanel extends JPanel {
     	Iterator<ManufactureProcessItem> j = info.getOutputList().iterator();
     	while (j.hasNext()) {
     		ManufactureProcessItem item = j.next();
-            result.append("&nbsp;&nbsp;").append(item.getName()).append(": ").append(getItemAmountString(item)).append("<br>");
+    		// 2014-11-19 Capitalized process names
+            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
     	}
     	
     	result.append("</html>");

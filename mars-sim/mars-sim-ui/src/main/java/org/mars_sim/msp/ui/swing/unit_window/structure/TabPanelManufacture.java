@@ -33,6 +33,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -503,7 +504,8 @@ extends TabPanel {
 				if (info != null) {
 					String processName = info.getName();
 					if (processName.length() > 35) processName = processName.substring(0, 35) + Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
-					((JLabel) result).setText(processName);
+					// 2014-11-19 Capitalized process names
+					((JLabel) result).setText(WordUtils.capitalize(processName));
 					((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 				}
 			}
@@ -512,7 +514,8 @@ extends TabPanel {
 				if (info != null) {
 					String processName = info.toString();
 					if (processName.length() > 35) processName = processName.substring(0, 35) + Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
-					((JLabel) result).setText(processName);
+					// 2014-11-19 Capitalized process names
+					((JLabel) result).setText(WordUtils.capitalize(processName));
 					((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 				}
 			}
