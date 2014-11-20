@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2014-11-17
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 
@@ -206,7 +206,8 @@ implements ActionListener {
     
     // 2014-11-11 Modified temperature and pressure panel
     public String getTemperatureString() {
-		return fmt.format(getTemperature()) + " Â°C"; //2 b localized?
+    	// 2014-11-20 Changed from " Â°C" to " °C" for English Locale
+		return fmt.format(getTemperature()) + " °C"; //2 b localized?
     }
     public double getTemperature() {
     	double outsideTemp = Simulation.instance().getMars().getWeather()

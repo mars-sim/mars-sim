@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 3.07 2014-10-14
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -219,30 +220,46 @@ extends TabPanel {
 		}
 
 		// TODO internationalize the resource processes' dynamic tooltip
+		// 2014-11-20 Aligned text to improved tooltip readability (for English Locale only)
 		private String getToolTipString(Building building) {
 			StringBuilder result = new StringBuilder("<html>");
-			result.append("Resource Process: ").append(process.getProcessName()).append("<br>");
+			result.append("&emsp;&nbsp;Process:&emsp;").append(process.getProcessName()).append("<br>");
 			// 2014-11-17 Changed building.getName() to building.getNickName()
-			result.append("Building: ").append(building.getNickName()).append("<br>");
-			result.append("Power Required: ").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
-			result.append("Process Inputs:<br>");
+			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
+			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
+			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
 			Iterator<AmountResource> i = process.getInputResources().iterator();
+			// 2014-11-20 Added ambientStr and ii and ii++
+			String ambientStr = "";
+			int ii = 0;
 			while (i.hasNext()) {
+				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				AmountResource resource = i.next();
 				double rate = process.getMaxInputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append("&nbsp;&nbsp;");
-				if (process.isAmbientInputResource(resource)) result.append("* ");
-				result.append(resource.getName()).append(": ").append(rateString).append(" kg/sol<br>");
+				//result.append("&nbsp;&nbsp;&emsp;");
+				if (process.isAmbientInputResource(resource)) ambientStr = "*";
+				// 2014-11-20 Capitalized resource.getName()
+				result.append(WordUtils.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/sol<br>");
+				ii++;
 			}
-			result.append("Process Outputs:<br>");
+			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
 			Iterator<AmountResource> j = process.getOutputResources().iterator();
+			// 2014-11-20 Added jj and jj++
+			int jj = 0;
 			while (j.hasNext()) {
+				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
 				AmountResource resource = j.next();
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(rateString).append(" kg/sol<br>");
+				// 2014-11-20 Capitalized resource.getName()
+				result.append(WordUtils.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/sol<br>");
+				jj++;
 			}
+			// 2014-11-20 Moved * from front to back of the text 
+			// Added a note to denote an ambient input resource
+			if (ambientStr == "*")
+				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");
 			result.append("</html>");
 			return result.toString();
 		}

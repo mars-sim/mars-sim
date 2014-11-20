@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,7 +53,8 @@ extends BuildingFunctionPanel {
 			AmountResource resource = i.next();
 
 			// Create resource label.
-			JLabel resourceLabel = new JLabel(resource.getName() + ":", JLabel.LEFT);
+			// 2014-11-20 Capitalized resource names
+			JLabel resourceLabel = new JLabel(WordUtils.capitalize(resource.getName()) + ":", JLabel.LEFT);
 			resourceStoragePanel.add(resourceLabel);
 
 			double capacity = resourceStorage.get(resource);

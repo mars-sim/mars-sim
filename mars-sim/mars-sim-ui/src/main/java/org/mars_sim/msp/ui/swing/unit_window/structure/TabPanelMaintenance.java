@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -207,7 +208,8 @@ extends TabPanel {
 			while (i.hasNext()) {
 				Part part = i.next();
 				int number = parts.get(part);
-				buf.append(number).append(" ").append(part.getName());
+				// 2014-11-20 Capitalized part.getName()
+				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
 			}
 		}

@@ -138,6 +138,7 @@ public class NotificationManager extends JDialog {
 	}
 	
 	// 2014-11-16 Added modifyMsg()
+	//TODO: 
 	public String parseMsg(String msg) {
 		
 		msg = msg.toUpperCase();
@@ -151,10 +152,9 @@ public class NotificationManager extends JDialog {
 		message = message.replaceAll("MINOR", "a MINOR");
 		message = message.replaceAll("FUEL", "a FUEL");
 		 */
-		msg = "<html><i><b>" 
-				+ msg + "</b></i></html>";
-		
+
 		msg = "a " + msg;
+		
 		msg = msg.replaceAll("a AIRLEAK", "an AIRLEAK");
 		msg = msg.replaceAll("a ELECTRICAL", "an ELECTRICAL");
 		
@@ -164,9 +164,14 @@ public class NotificationManager extends JDialog {
 		msg = msg.replaceAll("a BROKEN", "BROKEN");
 		msg = msg.replaceAll("a MINOR BURNS", "MINOR BURNS");
 		msg = msg.replaceAll("a GENERATOR", "GENERATOR");
-		
+		msg = msg.replaceAll("a STARVATION", "STARVATION");
+		msg = msg.replaceAll("a MENINGITIS", "MENINGITIS");
+		msg = msg.replaceAll("a SUFFOCATION", "SUFFOCATION");
+		msg = msg.replaceAll("a DEHYDRATION", "DEHYDRATION");
 
-		
+		msg = "<html><i><b>" 
+				+ msg + "</b></i></html>";
+
 		return msg;
 	}
 	

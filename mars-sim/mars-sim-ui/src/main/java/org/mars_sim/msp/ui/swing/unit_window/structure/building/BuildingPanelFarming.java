@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 3.06 2014-10-10
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -17,6 +19,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -53,7 +58,8 @@ extends BuildingFunctionPanel {
 	 * @param farm {@link Farming} the farming building this panel is for.
 	 * @param desktop {@link MainDesktopPane} The main desktop.
 	 */
-	public BuildingPanelFarming(Farming farm, MainDesktopPane desktop) {
+	// 2014-11-20 Added tooltip for crops 
+	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
 		super(farm.getBuilding(), desktop);
@@ -92,7 +98,56 @@ extends BuildingFunctionPanel {
 		cropTableModel = new CropTableModel(farm);
 
 		// Prepare crop table
-		JTable cropTable = new JTable(cropTableModel);
+		JTable cropTable = new JTable(cropTableModel){
+			private static final long serialVersionUID = 1L;
+			// 2014-11-20 Implement Table Cell ToolTip for crops           
+            public String getToolTipText(MouseEvent e) {
+                String name = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+                java.util.List<Crop> crops;
+    			StringBuilder result = new StringBuilder("<html>");
+    			
+                try {
+                        crops = farm.getCrops();
+                        Crop crop = crops.get(rowIndex);
+                        double time;
+                        double mass0, mass1;
+                        double water;
+                        String cropName, cat;
+                        cropName = crop.getCropType().getName();
+                        cat = crop.getCropType().getCropCategory();
+                    	mass0 = crop.getCropType().getEdibleBiomass();
+                    	water = 100 * crop.getCropType().getEdibleWaterContent();
+                    	mass1 = crop.getCropType().getInedibleBiomass();
+                    	time = crop.getCropType().getGrowingTime() /1000;
+	                	result.append("&emsp;&nbsp;Crop Name:&emsp;");
+	                	result.append(cropName);
+	                	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;");
+	                	result.append(cat);
+	                	result.append("<br>&emsp;Edible Mass:&emsp;");
+	                	result.append(mass0).append(" kg");
+	                	result.append("<br>&nbsp;Inedible Mass:&emsp;");
+	                	result.append(mass1).append(" kg");              
+	                	result.append("<br>&nbsp;Growing Days:&emsp;");
+	                	result.append(time); 
+	                	result.append("<br>&nbsp;Water Content:&emsp;");
+	                	result.append(water).append(" %"); 	                	
+                    //}
+                    //if (tip == "Soybean") {
+
+                    //"use soybeans to make soy products";
+                    //if (tip == "Kidney Bean")
+                    	//tip = "use soybeans to make soy products";
+                } catch (RuntimeException e1) {
+                    //catch null pointer exception if mouse is over an empty line
+                }
+    			result.append("</html>");
+    			return result.toString();
+            }
+        }; // end of JTable
+		
 		cropTable.setCellSelectionEnabled(false);
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(1).setPreferredWidth(60);
@@ -103,6 +158,7 @@ extends BuildingFunctionPanel {
 		cropScrollPanel.setViewportView(cropTable);
 	}
 
+	
 	/**
 	 * Update this panel
 	 */
