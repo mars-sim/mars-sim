@@ -1,12 +1,9 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-11-07
+ * @version 3.07 2014-11-21
  * @author Scott Davis 				
  */
-// 2014-10-15 mkung: Fixed the crash by checking if there is any food available
-//  Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
-//  see if new crop harvest comes in.
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
@@ -16,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -54,6 +52,8 @@ implements Serializable {
     private int cookCapacity;
     private List<CookedMeal> meals;
     private double cookingWorkTime;
+    
+    private Inventory inv ;
 
     /**
      * Constructor.
@@ -63,7 +63,8 @@ implements Serializable {
     public Cooking(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-
+        
+        inv = getBuilding().getInventory();
         //logger.info("just called Cooking's constructor");
         
         cookingWorkTime = 0D;
@@ -232,79 +233,115 @@ implements Serializable {
     /**
      * Adds cooking work to this facility. 
      * The amount of work is dependent upon the person's cooking skill.
-     * @param workTime work time (millisols)
-     * 2014-10-08 mkung: rewrote this function to highlight the while loop. 
-     * 					moved remaining tasks into a new method cookingChoice()
-     * 2014-10-15 mkung: Fixed the no available food crash by checking if the total food available
-     *  				is more than 0.5 kg, 
+     * @param workTime work time (millisols) 
      */
+    // 2014-10-08 Rewrote this function to highlight the while loop. 
+    // 					moved remaining tasks into a new method cookingChoice()
+    // 2014-10-15 Fixed the no available food crash by checking if the total food available
+    //  				is more than 0.5 kg,
     public void addWork(double workTime) {
     	cookingWorkTime += workTime;       
         //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime);
         //logger.info("addWork() : workTime is " + workTime);
         
     	// check if there are new harvest, if it does, set foodIsAvailable to true
-    	double foodAvailable = checkAmountOfFood();
+    	double foodAvailable = getTotalFreshFood();
     	
     	if (foodAvailable >= 0.5) 
     		foodIsAvailable = true;
     	
      	while ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (foodIsAvailable) ){      	
-            cookingChoice();
+            cookMealWithFreshFood();
         } // end of while
      } // end of void addWork()
     
-    public double checkAmountOfFood() {
+    /**
+     * Computes total amount of fresh food from all food group. 
+     * 
+     * @param none
+     * @return total amount of fresh food in kg
+     */
+    //2014-10-15 Fixed the crash by checking if there is any fresh food available for CookMeal.java 
+    //2014-11-21 Changed method name to getTotalFreshFood() 
+    public double getTotalFreshFood() {
 
-        AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
-        double fruitsAvailable = getBuilding().getInventory().getAmountResourceStored(fruits, false);
-        AmountResource grains = AmountResource.findAmountResource("Grain Group");
-        double grainsAvailable = getBuilding().getInventory().getAmountResourceStored(grains, false);
-        AmountResource legumes = AmountResource.findAmountResource("Legume Group");
-        double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumes, false);
-        AmountResource spices = AmountResource.findAmountResource("Spice Group");
-        double spicesAvailable = getBuilding().getInventory().getAmountResourceStored(spices, false);
-        AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
-        double vegAvailable = getBuilding().getInventory().getAmountResourceStored(veg, false);
-        
-        // totalAV  = vegAV + legumeAV +...
+        double fruitsAvailable = getFreshFoodAvailable("Fruit Group");
+        double grainsAvailable = getFreshFoodAvailable("Grain Group");
+        double legumesAvailable  = getFreshFoodAvailable("Legume Group");
+        double spicesAvailable = getFreshFoodAvailable("Spice Group");
+        double vegAvailable = getFreshFoodAvailable("Vegetable Group");
         return fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
-   	
     }
     
+    /**
+     * Gets the amount resource of the fresh food from a specified food group. 
+     * 
+     * @param String food group
+     * @return AmountResource of the specified fresh food 
+     */
+     //2014-11-21 Added getFreshFoodAR() 
+    public AmountResource getFreshFoodAR(String foodGroup) {
+        AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
+        return freshFoodAR;
+    }
     
+    /**
+     * Computes amount of fresh food from a particular fresh food amount resource. 
+     * 
+     * @param AmountResource of a particular fresh food
+     * @return Amount of a particular fresh food in kg, rounded to the 4th decimal places
+     */
+     //2014-11-21 Added getFreshFood() 
+    public double getFreshFood(AmountResource ar) {
+        double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
+        return Math.round(freshFoodAvailable* 10000.0) / 10000.0;
+    }
     
-    /** Deduct the amount of food at the same proportion across all 5 food group
+    /**
+     * Computes amount of fresh food available from a specified food group. 
+     * 
+     * @param String food group
+     * @return double amount of fresh food in kg, rounded to the 4th decimal places
+     */
+     //2014-11-21 Added getFreshFoodAvailable() 
+    public double getFreshFoodAvailable(String foodGroup) {
+    	return getFreshFood(getFreshFoodAR(foodGroup));
+    }
+    
+    /** Cooks the meal with the arbitrary method of deducting the amount of food
+     *  across all 5 fresh food groups. The proportion is based on the amount available 
+     *  at each food group 
      * @param none
      * 
      * */
     // TODO: let the cook choose what kind of meal to cook based on his preference
     // TODO: create a method to make the codes more compact
     // 2014-11-07 Deducted the amount of soybeans in case of legumes
-    public void  cookingChoice() {
+    public void  cookMealWithFreshFood() {
     	
         int mealQuality = getBestCookSkill();
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-
+        
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);   
        	
-        AmountResource fruitsAR = AmountResource.findAmountResource("Fruit Group");
-        double fruitsAvailable = getBuilding().getInventory().getAmountResourceStored(fruitsAR, false);
-        AmountResource grainsAR = AmountResource.findAmountResource("Grain Group");
-        double grainsAvailable = getBuilding().getInventory().getAmountResourceStored(grainsAR, false);
-        AmountResource legumesAR = AmountResource.findAmountResource("Legume Group");
-        double legumesAvailable = getBuilding().getInventory().getAmountResourceStored(legumesAR, false);
-        AmountResource spicesAR = AmountResource.findAmountResource("Spice Group");
-        double spicesAvailable = getBuilding().getInventory().getAmountResourceStored(spicesAR, false);
-        AmountResource vegAR = AmountResource.findAmountResource("Vegetable Group");
-        double vegAvailable = getBuilding().getInventory().getAmountResourceStored(vegAR, false);
+        AmountResource fruitsAR = getFreshFoodAR("Fruit Group");
+        double fruitsAvailable = getFreshFood(fruitsAR);
+        AmountResource grainsAR = getFreshFoodAR("Grain Group");
+        double grainsAvailable = getFreshFood(grainsAR);
+        AmountResource legumesAR = getFreshFoodAR("Legume Group");
+        double legumesAvailable = getFreshFood(legumesAR);
+        AmountResource spicesAR = getFreshFoodAR("Spice Group");
+        double spicesAvailable = getFreshFood(spicesAR);
+        AmountResource vegAR = getFreshFoodAR("Vegetable Group");
+        double vegAvailable = getFreshFood(vegAR);
   
-        AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
-        double soybeansAvailable = getBuilding().getInventory().getAmountResourceStored(soybeansAR, false);
-        double soybeansFraction = soybeansAvailable / legumesAvailable ;
+        // Addition Calculation for Soybeans that belongs to the Legume Group
+        AmountResource soybeansAR = getFreshFoodAR("Soybeans");
+        double soybeansAvailable = getFreshFood(soybeansAR);
+        double soybeansFraction = Math.round(soybeansAvailable / legumesAvailable* 10000.0) / 10000.0 ;
         
-        double totalAvailable =  fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
+        double totalAvailable =  Math.round((fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable )* 10000.0) / 10000.0;
         
         // 2014-10-15 mkung: Checked if the total food available is more than 0.5 kg food in total
         if (totalAvailable > 0.5) { 
@@ -316,13 +353,14 @@ implements Serializable {
 	        double spicesFraction = Math.round(foodAmount * spicesAvailable / totalAvailable* 10000.0) / 10000.0;
 	        double vegFraction = Math.round(foodAmount * vegAvailable / totalAvailable* 10000.0) / 10000.0;
 	        //double soybeansFraction = foodAmount * soybeansAvailable / totalAvailable;   
-	        getBuilding().getInventory().retrieveAmountResource(fruitsAR, fruitsFraction);
-	        getBuilding().getInventory().retrieveAmountResource(grainsAR, grainsFraction);
-	        getBuilding().getInventory().retrieveAmountResource(legumesAR, legumesFraction);
+	        if (fruitsFraction > 0.0001) inv.retrieveAmountResource(fruitsAR, fruitsFraction);
+	        if (grainsFraction > 0.0001) inv.retrieveAmountResource(grainsAR, grainsFraction);
+	        if (legumesFraction > 0.0001) inv.retrieveAmountResource(legumesAR, legumesFraction);
+	        if (spicesFraction > 0.0001) inv.retrieveAmountResource(spicesAR, spicesFraction);
+	        if (vegFraction > 0.0001) inv.retrieveAmountResource(vegAR, vegFraction);
 	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeansFraction*legumesFraction
-	        getBuilding().getInventory().retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
-	        getBuilding().getInventory().retrieveAmountResource(spicesAR, spicesFraction);
-	        getBuilding().getInventory().retrieveAmountResource(vegAR, vegFraction);
+	        if (soybeansFraction*legumesFraction > 0.0001) inv.retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
+
 	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
 	        meals.add(new CookedMeal(mealQuality, time));
@@ -334,16 +372,16 @@ implements Serializable {
         } 
         else { 
         	foodIsAvailable = false;
-         	   logger.info("cookingChoice() : no more fresh food available for meal! Wait until the next harvest");        	
+         	   logger.info("cookingChoice() : less than 0.5 kg fresh food available. Cannot cook more meal.");        	
         }
     }
 
     /**
-     * Time passing for the building.
+     * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
-     * 2014-10-08: mkung - Packed expired meal into food (turned 1 meal unit into 1 food unit)
      */
+    // 2014-10-08: Currently converting each unit of expired meal into 0.5 kg of packed food 
     public void timePassing(double time) {
 
         // Move expired meals back to food again (refrigerate leftovers).
@@ -357,14 +395,14 @@ implements Serializable {
                     PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                     AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
                     double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-                    double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(
+                    double foodCapacity = inv.getAmountResourceRemainingCapacity(
                             food, false, false);
                     if (foodAmount > foodCapacity) 
                     	foodAmount = foodCapacity;
                 			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
                 			// Turned 1 cooked meal unit into 1 food unit
                     foodAmount = Math.round( foodAmount * 1000.0) / 1000.0;
-                    getBuilding().getInventory().storeAmountResource(food, foodAmount , false);
+                    inv.storeAmountResource(food, foodAmount , false);
                     i.remove();
 
                     if(logger.isLoggable(Level.FINEST)) {

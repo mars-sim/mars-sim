@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.07 2014-08-01
+ * @version 3.07 2014-11-21
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -400,7 +400,7 @@ implements Serializable {
                     owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
             } else {
-                throw new IllegalStateException("Insufficiant stored amount to retrieve " + 
+                throw new IllegalStateException("Insufficient stored amount to retrieve " + 
                         resource.getName() + ". Storage Amount : " + getAmountResourceStored(resource, false) + 
                         " kg. Attempted Amount : " + amount + " kg");
             }
