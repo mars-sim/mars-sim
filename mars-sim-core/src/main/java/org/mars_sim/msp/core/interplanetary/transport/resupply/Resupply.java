@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -313,7 +313,8 @@ implements Serializable, Transportable {
         
         // Deliver buildings.
         BuildingManager buildingManager = settlement.getBuildingManager();
-        Iterator<BuildingTemplate> buildingI = getNewBuildings().iterator();
+        List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
         while (buildingI.hasNext()) {
             BuildingTemplate template = buildingI.next();
             
@@ -418,6 +419,33 @@ implements Serializable, Transportable {
             immigrants.add(immigrant);
             logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
         }
+    }
+    
+    /**
+     * Orders the new buildings with non-connector buildings first and connector buildings last.
+     * @return list of new buildings.
+     */
+    private List<BuildingTemplate> orderNewBuildings() {
+        
+        List<BuildingTemplate> result = new ArrayList<BuildingTemplate>(getNewBuildings().size());
+        
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        
+        Iterator<BuildingTemplate> i = getNewBuildings().iterator();
+        while (i.hasNext()) {
+            BuildingTemplate newBuilding = i.next();
+            boolean isBuildingConnector = buildingConfig.hasBuildingConnection(newBuilding.getType());
+            if (isBuildingConnector) {
+                // Add connector to end of new building list.
+                result.add(newBuilding);
+            }
+            else {
+                // Add non-connector to beginning of new building list.
+                result.add(0, newBuilding);
+            }
+        }
+        
+        return result;
     }
     
     /**
