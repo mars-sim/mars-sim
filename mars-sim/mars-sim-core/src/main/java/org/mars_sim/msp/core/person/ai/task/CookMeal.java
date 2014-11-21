@@ -94,7 +94,7 @@ implements Serializable {
         else endTask();
 
         //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-        double foodAvailable = kitchen.checkAmountOfFood();
+        double foodAvailable = kitchen.getTotalFreshFood();
         
         //logger.info("constructor : foodAvailble is " + foodAvailable);
         
