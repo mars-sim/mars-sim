@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.07 2014-10-21
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -21,7 +21,8 @@ implements Serializable {
 
 	// Static data
 	/** Sea level air pressure in Pa. */
-	private static final double SEA_LEVEL_AIR_PRESSURE = 911.925D;
+	//2014-11-21 Changed the average pressure from 911.925 to 8 mbars
+	private static final double SEA_LEVEL_AIR_PRESSURE = 8D;
 	/** Sea level air density in kg/m^3. */
 	private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
 	/** Mars' gravitational acceleration at sea level in m/sec^2. */
