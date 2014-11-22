@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ResearchBuildingPanel.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -29,12 +30,12 @@ extends BuildingFunctionPanel {
 	// Data members
 	/** The research building. */
 	private Research lab;
-	/** The number of researchers label. */
-	private JLabel researchersLabel;
 
 	// Data cache
 	/** The number of researchers cache. */
 	private int researchersCache;
+	
+	private JLabel researchersLabel;
 
 	/**
 	 * Constructor.
@@ -57,21 +58,26 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare research label
-		JLabel researchLabel = new JLabel("Research", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for the three labels
+		JLabel researchLabel = new JLabel(Msg.getString("BuildingPanelResearch.title"), JLabel.CENTER); //$NON-NLS-1$
+		researchLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(researchLabel);
 
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = new JLabel("Number of Researchers: " + researchersCache, JLabel.CENTER);
+		researchersLabel = new JLabel(Msg.getString("BuildingPanelResearch.numberOfResearchers", researchersCache), JLabel.CENTER);
 		labelPanel.add(researchersLabel);
 
 		// Prepare researcher capacityLabel
-		JLabel researcherCapacityLabel = new JLabel("Researcher Capacity: " + lab.getLaboratorySize(),
+		JLabel researcherCapacityLabel = new JLabel(Msg.getString("BuildingPanelResearch.researcherCapacity",
+				lab.getLaboratorySize()),
 				JLabel.CENTER);
 		labelPanel.add(researcherCapacityLabel);
 
 		// Prepare specialties label
-		JLabel specialtiesLabel = new JLabel("Specialties: ", JLabel.CENTER);
+		JLabel specialtiesLabel = new JLabel(Msg.getString("BuildingPanelResearch.namesOfSpecialties"), JLabel.CENTER);
 		labelPanel.add(specialtiesLabel);
 
 		// Get the research specialties of the building.
@@ -97,7 +103,9 @@ extends BuildingFunctionPanel {
 		// Update researchers label if necessary.
 		if (researchersCache != lab.getResearcherNum()) {
 			researchersCache = lab.getResearcherNum();
-			researchersLabel.setText("Number of Researchers: " + researchersCache);
+			researchersLabel.setText(
+				Msg.getString("BuildingPanelResearch.numberOfResearchers",
+						researchersCache));
 		}
 	}
 }

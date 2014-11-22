@@ -8,7 +8,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,9 +20,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -29,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
@@ -80,9 +90,23 @@ implements ActionListener {
 		setCurrentBuilding(building);
 		
 		// Create building select panel.
+		// 2014-11-21 Added buildingInfoPanel & buildingTitleLabel	
+		JPanel buildingInfoPanel = new JPanel(new GridLayout(2,1,0,0));
+		//buildingInfoPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(buildingInfoPanel);
+
+        JLabel buildingTitleLabel = new JLabel("Buildings Panel", JLabel.CENTER);
+        buildingTitleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        buildingTitleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        buildingInfoPanel.add(buildingTitleLabel);
+       
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		buildingSelectPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(buildingSelectPanel);
+		buildingInfoPanel.add(buildingSelectPanel);
+		
+        JLabel buildingLabel = new JLabel("Selected Building: ", JLabel.CENTER);
+        buildingLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //buildingLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        buildingSelectPanel.add(buildingLabel);
 
 		// Create building combo box model.
 		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
@@ -104,13 +128,17 @@ implements ActionListener {
 		buildingSelectPanel.add(buildingComboBox);		
 
 		//2014-10-29  Added renameBtn for renaming a building
+		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		renameBtn = new JButton(RENAME);
+		renameBtn.setPreferredSize(new Dimension(60, 20));
+		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
 		renameBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				renameBuilding();
 			}
 		});
-		buildingSelectPanel.add(renameBtn);
+		btnPanel.add(renameBtn);		
+		buildingSelectPanel.add(btnPanel);
 		
 		// Create building display panel.
 		buildingDisplayPanel = new JPanel();
@@ -129,6 +157,7 @@ implements ActionListener {
 			buildingDisplayPanel.add(panel, panel.getPanelName());
 			count++;
 		}
+	
 	}
 
 	/**

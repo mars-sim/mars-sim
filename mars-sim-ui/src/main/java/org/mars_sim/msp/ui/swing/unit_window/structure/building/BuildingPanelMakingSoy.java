@@ -59,8 +59,11 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cooking label
-		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelMakingSoy.makingSoy"), JLabel.CENTER); //$NON-NLS-1$
-		labelPanel.add(cookingLabel);
+		// 2014-11-21 Changed font type, size and color and label text
+		JLabel makingSoyLabel = new JLabel(Msg.getString("BuildingPanelMakingSoy.title"), JLabel.CENTER); //$NON-NLS-1$
+		makingSoyLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		makingSoyLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		labelPanel.add(makingSoyLabel);
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();

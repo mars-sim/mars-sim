@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelCooking.java
- * @version 3.07 2014-11-10
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -59,7 +59,10 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cooking label
-		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.cooking"), JLabel.CENTER); //$NON-NLS-1$
+		// 2014-11-21 Changed font type, size and color and label text
+		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		cookingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(cookingLabel);
 
 		// Prepare cook number label

@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -92,11 +95,16 @@ extends BuildingFunctionPanel {
         setLayout(new BorderLayout());
         
         // Prepare label panel
-        JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
+        //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
+        JPanel labelPane = new JPanel();
+        labelPane.setLayout(new GridLayout(3, 1, 0, 0));
+        
         add(labelPane, BorderLayout.NORTH);
         
         // Prepare manufacturing label
         JLabel manufactureLabel = new JLabel("Manufacturing", JLabel.CENTER);
+        manufactureLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        manufactureLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPane.add(manufactureLabel);
         
         // Prepare tech level label
@@ -139,7 +147,7 @@ extends BuildingFunctionPanel {
         processSelectionCache = getAvailableProcesses();
         processSelection = new JComboBoxMW(processSelectionCache);
         processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
-        processSelection.setToolTipText("Select an available manufacturing process");
+        processSelection.setToolTipText("Select an Available Manufacturing Process");
         interactionPanel.add(processSelection);
         
         // Add available salvage processes.
@@ -150,7 +158,7 @@ extends BuildingFunctionPanel {
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setEnabled(processSelection.getItemCount() > 0);
-        newProcessButton.setToolTipText("Create a new manufacturing or salvage process");
+        newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
@@ -400,8 +408,9 @@ extends BuildingFunctionPanel {
 			if (value instanceof ManufactureProcessInfo) {
 			    ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 			    if (info != null) {
-			        String processName = info.getName();
-			        if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
+			    	// 2014-11-21 Capitalized processName
+			        String processName = WordUtils.capitalize(info.getName());
+			        if (processName.length() > 45) processName = processName.substring(0, 45) + "...";
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 			    }
@@ -409,8 +418,9 @@ extends BuildingFunctionPanel {
 			else if (value instanceof SalvageProcessInfo) {
 			    SalvageProcessInfo info = (SalvageProcessInfo) value;
 			    if (info != null) {
-			        String processName = info.toString();
-			        if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
+			    	// 2014-11-21 Capitalized processName
+			        String processName = WordUtils.capitalize(info.toString());
+			        if (processName.length() > 45) processName = processName.substring(0, 45) + "...";
                     ((JLabel) result).setText(processName);
                     ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 			    }

@@ -1,17 +1,19 @@
 /**
  * Mars Simulation Project
- * VehicleMaintenanceBuildingPanel.java
- * @version 3.06 2014-01-29
+ * BuildingPanelVehicleMaintenance.java
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -20,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * The VehicleMaintenanceBuildingPanel class is a building function panel representing 
+ * The BuildingPanelVehicleMaintenance class is a building function panel representing 
  * the vehicle maintenance capabilities of the building.
  */
 public class BuildingPanelVehicleMaintenance
@@ -58,17 +60,23 @@ implements MouseListener {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Create vehicle maintenance label
-		JLabel vehicleMaintenanceLabel = new JLabel("Vehicle Loading/Maintenance", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for labels
+		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuidingPanelStorage.title"), JLabel.CENTER);
+		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(vehicleMaintenanceLabel);
 
 		// Create vehicle number label
 		vehicleNumberCache = garage.getCurrentVehicleNumber();
-		vehicleNumberLabel = new JLabel("Vehicle Number: " + vehicleNumberCache, JLabel.CENTER);
+		vehicleNumberLabel = new JLabel(Msg.getString("BuidingPanelStorage.numberOfVehicles",
+				vehicleNumberCache), JLabel.CENTER);
 		labelPanel.add(vehicleNumberLabel);
 
 		// Create vehicle capacity label
 		int vehicleCapacity = garage.getVehicleCapacity();
-		JLabel vehicleCapacityLabel = new JLabel("Vehicle Capacity: " + vehicleCapacity, JLabel.CENTER);
+		JLabel vehicleCapacityLabel = new JLabel(Msg.getString("BuidingPanelStorage.vehicleCapacity",
+				vehicleCapacity), JLabel.CENTER);
 		labelPanel.add(vehicleCapacityLabel);	
 
 		// Create vehicle list panel
@@ -105,7 +113,8 @@ implements MouseListener {
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
 
 			vehicleNumberCache = garage.getCurrentVehicleNumber();
-			vehicleNumberLabel.setText("Vehicle Number: " + vehicleNumberCache);
+			vehicleNumberLabel.setText(Msg.getString("BuidingPanelStorage.numberOfVehicles",
+					vehicleNumberCache));
 		}
 	}
 
