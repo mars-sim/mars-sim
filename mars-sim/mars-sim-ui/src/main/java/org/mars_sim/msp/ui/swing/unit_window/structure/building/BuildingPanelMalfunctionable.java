@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
- * MalfunctionableBuildingPanel.java
- * @version 3.06 2014-01-29
+ * BuildingPanelMalfunctionable.java
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -14,13 +15,14 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * The MalfunctionableBuildingPanel class is a building function panel representing 
+ * The BuildingPanelMalfunctionable class is a building function panel representing 
  * the malfunctions of a settlement building.
  */
 public class BuildingPanelMalfunctionable
@@ -55,7 +57,11 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Create malfunctions label
-		JLabel malfunctionsLabel = new JLabel("Malfunctions", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for labels
+		JLabel malfunctionsLabel = new JLabel(Msg.getString("BuidingPanelMalfunctionable.title"), JLabel.CENTER);
+		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunction list

@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
@@ -61,15 +63,24 @@ extends BuildingFunctionPanel {
 		isProducer = building.hasFunction(BuildingFunction.POWER_GENERATION);
 
 		// Set the layout
-		if (isProducer) setLayout(new GridLayout(3, 1, 0, 0));
-		else setLayout(new GridLayout(2, 1, 0, 0));
+		if (isProducer) setLayout(new GridLayout(4, 1, 0, 0));
+		else setLayout(new GridLayout(3, 1, 0, 0));
 
+		// 2014-11-21 Changed font type, size and color and label text
+		JLabel titleLabel = new JLabel(
+				Msg.getString("BuildingPanelPower.title"), //$NON-NLS-1$
+				JLabel.CENTER);		
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		add(titleLabel);
+		
+		
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
 		powerStatusLabel = new JLabel(
-			Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName()), //$NON-NLS-1$
-			JLabel.CENTER
-		);
+				Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName()), //$NON-NLS-1$
+				JLabel.CENTER
+			);
 		add(powerStatusLabel);
 
 		// If power producer, prepare power producer label.

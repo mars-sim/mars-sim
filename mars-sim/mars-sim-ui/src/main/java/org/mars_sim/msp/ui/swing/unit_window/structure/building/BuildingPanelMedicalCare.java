@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MedicalCareBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -16,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -63,16 +66,22 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Create medical care label
-		JLabel medicalCareLabel = new JLabel("Medical Care", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for labels
+		JLabel medicalCareLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.title"), JLabel.CENTER);
+		medicalCareLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(medicalCareLabel);
 
 		// Create sick bed label
-		JLabel sickBedLabel = new JLabel("Sick Beds: " + medical.getSickBedNum(), JLabel.CENTER);
+		JLabel sickBedLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.sickBeds",
+				medical.getSickBedNum()), JLabel.CENTER);
 		labelPanel.add(sickBedLabel);
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
-		physicianLabel = new JLabel("Physicians: " + physicianCache, JLabel.CENTER);
+		physicianLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.numberOfPhysicians", 
+				physicianCache), JLabel.CENTER);
 		labelPanel.add(physicianLabel);
 
 		// Create scroll panel for medical table

@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
@@ -20,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Crop;
@@ -75,17 +78,21 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare farming label
-		JLabel farmingLabel = new JLabel("Farming", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for the three labels
+		JLabel farmingLabel = new JLabel(Msg.getString("BuildingPanelFarming.title"), JLabel.CENTER);
+		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(farmingLabel);
 
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
-		farmersLabel = new JLabel("Number of Farmers: " + farmersCache, JLabel.CENTER);
+		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
 		labelPanel.add(farmersLabel);
 
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
-		cropsLabel = new JLabel("Number of Crops: " + cropsCache, JLabel.CENTER);
+		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", cropsCache), JLabel.CENTER);
 		labelPanel.add(cropsLabel);
 
 		// Create scroll panel for crop table

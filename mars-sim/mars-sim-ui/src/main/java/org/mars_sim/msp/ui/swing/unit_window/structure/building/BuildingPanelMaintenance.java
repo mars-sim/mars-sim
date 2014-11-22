@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
- * MaintenanceBuildingPanel.java
- * @version 3.06 2014-01-29
+ * BuildingPanelMaintenance.java
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.apache.commons.lang3.text.WordUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.Part;
@@ -13,12 +15,13 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * The MaintenanceBuildingPanel class is a building function panel representing 
+ * The BuildingPanelMaintenance class is a building function panel representing 
  * the maintenance state of a settlement building.
  */
 public class BuildingPanelMaintenance
@@ -60,20 +63,24 @@ extends BuildingFunctionPanel {
 		setLayout(new GridLayout(5, 1, 0, 0));
 
 		// Create maintenance label.
-		JLabel maintenanceLabel = new JLabel("Maintenance", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for the three labels
+		JLabel maintenanceLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.title"), JLabel.CENTER);
+		maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(maintenanceLabel);
 
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
-		wearConditionLabel = new JLabel("Wear Condition: " + wearConditionCache + 
-				"%", JLabel.CENTER);
-		wearConditionLabel.setToolTipText("The wear & tear condition: 100% = new; 0% = worn out");
+		wearConditionLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.wearCondition",
+				wearConditionCache), JLabel.CENTER);
+		wearConditionLabel.setToolTipText(Msg.getString("BuidingPanelMaintenance.toolTip"));
 		add(wearConditionLabel);
 
 		// Create lastCompletedLabel.
 		lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-		lastCompletedLabel = new JLabel("Last Completed: " + lastCompletedTime + 
-				" sols", JLabel.CENTER);
+		lastCompletedLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.lastCompleted", 
+				lastCompletedTime), JLabel.CENTER);
 		add(lastCompletedLabel);
 
 		// Create maintenance progress bar panel.
@@ -112,14 +119,16 @@ extends BuildingFunctionPanel {
 		int wearCondition = (int) Math.round(manager.getWearCondition());
 		if (wearCondition != wearConditionCache) {
 			wearConditionCache = wearCondition;
-			wearConditionLabel.setText("Wear Condition: " + wearCondition + "%");
+			wearConditionLabel.setText(Msg.getString("BuidingPanelMaintenance.wearCondition",
+					wearConditionCache));
 		}
 
 		// Update last completed label.
 		int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 		if (lastComplete != lastCompletedTime) {
 			lastCompletedTime = lastComplete;
-			lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " sols");
+			lastCompletedLabel.setText(Msg.getString("BuidingPanelMaintenance.lastCompleted", 
+					lastCompletedTime));
 		}
 
 		// Update progress bar.
@@ -148,7 +157,8 @@ extends BuildingFunctionPanel {
 			while (i.hasNext()) {
 				Part part = i.next();
 				int number = parts.get(part);
-				buf.append(number).append(" ").append(part.getName());
+				// 2014-11-21 Capitalized part.getName()
+				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
 			}
 		}
@@ -164,7 +174,7 @@ extends BuildingFunctionPanel {
 		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 		StringBuilder result = new StringBuilder("<html>");
 		int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-		result.append("Last completed maintenance: ").append(maintSols).append(" sols<br>");
+		result.append("Last Completed Maintenance: ").append(maintSols).append(" sols<br>");
 		result.append("Repair ").append(getPartsString().toLowerCase());
 		result.append("</html>");
 

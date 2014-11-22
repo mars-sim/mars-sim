@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AstronomicalObservationBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-21
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -50,11 +50,15 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Astronomy top label
-		JLabel astronomyLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.astronomyObservation"), JLabel.CENTER); //$NON-NLS-1$
+		// 2014-11-21 Changed font type, size and color and label text
+		JLabel astronomyLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.title"), JLabel.CENTER); //$NON-NLS-1$
+		astronomyLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		astronomyLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(astronomyLabel);
 
 		// Observer number label
-		observersLabel = new JLabel();
+		// 2014-11-21 Fixed currentObserversAmount
+		observersLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers", currentObserversAmount), JLabel.CENTER); //$NON-NLS-1$
 		observersLabel.setHorizontalAlignment(JLabel.CENTER);
 		update();
 		labelPanel.add(observersLabel);

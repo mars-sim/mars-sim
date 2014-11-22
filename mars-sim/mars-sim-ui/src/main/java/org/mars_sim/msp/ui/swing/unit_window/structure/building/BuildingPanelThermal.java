@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @version 3.07 2014-10-28
+ * @version 3.07 2014-11-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
@@ -32,7 +34,7 @@ extends BuildingFunctionPanel {
 	//private static Logger logger = Logger.getLogger(BuildingPanelThermal.class.getName());
 
 	/** Is the building a heat producer? */
-	private boolean isProducer;
+	private boolean hasFurnace;
 	/** The heat status label. */
 	private JLabel heatStatusLabel;
 	/** The heat production label. */
@@ -69,14 +71,22 @@ extends BuildingFunctionPanel {
 		furnace = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);	
 			
 		// Check if the building is a heat producer.
-		isProducer = building.hasFunction(BuildingFunction.THERMAL_GENERATION);
+		hasFurnace = building.hasFunction(BuildingFunction.THERMAL_GENERATION);
 
 		// Set the layout
-		if (isProducer) setLayout(new GridLayout(3, 1, 0, 0));
+		if (hasFurnace) setLayout(new GridLayout(3, 1, 0, 0));
 		//else setLayout(new GridLayout(, 1, 0, 0));
 
 		// If heat producer, prepare heat producer label.
-		if (isProducer) {
+		if (hasFurnace) {
+			
+			// 2014-11-21 Changed font type, size and color and label text
+			JLabel titleLabel = new JLabel(
+					Msg.getString("BuildingPanelThermal.title"), //$NON-NLS-1$
+					JLabel.CENTER);		
+			titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+			titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+			add(titleLabel);
 			
 			// Prepare heat status label.
 			heatStatusCache = building.getHeatMode();
@@ -103,7 +113,7 @@ extends BuildingFunctionPanel {
 	public void update() {	
 
 		// Update heat production if necessary.
-		if (isProducer) {
+		if (hasFurnace) {
 			
 			// Update heat status if necessary.
 			if (!heatStatusCache.equals(building.getHeatMode())) {

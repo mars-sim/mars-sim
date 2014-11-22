@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -60,7 +60,10 @@ implements MouseListener {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Create inhabitant label
-		JLabel inhabitantLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.occupants"), JLabel.CENTER); //$NON-NLS-1$
+		// 2014-11-21 Changed font type, size and color of the title text
+		JLabel inhabitantLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.title"), JLabel.CENTER); //$NON-NLS-1$
+		inhabitantLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(inhabitantLabel);
 
 		// Create number label

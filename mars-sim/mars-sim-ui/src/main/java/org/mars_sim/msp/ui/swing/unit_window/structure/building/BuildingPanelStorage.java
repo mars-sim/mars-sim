@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
- * StorageBuildingPanel.java
- * @version 3.06 2014-01-29
+ * BuildingPanelStorage.java
+ * @version 3.07 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -18,7 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * The StorageBuildingPanel class is a building function panel representing 
+ * The BuildingPanelStorage class is a building function panel representing 
  * the storage capacity of a settlement building.
  */
 public class BuildingPanelStorage
@@ -40,8 +41,17 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		// Create storage label.
-		JLabel storageLabel = new JLabel("Storage Capacity", JLabel.CENTER);
-		add(storageLabel, BorderLayout.NORTH);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for labels
+		JLabel storageLabel = new JLabel(Msg.getString("BuidingPanelStorage.title"), JLabel.CENTER);
+		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		JPanel titlePanel = new JPanel(new GridLayout(2,1,0,0));
+		add(titlePanel, BorderLayout.NORTH);
+		titlePanel.add(storageLabel);
+		
+		JLabel maxCapLabel = new JLabel(Msg.getString("BuidingPanelStorage.maxCap"), JLabel.CENTER);
+		titlePanel.add(maxCapLabel);
 
 		Map<AmountResource, Double> resourceStorage = storage.getResourceStorageCapacity();
 
