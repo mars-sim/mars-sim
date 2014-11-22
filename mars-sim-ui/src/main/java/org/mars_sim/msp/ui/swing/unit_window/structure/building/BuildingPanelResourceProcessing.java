@@ -1,17 +1,19 @@
 /**
  * Mars Simulation Project
  * ResourceProcessingBuildingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,9 +52,17 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Prepare resource processes label
-		JLabel resourceProcessesLabel = new JLabel("Resource Processes", JLabel.CENTER);
+		// 2014-11-21 Changed font type, size and color and label text
+		// 2014-11-21 Added internationalization for labels
+		JLabel resourceProcessesLabel = new JLabel(Msg.getString("BuidingPanelResourceProcessing.title"), JLabel.CENTER);
+		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(resourceProcessesLabel, BorderLayout.NORTH);
 
+		JLabel supportedProcessesLabel = new JLabel(Msg.getString("BuidingPanelResourceProcessing.supportedProcesses"), JLabel.CENTER);
+		add(supportedProcessesLabel, BorderLayout.NORTH);
+
+		
 		// Get all processes at building.
 		List<ResourceProcess> processes = processor.getProcesses();
 
