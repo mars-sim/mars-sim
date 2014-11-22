@@ -74,7 +74,7 @@ extends BuildingFunctionPanel {
 		labelPanel.add(medicalCareLabel);
 
 		// Create sick bed label
-		JLabel sickBedLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.sickBeds",
+		JLabel sickBedLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.numberOfsickBeds",
 				medical.getSickBedNum()), JLabel.CENTER);
 		labelPanel.add(sickBedLabel);
 
