@@ -83,7 +83,8 @@ extends JPanel {
         
         // Prepare function scroll panel.
         JScrollPane functionScrollPanel = new JScrollPane();
-        functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+        //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+        functionScrollPanel.setPreferredSize(new Dimension(270, 270));
         add(functionScrollPanel, BorderLayout.CENTER);
         
         // Prepare function list panel.

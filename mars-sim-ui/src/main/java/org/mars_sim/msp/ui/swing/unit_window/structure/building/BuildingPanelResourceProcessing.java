@@ -54,12 +54,12 @@ extends BuildingFunctionPanel {
 		// Prepare resource processes label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel resourceProcessesLabel = new JLabel(Msg.getString("BuidingPanelResourceProcessing.title"), JLabel.CENTER);
+		JLabel resourceProcessesLabel = new JLabel(Msg.getString("BuildingPanelResourceProcessing.title"), JLabel.CENTER);
 		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(resourceProcessesLabel, BorderLayout.NORTH);
 
-		JLabel supportedProcessesLabel = new JLabel(Msg.getString("BuidingPanelResourceProcessing.supportedProcesses"), JLabel.CENTER);
+		JLabel supportedProcessesLabel = new JLabel(Msg.getString("BuildingPanelResourceProcessing.supportedProcesses"), JLabel.CENTER);
 		add(supportedProcessesLabel, BorderLayout.NORTH);
 
 		

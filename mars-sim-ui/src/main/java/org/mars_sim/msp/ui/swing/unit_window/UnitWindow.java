@@ -44,7 +44,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	/** The center panel. */
 	private JTabbedPane centerPanel;
 
-	private Color THEME_COLOR = Color.ORANGE;
+	//private Color THEME_COLOR = Color.ORANGE;
 	
     /**
      * Constructor

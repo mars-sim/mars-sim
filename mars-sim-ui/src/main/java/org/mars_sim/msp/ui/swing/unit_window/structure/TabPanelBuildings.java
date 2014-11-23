@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.07 2014-11-07
+ * @version 3.07 2014-11-22
  * @author Scott Davis
  */
 
@@ -20,12 +20,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
@@ -67,7 +62,7 @@ implements ActionListener {
 	private Building building;
 
 	/**
-	 * Constructor.
+	 * Constructor
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
@@ -84,10 +79,12 @@ implements ActionListener {
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 		Collections.sort(buildings);
 		
-		// 2014-11-07 Set the first building object on the list 
-		// as the most current building object
-		building = buildings.get(0);
-		setCurrentBuilding(building);
+		// 2014-11-07 Set building to the first element on the list 
+		// 2014-11-22 Added if-clause for opening the building panel via the right click popup menu
+		if (building == null){	
+			building = buildings.get(0);
+			setCurrentBuilding(building);
+		}
 		
 		// Create building select panel.
 		// 2014-11-21 Added buildingInfoPanel & buildingTitleLabel	
@@ -112,9 +109,7 @@ implements ActionListener {
 		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
 		buildingsCache = new ArrayList<Building>(buildings);
 			//System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
-		Iterator<Building> i = buildingsCache.iterator();
-		
-		
+		Iterator<Building> i = buildingsCache.iterator();		
 		while (i.hasNext()) {
 			Building b = i.next();
 			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
@@ -172,6 +167,7 @@ implements ActionListener {
 					Msg.getString("TabPanelBuildings.JDialog.renameBuilding.title"),
 			        JOptionPane.QUESTION_MESSAGE);
 	}
+	
 	/**
 	 * Change and validate the new name of a Building
 	 * @return call Dialog popup

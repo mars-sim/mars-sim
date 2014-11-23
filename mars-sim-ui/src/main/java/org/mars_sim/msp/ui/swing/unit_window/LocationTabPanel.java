@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2014-11-22
  * @author Scott Davis
  */
 
@@ -46,8 +46,6 @@ implements ActionListener {
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
-	
-	
 	// 2014-11-11 Added new panels and labels
 	private JPanel tpPanel =  new JPanel();
 	private JPanel outsideReadingPanel = new JPanel();
@@ -55,7 +53,6 @@ implements ActionListener {
 	private JLabel temperatureLabel;
 	private JLabel airPressureLabel;
 	private JLabel locationLabel;
-	//private JLabel outsideLabel;
 	//private Color THEME_COLOR = Color.ORANGE;
 	private double airPressureCache;
 	private double temperatureCache;
@@ -83,11 +80,6 @@ implements ActionListener {
         // Create location panel
         JPanel locationPanel = new JPanel(new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
-        //TitledBorder locationTitle;
-        //locationTitle = BorderFactory.createTitledBorder("Location Info");
-        //locationPanel.setBorder(BorderFactory.createEtchedBorder());
-        //locationTitle.setTitleJustification(TitledBorder.CENTER);
-        //locationPanel.setBorder(locationTitle);
         locationPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
         
         topContentPanel.add(locationPanel);
@@ -122,30 +114,11 @@ implements ActionListener {
         //locationButton.setBackground(THEME_COLOR);
         locationButton.addActionListener(this);
 
-        //BorderLayout containerLayout = new BorderLayout(0, 0);
-        //containerPanel.setLayout(containerLayout);
-        //containerPanel.setBackground(THEME_COLOR);
-        
-        //TitledBorder containerTitle;
-        //containerTitle = BorderFactory.createTitledBorder("Inside");
-        //containerTitle.setTitleFont(new Font("Serif", Font.ITALIC, 9));
-        //containerPanel.setBorder(containerTitle);
         containerPanel.add(locationButton);
-        
-        // Create location text label
-        //locationLabel = new JLabel("@", JLabel.CENTER); 
-        //locationLabel.setOpaque(false);
-        //locationLabel.setBackground(THEME_COLOR);
-        //locationLabelPanel.add(locationLabel);
-  
+
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
 
-        //TitledBorder llTitle;
-        //llTitle = BorderFactory.createTitledBorder("Coordinates");
-        //llTitle.setTitleFont(new Font("Serif", Font.ITALIC, 9));
-        //locationCoordsPanel.setBorder(llTitle);
-        
         // Prepare latitude label
         latitudeLabel = new JLabel(getLatitudeString());
         latitudeLabel.setOpaque(false);
@@ -195,7 +168,7 @@ implements ActionListener {
             addContainerPanel();
         }
         else {   
-         	// 2014-10-22 mkung: Called new method checkOutsideReading()
+         	// 2014-10-22 Called new method checkOutsideReading()
         	checkOutsideReading();
         	addOutsideReadingPanel();
         }
@@ -217,7 +190,7 @@ implements ActionListener {
     
     // 2014-11-07 Added temperature and pressure panel    
     public String getAirPressureString() {
-    	return fmt.format(getAirPressure()) + " mbars"; //2 b localized?
+    	return fmt.format(getAirPressure()) + " kPa"; //2 b localized?
     }
     public double getAirPressure() {
     	double outsideAirPressure = Simulation.instance().getMars().getWeather()

@@ -68,19 +68,19 @@ extends BuildingFunctionPanel {
 		// Create medical care label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel medicalCareLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.title"), JLabel.CENTER);
+		JLabel medicalCareLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.title"), JLabel.CENTER);
 		medicalCareLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(medicalCareLabel);
 
 		// Create sick bed label
-		JLabel sickBedLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.numberOfsickBeds",
+		JLabel sickBedLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds",
 				medical.getSickBedNum()), JLabel.CENTER);
 		labelPanel.add(sickBedLabel);
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
-		physicianLabel = new JLabel(Msg.getString("BuidingPanelMedicalCare.numberOfPhysicians", 
+		physicianLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians", 
 				physicianCache), JLabel.CENTER);
 		labelPanel.add(physicianLabel);
 

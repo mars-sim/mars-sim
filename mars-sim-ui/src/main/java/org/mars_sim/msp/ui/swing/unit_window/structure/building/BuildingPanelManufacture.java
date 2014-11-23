@@ -410,7 +410,7 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = WordUtils.capitalize(info.getName());
-			        if (processName.length() > 45) processName = processName.substring(0, 45) + "...";
+			        if (processName.length() > 30) processName = processName.substring(0, 30) + "...";
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 			    }
@@ -420,7 +420,7 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = WordUtils.capitalize(info.toString());
-			        if (processName.length() > 45) processName = processName.substring(0, 45) + "...";
+			        if (processName.length() > 30) processName = processName.substring(0, 30) + "...";
                     ((JLabel) result).setText(processName);
                     ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 			    }

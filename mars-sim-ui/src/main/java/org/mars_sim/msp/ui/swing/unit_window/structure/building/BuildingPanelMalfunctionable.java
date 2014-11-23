@@ -59,7 +59,7 @@ extends BuildingFunctionPanel {
 		// Create malfunctions label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel malfunctionsLabel = new JLabel(Msg.getString("BuidingPanelMalfunctionable.title"), JLabel.CENTER);
+		JLabel malfunctionsLabel = new JLabel(Msg.getString("BuildingPanelMalfunctionable.title"), JLabel.CENTER);
 		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(malfunctionsLabel, BorderLayout.NORTH);
