@@ -78,7 +78,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 
 				dialog.add(panel);			
 				//dialog.setResizable(true);
-				dialog.setSize(280,300); 
+				dialog.setSize(280,320); 
 				dialog.setLayout(new FlowLayout()); 
 				dialog.setModal(false);
 				dialog.setTitle(buildingName);
@@ -86,10 +86,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				//dialog.setUndecorated(true);
 				dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.orange) );
 				dialog.setVisible(true);
-				
-				
-				// Have each building panel update.
-				
 				
 				Runnable r = new Runnable() {
 			         public void run() {
@@ -99,17 +95,15 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			        	 dialog.revalidate();
 			        	 dialog.setVisible(true);
 			        	 try {
-							Thread.sleep(500);
+							Thread.sleep(400);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 			         }
 			     };
-
 			     new Thread(r).start();
-				
-				
+
 				dialog.addWindowFocusListener(new WindowFocusListener() {            
 				    public void windowLostFocus(WindowEvent e) {
 				    	//dialog.setVisible(false);
@@ -135,24 +129,24 @@ public class PopUpBuildingMenu extends JPopupMenu {
             	JLabel dialogLabel = new JLabel(buildingName, JLabel.CENTER);
 				dialogLabel.setOpaque(true);
 				//dialog.setResizable(true);
-			    dialogLabel.setFont(new Font("Serif", Font.BOLD, 16));
+			    dialogLabel.setFont(new Font("Serif", Font.ITALIC, 16));
 			    dialogLabel.setForeground(new Color(102, 51, 0)); // dark brown
-			   	String str = "Description: [For Lander Hab] The Lander Hab is "
+			   	String str = "Description: The Lander Hab is "
 			   			+ "a general purpose habitat for 4 people. It serves"
 			   			+ "as a sort of jack-of-all-trades building. "
 			   			+ "The building has an airlock and changing room "
 			   			+ "for EVA operations. The tag airlock-capacity "
 			   			+ "indicates the number of people who can use "
-			   			+ "the airlock at once."
-			   			+ "</html>";
+			   			+ "the airlock at once.";
 			    JTextArea ta = new JTextArea();
 			   	//label2.setText("<html>"+ str +"</html>");
 			   	ta.setOpaque(true);
-				ta.setFont(new Font("Serif", Font.ITALIC, 14));
-				ta.setForeground(new Color(102, 51, 0)); // dark brown
+			   	//ta.setForeground(Color.orange);
+				ta.setFont(new Font("AvantGarde", Font.PLAIN, 14));
+				//ta.setForeground(new Color(102, 51, 0)); // dark brown
 			    ta.setText(str);
 			    ta.setEditable(false);
-				
+			    ta.setOpaque(true);
 			    ta.setLineWrap(true);
 			    ta.setWrapStyleWord(true);
 			    
@@ -168,6 +162,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				
 		        setBorder(new MarsPanelBorder());
 				dialog.add(panel);		
+				dialog.setForeground(Color.orange);
 				dialog.setSize(200,320); 
 				dialog.setLayout(new FlowLayout()); 
 				dialog.setModal(false);
