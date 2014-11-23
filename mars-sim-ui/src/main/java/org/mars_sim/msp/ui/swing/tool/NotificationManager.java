@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 3.07 2014-11-16
+ * @version 3.07 2014-11-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 
@@ -25,20 +26,24 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 /**
  * The NotificationManager class creates notification messages on the desktop
  * Events are based from HistoricalEvent.java
  */
- //TODO: replace subclassing JDialog. load up in MainDesktopPane
+//TODO: Does subclassing JDialog slow performance? 
+//TODO: Where is the best place to instantiate NotificationManager class? 
 //2014-11-15 Renamed NotificationBox to NotificationManager
 public class NotificationManager extends JDialog {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	/** The name of the tool the window is for. */
+	
+	// default logger.
+	private static Logger logger = Logger.getLogger(NotificationManager.class.getName());
+
+	
 	protected String name;
 	//TODO: need to create an array of two element with name 
 	// as array[0] and header as array[1]
@@ -204,16 +209,23 @@ public class NotificationManager extends JDialog {
 				// test if the person has a valid container
 				if (container == null) {
 	                locationName = "outside";
-	                message = "<html><CENTER><FONT COLOR=RED>" + 
+	                logger.info("Someone had an accident : " +
 	                		personName +
 							" had " + message + " " +
-							locationName + 
-	                		"</FONT></CENTER></html>"; 
+							locationName);
+	                message = personName +
+							" had " + message + " " +
+							locationName ; 
 				} // for a person
 	            else if (container instanceof Settlement) {
 	                settlementName = p.getSettlement().getName();
 	                BuildingManager bm = p.getSettlement().getBuildingManager();
 	                buildingName = bm.getBuilding(p).getNickName();
+	                logger.info("Someone had an accident : " +
+	                		personName +
+							" had " + message + 
+							" at " + buildingName + 
+							" in " + settlementName);
 	                message = personName +
 							" had " + message + 
 							" at " + buildingName + 
@@ -221,6 +233,10 @@ public class NotificationManager extends JDialog {
 	            } // for a person
 	            else if (container instanceof Vehicle) {
 	                vehicleName = p.getVehicle().getName();
+	                logger.info("Someone had an accident : " 
+	                		+ personName +
+							" had " + message + 
+							" in " + vehicleName);
 	                message = personName +
 							" had " + message + 
 							" in " + vehicleName ;
@@ -242,7 +258,7 @@ public class NotificationManager extends JDialog {
 							// yes the equipment does have a location container
 							// TODO: in future test if the equipment belongs to a person
 							// Person p = e.getUnitManager().getPerson();
-							System.out.println("Equipment malfunction : " + equipmentName +
+							logger.info("Equipment malfunction : " + equipmentName +
 									" had " + message + 
 									" in " + unitName);
 							message = equipmentName + 
@@ -255,7 +271,7 @@ public class NotificationManager extends JDialog {
 							unitName = "outside";
 							// TODO: in future test if the equipment belongs to a person
 							// Person p = e.getUnitManager().getPerson();
-							System.out.println("Equipment malfunction : " + equipmentName +
+							logger.info("Equipment malfunction : " + equipmentName +
 									" had " + message + " " +
 									unitName);
 							message = equipmentName + 
@@ -273,7 +289,7 @@ public class NotificationManager extends JDialog {
 						Unit u = e.getContainerUnit();
 						unitName = u.getName();
 						// yes the equipment does have a location/person container
-						System.out.println("Equipment malfunction : just had " + message + 
+						logger.info("Equipment malfunction : just had " + message + 
 								" in " + unitName);
 						message = "Just had " + message + 
 								" in " + unitName;
@@ -283,7 +299,7 @@ public class NotificationManager extends JDialog {
 						System.err.println("Exception Caught Successfully : equipment's container is" + e2.getMessage());
 						//e1.printStackTrace();
 						unitName = "outside";
-						System.out.println("Equipment malfunction : just had " + message + 
+						logger.info("Equipment malfunction : just had " + message + 
 							unitName);
 						message = "Just had " + message + 
 							" " + unitName;
@@ -301,7 +317,7 @@ public class NotificationManager extends JDialog {
 					
 					if (!unitName.equals(null)) {
 					// Yes, the Vehicle does have a location container
-					System.out.println("Vehicle malfunction : " + vehicleName +
+					logger.info("Vehicle malfunction : " + vehicleName +
 							" had " + message + 
 							 " at " + unitName + "\n");
 					message = vehicleName + 
@@ -313,7 +329,7 @@ public class NotificationManager extends JDialog {
 					System.err.println("Exception Caught Successfully : vehicle's container is " + e.getMessage());
 					//e.printStackTrace();
 				 	unitName = "outside";
-				 	System.out.println("Vehicle malfunction : " + vehicleName +
+				 	logger.info("Vehicle malfunction : " + vehicleName +
 							" had " + message + " " +
 							 unitName + "\n");
 					message = vehicleName + 

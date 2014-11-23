@@ -155,8 +155,11 @@ public class SettlementWindow extends ToolWindow {
 
 		    private void doPop(MouseEvent evt){
 		    	Building building = mapPane.selectBuildingAt(evt.getX(), evt.getY());
-		        PopUpBuildingMenu menu = new PopUpBuildingMenu(settlementWindow, building);
-		        menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		        // if NO building is selected, do NOT call popup menu
+		    	if (building != null) {
+		        	PopUpBuildingMenu menu = new PopUpBuildingMenu(settlementWindow, building);
+		        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		        }
 		    }
 		}
 		mapPane.addMouseListener(new PopClickListener());

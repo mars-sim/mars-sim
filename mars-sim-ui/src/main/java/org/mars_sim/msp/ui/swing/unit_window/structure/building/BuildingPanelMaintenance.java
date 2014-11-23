@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2014-11-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -119,7 +119,7 @@ extends BuildingFunctionPanel {
 		int wearCondition = (int) Math.round(manager.getWearCondition());
 		if (wearCondition != wearConditionCache) {
 			wearConditionCache = wearCondition;
-			wearConditionLabel.setText(Msg.getString("BuidingPanelMaintenance.wearCondition",
+			wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition",
 					wearConditionCache));
 		}
 
@@ -127,7 +127,7 @@ extends BuildingFunctionPanel {
 		int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 		if (lastComplete != lastCompletedTime) {
 			lastCompletedTime = lastComplete;
-			lastCompletedLabel.setText(Msg.getString("BuidingPanelMaintenance.lastCompleted", 
+			lastCompletedLabel.setText(Msg.getString("BuildingPanelMaintenance.lastCompleted", 
 					lastCompletedTime));
 		}
 

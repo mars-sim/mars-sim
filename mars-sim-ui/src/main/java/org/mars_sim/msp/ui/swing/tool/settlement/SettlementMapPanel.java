@@ -243,13 +243,11 @@ implements ClockListener {
 		Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
-			logger.info(" Person : " + person.getName());
 			double distanceX = person.getXLocation() - settlementPosition.getX();
 			double distanceY = person.getYLocation() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
 				selectedPerson = person;
-				logger.info(" selectedPerson is " + person.getName());
 			}
 		}
 
@@ -267,28 +265,46 @@ implements ClockListener {
 	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		double range2 = 60D / scale;
+		// Note: 20D is an arbitrary number (by experiment) that 
+		// gives an reasonable click detection area
+		//double range2 = 3D / scale;
+		//logger.info("scale is "+ scale);
+		//logger.info("range2 is "+ range2);
+
 		Building selectedBuilding = null;
 
-	    //Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+		//int i = 0;
 		Iterator<Building> j = returnBuildingList(settlement).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			//logger.info(" Building: " + building.getNickName());
-			double distanceX = building.getXLocation() - settlementPosition.getX();
-			double distanceY = building.getYLocation() - settlementPosition.getY();
+			// NOTE: Since without knowledge of the rotation orientation
+			// of the building, we take the smaller value of width and length
+			double width =building.getWidth(); // width is on y-axis ?
+			double length = building.getLength(); // length is on x-axis ?
+			double newRange;
+			if (width < length)
+				newRange =  width/2.0;
+			else newRange = length/2.0;
+				
+			double x = building.getXLocation();
+			double y = building.getYLocation();
+			
+			double distanceX = x - settlementPosition.getX();
+			double distanceY = y - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= range2) {
+			if (distance <= newRange) {	
+				//logger.info(i +", width is "+ width );
+				//logger.info(i +", length is "+ length);
+				//logger.info(i +", distanceX is "+ distanceX);
+				//logger.info(i +", distanceY is "+ distanceY);
+				//logger.info(i +", x is "+ x);
+				//logger.info(i +", y is "+ y);				
+				//logger.info(i +", distance is "+ distance);
+				//logger.info(i +", newRange is "+ newRange);				
 				selectedBuilding = building;
-				//logger.info(" selectedBuilding is " + selectedBuilding.getNickName());
 			}
+			//i++;
 		}
-		/*
-		if (selectedBuilding != null) {
-			selectBuilding(selectedBuilding);
-			repaint();
-		}
-		*/
 		return selectedBuilding;
 	}
 	
@@ -338,7 +354,7 @@ implements ClockListener {
 	/**
 	 * Selects a building on the map.
 	 * @param building the selected building.
-	 */
+
 	public void selectBuilding(Building building) {
 		logger.info("selectBuilding() : building is " + building.getNickName());
 		if ((settlement != null) && (building != null)) {
@@ -351,11 +367,11 @@ implements ClockListener {
 			//}
 		}
 	}
-
+	 */
 	/**
 	 * Get the selected building for the current settlement.
 	 * @return the selected building.
-	 */
+	
 	public Building getSelectedBuilding() {
 		Building result = null;
 		if (settlement != null) {
@@ -364,7 +380,7 @@ implements ClockListener {
 		logger.info("getSelectedBuilding() : Selected Building is " + building.getNickName());
 		return result;
 	}
-	
+	 */
 	/**
 	 * Convert a pixel X,Y position to a X,Y (meter) position local to the settlement in view.
 	 * @param xPixel the pixel X position.
