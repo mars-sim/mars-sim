@@ -65,21 +65,21 @@ extends BuildingFunctionPanel {
 		// Create maintenance label.
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
-		JLabel maintenanceLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.title"), JLabel.CENTER);
+		JLabel maintenanceLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
 		maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(maintenanceLabel);
 
 		// Create wear condition label.
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
-		wearConditionLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.wearCondition",
+		wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition",
 				wearConditionCache), JLabel.CENTER);
-		wearConditionLabel.setToolTipText(Msg.getString("BuidingPanelMaintenance.toolTip"));
+		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
 		add(wearConditionLabel);
 
 		// Create lastCompletedLabel.
 		lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-		lastCompletedLabel = new JLabel(Msg.getString("BuidingPanelMaintenance.lastCompleted", 
+		lastCompletedLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.lastCompleted", 
 				lastCompletedTime), JLabel.CENTER);
 		add(lastCompletedLabel);
 

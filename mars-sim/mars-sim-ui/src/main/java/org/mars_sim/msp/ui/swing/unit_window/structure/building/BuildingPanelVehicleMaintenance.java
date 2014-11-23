@@ -62,20 +62,20 @@ implements MouseListener {
 		// Create vehicle maintenance label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuidingPanelStorage.title"), JLabel.CENTER);
+		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuildingPanelStorage.title"), JLabel.CENTER);
 		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(vehicleMaintenanceLabel);
 
 		// Create vehicle number label
 		vehicleNumberCache = garage.getCurrentVehicleNumber();
-		vehicleNumberLabel = new JLabel(Msg.getString("BuidingPanelStorage.numberOfVehicles",
+		vehicleNumberLabel = new JLabel(Msg.getString("BuildingPanelStorage.numberOfVehicles",
 				vehicleNumberCache), JLabel.CENTER);
 		labelPanel.add(vehicleNumberLabel);
 
 		// Create vehicle capacity label
 		int vehicleCapacity = garage.getVehicleCapacity();
-		JLabel vehicleCapacityLabel = new JLabel(Msg.getString("BuidingPanelStorage.vehicleCapacity",
+		JLabel vehicleCapacityLabel = new JLabel(Msg.getString("BuildingPanelStorage.vehicleCapacity",
 				vehicleCapacity), JLabel.CENTER);
 		labelPanel.add(vehicleCapacityLabel);	
 

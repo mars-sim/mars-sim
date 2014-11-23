@@ -92,7 +92,7 @@ extends BuildingFunctionPanel {
 
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
-		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", cropsCache), JLabel.CENTER);
+		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops", cropsCache), JLabel.CENTER);
 		labelPanel.add(cropsLabel);
 
 		// Create scroll panel for crop table

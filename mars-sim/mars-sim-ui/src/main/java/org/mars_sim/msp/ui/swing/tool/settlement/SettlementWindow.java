@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.JSliderMW;
@@ -54,6 +56,9 @@ public class SettlementWindow extends ToolWindow {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	// default logger.
+	private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
+	
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 	public static final String RENAMEBTN = Msg.getString("SettlementWindow.renameSettlement.renameButton"); //$NON-NLS-1$
@@ -98,6 +103,8 @@ public class SettlementWindow extends ToolWindow {
 
 		this.desktop = desktop;
 		
+		final SettlementWindow settlementWindow = this;
+		
 		// Set the tool window to be maximizable.
 		setMaximizable(true);
 
@@ -123,11 +130,38 @@ public class SettlementWindow extends ToolWindow {
 
 			@Override
 			public void mouseClicked(MouseEvent evt) {
-
 				// Select person if clicked on.
 				mapPane.selectPersonAt(evt.getX(), evt.getY());
 			}
+
 		});
+		//2014-11-22 Added PopClickListener() to detect mouse right click
+		class PopClickListener extends MouseAdapter {
+		    public void mousePressed(MouseEvent evt){
+				 if (evt.isPopupTrigger()) {
+					//logger.info("mousePressed() : Yes, popup is triggered");
+					 doPop(evt);
+				 }
+		    }
+
+		    public void mouseReleased(MouseEvent evt){
+				 if (evt.isPopupTrigger()) {
+					//logger.info("mouseReleased() : Yes, popup is triggered");
+					 doPop(evt);
+				 }
+					xLast = evt.getX();
+					yLast = evt.getY();
+		    }
+
+		    private void doPop(MouseEvent evt){
+		    	Building building = mapPane.selectBuildingAt(evt.getX(), evt.getY());
+		        PopUpBuildingMenu menu = new PopUpBuildingMenu(settlementWindow, building);
+		        menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		    }
+		}
+		mapPane.addMouseListener(new PopClickListener());
+		
+		
 		mapPane.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
@@ -384,7 +418,7 @@ public class SettlementWindow extends ToolWindow {
 	 * Gets the settlement map panel.
 	 * @return the settlement map panel.
 	 */
-	private SettlementMapPanel getMapPanel() {
+	public SettlementMapPanel getMapPanel() {
 		return mapPane;
 	}
 
@@ -392,7 +426,7 @@ public class SettlementWindow extends ToolWindow {
 	 * Gets the main desktop panel for this tool.
 	 * @return main desktop panel.
 	 */
-	private MainDesktopPane getDesktop() {
+	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
 

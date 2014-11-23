@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -20,11 +21,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A panel for displaying the settlement map.
@@ -35,6 +38,9 @@ implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	// default logger.
+	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
 	public static final double DEFAULT_SCALE = 5D;
@@ -54,6 +60,9 @@ implements ClockListener {
 	private boolean showVehicleLabels;
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
+
+	//2014-11-22 Added selectedBuilding
+	private Map<Settlement, Building> selectedBuilding;
 	
 	// 2014-11-04 Added building
 	private Building building;
@@ -76,6 +85,9 @@ implements ClockListener {
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		selectedPerson = new HashMap<Settlement, Person>();
+		
+		//2014-11-22 Added selectedBuilding
+		selectedBuilding = new HashMap<Settlement, Building>() ;
 
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>(5);
@@ -231,11 +243,13 @@ implements ClockListener {
 		Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
+			logger.info(" Person : " + person.getName());
 			double distanceX = person.getXLocation() - settlementPosition.getX();
 			double distanceY = person.getYLocation() - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= range) {
 				selectedPerson = person;
+				logger.info(" selectedPerson is " + person.getName());
 			}
 		}
 
@@ -243,6 +257,54 @@ implements ClockListener {
 			selectPerson(selectedPerson);
 			repaint();
 		}
+	}
+	
+	/**
+	 * Selects a building 
+	 * @param xPixel the x pixel position on the displayed map.
+	 * @param yPixel the y pixel position on the displayed map.
+	 */
+	// 2014-11-22 Added building selection
+	public Building selectBuildingAt(int xPixel, int yPixel) {
+		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
+		double range2 = 60D / scale;
+		Building selectedBuilding = null;
+
+	    //Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+		Iterator<Building> j = returnBuildingList(settlement).iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			//logger.info(" Building: " + building.getNickName());
+			double distanceX = building.getXLocation() - settlementPosition.getX();
+			double distanceY = building.getYLocation() - settlementPosition.getY();
+			double distance = Math.hypot(distanceX, distanceY);
+			if (distance <= range2) {
+				selectedBuilding = building;
+				//logger.info(" selectedBuilding is " + selectedBuilding.getNickName());
+			}
+		}
+		/*
+		if (selectedBuilding != null) {
+			selectBuilding(selectedBuilding);
+			repaint();
+		}
+		*/
+		return selectedBuilding;
+	}
+	
+	// 2014-11-22 Added returnBuildingList
+	public static List<Building> returnBuildingList(Settlement settlement) {
+
+		List<Building> result = new ArrayList<Building>();
+		if (settlement != null) {
+			//Iterator<Building> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		    Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				Building building = i.next();
+						result.add(building);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -272,6 +334,37 @@ implements ClockListener {
 		return result;
 	}
 
+
+	/**
+	 * Selects a building on the map.
+	 * @param building the selected building.
+	 */
+	public void selectBuilding(Building building) {
+		logger.info("selectBuilding() : building is " + building.getNickName());
+		if ((settlement != null) && (building != null)) {
+			Building currentlySelected = selectedBuilding.get(settlement);
+			// Toggle on/off the selected building
+			//if (building.equals(currentlySelected)) {
+			//	selectedBuilding.put(settlement, null);
+			//} else {
+				selectedBuilding.put(settlement, building);
+			//}
+		}
+	}
+
+	/**
+	 * Get the selected building for the current settlement.
+	 * @return the selected building.
+	 */
+	public Building getSelectedBuilding() {
+		Building result = null;
+		if (settlement != null) {
+			result = selectedBuilding.get(settlement);
+		}
+		logger.info("getSelectedBuilding() : Selected Building is " + building.getNickName());
+		return result;
+	}
+	
 	/**
 	 * Convert a pixel X,Y position to a X,Y (meter) position local to the settlement in view.
 	 * @param xPixel the pixel X position.

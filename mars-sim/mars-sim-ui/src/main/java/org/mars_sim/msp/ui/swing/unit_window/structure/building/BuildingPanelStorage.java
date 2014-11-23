@@ -43,14 +43,14 @@ extends BuildingFunctionPanel {
 		// Create storage label.
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel storageLabel = new JLabel(Msg.getString("BuidingPanelStorage.title"), JLabel.CENTER);
+		JLabel storageLabel = new JLabel(Msg.getString("BuildingPanelStorage.title"), JLabel.CENTER);
 		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		JPanel titlePanel = new JPanel(new GridLayout(2,1,0,0));
 		add(titlePanel, BorderLayout.NORTH);
 		titlePanel.add(storageLabel);
 		
-		JLabel maxCapLabel = new JLabel(Msg.getString("BuidingPanelStorage.maxCap"), JLabel.CENTER);
+		JLabel maxCapLabel = new JLabel(Msg.getString("BuildingPanelStorage.maxCap"), JLabel.CENTER);
 		titlePanel.add(maxCapLabel);
 
 		Map<AmountResource, Double> resourceStorage = storage.getResourceStorageCapacity();
