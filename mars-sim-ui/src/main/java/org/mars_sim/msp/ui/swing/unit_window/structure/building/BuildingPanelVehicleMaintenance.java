@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelVehicleMaintenance.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2014-11-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -62,20 +62,20 @@ implements MouseListener {
 		// Create vehicle maintenance label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuildingPanelStorage.title"), JLabel.CENTER);
+		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuildingPanelVehicleMaintenance.title"), JLabel.CENTER);
 		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(vehicleMaintenanceLabel);
 
 		// Create vehicle number label
 		vehicleNumberCache = garage.getCurrentVehicleNumber();
-		vehicleNumberLabel = new JLabel(Msg.getString("BuildingPanelStorage.numberOfVehicles",
+		vehicleNumberLabel = new JLabel(Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles",
 				vehicleNumberCache), JLabel.CENTER);
 		labelPanel.add(vehicleNumberLabel);
 
 		// Create vehicle capacity label
 		int vehicleCapacity = garage.getVehicleCapacity();
-		JLabel vehicleCapacityLabel = new JLabel(Msg.getString("BuildingPanelStorage.vehicleCapacity",
+		JLabel vehicleCapacityLabel = new JLabel(Msg.getString("BuildingPanelVehicleMaintenance.vehicleCapacity",
 				vehicleCapacity), JLabel.CENTER);
 		labelPanel.add(vehicleCapacityLabel);	
 
@@ -113,7 +113,7 @@ implements MouseListener {
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
 
 			vehicleNumberCache = garage.getCurrentVehicleNumber();
-			vehicleNumberLabel.setText(Msg.getString("BuidingPanelStorage.numberOfVehicles",
+			vehicleNumberLabel.setText(Msg.getString("BuidingPanelVehicleMaintenance.numberOfVehicles",
 					vehicleNumberCache));
 		}
 	}
