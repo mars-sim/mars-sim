@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ResourceProcessingBuildingPanel.java
- * @version 3.06 2014-11-21
+ * BuildingPanelResourceProcessing.java
+ * @version 3.07 2014-11-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -13,6 +13,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -60,17 +63,20 @@ extends BuildingFunctionPanel {
 		add(resourceProcessesLabel, BorderLayout.NORTH);
 
 		JLabel supportedProcessesLabel = new JLabel(Msg.getString("BuildingPanelResourceProcessing.supportedProcesses"), JLabel.CENTER);
-		add(supportedProcessesLabel, BorderLayout.NORTH);
+		add(supportedProcessesLabel, BorderLayout.CENTER);
 
-		
 		// Get all processes at building.
 		List<ResourceProcess> processes = processor.getProcesses();
 
 		// Prepare resource processes list panel.
-		JPanel resourceProcessesListPanel = new JPanel(new GridLayout(processes.size(), 1, 0, 0));
+		JPanel resourceProcessesListPanel = new JPanel(new GridLayout(processes.size(), 2, 10, 3));
+		resourceProcessesListPanel.setBorder(new EmptyBorder(3, 20, 3, 20)); //(int top, int left, int bottom, int right)
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));		
 		resourceProcessesListPanel.setBorder(new MarsPanelBorder());
-		add(resourceProcessesListPanel, BorderLayout.CENTER);
+		listPanel.add(resourceProcessesListPanel);
+		add(listPanel, BorderLayout.SOUTH);
 
+		
 		// Load green and red dots.
 		greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");
 		redDot = new ImageIcon("images/RedDot.png", "Process is not running");
@@ -81,6 +87,9 @@ extends BuildingFunctionPanel {
 		while (i.hasNext()) {
 			ResourceProcess process = i.next();
 			JLabel processLabel = new JLabel(process.getProcessName(), JLabel.LEFT);
+			//processLabel.setForeground(Color.DARK_GRAY);
+			//processLabel.setBackground(Color.WHITE);
+			processLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
 
 			if (process.isProcessRunning()) {
 				processLabel.setIcon(greenDot);
