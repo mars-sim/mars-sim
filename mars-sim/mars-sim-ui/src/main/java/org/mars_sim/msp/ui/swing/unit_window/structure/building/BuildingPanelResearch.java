@@ -7,14 +7,18 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -84,15 +88,25 @@ extends BuildingFunctionPanel {
 		ScienceType[] specialties = lab.getTechSpecialties();
 
 		// Prepare specialtiesListPanel
-		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 0, 0));
-		specialtiesListPanel.setBorder(new MarsPanelBorder());
-		add(specialtiesListPanel, BorderLayout.CENTER);
+		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 10, 3));
+		specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
+
+		//add(specialtiesListPanel, BorderLayout.CENTER);
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
 			JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
+			specialtyLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
+			//specialtyLabel.setForeground(Color.DARK_GRAY);
+			//specialtyLabel.setBackground(Color.WHITE);
 			specialtiesListPanel.add(specialtyLabel);
 		}
+		
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));		
+		listPanel.add(specialtiesListPanel);
+		specialtiesListPanel.setBorder(new MarsPanelBorder());
+		add(listPanel, BorderLayout.CENTER);
+		
 	}
 
 	/**
