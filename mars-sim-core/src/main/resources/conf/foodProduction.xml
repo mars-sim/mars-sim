@@ -55,7 +55,7 @@
 		<description> Make bread from Soy Flour </description>
 		
 		<inputs>
-			<!--<equipment name="oven" number="1" />-->
+			<!-- <equipment name="oven" number="1" /> -->
 			<resource name="Soy Flour" amount="1.0" />
 			<resource name="Water" amount="0.33" />
 			<resource name="Yeast" amount="0.01" />			
@@ -65,58 +65,44 @@
 		</outputs>
 	</process>
 	
-	<!--<process name="Process Soybean Seeds into Soymilk" 
+	<process name="Make Tofu from Okara and Soymilk" 
 		tech="1" skill="1" work-time="50" process-time="900" 
 			power-required="1.0">
 			
-		<description>Washing, (Dehulling,) Soaking, Milling, Paste Heating, Filtration, Sanitization (not including dehulling) </description>
+		<description> Boil up Okara-Soymilk mixture, add Epsom Salt, 
+			gently stir and heat, the curds will separate.</description>
 		
 		<inputs>
-			<!--<equipment name="oven" number="1" />-->
-			<resource name="Soybeans" amount="1.0" />
-			<resource name="Water" amount="15.0" />
+			<resource name="Soymilk" amount="6.0" />
+			<resource name="Okara" amount="1.5" />
+			<resource name="Epsom Salt" amount=".05" />			
 		</inputs>
 		<outputs>
-			<resource name="Soymilk" amount="10.0" />
+			<resource name="Tofu" amount="2.0" />			
 		</outputs>
-	</process>-->
+	</process>
 	
-	<!--<process name="Process Soybean Seeds into Soymilk with Dehulling" 
-		tech="1" skill="1" work-time="60" process-time="1000" 
-			power-required="3.0">
-			
-		<description> Washing, (Dehulling,) Soaking, Milling, Paste Heating, Filtration, 
-			Sanitization </description>
-		
-		<inputs>
-			<!--<equipment name="oven" number="1" />-->
-			<resource name="Soybeans" amount="1.0" />
-			<resource name="Water" amount="10.0" />
-		</inputs>
-		<outputs>
-			<resource name="Soymilk" amount="10.0" />
-		</outputs>
-	</process> -->
-	
-
-	<process name="Process Soybeans into Okara" 
+	<process name="Make Okara and Soymilk from Soybeans" 
 		tech="1" skill="1" work-time="60" process-time="1000" 
 			power-required="2.0">
 			
-		<description> Make pulp (Okara) from soybeans after washing, dehulling, soaking, milling, paste heating, filtration. </description>
+		<description> Make pulp (Okara) and Soymilk from Soybeans after 
+			Washing, Dehulling, Soaking, Milling, Paste 
+			Heating, and Filtration. </description>
 		<inputs>
 			<!--<equipment name="oven" number="1" />-->
 			<resource name="Soybeans" amount="1.0" />
-			<resource name="Water" amount="10.0" />
+			<resource name="Water" amount="16.0" />
 		</inputs>
 		<outputs>
-			<resource name="Okara" amount="2.0" />
+			<resource name="Okara" amount="1.5" />
+			<resource name="Soymilk" amount="8.0" />
 		</outputs>
 	</process>
 
 	
 	<process name="Process Soybeans into Soy Flour" 
-		tech="1" skill="1" work-time="50" process-time="1000" 
+		tech="1" skill="2" work-time="50" process-time="1000" 
 			power-required="5.0">
 		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybeans at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
 		<inputs>
@@ -129,8 +115,8 @@
 		</outputs>
 	</process>
 
-	<process name="Extract Soy Proteins from Soy Flour" 
-		tech="1" skill="1" work-time="50" process-time="500" 
+	<process name="Extract Soy Protein from Soy Flour" 
+		tech="1" skill="2" work-time="50" process-time="500" 
 			power-required="1.0">
 		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
 		<inputs>
@@ -144,7 +130,7 @@
 	
 	
 	<process name="Extract Soybean Oil from Soybeans" 
-		tech="1" skill="1" work-time="50" process-time="500" 
+		tech="1" skill="2" work-time="50" process-time="500" 
 			power-required="1.0">
 		<description> Cracking, Screening, Heating at 130 deg C, Hot extrusion, Pressure at 40-60 MPa. Screening and Decantation of Oil </description>
 		<inputs>
