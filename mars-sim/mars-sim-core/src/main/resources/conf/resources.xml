@@ -35,6 +35,12 @@
 
 	<resource name="Sodium Hypochlorite" phase="solid" life-support="true">For sanitization of soybeans.</resource>
 	<resource name="Yeast" phase="solid" life-support="true">For making bread.</resource>
+	<resource name="Table Salt" phase="solid" life-support="true">Sodium Chloride, a Food Grade Salt. </resource>
+	<resource name="Epsom Salt" phase="solid" life-support="true">Magnesium Sulfate, as bath salt to soothe sore muscles or 
+	for gardeners to improve crops </resource>
+	<resource name="Bread" phase="solid" life-support="true">French bread or loaves of bread made from flour </resource>
+
+
 
 
 	<resource name="Grain Group" phase="solid" life-support="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;

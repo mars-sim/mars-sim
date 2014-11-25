@@ -190,8 +190,11 @@
 				<resource-storage resource="Food" capacity="500.0" />
 				<resource-storage resource="Soybeans" capacity="500.0" />
 				<resource-storage resource="Soymilk" capacity="500.0" />
-				<!-- <resource-storage resource="Sodium Hypochlorite" capacity="50.0" /> -->
-												
+				<resource-storage resource="Sodium Hypochlorite" capacity="30.0" />
+							
+				<resource-storage resource="Yeast" capacity="30.0" />
+				<resource-storage resource="Epsom Salt" capacity="50.0" />
+				<resource-storage resource="Table Salt" capacity="50.0" />												
 												
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
@@ -213,7 +216,8 @@
 				
 				<resource-initial resource="Sodium Hypochlorite" amount="30.0" />
 				<resource-initial resource="Yeast" amount="30.0" />
-
+				<resource-initial resource="Epsom Salt" amount="50.0" />
+				<resource-initial resource="Table Salt" amount="50.0" />
 				
 
 				<resource-initial resource="Fruit Group" amount="50.0" />
