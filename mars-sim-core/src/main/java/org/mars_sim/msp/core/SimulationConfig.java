@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -17,6 +17,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
@@ -67,7 +68,9 @@ public class SimulationConfig implements Serializable {
 	public static final String MANUFACTURE_FILE = "manufacturing";
 	public static final String CONSTRUCTION_FILE = "construction";
 	public static final String VALUE = "value";
-
+	// 2014-11-23 Added Food Production
+	public static final String FOODPRODUCTION_FILE = "foodProduction";
+	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
@@ -105,6 +108,8 @@ public class SimulationConfig implements Serializable {
 	private ResupplyConfig resupplyConfig;
 	private ConstructionConfig constructionConfig;
 
+	// 2014-11-23 Added Food Production
+	private FoodProductionConfig foodProductionConfig;
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
@@ -309,6 +314,16 @@ public class SimulationConfig implements Serializable {
 		return manufactureConfig;
 	}
 
+	
+	/**
+	 * Gets the foodProduction config subset.
+	 * @return foodProductione config
+	 */
+	// 2014-11-23 Added Food Production
+	public FoodProductionConfig getFoodProductionConfiguration() {
+		return foodProductionConfig;
+	}
+
 	/**
 	 * Gets the construction config subset.
 	 * @return construction config
@@ -342,6 +357,8 @@ public class SimulationConfig implements Serializable {
 			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
 			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
+			// 2014-11-23 Added Food Production
+			foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
 			e.printStackTrace();
@@ -368,6 +385,8 @@ public class SimulationConfig implements Serializable {
 		settlementConfig.destroy();
 		manufactureConfig.destroy();
 		constructionConfig.destroy();
+		// 2014-11-23 Added Food Production
+		foodProductionConfig.destroy();
 	}
 
 	/**

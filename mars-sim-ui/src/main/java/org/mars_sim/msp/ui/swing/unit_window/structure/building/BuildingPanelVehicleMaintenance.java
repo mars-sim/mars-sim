@@ -113,7 +113,7 @@ implements MouseListener {
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
 
 			vehicleNumberCache = garage.getCurrentVehicleNumber();
-			vehicleNumberLabel.setText(Msg.getString("BuidingPanelVehicleMaintenance.numberOfVehicles",
+			vehicleNumberLabel.setText(Msg.getString("BuildingPanelVehicleMaintenance.numberOfVehicles",
 					vehicleNumberCache));
 		}
 	}

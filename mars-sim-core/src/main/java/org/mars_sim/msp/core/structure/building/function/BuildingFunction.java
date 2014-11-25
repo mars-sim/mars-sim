@@ -39,7 +39,9 @@ public enum BuildingFunction {
 	MAKINGSOY					(Msg.getString("BuildingFunction.makingSoy")),  //$NON-NLS-1$
 	// 2014-11-08 Added	DRINKING and MAKINGCOFFEE
 	//DRINKING					(Msg.getString("BuildingFunction.drinking")),  //$NON-NLS-1$
-	SERVINGCOFFEE				(Msg.getString("BuildingFunction.servingCoffee")),  //$NON-NLS-1$	
+	SERVINGCOFFEE				(Msg.getString("BuildingFunction.servingCoffee")), 
+	//2014-11-23 Added foodProduction
+	FOOD_PRODUCTION  			(Msg.getString("BuildingFunction.foodProduction")), //$NON-NLS-1$	
 	;
 
 	private String name;

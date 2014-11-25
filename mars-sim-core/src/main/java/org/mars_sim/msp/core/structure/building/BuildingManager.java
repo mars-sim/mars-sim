@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-24
  * @author Scott Davis
  */
 
@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 import org.mars_sim.msp.core.structure.building.function.Dining;
 import org.mars_sim.msp.core.structure.building.function.EVA;
@@ -781,9 +782,12 @@ implements Serializable {
                 result += Exercise.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasFarming(buildingName))
                 result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
+          //2014-11-24 Added FoodProduction
+            if (config.hasFoodProduction(buildingName)) 
+                result += FoodProduction.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasGroundVehicleMaintenance(buildingName))
                 result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
-            //2014-10-17 mkung: Added the effect of heating requirement
+            //2014-10-17 Added the effect of heating requirement
             if (config.hasThermalGeneration(buildingName)) 
                 result += ThermalGeneration.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasThermalStorage(buildingName))

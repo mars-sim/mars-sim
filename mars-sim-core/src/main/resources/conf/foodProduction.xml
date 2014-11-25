@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE foodProduction-processes SYSTEM "conf/dtd/foodProduction.dtd">
+
+<!-- List of all food production processes. -->
+<foodProduction-processes>
+
+	<!-- tech - The minimum tech level required to perform the process.  -->
+	<!-- skill - The minimum person skill level in cooking to perform the process. -->
+	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
+	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
+	<!-- power-required - The total amount of power (kW hr) required for the process. -->
+	<process name="Prepare Soy Sprouts from Soybeans"
+			tech="0" skill="0"
+			work-time="50"
+			process-time="2000" 
+			power-required="0.0">
+		<description>The first step of making soy sprouts is to sanitize soybean seeds with sodium hypochlorite. Second, wash the seeds and soak them in water and wait for germination. When germinated, freeze dry them. </description>
+		
+		<!-- List of inputs for the process (resources and parts). -->
+		<inputs>
+			<!-- amount - The amount of the resource in kilograms. -->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="5.0" />
+			<resource name="Sodium Hypochlorite" amount="0.3" />
+		</inputs>
+		
+		<!-- List of outputs from the process (resources, parts, equipment and vehicles). -->
+		<outputs>
+			<resource name="Soy Sprouts" amount="3.0" />
+		</outputs>
+	</process>
+	
+	<process name="Freeze dry vegetables into package food" 
+		tech="1" skill="1" work-time="50" process-time="50" 
+			power-required="1.0">
+			
+		<description>Prepare vegetables and freeze dry them 
+			into package food </description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Vegetable Group" amount="1.0" />
+			<resource name="Water" amount="0.5" />
+		</inputs>
+		<outputs>
+			<resource name="Food" amount="1.0" />
+		</outputs>
+	</process>
+	
+		<process name="Make two loaves of bread from Soy Flour " 
+		tech="1" skill="1" work-time="50" process-time="50" 
+			power-required="1.0">
+			
+		<description> Make bread from Soy Flour </description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soy Flour" amount="1.0" />
+			<resource name="Water" amount="0.33" />
+			<resource name="Yeast" amount="0.01" />			
+		</inputs>
+		<outputs>
+			<resource name="Bread" amount="1.2" />
+		</outputs>
+	</process>
+	
+	<!--<process name="Process Soybean Seeds into Soymilk" 
+		tech="1" skill="1" work-time="50" process-time="900" 
+			power-required="1.0">
+			
+		<description>Washing, (Dehulling,) Soaking, Milling, Paste Heating, Filtration, Sanitization (not including dehulling) </description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="15.0" />
+		</inputs>
+		<outputs>
+			<resource name="Soymilk" amount="10.0" />
+		</outputs>
+	</process>-->
+	
+	<!--<process name="Process Soybean Seeds into Soymilk with Dehulling" 
+		tech="1" skill="1" work-time="60" process-time="1000" 
+			power-required="3.0">
+			
+		<description> Washing, (Dehulling,) Soaking, Milling, Paste Heating, Filtration, 
+			Sanitization </description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="10.0" />
+		</inputs>
+		<outputs>
+			<resource name="Soymilk" amount="10.0" />
+		</outputs>
+	</process> -->
+	
+
+	<process name="Process Soybeans into Okara" 
+		tech="1" skill="1" work-time="60" process-time="1000" 
+			power-required="2.0">
+			
+		<description> Make pulp (Okara) from soybeans after washing, dehulling, soaking, milling, paste heating, filtration. </description>
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="10.0" />
+		</inputs>
+		<outputs>
+			<resource name="Okara" amount="2.0" />
+		</outputs>
+	</process>
+
+	
+	<process name="Process Soybeans into Soy Flour" 
+		tech="1" skill="1" work-time="50" process-time="1000" 
+			power-required="5.0">
+		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybeans at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="7.0" />
+		</inputs>
+		<outputs>
+			<resource name="Soy Flour" amount="1.0" />
+		</outputs>
+	</process>
+
+	<process name="Extract Soy Proteins from Soy Flour" 
+		tech="1" skill="1" work-time="50" process-time="500" 
+			power-required="1.0">
+		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
+		<inputs>
+			<resource name="Soy Flour" amount="1.0" />
+			<resource name="Water" amount="3.0" />
+		</inputs>
+		<outputs>
+			<resource name="Soy Protein" amount="1.0" />
+		</outputs>
+	</process>
+	
+	
+	<process name="Extract Soybean Oil from Soybeans" 
+		tech="1" skill="1" work-time="50" process-time="500" 
+			power-required="1.0">
+		<description> Cracking, Screening, Heating at 130 deg C, Hot extrusion, Pressure at 40-60 MPa. Screening and Decantation of Oil </description>
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="water" amount="3.0" />
+		</inputs>
+		<outputs>
+			<resource name="Soybean Oil" amount="1.0" />
+		</outputs>
+	</process>
+
+</foodProduction-processes>

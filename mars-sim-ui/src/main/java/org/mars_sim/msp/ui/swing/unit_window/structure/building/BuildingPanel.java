@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2014-11-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.MakingSoy;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
@@ -131,6 +132,18 @@ extends JPanel {
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
         		functionPanels.add(manufacturePanel);
         		functionListPanel.add(manufacturePanel);
+//        	}
+//        	catch (BuildingException e) {}
+        }
+        
+        
+        // 2014-11-24 Added FoodProduction
+        if (building.hasFunction(BuildingFunction.FOOD_PRODUCTION)) {
+//        	try {
+        		FoodProduction foodFactory = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+        		BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
+        		functionPanels.add(foodProductionPanel);
+        		functionListPanel.add(foodProductionPanel);
 //        	}
 //        	catch (BuildingException e) {}
         }

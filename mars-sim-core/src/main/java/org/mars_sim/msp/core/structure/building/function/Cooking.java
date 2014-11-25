@@ -101,7 +101,7 @@ implements Serializable {
                 removedBuilding = true;
             }
             else {
-                Cooking cookingFunction = (Cooking) building.getFunction(FUNCTION);
+                Cooking cookingFunction = (Cooking) building.getFunction(FUNCTION);         
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 supply += cookingFunction.cookCapacity * wearModifier;
             }

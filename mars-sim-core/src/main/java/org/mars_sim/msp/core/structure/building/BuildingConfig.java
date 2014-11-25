@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-11-02
+ * @version 3.07 2014-11-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -113,6 +113,9 @@ public class BuildingConfig implements Serializable {
 	private static final String COMSUMPTION_RATE = "consumption-rate";
 	private static final String TOGGLE = "toggle";
 
+	//2014-11-23 Added food production
+	private static final String FOOD_PRODUCTION = "food-production";
+	
     private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
     private static final String EARTH_RETURN = "earth-return";
     private static final String CREW_CAPACITY = "crew-capacity";
@@ -966,6 +969,40 @@ public class BuildingConfig implements Serializable {
 		return hasElements(buildingName,FUNCTIONS,COOKING);
 	}
 	
+
+	/**
+	 * Checks if the building has the Food Production function.
+	 * @param buildingName the name of the building.
+	 * @return true if it has Food Production.
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	//2014-11-23 Added hasFoodProduction()
+	public boolean hasFoodProduction(String buildingName) {
+		return hasElements(buildingName,FUNCTIONS,FOOD_PRODUCTION);
+	}
+	
+	/**
+	 * Gets the tech level of the Food Production facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return tech level.
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	//2014-11-23 Added getFoodProductionTechLevel()
+	public int getFoodProductionTechLevel(String buildingName) {
+		return getValueAsInteger(buildingName,FUNCTIONS,FOOD_PRODUCTION,TECH_LEVEL);
+	}
+	
+	/**
+	 * Gets the concurrent process limit of the Food Production facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return concurrent process limit.
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	//2014-11-23 Added getFoodProductionConcurrentProcesses()
+	public int getFoodProductionConcurrentProcesses(String buildingName) {
+		return getValueAsInteger(buildingName,FUNCTIONS,FOOD_PRODUCTION,CONCURRENT_PROCESSES);
+	}
+	
 	/**
 	 * Gets the capacity of the cooking facility in the building.
 	 * @param buildingName the name of the building.
@@ -1170,6 +1207,16 @@ public class BuildingConfig implements Serializable {
      */
     public List<Point2D> getFarmingActivitySpots(String buildingName) {
         return getActivitySpots(buildingName, FARMING);
+    }
+    
+	/**
+     * Gets a list of activity spots for the Food Production building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    // 2014-11-24 Added getFoodProductionActivitySpots
+    public List<Point2D> getFoodProductionActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, FOOD_PRODUCTION);
     }
     
     /**

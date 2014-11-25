@@ -8,7 +8,7 @@
 <!ATTLIST power-required base-power CDATA #REQUIRED>
 <!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
 <!ELEMENT functions (administration?, astronomical-observation?, building-connection?, 
-communication?, cooking?, dining?, earth-return?, EVA?, exercise?, farming?, 
+communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, 
 ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
 management?, medical-care?, power-generation?, power-storage?, recreation?, research?, 
 resource-processing?, storage?, thermal-generation?, thermal-storage? )>
@@ -41,12 +41,14 @@ resource-processing?, storage?, thermal-generation?, thermal-storage? )>
 <!ATTLIST farming power-growing-crop CDATA #REQUIRED>
 <!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
 <!ATTLIST farming growing-area CDATA #REQUIRED>
+<!ELEMENT food-production (activity?)>
+<!ATTLIST food-production tech-level CDATA #REQUIRED>
+<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
 <!ELEMENT ground-vehicle-maintenance (parking-location+, activity?)>
 <!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
 <!ELEMENT parking-location EMPTY>
 <!ATTLIST parking-location xloc CDATA #REQUIRED>
 <!ATTLIST parking-location yloc CDATA #REQUIRED>
-
 <!ELEMENT thermal-generation (heat-source+)>
 <!ELEMENT heat-source EMPTY>
 <!ATTLIST heat-source type CDATA #REQUIRED>
@@ -56,7 +58,6 @@ resource-processing?, storage?, thermal-generation?, thermal-storage? )>
 <!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
 <!ELEMENT thermal-storage EMPTY>
 <!ATTLIST thermal-storage capacity CDATA #REQUIRED>
-
 <!ELEMENT life-support EMPTY>
 <!ATTLIST life-support capacity CDATA #REQUIRED>
 <!ATTLIST life-support power-required CDATA #REQUIRED>
