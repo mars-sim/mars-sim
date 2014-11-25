@@ -43,7 +43,8 @@ implements ClockListener {
 	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-	public static final double DEFAULT_SCALE = 5D;
+	//public static final double DEFAULT_SCALE = 5D;
+	public static final double DEFAULT_SCALE = 10D;	
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);

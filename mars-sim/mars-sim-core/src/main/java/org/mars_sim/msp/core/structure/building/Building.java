@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-23
  * @author Scott Davis
  */
 
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.MakingSoy;
@@ -109,7 +110,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected double currentTemperature;
 	//protected double deltaTemperature ;
     private static final double INITIAL_TEMPERATURE = 22.5D;
-	private static int count;
+	//private static int count;
     
 	// 2014-10-28  changed variable's name from "name" to "buildingType"
 	protected String buildingType;
@@ -141,7 +142,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.manager = manager;
 		
 		heatMode = HeatMode.POWER_DOWN;
-		count++;
+		//count++;
 		//Logger.info("constructor 1 : count is " + count);
 	}
 
@@ -173,7 +174,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-		count++;
+		//count++;
 		//logger.info("constructor2 : count is " + count);
 	
 		this.currentTemperature = INITIAL_TEMPERATURE;
@@ -347,6 +348,9 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set manufacture function.
 		if (config.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
+
+		//2014-11-23 Added food production
+		if (config.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
 
 		// Set power storage function.
 		if (config.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));

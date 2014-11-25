@@ -62,6 +62,12 @@
 				</activity>
 			</exercise>
 	
+			<food-production tech-level="1" concurrent-processes="1">
+				<activity>
+					<activity-spot xloc="2.19" yloc="-1.76" />
+				</activity>
+			</food-production>
+			
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
@@ -180,10 +186,12 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
-<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
+				<!-- <resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
 				<resource-storage resource="Soybeans" capacity="500.0" />
 				<resource-storage resource="Soymilk" capacity="500.0" />
+				<!-- <resource-storage resource="Sodium Hypochlorite" capacity="50.0" /> -->
+												
 												
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
@@ -202,6 +210,11 @@
 				<resource-initial resource="Food" amount="150.0" />
 				<resource-initial resource="Soybeans" amount="50.0" />
 				<resource-initial resource="Soymilk" amount="0.0" />
+				
+				<resource-initial resource="Sodium Hypochlorite" amount="30.0" />
+				<resource-initial resource="Yeast" amount="30.0" />
+
+				
 
 				<resource-initial resource="Fruit Group" amount="50.0" />
 				<resource-initial resource="Vegetable Group" amount="50.0" />
@@ -457,6 +470,7 @@
 					<activity-spot xloc="-2.4" yloc="2.9" />
 				</activity>
 			</cooking>
+			
 			<dining capacity="33">
 				<activity>
 					<activity-spot xloc="-.65" yloc="2.0" />
@@ -502,6 +516,16 @@
 					<activity-spot xloc="2.0" yloc="-2.9" />
 				</activity>
 			</exercise>
+			
+			<food-production tech-level="4" concurrent-processes="4">
+				<activity>
+					<activity-spot xloc="-1.7" yloc="3.7" />
+					<activity-spot xloc="-1.7" yloc="3.2" />
+					<activity-spot xloc="-1.9" yloc="2.9" />
+					<activity-spot xloc="-2.4" yloc="2.9" />
+				</activity>
+			</food-production>
+			
 			<life-support capacity="20" power-required="40.0" />
 			<recreation population-support="25">
 				<activity>
@@ -1166,6 +1190,13 @@
 					<activity-spot xloc="-2.8" yloc="2.3" />
 				</activity>
 			</dining>
+			
+			<food-production tech-level="1" concurrent-processes="1">
+				<activity>
+					<activity-spot xloc="-1.3" yloc="3.7" />
+				</activity>
+			</food-production>
+			
 			<life-support capacity="6" power-required="12.0" />
 			<medical-care tech-level="2" beds="1">
 				<activity>

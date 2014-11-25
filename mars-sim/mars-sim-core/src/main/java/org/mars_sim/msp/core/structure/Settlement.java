@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-11-23
  * @author Scott Davis
  */
 
@@ -78,11 +78,9 @@ implements LifeSupport {
     protected ConstructionManager constructionManager;
     /** The settlement's building power grid. */
     protected PowerGrid powerGrid;
-    
     //2014-10-17 Added heating system
     /** The settlement's heating system. */
-    protected ThermalSystem thermalSystem;
-    
+    protected ThermalSystem thermalSystem;  
     /** The settlement template name. */
     private String template;
     /** Override flag for mission creation at settlement. */
@@ -99,11 +97,12 @@ implements LifeSupport {
     private double zeroPopulationTime;
     /** The initial population of the settlement. */
     private int initialPopulation;
-
     // 2014-10-27 Added settlement id
     // TODO: implement settlement id
     private int id;
     private static int count;
+    //2014-11-23 Added foodProductionOverride
+    private boolean foodProductionOverride;
     
     /**
      * Constructor for subclass extension.
@@ -691,6 +690,22 @@ implements LifeSupport {
     }
 
     /**
+     * Sets the FoodProduction override flag.
+     * @param FoodProduction override for FoodProduction.
+     */
+    public void setFoodProductionOverride(boolean foodProductionOverride) {
+        this.foodProductionOverride = foodProductionOverride;
+    }
+
+    /**
+     * Gets the FoodProduction override flag.
+     * @return override for settlement FoodProduction.
+     */
+    public boolean getFoodProductionOverride() {
+        return foodProductionOverride;
+    }
+
+    /**
      * Sets the manufacture override flag.
      * @param manufactureOverride override for manufacture.
      */
@@ -814,4 +829,5 @@ implements LifeSupport {
         }
         scientificAchievement = null;
     }
+
 }

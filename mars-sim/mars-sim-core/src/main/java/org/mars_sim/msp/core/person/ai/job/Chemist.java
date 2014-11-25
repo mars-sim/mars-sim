@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chemist.java
- * @version 3.06 2014-05-09
+ * @version 3.06 2014-11-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
+import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
@@ -66,6 +67,9 @@ implements Serializable {
 		jobTasks.add(RespondToStudyInvitation.class);
 		jobTasks.add(StudyFieldSamples.class);
 
+		//2014-11-23 Added ProduceFood.class
+		jobTasks.add(ProduceFood.class);
+		
 		// Add chemist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);  

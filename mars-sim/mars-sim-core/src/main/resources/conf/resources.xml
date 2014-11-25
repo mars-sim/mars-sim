@@ -28,6 +28,14 @@
 	<resource name="Soy Flour" phase="solid" life-support="true">Flour made from ground soybeans.</resource>
 	<resource name="Soy Fiber" phase="solid" life-support="true">Light yellow, silky protein soybeans fiber .</resource>
 	<resource name="Soy Protein" phase="solid" life-support="true">Protein extract derived from soybeans.</resource>
+	<resource name="Soybean Ash" phase="solid" life-support="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium</resource>
+	<resource name="Okara" phase="solid" life-support="true">The Soy Pulp consisting of insoluble parts of the soybean which
+		 after pureed soybeans are filtered in the production of soymilk and tofu.</resource>
+	<resource name="Soy Sprouts" phase="solid" life-support="true">Sprouted soybeans.</resource>
+
+	<resource name="Sodium Hypochlorite" phase="solid" life-support="true">For sanitization of soybeans.</resource>
+	<resource name="Yeast" phase="solid" life-support="true">For making bread.</resource>
+
 
 	<resource name="Grain Group" phase="solid" life-support="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
 		Small hard dry seeds, with or without attached hulls or fruit layers</resource>
