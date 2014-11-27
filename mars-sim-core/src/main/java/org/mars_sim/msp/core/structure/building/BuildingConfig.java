@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-11-24
+ * @version 3.07 2014-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 //import java.util.logging.Logger;
+
 
 
 import org.jdom.DataConversionException;
@@ -35,6 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
 import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
+import org.w3c.dom.Node;
 
 /**
  * Provides configuration information about settlement buildings.
@@ -46,11 +48,13 @@ public class BuildingConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //private static final Logger logger = Logger.getLogger(BuildingConfig.class.getName());
+	
+    //2014-11-27 Added description 
+    private static final String DESCRIPTION = "description";
 
-    
 	// Element and attribute names
 	private static final String BUILDING = "building";
-	//2014-10-27 mkung: Added nickName 	
+	//2014-10-27 Added nickName 	
 	private static final String NICKNAME = "nickName";	
 	private static final String NAME = "name";
 	private static final String WIDTH = "width";
@@ -126,11 +130,10 @@ public class BuildingConfig implements Serializable {
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String ADMINISTRATION = "administration";
   
-	// 2014-10-17 mkung: Added heat source and heat related types
+	// 2014-10-17 Added heat source and heat related types
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String BASE_HEAT = "base-heat";
 	private static final String BASE_POWER_DOWN_HEAT = "base-power-down-heat";
-	//private static final String HEAT_DOWN_LEVEL = "heat-down-level";
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
     private static final String THERMAL_STORAGE = "thermal-storage";
@@ -243,6 +246,22 @@ public class BuildingConfig implements Serializable {
         Element buildingElement = getBuildingElement(buildingName);
         return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
+	
+	/**
+	 * Gets the description of the building.
+	 * @param buildingName the name of the building
+	 * @return description of the building.
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+    // 2014-11-27 Added getDescription()
+	public String getDescription(String buildingName) {
+        Element buildingElement = getBuildingElement(buildingName);
+        Element descriptionElement = buildingElement.getChild(DESCRIPTION);
+        //Element textElement = descriptionElement.getChild(buildingName);
+        String str = descriptionElement.getValue().trim();
+        str = str.replaceAll("\\t", "").replaceAll("\\n", "");
+        return str;
+	}
 	
 	/**
 	 * Gets the base heat requirement for the building.

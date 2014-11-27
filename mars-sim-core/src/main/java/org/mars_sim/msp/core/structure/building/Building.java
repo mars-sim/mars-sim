@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2014-11-27
  * @author Scott Davis
  */
 
@@ -80,6 +80,8 @@ LocalBoundedObject, InsidePathLocation {
 	private static final double BASE_MAINTENANCE_TIME = 50D;
 
     // Data members
+	protected String buildingType;
+	protected String nickName;
 	protected BuildingManager manager; 	
 	protected double width;
 	protected double length;
@@ -93,15 +95,12 @@ LocalBoundedObject, InsidePathLocation {
 	protected MalfunctionManager malfunctionManager;
 	protected List<Function> functions;
 	protected int id;
-
-	//2014-10-23  Modified thermal control parameters in the building */
-	protected HeatMode heatMode;
-	
-	// 2014-11-02 Added HeatModeCache
-	protected HeatMode heatModeCache;
-	
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
+
+	//private static int count;
+	// 2014-10-28  changed variable's name from "name" to "buildingType"
+	protected ThermalGeneration furnace;
 	// Specific Heat Capacity = 4.0 for a typical house
 	protected double SHC = 4.0; 
 	// Building Loss Coefficient = 1.0 for a typical house
@@ -110,16 +109,15 @@ LocalBoundedObject, InsidePathLocation {
 	protected double currentTemperature;
 	//protected double deltaTemperature ;
     private static final double INITIAL_TEMPERATURE = 22.5D;
-	//private static int count;
-    
-	// 2014-10-28  changed variable's name from "name" to "buildingType"
-	protected String buildingType;
-	protected String nickName;
-	protected ThermalGeneration furnace;
-
+	//2014-10-23  Modified thermal control parameters in the building */
+	protected HeatMode heatMode;
+	// 2014-11-02 Added HeatModeCache
+	protected HeatMode heatModeCache;
 	// 2014-11-02 Added heatGenerated
 	private double heatGenerated = 0; // the initial value is zero 
 	private double heatGeneratedCache = 0; // the initial value is zero 
+	// 2014-11-27 Added description
+	protected String description = "Stay tuned";
 	
 	/** Constructor 1
 	 * Constructs a Building object.
@@ -204,6 +202,8 @@ LocalBoundedObject, InsidePathLocation {
 
 		baseLevel = config.getBaseLevel(buildingType);
 		
+		description = config.getDescription(buildingType);
+		
 		// Get the building's functions
 		functions = determineFunctions();
 
@@ -242,6 +242,15 @@ LocalBoundedObject, InsidePathLocation {
 	/** Empty constructor. */
 	protected Building() {}
 
+
+	/**
+     * Gets the description of a building.
+     * @return String description
+     */
+	//2014-11-27  Added getDescription()
+    public String getDescription() {
+            return description;
+    }
 	/**
 	 * Sets building nickname
 	 * @return none

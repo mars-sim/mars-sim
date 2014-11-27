@@ -95,7 +95,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return foodList.size() + " Food Items";
+		return foodList.size() + " Food Items"; // do need a white space before Food Items 
 	}
 
 	/**

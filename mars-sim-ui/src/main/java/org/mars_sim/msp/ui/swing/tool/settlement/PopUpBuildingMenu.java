@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopUpBuildingMenu.java
- * @version 3.07 2014-11-22
+ * @version 3.07 2014-11-27
  * @author Manny Kung
  */
 
@@ -24,18 +24,11 @@ import java.awt.event.WindowFocusListener;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-
-
-
-import javax.swing.SwingUtilities;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -43,11 +36,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
-// extends  JInternalFrame
+// TODO: is extending to JInternalFrame better?
 public class PopUpBuildingMenu extends JPopupMenu {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
 	private JMenuItem itemOne, itemTwo;
@@ -60,8 +51,8 @@ public class PopUpBuildingMenu extends JPopupMenu {
     	this.building = building;
     	this.settlement = swindow.getMapPanel().getSettlement();
         this.desktop = swindow.getDesktop();
-    	itemOne = new JMenuItem("Info");
-        itemTwo = new JMenuItem("Panel");       
+    	itemOne = new JMenuItem("Building Info");
+        itemTwo = new JMenuItem("Building Panel");       
         add(itemOne);
         add(itemTwo);
         final String buildingName = building.getNickName();
@@ -78,7 +69,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 dialog.setLocation(location);
-
 				dialog.add(panel);			
 				//dialog.setResizable(true);
 				dialog.setSize(280,320); 
@@ -138,17 +128,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 dialog.setLocation(location);
             	JLabel dialogLabel = new JLabel(buildingName, JLabel.CENTER);
-				dialogLabel.setOpaque(true);
+				dialogLabel.setOpaque(false);
 				//dialog.setResizable(true);
 			    dialogLabel.setFont(new Font("Serif", Font.ITALIC, 16));
 			    dialogLabel.setForeground(new Color(102, 51, 0)); // dark brown
-			   	String str = "Description: The Lander Hab is "
-			   			+ "a general purpose habitat for 4 people. It serves"
-			   			+ "as a sort of jack-of-all-trades building. "
-			   			+ "The building has an airlock and changing room "
-			   			+ "for EVA operations. The tag airlock-capacity "
-			   			+ "indicates the number of people who can use "
-			   			+ "the airlock at once.";
+			   	// 2014-11-27 Added building.getDescription() for loading text
+			    String str = building.getDescription();
 			    JTextArea ta = new JTextArea();
 			   	//label2.setText("<html>"+ str +"</html>");
 			   	ta.setOpaque(true);
@@ -157,20 +142,19 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				//ta.setForeground(new Color(102, 51, 0)); // dark brown
 			    ta.setText(str);
 			    ta.setEditable(false);
-			    ta.setOpaque(true);
+			    ta.setOpaque(false);
 			    ta.setLineWrap(true);
 			    ta.setWrapStyleWord(true);
 			    
 			    JPanel panel = new JPanel(new BorderLayout());
 			    panel.add(dialogLabel, BorderLayout.NORTH);
 			    panel.add(ta, BorderLayout.CENTER);
-			    panel.setPreferredSize(new Dimension(180, 280));
+			    panel.setPreferredSize(new Dimension(180, 300));
 			    //JPanel panel = new JPanel(new GridLayout(2,1,0,0));
-				panel.setOpaque(true);
+				panel.setOpaque(false);
 		        //panel.setBorder(MainDesktopPane.newEmptyBorder());
 		        //panel.setPreferredSize(new Dimension(120, 300));
 				dialog.setBackground(THEME_COLOR);
-				
 		        setBorder(new MarsPanelBorder());
 				dialog.add(panel);		
 				dialog.setForeground(Color.orange);
