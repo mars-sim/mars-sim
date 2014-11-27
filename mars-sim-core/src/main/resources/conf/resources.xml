@@ -19,37 +19,41 @@
 	<resource name="carbon monoxide" phase="gas" />
 <!-- <resource name="chlorine" phase="gas"/> -->
 
-	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
+	<resource name="food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
 
-	<resource name="Soybeans" phase="solid" life-support="true">Soybean seeds.</resource>
-	<resource name="Soymilk" phase="liquid" life-support="true">Plant milk produced by soaking dry soybeans and grinding them with water.</resource>
-	<resource name="Soybean Oil" phase="liquid" life-support="true">Oil derived from soybeans.</resource>
-	<resource name="Tofu" phase="solid" life-support="true">Tofu made of Okara from soybeans.</resource>
-	<resource name="Soy Flour" phase="solid" life-support="true">Flour made from ground soybeans.</resource>
-	<resource name="Soy Fiber" phase="solid" life-support="true">Light yellow, silky protein soybeans fiber .</resource>
+	<resource name="Soybeans" phase="solid" life-support="true" edible="true">Soybean seeds.</resource>
+	<resource name="Soymilk" phase="liquid" life-support="true" edible="true">Plant milk produced by soaking dry soybeans and grinding them with water.</resource>
+	<resource name="Soybean Oil" phase="liquid" life-support="true" edible="true">Oil derived from soybeans.</resource>
+	<resource name="Tofu" phase="solid" life-support="true" edible="true">Tofu made of Okara from soybeans.</resource>
+	<resource name="Soy Flour" phase="solid" life-support="true" edible="true">Flour made from ground soybeans.</resource>
+	<resource name="Soy Fiber" phase="solid" life-support="true" edible="true">Light yellow, silky protein soybeans fiber .</resource>
 	<resource name="Soy Protein" phase="solid" life-support="true">Protein extract derived from soybeans.</resource>
-	<resource name="Soybean Ash" phase="solid" life-support="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium</resource>
-	<resource name="Okara" phase="solid" life-support="true">The Soy Pulp consisting of insoluble parts of the soybean which
+	<resource name="Soybean Ash" phase="solid" life-support="true" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium</resource>
+	<resource name="Okara" phase="solid" life-support="true" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed soybeans are filtered in the production of soymilk and tofu.</resource>
-	<resource name="Soy Sprouts" phase="solid" life-support="true">Sprouted soybeans.</resource>
+	<resource name="Soy Sprouts" phase="solid" life-support="true" edible="true">Sprouted soybeans.</resource>
 
-	<resource name="Sodium Hypochlorite" phase="solid" life-support="true">For sanitization of soybeans.</resource>
-	<resource name="Yeast" phase="solid" life-support="true">For making bread.</resource>
-	<resource name="Table Salt" phase="solid" life-support="true">Sodium Chloride, a Food Grade Salt. </resource>
-	<resource name="Epsom Salt" phase="solid" life-support="true">Magnesium Sulfate, as bath salt to soothe sore muscles or 
+	<resource name="Sodium Hypochlorite" phase="solid" >For sanitization of soybeans.</resource>
+	<resource name="Yeast" phase="solid" life-support="true" edible="true">For making bread.</resource>
+	<resource name="Table Salt" phase="solid" life-support="true" edible="true">Sodium Chloride, a Food Grade Salt. </resource>
+	<resource name="Epsom Salt" phase="solid" life-support="true" edible="true">Magnesium Sulfate, as bath salt to soothe sore muscles or 
 	for gardeners to improve crops </resource>
-	<resource name="Bread" phase="solid" life-support="true">French bread or loaves of bread made from flour </resource>
+	<resource name="Bread" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour </resource>
+	<resource name="Veggie Patties" phase="solid" life-support="true" edible="true">Made of	textured vegetable protein (like soy), legumes (beans), tofu,
+			nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
+	<resource name="Wheat Flour" phase="solid" life-support="true" edible="true">Flour made from wheat kernel</resource>
+	<resource name="Wheat Kernel" phase="solid" life-support="true" edible="true">Seeds harvested from wheat crop. The kernel is the whole grain, made up of 
+		three edible parts – bran, germ, and  endosperm – protected by an inedible husk </resource>
+	<resource name="Burger Bun" phase="solid" life-support="true" edible="true">fluffy Buns for holding Veggie patties </resource>
 
 
-
-
-	<resource name="Grain Group" phase="solid" life-support="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
+	<resource name="Grain Group" phase="solid" life-support="true" edible="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
 		Small hard dry seeds, with or without attached hulls or fruit layers</resource>
-	<resource name="Fruit Group" phase="solid" life-support="true">
+	<resource name="Fruit Group" phase="solid" life-support="true" edible="true">
 		the fleshy seed-associated structures of a plant that are sweet or sour and edible in the raw state</resource>
-	<resource name="Vegetable Group" phase="solid" life-support="true">the leafy or root structure of a plant cultivated for food</resource>
-	<resource name="Legume Group" phase="solid" life-support="true">the seed of a plant cultivated for food</resource>
-	<resource name="Spice Group" phase="solid" life-support="true">For food seasoning</resource>
+	<resource name="Vegetable Group" phase="solid" life-support="true" edible="true">the leafy or root structure of a plant cultivated for food</resource>
+	<resource name="Legume Group" phase="solid" life-support="true" edible="true">the seed of a plant cultivated for food</resource>
+	<resource name="Spice Group" phase="solid" life-support="true" edible="true">For food seasoning</resource>
 
 
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>

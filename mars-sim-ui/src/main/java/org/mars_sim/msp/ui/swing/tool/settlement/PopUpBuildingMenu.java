@@ -8,49 +8,53 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
+
+
+
 import javax.swing.SwingUtilities;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.unit_window.structure.TabPanelBuildings;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
+// extends  JInternalFrame
 public class PopUpBuildingMenu extends JPopupMenu {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private JMenuItem itemOne, itemTwo;
-    Building building;
+    private Building building;
     private Settlement settlement;
 	private MainDesktopPane desktop;
 	private Color THEME_COLOR = Color.ORANGE;
-	private List<BuildingPanel> buildingPanels;
 	
     public PopUpBuildingMenu(final SettlementWindow swindow, final Building building){
     	this.building = building;
@@ -65,9 +69,8 @@ public class PopUpBuildingMenu extends JPopupMenu {
         itemTwo.addActionListener(new ActionListener() {
         	 
             public void actionPerformed(ActionEvent e) {
-        		final JDialog dialog;
-				dialog = new JDialog(); 
-				//JLabel dialogLabel = new JLabel(buildingName);			
+        		final JDialog dialog = new JDialog();
+            	//final JInternalFrame dialog = new JInternalFrame();			
 				JPanel panel = new JPanel();
 				final BuildingPanel buildingPanel = new BuildingPanel("Default", building, desktop);				
 				panel.add(buildingPanel);	
@@ -80,13 +83,24 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				//dialog.setResizable(true);
 				dialog.setSize(280,320); 
 				dialog.setLayout(new FlowLayout()); 
-				dialog.setModal(false);
+				//dialog.setModal(false);
 				dialog.setTitle(buildingName);
 				//removeButtons(dialog);
 				//dialog.setUndecorated(true);
 				dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.orange) );
 				dialog.setVisible(true);
-				
+				/*
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						//fireTableStructureChanged();
+						buildingPanel.update();
+			        	 dialog.repaint();
+			        	 dialog.revalidate();
+			        	 dialog.setVisible(true);
+					}
+				});
+				*/
 				Runnable r = new Runnable() {
 			         public void run() {
 			        	 //dialog.setVisible(false);
@@ -95,7 +109,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			        	 dialog.revalidate();
 			        	 dialog.setVisible(true);
 			        	 try {
-							Thread.sleep(400);
+							Thread.sleep(300);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -103,18 +117,15 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			         }
 			     };
 			     new Thread(r).start();
-
-				dialog.addWindowFocusListener(new WindowFocusListener() {            
-				    public void windowLostFocus(WindowEvent e) {
-				    	//dialog.setVisible(false);
-				    	dialog.dispose();
-				    }            
-				    public void windowGainedFocus(WindowEvent e) {
-				    }
-				});
-        
+			     dialog.addWindowFocusListener(new WindowFocusListener() {            
+					    public void windowLostFocus(WindowEvent e) {
+					    	//dialog.setVisible(false);
+					    	dialog.dispose();
+					    }            
+					    public void windowGainedFocus(WindowEvent e) {
+					    }
+					});
             }
-
         });
         
         itemOne.addActionListener(new ActionListener() {
@@ -197,4 +208,9 @@ public class PopUpBuildingMenu extends JPopupMenu {
 	            }
 	        }
 	    }
+	   
+		public void destroy() {
+			settlement.destroy();
+			building.destroy();
+		}
 }

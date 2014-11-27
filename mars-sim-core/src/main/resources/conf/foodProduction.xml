@@ -48,7 +48,7 @@
 		</outputs>
 	</process>
 	
-		<process name="Make two loaves of bread from Soy Flour " 
+	<process name="Make two loaves of bread from Soy Flour " 
 		tech="1" skill="1" work-time="50" process-time="50" 
 			power-required="1.0">
 			
@@ -69,7 +69,7 @@
 		tech="1" skill="1" work-time="50" process-time="900" 
 			power-required="1.0">
 			
-		<description> Boil up Okara-Soymilk mixture, add Epsom Salt, 
+		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants, 
 			gently stir and heat, the curds will separate.</description>
 		
 		<inputs>
@@ -143,4 +143,37 @@
 		</outputs>
 	</process>
 
+	<process name="Make Veggie Patties from Veg, Tofu and Spice" 
+		tech="2" skill="3" work-time="70" process-time="300" 
+			power-required="2.0">	
+		<description>A Veggie patty imitates a burger patty and is made of
+			textured vegetable protein (like soy), legumes (beans), tofu,
+			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
+		<inputs>
+			<resource name="Tofu" amount="0.5" />
+			<resource name="Legume Group" amount="1.0" />
+			<resource name="Table Salt" amount=".05" />	
+			<resource name="Grain Group" amount="0.5" />
+			<resource name="Soybean Oil" amount="0.1" />		
+		</inputs>
+		<outputs>
+			<resource name="Veggie Patties" amount="2.0" />			
+		</outputs>
+	</process>
+	
+	<process name="Make burger bun from Wheat Flour " 
+		tech="2" skill="2" work-time="50" process-time="200" 
+			power-required="1.0">		
+		<description>Make burger bun from Wheat Flour </description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" /> -->
+			<resource name="Wheat Flour" amount="1.0" />
+			<resource name="Water" amount="0.33" />
+			<resource name="Yeast" amount="0.01" />			
+		</inputs>
+		<outputs>
+			<resource name="Burger Bun" amount="1.0" />
+		</outputs>
+	</process>
+	
 </foodProduction-processes>

@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -39,6 +38,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -103,10 +103,11 @@ extends TabPanel {
 		// Create topPanel.
 		JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(topPane);
-
+		
 		// Create foodProduction label.
 		JLabel foodProductionLabel = new JLabel(Msg.getString("TabPanelFoodProduction.label"), JLabel.CENTER); //$NON-NLS-1$
-		topPane.add(foodProductionLabel);
+		topPane.add(foodProductionLabel);      
+   
 
 		// Create scroll panel for foodProduction list pane.
 		foodProductionScrollPane = new JScrollPane();
@@ -131,17 +132,12 @@ extends TabPanel {
 		Iterator<FoodProductionProcess> i = processCache.iterator();
 		while (i.hasNext()) foodProductionListPane.add(new FoodProductionPanel(i.next(), true, 30));
 
-		// Create salvage panels.
-		//salvageCache = new ArrayList<SalvageProcess>(getSalvageProcesses());
-		//Iterator<SalvageProcess> j = salvageCache.iterator();
-		//while (j.hasNext()) foodProductionListPane.add(new SalvagePanel(j.next(), true, 30));
-
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		topContentPanel.add(interactionPanel);
-
+		
 		// Create new building selection.
-		buildingSelectionCache = getManufacturingBuildings();
+		buildingSelectionCache = getFoodProductionBuildings();
 		buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
 		buildingSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingSelection.addItemListener(new ItemListener() {
@@ -159,6 +155,8 @@ extends TabPanel {
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
+
+		
 		// Add available salvage processes.
 		//salvageSelectionCache = getAvailableSalvageProcesses(foodFactoryBuilding);
 		//Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
@@ -196,8 +194,8 @@ extends TabPanel {
 		interactionPanel.add(newProcessButton);
 
 		// Create override check box.
-		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelFoodProduction.checkbox.overrideManufacturing")); //$NON-NLS-1$
-		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideManufacturing") + //$NON-NLS-1$
+		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelFoodProduction.checkbox.overrideProduction")); //$NON-NLS-1$
+		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction") + //$NON-NLS-1$
 				"starting new manufacturing or salvage processes.");
 		overrideCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -206,6 +204,8 @@ extends TabPanel {
 		});
 		overrideCheckbox.setSelected(settlement.getFoodProductionOverride());
 		interactionPanel.add(overrideCheckbox);
+		
+		//setVisible(true);
 	}
 
 	@Override
@@ -279,7 +279,7 @@ extends TabPanel {
 		}
 */
 		// Update building selection list.
-		Vector<Building> newBuildings = getManufacturingBuildings();
+		Vector<Building> newBuildings = getFoodProductionBuildings();
 		if (!newBuildings.equals(buildingSelectionCache)) {
 			buildingSelectionCache = newBuildings;
 			Building currentSelection = (Building) buildingSelection.getSelectedItem();
@@ -364,15 +364,15 @@ extends TabPanel {
 
 
 	/**
-	 * Gets all manufacturing buildings at a settlement.
+	 * Gets all food production buildings at a settlement.
 	 * @return vector of buildings.
 	 */
-	private Vector<Building> getManufacturingBuildings() {
+	private Vector<Building> getFoodProductionBuildings() {
 		return new Vector<Building>(settlement.getBuildingManager().getBuildings(BuildingFunction.FOOD_PRODUCTION));
 	}
 
 	/**
-	 * Gets all manufacturing processes available at the foodFactory.
+	 * Gets all food production processes available at the foodFactory.
 	 * @param foodProductionBuilding the manufacturing building.
 	 * @return vector of processes.
 	 */

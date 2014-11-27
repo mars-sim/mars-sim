@@ -8,19 +8,14 @@
 package org.mars_sim.msp.core.foodProduction;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -35,10 +30,7 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
 
 /**
  * Utility class for getting foodProduction processes.
@@ -384,9 +376,9 @@ public final class FoodProductionUtil {
             Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
             result = GoodsUtil.getEquipmentGood(equipmentClass);
         }
-        else if (Type.VEHICLE.equals(item.getType())) {
-            result = GoodsUtil.getVehicleGood(item.getName());
-        }
+        //else if (Type.VEHICLE.equals(item.getType())) {
+        //    result = GoodsUtil.getVehicleGood(item.getName());
+        //}
 
         return result;
     }
@@ -411,10 +403,10 @@ public final class FoodProductionUtil {
             double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
             mass = item.getAmount() * equipmentMass;
         }
-        else if (Type.VEHICLE.equals(item.getType())) {
-            VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-            mass = item.getAmount() * config.getEmptyMass(item.getName());
-        }
+        //else if (Type.VEHICLE.equals(item.getType())) {
+        //    VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+        //    mass = item.getAmount() * config.getEmptyMass(item.getName());
+        //}
 
         return mass;
     }
