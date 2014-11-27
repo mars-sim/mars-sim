@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-25
  * @author Scott Davis
  */
 
@@ -35,6 +35,8 @@ implements Serializable {
 	private String name;
 	private String description;
 
+	// 2014-11-25 Added edible
+	private boolean edible;
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.
@@ -60,12 +62,14 @@ implements Serializable {
 		String name,
 		String description,
 		Phase phase,
-		boolean lifeSupport
+		boolean lifeSupport,
+		boolean edible
 	) {
 		this.name = name;
 		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
+		this.edible = edible;
 		this.hashcode = getName().hashCode() * phase.hashCode();
 	}
 
@@ -83,6 +87,15 @@ implements Serializable {
 	 */
 	public boolean isLifeSupport() {
 		return lifeSupport;
+	}
+
+	/**
+	 * Checks if edible resource.
+	 * @return true if edible resource.
+	 */
+	// 2014-11-25 Added edible
+	public boolean isEdible() {
+		return edible;
 	}
 
 	/**

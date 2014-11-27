@@ -3,3 +3,4 @@
 <!ATTLIST resource name CDATA #REQUIRED>
 <!ATTLIST resource phase (solid|liquid|gas) #REQUIRED>
 <!ATTLIST resource life-support (true|false) "false">
+<!ATTLIST resource edible (true|false) "false">

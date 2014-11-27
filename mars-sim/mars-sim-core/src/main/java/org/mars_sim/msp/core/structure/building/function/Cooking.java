@@ -48,7 +48,7 @@ implements Serializable {
 
     // Data members
     private boolean foodIsAvailable = true;
-    private boolean soyIsAvailable = true;
+    //private boolean soyIsAvailable = true;
     private int cookCapacity;
     private List<CookedMeal> meals;
     private double cookingWorkTime;

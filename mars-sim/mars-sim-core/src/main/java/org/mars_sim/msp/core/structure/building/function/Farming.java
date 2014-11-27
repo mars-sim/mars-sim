@@ -42,13 +42,12 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	private static Logger logger = Logger.getLogger(Farming.class.getName());
+	//private static Logger logger = Logger.getLogger(Farming.class.getName());
 
-    
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
     // HARVEST_MULTIPLIER has been the conversion parameter set for all crops 
-    public static final double HARVEST_MULTIPLIER = 10D;
+    //public static final double HARVEST_MULTIPLIER = 10D;
 
     private int cropNum;
     private double powerGrowingCrop;

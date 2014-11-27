@@ -157,7 +157,10 @@ implements TableModelListener, ActionListener {
 		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
 		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
 		// 2014-10-14 mkung: added FoodTableModel
-		addTab(new UnitTab(this,new FoodTableModel(unitManager), true));
+		addTab(new UnitTab(this,new CropTableModel(unitManager), true));
+
+		// 2014-11-25 mkung: added FoodInventoryTab()
+		addTab(new FoodInventoryTab(this));
 		
 		addTab(new MissionTab(this));
 		eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager()));

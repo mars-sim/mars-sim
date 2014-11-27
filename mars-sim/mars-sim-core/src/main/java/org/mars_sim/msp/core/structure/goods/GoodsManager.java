@@ -305,6 +305,9 @@ implements Serializable {
 
             // Add manufacturing demand.
             demand += getResourceManufacturingDemand(resource);
+ 
+            //2014-11-25 Add Food Production demand.
+            demand += getResourceFoodProductionDemand(resource);
 
             // Add construction demand.
             demand += getResourceConstructionDemand(resource);
@@ -584,6 +587,28 @@ implements Serializable {
         return demand;
     }
 
+    /**
+     * Gets the demand for an amount resource as an input in the settlement's manufacturing processes.
+     * @param resource the amount resource.
+     * @return demand (kg)
+     * @throws Exception if error determining demand for resource.
+     */
+    private double getResourceFoodProductionDemand(AmountResource resource) {
+        double demand = 0D;
+
+        // Get highest manufacturing tech level in settlement.
+        if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
+            int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
+                    techLevel).iterator();
+            while (i.hasNext()) {
+                double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
+                demand += manufacturingDemand;
+            }
+        }
+
+        return demand;
+    }
     /**
      * Gets the demand for an input amount resource in a manufacturing process.
      * @param resource the amount resource.

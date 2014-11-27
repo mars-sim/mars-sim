@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-25
  * @author Scott Davis
  */
 
@@ -30,6 +30,9 @@ public class AmountResourceConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
 	private static final String LIFE_SUPPORT = "life-support";
+	
+	// 2014-11-25 Added edible
+	private static final String EDIBLE = "edible";
 	
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
@@ -66,8 +69,12 @@ public class AmountResourceConfig implements Serializable {
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
+			// 2014-11-25 Added edible 
+			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
+			
 			// Create new amount resource.
-			AmountResource resource = new AmountResource(name, description, phase, lifeSupport);
+			// 2014-11-25 Added edible
+			AmountResource resource = new AmountResource(name, description, phase, lifeSupport, edible);
 			resources.add(resource);
 		}
 	}

@@ -3,6 +3,16 @@
 <!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
 
 <crop-list>
+
+<!-- References : 
+1. Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006 
+2. NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
+http://sourceforge.net/p/mars-sim/code/2842/
+3. Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
+
+For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
+-->
+
 	<crop name="Cabbage" 
     	growing-time="85.0" 
     	crop-category="Vegetable Group" 
@@ -54,9 +64,9 @@
     <crop name="Lettuce" 
     	growing-time="28.0" 
     	crop-category="Vegetable Group" 
-    	edible-biomass="131.35"
+    	edible-biomass="3"
     	edible-water-content=".95"
-    	inedible-biomass="7.3" 
+    	inedible-biomass="0.5" 
     	/>
     	
     <crop name="Onion" 
@@ -78,25 +88,41 @@
     <crop name="Peanut"
         growing-time="104.0" 
     	crop-category="Legume Group" 
-    	edible-biomass="5.96" 
+    	edible-biomass="6" 
     	edible-water-content="5.6"
-    	inedible-biomass="168.75" 
+    	inedible-biomass="18" 
     	/>  
     	    	
      <crop name="Rice"
-        growing-time="85.0" 
+        growing-time="100.0" 
     	crop-category="Grain Group" 
     	edible-biomass="10.3" 
     	edible-water-content=".12"
-    	inedible-biomass="211.58" 
+    	inedible-biomass="38" 
     	/>	
     	   	
+    <crop name="Wheat"
+        growing-time="80" 
+    	crop-category="Grain Group" 
+    	edible-biomass="13" 
+    	edible-water-content=".12"
+    	inedible-biomass="35" 
+    	/>	
+
+    <crop name="Potato" 
+    	growing-time="100.0" 
+    	crop-category="Vegetable Group" 
+    	edible-biomass="30"
+    	edible-water-content=".8"
+    	inedible-biomass="20" 
+    	/>
+    	    	   	
      <crop name="Soybean"
-        growing-time="97.0" 
+        growing-time="93" 
     	crop-category="Legume Group" 
-    	edible-biomass="5.04" 
+    	edible-biomass="7" 
     	edible-water-content=".10"
-    	inedible-biomass="68.04" 
+    	inedible-biomass="13" 
     	/>	
     	
     	
