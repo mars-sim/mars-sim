@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2014-11-17
+ * @version 3.07 2014-11-28
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
@@ -280,6 +281,11 @@ public class MainWindow {
 
 			// Open navigator tool after creating new simulation.
 			desktop.openToolWindow(NavigatorWindow.NAME);
+			
+			// Open user guide tool.
+            desktop.openToolWindow(GuideWindow.NAME);
+            GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+            ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
 

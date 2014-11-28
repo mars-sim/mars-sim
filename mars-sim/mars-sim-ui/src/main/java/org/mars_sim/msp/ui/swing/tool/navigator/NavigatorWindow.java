@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;  
@@ -352,11 +352,21 @@ implements ActionListener {
 
 				if ((latitude >= 0D) && (latitude <= 90D)) {
 					if ((longitude >= 0D) && (longitude <= 180)) {
-						if (latDirStr.equals(Msg.getString("direction.northShort"))) latitude = 90D - latitude; //$NON-NLS-1$
-						else latitude += 90D;
-						if (longitude > 0D) {
-							if (longDirStr.equals(Msg.getString("direction.westShort"))) longitude = 360D - longitude; //$NON-NLS-1$
+					    String northString = Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort");
+						if (latDirStr.equals(northString)) {
+						    latitude = 90D - latitude; //$NON-NLS-1$
 						}
+						else {
+						    latitude += 90D;
+						}
+						
+						String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
+						if (longitude > 0D) {
+							if (longDirStr.equals(westString)) {
+							    longitude = 360D - longitude; //$NON-NLS-1$
+							}
+						}
+						
 						double phi = Math.PI * (latitude / 180D);
 						double theta = (2 * Math.PI) * (longitude / 360D);
 						updateCoords(new Coordinates(phi, theta));
