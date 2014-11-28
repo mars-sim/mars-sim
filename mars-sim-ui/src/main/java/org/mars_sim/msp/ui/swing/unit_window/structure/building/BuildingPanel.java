@@ -9,18 +9,28 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
@@ -51,6 +61,8 @@ extends JPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+    private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());
+
 	/** The name of the panel. */
 	private String panelName;
 	/** The building this panel is for. */
@@ -59,8 +71,10 @@ extends JPanel {
 	private List<BuildingFunctionPanel> functionPanels;
 
 	//private String buildingType;
-	
-
+	// 2014-11-27 Added desktop and buildingNameLabel
+	private MainDesktopPane desktop;
+	private JLabel buildingNameLabel;
+	private String newName;
 	/**
 	 * Constructor
 	 *
@@ -75,13 +89,41 @@ extends JPanel {
         // Initialize data members
         this.panelName = panelName;
         this.building = building;
+        this.desktop = desktop;
         //buildingType = building.getBuildingType();
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
         
         // Set layout
         setLayout(new BorderLayout(0, 0));
+ 
+        // 2014-11-27 Added namePanel and buildingNameLabel
+        JPanel namePanel = new JPanel(new FlowLayout());
+        //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+        buildingNameLabel = new JLabel(building.getNickName());
+        buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        namePanel.add(buildingNameLabel);
+        add(namePanel, BorderLayout.NORTH);
         
+    
+		//2014-11-27  Added renameBtn for renaming a building
+		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JButton renameBtn = new JButton(Msg.getString(
+				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
+		renameBtn.setPreferredSize(new Dimension(60, 20));
+		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
+		renameBtn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+				// if rename is done successfully, then update the building name
+				boolean isRenamed = renameBuilding();
+				if (isRenamed)
+					buildingNameLabel.setText(newName);
+			}
+		});
+		btnPanel.add(renameBtn);		
+		namePanel.add(btnPanel);
+		
         // Prepare function scroll panel.
         JScrollPane functionScrollPanel = new JScrollPane();
         //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
@@ -299,7 +341,42 @@ extends JPanel {
     }
 
 
-	  
+	/**
+	 * Ask for a new building name
+	 * @return pop up jDialog
+	 */
+	// 2014-11-27 Moved askNameDialog() from TabPanelBuilding.java to here
+	public String askNameDialog() {
+		return JOptionPane
+			.showInputDialog(desktop, 
+					Msg.getString("BuildingPanel.renameBuilding.dialogInput"),
+					Msg.getString("BuildingPanel.renameBuilding.dialogTitle"),
+			        JOptionPane.QUESTION_MESSAGE);
+	}
+	
+	/**
+	 * Change and validate the new name of a Building
+	 * @return call Dialog popup
+	 */
+	// 2014-11-27 Moved renameBuilding() from TabPanelBuilding.java to here
+	private boolean renameBuilding() {
+		boolean isRenamed = false;
+		JDialog.setDefaultLookAndFeelDecorated(true);
+		String oldName = building.getNickName();
+			logger.info("Old name was " + oldName);
+		newName = askNameDialog();
+				
+		if (newName.trim().equals(null) || (newName.trim().length() == 0)) {
+			newName = askNameDialog();
+		}
+		else {
+			building.setNickName(newName);
+			logger.info("New name is now " + newName);
+			isRenamed = true;
+		}
+		return isRenamed;
+	}
+
     /**
      * Gets the panel's name.
      * @return panel name

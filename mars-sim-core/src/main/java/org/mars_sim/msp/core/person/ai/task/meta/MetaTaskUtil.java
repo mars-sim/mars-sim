@@ -31,7 +31,7 @@ public class MetaTaskUtil {
         
         // Populate metaTasks list with all meta tasks.
         // 2014-11-06 Added MakeSoyMeta(), DrinkSoymilkMeta()
-        metaTasks.add(new MakeSoyMeta());
+        //metaTasks.add(new MakeSoyMeta());
         metaTasks.add(new DrinkSoymilkMeta());
         // 2014-11-24 Added ProduceFoodMeta()
         metaTasks.add(new ProduceFoodMeta());

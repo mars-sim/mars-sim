@@ -267,7 +267,7 @@ extends UnitTableModel {
 					Iterator<Crop> k = cropsList.iterator();
 			        while (k.hasNext()) {
 			        	kk++;
-						logger.info("setUpNewCropCache() : kk is " + kk  ) ;
+						//logger.info("setUpNewCropCache() : kk is " + kk  ) ;
 			            Crop crop = k.next();
 			            CropType cropType = crop.getCropType();
 			            String testCat = cropType.getCropCategory();
