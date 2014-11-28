@@ -3,7 +3,7 @@
 # Mars Simulation Project
 # Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.07 2014-11-18
+# @version 3.07 2014-11-28
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.4 or later and the 'SearchResults' file to be in the
@@ -87,7 +87,7 @@ for tsvline in tsvlinelist:
 		landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
 # Center_Longitude
 		if Decimal(valuelist[index_long]) > 180:
-				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])-180))+" W") 
+				landmark.setAttribute("longitude", str((360 - Decimal(valuelist[index_long])))+" W")
 		else:
 				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])))+" E") 
 # Center_Latitude
