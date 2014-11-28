@@ -30,10 +30,12 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ComponentMover;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 // TODO: is extending to JInternalFrame better?
@@ -51,16 +53,18 @@ public class PopUpBuildingMenu extends JPopupMenu {
     	this.building = building;
     	this.settlement = swindow.getMapPanel().getSettlement();
         this.desktop = swindow.getDesktop();
-    	itemOne = new JMenuItem("Building Info");
-        itemTwo = new JMenuItem("Building Panel");       
+    	itemOne = new JMenuItem(Msg.getString("PopUpBuildingMenu.itemOne"));
+        itemTwo = new JMenuItem(Msg.getString("PopUpBuildingMenu.itemTwo"));       
         add(itemOne);
         add(itemTwo);
         final String buildingName = building.getNickName();
 
         itemTwo.addActionListener(new ActionListener() {
-        	 
             public void actionPerformed(ActionEvent e) {
         		final JDialog dialog = new JDialog();
+        		//2014-11-27 Added ComponentMover Class
+        		ComponentMover cm = new ComponentMover();
+        		cm.registerComponent(dialog);
             	//final JInternalFrame dialog = new JInternalFrame();			
 				JPanel panel = new JPanel();
 				final BuildingPanel buildingPanel = new BuildingPanel("Default", building, desktop);				
@@ -71,12 +75,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
                 dialog.setLocation(location);
 				dialog.add(panel);			
 				//dialog.setResizable(true);
-				dialog.setSize(280,320); 
+				dialog.setSize(280,320);  // if undecorated, add 20 to height
 				dialog.setLayout(new FlowLayout()); 
 				//dialog.setModal(false);
 				dialog.setTitle(buildingName);
 				//removeButtons(dialog);
-				//dialog.setUndecorated(true);
+				dialog.setUndecorated(true);
 				dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.orange) );
 				dialog.setVisible(true);
 				/*
@@ -125,13 +129,16 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				//	desktop.openUnitWindow(settlement, false);
 				//}	
             	final JDialog dialog = new JDialog();
+            	//2014-11-27 Added ComponentMover Class
+        		ComponentMover cm = new ComponentMover();
+        		cm.registerComponent(dialog);
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 dialog.setLocation(location);
             	JLabel dialogLabel = new JLabel(buildingName, JLabel.CENTER);
 				dialogLabel.setOpaque(false);
 				//dialog.setResizable(true);
 			    dialogLabel.setFont(new Font("Serif", Font.ITALIC, 16));
-			    dialogLabel.setForeground(new Color(102, 51, 0)); // dark brown
+			    dialog.setForeground(new Color(102, 51, 0)); // dark brown
 			   	// 2014-11-27 Added building.getDescription() for loading text
 			    String str = building.getDescription();
 			    JTextArea ta = new JTextArea();
@@ -158,7 +165,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 		        setBorder(new MarsPanelBorder());
 				dialog.add(panel);		
 				dialog.setForeground(Color.orange);
-				dialog.setSize(200,320); 
+				dialog.setSize(200,320); // panel size is 180,300
 				dialog.setLayout(new FlowLayout()); 
 				dialog.setModal(false);
 				//removeButtons(dialog);

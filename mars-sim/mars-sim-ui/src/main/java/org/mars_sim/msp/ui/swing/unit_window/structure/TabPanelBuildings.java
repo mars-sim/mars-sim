@@ -47,8 +47,6 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String RENAME = Msg.getString("TabPanelBuildings.renameBuilding.renameButton"); //$NON-NLS-1$
-	
 	private DefaultComboBoxModel<Building> buildingComboBoxModel;
 	private JComboBoxMW<Building> buildingComboBox;
 	private List<Building> buildingsCache;
@@ -57,8 +55,6 @@ implements ActionListener {
 	private List<BuildingPanel> buildingPanels;
 	private int count;
 
-	//2014-10-29 Added renameBtn
-	private JButton renameBtn;
 	private Building building;
 
 	/**
@@ -66,6 +62,7 @@ implements ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
+	// 2014-11-27 Moved rename building capability to BuildingPanel.java
 	public TabPanelBuildings(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
@@ -121,19 +118,6 @@ implements ActionListener {
 		buildingComboBox.addActionListener(this);
 		buildingComboBox.setMaximumRowCount(10);
 		buildingSelectPanel.add(buildingComboBox);		
-
-		//2014-10-29  Added renameBtn for renaming a building
-		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		renameBtn = new JButton(RENAME);
-		renameBtn.setPreferredSize(new Dimension(60, 20));
-		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
-		renameBtn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-				renameBuilding();
-			}
-		});
-		btnPanel.add(renameBtn);		
-		buildingSelectPanel.add(btnPanel);
 		
 		// Create building display panel.
 		buildingDisplayPanel = new JPanel();
@@ -153,42 +137,6 @@ implements ActionListener {
 			count++;
 		}
 	
-	}
-
-	/**
-	 * Ask for a new building name
-	 * @return pop up jDialog
-	 */
-	// 2014-10-29  Added askNameDialog()
-	public String askNameDialog() {
-		return JOptionPane
-			.showInputDialog(desktop, 
-					Msg.getString("TabPanelBuildings.JDialog.renameBuilding.input"),
-					Msg.getString("TabPanelBuildings.JDialog.renameBuilding.title"),
-			        JOptionPane.QUESTION_MESSAGE);
-	}
-	
-	/**
-	 * Change and validate the new name of a Building
-	 * @return call Dialog popup
-	 */
-	// 2014-10-29  Added renameBuilding()
-	private void renameBuilding() {
-		JDialog.setDefaultLookAndFeelDecorated(true);
-		String oldName = building.getNickName();
-			System.out.println("TabPanelBuildings.java : renameBuilding() : old name is " + oldName);
-		String newName = askNameDialog();
-				
-		if (newName.trim().equals(null) || (newName.trim().length() == 0))
-			newName = askNameDialog();
-		else {
-			building.setNickName(newName);
-			System.out.println("TabPanelBuildings.java : renameBuilding() : new name is " + newName);
-		}
-		//Settlement settlement = buildingDisplayPanel.getSettlement();
-		//if (settlement != null) getDesktop().openUnitWindow(settlement, false);
-        //desktop.disposeUnitWindow(unit.getContainerUnit());
-		//desktop.openUnitWindow(unit.getContainerUnit(), false);
 	}
 	
 	/** Set the new name of a Building
