@@ -4,7 +4,7 @@
  * @version 3.07 2014-11-25
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.structure.food;
+package org.mars_sim.msp.core.foodProduction;
 
 import java.util.ArrayList;
 import java.util.Collections;

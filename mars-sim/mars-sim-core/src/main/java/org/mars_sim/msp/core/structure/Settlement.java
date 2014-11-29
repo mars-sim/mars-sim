@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2014-11-27
  * @author Scott Davis
  */
 
@@ -60,8 +60,10 @@ implements LifeSupport {
     private static final double NORMAL_AIR_PRESSURE = 101325D;
     /** Normal temperature (celsius) */
     private static final double NORMAL_TEMP = 22.5D;
-    // minimal acceptable temperature for living space (arbitrary)
-    private static final double MIN_TEMP = 10.0D;
+    // maximum & minimal acceptable temperature for living space (arbitrary)
+    // TODO: where are these two values from people.xml saved into by PersonConfig.java?
+    private static final double MIN_TEMP = 0.0D;
+    private static final double MAX_TEMP = 48.0D;
 
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
@@ -277,8 +279,9 @@ implements LifeSupport {
         // TODO: check against indoor air pressure
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
-        // TODO: check against temperature
-        if (getTemperature() < MIN_TEMP)
+        // TODO: check if this is working
+        // 2014-11-28 Added MAX_TEMP
+        if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
             result = false;
 
         return result;

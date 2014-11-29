@@ -432,11 +432,23 @@ implements VehicleOperator, Serializable {
         if (takeFromInv) {
             health.consumeFood(amount, getContainerUnit());
         }
-        else {
+        else { // TODO: mkung: figure out what the intended consequence of calling 
+        	   // this "empty" health.consumFood() method is
             health.consumeFood(amount);
         }
     }
 
+    /**
+     * Person consumes given amount of food.
+     * @param amount the amount of food to consume (in kg)
+     * @param takeFromInv is food taken from local inventory?
+     */
+    // 2014-11-28 Added consumeDessert()
+    public void consumeDessert(double amount, boolean takeFromInv) {
+        if (takeFromInv) {
+            health.consumeDessert(amount, getContainerUnit());
+        }
+    }
     /**
      * Person consumes given amount of water.
      * @param amount the amount of water to consume (in kg)

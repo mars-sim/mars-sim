@@ -53,6 +53,7 @@ implements Serializable {
     private List<CookedMeal> meals;
     private double cookingWorkTime;
     
+    private int numOfCookedMealCache;
     private Inventory inv ;
 
     /**
@@ -361,9 +362,11 @@ implements Serializable {
 	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeansFraction*legumesFraction
 	        if (soybeansFraction*legumesFraction > 0.0001) inv.retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
 
+	        String nameOfMeal = "Mixed Bowl";
 	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
 	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(mealQuality, time));
+	        meals.add(new CookedMeal(nameOfMeal, mealQuality, time));
+	        
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	        			" has " + meals.size() + " meals and quality is " + mealQuality + ")");
@@ -382,15 +385,21 @@ implements Serializable {
      * @throws BuildingException if error occurs.
      */
     // 2014-10-08: Currently converting each unit of expired meal into 0.5 kg of packed food 
+    // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
-
-        // Move expired meals back to food again (refrigerate leftovers).
-   
-        Iterator<CookedMeal> i = meals.iterator();
-        while (i.hasNext()) {
+     boolean hasAMeal = hasCookedMeal(); 
+     //logger.info(" hasAMeal : "+ hasAMeal);
+     if ( hasAMeal ) {
+         int newNumOfCookedMeal = meals.size();
+         //if ( numOfCookedMealCache != newNumOfCookedMeal)
+         //	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+         Iterator<CookedMeal> i = meals.iterator();
+         while (i.hasNext()) {
             CookedMeal meal = i.next();
+            //logger.info("CookedMeal : " + meal.getName());
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
+             // Move expired meals back to food again (refrigerate leftovers).
+             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
                 try {
                     PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                     AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
@@ -406,13 +415,15 @@ implements Serializable {
                     i.remove();
 
                     if(logger.isLoggable(Level.FINEST)) {
-                        logger.finest("Cooked meal expiring at " + 
+                        logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
                                 getBuilding().getBuildingManager().getSettlement().getName());
                     }
                 }
                 catch (Exception e) {}
             }
         }
+         numOfCookedMealCache = newNumOfCookedMeal;
+    	}
     }
 
     /**

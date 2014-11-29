@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.structure.food;
+package org.mars_sim.msp.core.foodProduction;
 
 public enum FoodType {
 

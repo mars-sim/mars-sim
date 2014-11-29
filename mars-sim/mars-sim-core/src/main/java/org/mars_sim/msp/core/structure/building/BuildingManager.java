@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-11-24
+ * @version 3.07 2014-11-27
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
-import org.mars_sim.msp.core.structure.building.function.MakingSoy;
+import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.Dining;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
@@ -772,7 +772,7 @@ implements Serializable {
             if (config.hasCooking(buildingName)) {
                 result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
                 // 2014-11-06 Added MakingSoy
-                result += MakingSoy.getFunctionValue(buildingName, newBuilding, settlement);                
+                result += PreparingDessert.getFunctionValue(buildingName, newBuilding, settlement);                
             }
             if (config.hasDining(buildingName))
                 result += Dining.getFunctionValue(buildingName, newBuilding, settlement);

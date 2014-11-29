@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.07 2014-11-24
+ * @version 3.07 2014-11-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -31,8 +31,9 @@ public class MetaTaskUtil {
         
         // Populate metaTasks list with all meta tasks.
         // 2014-11-06 Added MakeSoyMeta(), DrinkSoymilkMeta()
-        //metaTasks.add(new MakeSoyMeta());
-        metaTasks.add(new DrinkSoymilkMeta());
+        // 2014-11-28 Changed name to PrepareSoymilkMeta()
+        metaTasks.add(new PrepareDessertMeta());
+        metaTasks.add(new EatDessertMeta());
         // 2014-11-24 Added ProduceFoodMeta()
         metaTasks.add(new ProduceFoodMeta());
         

@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.MakeSoy;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -46,8 +46,8 @@ implements Serializable {
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
-		// 2014-11-02 Added MakeSoy.class
-		//jobTasks.add(MakeSoy.class);
+		// 2014-11-02 Changed name to PrepareSoymilk.class
+		jobTasks.add(PrepareDessert.class);
 		//2014-11-23 Added ProduceFood.class
 		jobTasks.add(ProduceFood.class);
 

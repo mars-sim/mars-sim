@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookedMeal.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -25,16 +25,24 @@ implements Serializable {
 	// Data members
 	private int quality;
 	private MarsClock expirationTime;
-
+	// 2014-11-28 Added name
+	private String name;
+	
 	/**
 	 * Constructor.
 	 * @param quality the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(int quality, MarsClock creationTime) {
+	public CookedMeal(String name, int quality, MarsClock creationTime) {
 		this.quality = quality;
+		this.name = name;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
+	}
+	
+	// 2014-11-28 Added getName()
+	public String getName() {
+		return name;
 	}
 
 	/**

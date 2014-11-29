@@ -5,7 +5,7 @@
  * http://tips4java.wordpress.com/2009/06/14/moving-windows/
  *  */
 
-package org.mars_sim.msp.ui.swing.tool;
+package org.mars_sim.msp.ui.swing;
 
 
 import java.awt.*;

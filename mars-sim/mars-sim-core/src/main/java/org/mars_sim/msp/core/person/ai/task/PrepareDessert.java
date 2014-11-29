@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MakeSoy.java
- * @version 3.07 2014-11-06
+ * PrepareDessert.java
+ * @version 3.07 2014-11-28
  * @author Manny Kung
  * 
  *   
@@ -27,15 +27,14 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.MakingSoy;
+import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
 
 /** 
- * The MakeSoy class is a task for making soy related food items 
- * in a building with the MakingSoy function.
+ * The PrepareDessert class is a task for making dessert 
  */
 // 2014-11-06 Note that SkillType stays the same as COOKING
-// Only BuildingFunction is changed to MAKINGSOY
-public class MakeSoy
+// 2014-11-28 Changed Class name from MakeSoy to PrepareDessert
+public class PrepareDessert
 extends Task
 implements Serializable {
 
@@ -43,15 +42,15 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MakeSoy.class.getName());
+	private static Logger logger = Logger.getLogger(PrepareDessert.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.makeSoy"); //$NON-NLS-1$
+            "Task.description.prepareDessert"); //$NON-NLS-1$
 	
     /** Task phases. */
-    private static final TaskPhase MAKINGSOY = new TaskPhase(Msg.getString(
-            "Task.phase.makingSoy")); //$NON-NLS-1$
+    private static final TaskPhase PREPARING_DESSERT = new TaskPhase(Msg.getString(
+            "Task.phase.prepareDessert")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -67,58 +66,63 @@ implements Serializable {
 	private static final double DURATION = 80D;
 
 	// Data members
-	/** The kitchen the person is making soy product. */
-	private MakingSoy kitchen;
+	/** The kitchen the person is making soymmlk. */
+	private PreparingDessert kitchen;
 
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing task.
 	 */
-	public MakeSoy(Person person) {
+	public PrepareDessert(Person person) {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
-        //logger.info("just called MakeSoy's constructor");
+        // logger.info("just called MakeSoy's constructor");
 
         // Initialize data members
-        setDescription(Msg.getString("Task.description.makeSoy.detail", 
+        setDescription(Msg.getString("Task.description.prepareDessert.detail", 
                 getSoyProductName())); //$NON-NLS-1$
         
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
+        
         if (kitchenBuilding != null) {
-            kitchen = (MakingSoy) kitchenBuilding.getFunction(BuildingFunction.MAKINGSOY);
+            kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
 
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding);
+            
+            //2014-10-15 mkung: check if there are any, if not, endTask()
+            double soymilkAvailable = kitchen.checkAmountOfDessert();
+            
         }
         else endTask();
 
-        //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-        double soyAvailable = kitchen.checkAmountOfSoybeans();
+        //2014-10-15 mkung: check if there are any, if not, endTask()
+        double soymilkAvailable = kitchen.checkAmountOfDessert();
         
         //logger.info("constructor : soyAvailble is " + soyAvailable);
         
-        if (soyAvailable < 0.2) {
-            logger.severe("constructor : no more soybean left!");
+        if (soymilkAvailable < 0.5) {
+            logger.severe("less than 0.5 kg soymilk left!");
             
         	endTask();
         } else  {
                 
 	        // Add task phase
-	        addPhase(MAKINGSOY);
-	        setPhase(MAKINGSOY);
+	        addPhase(PREPARING_DESSERT);
+	        setPhase(PREPARING_DESSERT);
 	
 	        String jobName = person.getMind().getJob().getName(person.getGender());
-	        logger.finest(jobName + " " + person.getName() + " making soy products in " + kitchen.getBuilding().getName() + 
+	        logger.finest(jobName + " " + person.getName() + " making dessert in " + kitchen.getBuilding().getName() + 
 	                " at " + person.getSettlement());
         }
     }
     
-    @Override
+  	@Override
     protected BuildingFunction getRelatedBuildingFunction() {
-        return BuildingFunction.MAKINGSOY;
+        return BuildingFunction.PREPARING_DESSERT;
     }
 
     /**
@@ -128,10 +132,10 @@ implements Serializable {
      */
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            throw new IllegalArgumentException("The MakingSoy task phase is null");
+            throw new IllegalArgumentException("The Preparing Desert task phase is null");
         }
-        else if (MAKINGSOY.equals(getPhase())) {
-            return soyMakingPhase(time);
+        else if (PREPARING_DESSERT.equals(getPhase())) {
+            return preparingDessertPhase(time);
         }
         else {
             return time;
@@ -143,7 +147,7 @@ implements Serializable {
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left after performing the phase.
      */
-    private double soyMakingPhase(double time) {
+    private double preparingDessertPhase(double time) {
 
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -151,7 +155,7 @@ implements Serializable {
             return time;
         }
 
-        if (!isSoyTime(person)) {
+        if (!isDessertTime(person)) {
             endTask();
             kitchen.cleanup();
             return time;
@@ -198,7 +202,7 @@ implements Serializable {
      * Gets the kitchen the person is making soy products.
      * @return kitchen
      */
-    public MakingSoy getKitchen() {
+    public PreparingDessert getKitchen() {
         return kitchen;
     }
 
@@ -229,7 +233,7 @@ implements Serializable {
      * @param person the person to check for.
      * @return true if it is soy product making time
      */
-    public static boolean isSoyTime(Person person) {
+    public static boolean isDessertTime(Person person) {
         boolean result = false;
 
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -257,7 +261,7 @@ implements Serializable {
      */
     //TODO: May change to specific products such as Soymilk, Soybean oil and Tofu in near future
     private String getSoyProductName() {        
-    	String result = "Soy Products";
+    	String result = "Soymilk";
         return result;
     }
 
@@ -272,7 +276,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.MAKINGSOY);
+            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
@@ -300,7 +304,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                MakingSoy kitchen = (MakingSoy) building.getFunction(BuildingFunction.MAKINGSOY);
+                PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) result.add(building);
             }
         }
