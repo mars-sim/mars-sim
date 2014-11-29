@@ -25,10 +25,10 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.foodProduction.Food;
+import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.food.Food;
-import org.mars_sim.msp.core.structure.food.FoodUtil;
 
 public class FoodInventoryTableModel
 extends AbstractTableModel

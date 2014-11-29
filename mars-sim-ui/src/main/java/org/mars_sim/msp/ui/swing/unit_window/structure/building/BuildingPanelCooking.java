@@ -81,7 +81,7 @@ extends BuildingFunctionPanel {
 
 		// Prepare meal quality label
 		mealQualityCache = kitchen.getBestMealQuality();
-		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.qualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
+		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(mealQualityLabel);
 	}	
 
@@ -104,7 +104,7 @@ extends BuildingFunctionPanel {
 		// Update meal quality
 		if (mealQualityCache != kitchen.getBestMealQuality()) {
 			mealQualityCache = kitchen.getBestMealQuality();
-			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.qualityOfMeals", mealQualityCache)); //$NON-NLS-1$
+			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache)); //$NON-NLS-1$
 		}
 	}
 }

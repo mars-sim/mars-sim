@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2014-11-19
+ * @version 3.07 2014-11-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -182,7 +182,7 @@ implements Serializable {
             if (requireAirPressure(support, config.getMinAirPressure()))
                 logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
             if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
-                logger.log(Level.SEVERE, person.getName() + " has insufficient temperature.");
+                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
         }
         catch (Exception e) {
             logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
@@ -406,18 +406,40 @@ implements Serializable {
 
     }
 
+    // 2014-11-28 Added consumeDessert()
+    public void consumeDessert(double amount, Unit container) {
+        if (container == null) throw new IllegalArgumentException("container is null");
+	
+		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
+		
+		double foodEaten = amount;
+		double soymilkAvailable = container.getInventory().getAmountResourceStored(soymilkAR, false);
+	
+		if (soymilkAvailable < 0.5D) {
+			throw new IllegalStateException("No more serving of soymilk available. Each serving is 0.5 kg");
+		}
 
+		// if container has less than enough food, finish up all food in the container
+		if (foodEaten > soymilkAvailable)
+			foodEaten = soymilkAvailable;
+
+		foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
+		// subtract food from container
+		container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);
+    }
     /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.
      */
-	// 2014-11-06 mkung : Toss a dice to decide what food category to eat
+	// 2014-11-06 Toss a dice to decide what food category to eat
 	// Spice Group is excluded from the selection
+    // 2014-11-28 Temporarily disable selection of other fresh food
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
-
+		consumePackedFood(amount, container, LifeSupport.FOOD);
+        /*
     	int choice = RandomUtil.getRandomInt(9);
 
         switch (choice) {
@@ -449,6 +471,7 @@ implements Serializable {
        		consumePackedFood(amount, container, LifeSupport.FOOD);
        		break;
     	}
+    	*/
     }
     	
     /**
@@ -472,22 +495,18 @@ implements Serializable {
     			else if (!noMoreVeggies) consumeVegetables(amount, container, "Vegetable Group");
        			else if (!noMoreGrains) consumeGrains(amount, container, "Grain Group");
        			//else if (!noMoreSpices) consumeSpices(amount, container, "Spice Group");
-                throw new IllegalStateException("No more packaged food available.");   
+                throw new IllegalStateException("Warning: less than 0.5 kg total food remaining.");   
             }
 
             // if container has less than enough food, finish up all food in the container
             if (foodEaten > foodAvailable)
                 foodEaten = foodAvailable;
-
             //2014-11-19 Truncated foodEaten to 4 decimal places
             foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
             // subtract food from container
             container.getInventory().retrieveAmountResource(food, foodEaten);
-            //System.out.println("PhysicalCondition.java : consumeFood() : food Eaten is "
-            //	+ foodEaten +  ", food remaining is " + (foodAvailable-foodEaten));
-
-
-
+            //logger.info("consumePackedFood() : food Eaten : "
+            //	+ foodEaten +  ", food remaining : " + (foodAvailable-foodEaten));
     }
 
     /**

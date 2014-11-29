@@ -35,12 +35,11 @@ public enum BuildingFunction {
 	RESEARCH					(Msg.getString("BuildingFunction.research")), //$NON-NLS-1$
 	RESOURCE_PROCESSING			(Msg.getString("BuildingFunction.resourceProcessing")), //$NON-NLS-1$
 	STORAGE						(Msg.getString("BuildingFunction.storage")),  //$NON-NLS-1$
-	// 2014-11-06 Added MAKINGSOY and DRINKINGSOY
-	MAKINGSOY					(Msg.getString("BuildingFunction.makingSoy")),  //$NON-NLS-1$
-	// 2014-11-08 Added	DRINKING and MAKINGCOFFEE
-	//DRINKING					(Msg.getString("BuildingFunction.drinking")),  //$NON-NLS-1$
+	// 2014-11-28 Added PREPARING_DESSERT
+	PREPARING_DESSERT					(Msg.getString("BuildingFunction.preparingDessert")),  //$NON-NLS-1$
+	// 2014-11-08 Added	MAKINGCOFFEE
 	SERVINGCOFFEE				(Msg.getString("BuildingFunction.servingCoffee")), 
-	//2014-11-23 Added foodProduction
+	//2014-11-23 Added FOOD_PRODUCTION
 	FOOD_PRODUCTION  			(Msg.getString("BuildingFunction.foodProduction")), //$NON-NLS-1$	
 	;
 

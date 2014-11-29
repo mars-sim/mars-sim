@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.MakingSoy;
+import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
@@ -214,12 +214,12 @@ extends JPanel {
         
 		//2014-11-11 Added soy making function
 		// Prepare cooking panel if building has soy making function.
-		if (building.hasFunction(BuildingFunction.MAKINGSOY)) {
+		if (building.hasFunction(BuildingFunction.PREPARING_DESSERT)) {
 //			try {
-				MakingSoy kitchen = (MakingSoy) building.getFunction(BuildingFunction.MAKINGSOY);
-				BuildingFunctionPanel soyMakingPanel = new BuildingPanelMakingSoy(kitchen, desktop);
-				functionPanels.add(soyMakingPanel);
-				functionListPanel.add(soyMakingPanel);
+			PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
+				BuildingFunctionPanel preparingDessertPanel = new BuildingPanelPreparingDessert(kitchen, desktop);
+				functionPanels.add(preparingDessertPanel);
+				functionListPanel.add(preparingDessertPanel);
 //			}
 //			catch (BuildingException e) {}
 		}		

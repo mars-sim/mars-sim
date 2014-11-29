@@ -85,33 +85,35 @@ implements Serializable {
         
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
-        if (kitchenBuilding != null) {
-            kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
-            // Walk to kitchen building.
-            walkToActivitySpotInBuilding(kitchenBuilding);
-        }
-        else endTask();
-
-        //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-        double foodAvailable = kitchen.getTotalFreshFood();
-        
-        //logger.info("constructor : foodAvailble is " + foodAvailable);
-        
-        if (foodAvailable < 2.0) {
-            logger.severe("< 2 kg total fresh food (not packed food) remaining. No meal cooking");
-            
-        	endTask();
-        } else  {
-                
-	        // Add task phase
-	        addPhase(COOKING);
-	        setPhase(COOKING);
+	        if (kitchenBuilding != null) {
+	            kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	
-	        String jobName = person.getMind().getJob().getName(person.getGender());
-	        logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
-	                " in " + person.getSettlement());
-        }
+	            // Walk to kitchen building.
+	            walkToActivitySpotInBuilding(kitchenBuilding);
+	            
+	            //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
+	            double freshFoodAvailable = kitchen.getTotalFreshFood();
+	            
+	            if (freshFoodAvailable < 0.5) {
+	                logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
+	                
+	                endTask();
+      
+	            } else {
+	            	 // Add task phase
+	            	 addPhase(COOKING);
+		    	     setPhase(COOKING);
+		    	
+		    	     String jobName = person.getMind().getJob().getName(person.getGender());
+		    	     logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
+		    	                " in " + person.getSettlement());
+		            
+	            	
+	            }
+	            
+	        }
+	        else endTask();
     }
     
     @Override

@@ -46,7 +46,7 @@ implements Serializable {
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
 	// 2014-10-14 mkung: changed element from "alpha-team" to "person-list" , from alphaTeam to personList
-	private static final String ALPHA_TEAM = "alpha-team";
+	//private static final String ALPHA_TEAM = "alpha-team";
 	private static final String PERSON_LIST = "person-list";
 	private static final String PERSON = "person";
 	private static final String NAME = "name";

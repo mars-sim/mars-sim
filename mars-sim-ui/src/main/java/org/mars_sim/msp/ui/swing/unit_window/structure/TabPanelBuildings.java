@@ -63,6 +63,7 @@ implements ActionListener {
 	 * @param desktop the main desktop.
 	 */
 	// 2014-11-27 Moved rename building capability to BuildingPanel.java
+	@SuppressWarnings("unchecked")
 	public TabPanelBuildings(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
@@ -97,10 +98,10 @@ implements ActionListener {
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingInfoPanel.add(buildingSelectPanel);
 		
-        JLabel buildingLabel = new JLabel("Selected Building: ", JLabel.CENTER);
-        buildingLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //JLabel buildingLabel = new JLabel("Selected Building: ", JLabel.CENTER);
+        //buildingLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         //buildingLabel.setForeground(new Color(102, 51, 0)); // dark brown
-        buildingSelectPanel.add(buildingLabel);
+        //buildingSelectPanel.add(buildingLabel);
 
 		// Create building combo box model.
 		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
@@ -117,7 +118,7 @@ implements ActionListener {
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxModel);
 		buildingComboBox.addActionListener(this);
 		buildingComboBox.setMaximumRowCount(10);
-		buildingSelectPanel.add(buildingComboBox);		
+		buildingSelectPanel.add(buildingComboBox);
 		
 		// Create building display panel.
 		buildingDisplayPanel = new JPanel();

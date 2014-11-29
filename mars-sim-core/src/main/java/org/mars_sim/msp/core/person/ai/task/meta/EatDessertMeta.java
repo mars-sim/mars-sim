@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * drinkSoymilkMeta.java
- * @version 3.07 2014-11-06
- * @author Scott Davis
+ * EatDessertMeta.java
+ * @version 3.07 2014-11-28
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
@@ -10,21 +10,20 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.DrinkSoymilk;
+import org.mars_sim.msp.core.person.ai.task.EatDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 
-public class DrinkSoymilkMeta implements MetaTask {
+public class EatDessertMeta implements MetaTask {
   
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(DrinkSoymilkMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.drinkSoymilk"); //$NON-NLS-1$
+            "Task.description.eatDessert"); //$NON-NLS-1$
     
-    public DrinkSoymilkMeta() {
-       // logger.info("just called DrinkSoymilkMeta's constructor");
+    public EatDessertMeta() {
     }
     
     @Override
@@ -34,7 +33,7 @@ public class DrinkSoymilkMeta implements MetaTask {
 
     @Override
     public Task constructInstance(Person person) {
-        return new DrinkSoymilk(person);
+        return new EatDessert(person);
     }
 
     @Override
@@ -45,17 +44,17 @@ public class DrinkSoymilkMeta implements MetaTask {
 
         if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
 
-        Building building = DrinkSoymilk.getAvailableDiningBuilding(person);
+        Building building = EatDessert.getAvailableDiningBuilding(person);
         if (building != null) {
             result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
             result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
         }
 
         // Check if there's a cooked meal at a local kitchen.
-        if (DrinkSoymilk.getKitchenWithSoymilk(person) != null) result *= 5D;
+        if (EatDessert.getKitchenWithDessert(person) != null) result *= 5D;
         else {
             // Check if there is food available to eat.
-            if (!DrinkSoymilk.isSoyAvailable(person)) result = 0D;
+            if (!EatDessert.isDessertAvailable(person)) result = 0D;
         }
 
         return result;

@@ -11,11 +11,12 @@
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
 	<process name="Prepare Soy Sprouts from Soybeans"
-			tech="0" skill="0"
+			tech="1" skill="0"
 			work-time="50"
 			process-time="2000" 
 			power-required="0.0">
-		<description>The first step of making soy sprouts is to sanitize soybean seeds with sodium hypochlorite. Second, wash the seeds and soak them in water and wait for germination. When germinated, freeze dry them. </description>
+		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and 
+			wait for germination. When germinated, freeze dry them. </description>
 		
 		<!-- List of inputs for the process (resources and parts). -->
 		<inputs>
@@ -27,9 +28,28 @@
 		
 		<!-- List of outputs from the process (resources, parts, equipment and vehicles). -->
 		<outputs>
-			<resource name="Soy Sprouts" amount="3.0" />
+			<resource name="Soy Sprouts" amount="4.0" />
 		</outputs>
 	</process>
+	
+	<process name="Make Okara and Soymilk from Soybeans" 
+		tech="1" skill="1" work-time="60" process-time="700" 
+			power-required="1.0">
+			
+		<description> Make pulp (Okara) and Soymilk from Soybeans after 
+			Washing, Dehulling, Soaking, Milling, Paste 
+			Heating, and Filtration. </description>
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Soybeans" amount="1.0" />
+			<resource name="Water" amount="16.0" />
+		</inputs>
+		<outputs>
+			<resource name="Okara" amount="0.8" />
+			<resource name="Soymilk" amount="12.0" />
+		</outputs>
+	</process>
+	
 	
 	<process name="Freeze dry vegetables into package food" 
 		tech="1" skill="1" work-time="50" process-time="50" 
@@ -49,7 +69,7 @@
 	</process>
 	
 	<process name="Make two loaves of bread from Soy Flour " 
-		tech="1" skill="1" work-time="50" process-time="50" 
+		tech="1" skill="2" work-time="50" process-time="50" 
 			power-required="1.0">
 			
 		<description> Make bread from Soy Flour </description>
@@ -66,15 +86,15 @@
 	</process>
 	
 	<process name="Make Tofu from Okara and Soymilk" 
-		tech="1" skill="1" work-time="50" process-time="900" 
+		tech="1" skill="2" work-time="50" process-time="700" 
 			power-required="1.0">
 			
 		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants, 
 			gently stir and heat, the curds will separate.</description>
 		
 		<inputs>
-			<resource name="Soymilk" amount="6.0" />
-			<resource name="Okara" amount="1.5" />
+			<resource name="Soymilk" amount="3.0" />
+			<resource name="Okara" amount="0.5" />
 			<resource name="Epsom Salt" amount=".05" />			
 		</inputs>
 		<outputs>
@@ -82,24 +102,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Make Okara and Soymilk from Soybeans" 
-		tech="1" skill="1" work-time="60" process-time="1000" 
-			power-required="2.0">
-			
-		<description> Make pulp (Okara) and Soymilk from Soybeans after 
-			Washing, Dehulling, Soaking, Milling, Paste 
-			Heating, and Filtration. </description>
-		<inputs>
-			<!--<equipment name="oven" number="1" />-->
-			<resource name="Soybeans" amount="1.0" />
-			<resource name="Water" amount="16.0" />
-		</inputs>
-		<outputs>
-			<resource name="Okara" amount="1.5" />
-			<resource name="Soymilk" amount="8.0" />
-		</outputs>
-	</process>
-
+	
 	
 	<process name="Process Soybeans into Soy Flour" 
 		tech="1" skill="2" work-time="50" process-time="1000" 
@@ -116,7 +119,7 @@
 	</process>
 
 	<process name="Extract Soy Protein from Soy Flour" 
-		tech="1" skill="2" work-time="50" process-time="500" 
+		tech="2" skill="2" work-time="50" process-time="500" 
 			power-required="1.0">
 		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
 		<inputs>
@@ -144,7 +147,7 @@
 	</process>
 
 	<process name="Make Veggie Patties from Veg, Tofu and Spice" 
-		tech="2" skill="3" work-time="70" process-time="300" 
+		tech="2" skill="2" work-time="70" process-time="300" 
 			power-required="2.0">	
 		<description>A Veggie patty imitates a burger patty and is made of
 			textured vegetable protein (like soy), legumes (beans), tofu,
