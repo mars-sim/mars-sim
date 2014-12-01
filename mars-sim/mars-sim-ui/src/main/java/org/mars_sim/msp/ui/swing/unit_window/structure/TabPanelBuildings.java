@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -21,10 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;

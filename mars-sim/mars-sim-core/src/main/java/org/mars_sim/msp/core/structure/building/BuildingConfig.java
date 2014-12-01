@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
 import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
-import org.w3c.dom.Node;
 
 /**
  * Provides configuration information about settlement buildings.
