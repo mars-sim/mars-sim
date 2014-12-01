@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-11-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -122,17 +122,17 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		mainPane.add(descriptionPane);
 
 		// Create the description label.
-		descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description"),SwingConstants.LEFT); //$NON-NLS-1$
+		descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", ""),SwingConstants.LEFT); //$NON-NLS-1$
 		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(descriptionLabel);
 
 		// Create the type label.
-		typeLabel = new JLabel(Msg.getString("MainDetailPanel.type")); //$NON-NLS-1$
+		typeLabel = new JLabel(Msg.getString("MainDetailPanel.type", "")); //$NON-NLS-1$
 		typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(typeLabel);
 
 		// Create the phase label.
-		phaseLabel = new JLabel(Msg.getString("MainDetailPanel.phase")); //$NON-NLS-1$
+		phaseLabel = new JLabel(Msg.getString("MainDetailPanel.phase", "")); //$NON-NLS-1$
 		phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(phaseLabel);
 
@@ -230,17 +230,17 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		travelPane.add(vehicleStatusLabel);
 
 		// Create the speed label.
-		speedLabel = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed","")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
 		speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel);
 
 		// Create the distance next navpoint label.
-		distanceNextNavLabel = new JLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint")); //$NON-NLS-1$
+		distanceNextNavLabel = new JLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint", "0")); //$NON-NLS-1$
 		distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel);
 
 		// Create the traveled distance label.
-		traveledLabel = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled")); //$NON-NLS-1$
+		traveledLabel = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled", "0", "0")); //$NON-NLS-1$
 		traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(traveledLabel);
 
@@ -393,9 +393,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				// Clear vehicle info.
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-				speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","")); //$NON-NLS-1$ //$NON-NLS-2$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","")); //$NON-NLS-1$ //$NON-NLS-2$
-				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","")); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 				currentVehicle = null;
 			}
 
@@ -413,9 +413,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
 			vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-			speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","")); //$NON-NLS-1$ //$NON-NLS-2$
-			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavPoint","")); //$NON-NLS-1$ //$NON-NLS-2$
-			traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","")); //$NON-NLS-1$ //$NON-NLS-2$
+			speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
+			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavPoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+			traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 			currentMission = null;
 			currentVehicle = null;
 			customPanelLayout.show(missionCustomPane, EMPTY);
@@ -535,7 +535,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				else {
 					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus","")); //$NON-NLS-1$ //$NON-NLS-2$
-					speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","")); //$NON-NLS-1$ //$NON-NLS-2$
+					speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed","0")); //$NON-NLS-1$ //$NON-NLS-2$
 					if (currentVehicle != null) currentVehicle.removeUnitListener(panel);
 					currentVehicle = null;
 				}
@@ -549,7 +549,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				catch (Exception e2) {}
 				int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 				int totalDistance = (int) vehicleMission.getTotalDistance();
-				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled",travelledDistance +  //$NON-NLS-1$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled",travelledDistance,  //$NON-NLS-1$
 					totalDistance));
 			}
 
