@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SupplyTableModel.java
- * @version 3.06 2014-04-17
+ * @version 3.06 2014-12-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -95,7 +96,8 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			AmountResource resource = j.next();
 			double amount = resupply.getNewResources().get(resource);
-			SupplyItem supplyItem = new SupplyItem(RESOURCE, resource.getName(), amount);
+			// 2014-12-01 Added WordUtils.capitalize()
+			SupplyItem supplyItem = new SupplyItem(RESOURCE, WordUtils.capitalize(resource.getName()), amount);
 			supplyList.add(supplyItem);
 		}
 
@@ -107,7 +109,8 @@ extends AbstractTableModel {
 		while (k.hasNext()) {
 			Part part = k.next();
 			int num = resupply.getNewParts().get(part);
-			SupplyItem supplyItem = new SupplyItem(PART, part.getName(), num);
+			// 2014-12-01 Added WordUtils.capitalize()
+			SupplyItem supplyItem = new SupplyItem(PART, WordUtils.capitalize(part.getName()), num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -141,7 +144,8 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			String supplyType = j.next();
 			int num = supplyMap.get(supplyType);
-			SupplyItem supplyItem = new SupplyItem(category, supplyType, num);
+			// 2014-12-01 Added WordUtils.capitalize()
+			SupplyItem supplyItem = new SupplyItem(category, WordUtils.capitalize(supplyType), num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -179,7 +183,8 @@ extends AbstractTableModel {
 		if (rowIndex < supplyList.size()) {
 			SupplyItem item = supplyList.get(rowIndex);
 			if (colIndex == 0) result = item.category;
-			else if (colIndex == 1) result = item.type;
+			// 2014-12-01 Added WordUtils.capitalize()
+			else if (colIndex == 1) result = WordUtils.capitalize(item.type);
 			else if (colIndex == 2) result = item.number.intValue();
 		}
 		return result;
@@ -199,7 +204,8 @@ extends AbstractTableModel {
 				item.category = (String) value;
 			}
 			else if (col == 1) {
-				item.type = (String) value;
+				// 2014-12-01 Added WordUtils.capitalize()
+				item.type = WordUtils.capitalize((String) value);
 			}
 			else if (col == 2) {
 				try {

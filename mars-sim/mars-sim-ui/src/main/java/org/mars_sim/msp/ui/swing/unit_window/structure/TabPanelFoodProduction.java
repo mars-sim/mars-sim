@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * FoodProductionabPanel.java
- * @version 3.07 2014-11-23
+ * TabPanelFoodProduction.java
+ * @version 3.07 2014-12-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -51,7 +53,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
- * A tab panel displaying settlement manufacturing information.
+ * TabPanelFoodProduction is a panel that displays settlement food production information.
  */
 public class TabPanelFoodProduction
 extends TabPanel {
@@ -137,7 +139,12 @@ extends TabPanel {
 		
 		// Create new building selection.
 		buildingSelectionCache = getFoodProductionBuildings();
+		// 2014-12-01 Added sorting
+		Collections.sort(buildingSelectionCache);
 		buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
+		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+		buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingSelection.setSelectedIndex(-1);
 		buildingSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingSelection.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
@@ -150,7 +157,9 @@ extends TabPanel {
 		Building foodFactoryBuilding = (Building) buildingSelection.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
-		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer());
+		// 2014-12-01 Modified FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
+		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
+		processSelection.setSelectedIndex(-1);
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
@@ -194,8 +203,7 @@ extends TabPanel {
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelFoodProduction.checkbox.overrideProduction")); //$NON-NLS-1$
-		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction") + //$NON-NLS-1$
-				"starting new manufacturing or salvage processes.");
+		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setFoodProductionOverride(overrideCheckbox.isSelected());
@@ -207,6 +215,36 @@ extends TabPanel {
 		//setVisible(true);
 	}
 
+	// 2014-12-01 Added PromptComboBoxRenderer()
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer
+	{
+
+		private static final long serialVersionUID = 1L;
+		private String prompt;
+
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		public PromptComboBoxRenderer(String prompt)
+		{
+			this.prompt = prompt;
+		}
+
+		/*
+		 *  Custom rendering to display the prompt text when no item is selected
+		 */
+		public Component getListCellRendererComponent(
+			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+		{
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+			if (value == null)
+				setText( prompt );
+
+			return this;
+		}
+	}
+	
 	@Override
 	public void update() {
 
@@ -319,7 +357,7 @@ extends TabPanel {
 		// Update new process button.
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
-		// Update ooverride check box.
+		// Update override check box.
 		if (settlement.getFoodProductionOverride() != overrideCheckbox.isSelected()) 
 			overrideCheckbox.setSelected(settlement.getFoodProductionOverride());
 	}
@@ -388,7 +426,7 @@ extends TabPanel {
 	            while (i.hasNext()) {
 	                Person tempPerson = i.next();
 	                SkillManager skillManager = tempPerson.getMind().getSkillManager();
-	                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+	                int skill = skillManager.getSkillLevel(SkillType.COOKING);
 	                if (skill > highestSkillLevel) {
 	                    highestSkillLevel = skill;
 	                }
@@ -428,6 +466,19 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private static final int PROCESS_NAME_LENGTH = 40;
+		private String prompt;
+		
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		// 2014-12-01 Added prompt
+		public FoodProductionSelectionListCellRenderer(String prompt)
+		{
+			this.prompt = prompt;
+		}
+
+		
 		// TODO check actual combobox size before cutting off too much of the processes' names
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, 
@@ -437,12 +488,15 @@ extends TabPanel {
 				FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
 				if (info != null) {
 					String processName = info.getName();
-					if (processName.length() > 35) processName = processName.substring(0, 35) + Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
+					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) + Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
 					((JLabel) result).setText(WordUtils.capitalize(processName));
 					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
 				}
 			}
+			// 2014-12-01 Added setText()
+			if (value == null)
+				setText(prompt);
 			
 			return result;
 		}

@@ -15,7 +15,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 
 	<crop name="Cabbage" 
  	  	growing-time="85.0" 
-    	crop-category="Vegetable Group" 
+    	crop-category="Vegetables" 
     	edible-biomass="75.78"
     	edible-water-content=".92"
     	inedible-biomass="6.74" 
@@ -23,7 +23,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
 	<crop name="Carrot" 
     	growing-time="74.83" 
-    	crop-category="Vegetable Group" 
+    	crop-category="Roots" 
     	edible-biomass="74.83"
     	edible-water-content=".88"
     	inedible-biomass="59.87" 
@@ -31,7 +31,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 
 	<crop name="Chard" 
     	growing-time="45.0" 
-    	crop-category="Vegetable Group" 
+    	crop-category="Vegetables" 
     	edible-biomass="87.50"
     	edible-water-content=".92"
     	inedible-biomass="37.69" 
@@ -39,7 +39,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
 	<crop name="Celery" 
     	growing-time="75.0" 
-    	crop-category="Vegetable Group" 
+    	crop-category="Vegetables" 
     	edible-biomass="103.27"
     	edible-water-content=".90"
     	inedible-biomass="11.47" 
@@ -47,7 +47,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 
     <crop name="Kidney Bean" 
     	growing-time="85.0" 
-    	crop-category="Legume Group" 
+    	crop-category="Legumes" 
     	edible-biomass="11.11" 
     	edible-water-content=".10"
     	inedible-biomass="150.0" 
@@ -55,7 +55,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	    	    	
     <crop name="Green Onion" 
     	growing-time="50.0" 
-    	crop-category="Spice Group" 
+    	crop-category="Spices" 
     	edible-biomass="81.82" 
     	edible-water-content=".89"
     	inedible-biomass="10.0" 
@@ -63,15 +63,17 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
     <crop name="Lettuce" 
     	growing-time="28.0" 
-    	crop-category="Vegetable Group" 
-    	edible-biomass="3"
+    	crop-category="Vegetables" 
+    	edible-biomass="35"
     	edible-water-content=".95"
-    	inedible-biomass="0.5" 
+    	inedible-biomass="5" 
     	/>
+    	<!-- http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
+    	 10 kg / week yield for greenhouse  -->
     	
     <crop name="White Onion" 
     	growing-time="50.0" 
-    	crop-category="Bulb Group" 
+    	crop-category="Bulbs" 
     	edible-biomass="81.82" 
     	edible-water-content=".89"
     	inedible-biomass="22.50" 
@@ -79,7 +81,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
     <crop name="Peas"
         growing-time="75.0" 
-    	crop-category="Legume Group" 
+    	crop-category="Legumes" 
     	edible-biomass="12.20" 
     	edible-water-content=".12"
     	inedible-biomass="161.00" 
@@ -87,7 +89,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
     <crop name="Peanut"
         growing-time="104.0" 
-    	crop-category="Legume Group" 
+    	crop-category="Legumes" 
     	edible-biomass="6" 
     	edible-water-content="5.6"
     	inedible-biomass="18" 
@@ -95,7 +97,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	    	
      <crop name="White Rice"
         growing-time="100.0" 
-    	crop-category="Grain Group" 
+    	crop-category="Grains" 
     	edible-biomass="10.3" 
     	edible-water-content=".12"
     	inedible-biomass="38" 
@@ -103,7 +105,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	   	
     <crop name="Wheat"
         growing-time="80" 
-    	crop-category="Grain Group" 
+    	crop-category="Grains" 
     	edible-biomass="13" 
     	edible-water-content=".12"
     	inedible-biomass="35" 
@@ -111,7 +113,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 
     <crop name="Potato" 
     	growing-time="100.0" 
-    	crop-category="Tuber Group" 
+    	crop-category="Tubers" 
     	edible-biomass="30"
     	edible-water-content=".8"
     	inedible-biomass="20" 
@@ -119,7 +121,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	    	   	
      <crop name="Soybean"
         growing-time="93" 
-    	crop-category="Legume Group" 
+    	crop-category="Legumes" 
     	edible-biomass="7" 
     	edible-water-content=".10"
     	inedible-biomass="13" 
@@ -127,7 +129,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
     <crop name="Garlic"
         growing-time="85" 
-    	crop-category="Bulb Group" 
+    	crop-category="Bulbs" 
     	edible-biomass="5.5" 
     	edible-water-content=".58" 
     	inedible-biomass="2.0" 
@@ -138,12 +140,24 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	
     <crop name="Sesame Seed"
         growing-time="100" 
-    	crop-category="Flower Group" 
+    	crop-category="Flowers" 
     	edible-biomass="7.2" 
     	edible-water-content=".4" 
     	inedible-biomass="15.0" 
     	/>		
     	<!--http://en.wiki2.org/wiki/Sesame
     	7.2 Metric Ton/hectare -->
+    	
+    <crop name="Tomato"
+        growing-time="80" 
+    	crop-category="Fruits" 
+    	edible-biomass="17" 
+    	edible-water-content=".948" 
+    	inedible-biomass="16" 
+    	/>		
+    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
+    	 484 MT/ha for earth greenhouse 
+    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
+    	  -->
     	
 </crop-list>

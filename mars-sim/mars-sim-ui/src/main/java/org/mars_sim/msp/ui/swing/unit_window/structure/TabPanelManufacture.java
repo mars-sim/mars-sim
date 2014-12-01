@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -52,6 +53,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
 
 /**
  * A tab panel displaying settlement manufacturing information.
@@ -145,6 +147,9 @@ extends TabPanel {
 		// Create new building selection.
 		buildingSelectionCache = getManufacturingBuildings();
 		buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
+		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+		buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingSelection.setSelectedIndex(-1);
 		buildingSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingSelection.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
@@ -157,7 +162,9 @@ extends TabPanel {
 		Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
-		processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
+		// 2014-12-01 Modified ManufactureSelectionListCellRenderer() & Added setSelectedIndex(-1)
+		processSelection.setSelectedIndex(-1);
+		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
@@ -205,8 +212,7 @@ extends TabPanel {
 
 		// Create override check box.
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelManufacture.checkbox.overrideManufacturing")); //$NON-NLS-1$
-		overrideCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideManufacturing") + //$NON-NLS-1$
-				"starting new manufacturing or salvage processes.");
+		overrideCheckbox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.overrideManufacturing")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setManufactureOverride(overrideCheckbox.isSelected());
@@ -216,6 +222,37 @@ extends TabPanel {
 		interactionPanel.add(overrideCheckbox);
 	}
 
+
+	// 2014-12-01 Added PromptComboBoxRenderer()
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer
+	{
+
+		private static final long serialVersionUID = 1L;
+		private String prompt;
+
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		public PromptComboBoxRenderer(String prompt)
+		{
+			this.prompt = prompt;
+		}
+
+		/*
+		 *  Custom rendering to display the prompt text when no item is selected
+		 */
+		public Component getListCellRendererComponent(
+			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+		{
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+			if (value == null)
+				setText( prompt );
+
+			return this;
+		}
+	}
+	
 	@Override
 	public void update() {
 
@@ -494,6 +531,19 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private static final int PROCESS_NAME_LENGTH = 40;
+		private String prompt;
+		
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		// 2014-12-01 Added prompt
+		public ManufactureSelectionListCellRenderer(String prompt)
+		{
+			this.prompt = prompt;
+		}
+
+	
 		// TODO check actual combobox size before cutting off too much of the processes' names
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, 
@@ -503,7 +553,8 @@ extends TabPanel {
 				ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 				if (info != null) {
 					String processName = info.getName();
-					if (processName.length() > 35) processName = processName.substring(0, 35) + Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
+					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) 
+							+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
 					((JLabel) result).setText(WordUtils.capitalize(processName));
 					((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
@@ -513,12 +564,18 @@ extends TabPanel {
 				SalvageProcessInfo info = (SalvageProcessInfo) value;
 				if (info != null) {
 					String processName = info.toString();
-					if (processName.length() > 35) processName = processName.substring(0, 35) + Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
+					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) 
+							+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
 					((JLabel) result).setText(WordUtils.capitalize(processName));
 					((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 				}
 			}
+			
+			// 2014-12-01 Added setText()
+			if (value == null)
+				setText(prompt);
+			
 			return result;
 		}
 	}
