@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * GoodsTabPanel.java
- * @version 3.06 2014-01-29
+ * TabPanelGoods.java
+ * @version 3.07 2014-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;

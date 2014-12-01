@@ -462,9 +462,9 @@ implements Serializable {
 	        if (ingredientAvailable > amount) 
 	        	result = result && true;
 	        else { 
-                logger.info(ingredientName + 
-                "  Required : " + amount + 
-                "  Remaining : " +  ingredientAvailable); 
+                //logger.info(ingredientName + 
+                //"  Required : " + amount + 
+                //"  Remaining : " +  ingredientAvailable); 
                 result = false;
                 }
         }
@@ -505,8 +505,7 @@ implements Serializable {
 	        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 
 	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, time);
-	        
-	        logger.info(" New CookedMeal : " + meal.getName());
+	        //logger.info("New meal : " + meal.getName());
 	        
 	    	meals.add(meal);
 	  	        
@@ -515,8 +514,8 @@ implements Serializable {
 	  	        			" has " + meals.size() + " meal(s) with quality score of " + mealQuality);
 	  	    }
   
-	        logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
-  	        			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
+	        //logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
+  	        //			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
 	        //logger.info(" BestMealQuality : " + getBestMealQuality());
 	        
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 

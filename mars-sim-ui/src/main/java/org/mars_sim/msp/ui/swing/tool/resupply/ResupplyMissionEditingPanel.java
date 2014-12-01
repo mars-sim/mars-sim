@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyMissionEditingPanel.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -256,8 +257,8 @@ extends TransportItemEditingPanel {
 		add(bottomEditPane, BorderLayout.CENTER);
 
 		// Create supply table.
-		supplyTableModel = new SupplyTableModel(resupply);
-		supplyTable = new JTable(supplyTableModel);
+		supplyTableModel = new SupplyTableModel(resupply) ;
+		supplyTable = new JTable(supplyTableModel) ;
 		supplyTable.getColumnModel().getColumn(0).setMaxWidth(100);
 		supplyTable.getColumnModel().getColumn(0).setCellEditor(new CategoryCellEditor());
 		supplyTable.getColumnModel().getColumn(1).setMaxWidth(200);
@@ -401,6 +402,8 @@ extends TransportItemEditingPanel {
 
 				// Update supply type cell in row if category has changed.
 				String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
+				// 2014-12-01 Added WordUtils.capitalize
+				//supplyTable.setValueAt(WordUtils.capitalize(defaultType), editingRow, 1);
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
@@ -432,7 +435,8 @@ extends TransportItemEditingPanel {
 				Iterator<String> j = types.iterator();
 				while (j.hasNext()) {
 					String type = j.next();
-					categoryCB.addItem(type);
+					// 2014-12-01 Added WordUtils.capitalize
+					categoryCB.addItem(WordUtils.capitalize(type));
 				}
 				typeCBMap.put(category, categoryCB);
 			}

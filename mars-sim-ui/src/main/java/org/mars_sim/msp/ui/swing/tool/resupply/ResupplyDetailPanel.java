@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.06 2014-04-17
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -484,8 +485,11 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				AmountResource resourceType = j.next();
 				double amount = resources.get(resourceType);
+				// 2014-12-01 Added WordUtils.capitalize()
+				String resourceName = WordUtils.capitalize(resourceType.getName());
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
-				rowData.add(resourceType);
+				//rowData.add(resourceType);
+				rowData.add(resourceName);
 				rowData.add(amount);
 				tableModel.addRow(rowData);
 			}
@@ -537,7 +541,10 @@ implements ClockListener, HistoricalEventListener {
 				Part partType = j.next();
 				int num = parts.get(partType);
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
-				rowData.add(partType);
+				// 2014-12-01 Added WordUtils.capitalize()
+				String partName = WordUtils.capitalize(partType.getName());
+				rowData.add(partName);
+				//rowData.add(partType);
 				rowData.add(num);
 				tableModel.addRow(rowData);
 			}
