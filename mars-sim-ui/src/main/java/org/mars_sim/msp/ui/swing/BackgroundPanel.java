@@ -6,7 +6,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.*;
-import java.awt.image.*;
 import javax.swing.*;
 
 /*

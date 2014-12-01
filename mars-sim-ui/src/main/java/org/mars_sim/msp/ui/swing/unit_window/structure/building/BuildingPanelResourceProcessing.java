@@ -14,9 +14,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
