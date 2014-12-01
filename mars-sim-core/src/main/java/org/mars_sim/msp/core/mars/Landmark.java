@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Landmark.java
- * @version 3.07 2014-11-18
+ * @version 3.07 2014-11-28
  * @author Dalen Kruse
  */
 
@@ -125,7 +125,7 @@ public class Landmark implements Serializable {
      *  Gets the type.
      *  @return type of the landmark
      */
-    public String getLandmarkTyper() {
+    public String getLandmarkType() {
         return landmarkType;
     }
 }

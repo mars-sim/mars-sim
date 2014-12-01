@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2014-11-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -409,8 +409,8 @@ extends VehicleMission {
 				}
 			}
 			else {
-				logger.severe(Msg.getString("RoverMission.log.noHabitat",destinationBuilding.getName())); //$NON-NLS-1$
-				endMission(Msg.getString("RoverMission.log.noHabitat",destinationBuilding.getName())); //$NON-NLS-1$
+				logger.severe(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
+				endMission(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
 			}
 		}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-11-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -166,6 +166,7 @@ implements Serializable {
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
+			
 			checkForEmergency();
 			remainingTime = currentTask.performTask(time);
 		}
@@ -185,7 +186,7 @@ implements Serializable {
 			boolean hasAirlockTask = false;
 			Task task = currentTask;
 			while (task != null) {
-				if ((task instanceof EnterAirlock) && (task instanceof ExitAirlock)) {
+				if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
 					hasAirlockTask = true;
 				}
 				task = task.getSubTask();
