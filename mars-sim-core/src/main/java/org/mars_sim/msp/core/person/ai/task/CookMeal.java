@@ -93,14 +93,14 @@ implements Serializable {
 	            walkToActivitySpotInBuilding(kitchenBuilding);
 	            
 	            //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-	            double freshFoodAvailable = kitchen.getTotalFreshFood();
+	            //double freshFoodAvailable = kitchen.getTotalFreshFood();
 	            
-	            if (freshFoodAvailable < 0.5) {
-	                logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
+	            //if (freshFoodAvailable < 0.5) {
+	            //    logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
 	                
-	                endTask();
+	             //   endTask();
       
-	            } else {
+	           // } else {
 	            	 // Add task phase
 	            	 addPhase(COOKING);
 		    	     setPhase(COOKING);
@@ -110,7 +110,7 @@ implements Serializable {
 		    	                " in " + person.getSettlement());
 		            
 	            	
-	            }
+	            //}
 	            
 	        }
 	        else endTask();

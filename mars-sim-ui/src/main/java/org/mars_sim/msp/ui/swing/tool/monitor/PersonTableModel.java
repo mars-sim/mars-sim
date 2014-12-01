@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
@@ -46,6 +47,8 @@ extends UnitTableModel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
+
 	// Column indexes
 	/** Person name column. */
 	private final static int NAME = 0;
@@ -55,29 +58,30 @@ extends UnitTableModel {
 	private final static int LOCATION = 2;
 	/** Personality column. */
 	private final static int PERSONALITY = 3;
-	/** Hunger column. */
-	private final static int HUNGER = 4;
-	/** Fatigue column. */
-	private final static int FATIGUE = 5;
-	/** Stress column. */
-	private final static int STRESS = 6;
-	/** Performance column. */
-	private final static int PERFORMANCE = 7;
-	/** Job column. */
-	private final static int JOB = 8;
-	/** Task column. */
-	private final static int TASK = 9;
-	/** Mission column. */
-	private final static int MISSION = 10;
 	/** Health column. */
-	private final static int HEALTH = 11;
+	private final static int HEALTH = 4;
+	/** Hunger column. */
+	private final static int HUNGER = 5;
+	/** Fatigue column. */
+	private final static int FATIGUE = 6;
+	/** Stress column. */
+	private final static int STRESS = 7;
+	/** Performance column. */
+	private final static int PERFORMANCE = 8;
+	/** Job column. */
+	private final static int JOB = 9;
+	/** Task column. */
+	private final static int TASK = 10;
+	/** Mission column. */
+	private final static int MISSION = 11;
+
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 12;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
-
+	
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -90,6 +94,8 @@ extends UnitTableModel {
 		columnTypes[GENDER] = String.class;
 		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
 		columnTypes[PERSONALITY] = String.class; 
+		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
+		columnTypes[HEALTH] = String.class;
 		columnNames[HUNGER] = Msg.getString("PersonTableModel.column.hunger"); //$NON-NLS-1$
 		columnTypes[HUNGER] = Integer.class;
 		columnNames[FATIGUE] = Msg.getString("PersonTableModel.column.fatigue"); //$NON-NLS-1$
@@ -106,8 +112,7 @@ extends UnitTableModel {
 		columnTypes[MISSION] = String.class;
 		columnNames[TASK] = Msg.getString("PersonTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
-		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
-		columnTypes[HEALTH] = String.class;
+
 	}
 
 	/** inner enum with valid source types. */
@@ -308,8 +313,8 @@ extends UnitTableModel {
 		if (rowIndex < getUnitNumber()) {
 			Person person = (Person)getUnit(rowIndex);
 
-			// Invoke the appropriate method, switch is the best solution
-			// although disliked by some
+			Boolean isDead = person.getPhysicalCondition().isDead();
+			
 			switch (columnIndex) {
 			case NAME : {
 				result = person.getName();
@@ -317,7 +322,10 @@ extends UnitTableModel {
 
 			case GENDER : {
 				String genderStr = person.getGender().getName();
-				result = genderStr;
+				String letter;
+				if (genderStr.equals("male")) letter = "M";
+				else letter = "F";
+				result = letter;
 			} break;
 
 			case PERSONALITY : {
@@ -326,25 +334,34 @@ extends UnitTableModel {
 
 			case HUNGER : {
 				double hunger = person.getPhysicalCondition().getHunger();
-				result = new Float(hunger).intValue();
+				//result = new Float(hunger).intValue();
+				if (isDead)	result = "";
+					else result = getHungerStatus(hunger);
 			} break;
 
 			case FATIGUE : {
 				double fatigue = person.getPhysicalCondition().getFatigue();
-				result = new Float(fatigue).intValue();
+				//result = new Float(fatigue).intValue();
+			if (isDead)	result = "";
+					else result = getFatigueStatus(fatigue);
 			} break;
 
 			case STRESS : {
 				double stress = person.getPhysicalCondition().getStress();
-				result = new Double(stress).intValue();
+				//result = new Double(stress).intValue();
+				if (isDead)	result = "";
+					else result = getStressStatus(stress);
 			} break;
 
 			case PERFORMANCE : {
 				double performance = person.getPhysicalCondition().getPerformanceFactor();
-				result = new Float(performance * 100D).intValue();
+				//result = new Float(performance * 100D).intValue();
+				if (isDead)	result = "";
+					else result = getPerformanceStatus(performance* 100D);
 			} break;
 
 			case HEALTH : {
+				
 				result = person.getPhysicalCondition().getHealthSituation();
 			} break;
 
@@ -385,6 +402,71 @@ extends UnitTableModel {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Give the status of a person's hunger level
+	 * @param hunger
+	 * @return status
+	 */
+	public String getHungerStatus(double hunger) {
+		String status= "N/A";
+		if (hunger < 200) status = Msg.getString("PersonTableModel.column.hunger.level1");
+		else if (hunger < 500) status = Msg.getString("PersonTableModel.column.hunger.level2");
+		else if (hunger < 1000) status = Msg.getString("PersonTableModel.column.hunger.level3");
+		else if (hunger < 2000) status = Msg.getString("PersonTableModel.column.hunger.level4");
+		else status = Msg.getString("PersonTableModel.column.hunger.level5");
+		//logger.info(" hunger pt : " + Math.round(hunger) + ", status : " + status);
+		return status;
+	}
+
+
+	/**
+	 * Give the status of a person's fatigue level
+	 * @param fatigue
+	 * @return status
+	 */
+	public String getFatigueStatus(double value) {
+		String status= "N/A";
+		if (value < 100) status = Msg.getString("PersonTableModel.column.fatigue.level1");
+		else if (value < 400) status = Msg.getString("PersonTableModel.column.fatigue.level2");
+		else if (value < 800) status = Msg.getString("PersonTableModel.column.fatigue.level3");
+		else if (value < 1200) status = Msg.getString("PersonTableModel.column.fatigue.level4");
+		else status = Msg.getString("PersonTableModel.column.fatigue.level5");
+		return status;
+	}
+
+
+	/**
+	 * Give the status of a person's stress level
+	 * @param hunger
+	 * @return status
+	 */
+	public String getStressStatus(double value) {
+		String status= "N/A";
+		if (value == 0 ) status = Msg.getString("PersonTableModel.column.stress.level1");
+		else if (value < 15) status = Msg.getString("PersonTableModel.column.stress.level2");
+		else if (value < 40) status = Msg.getString("PersonTableModel.column.stress.level3");
+		else if (value < 75) status = Msg.getString("PersonTableModel.column.stress.level4");
+		else if (value < 95) status = Msg.getString("PersonTableModel.column.stress.level5");
+		return status;
+	}
+
+
+	/**
+	 * Give the status of a person's hunger level
+	 * @param hunger
+	 * @return status
+	 */
+	public String getPerformanceStatus(double value) {
+		String status= "N/A";
+		if (value > 98 ) status = Msg.getString("PersonTableModel.column.performance.level1");
+		else if (value < 99) status = Msg.getString("PersonTableModel.column.performance.level2");
+		else if (value < 75) status = Msg.getString("PersonTableModel.column.performance.level3");
+		else if (value < 50) status = Msg.getString("PersonTableModel.column.performance.level4");
+		else if (value < 25) status = Msg.getString("PersonTableModel.column.performance.level5");
+		//logger.info(" Perf : " + Math.round(value) + " ; status : " + status);
+		return status;
 	}
 
 	/**

@@ -68,11 +68,11 @@ public class CookMealMeta implements MetaTask {
 
                     
                     // Check if there is enough food available to cook.
-                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    double freshFoodAvailable = kitchen.getTotalFreshFood();
+                    //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+                    //double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
+                    //double freshFoodAvailable = kitchen.getTotalFreshFood();
                  	//logger.info(" freshFoodAvailable : " + freshFoodAvailable);
-                    if (freshFoodAvailable < foodRequired) result = 0D;
+                    //if (freshFoodAvailable < foodRequired) result = 0D;
                 }
             }
             catch (Exception e) {

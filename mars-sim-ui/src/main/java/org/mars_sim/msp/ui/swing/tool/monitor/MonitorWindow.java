@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 3.06 2014-10-15
+ * @version 3.07 2014-11-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /**
@@ -153,6 +154,10 @@ implements TableModelListener, ActionListener {
 
 		// Add the default table tabs
 		UnitManager unitManager = Simulation.instance().getUnitManager();
+		
+		// 2014-11-29 Added notifyBox
+		NotificationWindow notifyBox = new NotificationWindow();
+		
 		addTab(new UnitTab(this,new PersonTableModel(unitManager), true));
 		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
 		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
@@ -163,7 +168,8 @@ implements TableModelListener, ActionListener {
 		addTab(new FoodInventoryTab(this));
 		
 		addTab(new MissionTab(this));
-		eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager()));
+		// 2014-11-29 Added notifyBox
+		eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager(), notifyBox));
 		addTab(eventsTab);
 		addTab(new TradeTab(this));
 

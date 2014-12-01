@@ -223,7 +223,8 @@ implements Serializable {
         if (bestDessert != null) {
         	servingsOfDessertList.remove(bestDessert);
         	// remove dessert from amount resource 
-        	removeDessertFromAmountResource();
+        	// TODO: why calling this method ? plus it's causing IllegalStateException 
+        	//removeDessertFromAmountResource();
          }
         return bestDessert;
     }
@@ -235,7 +236,8 @@ implements Serializable {
     // 2014-11-06 Added removeDessertFromAmountResource()
     public void removeDessertFromAmountResource() {
         AmountResource soymilkAR = AmountResource.findAmountResource("soymilk");  
-        double soymilkPerServing = getMassPerServing();    
+        double soymilkPerServing = getMassPerServing(); 
+        // 2014-11-29 TODO: need to prevent IllegalStateException
 	    getBuilding().getInventory().retrieveAmountResource(soymilkAR, soymilkPerServing);
     }
     

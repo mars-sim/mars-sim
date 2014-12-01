@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2014-11-22
+ * @version 3.07 2014-11-29
  * @author Scott Davis
  */
 
@@ -243,7 +243,8 @@ implements ActionListener {
 	        }
 	        else if (person.getLocationSituation() == LocationSituation.BURIED) {
 				outsideReadingPanel.remove(tpPanel);
-				outsideReadingPanel.remove(locationLabel);
+				// 2014-11-29 Commented out remove(locationLabel) to avoid Exception
+				//outsideReadingPanel.remove(locationLabel);
 				outsideReadingPanel.add(locationLabel);
 				// 2014-11-17 Fixed NullPointer Exception. setText after adding locationLabel;
 				locationLabel.setText("Buried Outside");

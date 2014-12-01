@@ -411,6 +411,57 @@ implements Serializable {
         return vehicles;
     }
 
+  
+    // 2014-11-30 Created getValueList()    		
+    public List<Double> getValueList(List<AmountResource> foodARList) {
+    	
+    	double foodValue = 0;
+    	List<Double> foodValueList = new ArrayList<Double>();
+    	AmountResource ar = null;
+    	
+		Iterator<AmountResource> i = foodARList.iterator();
+		while (i.hasNext()) 
+		{
+			ar = i.next();
+			foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ar));
+			foodValueList.add(foodValue);	
+		}
+    	return foodValueList;
+    }
+    
+ // 2014-11-30 Created getARList()
+    public List<AmountResource> getARList() {
+    	
+    	boolean edible = false;
+		AmountResource ar = null;
+		
+		List<AmountResource> foodARList = new ArrayList<AmountResource>();
+		
+		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		while (i.hasNext()) 
+		{
+			ar = i.next();
+			edible = ar.isEdible();
+			if (edible == true) 
+				foodARList.add(ar);	
+		}
+    	return foodARList;
+    }
+    
+    // 2014-11-30 Created getTotalDemand()
+    public double getTotalDemand(List<Double> foodValueList, Farming farm, double amountNeeded) {
+    	double demand = 0;
+    	//List<Double> foodValueList = new ArrayList<Double>();
+    	Iterator<Double> i = foodValueList.iterator();
+    	
+    	while (i.hasNext()) {	
+    		double foodValue = i.next();
+        	demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
+    	}
+    
+    	return demand;
+    }
+    
     /**
      * Gets the farming demand for the resource.
      * @param resource the resource to check.
@@ -418,33 +469,43 @@ implements Serializable {
      * @throws Exception if error determining demand.
      */
     // 2014-10-15 mkung: added 5 new food groups to enable them to be traded
+    // 2014-11-30 Rewrote getFarmingDemand() for a large list of edible food
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
         AmountResource wasteWater = AmountResource.findAmountResource("waste water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-        // 2014-10-15 mkung: added 5 new food groups
-        AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
-        AmountResource legumes = AmountResource.findAmountResource("Legume Group");
+        //AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         // 2014-11-06 Added soybeans and soymilk
-        AmountResource soybeans = AmountResource.findAmountResource("soybeans");
-        AmountResource soymilk = AmountResource.findAmountResource("soymilk");       
+        //AmountResource soybean = AmountResource.findAmountResource("Soybean");
+        //AmountResource soymilk = AmountResource.findAmountResource("Soymilk"); 
+        
+        // get a List<foodAR> of edible food 
+        // iterate over the list to create a list of foodAR
+        //String name = null;
+        List<AmountResource> foodARList = getARList();
+        
+        // 2014-10-15 mkung: added 5 new food groups
+        /*AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
+        AmountResource legumes = AmountResource.findAmountResource("Legume Group")
         AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
         AmountResource spices = AmountResource.findAmountResource("Spice Group");
         AmountResource grains = AmountResource.findAmountResource("Grain Group");
-                     
+           */          
         if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
-            double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
-            // 2014-10-15 mkung: added 5 new food groups
-            double vegValue = getGoodValuePerItem(GoodsUtil.getResourceGood(veg));
-            double legumesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(legumes));
+            //double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
             // 2014-11-06 Added soybeans and soymilk
-            double soybeansValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soybeans));
-            double soymilkValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soymilk));
+            //double soybeansValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soybean));
+            //double soymilkValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soymilk));
+            
+            List<Double> foodValueList = getValueList(foodARList);
+            
+            // 2014-10-15 mkung: added 5 new food groups
+            /*double vegValue = getGoodValuePerItem(GoodsUtil.getResourceGood(veg));
+            double legumesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(legumes));
             double fruitsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(fruits));
             double spicesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(spices));
             double grainsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(grains));
-                        
+            */            
             Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
             while (i.hasNext()) {
                 Building building = i.next();
@@ -457,17 +518,20 @@ implements Serializable {
                     else if (resource.equals(carbonDioxide))
                         amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
-                    demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
-                    // 2014-10-15 Added 5 new food groups
-                    demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
-                    demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
+                    demand = getTotalDemand(foodValueList, farm, amountNeeded);
+                    
+                    //demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
                     // 2014-11-06 Added soybeans and soymilk
-                    demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
-                    demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
+                    //demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
+                    //demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
+                    
+                    // 2014-10-15 Added 5 new food groups
+                    /*demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
+                    demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * fruitsValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * spicesValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * grainsValue) / amountNeeded;
-
+					*/
                 }
             }
         }

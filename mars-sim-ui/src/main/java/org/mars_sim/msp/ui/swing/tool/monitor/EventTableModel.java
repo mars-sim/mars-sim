@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
 
-import org.mars_sim.msp.ui.swing.tool.NotificationManager;
+import org.mars_sim.msp.ui.swing.tool.NotificationWindow;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -75,16 +75,19 @@ implements MonitorModel, HistoricalEventListener {
 	final JFrame frame = new JFrame();
 
 	// 2014-11-15 Added NotificationManager
-	private NotificationManager notificationMgr;
+	private NotificationWindow notifyBox;
 	//private static int count;
 	
 	/**
 	 * constructor.
 	 * Create a new Event model based on the specified event manager.
 	 * @param manager Manager to extract events from.
+	 * @param notifyBox to present notification message to user.
 	 */
-	public EventTableModel(HistoricalEventManager manager) {
+	// 2014-11-29 Added NotificationWindow to the param list
+	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox) {
 		this.manager = manager;
+		this.notifyBox = notifyBox;
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
@@ -93,8 +96,8 @@ implements MonitorModel, HistoricalEventListener {
 		manager.addListener(this);
 		
 		// 2014-11-15 Added notificationManager 
-		//logger.info("count is " + count);
-		notificationMgr = new NotificationManager();
+		// 2014-11-29 Relocated its instantiation to MonitorWindow.java
+		//notifyBox = new NotificationManager();
 
 	}
 
@@ -290,8 +293,8 @@ implements MonitorModel, HistoricalEventListener {
 		if (index == 0)
 			if (event != null) {
 			
-			// 2014-11-15 Added notificationMgr and fire sendAlert()
-			notificationMgr.validateMsg(event);
+			// 2014-11-15 Added notifyBox and fire sendAlert()
+			notifyBox.validateMsg(event);
 				
 			}
 	}

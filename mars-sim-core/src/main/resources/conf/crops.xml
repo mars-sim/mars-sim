@@ -14,7 +14,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 -->
 
 	<crop name="Cabbage" 
-    	growing-time="85.0" 
+ 	  	growing-time="85.0" 
     	crop-category="Vegetable Group" 
     	edible-biomass="75.78"
     	edible-water-content=".92"
@@ -69,9 +69,9 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	inedible-biomass="0.5" 
     	/>
     	
-    <crop name="Onion" 
+    <crop name="White Onion" 
     	growing-time="50.0" 
-    	crop-category="Spice Group" 
+    	crop-category="Bulb Group" 
     	edible-biomass="81.82" 
     	edible-water-content=".89"
     	inedible-biomass="22.50" 
@@ -93,7 +93,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	inedible-biomass="18" 
     	/>  
     	    	
-     <crop name="Rice"
+     <crop name="White Rice"
         growing-time="100.0" 
     	crop-category="Grain Group" 
     	edible-biomass="10.3" 
@@ -111,7 +111,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 
     <crop name="Potato" 
     	growing-time="100.0" 
-    	crop-category="Vegetable Group" 
+    	crop-category="Tuber Group" 
     	edible-biomass="30"
     	edible-water-content=".8"
     	inedible-biomass="20" 
@@ -125,5 +125,25 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	inedible-biomass="13" 
     	/>	
     	
+    <crop name="Garlic"
+        growing-time="85" 
+    	crop-category="Bulb Group" 
+    	edible-biomass="5.5" 
+    	edible-water-content=".58" 
+    	inedible-biomass="2.0" 
+    	/>	
+    	<!-- see http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2 -->
+    	<!-- http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
+    	5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space, -->
+    	
+    <crop name="Sesame Seed"
+        growing-time="100" 
+    	crop-category="Flower Group" 
+    	edible-biomass="7.2" 
+    	edible-water-content=".4" 
+    	inedible-biomass="15.0" 
+    	/>		
+    	<!--http://en.wiki2.org/wiki/Sesame
+    	7.2 Metric Ton/hectare -->
     	
 </crop-list>

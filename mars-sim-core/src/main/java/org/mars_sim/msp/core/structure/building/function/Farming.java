@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -29,12 +29,12 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * The Farming class is a building function for greenhouse farming.
  */
-// 2014-11-06 Added if clause to account for soybean harvest
 // 2014-10-15 Fixed the crash by checking if there is any food available
-// 	Added new method checkAmountOfFood() for CookMeal.java to call ahead of time to 
-//  see if new crop harvest comes in.
+// 	Added new method checkAmountOfFood() for CookMeal.java
 // 2014-10-14 Implemented new way of calculating amount of crop harvest in kg, 
 // Crop Yield or Edible Biomass, based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
+// 2014-11-06 Added if clause to account for soybean harvest
+// 2014-11-29 Added harvesting crops to turn into corresponding amount resource having the same name as the crop's name
 public class Farming
 extends Function
 implements Serializable {
@@ -45,9 +45,6 @@ implements Serializable {
 	//private static Logger logger = Logger.getLogger(Farming.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
-
-    // HARVEST_MULTIPLIER has been the conversion parameter set for all crops 
-    //public static final double HARVEST_MULTIPLIER = 10D;
 
     private int cropNum;
     private double powerGrowingCrop;
@@ -67,19 +64,14 @@ implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        cropNum = config.getCropNum(building.getName());
-        powerGrowingCrop = config.getPowerForGrowingCrop(building.getName());
-        powerSustainingCrop = config.getPowerForSustainingCrop(building.getName());
-        growingArea = config.getCropGrowingArea(building.getName());
+        cropNum = config.getCropNum(building.getBuildingType());
+        powerGrowingCrop = config.getPowerForGrowingCrop(building.getBuildingType());
+        powerSustainingCrop = config.getPowerForSustainingCrop(building.getBuildingType());
+        growingArea = config.getCropGrowingArea(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getFarmingActivitySpots(building.getName()));
+        loadActivitySpots(config.getFarmingActivitySpots(building.getBuildingType()));
 
-        // [DEPRECATED by mkung]
-        // Determine maximum harvest 
-        //maxHarvest = growingArea * HARVEST_MULTIPLIER;
-
-        
         // Create initial crops.
         crops = new ArrayList<Crop>();
         Settlement settlement = building.getBuildingManager().getSettlement();
@@ -125,7 +117,7 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {
@@ -223,24 +215,16 @@ implements Serializable {
      * @param cropCategory
      
      */
-    // 2014-10-14 Added String cropCategory to the param list,
     // Note: this method was called by Crop.java's addWork()
+    // 2014-10-14 Added String cropCategory to the param list,
+    // 2014-11-29 Used cropName instead of cropCategory when creating amount resource
     public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
 
     	try {
     		Inventory inv = getBuilding().getInventory();
-            AmountResource harvestCropCategory = AmountResource.findAmountResource(cropCategory);      
-            double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropCategory, false, false);
-                 //logger.info("addHarvest() : remaining Capacity is " + Math.round(remainingCapacity));
-            /*// look up on the following three attributes. Sanity check only.
-            double amountResourceStored = inv.getAmountResourceStored(harvestCrop, false);
-                 // logger.info("addHarvest() : amountResourceStored is " + amountResourceStored);             
-            double amountResourceCapacityNoContainers = inv.getAmountResourceCapacityNoContainers(harvestCrop);
-                 // logger.info("addHarvest() : amountResourceCapacityNoContainers is " + amountResourceCapacityNoContainers);               
-            double amountResourceCapacity = inv.getAmountResourceCapacity(harvestCrop, false);
-                 // logger.info("addHarvest() : amountResourceCapacity is " + amountResourceCapacity);                
-            */
-            
+            AmountResource harvestCropAR = AmountResource.findAmountResource(cropName);      
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropAR, false, false);
+
             if (remainingCapacity < harvestAmount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	harvestAmount = remainingCapacity;
@@ -248,14 +232,8 @@ implements Serializable {
                 }
                 // add the harvest to the remaining capacity
             // 2014-11-06 changed the last param from false to true
-            inv.storeAmountResource(harvestCropCategory, harvestAmount, true);
-            // logger.info("addHarvest() : just added a harvest in " + harvestCropCategory + " to storage");
-            // 2014-11-06 Added if clause to account for soybean harvest
-            // note that crop name is Soybean (without 's')
-            if (cropName == "Soybean") {
-               AmountResource soybeansAR = AmountResource.findAmountResource("Soybeans");
-        	   inv.storeAmountResource(soybeansAR, harvestAmount, true);
-           }
+            inv.storeAmountResource(harvestCropAR, harvestAmount, true);
+  
         }  catch (Exception e) {}
     }
 
