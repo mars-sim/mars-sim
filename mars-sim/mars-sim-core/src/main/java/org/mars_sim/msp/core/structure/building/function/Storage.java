@@ -47,7 +47,7 @@ implements Serializable {
 		Inventory inventory = building.getInventory();	
 
 		// Get building resource capacity.
-		storageCapacity = config.getStorageCapacities(building.getName());
+		storageCapacity = config.getStorageCapacities(building.getBuildingType());
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();

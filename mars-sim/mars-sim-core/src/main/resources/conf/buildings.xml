@@ -185,23 +185,41 @@
 				<resource-storage resource="Water" capacity="5000.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
-				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
-				<!-- <resource-storage resource="chlorine" capacity="50.0" /> -->
+				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
+				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
-				<resource-storage resource="Soybeans" capacity="500.0" />
+				<resource-storage resource="Soybean" capacity="500.0" />
 				<resource-storage resource="Soymilk" capacity="500.0" />
-				<resource-storage resource="Sodium Hypochlorite" capacity="30.0" />
+				
+				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
 							
-				<resource-storage resource="Yeast" capacity="30.0" />
-				<resource-storage resource="Epsom Salt" capacity="50.0" />
-				<resource-storage resource="Table Salt" capacity="50.0" />												
-												
+				<resource-storage resource="Yeast" capacity="500.0" />
+				<resource-storage resource="Epsom Salt" capacity="500.0" />
+				<resource-storage resource="Table Salt" capacity="500.0" />
+																
+				<resource-storage resource="Soybean Oil" capacity="500.0" />
+				<resource-storage resource="White Onion" capacity="500.0" />
+				<resource-storage resource="White Rice" capacity="500.0" />	
+				<resource-storage resource="Kidney Bean" capacity="500.0" />	
+				<resource-storage resource="Wheat" capacity="500.0" />
+				<resource-storage resource="Soy Flour" capacity="500.0" />	
+				<resource-storage resource="Wheat Flour" capacity="500.0" />	
+				<resource-storage resource="Cabbage" capacity="500.0" />
+				<resource-storage resource="Carrot" capacity="500.0" />
+				<resource-storage resource="Green Onion" capacity="500.0" />		
+				<resource-storage resource="Peanut" capacity="500.0" />
+				<resource-storage resource="Potato" capacity="500.0" />
+				<resource-storage resource="Sesame Seed" capacity="500.0" />
+				<resource-storage resource="Garlic" capacity="500.0" />	
+				<resource-storage resource="Lettuce" capacity="500.0" />	
+											
+				<!--												
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
 				<resource-storage resource="Grain Group" capacity="500.0" />
 				<resource-storage resource="Legume Group" capacity="500.0" />		
 				<resource-storage resource="Spice Group" capacity="500.0" />						
-
+				-->
 				<resource-storage resource="Ice" capacity="100.0" />
 				
 				<!-- The initial resources in the building. -->
@@ -211,20 +229,38 @@
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 				<resource-initial resource="Food" amount="150.0" />
-				<resource-initial resource="Soybeans" amount="50.0" />
+				<resource-initial resource="Soybean" amount="50.0" />
 				<resource-initial resource="Soymilk" amount="50.0" />
 				
-				<resource-initial resource="Sodium Hypochlorite" amount="30.0" />
-				<resource-initial resource="Yeast" amount="30.0" />
-				<resource-initial resource="Epsom Salt" amount="50.0" />
-				<resource-initial resource="Table Salt" amount="50.0" />
+				<resource-initial resource="Sodium Hypochlorite" amount="100.0" />
 				
-
+				<resource-initial resource="Yeast" amount="500.0" />
+				<resource-initial resource="Epsom Salt" amount="500.0" />
+				<resource-initial resource="Table Salt" amount="500.0" />
+				
+				<resource-initial resource="Soybean Oil" amount="50.0" />	
+				<resource-initial resource="White Onion" amount="50.0" />
+				<resource-initial resource="White Rice" amount="50.0" />	
+				<resource-initial resource="Kidney Bean" amount="50.0" />	
+				<resource-initial resource="Wheat" amount="50.0" />
+				<resource-initial resource="Soy Flour" amount="50.0" />	
+				<resource-initial resource="Wheat Flour" amount="50.0" />				
+				<resource-initial resource="Cabbage" amount="50.0" />
+				<resource-initial resource="Carrot" amount="50.0" />
+				<resource-initial resource="Green Onion" amount="50.0" />	
+				<resource-initial resource="Peanut" amount="50.0" />			
+				<resource-initial resource="Potato" amount="50.0" />					
+				<resource-initial resource="Sesame Seed" amount="50.0" />					
+				<resource-initial resource="Garlic" amount="50.0" />	
+				<resource-initial resource="Lettuce" amount="50.0" />	
+											
+				<!--				
 				<resource-initial resource="Fruit Group" amount="50.0" />
 				<resource-initial resource="Vegetable Group" amount="50.0" />
 				<resource-initial resource="Grain Group" amount="50.0" />
 				<resource-initial resource="Legume Group" amount="50.0" />
-				<resource-initial resource="Spice Group" amount="50.0" />				
+				<resource-initial resource="Spice Group" amount="50.0" />
+				-->				
 		
 			</storage>
 			
@@ -288,11 +324,13 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 
+			<!--
 				<resource-storage resource="Fruit Group" capacity="500.0" />
 				<resource-storage resource="Vegetable Group" capacity="500.0" />
 				<resource-storage resource="Grain Group" capacity="500.0" />
 				<resource-storage resource="Legume Group" capacity="500.0" />		
-				<resource-storage resource="Spice Group" capacity="500.0" />										
+				<resource-storage resource="Spice Group" capacity="500.0" />
+			-->										
 			</storage>
 					
 			<thermal-generation>

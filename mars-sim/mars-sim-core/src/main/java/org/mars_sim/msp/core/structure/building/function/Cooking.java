@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,14 +48,16 @@ implements Serializable {
     public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
 
     // Data members
-    private boolean foodIsAvailable = true;
+    //private boolean foodIsAvailable = true;
     //private boolean soyIsAvailable = true;
     private int cookCapacity;
     private List<CookedMeal> meals;
     private double cookingWorkTime;
     
-    private int numOfCookedMealCache;
+    private int numOfCookedMealCache; // in use in timePassing()
     private Inventory inv ;
+    
+    private HotMeal aMeal;
 
     /**
      * Constructor.
@@ -77,6 +80,7 @@ implements Serializable {
 
         // Load activity spots
         loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
+    
     }
 
     /**
@@ -218,7 +222,8 @@ implements Serializable {
         Iterator<CookedMeal> i = meals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
-            if (meal.getQuality() > bestQuality) bestQuality = meal.getQuality();
+            if (meal.getQuality() > bestQuality) 
+            	bestQuality = meal.getQuality();
         }
 
         return bestQuality;
@@ -231,6 +236,92 @@ implements Serializable {
         cookingWorkTime = 0D;
     }
 
+    // 2014-11-30 Added pickAMeal() 
+ 	public HotMeal pickAMeal() {
+
+ 	  	int upperbound = 5;
+    	int lowerbound = 0;
+
+    	int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
+    	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
+    	
+ 		
+	 	HotMeal aMeal = new HotMeal();
+    	
+    	if (number == 0) {
+    	
+	    	aMeal.addMealName("Kidney Bean Fried Rice with Onion");
+	    	aMeal.add("Kidney Bean", .19);
+	      	aMeal.add("White Rice", .20);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("White Onion", .08);
+	      	aMeal.add("Table Salt", 01);
+	      	
+    	} else if (number == 1) {
+    	
+	    	aMeal.addMealName("Carrot Soup");
+	    	aMeal.add("Cabbage", .17);
+	      	aMeal.add("Carrot", .17);
+	      	aMeal.add("Sesame Seed", .03);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("Green Onion", .10);
+	      	aMeal.add("Table Salt", 01);
+	      	
+	      	
+    	}  else if (number == 2) {
+    	
+    		// Garnish the Coleslaw with toasted sesame seeds/chopped 
+			//roasted peanuts and shredded carrot and cabbage 
+    		
+	    	aMeal.addMealName("Cabbage & Carrot Slaw Plate");
+	    	aMeal.add("Cabbage", .20);
+	      	aMeal.add("Carrot", .20);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("Sesame Seed", .07);
+	      	aMeal.add("Table Salt", 01);
+	      	
+    	} else if (number == 3) {
+    	
+    		// clove garlic, finely chopped, shredded carrots
+    		// thinly sliced green onions
+    		//	Ground black pepper, to taste
+    		
+	    	aMeal.addMealName("Roasted Garlic, Potato & Lettuce Salad");
+	    	aMeal.add("Potato", .22);
+	      	aMeal.add("Lettuce", .12);
+	      	aMeal.add("Garlic", .08);
+	      	aMeal.add("Sesame Seed", .05);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("Table Salt", 01);
+		      	
+	    	
+		} else if (number == 4) {
+	    	
+			// 
+	    	aMeal.addMealName("Soy Sprout Stir Fry");
+	    	aMeal.add("Soy Sprout", .27);
+	      	aMeal.add("Garlic", .05);
+	      	aMeal.add("Green Onion", .15);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("Table Salt", .01);
+	      	
+		} 
+    	
+			else if (number == 5) {
+	    	
+			// 
+	    	aMeal.addMealName("Veggie Burger");
+	    	aMeal.add("Wheat Bun", .15);
+	      	aMeal.add("Veggie Patty", .25);
+	      	aMeal.add("Lettuce", .1);
+	      	
+	      	
+		} 
+    	//logger.info(" meal# is " + number);
+    	
+    	return aMeal;
+	}
+	
     /**
      * Adds cooking work to this facility. 
      * The amount of work is dependent upon the person's cooking skill.
@@ -242,26 +333,208 @@ implements Serializable {
     //  				is more than 0.5 kg,
     public void addWork(double workTime) {
     	cookingWorkTime += workTime;       
-        //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime);
-        //logger.info("addWork() : workTime is " + workTime);
-        
-    	// check if there are new harvest, if it does, set foodIsAvailable to true
-    	double foodAvailable = getTotalFreshFood();
+        //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
+        //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
+  
     	
-    	if (foodAvailable >= 0.5) 
-    		foodIsAvailable = true;
     	
-     	while ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (foodIsAvailable) ){      	
-            cookMealWithFreshFood();
-        } // end of while
+      
+    	while ( cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
+ 
+    		boolean exit = false;
+    		
+    		// pick a meal whose ingredients are available
+    		while (!exit) {
+    			aMeal = pickAMeal();
+    			boolean isAmountAV = checkAmountAvailable(aMeal);
+    			if (isAmountAV) {
+    				cookAHotMeal(aMeal);
+    				exit = true;
+    			}
+    		}
+    		
+    	}
+     	
      } // end of void addWork()
     
+
+
+    // 2014-11-29 Created Ingredient()
+	private class Ingredient {
+    	String name;
+    	double amount;
+    Ingredient(String name, double amount) {
+    		this.name = name;
+    		this.amount = amount;
+    }
+	    public String getName() {
+	    		return name;
+	    	}
+	    public double getAmount() {
+	    		return amount;
+	    	}
+	}
+    
+
+    // 2014-11-29 Created HotMeal()
+	private class HotMeal {
+    	List<Ingredient> ingredientList = new ArrayList<Ingredient>();
+    	String nameOfMeal;
+		public void add(String name, double amount) {
+			ingredientList.add(new Ingredient(name, amount));
+		}
+		public void addMealName(String nameOfMeal) {
+			this.nameOfMeal = nameOfMeal;
+		}
+		public String getMealName() {
+			return nameOfMeal;
+		}
+		public List<Ingredient> getIngredientList() {
+			return ingredientList;
+		}
+		
+		public String getAvailableOil() {
+			// pick an oil that's available
+	    	
+	    	boolean exit = false;
+	    	String oil = null;
+	    	
+			while (!exit) {
+				oil = getAnOil();
+				boolean isAmountAV;
+				try {
+					double amount = getFreshFoodAvailable(oil);	
+					exit = true;
+				} catch (Exception e) {}
+
+			} // end of while loop
+			return oil;
+		}
+	}
+    	
+    	
+		
+		public String getAnOil() {
+			// 
+			int upperbound = 4;
+	    	int lowerbound = 0;
+	    	String oilName = "";
+	    	int index = ThreadLocalRandom.current().nextInt(upperbound + 1);
+	    	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
+	    	//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+	    	
+	    	//HotMeal aMeal = new HotMeal();
+	    	
+	    	if (index == 0) {
+	    		oilName = "Soybean Oil";
+	    	} else if (index == 1) {
+	    		oilName = "Garlic Oil";
+	    	} else if (index == 2) {
+	    		oilName = "Sesame Oil";
+	    	} else if (index == 3) {
+	    		oilName = "Peanut Oil";
+	    	} else if (index == 4) {
+	    		oilName = "Soybean Oil";
+	    	} 
+	
+	    	//logger.info(" Oil is " + oilName);
+
+	    	return oilName;
+
+		}
+    
+    // 2014-11-29 Created checkAmountAvailable()
+    public boolean checkAmountAvailable(HotMeal aMeal) {
+    	boolean result = true;
+
+       	List<Ingredient> ingredientList = aMeal.getIngredientList();
+        
+        Iterator<Ingredient> i = ingredientList.iterator();
+        
+        while (i.hasNext()) {
+        	
+	        Ingredient oneIngredient;
+	        oneIngredient = i.next();
+	        String ingredientName = oneIngredient.getName();
+	        double amount = oneIngredient.getAmount();
+	            	
+	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
+	        double ingredientAvailable = getFreshFood(ingredientAR);
+               
+	        if (ingredientAvailable > amount) 
+	        	result = result && true;
+	        else { 
+                logger.info(ingredientName + 
+                "  Required : " + amount + 
+                "  Remaining : " +  ingredientAvailable); 
+                result = false;
+                }
+        }
+        //logger.info(" result from checkAmountAvailable() : " + result);
+		return result;
+    }
+    
+    // 2014-11-29 Created cookAHotMeal()
+    public void cookAHotMeal(HotMeal hotMeal) {
+
+    	//logger.info("Entering cookAHotMeal");
+    	
+    	List<Ingredient> ingredientList = hotMeal.getIngredientList();
+    	
+     	String nameOfMeal = hotMeal.getMealName();
+ 
+        boolean isAmountAV = checkAmountAvailable(hotMeal);
+        
+        if (isAmountAV) {
+        	
+	        Iterator<Ingredient> i = ingredientList.iterator();
+	        
+	        while (i.hasNext()) {
+	        	
+		        Ingredient oneIngredient;
+		        oneIngredient = i.next();
+		        String ingredientName = oneIngredient.getName();
+		        double amount = oneIngredient.getAmount();
+		            	
+		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
+		        //double ingredientAvailable = getFreshFood(ingredientAR);
+                
+		        inv.retrieveAmountResource(ingredientAR, amount);
+	         
+	        } // end of while
+	
+	       	int mealQuality = getBestCookSkill();
+	        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+
+	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, time);
+	        
+	        logger.info(" New CookedMeal : " + meal.getName());
+	        
+	    	meals.add(meal);
+	  	        
+	  	    if (logger.isLoggable(Level.FINEST)) {
+	  	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+	  	        			" has " + meals.size() + " meal(s) with quality score of " + mealQuality);
+	  	    }
+  
+	        logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
+  	        			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
+	        //logger.info(" BestMealQuality : " + getBestMealQuality());
+	        
+	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
+	  	        
+        }
+        
+    }
+    
+    
+   
     /**
      * Computes total amount of fresh food from all food group. 
      * 
      * @param none
      * @return total amount of fresh food in kg
-     */
+     
     //2014-10-15 Fixed the crash by checking if there is any fresh food available for CookMeal.java 
     //2014-11-21 Changed method name to getTotalFreshFood() 
     public double getTotalFreshFood() {
@@ -273,7 +546,7 @@ implements Serializable {
         double vegAvailable = getFreshFoodAvailable("Vegetable Group");
         return fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
     }
-    
+    */
     /**
      * Gets the amount resource of the fresh food from a specified food group. 
      * 
@@ -295,7 +568,9 @@ implements Serializable {
      //2014-11-21 Added getFreshFood() 
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
-        return Math.round(freshFoodAvailable* 10000.0) / 10000.0;
+        // 2014-11-29 Deleted the rounding or java.lang.IllegalStateException
+        //return Math.round(freshFoodAvailable* 10000.0) / 10000.0;
+        return freshFoodAvailable;
     }
     
     /**
@@ -305,19 +580,20 @@ implements Serializable {
      * @return double amount of fresh food in kg, rounded to the 4th decimal places
      */
      //2014-11-21 Added getFreshFoodAvailable() 
-    public double getFreshFoodAvailable(String foodGroup) {
-    	return getFreshFood(getFreshFoodAR(foodGroup));
+    public double getFreshFoodAvailable(String food) {
+    	return getFreshFood(getFreshFoodAR(food));
     }
+    
     
     /** Cooks the meal with the arbitrary method of deducting the amount of food
      *  across all 5 fresh food groups. The proportion is based on the amount available 
      *  at each food group 
      * @param none
      * 
-     * */
+     * 
     // TODO: let the cook choose what kind of meal to cook based on his preference
     // TODO: create a method to make the codes more compact
-    // 2014-11-07 Deducted the amount of soybeans in case of legumes
+    // 2014-11-07 Deducted the amount of soybean in case of legumes
     public void  cookMealWithFreshFood() {
     	
         int mealQuality = getBestCookSkill();
@@ -337,10 +613,10 @@ implements Serializable {
         AmountResource vegAR = getFreshFoodAR("Vegetable Group");
         double vegAvailable = getFreshFood(vegAR);
   
-        // Addition Calculation for Soybeans that belongs to the Legume Group
-        AmountResource soybeansAR = getFreshFoodAR("Soybeans");
-        double soybeansAvailable = getFreshFood(soybeansAR);
-        double soybeansFraction = Math.round(soybeansAvailable / legumesAvailable* 10000.0) / 10000.0 ;
+        // Addition Calculation for Soybean that belongs to the Legume Group
+        AmountResource soybeanAR = getFreshFoodAR("Soybean");
+        double soybeanAvailable = getFreshFood(soybeanAR);
+        double soybeanFraction = Math.round(soybeanAvailable / legumesAvailable* 10000.0) / 10000.0 ;
         
         double totalAvailable =  Math.round((fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable )* 10000.0) / 10000.0;
         
@@ -353,14 +629,14 @@ implements Serializable {
 	        double legumesFraction = Math.round(foodAmount * legumesAvailable / totalAvailable* 10000.0) / 10000.0;
 	        double spicesFraction = Math.round(foodAmount * spicesAvailable / totalAvailable* 10000.0) / 10000.0;
 	        double vegFraction = Math.round(foodAmount * vegAvailable / totalAvailable* 10000.0) / 10000.0;
-	        //double soybeansFraction = foodAmount * soybeansAvailable / totalAvailable;   
+	        //double soybeanFraction = foodAmount * soybeanAvailable / totalAvailable;   
 	        if (fruitsFraction > 0.0001) inv.retrieveAmountResource(fruitsAR, fruitsFraction);
 	        if (grainsFraction > 0.0001) inv.retrieveAmountResource(grainsAR, grainsFraction);
 	        if (legumesFraction > 0.0001) inv.retrieveAmountResource(legumesAR, legumesFraction);
 	        if (spicesFraction > 0.0001) inv.retrieveAmountResource(spicesAR, spicesFraction);
 	        if (vegFraction > 0.0001) inv.retrieveAmountResource(vegAR, vegFraction);
-	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeansFraction*legumesFraction
-	        if (soybeansFraction*legumesFraction > 0.0001) inv.retrieveAmountResource(soybeansAR, soybeansFraction*legumesFraction);
+	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeanFraction*legumesFraction
+	        if (soybeanFraction*legumesFraction > 0.0001) inv.retrieveAmountResource(soybeanAR, soybeanFraction*legumesFraction);
 
 	        String nameOfMeal = "Mixed Bowl";
 	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
@@ -369,7 +645,7 @@ implements Serializable {
 	        
 	        if (logger.isLoggable(Level.FINEST)) {
 	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has " + meals.size() + " meals and quality is " + mealQuality + ")");
+	        			" has " + meals.size() + " meals; best cook skill : " + mealQuality + ")");
 	        }
 	        cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
         } 
@@ -378,7 +654,7 @@ implements Serializable {
          	   logger.info("cookingChoice() : less than 0.5 kg fresh food available. Cannot cook more meal.");        	
         }
     }
-
+*/
     /**
      * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)

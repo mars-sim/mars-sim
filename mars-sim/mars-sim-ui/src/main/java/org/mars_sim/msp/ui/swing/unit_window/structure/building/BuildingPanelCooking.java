@@ -80,8 +80,13 @@ extends BuildingFunctionPanel {
 		labelPanel.add(numMealsLabel);
 
 		// Prepare meal quality label
+		String mealQualityStr;
 		mealQualityCache = kitchen.getBestMealQuality();
-		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
+		// Update meal quality
+		if (mealQualityCache == 0) mealQualityStr = "None";
+		else mealQualityStr = "" + mealQualityCache;
+		//System.out.println("BuildingPanelCooking.java : initial mealQualityCache : " + mealQualityCache);
+		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityStr), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(mealQualityLabel);
 	}	
 
@@ -89,22 +94,33 @@ extends BuildingFunctionPanel {
 	 * Update this panel
 	 */
 	public void update() {
+		
+		int numCooks = 0;
+		numCooks = kitchen.getNumCooks();
 		// Update cook number
-		if (numCooksCache != kitchen.getNumCooks()) {
-			numCooksCache = kitchen.getNumCooks();
-			numCooksLabel.setText(Msg.getString("BuildingPanelCooking.numberOfCooks", numCooksCache)); //$NON-NLS-1$
+		if (numCooksCache != numCooks) {
+			numCooksCache = numCooks;
+			numCooksLabel.setText(Msg.getString("BuildingPanelCooking.numberOfCooks", numCooks)); //$NON-NLS-1$
 		}
 
+		int numMeals = 0;
+		numMeals = kitchen.getNumberOfCookedMeals();
 		// Update meal number
-		if (numMealsCache != kitchen.getNumberOfCookedMeals()) {
-			numMealsCache = kitchen.getNumberOfCookedMeals();
-			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMeals", numMealsCache)); //$NON-NLS-1$
+		if (numMealsCache != numMeals) {
+			numMealsCache = numMeals;
+			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMeals", numMeals)); //$NON-NLS-1$
 		}
 
+		String mealQualityStr;
+		int mealQuality = 0;
+		mealQuality = kitchen.getBestMealQuality();
 		// Update meal quality
-		if (mealQualityCache != kitchen.getBestMealQuality()) {
-			mealQualityCache = kitchen.getBestMealQuality();
-			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityCache)); //$NON-NLS-1$
+		if (mealQualityCache != mealQuality) {
+			mealQualityCache = mealQuality;
+			if (mealQuality == 0) mealQualityStr = "None";
+			else mealQualityStr = "" + mealQuality;
+			//System.out.println("BuildingPanelCooking.java : updated mealQualityCache : "+ mealQuality);
+			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.bestQualityOfMeals", mealQualityStr)); //$NON-NLS-1$
 		}
 	}
 }

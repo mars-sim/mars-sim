@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -667,7 +668,7 @@ implements Serializable {
     public double getHunger() {
         return hunger;
     }
-
+    
     /**
      * Define the hunger setting for this person
      * @param newHunger New hunger.

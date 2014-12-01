@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 3.07 2014-11-22
+ * @version 3.07 2014-11-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.util.logging.Logger;
 
 import javax.swing.JDialog;
@@ -26,22 +25,21 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 
 /**
  * The NotificationManager class creates notification messages on the desktop
  * Events are based from HistoricalEvent.java
  */
-//TODO: Does subclassing JDialog slow performance? 
-//TODO: Where is the best place to instantiate NotificationManager class? 
-//2014-11-15 Renamed NotificationBox to NotificationManager
-public class NotificationManager extends JDialog {
+//TODO: Does subclassing JDialog have slower performance than not? 
+//2014-11-29 Renamed NotificationManager to NotificationWindow 
+//2014-11-29 Relocated its instantiation from EventTableModel to MonitorWindow
+public class NotificationWindow extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	/** The name of the tool the window is for. */
 	
 	// default logger.
-	private static Logger logger = Logger.getLogger(NotificationManager.class.getName());
+	private static Logger logger = Logger.getLogger(NotificationWindow.class.getName());
 
 	
 	protected String name;
@@ -57,7 +55,7 @@ public class NotificationManager extends JDialog {
 	private String matchedWord2 = "recovering";
 	private String oldMsgCache = "";
 
-	public NotificationManager() {
+	public NotificationWindow() {
 		queue = new TelegraphQueue();
 	
 	}
@@ -80,6 +78,10 @@ public class NotificationManager extends JDialog {
 				//System.out.println("sendAlert() : header is "+ header);
 				telegraphConfig = new TelegraphConfig();
 				
+				//telegraphConfig.setButtonIcon();
+				//telegraphConfig.setWindowWidth(100);
+				//telegraphConfig.setWindowWidth(100);
+
 				telegraphConfig.setBackgroundColor(ORANGE);
 				telegraphConfig.setTitleColor(BURGANDY);
 				//telegraphConfig.setTitleFont(font);
@@ -88,7 +90,7 @@ public class NotificationManager extends JDialog {
 				telegraphConfig.setAudioEnabled(false);
 				//telegraphConfig.setAudioInputStream(null);
 				//telegraphConfig.setButtonEnabled(true);
-				telegraphConfig.setDuration(3000);
+				telegraphConfig.setDuration(2500);
 				telegraphConfig.setBorderColor(Color.YELLOW);
 				telegraphConfig.setBorderThickness(5);
 				telegraphConfig.setTelegraphPosition(TelegraphPosition.BOTTOM_RIGHT);
@@ -174,9 +176,6 @@ public class NotificationManager extends JDialog {
 		msg = msg.replaceAll("a SUFFOCATION", "SUFFOCATION");
 		msg = msg.replaceAll("a DEHYDRATION", "DEHYDRATION");
 
-		msg = "<html><i><b>" 
-				+ msg + "</b></i></html>";
-
 		return msg;
 	}
 	
@@ -195,10 +194,8 @@ public class NotificationManager extends JDialog {
 		String locationName = "";
 		String unitName = "";
 	
-		
 		if (willNotify == true) {
 			// if the condition is true,
-			
 			//category = category + event.getCategory();		
 			Object source = event.getSource();
 			try {
@@ -213,6 +210,7 @@ public class NotificationManager extends JDialog {
 	                		personName +
 							" had " + message + " " +
 							locationName);
+	    		 	message = formatMsg(message);
 	                message = personName +
 							" had " + message + " " +
 							locationName ; 
@@ -226,6 +224,7 @@ public class NotificationManager extends JDialog {
 							" had " + message + 
 							" at " + buildingName + 
 							" in " + settlementName);
+	    		 	message = formatMsg(message);
 	                message = personName +
 							" had " + message + 
 							" at " + buildingName + 
@@ -237,6 +236,7 @@ public class NotificationManager extends JDialog {
 	                		+ personName +
 							" had " + message + 
 							" in " + vehicleName);
+	    		 	message = formatMsg(message);
 	                message = personName +
 							" had " + message + 
 							" in " + vehicleName ;
@@ -261,6 +261,7 @@ public class NotificationManager extends JDialog {
 							logger.info("Equipment malfunction : " + equipmentName +
 									" had " + message + 
 									" in " + unitName);
+						 	message = formatMsg(message);
 							message = equipmentName + 
 									" had " + message + 
 									" in " + unitName ;
@@ -274,6 +275,7 @@ public class NotificationManager extends JDialog {
 							logger.info("Equipment malfunction : " + equipmentName +
 									" had " + message + " " +
 									unitName);
+						 	message = formatMsg(message);
 							message = equipmentName + 
 									" had " + message + 
 									" " + unitName ;	
@@ -291,9 +293,9 @@ public class NotificationManager extends JDialog {
 						// yes the equipment does have a location/person container
 						logger.info("Equipment malfunction : just had " + message + 
 								" in " + unitName);
+					 	message = formatMsg(message);
 						message = "Just had " + message + 
 								" in " + unitName;
-						
 					} catch (Exception e2) { 
 						// No, the equipment does NOT have a location container
 						System.err.println("Exception Caught Successfully : equipment's container is" + e2.getMessage());
@@ -301,6 +303,7 @@ public class NotificationManager extends JDialog {
 						unitName = "outside";
 						logger.info("Equipment malfunction : just had " + message + 
 							unitName);
+					 	message = formatMsg(message);
 						message = "Just had " + message + 
 							" " + unitName;
 					} // end of test if the equipment has a location/person container
@@ -311,8 +314,7 @@ public class NotificationManager extends JDialog {
 				vehicleName = v.getName();		
 				try {  // test if the Vehicle has a location container
 					Unit u = v.getTopContainerUnit();
-					//if (!u.equals(null))
-						
+					//if (!u.equals(null))	
 					unitName = u.getName();
 					
 					if (!unitName.equals(null)) {
@@ -320,6 +322,7 @@ public class NotificationManager extends JDialog {
 					logger.info("Vehicle malfunction : " + vehicleName +
 							" had " + message + 
 							 " at " + unitName + "\n");
+				 	message = formatMsg(message);
 					message = vehicleName + 
 							 " had " + message + 
 							 " at " + unitName ;
@@ -332,7 +335,8 @@ public class NotificationManager extends JDialog {
 				 	logger.info("Vehicle malfunction : " + vehicleName +
 							" had " + message + " " +
 							 unitName + "\n");
-					message = vehicleName + 
+				 	message = formatMsg(message);
+				 	message = vehicleName + 
 							 " had " + message + 
 							 "  " + unitName;
 				}
@@ -344,6 +348,10 @@ public class NotificationManager extends JDialog {
 				//System.out.println("buildingName is " + buildingName);
 				Settlement s = b.getBuildingManager().getSettlement();
 				settlementName = s.getName();
+			 	logger.info("Building malfunction : " + buildingName + 
+						" had " + message + 
+						" in " + settlementName) ;
+			 	message = formatMsg(message);
 				message = buildingName + 
 						" had " + message + 
 						" in " + settlementName ;
@@ -355,9 +363,17 @@ public class NotificationManager extends JDialog {
 		
 		} // end of if (willNotify == true)
 
+		msg = "<html><i><b>" 
+				+ msg + "</b></i></html>";
+		
 		message = "<html><CENTER><FONT COLOR=RED>" + message + "</FONT COLOR=RED></CENTER></html>";
 
 		// 2014-11-16 Added modifyMsg()
 		return message;
 	}
+	
+	public String formatMsg(String msg) {
+		return 	"<html><i><b>" 
+				+ msg + "</b></i></html>";
+	};
 }
