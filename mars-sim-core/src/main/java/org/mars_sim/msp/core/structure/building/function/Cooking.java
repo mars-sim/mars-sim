@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2014-11-30
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -253,9 +253,9 @@ implements Serializable {
 	    	aMeal.addMealName("Kidney Bean Fried Rice with Onion");
 	    	aMeal.add("Kidney Bean", .19);
 	      	aMeal.add("White Rice", .20);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add(aMeal.getAvailableOil(), .03);
 	      	aMeal.add("White Onion", .08);
-	      	aMeal.add("Table Salt", 01);
+	      	//aMeal.add("Table Salt", .01);
 	      	
     	} else if (number == 1) {
     	
@@ -263,9 +263,9 @@ implements Serializable {
 	    	aMeal.add("Cabbage", .17);
 	      	aMeal.add("Carrot", .17);
 	      	aMeal.add("Sesame Seed", .03);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add(aMeal.getAvailableOil(), .03);
 	      	aMeal.add("Green Onion", .10);
-	      	aMeal.add("Table Salt", 01);
+	      	//aMeal.add("Table Salt", .01);
 	      	
 	      	
     	}  else if (number == 2) {
@@ -276,9 +276,9 @@ implements Serializable {
 	    	aMeal.addMealName("Cabbage & Carrot Slaw Plate");
 	    	aMeal.add("Cabbage", .20);
 	      	aMeal.add("Carrot", .20);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add(aMeal.getAvailableOil(), .03);
 	      	aMeal.add("Sesame Seed", .07);
-	      	aMeal.add("Table Salt", 01);
+	      	//aMeal.add("Table Salt", .01);
 	      	
     	} else if (number == 3) {
     	
@@ -291,8 +291,8 @@ implements Serializable {
 	      	aMeal.add("Lettuce", .12);
 	      	aMeal.add("Garlic", .08);
 	      	aMeal.add("Sesame Seed", .05);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
-	      	aMeal.add("Table Salt", 01);
+	      	aMeal.add(aMeal.getAvailableOil(), .03);
+	      	//aMeal.add("Table Salt", .01);
 		      	
 	    	
 		} else if (number == 4) {
@@ -302,20 +302,20 @@ implements Serializable {
 	    	aMeal.add("Soy Sprout", .27);
 	      	aMeal.add("Garlic", .05);
 	      	aMeal.add("Green Onion", .15);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
-	      	aMeal.add("Table Salt", .01);
+	      	aMeal.add(aMeal.getAvailableOil(), .03);
+	      	//aMeal.add("Table Salt", .01);
 	      	
 		} 
     	
 			else if (number == 5) {
 	    	
 			// 
-	    	aMeal.addMealName("Veggie Burger");
+	    	aMeal.addMealName("Veggie Burger Plate");
 	    	aMeal.add("Wheat Bun", .15);
-	      	aMeal.add("Veggie Patty", .25);
+	      	aMeal.add("Veggie Patty", .15);
 	      	aMeal.add("Lettuce", .1);
-	      	
-	      	
+	      	aMeal.add("White Onion", .1);
+
 		} 
     	//logger.info(" meal# is " + number);
     	
@@ -330,15 +330,13 @@ implements Serializable {
     // 2014-10-08 Rewrote this function to highlight the while loop. 
     // 					moved remaining tasks into a new method cookingChoice()
     // 2014-10-15 Fixed the no available food crash by checking if the total food available
-    //  				is more than 0.5 kg,
+    //  				is more than 0.5 kg
+ 	// 2014-11-30 Added new features to cooking by calling pickAMeal() and cookAHotMeal()
     public void addWork(double workTime) {
     	cookingWorkTime += workTime;       
         //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
         //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
   
-    	
-    	
-      
     	while ( cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
  
     		boolean exit = false;
@@ -527,26 +525,7 @@ implements Serializable {
         
     }
     
-    
-   
-    /**
-     * Computes total amount of fresh food from all food group. 
-     * 
-     * @param none
-     * @return total amount of fresh food in kg
-     
-    //2014-10-15 Fixed the crash by checking if there is any fresh food available for CookMeal.java 
-    //2014-11-21 Changed method name to getTotalFreshFood() 
-    public double getTotalFreshFood() {
 
-        double fruitsAvailable = getFreshFoodAvailable("Fruit Group");
-        double grainsAvailable = getFreshFoodAvailable("Grain Group");
-        double legumesAvailable  = getFreshFoodAvailable("Legume Group");
-        double spicesAvailable = getFreshFoodAvailable("Spice Group");
-        double vegAvailable = getFreshFoodAvailable("Vegetable Group");
-        return fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable;
-    }
-    */
     /**
      * Gets the amount resource of the fresh food from a specified food group. 
      * 
@@ -585,76 +564,6 @@ implements Serializable {
     }
     
     
-    /** Cooks the meal with the arbitrary method of deducting the amount of food
-     *  across all 5 fresh food groups. The proportion is based on the amount available 
-     *  at each food group 
-     * @param none
-     * 
-     * 
-    // TODO: let the cook choose what kind of meal to cook based on his preference
-    // TODO: create a method to make the codes more compact
-    // 2014-11-07 Deducted the amount of soybean in case of legumes
-    public void  cookMealWithFreshFood() {
-    	
-        int mealQuality = getBestCookSkill();
-        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-        
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);   
-       	
-        AmountResource fruitsAR = getFreshFoodAR("Fruit Group");
-        double fruitsAvailable = getFreshFood(fruitsAR);
-        AmountResource grainsAR = getFreshFoodAR("Grain Group");
-        double grainsAvailable = getFreshFood(grainsAR);
-        AmountResource legumesAR = getFreshFoodAR("Legume Group");
-        double legumesAvailable = getFreshFood(legumesAR);
-        AmountResource spicesAR = getFreshFoodAR("Spice Group");
-        double spicesAvailable = getFreshFood(spicesAR);
-        AmountResource vegAR = getFreshFoodAR("Vegetable Group");
-        double vegAvailable = getFreshFood(vegAR);
-  
-        // Addition Calculation for Soybean that belongs to the Legume Group
-        AmountResource soybeanAR = getFreshFoodAR("Soybean");
-        double soybeanAvailable = getFreshFood(soybeanAR);
-        double soybeanFraction = Math.round(soybeanAvailable / legumesAvailable* 10000.0) / 10000.0 ;
-        
-        double totalAvailable =  Math.round((fruitsAvailable + grainsAvailable + legumesAvailable + spicesAvailable + vegAvailable )* 10000.0) / 10000.0;
-        
-        // 2014-10-15 mkung: Checked if the total food available is more than 0.5 kg food in total
-        if (totalAvailable > 0.5) { 
-        	//foodAvailable = true;
-	        //Use Math.round( xxx * 10000.0) / 10000.0 to truncate excessive decimal
-	        double fruitsFraction = Math.round(foodAmount * fruitsAvailable / totalAvailable* 10000.0) / 10000.0;
-	        double grainsFraction = Math.round(foodAmount * grainsAvailable / totalAvailable* 10000.0) / 10000.0;
-	        double legumesFraction = Math.round(foodAmount * legumesAvailable / totalAvailable* 10000.0) / 10000.0;
-	        double spicesFraction = Math.round(foodAmount * spicesAvailable / totalAvailable* 10000.0) / 10000.0;
-	        double vegFraction = Math.round(foodAmount * vegAvailable / totalAvailable* 10000.0) / 10000.0;
-	        //double soybeanFraction = foodAmount * soybeanAvailable / totalAvailable;   
-	        if (fruitsFraction > 0.0001) inv.retrieveAmountResource(fruitsAR, fruitsFraction);
-	        if (grainsFraction > 0.0001) inv.retrieveAmountResource(grainsAR, grainsFraction);
-	        if (legumesFraction > 0.0001) inv.retrieveAmountResource(legumesAR, legumesFraction);
-	        if (spicesFraction > 0.0001) inv.retrieveAmountResource(spicesAR, spicesFraction);
-	        if (vegFraction > 0.0001) inv.retrieveAmountResource(vegAR, vegFraction);
-	        // 2014-11-07 Changed the 2nd param from legumesFraction to soybeanFraction*legumesFraction
-	        if (soybeanFraction*legumesFraction > 0.0001) inv.retrieveAmountResource(soybeanAR, soybeanFraction*legumesFraction);
-
-	        String nameOfMeal = "Mixed Bowl";
-	        //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
-	      	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
-	        meals.add(new CookedMeal(nameOfMeal, mealQuality, time));
-	        
-	        if (logger.isLoggable(Level.FINEST)) {
-	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	        			" has " + meals.size() + " meals; best cook skill : " + mealQuality + ")");
-	        }
-	        cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
-        } 
-        else { 
-        	foodIsAvailable = false;
-         	   logger.info("cookingChoice() : less than 0.5 kg fresh food available. Cannot cook more meal.");        	
-        }
-    }
-*/
     /**
      * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)
