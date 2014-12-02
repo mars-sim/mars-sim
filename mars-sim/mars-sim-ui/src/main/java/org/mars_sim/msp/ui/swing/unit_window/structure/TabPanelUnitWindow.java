@@ -17,7 +17,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 /**
  * The SettlementWindow is the window for displaying a settlement.
  */
-public class SettlementWindow extends UnitWindow {
+public class TabPanelUnitWindow extends UnitWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class SettlementWindow extends UnitWindow {
      * @param desktop the main desktop panel.
      * @param unit the unit to display.
      */
-    public SettlementWindow(MainDesktopPane desktop, Unit unit) {
+    public TabPanelUnitWindow(MainDesktopPane desktop, Unit unit) {
         // Use UnitWindow constructor
         super(desktop, unit, false);
         
@@ -55,5 +55,7 @@ public class SettlementWindow extends UnitWindow {
         //2014-11-23 Added food production
         addTabPanel(new TabPanelFoodProduction(settlement, desktop));
         
+        //addTabPanel(new TabPanelJournal(settlement, desktop));
+        //addTabPanel(new TabPanelCooking(settlement, desktop));
     }
 }
