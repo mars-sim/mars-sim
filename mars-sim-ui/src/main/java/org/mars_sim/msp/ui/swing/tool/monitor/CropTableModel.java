@@ -207,7 +207,7 @@ extends UnitTableModel {
 				case NAME : {
 					String i = settle.getName();
 					//if (name != i) {
-						result = i;
+						result = (Object) i;
 					//	name = i;
 					//}
 				} break;
@@ -216,12 +216,12 @@ extends UnitTableModel {
 					int numGreenhouses = bMgr.getBuildings(BuildingFunction.FARMING).size();
 					//if (numHouse != numGreenhouses ) {
 					//	numHouse = numGreenhouses;
-						result = numGreenhouses;
+						result = (Object) numGreenhouses;
 					//}
 				} break;
 							
 				case CROPS : {
-					result = getTotalNumOfAllCrops(settle);
+					result = (Object) getTotalNumOfAllCrops(settle);
 					
 				} break;
 
@@ -372,7 +372,7 @@ extends UnitTableModel {
 			String cropCat = cropType.getCropCategory();
 			//logger.info("unitUpdate() : cropCat is " + cropCat);
 			
-			//try {
+			try {
 				int tempColumnNum = -1;
 				
 				tempColumnNum = getGroupNum(cropCat);
@@ -406,8 +406,8 @@ extends UnitTableModel {
 						//logger.info("unitUpdate() : cropCache.toString() : " + cropCache.toString());
 					}
 				}
-			//}
-			//catch (Exception e) {}
+			}
+			catch (Exception e) {}
 		} // end of else if (eventType == UnitEventType.CROP_EVENT) {
 		if (columnNum > -1) {
 			SwingUtilities.invokeLater(new FoodTableCellUpdater(unitIndex, columnNum));

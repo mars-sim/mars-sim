@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -275,7 +276,8 @@ extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0) result = study.toString();
+				// 2014-12-01 Added WordUtils.capitalize()
+				if (columnIndex == 0) result = WordUtils.capitalize(study.toString());
 				else if (columnIndex == 1) {
 					if (study.isCompleted()) result = study.getCompletionState();
 					else result = study.getPhase();

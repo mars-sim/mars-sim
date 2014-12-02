@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 
@@ -110,7 +110,8 @@ implements Serializable {
 		Iterator<Part> i = getItemResources().iterator();
 		while (i.hasNext()) {
 			ItemResource resource = i.next();
-			if (resource.getName().equals(name)) result = resource;
+			//2014-12-01 Added equalsIgnoreCase()
+			if (resource.getName().equalsIgnoreCase(name)) result = resource;
 		}
 		if (result != null) return result;
 		else throw new UnknownResourceName(name);

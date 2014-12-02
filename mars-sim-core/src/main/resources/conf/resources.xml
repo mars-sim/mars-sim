@@ -70,17 +70,6 @@
 	<resource name="Sesame Oil" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Garlic Oil" phase="solid" life-support="true" edible="true"></resource>
 
-	
-	<!--
-	<resource name="Grain Group" phase="solid" life-support="true" edible="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
-		Small hard dry seeds, with or without attached hulls or fruit layers</resource>
-	<resource name="Fruit Group" phase="solid" life-support="true" edible="true">
-		the fleshy seed-associated structures of a plant that are sweet or sour and edible in the raw state</resource>
-	<resource name="Vegetable Group" phase="solid" life-support="true" edible="true">the leafy or root structure of a plant cultivated for food</resource>
-	<resource name="Legume Group" phase="solid" life-support="true" edible="true">the seed of a plant cultivated for food</resource>
-	<resource name="Spice Group" phase="solid" life-support="true" edible="true">For food seasoning</resource>
-	-->
-
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>
 	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>

@@ -375,7 +375,10 @@ implements Serializable {
     
 
     // 2014-11-29 Created HotMeal()
-	private class HotMeal {
+	class HotMeal {
+	    /** default serial id. */
+	    private static final long serialVersionUID = 1L;
+
     	List<Ingredient> ingredientList = new ArrayList<Ingredient>();
     	String nameOfMeal;
 		public void add(String name, double amount) {
@@ -399,7 +402,7 @@ implements Serializable {
 	    	
 			while (!exit) {
 				oil = getAnOil();
-				boolean isAmountAV;
+				//boolean isAmountAV;
 				try {
 					double amount = getFreshFoodAvailable(oil);	
 					exit = true;
