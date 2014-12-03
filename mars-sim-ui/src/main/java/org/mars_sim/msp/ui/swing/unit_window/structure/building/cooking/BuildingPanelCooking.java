@@ -4,11 +4,12 @@
  * @version 3.07 2014-11-21
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure.building;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 import javax.swing.*;
 

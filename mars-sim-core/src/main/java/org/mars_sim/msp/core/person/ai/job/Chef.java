@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /** 
  * The Chef class represents a job for a chef.

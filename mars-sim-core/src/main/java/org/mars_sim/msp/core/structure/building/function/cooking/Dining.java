@@ -4,7 +4,7 @@
  * @version 3.07 2014-06-19
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.building.function;
+package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Function;
 
 /**
  * The Dining class is a building function for dining.

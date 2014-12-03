@@ -56,6 +56,6 @@ public class TabPanelUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelFoodProduction(settlement, desktop));
         
         //addTabPanel(new TabPanelJournal(settlement, desktop));
-        //addTabPanel(new TabPanelCooking(settlement, desktop));
+        addTabPanel(new TabPanelCooking(settlement, desktop));
     }
 }

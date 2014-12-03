@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.ui.swing.unit_window.structure.building;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,10 +40,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.cooking.FoodProduction;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.FoodProductionPanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 /**
  * A building panel displaying the foodProduction building function.
