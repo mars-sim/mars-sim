@@ -358,7 +358,7 @@ implements Serializable {
 
 
     // 2014-11-29 Created Ingredient()
-	private class Ingredient {
+	private class Ingredient implements Serializable {
     	String name;
     	double amount;
     Ingredient(String name, double amount) {
@@ -375,7 +375,7 @@ implements Serializable {
     
 
     // 2014-11-29 Created HotMeal()
-	class HotMeal {
+	class HotMeal implements Serializable {
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
 
