@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 
@@ -54,8 +54,10 @@ public class TabPanelUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelScience(settlement, desktop));
         //2014-11-23 Added food production
         addTabPanel(new TabPanelFoodProduction(settlement, desktop));
+        //2014-12-02 Added
+        addTabPanel(new TabPanelCooking(settlement, desktop));
         
         //addTabPanel(new TabPanelJournal(settlement, desktop));
-        addTabPanel(new TabPanelCooking(settlement, desktop));
+        
     }
 }
