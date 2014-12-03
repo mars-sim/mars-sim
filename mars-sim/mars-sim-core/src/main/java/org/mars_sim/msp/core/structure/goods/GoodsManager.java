@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2014-11-30
  * @author Scott Davis
  * 
  */
@@ -336,7 +336,12 @@ implements Serializable {
      * @return demand (kg)
      * @throws Exception if error getting life support demand.
      */
+    // 2014-12-03 Added if (resource.isEdible()) 
     private double getLifeSupportDemand(AmountResource resource) {
+    	
+		String resourceName = resource.getName();
+    	//logger.info(" resource is " + resource.getName());
+		
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -344,9 +349,13 @@ implements Serializable {
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-            if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
+            //AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+            //if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
 
+            // 2014-12-03 Added checking for a variety of food items
+   			if ( resource.isEdible() )
+				amountNeededSol = config.getFoodConsumptionRate();
+  
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
@@ -479,9 +488,7 @@ implements Serializable {
         //AmountResource soybean = AmountResource.findAmountResource("Soybean");
         //AmountResource soymilk = AmountResource.findAmountResource("Soymilk"); 
         
-        // get a List<foodAR> of edible food 
-        // iterate over the list to create a list of foodAR
-        //String name = null;
+        // 2014-11-30 Created foodARList() to Get a List<foodAR> of edible food 
         List<AmountResource> foodARList = getARList();
         
         // 2014-10-15 mkung: added 5 new food groups
@@ -497,6 +504,7 @@ implements Serializable {
             //double soybeansValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soybean));
             //double soymilkValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soymilk));
             
+            // 2014-11-30 Created getValueList()
             List<Double> foodValueList = getValueList(foodARList);
             
             // 2014-10-15 mkung: added 5 new food groups
@@ -518,6 +526,7 @@ implements Serializable {
                     else if (resource.equals(carbonDioxide))
                         amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
+                    // 2014-11-30 Created getTotalDemand()
                     demand = getTotalDemand(foodValueList, farm, amountNeeded);
                     
                     //demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
@@ -767,7 +776,7 @@ implements Serializable {
                         Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
                         while (i.hasNext()) {
                             ConstructionStageInfo tempBuildingStage = ConstructionUtil.getConstructionStageInfo(
-                                    i.next().getName());
+                                    i.next().getBuildingType());
                             if (tempBuildingStage != null) {
                                 ConstructionStageInfo tempFrameStage = ConstructionUtil.getPrerequisiteStage(
                                         tempBuildingStage);
