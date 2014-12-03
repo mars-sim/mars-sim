@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.time.MarsClock;
 
 
 // 2014-12-01 Created ReadyMeal class
-	 public class ReadyMeal {
+	 public class ReadyMeal implements Serializable{
 	 	String name;
 	 	int numServings;
 		//int numKitchens;

@@ -117,8 +117,8 @@ extends TabPanel {
 		cookingTable.setCellSelectionEnabled(false);
 		cookingTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		//cookingTable.getColumnModel().getColumn(0).setPreferredWidth(15);
-		cookingTable.getColumnModel().getColumn(0).setPreferredWidth(130);
-		cookingTable.getColumnModel().getColumn(1).setPreferredWidth(45);
+		cookingTable.getColumnModel().getColumn(0).setPreferredWidth(140);
+		cookingTable.getColumnModel().getColumn(1).setPreferredWidth(47);
 		cookingTable.getColumnModel().getColumn(2).setPreferredWidth(45);
 		cookingTable.getColumnModel().getColumn(3).setPreferredWidth(45);
 		cookingTablePanel.add(cookingTable.getTableHeader(), BorderLayout.NORTH);

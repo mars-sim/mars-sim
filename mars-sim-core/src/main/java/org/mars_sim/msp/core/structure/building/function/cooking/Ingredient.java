@@ -7,11 +7,17 @@
 
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
+import java.io.Serializable;
+
 // 2014-11-29 Created Ingredient()
-public class Ingredient {
+public class Ingredient implements Serializable {
 	String name;
 	double amount;
 	
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	Ingredient(String name, double amount) {
 			this.name = name;
 			this.amount = amount;

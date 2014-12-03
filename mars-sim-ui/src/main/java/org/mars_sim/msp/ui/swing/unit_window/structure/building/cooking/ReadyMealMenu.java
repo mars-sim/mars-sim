@@ -6,14 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.ReadyMeal;
 
 // 2014-12-01 Created ReadyMealMenu class
-public class ReadyMealMenu {
+public class ReadyMealMenu implements Serializable {
 
 	    /** default serial id. */
 	private static final long serialVersionUID = 1L;

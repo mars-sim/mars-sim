@@ -192,11 +192,14 @@
 				<resource-storage resource="Soymilk" capacity="500.0" />
 				
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
+				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
 							
 				<resource-storage resource="Yeast" capacity="500.0" />
 				<resource-storage resource="Epsom Salt" capacity="500.0" />
 				<resource-storage resource="Table Salt" capacity="500.0" />
-																
+				<resource-storage resource="Sugar" capacity="500.0" />
+				<resource-storage resource="Rice Vinegar" capacity="500.0" />
+																				
 				<resource-storage resource="Soybean Oil" capacity="500.0" />
 				<resource-storage resource="White Onion" capacity="500.0" />
 				<resource-storage resource="White Rice" capacity="500.0" />	
@@ -209,17 +212,12 @@
 				<resource-storage resource="Green Onion" capacity="500.0" />		
 				<resource-storage resource="Peanut" capacity="500.0" />
 				<resource-storage resource="Potato" capacity="500.0" />
-				<resource-storage resource="Sesame Seed" capacity="500.0" />
+				<resource-storage resource="Sesame" capacity="500.0" />
 				<resource-storage resource="Garlic" capacity="500.0" />	
-				<resource-storage resource="Lettuce" capacity="500.0" />	
+				<resource-storage resource="Lettuce" capacity="500.0" />
+				
+					
 											
-				<!--												
-				<resource-storage resource="Fruit Group" capacity="500.0" />
-				<resource-storage resource="Vegetable Group" capacity="500.0" />
-				<resource-storage resource="Grain Group" capacity="500.0" />
-				<resource-storage resource="Legume Group" capacity="500.0" />		
-				<resource-storage resource="Spice Group" capacity="500.0" />						
-				-->
 				<resource-storage resource="Ice" capacity="100.0" />
 				
 				<!-- The initial resources in the building. -->
@@ -228,16 +226,19 @@
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
-				<resource-initial resource="Food" amount="150.0" />
+				<resource-initial resource="Food" amount="300.0" />
 				<resource-initial resource="Soybean" amount="50.0" />
 				<resource-initial resource="Soymilk" amount="50.0" />
 				
 				<resource-initial resource="Sodium Hypochlorite" amount="100.0" />
-				
-				<resource-initial resource="Yeast" amount="500.0" />
-				<resource-initial resource="Epsom Salt" amount="500.0" />
-				<resource-initial resource="Table Salt" amount="500.0" />
-				
+				<resource-initial resource="Acetic Acid Bacteria" amount="100.0" />
+								
+				<resource-initial resource="Yeast" amount="100.0" />
+				<resource-initial resource="Epsom Salt" amount="100.0" />
+				<resource-initial resource="Table Salt" amount="100.0" />
+				<resource-initial resource="Sugar" amount="100.0" />
+				<resource-initial resource="Rice Vinegar" amount="50.0" />					
+								
 				<resource-initial resource="Soybean Oil" amount="50.0" />	
 				<resource-initial resource="White Onion" amount="50.0" />
 				<resource-initial resource="White Rice" amount="50.0" />	
@@ -250,18 +251,10 @@
 				<resource-initial resource="Green Onion" amount="50.0" />	
 				<resource-initial resource="Peanut" amount="50.0" />			
 				<resource-initial resource="Potato" amount="50.0" />					
-				<resource-initial resource="Sesame Seed" amount="50.0" />					
+				<resource-initial resource="Sesame" amount="50.0" />					
 				<resource-initial resource="Garlic" amount="50.0" />	
 				<resource-initial resource="Lettuce" amount="50.0" />	
-											
-				<!--				
-				<resource-initial resource="Fruit Group" amount="50.0" />
-				<resource-initial resource="Vegetable Group" amount="50.0" />
-				<resource-initial resource="Grain Group" amount="50.0" />
-				<resource-initial resource="Legume Group" amount="50.0" />
-				<resource-initial resource="Spice Group" amount="50.0" />
-				-->				
-		
+														
 			</storage>
 			
 			<!-- The building is capable of producing heat. -->

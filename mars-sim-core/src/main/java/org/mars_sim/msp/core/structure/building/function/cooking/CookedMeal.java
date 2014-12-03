@@ -20,7 +20,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** The time (millisols) between when a meal is cooked and when it expires. */
-	private static final double SHELF_LIFE = 150D; // note: 100 mSol ~= 2.5 hrs
+	private static final double SHELF_LIFE = 200D; // note: 100 mSol ~= 2.5 hrs
 
 	// Data members
 	private int quality;
