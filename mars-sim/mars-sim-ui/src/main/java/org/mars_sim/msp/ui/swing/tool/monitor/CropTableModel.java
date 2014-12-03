@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.07 2014-12-01
+ * @version 3.07 2014-12-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
 // 2014-11-26 Major Overhaul: commented out all individual food items and moved them to another table
 // & Kept only crop items and changed name to CropTableModel.java
 // 2014-12-01 Added BULB, FLOWER, TUBER, ROOT
+// 2014-12-02 Added GRASSES
 public class CropTableModel
 extends UnitTableModel {
 
@@ -64,68 +65,61 @@ extends UnitTableModel {
 	private final static int FRUITS = 5;
 	
 	private final static int GRAINS = 6;
-	private final static int LEGUMES = 7;
-	private final static int ROOTS = 8;	
+	private final static int GRASSES = 7;
+	private final static int LEGUMES = 8;
+	private final static int ROOTS = 9;	
 	
-	private final static int SPICES = 9;
-	private final static int TUBERS = 10;
-	private final static int VEGETABLES = 11;
+	private final static int SPICES = 10;
+	private final static int TUBERS = 11;
+	private final static int VEGETABLES = 12;
+	
+	// 2014-11-25 Added NUMCROPTYPE
+	private final static int NUMCROPTYPE = 10;
+	/** The number of Columns. */
+	private final static int COLUMNCOUNT = 13;
 
 	String name = null;
 	int numHouse = 0;
 	
-	
 	enum CropsEnum {
-		BULBS,FLOWERS,FRUITS,GRAINS,LEGUMES,
+		BULBS,FLOWERS,FRUITS,GRAINS,GRASSES,LEGUMES,
 		ROOTS,SPICES,TUBERS,VEGETABLES;
 	}
 
-	//use CropsEnum.valueOf("BULB").ordinal();
 
-	// 2014-11-25 Added NUMCROPTYPE
-	private final static int NUMCROPTYPE = 9;
-	
-	//private int NumOfCropsinSettlementCache = 0;
-	
-	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 12;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
 	private static Class<?> columnTypes[];
-/*
-	private final String GROUP1 = "Fruit";
-	private final String GROUP2 = "Grain";
-	private final String GROUP3 = "Legume";
-	private final String GROUP4 = "Spice";
-	private final String GROUP5 = "Vegetable";
-	*/
+
 	static {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = "Settlement Name";
+		columnNames[NAME] = "<html>Settlement<br>Name</html>";
 		columnTypes[NAME] = String.class;
-		columnNames[GREENHOUSES] = "# Greenhouses";
+		columnNames[GREENHOUSES] = "Greenhouses";
 		columnTypes[GREENHOUSES] = Integer.class;
-		columnNames[CROPS] = "Total # Crops";
+		columnNames[CROPS] = "<html>Total<br>Crops</html>";
 		columnTypes[CROPS] = Integer.class;	
-		columnNames[BULBS] = "# Bulbs";
+		columnNames[BULBS] = "<html><Bulb<br>Group</html>";
 		columnTypes[BULBS] = Integer.class;
-		columnNames[FLOWERS] = "# Flowers";
+		columnNames[FLOWERS] = "<html>Flower<br>Group</html>";
 		columnTypes[FLOWERS] = Integer.class;
-		columnNames[FRUITS] = "# Fruits";
+		columnNames[FRUITS] = "<html>Fruit<br>Group</html>";
 		columnTypes[FRUITS] = Integer.class;
-		columnNames[GRAINS] = "# Grains";
+		columnNames[GRAINS] = "<html>Grain<br>Group</html>";
 		columnTypes[GRAINS] = Integer.class;
-		columnNames[LEGUMES] = "# Legumes";
+		columnNames[GRASSES] = "<html>Grass<br>Group</html>";
+		columnTypes[GRASSES] = Integer.class;
+		columnNames[LEGUMES] = "<html>Legume<br>Group</html>";
 		columnTypes[LEGUMES] = Integer.class;
-		columnNames[ROOTS] = "# Roots";
+		columnNames[ROOTS] = "<html>Root<br>Group</html>";
 		columnTypes[ROOTS] = Integer.class;
-		columnNames[SPICES] = "# Spices";
+		columnNames[SPICES] = "<html>Spice<br>Group</html>";
 		columnTypes[SPICES] = Integer.class;
-		columnNames[TUBERS] = "# Tubers";
+		columnNames[TUBERS] = "<html>Tuber<br>Group</html>";
 		columnTypes[TUBERS] = Integer.class;
-		columnNames[VEGETABLES] = "# Vegetables";
+		columnNames[VEGETABLES] = "<html>Vegetable<br>Group</html>";
 		columnTypes[VEGETABLES] = Integer.class;
 		
 
@@ -240,7 +234,11 @@ extends UnitTableModel {
 				case GRAINS : {
 					result = getValueAtColumn(rowIndex, "Grains");
 				} break;
-	
+
+				case GRASSES : {
+					result = getValueAtColumn(rowIndex, "Grasses");
+				} break;
+				
 				case LEGUMES : {
 					result = getValueAtColumn(rowIndex, "Legumes");
 				} break;
@@ -377,18 +375,7 @@ extends UnitTableModel {
 				
 				tempColumnNum = getGroupNum(cropCat);
 				//logger.info(" tempColumnNum : " + tempColumnNum);
-				/*
-				if (cropCat.equals(GROUP1))
-					tempColumnNum = FRUITS;
-				else if (cropCat.equals(GROUP2))
-					tempColumnNum = GRAINS;
-				else if (cropCat.equals(GROUP3))
-					tempColumnNum = LEGUMES;
-				else if (cropCat.equals(GROUP4))
-					tempColumnNum = SPICES;
-				else if (cropCat.equals(GROUP5))
-					tempColumnNum = VEGETABLES;
-				 */
+	
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
 					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);

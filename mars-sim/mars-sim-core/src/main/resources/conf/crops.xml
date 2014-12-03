@@ -29,7 +29,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	inedible-biomass="59.87" 
     	/>
 
-	<crop name="Chard" 
+	<crop name="Swiss Chard" 
     	growing-time="45.0" 
     	crop-category="Vegetables" 
     	edible-biomass="87.50"
@@ -138,7 +138,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	<!-- http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
     	5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space, -->
     	
-    <crop name="Sesame Seed"
+    <crop name="Sesame"
         growing-time="100" 
     	crop-category="Flowers" 
     	edible-biomass="7.2" 
@@ -146,6 +146,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	inedible-biomass="15.0" 
     	/>		
     	<!--http://en.wiki2.org/wiki/Sesame
+    	~50 to 80 seeds per capsule
     	7.2 Metric Ton/hectare -->
     	
     <crop name="Tomato"
@@ -159,5 +160,18 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	 484 MT/ha for earth greenhouse 
     	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
     	  -->
+ 
+   <crop name="Sugarcane"
+        growing-time="180" 
+    	crop-category="Grasses" 
+    	edible-biomass="100" 
+    	edible-water-content=".948" 
+    	inedible-biomass="200" 
+    	/>		
+    	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
+    	 100-300 MT/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%) 
+
+    	  -->    	  
+    	  
     	
 </crop-list>

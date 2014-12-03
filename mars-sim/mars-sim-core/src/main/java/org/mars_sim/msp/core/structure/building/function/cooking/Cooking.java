@@ -242,12 +242,12 @@ implements Serializable {
     // 2014-11-30 Added pickAMeal() 
  	public HotMeal pickAMeal() {
 
- 	  	int upperbound = 5;
+ 	  	int upperbound = 9;
     	int lowerbound = 0;
 
     	int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
     	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
-    	
+    	//logger.info(" random # is " + number);
  		
 	 	HotMeal aMeal = new HotMeal(this);
     	
@@ -256,19 +256,20 @@ implements Serializable {
 	    	aMeal.addMealName("Kidney Bean Fried Rice with Onion");
 	    	aMeal.add("Kidney Bean", .19);
 	      	aMeal.add("White Rice", .20);
-	      	aMeal.add(aMeal.getAvailableOil(), .03);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
 	      	aMeal.add("White Onion", .08);
-	      	//aMeal.add("Table Salt", .01);
+	      	aMeal.add("Table Salt", .01);
 	      	
     	} else if (number == 1) {
     	
 	    	aMeal.addMealName("Carrot Soup");
-	    	aMeal.add("Cabbage", .17);
+	    	aMeal.add("Cabbage", .19);
 	      	aMeal.add("Carrot", .17);
-	      	aMeal.add("Sesame Seed", .03);
-	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	aMeal.add("Green Onion", .10);
-	      	//aMeal.add("Table Salt", .01);
+	      	aMeal.add("Sesame", .01);
+	      	aMeal.add(aMeal.getAvailableOil(), .02);
+	      	aMeal.add("Green Onion", .05);
+	      	aMeal.add("Tomato", .05);
+	      	aMeal.add("Table Salt", .01);
 	      	
 	      	
     	}  else if (number == 2) {
@@ -280,8 +281,8 @@ implements Serializable {
 	    	aMeal.add("Cabbage", .20);
 	      	aMeal.add("Carrot", .20);
 	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	aMeal.add("Sesame Seed", .07);
-	      	//aMeal.add("Table Salt", .01);
+	      	aMeal.add("Sesame", .06);
+	      	aMeal.add("Table Salt", .01);
 	      	
     	} else if (number == 3) {
     	
@@ -293,33 +294,85 @@ implements Serializable {
 	    	aMeal.add("Potato", .22);
 	      	aMeal.add("Lettuce", .12);
 	      	aMeal.add("Garlic", .08);
-	      	aMeal.add("Sesame Seed", .05);
+	      	aMeal.add("Sesame", .04);
 	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	//aMeal.add("Table Salt", .01);
+	      	aMeal.add("Table Salt", .01);
 		      	
 	    	
 		} else if (number == 4) {
 	    	
 			// 
-	    	aMeal.addMealName("Soy Sprout Stir Fry");
+	    	aMeal.addMealName("Bean Sprout Garlic Stir Fry");
 	    	aMeal.add("Soy Sprout", .27);
-	      	aMeal.add("Garlic", .05);
+	      	aMeal.add("Garlic", .04);
 	      	aMeal.add("Green Onion", .15);
 	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	//aMeal.add("Table Salt", .01);
+	      	aMeal.add("Table Salt", .01);
 	      	
 		} 
     	
 			else if (number == 5) {
 	    	
 			// 
-	    	aMeal.addMealName("Veggie Burger Plate");
-	    	aMeal.add("Wheat Bun", .15);
+	    	aMeal.addMealName("Veggie Burger & French Fries");
+	    	aMeal.add("Wheat Bun", .05);
 	      	aMeal.add("Veggie Patty", .15);
-	      	aMeal.add("Lettuce", .1);
-	      	aMeal.add("White Onion", .1);
+	      	aMeal.add("French Fries", .10);	      	
+	      	aMeal.add("Lettuce", .10);
+	      	aMeal.add("Tomato", .08);
+	      	aMeal.add("White Onion", .02);
 
 		} 
+    	
+			else if (number == 6) {
+		    	
+				// 
+		    	aMeal.addMealName("Sauteed Swiss Chard w/ Onions Fried Rice");
+		    	aMeal.add("Swiss Chard", .25);
+		      	aMeal.add("Carrot", .05);
+		      	aMeal.add("Garlic", .05);
+		      	aMeal.add("White Rice", .13);
+		      	aMeal.add("White Onion", .02);
+
+			} 
+    	
+			else if (number == 7) {
+		    	
+				// 
+		    	aMeal.addMealName("Veggie Sandwich & Peas");
+		    	aMeal.add("White Bread", .5);
+		      	aMeal.add("Veggie Patty", .15);
+		      	aMeal.add("Peas", .09);	      	
+		      	aMeal.add("Lettuce", .1);
+		      	aMeal.add("Tomato", .08);
+		      	aMeal.add("White Onion", .02);
+		      	aMeal.add("Table Salt", .01);
+
+			} 
+    	
+			else if (number == 8) {
+		    	
+				// 3 stalks celery, rinsed and trimmed, leaves chopped
+		    	aMeal.addMealName("Braised Celery with Carrot and Peanuts");
+		    	aMeal.add("Celery", .25);
+		      	aMeal.add("Carrot", .15);
+		      	aMeal.add("Peanut", .09);
+		      	aMeal.add("Table Salt", .01);
+
+			} 
+		
+			else if (number == 9) {
+		    	
+				// 
+		    	aMeal.addMealName("Tofu Menudo");
+		    	aMeal.add("Tofu", .15);
+		      	aMeal.add("Carrot", .12);
+		      	aMeal.add("Potato", .1);
+		      	aMeal.add("Tomato", .05);		      	
+		      	aMeal.add("Peas", .05);
+		      	aMeal.add("White Onion", .02);
+		      	aMeal.add("Table Salt", .01);
+			} 
     	//logger.info(" meal# is " + number);
     	
     	return aMeal;

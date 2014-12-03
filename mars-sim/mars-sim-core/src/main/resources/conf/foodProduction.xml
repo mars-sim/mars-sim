@@ -10,25 +10,97 @@
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="Prepare Soy Sprouts from Soybeans"
-			tech="1" skill="1"
+	<process name="Package Cabbage into preserved food"
+			tech="1" skill="0"
 			work-time="50"
-			process-time="2000" 
-			power-required="0.0">
-		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and 
-			wait for germination. When germinated, freeze dry them. </description>
+			process-time="50" 
+			power-required="0.1">
+		<description>Cut and freeze dry cabbage into packed food.</description>
 		
 		<!-- List of inputs for the process (resources and parts). -->
 		<inputs>
 			<!-- amount - The amount of the resource in kilograms. -->
-			<resource name="Soybean" amount="1.0" />
-			<resource name="Water" amount="5.0" />
-			<resource name="Sodium Hypochlorite" amount="0.3" />
+			<resource name="Cabbage" amount="5.0" />
 		</inputs>
 		
 		<!-- List of outputs from the process (resources, parts, equipment and vehicles). -->
 		<outputs>
-			<resource name="Soy Sprout" amount="4.0" />
+			<resource name="food" amount="3.0" />
+		</outputs>
+	</process>
+
+	<process name="Package Carrot into preserved food"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="50" 
+			power-required="0.1">
+		<description>Cut and freeze dry carrots into packed food.</description>	
+		<inputs>
+			<resource name="Carrot" amount="5.0" />
+		</inputs>	
+		<outputs>
+			<resource name="food" amount="3.0" />
+		</outputs>
+	</process>
+	
+	<process name="Package Swiss Chard into preserved food"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="50" 
+			power-required="0.1">
+		<description>Cut and freeze dry swiss chard into packed food.</description>	
+		<inputs>
+			<resource name="Swiss Chard" amount="5.0" />
+		</inputs>	
+		<outputs>
+			<resource name="food" amount="3.0" />
+		</outputs>
+	</process>
+	
+	<process name="Package potatoes into preserved food"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="50" 
+			power-required="0.1">
+		<description>Cut and dry potatoes into packed food.</description>	
+		<inputs>
+			<resource name="Potato" amount="10.0" />
+		</inputs>	
+		<outputs>
+			<resource name="food" amount="5.0" />
+		</outputs>
+	</process>
+	
+	<process name="Make French Fries from potatoes"
+			tech="1" skill="1"
+			work-time="50"
+			process-time="50" 
+			power-required="0.7">
+		<description>Cut potatoes and make French Fries.</description>	
+		<inputs>
+			<resource name="Potato" amount="10.0" />
+			<resource name="Peanut Oil" amount="1.0" />
+		</inputs>	
+		<outputs>
+			<resource name="French Fries" amount="10.0" />
+		</outputs>
+	</process>
+	
+	<process name="Prepare Soy Sprouts from Soybeans"
+			tech="1" skill="1"
+			work-time="50"
+			process-time="3000" 
+			power-required="0.0">
+		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and 
+			wait for germination. When germinated, freeze dry them. </description>	
+		<inputs>
+			<resource name="Soybean" amount="3.0" />
+			<resource name="Water" amount="3.0" />
+			<resource name="Sodium Hypochlorite" amount="0.1" />
+		</inputs>
+		
+		<outputs>
+			<resource name="Soy Sprout" amount="15.0" />
 		</outputs>
 	</process>
 	
@@ -67,7 +139,7 @@
 		</outputs>
 	</process>
 	
-		<process name="Chop and Roast Peanuts in Oven" 
+	<process name="Chop and Roast Peanuts in Oven" 
 		tech="1" skill="1" work-time="50" process-time="300" 
 			power-required="1.0">
 			
@@ -82,6 +154,22 @@
 			<resource name="Roasted Peanut" amount="5.0" />
 		</outputs>
 	</process>
+	
+	<process name="Package Roast Peanuts into dry food " 
+		tech="0" skill="0" work-time="50" process-time="50" 
+			power-required="1.0">
+			
+		<description>Pack peanuts into dry food</description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="Roasted Peanut" amount="5.0" />
+		</inputs>
+		<outputs>
+			<resource name="food" amount="5.0" />
+		</outputs>
+	</process>
+	
 	
 	<process name="Bake White Bread from Soy Flour " 
 		tech="1" skill="2" work-time="50" process-time="200" 
@@ -166,7 +254,7 @@
 		<description> Continuous pressing by means of expellers is a widely applied process for the extraction of oil from sesame seeds</description>
 		<inputs>
 			<!--<equipment name="oven" number="1" />-->
-			<resource name="Sesame Seed" amount="2.5" />
+			<resource name="Sesame" amount="2.5" />
 		</inputs>
 		<outputs>
 			<resource name="Sesame Oil" amount="2.5" />
@@ -198,7 +286,7 @@
 			<resource name="Cabbage" amount=".5" />
 			<resource name="Potato" amount=".5" />
 			<resource name="Carrot" amount=".5" />
-			<resource name="Sesame Seed" amount=".05" />
+			<resource name="Sesame" amount=".05" />
 			<resource name="Table Salt" amount=".05" />	
 			<resource name="Soybean" amount="0.5" />
 			<resource name="Soybean Oil" amount="0.1" />		
@@ -223,7 +311,7 @@
 		</outputs>
 	</process>
 	
-		<process name="Make Wheat Bread from Wheat Flour " 
+	<process name="Make Wheat Bread from Wheat Flour " 
 		tech="1" skill="2" work-time="50" process-time="250" 
 			power-required="1.0">		
 		<description>Bake Wheat Bread from Wheat Flour </description>
@@ -237,4 +325,41 @@
 			<resource name="Wheat Bread" amount="1.0" />
 		</outputs>
 	</process>
+	
+	<process name="Make Rice Vinegar by Fermentation" 
+		tech="1" skill="2" work-time="50" process-time="30000" 
+			power-required="1.0">		
+		<description>Clean bottle with bleach. Add water to white rice and heat up mixture. Add bacteria and wait for fermentation to complete</description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" /> -->
+			<resource name="White Rice" amount="5.0" />
+			<resource name="Acetic Acid Bacteria" amount="0.1" />
+			<resource name="Sugar" amount=".5" />						
+			<resource name="Water" amount="10" />
+			<resource name="Sodium hypochlorite" amount="0.1" />				
+		</inputs>
+		<outputs>
+			<resource name="Rice Vinegar" amount="15.0" />
+		</outputs>
+	</process>
+	
+	<process name="Derive Sugar from Sugarcane" 
+		tech="1" skill="2" work-time="50" process-time="200" 
+			power-required="1.0">		
+		<description>Derive Sugar from Sugarcane. </description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" /> -->
+			<resource name="Sugarcane" amount="10.0" />
+			<resource name="Water" amount="20.0" />				
+		</inputs>
+		<outputs>
+			<resource name="Sugar" amount="2" />
+			<resource name="Cane Fiber" amount="2" />
+			
+		</outputs>
+	</process>
+	
+	
+	<!-- Make Sugarcane juice from Sugarcane-->
+		
 </foodProduction-processes>

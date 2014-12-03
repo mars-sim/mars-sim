@@ -30,20 +30,31 @@
 	<resource name="Soy Flour" phase="solid" life-support="true" edible="true">Flour made from ground Soybean.</resource>
 	<resource name="Soy Fiber" phase="solid" life-support="true" edible="true">Light yellow, silky protein Soybean fiber .</resource>
 	<resource name="Soy Protein" phase="solid" life-support="true">Protein extract derived from Soybean.</resource>
-	<resource name="Soybean Ash" phase="solid" life-support="true" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium</resource>
+	<resource name="Soybean Ash" phase="solid" life-support="true" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium.</resource>
 	<resource name="Okara" phase="solid" life-support="true" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="Sodium Hypochlorite" phase="solid" >For sanitization of Soybean.</resource>
 	<resource name="Yeast" phase="solid" life-support="true" edible="true">For making bread.</resource>
 	<resource name="Table Salt" phase="solid" life-support="true" edible="true">Sodium Chloride, a Food Grade Salt. </resource>
 	<resource name="Epsom Salt" phase="solid" life-support="true" edible="true">Magnesium Sulfate, as bath salt to soothe sore muscles or 
-	for gardeners to improve crops </resource>
-	<resource name="White Bread" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour </resource>
-	<resource name="Veggie Patty" phase="solid" life-support="true" edible="true">Made of	textured vegetable protein (like soy), legumes (beans), tofu,
-			nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
-	<resource name="Wheat Flour" phase="solid" life-support="true" edible="true">Flour made from wheat kernel</resource>
-	<resource name="Wheat Bun" phase="solid" life-support="true" edible="true">fluffy Buns for holding Veggie Patty </resource>
-	<resource name="Wheat Bread" phase="solid" life-support="true" edible="true">fluffy Buns for holding Veggie Patty </resource>
+	for gardeners to improve crops. </resource>
+	<resource name="White Bread" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="Veggie Patty" phase="solid" life-support="true" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
+	<resource name="Wheat Flour" phase="solid" life-support="true" edible="true">Flour made from wheat kernel.</resource>
+	<resource name="Wheat Bun" phase="solid" life-support="true" edible="true">fluffy Buns for holding Veggie Patty.</resource>
+	<resource name="Wheat Bread" phase="solid" life-support="true" edible="true">Loaves of Bread for making sandwiches. </resource>
+		<resource name="Roasted Peanut" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Peanut Butter" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Peanut Oil" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Sesame" phase="solid" life-support="true" edible="true">Seeds from sesame plant.</resource>
+	<resource name="Sesame Oil" phase="solid" life-support="true" edible="true">Oil pressed from sesame seeds.</resource>
+	<resource name="Garlic Oil" phase="solid" life-support="true" edible="true">Oil pressed from garlic.</resource>
+	<resource name="French Fries" phase="solid" life-support="true" edible="true">French fries made from potatoes.</resource>
+	<resource name="Acetic Acid Bacteria" phase="solid" life-support="true" edible="true">Used for making vinegar.</resource>
+	<resource name="Rice Vinegar" phase="solid" life-support="true" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
+	<resource name="Sugar" phase="solid" life-support="true" edible="true">Sugar processed from sugarcane.</resource>
+	<resource name="Cane Fiber" phase="solid" life-support="true" edible="true">Fiber processed from sugarcane.</resource>
+
 
 	<resource name="Soybean" phase="solid" life-support="true" edible="true">Soybean seeds.</resource>
 	<resource name="Soy Sprout" phase="solid" life-support="true" edible="true">Sprouted Soybean.</resource>
@@ -51,7 +62,7 @@
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and  endosperm – protected by an inedible husk </resource>
 	<resource name="Cabbage" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Carrot" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Chard" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Swiss Chard" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Celery" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Kidney Bean" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Green Onion" phase="solid" life-support="true" edible="true"></resource>
@@ -61,15 +72,11 @@
 	<resource name="Peanut" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="White Rice" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Potato" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Tomato" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Garlic" phase="solid" life-support="true" edible="true"></resource>
-	
-	<resource name="Roasted Peanut" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Peanut Butter" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Peanut Oil" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Sesame Seed" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Sesame Oil" phase="solid" life-support="true" edible="true"></resource>
-	<resource name="Garlic Oil" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Sugarcane" phase="solid" life-support="true" edible="true"></resource>
 
+	
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>
 	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
