@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2014-11-28
+ * @version 3.07 2014-12-01
  * @author Scott Davis
  */
 
@@ -274,9 +274,6 @@ public class MainWindow {
 			}
 
 			desktop.disposeAnnouncementWindow();
-
-			// Open navigator tool after creating new simulation.
-			desktop.openToolWindow(NavigatorWindow.NAME);
 			
 			// Open user guide tool.
             desktop.openToolWindow(GuideWindow.NAME);
