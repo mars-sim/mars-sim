@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.07 2014-11-15
+ * @version 3.07 2014-12-03
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -290,13 +290,9 @@ implements MonitorModel, HistoricalEventListener {
 		// fireTableRowsInserted(index, index);
 		
 		//System.out.println("EventTableModel.java : eventAdded() : index is " + index + ", event is " + event);
-		if (index == 0)
-			if (event != null) {
-			
-			// 2014-11-15 Added notifyBox and fire sendAlert()
-			notifyBox.validateMsg(event);
-				
-			}
+		if ((index == 0) && (event != null)) {
+		    SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+		}
 	}
 
 	/**
@@ -402,5 +398,21 @@ implements MonitorModel, HistoricalEventListener {
 		manager.removeListener(this);
 		manager = null;
 		cachedEvents = null;
+	}
+	
+	/**
+	 * Internal class for launching a notify window.
+	 */
+	private class NotifyBoxLauncher implements Runnable {
+	    
+	    private HistoricalEvent event;
+	    
+	    private NotifyBoxLauncher(HistoricalEvent event) {
+	        this.event = event;
+	    }
+	    
+	    public void run() {
+	        notifyBox.validateMsg(event);
+	    }
 	}
 }
