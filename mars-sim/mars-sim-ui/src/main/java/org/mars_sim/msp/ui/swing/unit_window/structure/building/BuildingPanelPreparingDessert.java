@@ -7,7 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;

@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
  * Meta task for the PrepareSoymilk task.

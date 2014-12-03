@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.PreparedDessert;
-import org.mars_sim.msp.core.structure.building.function.PreparingDessert;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**

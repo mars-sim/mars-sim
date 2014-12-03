@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.foodProduction;
 
-import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.cooking.FoodProduction;
 
 import java.io.Serializable;
 
