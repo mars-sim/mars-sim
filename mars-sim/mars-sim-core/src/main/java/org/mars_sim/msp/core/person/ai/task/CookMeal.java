@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-10-15
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  * 
  * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /** 
- * The TendGreenhouse class is a task for cooking meals in a building
+ * The CookMeal class is a task for cooking meals in a building
  * with the Cooking function.
  * This is an effort driven task.
  */
@@ -57,9 +57,11 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = -.1D;
 
 	// Starting meal times (millisol) for 0 degrees longitude.
-	private static final double BREAKFAST_START = 300D;
-	private static final double LUNCH_START = 500D;
-	private static final double DINNER_START = 800D;
+	// 2014-12-03 Added MIDNIGHT_SHIFT_MEAL_START
+	private static final double BREAKFAST_START = 250D; // at 6am
+	private static final double LUNCH_START = 500D; // at 12 am
+	private static final double DINNER_START = 750D; // at 6 pm
+	private static final double MIDNIGHT_SHIFT_MEAL_START = 0D; // at 0 am 
 
 	// Time (millisols) duration of meals.
 	private static final double MEALTIME_DURATION = 100D;
@@ -247,7 +249,10 @@ implements Serializable {
         if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
             result = true;		
         }
-
+    	// 2014-12-03 Added MIDNIGHT_SHIFT_MEAL_START
+        if ((modifiedTime >= MIDNIGHT_SHIFT_MEAL_START) && (modifiedTime <= (MIDNIGHT_SHIFT_MEAL_START + MEALTIME_DURATION))) {
+            result = true;		
+        }
         return result;
     }
 
@@ -273,6 +278,10 @@ implements Serializable {
         }
         if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
             result = "Dinner";
+        }
+    	// 2014-12-03 Added MIDNIGHT_SHIFT_MEAL_START
+        if ((modifiedTime >= MIDNIGHT_SHIFT_MEAL_START) && (modifiedTime <= (MIDNIGHT_SHIFT_MEAL_START + MEALTIME_DURATION))) {
+            result = "Midnight Meal";
         }
 
         return result;

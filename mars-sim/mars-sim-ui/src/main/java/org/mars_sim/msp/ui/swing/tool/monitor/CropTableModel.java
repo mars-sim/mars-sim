@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.07 2014-12-02
+ * @version 3.07 2014-12-03
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -101,7 +101,7 @@ extends UnitTableModel {
 		columnTypes[GREENHOUSES] = Integer.class;
 		columnNames[CROPS] = "<html>Total<br>Crops</html>";
 		columnTypes[CROPS] = Integer.class;	
-		columnNames[BULBS] = "<html><Bulb<br>Group</html>";
+		columnNames[BULBS] = "<html>Bulb<br>Group</html>";
 		columnTypes[BULBS] = Integer.class;
 		columnNames[FLOWERS] = "<html>Flower<br>Group</html>";
 		columnTypes[FLOWERS] = Integer.class;

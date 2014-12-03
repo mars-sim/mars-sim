@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 3.07 2014-11-19
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -165,31 +165,37 @@ public class ManufacturePanel extends JPanel {
     public static String getToolTipString(ManufactureProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("Manufacturing Process: ").append(WordUtils.capitalize(info.getName())).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(WordUtils.capitalize(info.getName())).append("<br>");
     	// 2014-11-19 Changed from getName() to getNickName()
-    	if (building != null) result.append("Manufacture Building: ").append(building.getNickName()).append("<br>");
-        result.append("Effort Time Required: ").append(info.getWorkTimeRequired()).append(" millisols<br>");
-        result.append("Process Time Required: ").append(info.getProcessTimeRequired()).append(" millisols<br>");
-        result.append("Power Required: ").append(info.getPowerRequired()).append(" kW<br>");
-        result.append("Building Tech Level Required: ").append(info.getTechLevelRequired()).append("<br>");
-        result.append("Materials Science Skill Level Required: ").append(info.getSkillLevelRequired()).append("<br>");
+    	//if (building != null) result.append("Building : ").append(building.getNickName()).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired()).append(" millisols<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;Power Req : ").append(info.getPowerRequired()).append(" kW<br>");
+        result.append("&emsp;&emsp;&nbsp;Bldg Tech Req : Level ").append(info.getTechLevelRequired()).append("<br>");
+        result.append("Mat Sci Skill Req : Level ").append(info.getSkillLevelRequired()).append("<br>");
     	
     	// Add process inputs.
-    	result.append("Process Inputs:<br>");
+    	result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Inputs : ");
     	Iterator<ManufactureProcessItem> i = info.getInputList().iterator();
+    	int ii = 0;
     	while (i.hasNext()) {
     		ManufactureProcessItem item = i.next();
     		// 2014-11-19 Capitalized process names
-            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
+            if (ii ==0) result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+            ii++;
     	}
     	
     	// Add process outputs.
-    	result.append("Process Outputs:<br>");
+    	result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Outputs : ");
     	Iterator<ManufactureProcessItem> j = info.getOutputList().iterator();
+    	int jj = 0;
     	while (j.hasNext()) {
     		ManufactureProcessItem item = j.next();
     		// 2014-11-19 Capitalized process names
-            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
+            if (jj==0) result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+            else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+            jj++;
     	}
     	
     	result.append("</html>");

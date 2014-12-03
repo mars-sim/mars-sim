@@ -162,34 +162,41 @@ public class FoodProductionPanel extends JPanel {
      * @param info the foodProduction process info.
      * @param building the foodProduction building (or null if none).
      */
+    // 2014-12-03 Updated tooltip formatting 
     public static String getToolTipString(FoodProductionProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("Food Production Process: ").append(WordUtils.capitalize(info.getName())).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(WordUtils.capitalize(info.getName())).append("<br>");
     	// 2014-11-19 Changed from getName() to getNickName()
-    	if (building != null) result.append("Food Production Building: ").append(building.getNickName()).append("<br>");
-        result.append("Effort Time Required: ").append(info.getWorkTimeRequired()).append(" millisols<br>");
-        result.append("Process Time Required: ").append(info.getProcessTimeRequired()).append(" millisols<br>");
-        result.append("Power Required: ").append(info.getPowerRequired()).append(" kW<br>");
-        result.append("Building Tech Level Required: ").append(info.getTechLevelRequired()).append("<br>");
-        result.append("Cooking Skill Level Required: ").append(info.getSkillLevelRequired()).append("<br>");
+    	//if (building != null) result.append("&emsp;&emsp;&emsp;&emsp;Building: ").append(building.getNickName()).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
+        result.append("&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired()).append(" millisols<br>");
+        result.append("&emsp;&emsp;&emsp;Power Req : ").append(info.getPowerRequired()).append(" kW<br>");
+        result.append("&emsp;&nbsp;Bldg Tech Req :&nbsp;Level ").append(info.getTechLevelRequired()).append("<br>");
+        result.append("Cooking Skill Req :&nbsp;Level ").append(info.getSkillLevelRequired()).append("<br>");
     	
     	// Add process inputs.
-    	result.append("Process Inputs:<br>");
+    	result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Inputs : ");
     	Iterator<FoodProductionProcessItem> i = info.getInputList().iterator();
+		int ii = 0;
     	while (i.hasNext()) {
     		FoodProductionProcessItem item = i.next();
     		// 2014-11-19 Capitalized process names
-            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
+    		if (ii==0) result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		ii++;
     	}
     	
     	// Add process outputs.
-    	result.append("Process Outputs:<br>");
+    	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Outputs : ");
     	Iterator<FoodProductionProcessItem> j = info.getOutputList().iterator();
+    	int jj = 0;
     	while (j.hasNext()) {
     		FoodProductionProcessItem item = j.next();
     		// 2014-11-19 Capitalized process names
-            result.append("&nbsp;&nbsp;").append(WordUtils.capitalize(item.getName())).append(": ").append(getItemAmountString(item)).append("<br>");
+    		if (jj==0)  result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		jj++;
     	}
     	
     	result.append("</html>");

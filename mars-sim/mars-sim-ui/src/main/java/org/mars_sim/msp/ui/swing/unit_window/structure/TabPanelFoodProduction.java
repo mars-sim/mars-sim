@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFoodProduction.java
- * @version 3.07 2014-12-01
+ * @version 3.07 2014-12-03
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -53,7 +53,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
- * TabPanelFoodProduction is a panel that displays settlement food production information.
+ * TabPanelFoodProduction is a panel that displays a settlement's food production information.
  */
 public class TabPanelFoodProduction
 extends TabPanel {
@@ -69,7 +69,7 @@ extends TabPanel {
 	private JPanel foodProductionListPane;
 	private JScrollPane foodProductionScrollPane;
 	private List<FoodProductionProcess> processCache;
-	//private List<SalvageProcess> salvageCache;
+
 	/** building selector. */
 	private JComboBoxMW<Building> buildingSelection;
 	/** List of available foodProduction buildings. */
@@ -78,8 +78,7 @@ extends TabPanel {
 	private JComboBoxMW<Object> processSelection;
 	/** List of available processes. */
 	private Vector<FoodProductionProcessInfo> processSelectionCache;
-	/** List of available salvage processes. */
-	//private Vector<SalvageProcessInfo> salvageSelectionCache;
+
 	/** Process selection button. */
 	private JButton newProcessButton;
 	private JCheckBox overrideCheckbox;
@@ -163,13 +162,6 @@ extends TabPanel {
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
 		interactionPanel.add(processSelection);
 
-
-		
-		// Add available salvage processes.
-		//salvageSelectionCache = getAvailableSalvageProcesses(foodFactoryBuilding);
-		//Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
-		//while (k.hasNext()) processSelection.addItem(k.next());
-
 		// Create new process button.
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
@@ -188,7 +180,7 @@ extends TabPanel {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
 								}
-								// salvage
+						
 							}
 							
 						}
@@ -261,15 +253,7 @@ extends TabPanel {
 				if (!processCache.contains(process)) 
 					foodProductionListPane.add(new FoodProductionPanel(process, true, 30));
 			}
-			/*
-			// Add salvage panels for new salvage processes.
-			Iterator<SalvageProcess> k = salvages.iterator();
-			while (k.hasNext()) {
-				SalvageProcess salvage = k.next();
-				if (!salvageCache.contains(salvage))
-					foodProductionListPane.add(new SalvagePanel(salvage, true, 23));
-			}
-*/
+	
 			// Remove foodProduction panels for old processes.
 			Iterator<FoodProductionProcess> j = processCache.iterator();
 			while (j.hasNext()) {
@@ -279,26 +263,13 @@ extends TabPanel {
 					if (panel != null) foodProductionListPane.remove(panel);
 				}
 			}
-/*
-			// Remove salvage panels for old salvages.
-			Iterator<SalvageProcess> l = salvageCache.iterator();
-			while (l.hasNext()) {
-				SalvageProcess salvage = l.next();
-				if (!salvages.contains(salvage)) {
-					SalvagePanel panel = getSalvagePanel(salvage);
-					if (panel != null) foodProductionListPane.remove(panel);
-				}
-			}
-*/
+
 			foodProductionScrollPane.validate();
 
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
 
-			// Update salvageCache
-			//salvageCache.clear();
-			//salvageCache.addAll(salvages);
 		}
 
 		// Update all process panels.
@@ -307,14 +278,7 @@ extends TabPanel {
 			FoodProductionPanel panel = getFoodProductionPanel(i.next());
 			if (panel != null) panel.update();
 		}
-/*
-		// Update all salvage panels.
-		Iterator<SalvageProcess> j = salvages.iterator();
-		while (j.hasNext()) {
-			SalvagePanel panel = getSalvagePanel(j.next());
-			if (panel != null) panel.update();
-		}
-*/
+
 		// Update building selection list.
 		Vector<Building> newBuildings = getFoodProductionBuildings();
 		if (!newBuildings.equals(buildingSelectionCache)) {
@@ -333,20 +297,14 @@ extends TabPanel {
 		// Update process selection list.
 		Building selectedBuilding = (Building) buildingSelection.getSelectedItem();
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
-		//Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses(selectedBuilding);
-		//if (!newProcesses.equals(processSelectionCache) || !newSalvages.equals(salvageSelectionCache)) {
-		if (!newProcesses.equals(processSelectionCache)) {
+			if (!newProcesses.equals(processSelectionCache)) {
 
 			processSelectionCache = newProcesses;
-			//salvageSelectionCache = newSalvages;
 			Object currentSelection = processSelection.getSelectedItem();
 			processSelection.removeAllItems();
 
 			Iterator<FoodProductionProcessInfo> l = processSelectionCache.iterator();
 			while (l.hasNext()) processSelection.addItem(l.next());
-
-			//Iterator<SalvageProcessInfo> m = salvageSelectionCache.iterator();
-			//while (m.hasNext()) processSelection.addItem(m.next());
 
 			if (currentSelection != null) {
 				if (processSelectionCache.contains(currentSelection)) 
