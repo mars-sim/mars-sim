@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SelfTreatHealthProblem.java
- * @version 3.07 2014-11-12
+ * @version 3.07 2014-12-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -277,11 +277,13 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
             HealthProblem problem = i.next();
             if (problem.getDegrading()) {
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
-                boolean selfTreatable = treatment.getSelfAdminister();
-                int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-                int requiredSkill = treatment.getSkill();
-                if (selfTreatable && (skill >= requiredSkill)) {
-                    result.add(problem);
+                if (treatment != null) {
+                    boolean selfTreatable = treatment.getSelfAdminister();
+                    int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+                    int requiredSkill = treatment.getSkill();
+                    if (selfTreatable && (skill >= requiredSkill)) {
+                        result.add(problem);
+                    }
                 }
             }
         }

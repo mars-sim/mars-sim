@@ -79,7 +79,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask {
             if (problem.getDegrading()) {
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
                 if (treatment != null) {
-                boolean selfTreatable = treatment.getSelfAdminister();
+                    boolean selfTreatable = treatment.getSelfAdminister();
                     int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
                     int requiredSkill = treatment.getSkill();
                     if (selfTreatable && (skill >= requiredSkill)) {
