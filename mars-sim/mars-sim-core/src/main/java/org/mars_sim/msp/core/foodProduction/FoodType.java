@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.foodProduction;
 
 public enum FoodType {
 
-	AMOUNT_RESOURCE ("FoodType.amountResource"), //$NON-NLS-1$
-	ITEM_RESOURCE ("GoodType.itemResource"), //$NON-NLS-1$
-	EQUIPMENT ("GoodType.equipment"), //$NON-NLS-1$
-	VEHICLE ("GoodType.vehicle"); //$NON-NLS-1$
+	AMOUNT_RESOURCE ("FoodType.amountResource"); //$NON-NLS-1$
+	//ITEM_RESOURCE ("FoodType.itemResource"), //$NON-NLS-1$
+	//EQUIPMENT ("FoodType.equipment"); //$NON-NLS-1$
+	//VEHICLE ("FoodType.vehicle"); //$NON-NLS-1$
 
 	private String msgKey;
 

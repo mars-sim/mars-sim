@@ -25,7 +25,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.cooking.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -283,8 +284,8 @@ public final class FoodProductionUtil {
      * @param inv the inventory.
      * @return true if storage room.
      * @throws Exception if error determining storage room for outputs.
-     */
-    /*
+    
+    
 	private static final boolean canProcessOutputsBeStored(FoodProductionProcessInfo process, Inventory inv)
 			{
 		boolean result = true;
@@ -312,7 +313,7 @@ public final class FoodProductionUtil {
 				double capacity = inv.getGeneralCapacity();
 				if (mass > capacity) result = false;
 			}
-			else if (FoodProductionProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+			//else if (FoodProductionProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
 				// Vehicles are stored outside a settlement.
 			}
 			else throw new BuildingException("FoodProduction.addProcess(): output: " + 
@@ -321,7 +322,7 @@ public final class FoodProductionUtil {
 
 		return result;
 	}
-     */
+      */
 
     /**
      * Checks if settlement has buildings with food production function.
@@ -332,7 +333,7 @@ public final class FoodProductionUtil {
     public static boolean doesSettlementHaveFoodProduction(Settlement settlement)
     {
         BuildingManager manager = settlement.getBuildingManager();
-        return (manager.getBuildings(BuildingFunction.MANUFACTURE).size() > 0);
+        return (manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).size() > 0);
     }
 
     /**
@@ -345,10 +346,10 @@ public final class FoodProductionUtil {
     {
         int highestTechLevel = 0;
         BuildingManager manager = settlement.getBuildingManager();
-        Iterator<Building> i = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
+        Iterator<Building> i = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.MANUFACTURE);
+            FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
             if (foodProductionFunction.getTechLevel() > highestTechLevel) 
                 highestTechLevel = foodProductionFunction.getTechLevel();
         }

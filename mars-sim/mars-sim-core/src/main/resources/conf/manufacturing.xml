@@ -1067,10 +1067,11 @@
 		</outputs>
 	</process>
 	
-	<!-- Creating a bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
+	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
 	<process name="bag manufacturing" tech="2" skill="2" work-time="100" process-time="0" 
 			power-required="0.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.5" />
 			<part name="fiberglass cloth" number="5" />
 			<part name="plastic sheet" number="5" />
 		</inputs>
@@ -1083,6 +1084,7 @@
 	<process name="large bag manufacturing" tech="2" skill="2" work-time="400" process-time="0" 
 			power-required="0.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.2" />
 			<part name="fiberglass cloth" number="2" />
 			<part name="plastic sheet" number="2" />
 		</inputs>
@@ -1105,6 +1107,7 @@
 	<process name="eva helmet manufacturing" tech="4" skill="4" work-time="400" process-time="300" 
 			power-required="3.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.2" />		
 			<resource name="polyethylene" amount="2.0" />
 			<part name="plastic tubing" number="2" />
 			<part name="electrical wire" number="10" />
@@ -1130,6 +1133,7 @@
 			power-required="5.0">
 		<inputs>
 			<resource name="polyethylene" amount="1.0" />
+			<resource name="Cane Fiber" amount="0.3" />
 		</inputs>
 		<outputs>
 			<part name="counter pressure suit" number="1" />
@@ -1139,6 +1143,7 @@
 	<process name="coveralls manufacturing" tech="2" skill="3" work-time="200" process-time="100" 
 			power-required="5.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.2" />		
 			<part name="fiberglass cloth" number="5" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1150,6 +1155,7 @@
 	<process name="eva gloves manufacturing" tech="3" skill="3" work-time="200" process-time="100" 
 			power-required="3.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.1" />		
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1161,6 +1167,7 @@
 	<process name="eva boots manufacturing" tech="3" skill="3" work-time="300" process-time="100" 
 			power-required="10.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.2" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="2" />
 			<part name="fiberglass" number="2" />
@@ -1173,8 +1180,9 @@
 	<process name="eva pads manufacturing" tech="3" skill="3" work-time="300" process-time="100" 
 			power-required="7.0">
 		<inputs>
+			<resource name="Cane Fiber" amount="0.1" />		
 			<part name="steel ingot" number="1" />
-			<part name="fiberglass" number="1" />
+			<part name="fiberglass" number="1" />			
 		</inputs>
 		<outputs>
 			<part name="eva pads" number="3" />
@@ -1186,6 +1194,7 @@
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
 			<resource name="polyethylene" amount="10.0" />
+			<resource name="Cane Fiber" amount="0.5" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="1" />
 			<part name="electrical wire" number="10" />
@@ -1194,6 +1203,7 @@
 			<part name="valve" number="1" />
 			<part name="gasket" number="3" />
 			<part name="steel canister" number="1" />
+			
 		</inputs>
 		<outputs>
 			<part name="eva backpack" number="1" />

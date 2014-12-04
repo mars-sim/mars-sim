@@ -32,6 +32,9 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
+import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -114,6 +117,8 @@ implements Serializable {
     private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
     private static final double MANUFACTURING_INPUT_FACTOR = .5D;
     private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
+    // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
+    private static final double FOOD_PRODUCTION_INPUT_FACTOR = .6D;
 
     // Data members
     private Settlement settlement;
@@ -665,27 +670,29 @@ implements Serializable {
     }
 
     /**
-     * Gets the demand for an amount resource as an input in the settlement's manufacturing processes.
+     * Gets the demand for an amount resource as an input in the settlement's Food Production processes.
      * @param resource the amount resource.
      * @return demand (kg)
      * @throws Exception if error determining demand for resource.
      */
+    //2014-12-04 Modified getResourceFoodProductionDemand
     private double getResourceFoodProductionDemand(AmountResource resource) {
         double demand = 0D;
 
-        // Get highest manufacturing tech level in settlement.
-        if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
-            int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
+        // Get highest Food Production tech level in settlement.
+        if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
+            int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
+            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(
                     techLevel).iterator();
             while (i.hasNext()) {
-                double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
-                demand += manufacturingDemand;
+                double FoodProductionDemand = getResourceFoodProductionProcessDemand(resource, i.next());
+                demand += FoodProductionDemand;
             }
         }
 
         return demand;
     }
+  
     /**
      * Gets the demand for an input amount resource in a manufacturing process.
      * @param resource the amount resource.
@@ -724,6 +731,53 @@ implements Serializable {
             }
 
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
+
+            demand = (1D / totalItems) * totalInputsValue;
+        }
+
+        return demand;
+    }
+
+
+    /**
+     * Gets the demand for an input amount resource in a Food Production process.
+     * @param resource the amount resource.
+     * @param process the Food Production process.
+     * @return demand (kg)
+     * @throws Exception if error determining resource value.
+     */
+    // 2014-12-04 Added getResourceFoodProductionProcessDemand()
+    private double getResourceFoodProductionProcessDemand(AmountResource resource,
+            FoodProductionProcessInfo process) {
+        double demand = 0D;
+
+        FoodProductionProcessItem resourceInput = null;
+        Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
+        while ((resourceInput == null) && i.hasNext()) {
+            FoodProductionProcessItem item = i.next();
+            if (
+                    Type.AMOUNT_RESOURCE.equals(item.getType()) && 
+                    resource.getName().equalsIgnoreCase(item.getName())
+                    ) {
+                resourceInput = item;
+                break;
+            }
+        }
+
+        if (resourceInput != null) {
+            double outputsValue = 0D;
+            Iterator<FoodProductionProcessItem> j = process.getOutputList().iterator();
+            while (j.hasNext()) {
+                outputsValue += FoodProductionUtil.getFoodProductionProcessItemValue(j.next(), settlement, true);
+            }
+
+            double totalItems = 0D;
+            Iterator<FoodProductionProcessItem> k = process.getInputList().iterator();
+            while (k.hasNext()) {
+                totalItems += k.next().getAmount();
+            }
+
+            double totalInputsValue = outputsValue * FOOD_PRODUCTION_INPUT_FACTOR;
 
             demand = (1D / totalItems) * totalInputsValue;
         }
@@ -1041,6 +1095,7 @@ implements Serializable {
      * @return value (Value Points / item)
      * @throws Exception if error determining value.
      */
+    //2014-12-04 Added getPartFoodProductionDemand()
     private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
     {
         double value = 0D;
@@ -1065,6 +1120,9 @@ implements Serializable {
                 // Add manufacturing demand.
                 demand += getPartManufacturingDemand(part);
 
+                //2014-12-04 getPartFoodProductionDemand()
+                demand += getPartFoodProductionDemand(part);
+                
                 // Add construction demand.
                 demand += getPartConstructionDemand(part);
             }
@@ -1307,6 +1365,76 @@ implements Serializable {
         return demand;
     }
 
+    
+
+    /**
+     * Gets the Food Production demand for a part.
+     * @param part the part.
+     * @return demand (# of parts)
+     * @throws Exception if error getting part Food Production demand.
+     */
+    // 2014-12-04 Added getPartFoodProductionDemand()
+    private double getPartFoodProductionDemand(Part part) {
+        double demand = 0D;
+
+        // Get highest Food Production tech level in settlement.
+        if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
+            int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
+            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(
+                    techLevel).iterator();
+            while (i.hasNext()) {
+                double FoodProductionDemand = getPartFoodProductionProcessDemand(part, i.next());
+                demand += FoodProductionDemand;
+            }
+        }
+
+        return demand;
+    }
+
+    /**
+     * Gets the demand of an input part in a Food Production process. 
+     * @param part the input part.
+     * @param process the Food Production process.
+     * @return demand (# of parts)
+     * @throws Exception if error determining Food Production demand.
+     */
+    // 2014-12-04 Added getPartFoodProductionProcessDemand()
+    private double getPartFoodProductionProcessDemand(Part part, 
+    		FoodProductionProcessInfo process) {
+        double demand = 0D;
+        double totalInputNum = 0D;
+
+        FoodProductionProcessItem partInput = null;
+        Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
+        while (i.hasNext()) {
+        	FoodProductionProcessItem item = i.next();
+            if (
+                    Type.PART.equals(item.getType()) && 
+                    part.getName().equalsIgnoreCase(item.getName())
+                    ) {
+                partInput = item;
+            }
+            totalInputNum += item.getAmount();
+        }
+
+        if (partInput != null) {
+
+            double outputsValue = 0D;
+            Iterator<FoodProductionProcessItem> j = process.getOutputList().iterator();
+            while (j.hasNext()) {
+            	FoodProductionProcessItem item = j.next();
+                outputsValue += FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true);
+            }
+
+            double totalInputsValue = outputsValue * FOOD_PRODUCTION_INPUT_FACTOR;
+            double partNum = partInput.getAmount();
+
+            demand = totalInputsValue * (partNum / totalInputNum);
+        }
+
+        return demand;
+    }
+    
     /**
      * Gets the construction demand for a part.
      * @param part the part.
