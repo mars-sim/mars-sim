@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
@@ -91,8 +93,10 @@ extends TabPanel {
 		topContentPanel.add(powerGridLabelPanel);
 
 		// Prepare power grid label.
-		JLabel powerGridLabel = new JLabel(Msg.getString("TabPanelPowerGrid.label"), JLabel.CENTER); //$NON-NLS-1$
-		powerGridLabelPanel.add(powerGridLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPowerGrid.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare power info panel.
 		JPanel powerInfoPanel = new JPanel(new GridLayout(4, 1, 0, 0));
@@ -121,19 +125,20 @@ extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane powerScrollPane = new JScrollPane();
-		powerScrollPane.setPreferredSize(new Dimension(257, 230));
+		//powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
 
 		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		powerScrollPane.setViewportView(outerTablePanel);
+		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//outerTablePanel.setBorder(new MarsPanelBorder());
+		//powerScrollPane.setViewportView(outerTablePanel);
+
 
 		// Prepare power table panel.
-		JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(powerTablePanel);
+		//JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
+		//outerTablePanel.add(powerTablePanel);
 		// powerScrollPanel.setViewportView(powerTablePanel);
 
 		// Prepare power table model.
@@ -145,10 +150,15 @@ extends TabPanel {
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		powerTable.getColumnModel().getColumn(2).setPreferredWidth(70);
-		powerTable.getColumnModel().getColumn(3).setPreferredWidth(70);
-		powerTablePanel.add(powerTable.getTableHeader(), BorderLayout.NORTH);
-		powerTablePanel.add(powerTable, BorderLayout.CENTER);
+		powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		powerTable.getColumnModel().getColumn(3).setPreferredWidth(10);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes		
+		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		//powerTablePanel.add(powerTable.getTableHeader(), BorderLayout.NORTH);
+		//powerTablePanel.add(powerTable, BorderLayout.CENTER);
+		powerScrollPane.setViewportView(powerTable);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -74,8 +75,10 @@ extends TabPanel {
 		topPanel.add(maintenancePanel);
 
 		// Create maintenance label.
-		JLabel maintenanceLabel = new JLabel("Building Maintenance", JLabel.CENTER);
-		maintenancePanel.add(maintenanceLabel, BorderLayout.NORTH);
+		JLabel titleLabel = new JLabel("Building Maintenance", JLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		maintenancePanel.add(titleLabel, BorderLayout.NORTH);
 
 		// Create scroll pane for maintenance list panel.
 		maintenanceScrollPane = new JScrollPane();

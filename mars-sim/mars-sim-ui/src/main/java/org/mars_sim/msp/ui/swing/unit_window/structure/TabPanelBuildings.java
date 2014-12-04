@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBuildings.java
- * @version 3.07 2014-11-22
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 
@@ -86,10 +86,10 @@ implements ActionListener {
 		//buildingInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(buildingInfoPanel);
 
-        JLabel buildingTitleLabel = new JLabel("Buildings Panel", JLabel.CENTER);
-        buildingTitleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        buildingTitleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-        buildingInfoPanel.add(buildingTitleLabel);
+        JLabel titleLabel = new JLabel("Buildings", JLabel.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        buildingInfoPanel.add(titleLabel);
        
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingInfoPanel.add(buildingSelectPanel);

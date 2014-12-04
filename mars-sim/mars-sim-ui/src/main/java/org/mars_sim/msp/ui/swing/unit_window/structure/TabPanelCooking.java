@@ -1,14 +1,17 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2014-12-02
+ * @version 3.07 2014-12-03
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,13 +87,19 @@ extends TabPanel {
 		mealMenu = updateMealMenu(settlement, mealMenu);
 
 		// Prepare cooking label panel.
-		JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel cookingLabelPanel = new JPanel(new GridLayout(2,1,0,0));
 		topContentPanel.add(cookingLabelPanel);
 
-		// Prepare cooking label.
-		JLabel cookingLabel = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(cookingLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		cookingLabelPanel.add(titleLabel);
 
+		
+		// Prepare cooking label.
+		JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabelPanel.add(label);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane cookingScrollPane = new JScrollPane();
@@ -100,20 +109,22 @@ extends TabPanel {
 		centerContentPanel.add(cookingScrollPane,BorderLayout.CENTER);
 
 		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		cookingScrollPane.setViewportView(outerTablePanel);
+		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//outerTablePanel.setBorder(new MarsPanelBorder());
+		//cookingScrollPane.setViewportView(outerTablePanel);
 
 		// Prepare cooking table panel.
-		JPanel cookingTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(cookingTablePanel);
-		// cookingScrollPanel.setViewportView(cookingTablePanel);
+		//JPanel cookingTablePanel = new JPanel(new BorderLayout(0, 0));
+		//outerTablePanel.add(cookingTablePanel);
+		//cookingScrollPanel.setViewportView(cookingTablePanel);
 
+		
 		// Prepare cooking table model.
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
 		JTable cookingTable = new JTable(cookingTableModel);
+		cookingScrollPane.setViewportView(cookingTable);
 		cookingTable.setCellSelectionEnabled(false);
 		cookingTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		//cookingTable.getColumnModel().getColumn(0).setPreferredWidth(15);
@@ -121,8 +132,12 @@ extends TabPanel {
 		cookingTable.getColumnModel().getColumn(1).setPreferredWidth(47);
 		cookingTable.getColumnModel().getColumn(2).setPreferredWidth(45);
 		cookingTable.getColumnModel().getColumn(3).setPreferredWidth(45);
-		cookingTablePanel.add(cookingTable.getTableHeader(), BorderLayout.NORTH);
-		cookingTablePanel.add(cookingTable, BorderLayout.CENTER);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes
+		cookingTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		cookingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//cookingTablePanel.add(cookingTable.getTableHeader(), BorderLayout.NORTH);
+		//cookingTablePanel.add(cookingTable, BorderLayout.CENTER);
 	}
 
 	public ReadyMealMenu updateMealMenu(Settlement settlement, ReadyMealMenu mealMenu) {

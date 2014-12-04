@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * TabPanelGoods.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -57,8 +59,10 @@ extends TabPanel {
 		topContentPanel.add(goodsLabelPanel);
 
 		// Prepare goods label.
-		JLabel goodsLabel = new JLabel(Msg.getString("TabPanelGoods.label"), JLabel.CENTER); //$NON-NLS-1$
-		goodsLabelPanel.add(goodsLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelGoods.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		goodsLabelPanel.add(titleLabel);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane goodsScrollPane = new JScrollPane();
@@ -68,25 +72,30 @@ extends TabPanel {
 		centerContentPanel.add(goodsScrollPane);
 
 		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		goodsScrollPane.setViewportView(outerTablePanel);   
+		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//outerTablePanel.setBorder(new MarsPanelBorder());
+		//goodsScrollPane.setViewportView(outerTablePanel);   
 
 		// Prepare goods table panel.
-		JPanel goodsTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(goodsTablePanel);
+		//JPanel goodsTablePanel = new JPanel(new BorderLayout(0, 0));
+		//outerTablePanel.add(goodsTablePanel);
 
 		// Prepare goods table model.
 		goodsTableModel = new GoodsTableModel(((Settlement) unit).getGoodsManager());
 
 		// Prepare goods table.
 		JTable goodsTable = new JTable(goodsTableModel);
+		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setCellSelectionEnabled(false);
 		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
 		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
-		goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
-		goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes
+		goodsTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		goodsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
+		//goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
 	}
 
 	/**

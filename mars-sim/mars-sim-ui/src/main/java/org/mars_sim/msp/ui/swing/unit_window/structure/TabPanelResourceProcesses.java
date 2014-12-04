@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -78,6 +80,8 @@ extends TabPanel {
 
 		// Prepare esource processes label.
 		JLabel resourceProcessesLabel = new JLabel(Msg.getString("TabPanelResourceProcesses.label"), JLabel.CENTER); //$NON-NLS-1$
+		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		resourceProcessesLabelPanel.add(resourceProcessesLabel);
 
 		// Create scroll panel for the outer table panel.

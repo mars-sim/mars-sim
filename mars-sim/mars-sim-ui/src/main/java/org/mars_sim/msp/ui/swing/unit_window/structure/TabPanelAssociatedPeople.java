@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * AssociatedPeopleTabPanel.java
- * @version 3.06 2014-04-30
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -71,8 +73,10 @@ implements MouseListener, ActionListener {
 		topContentPanel.add(associatedLabelPanel);
 
 		// Create associated people label
-		JLabel associatedLabel = new JLabel(Msg.getString("TabPanelAssociatedPeople.label"), JLabel.CENTER); //$NON-NLS-1$
-		associatedLabelPanel.add(associatedLabel);
+		JLabel label = new JLabel(Msg.getString("TabPanelAssociatedPeople.label"), JLabel.CENTER); //$NON-NLS-1$
+		label.setFont(new Font("Serif", Font.BOLD, 16));
+		label.setForeground(new Color(102, 51, 0)); // dark brown
+		associatedLabelPanel.add(label);
 
 		// Create population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));

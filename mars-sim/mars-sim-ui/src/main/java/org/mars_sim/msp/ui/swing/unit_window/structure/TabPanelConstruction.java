@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -52,8 +52,10 @@ extends TabPanel {
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePanel);
 
-		JLabel constructionLabel = new JLabel(Msg.getString("TabPanelConstruction.label"), JLabel.CENTER); //$NON-NLS-1$
-		titlePanel.add(constructionLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelConstruction.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		titlePanel.add(titleLabel);
 
 		JPanel mainContentPanel = new JPanel(new GridLayout(2, 1));
 		centerContentPanel.add(mainContentPanel, BorderLayout.CENTER);

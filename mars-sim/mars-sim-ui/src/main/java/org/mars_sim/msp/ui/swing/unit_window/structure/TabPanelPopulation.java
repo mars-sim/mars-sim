@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 3.06 2014-04-30
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -70,6 +72,12 @@ implements MouseListener, ActionListener {
 
 		Settlement settlement = (Settlement) unit;
 
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		topContentPanel.add(titleLabel);      
+ 
+		
 		// Create population count panel
 		JPanel populationCountPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 		populationCountPanel.setBorder(new MarsPanelBorder());

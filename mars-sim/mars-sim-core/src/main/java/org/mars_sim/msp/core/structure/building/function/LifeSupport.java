@@ -92,14 +92,14 @@ implements Serializable {
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Set occupant capacity.
-		occupantCapacity = config.getLifeSupportCapacity(building.getName());
+		occupantCapacity = config.getLifeSupportCapacity(building.getBuildingType());
 
 		//2014-10-17 Added the heating requirement
 		// Set life support heating required.
 		//heatRequired = config.getLifeSupportHeatRequirement(building.getName());
 
 		// Set life support power required.
-		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
+		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
 
 	    
 		//2014-10-23 new initial values */
@@ -110,7 +110,7 @@ implements Serializable {
 
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
-		name =  getBuilding().getName();
+		name =  getBuilding().getBuildingType();
 		floorArea = length * width ;
 		//logger.info("constructor : " + name + " is " + length + " x " + width);
 
@@ -139,7 +139,7 @@ implements Serializable {
 		deltaTemperature = 0;
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
-		name =  getBuilding().getName();
+		name =  getBuilding().getBuildingType();
 		floorArea = length * width ;
 		//logger.info("constructor : " + name + " is " + length + " x " + width);
 
@@ -151,7 +151,6 @@ implements Serializable {
 	// 2014-11-02 Added checking if PowerMode.POWER_DOWN
 	// TODO: also set up a time sensitivity value
 	public void turnOnOffHeat() {
-		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 		double T_INITIAL = building.getInitialTemperature();
 		double T_NOW = building.getTemperature();
 		//logger.info("turnOnOffHeat() : T_NOW is " + T_NOW);
@@ -175,14 +174,12 @@ implements Serializable {
 			//logger.info("turnOnOffHeat() : do nothing to HeatMode at " + building.getHeatMode());
 		}
 		//logger.info("turnOnOffHeat() : updated HeatMode is " + building.getHeatMode());
-
 	}
 	
 	/**Adjust the current temperature in response to the delta temperature
 	 * @return none. update currentTemperature
 	 */
 	public void updateTemperature() {
-		//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 		//currentTemperature += deltaTemperature;
 		building.setTemperature(building.getTemperature() + deltaTemperature);
 		//logger.info("updateTemperature() : updated currentTemp is "+ fmt.format(building.getTemperature()));
@@ -279,7 +276,7 @@ implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
@@ -427,7 +424,7 @@ implements Serializable {
 		
 		// skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
 		// make sure it calls out buildingType, NOT calling out getNickName()
-		if (!building.getName().equals("Hallway")) 
+		if (!building.getBuildingType().equals("Hallway")) 
 			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
 			adjustThermalControl();
 	
@@ -440,8 +437,7 @@ implements Serializable {
 	// 2014-10-25 Added adjustThermalControl()
 	public void adjustThermalControl() {
 		// Skip Hallway
-		if (!building.getName().equals("Hallway")) {
-			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
+		if (!building.getBuildingType().equals("Hallway")) {
 			double miliSolElapsed = Simulation.instance().getMasterClock().getTimePulse() ;
 			//logger.info("timePassing() : TimePulse is " + miliSolElapsed);
 			tally++;
