@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructedBuildingsPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -53,24 +53,29 @@ extends JPanel {
 		add(scrollPanel, BorderLayout.CENTER);         
 
 		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		scrollPanel.setViewportView(outerTablePanel);   
+		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//outerTablePanel.setBorder(new MarsPanelBorder());
+		//scrollPanel.setViewportView(outerTablePanel);   
 
 		// Prepare constructed table panel.
-		JPanel constructedTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(constructedTablePanel);
+		//JPanel constructedTablePanel = new JPanel(new BorderLayout(0, 0));
+		//outerTablePanel.add(constructedTablePanel);
 
 		// Prepare constructed table model.
 		constructedTableModel = new ConstructedBuildingTableModel(manager);
 
 		// Prepare constructed table.
 		JTable constructedTable = new JTable(constructedTableModel);
+		scrollPanel.setViewportView(constructedTable);
 		constructedTable.setCellSelectionEnabled(false);
 		constructedTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		constructedTable.getColumnModel().getColumn(1).setPreferredWidth(105);
-		constructedTablePanel.add(constructedTable.getTableHeader(), BorderLayout.NORTH);
-		constructedTablePanel.add(constructedTable, BorderLayout.CENTER);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes
+		constructedTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		constructedTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//constructedTablePanel.add(constructedTable.getTableHeader(), BorderLayout.NORTH);
+		//constructedTablePanel.add(constructedTable, BorderLayout.CENTER);
 	}
 
 	/**

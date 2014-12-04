@@ -7,8 +7,10 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -84,8 +86,10 @@ extends TabPanel {
 		topContentPanel.add(labelPanel);
 
 		// Create settlement missions label.
-		JLabel settlementMissionsLabel = new JLabel(Msg.getString("TabPanelMissions.label"), JLabel.CENTER); //$NON-NLS-1$
-		labelPanel.add(settlementMissionsLabel);
+		JLabel label = new JLabel(Msg.getString("TabPanelMissions.label"), JLabel.CENTER); //$NON-NLS-1$
+		label.setFont(new Font("Serif", Font.BOLD, 16));
+		label.setForeground(new Color(102, 51, 0)); // dark brown
+		labelPanel.add(label);
 
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());

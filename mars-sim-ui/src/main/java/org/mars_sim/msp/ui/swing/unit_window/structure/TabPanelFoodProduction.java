@@ -7,9 +7,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -105,8 +107,10 @@ extends TabPanel {
 		topContentPanel.add(topPane);
 		
 		// Create foodProduction label.
-		JLabel foodProductionLabel = new JLabel(Msg.getString("TabPanelFoodProduction.label"), JLabel.CENTER); //$NON-NLS-1$
-		topPane.add(foodProductionLabel);      
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelFoodProduction.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		topPane.add(titleLabel);      
    
 
 		// Create scroll panel for foodProduction list pane.

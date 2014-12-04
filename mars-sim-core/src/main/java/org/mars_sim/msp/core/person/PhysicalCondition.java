@@ -78,16 +78,15 @@ implements Serializable {
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
 
+    /*
     //2014-11-16 Added boolean values
     private boolean noMoreFruits;
     private boolean noMoreVeggies;
     private boolean noMoreLegumes;
-    //private boolean noMoreSpices;
+    private boolean noMoreSpices;
     private boolean noMoreGrains;
-    private boolean noMorePackedFood;
-    
-    
-    
+	private boolean noMorePackedFood;
+    */
     /**
      * Constructor.
      * @param newPerson The person requiring a physical presence.
@@ -269,7 +268,7 @@ implements Serializable {
 	* @param amount amount of Legumes to consume (in kg).
 	* @param container unit to get Legumes from
 	* @throws Exception if error consuming Legumes.
-	*/
+	
     // 2014-11-06 Added consumeLegumes() 
 	// TODO: find a way to elegantly handle more one legume food in future
 	public void consumeLegumes(double amount, Unit container, String foodType) {
@@ -303,7 +302,7 @@ implements Serializable {
 		container.getInventory().retrieveAmountResource(soybeansAR, foodEaten);
 		//logger.info("consumeLegumes() : Just consumed " + foodEaten + " kg of soybeans");
 	}
-	
+	*/
 		/**
      * Person consumes given amount of Grains
      * @param amount amount of Grains to consume (in kg).
@@ -311,7 +310,7 @@ implements Serializable {
      * @throws Exception if error consuming Grains.
      * 	2014-10-08 mkung : the person decides to eat grains 
      *  TODO: consolidate all four similar methods into one
-     */
+     
     public void consumeGrains(double amount, Unit container, String foodType) {
 
         AmountResource food = AmountResource.findAmountResource(foodType);
@@ -334,7 +333,7 @@ implements Serializable {
         //System.out.println("PhysicalCondition.java : consumeGrains() : Grains Eaten is " 
         //	+ foodEaten +  ", Grains remaining is " + (foodAvailable-foodEaten));
     }
-
+*/
     /**
      * Person consumes given amount of Vegetables
      * @param amount amount of Vegetables to consume (in kg).
@@ -343,7 +342,7 @@ implements Serializable {
      * @throws Exception if error consuming Vegetables.
      * 2014-10-08 mkung : the person decides to eat vegetables 
      *  TODO: consolidate all four similar methods into one
-     */
+     
     public void consumeVegetables(double amount, Unit container, String foodType) {
 
         AmountResource food = AmountResource.findAmountResource(foodType);
@@ -369,7 +368,7 @@ implements Serializable {
         //	+ foodEaten +  ",  Vegetables remaining is " + (foodAvailable-foodEaten));
 
     }
-
+*/
     /**
      * Person consumes given amount of fruits
      * @param amount amount of fruits to consume (in kg).
@@ -378,7 +377,7 @@ implements Serializable {
      * @throws Exception if error consuming fruits.
      *  2014-10-08 mkung : the person decides to eat fruits 
      *  TODO: consolidate all four similar methods into one
-     */
+     
     public void consumeFruits(double amount, Unit container, String foodType) {
 
         AmountResource food = AmountResource.findAmountResource(foodType);
@@ -405,7 +404,8 @@ implements Serializable {
         //	+ foodEaten +  ", fruit remaining is "  + (foodAvailable-foodEaten));
 
     }
-
+*/
+    
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
@@ -427,6 +427,7 @@ implements Serializable {
 		// subtract food from container
 		container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);
     }
+    
     /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
@@ -488,14 +489,14 @@ implements Serializable {
             double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
             if (foodAvailable < 0.5D) {
-    			noMorePackedFood = true;
+    			//noMorePackedFood = true;
     		//2014-11-19 Fixed endless loop with the following if-then-else clauses
-    			if (!noMoreLegumes) consumeLegumes(amount, container, "Legume Group");
-    			else if (!noMoreFruits) consumeFruits(amount, container, "Fruit Group");
-    			else if (!noMoreVeggies) consumeVegetables(amount, container, "Vegetable Group");
-       			else if (!noMoreGrains) consumeGrains(amount, container, "Grain Group");
+    			//if (!noMoreLegumes) consumeLegumes(amount, container, "Legume Group");
+    			//else if (!noMoreFruits) consumeFruits(amount, container, "Fruit Group");
+    			//else if (!noMoreVeggies) consumeVegetables(amount, container, "Vegetable Group");
+       			//else if (!noMoreGrains) consumeGrains(amount, container, "Grain Group");
        			//else if (!noMoreSpices) consumeSpices(amount, container, "Spice Group");
-                throw new IllegalStateException("Warning: less than 0.5 kg total food remaining.");   
+                throw new IllegalStateException("Warning: less than 0.5 kg packed food remaining.");   
             }
 
             // if container has less than enough food, finish up all food in the container
@@ -801,6 +802,7 @@ implements Serializable {
             else {
                 situation = serious.getSituation();
             }
+            //else situation = "Not Well";
         }
         return situation;
     }
@@ -842,6 +844,7 @@ implements Serializable {
             }
         }
 
+        // TODO: change health status as well in all of the following cases
         // High fatigue reduces performance.
         if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
 

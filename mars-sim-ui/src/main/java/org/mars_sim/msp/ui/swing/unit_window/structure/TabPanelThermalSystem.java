@@ -7,8 +7,10 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -101,6 +103,8 @@ extends TabPanel {
 
 		// Prepare heating System label.
 		JLabel thermalSystemLabel = new JLabel(Msg.getString("TabPanelThermalSystem.label"), JLabel.CENTER); //$NON-NLS-1$
+		thermalSystemLabel.setFont(new Font("Serif", Font.BOLD, 16));
+	    thermalSystemLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.
@@ -125,34 +129,29 @@ extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane heatScrollPane = new JScrollPane();
-		heatScrollPane.setPreferredSize(new Dimension(257, 230));
+		//heatScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		heatScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		heatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(heatScrollPane,BorderLayout.CENTER);
-
-		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		heatScrollPane.setViewportView(outerTablePanel);
-
-		// Prepare thermal control table panel.
-		JPanel heatTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(heatTablePanel);
-
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
-
 		// Prepare thermal control table.
-		JTable heatTable = new JTable(heatTableModel);
+		JTable heatTable = new JTable(heatTableModel);	
+		heatScrollPane.setViewportView(heatTable);
 		heatTable.setCellSelectionEnabled(false);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		heatTable.getColumnModel().getColumn(0).setPreferredWidth(25);
-		heatTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(42);
-		heatTable.getColumnModel().getColumn(3).setPreferredWidth(65);
-		heatTable.getColumnModel().getColumn(4).setPreferredWidth(65);
-		heatTablePanel.add(heatTable.getTableHeader(), BorderLayout.NORTH);
-		heatTablePanel.add(heatTable, BorderLayout.CENTER);
+		heatTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		heatTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes
+		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		
+
 	}
 
 	/**

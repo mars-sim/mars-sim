@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * VehicleTabPanel.java
- * @version 3.06 2014-04-30
+ * @version 3.07 2014-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -63,8 +65,10 @@ implements MouseListener {
 		topContentPanel.add(vehicleLabelPanel);
 
 		// Create vehicle label
-		JLabel vehicleLabel = new JLabel(Msg.getString("TabPanelVehicles.parkedVehicles"), JLabel.CENTER); //$NON-NLS-1$
-		vehicleLabelPanel.add(vehicleLabel);
+		JLabel label = new JLabel(Msg.getString("TabPanelVehicles.parkedVehicles"), JLabel.CENTER); //$NON-NLS-1$
+		label.setFont(new Font("Serif", Font.BOLD, 16));
+		label.setForeground(new Color(102, 51, 0)); // dark brown
+		vehicleLabelPanel.add(label);
 
 		// Create vehicle display panel
 		JPanel vehicleDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

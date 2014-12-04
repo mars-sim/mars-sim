@@ -345,10 +345,14 @@ implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-            if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
-            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-            if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
+            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            //if (resource.equals(oxygen)) 
+            	if (resourceName == "oxygen")
+            		amountNeededSol = config.getOxygenConsumptionRate();
+            //AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            //if (resource.equals(water)) 
+            	if (resourceName == "water")
+            		amountNeededSol = config.getWaterConsumptionRate();
             //AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
             //if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
 

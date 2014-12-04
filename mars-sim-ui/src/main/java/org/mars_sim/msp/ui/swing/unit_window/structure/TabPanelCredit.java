@@ -8,8 +8,10 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -62,34 +64,41 @@ extends TabPanel {
 
 		// Prepare credit label.
 		JLabel creditLabel = new JLabel(Msg.getString("TabPanelCredit.label"), JLabel.CENTER); //$NON-NLS-1$
+		creditLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		creditLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		creditLabelPanel.add(creditLabel);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane creditScrollPanel = new JScrollPane();
-		creditScrollPanel.setPreferredSize(new Dimension(220, 280));
+		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
 		centerContentPanel.add(creditScrollPanel);         
 
 		// Prepare outer table panel.
-		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		outerTablePanel.setBorder(new MarsPanelBorder());
-		creditScrollPanel.setViewportView(outerTablePanel);   
+		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//outerTablePanel.setBorder(new MarsPanelBorder());
+		//creditScrollPanel.setViewportView(outerTablePanel);   
 
 		// Prepare credit table panel.
-		JPanel creditTablePanel = new JPanel(new BorderLayout(0, 0));
-		outerTablePanel.add(creditTablePanel);
+		//JPanel creditTablePanel = new JPanel(new BorderLayout(0, 0));
+		//outerTablePanel.add(creditTablePanel);
 
 		// Prepare credit table model.
 		CreditTableModel creditTableModel = new CreditTableModel((Settlement) unit);
 
 		// Prepare credit table.
 		JTable creditTable = new JTable(creditTableModel);
+		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setCellSelectionEnabled(false);
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
-		creditTablePanel.add(creditTable, BorderLayout.CENTER);
+		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//resizable automatically when its Panel resizes
+		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
+		//creditTablePanel.add(creditTable, BorderLayout.CENTER);
 	}
 
 	/**

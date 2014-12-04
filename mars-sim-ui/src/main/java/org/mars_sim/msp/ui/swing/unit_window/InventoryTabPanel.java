@@ -8,8 +8,10 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -69,8 +71,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         topContentPanel.add(inventoryLabelPanel);
         
         // Create inventory label
-        JLabel inventoryLabel = new JLabel("Inventory", JLabel.CENTER);
-        inventoryLabelPanel.add(inventoryLabel);
+        JLabel titleLabel = new JLabel("Inventory", JLabel.CENTER);
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        inventoryLabelPanel.add(titleLabel);
         
         // Create inventory content panel
         JPanel inventoryContentPanel = new JPanel(new GridLayout(2, 1, 0, 0));
