@@ -155,6 +155,28 @@
 		</outputs>
 	</process>
 	
+		<process name="Make Peanut Butter from Peanuts" 
+		tech="1" skill="1" work-time="50" process-time="50" 
+			power-required="0.2">
+			
+		<description>Ground peanuts, mix with oil, pour the mixture into food processor.
+		Blend until smooth.</description>
+		
+		<inputs>
+			<!--<equipment name="oven" number="1" 
+			TODO: add cocoa powder, cinnamon or other spice
+			/>-->
+			<resource name="Peanut" amount="3.0" />
+			<resource name="Soybean Oil" amount="0.5" />
+			<resource name="Table Salt" amount="0.1" />
+			<resource name="Soy Protein" amount="0.1" />
+		</inputs>
+		<outputs>
+			<resource name="Peanut Butter" amount="3.5" />
+		</outputs>
+	</process>
+	
+	
 	<process name="Package Roast Peanuts into dry food " 
 		tech="0" skill="0" work-time="50" process-time="50" 
 			power-required="1.0">
@@ -299,7 +321,7 @@
 	<process name="Bake Wheat Bun from Wheat Flour " 
 		tech="1" skill="2" work-time="50" process-time="250" 
 			power-required="1.0">		
-		<description>Bake burger bun from Wheat Flour </description>
+		<description>Bake Wheat Burger Bun from Wheat Flour </description>
 		<inputs>
 			<!-- <equipment name="oven" number="1" /> -->
 			<resource name="Wheat Flour" amount="1.0" />
@@ -359,6 +381,18 @@
 		</outputs>
 	</process>
 	
+	<!-- Produce Fiber Cloth from Cane and Soy Fiber. -->
+	<process name="Fiber cloth weaving" tech="2" skill="3" work-time="100" process-time="200" 
+			power-required="3.0">
+		<inputs>
+			<resource name="Cane Fiber" amount="2" />
+			<resource name="Soy Fiber" amount="2" />			
+		</inputs>
+		<outputs>
+			<resource name="Fiber Cloth" amount="3" />
+		</outputs>
+	</process>
+
 	
 	<!-- Make Sugarcane juice from Sugarcane-->
 		

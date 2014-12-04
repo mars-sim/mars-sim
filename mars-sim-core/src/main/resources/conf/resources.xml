@@ -53,7 +53,9 @@
 	<resource name="Acetic Acid Bacteria" phase="solid" life-support="true" edible="true">Used for making vinegar.</resource>
 	<resource name="Rice Vinegar" phase="solid" life-support="true" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
 	<resource name="Sugar" phase="solid" life-support="true" edible="true">Sugar processed from sugarcane.</resource>
-	<resource name="Cane Fiber" phase="solid" life-support="true" edible="true">Fiber processed from sugarcane.</resource>
+	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from sugarcane.</resource>
+	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
+
 
 
 	<resource name="Soybean" phase="solid" life-support="true" edible="true">Soybean seeds.</resource>

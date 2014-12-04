@@ -193,6 +193,7 @@
 				
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
 				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
+				<resource-storage resource="Cane Fiber" capacity="500.0" />
 							
 				<resource-storage resource="Yeast" capacity="500.0" />
 				<resource-storage resource="Epsom Salt" capacity="500.0" />
@@ -232,13 +233,14 @@
 				
 				<resource-initial resource="Sodium Hypochlorite" amount="100.0" />
 				<resource-initial resource="Acetic Acid Bacteria" amount="100.0" />
-								
+				<resource-initial resource="Cane Fiber" amount="50.0" />
+												
 				<resource-initial resource="Yeast" amount="100.0" />
 				<resource-initial resource="Epsom Salt" amount="100.0" />
 				<resource-initial resource="Table Salt" amount="100.0" />
 				<resource-initial resource="Sugar" amount="100.0" />
-				<resource-initial resource="Rice Vinegar" amount="50.0" />					
-								
+				<resource-initial resource="Rice Vinegar" amount="50.0" />
+										
 				<resource-initial resource="Soybean Oil" amount="50.0" />	
 				<resource-initial resource="White Onion" amount="50.0" />
 				<resource-initial resource="White Rice" amount="50.0" />	
@@ -699,7 +701,7 @@
 	<building name="Large Greenhouse" width="12.0" length="18.0" base-level="0">
 		<description> 
 			The Large Greenhouse is furnished with botany lab and with spacious interior
-			for high volume crop culivation and resource storage capability
+			for high volume crop cultivation and resource storage capability
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>

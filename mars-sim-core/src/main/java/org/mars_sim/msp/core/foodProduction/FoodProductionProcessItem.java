@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * ManufactureProcessItem.java
- * @version 3.06 2014-01-29
- * @author Scott Davis
+ * FoodProductionProcessItem.java
+ * @version 3.07 2014-12-04
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.foodProduction;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.resource.Type;
 
 /**
- * A manufacturing process input or output item.
+ * A Food Production process input or output item.
  */
 public class FoodProductionProcessItem implements Serializable {
 

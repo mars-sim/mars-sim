@@ -242,7 +242,7 @@ implements Serializable {
     // 2014-11-30 Added pickAMeal() 
  	public HotMeal pickAMeal() {
 
- 	  	int upperbound = 9;
+ 	  	int upperbound = 10;
     	int lowerbound = 0;
 
     	int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
@@ -316,8 +316,9 @@ implements Serializable {
 			// 
 	    	aMeal.addMealName("Veggie Burger & French Fries");
 	    	aMeal.add("Wheat Bun", .05);
-	      	aMeal.add("Veggie Patty", .15);
-	      	aMeal.add("French Fries", .10);	      	
+	      	aMeal.add("Veggie Patty", .13);
+	      	aMeal.add("French Fries", .10);	
+	      	aMeal.add("Peanut Butter", .02);
 	      	aMeal.add("Lettuce", .10);
 	      	aMeal.add("Tomato", .08);
 	      	aMeal.add("White Onion", .02);
@@ -341,10 +342,11 @@ implements Serializable {
 				// 
 		    	aMeal.addMealName("Veggie Sandwich & Peas");
 		    	aMeal.add("White Bread", .5);
-		      	aMeal.add("Veggie Patty", .15);
+		      	aMeal.add("Veggie Patty", .13);
 		      	aMeal.add("Peas", .09);	      	
 		      	aMeal.add("Lettuce", .1);
 		      	aMeal.add("Tomato", .08);
+		      	aMeal.add("Peanut Butter", .02);
 		      	aMeal.add("White Onion", .02);
 		      	aMeal.add("Table Salt", .01);
 
@@ -353,10 +355,11 @@ implements Serializable {
 			else if (number == 8) {
 		    	
 				// 3 stalks celery, rinsed and trimmed, leaves chopped
-		    	aMeal.addMealName("Braised Celery with Carrot and Peanuts");
-		    	aMeal.add("Celery", .25);
+		    	aMeal.addMealName("Braised Celery, Carrot and Roasted Peanuts");
+		    	aMeal.add("Celery", .20);
 		      	aMeal.add("Carrot", .15);
-		      	aMeal.add("Peanut", .09);
+		      	aMeal.add("Roasted Peanut", .07);
+		      	aMeal.add("Peanut Butter", .07);
 		      	aMeal.add("Table Salt", .01);
 
 			} 
@@ -365,6 +368,19 @@ implements Serializable {
 		    	
 				// 
 		    	aMeal.addMealName("Tofu Menudo");
+		    	aMeal.add("Tofu", .15);
+		      	aMeal.add("Carrot", .12);
+		      	aMeal.add("Potato", .1);
+		      	aMeal.add("Tomato", .05);		      	
+		      	aMeal.add("Peas", .05);
+		      	aMeal.add("White Onion", .02);
+		      	aMeal.add("Table Salt", .01);
+			} 
+    	
+			else if (number == 10) {
+		    	
+				// 
+		    	aMeal.addMealName("Spaghetti");
 		    	aMeal.add("Tofu", .15);
 		      	aMeal.add("Carrot", .12);
 		      	aMeal.add("Potato", .1);

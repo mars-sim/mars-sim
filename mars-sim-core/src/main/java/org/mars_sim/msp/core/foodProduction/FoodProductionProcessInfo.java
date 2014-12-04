@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * ManufactureProcessInfo.java
- * @version 3.06 2014-01-29
- * @author Scott Davis
+ * FoodProductionProcessInfo.java
+ * @version 3.07 2014-12-04
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.foodProduction;

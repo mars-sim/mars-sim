@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.equipment.Equipment;
+
 //import org.mars_sim.msp.core.equipment.Equipment;
 
 /**
@@ -88,11 +90,11 @@ implements Serializable, Comparable<Food> {
 	/**
 	 * Gets the food's class.
 	 * @return class
-	 
+	 */
 	public Class<? extends Equipment> getClassType() {
 		return classType;
 	}
-*/
+
 	/**
 	 * Gets the food's object if any.
 	 * @return object or null if none.
