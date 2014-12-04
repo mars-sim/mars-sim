@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2014-12-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -43,7 +43,7 @@ extends UnitTableModel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
+	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 	 
 	// Column indexes
 	private final static int NAME = 0;
@@ -192,8 +192,8 @@ extends UnitTableModel {
 				} break;
 
 				case HYDROGEN : {
-					result = decFormatter.format(resourceMap.get(
-							AmountResource.findAmountResource("hydrogen")));
+					result = resourceMap.get(
+							AmountResource.findAmountResource("hydrogen"));
 				} break;
 
 				case WASTE_WATER : {
