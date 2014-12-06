@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthReturn.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-12-06
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalStorage.java
- * @version 3.06 2014-10-17
+ * @version 3.07 2014-12-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;

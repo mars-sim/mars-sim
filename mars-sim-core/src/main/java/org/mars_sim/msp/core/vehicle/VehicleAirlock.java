@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.06 2014-04-26
+ * @version 3.07 2014-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;

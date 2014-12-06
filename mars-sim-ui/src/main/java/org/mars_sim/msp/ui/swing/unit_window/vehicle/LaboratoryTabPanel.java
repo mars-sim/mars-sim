@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;

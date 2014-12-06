@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-11-11
+ * @version 3.07 2014-12-06
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
