@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
