@@ -59,7 +59,6 @@ implements ActionListener {
 	 * @param desktop the main desktop.
 	 */
 	// 2014-11-27 Moved rename building capability to BuildingPanel.java
-	@SuppressWarnings("unchecked")
 	public TabPanelBuildings(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
