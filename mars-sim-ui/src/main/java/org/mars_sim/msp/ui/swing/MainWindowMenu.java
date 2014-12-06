@@ -25,6 +25,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -79,6 +80,11 @@ implements ActionListener, MenuListener {
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
+	
+	// 2014-12-04 Added notificationMenu
+	private NotificationMenu notificationMenu;
+	//private MainDesktopPane desktop;
+	
 	/** Mute menu item. */
 	private JCheckBoxMenuItem muteItem;
 	/** Volume Up menu item. */
@@ -94,22 +100,22 @@ implements ActionListener, MenuListener {
 	/** User Guide menu item. */
 	private JMenuItem guideItem;	
 	
-	
-	
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main window pane
 	 */
-	public MainWindowMenu(MainWindow mainWindow) {
+	public MainWindowMenu(MainWindow mainWindow, MainDesktopPane desktop) {
 
 		// Use JMenuBar constructor
 		super();
 
 		// Initialize data members
 		this.mainWindow = mainWindow;
+		//this.desktop = desktop;
 
 		// Create file menu
 		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
+		fileMenu.setMnemonic(KeyEvent.VK_F);
 		add(fileMenu);
 
 		// Create new menu item
@@ -159,6 +165,7 @@ implements ActionListener, MenuListener {
 		// Create tools menu
 		JMenu toolsMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
 		toolsMenu.addMenuListener(this);
+		toolsMenu.setMnemonic(KeyEvent.VK_T);
 		add(toolsMenu);
 
 		// Create Mars navigator menu item
@@ -220,6 +227,7 @@ implements ActionListener, MenuListener {
 		
 		// Create settings menu 
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
+		settingsMenu.setMnemonic(KeyEvent.VK_S);
 		settingsMenu.addMenuListener(this);
 		add(settingsMenu);
 
@@ -238,10 +246,10 @@ implements ActionListener, MenuListener {
 		settingsMenu.add(showToolBarItem);
 
 		settingsMenu.add(new JSeparator());
-
+		//settingsMenu.addSeparator();
+			
 		// Create Volume slider menu item
-		
-		MainDesktopPane desktop = mainWindow.getDesktop();
+		//MainDesktopPane desktop = mainWindow.getDesktop();
 		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
 		float volume = soundPlayer.getVolume();
 		int intVolume = Math.round(volume * 10F);
@@ -283,8 +291,12 @@ implements ActionListener, MenuListener {
 		muteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute")); //$NON-NLS-1$
 		settingsMenu.add(muteItem);	
 		
+		// 2014-12-05 Added notificationMenu
+		notificationMenu = new NotificationMenu(this);
+		
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		helpMenu.addMenuListener(this);
 		add(helpMenu);
 
@@ -312,6 +324,27 @@ implements ActionListener, MenuListener {
 		helpMenu.add(guideItem);
 	}
 
+
+	/**
+	 * Gets the Notification Menu.
+	 * @return notificationMenu
+	 */
+	// 2014-12-05 Added getNotificationMenu()
+	public NotificationMenu getNotificationMenu() {
+		return notificationMenu;
+	}
+
+
+	/**
+	 * Gets the Main Window.
+	 * @return mainWindow
+	 */
+	// 2014-12-05 Added getMainWindow()
+	public MainWindow getMainWindow() {
+		return mainWindow;
+	}
+
+	
 	/** ActionListener method overriding. */
 	@Override
 	public final void actionPerformed(ActionEvent event) {
@@ -371,6 +404,7 @@ implements ActionListener, MenuListener {
 		if (selectedItem == showToolBarItem) {
 			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());}
 
+		
 		if (selectedItem == volumeUpItem) {
 			float oldvolume = desktop.getSoundPlayer().getVolume();
 			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
@@ -420,10 +454,17 @@ implements ActionListener, MenuListener {
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
+
+		///
+		//notificationItem.setSelected(desktop.getMainWindow().getNotification());
+
 		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getVolume() * 10F));
 		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute());
 		muteItem.setSelected(desktop.getSoundPlayer().isMute());
 	}
+	
+
+	
 
 	public void menuCanceled(MenuEvent event) {}
 	public void menuDeselected(MenuEvent event) {}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2014-12-01
+ * @version 3.07 2014-12-05
  * @author Scott Davis
  */
 
@@ -56,6 +56,9 @@ public class MainWindow {
 	/** The main desktop. */
 	private final MainDesktopPane desktop;
 
+	// 2014-12-05 Added mainWindowMenu;
+	private final MainWindowMenu mainWindowMenu;
+	
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
@@ -90,7 +93,9 @@ public class MainWindow {
 		});
 
 		// Prepare menu
-		frame.setJMenuBar(new MainWindowMenu(this));
+		// 2014-12-05 Added mainWindowMenu
+		mainWindowMenu = new MainWindowMenu(this, desktop);
+		frame.setJMenuBar(mainWindowMenu);
 
 		// Prepare content frame
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -162,6 +167,15 @@ public class MainWindow {
 	 */
 	public MainDesktopPane getDesktop() {
 		return desktop;
+	}
+
+	/**
+	 * Gets the Main Window Menu.
+	 * @return mainWindowMenu
+	 */
+	// 2014-12-05 Added getMainWindowMenu()
+	public MainWindowMenu getMainWindowMenu() {
+		return mainWindowMenu;
 	}
 
 	/**
@@ -444,4 +458,13 @@ public class MainWindow {
 	public ToolToolBar getToolToolBar() {
 		return toolToolbar;
 	}
+	
+	/**
+	 * Gets the Notification.
+	 * @return tool toolbar.
+	 
+	public NotificationSetting getNotification() {
+		return notificationSetting;
+	}
+	 */
 }

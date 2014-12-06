@@ -1,20 +1,22 @@
 /**
  * Mars Simulation Project
- * MainDesktopManager.java
- * @version 3.07 2014-11-29
+ * NotificationWindow.java
+ * @version 3.07 2014-12-05
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.tool;
+package org.mars_sim.msp.ui.swing.notification;
 
 import java.awt.Color;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 
-import org.jtelegraph.Telegraph;
-import org.jtelegraph.TelegraphConfig;
-import org.jtelegraph.TelegraphPosition;
-import org.jtelegraph.TelegraphQueue;
+import org.mars_sim.msp.ui.swing.notification.Telegraph;
+import org.mars_sim.msp.ui.swing.notification.TelegraphConfig;
+import org.mars_sim.msp.ui.swing.notification.TelegraphPosition;
+import org.mars_sim.msp.ui.swing.notification.TelegraphQueue;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -25,14 +27,16 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
- * The NotificationManager class creates notification messages on the desktop
+ * The NotificationWindow class creates notification messages on the desktop
  * Events are based from HistoricalEvent.java
  */
-//TODO: Does subclassing JDialog have slower performance than not? 
-//2014-11-29 Renamed NotificationManager to NotificationWindow 
-//2014-11-29 Relocated its instantiation from EventTableModel to MonitorWindow
+// TODO: Does subclassing JDialog have slower performance than not? 
+// 2014-11-29 Renamed NotificationManager to NotificationWindow 
+// 2014-11-29 Relocated its instantiation from EventTableModel to MonitorWindow
+// 2014-12-05 Added notification settings to msp
 public class NotificationWindow extends JDialog {
 
 	private static final long serialVersionUID = 1L;
@@ -41,6 +45,15 @@ public class NotificationWindow extends JDialog {
 	// default logger.
 	private static Logger logger = Logger.getLogger(NotificationWindow.class.getName());
 
+	private boolean showMedical = true;
+	private boolean showMedicalCache = true;
+	private boolean showMalfunction = true;
+	private boolean showMalfunctionCache = true;	
+	private int maxNumMsg = 99;
+	private int maxNumMsgCache = 99;
+	private int displayTime = 2;
+	private int displayTimeCache = 2;	
+	private int messageCounter = 0;
 	
 	protected String name;
 	//TODO: need to create an array of two element with name 
@@ -48,20 +61,114 @@ public class NotificationWindow extends JDialog {
 	//private String header;
 	private Telegraph telegraph;
 	private TelegraphConfig telegraphConfig ;
-	private TelegraphQueue queue;
+	private TelegraphQueue telegraphQueue;
 	private boolean willNotify= false;
 	//private String message = "";		
 	private String matchedWord1 = "fixed";
 	private String matchedWord2 = "recovering";
 	private String oldMsgCache = "";
-
-	public NotificationWindow() {
-		queue = new TelegraphQueue();
+	private boolean isSettingChange = false;
 	
+	private MainDesktopPane desktop;
+	
+	public NotificationWindow(MainDesktopPane desktop) {
+		this.desktop = desktop;
+		telegraphQueue = new TelegraphQueue();
+	}
+
+	public void checkSetting() {
+		NotificationMenu nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+		showMedical = nMenu.getShowMedical();	
+		if (showMedical != showMedicalCache ) {
+			isSettingChange = true;
+			showMedicalCache = showMedical;
+		}
+
+		showMalfunction = nMenu.getShowMalfunction();
+		if (showMalfunction != showMalfunctionCache ) {
+			isSettingChange = true;
+			showMalfunctionCache = showMalfunction;
+		}
+		
+		maxNumMsg = nMenu.getMaxNumMsg();
+		//System.out.println("maxNumMsgCache : "+ maxNumMsgCache);
+		//System.out.println("maxNumMsg : "+ maxNumMsg);
+		if (maxNumMsg != maxNumMsgCache ) {
+			isSettingChange = true;		
+			//maxNumMsgCache = 0;	
+			//emptyQueue();
+			// call run() 
+			// set maxNumMsgCache = 0
+			// sleep(5000);
+			maxNumMsgCache = maxNumMsg;
+		}
+		//System.out.println("maxNumMsgCache : "+ maxNumMsgCache);
+		//System.out.println("maxNumMsg : "+ maxNumMsg);
+		
+		displayTime = nMenu.getDisplayTime();
+		if (displayTime != displayTimeCache ) {
+			isSettingChange = true;
+			displayTimeCache = displayTime;
+		}
+		
 	}
 	
+	
+	public void emptyQueue() {
+		
+		Queue<Telegraph> telegraphList = telegraphQueue.getQueue();
+		
+		telegraphQueue.getTimer().stop();		
+		//telegraph.getTimelineStay().suspend();
+		
+		//System.out.println("entering emptyQueue() : " + telegraphList.size());// + telegraphList.element());
+		
+		Iterator i = telegraphList.iterator();
+		
+		int temp = maxNumMsg;
+		
+		maxNumMsg = 0;
+		
+		while(i.hasNext()){
+		  Telegraph oneTelegraph = (Telegraph) i.next();
+		  oneTelegraph.dispose();
+		  oneTelegraph = telegraphList.remove();
+		  telegraphList.remove(oneTelegraph);
+		}
+		
+		maxNumMsg = temp;
+		
+		
+		//telegraph.getTimelineStay().resume();
+		//telegraphQueue.getTimer().start();		
+		
+		//System.out.println("leaving emptyQueue() : " + telegraphList.size());// + telegraphList.element());
+
+	}
+
 	// 2014-11-15 Created sendAlert()
-	public void sendAlert(HistoricalEvent event, String message, String header) {
+	public void sendAlert(HistoricalEvent event, 
+			String message,
+			String header) {
+
+		checkSetting();
+		if (isSettingChange) {
+			// start a new queue
+			//queue = null;
+
+			emptyQueue();
+			
+			//telegraph.dispose();
+
+			//queue = new TelegraphQueue();
+			messageCounter = 0;
+		}
+
+    	//System.out.println("validateMsg() : showMedical is " + showMedical);
+		//System.out.println("validateMsg() : showMalfunction is " + showMalfunction);
+		//System.out.println("validateMsg() : displayTime is " + displayTime);
+		//System.out.println("validateMsg() : maxNumMsg is " + maxNumMsg);
+		//System.out.println("validateMsg() : messageCounter is " + messageCounter);
 
 		Color GREEN_CYAN = new Color(0, 255, 128);
 		Color PURPLE_BLUE = new Color(39, 16, 167);		
@@ -69,18 +176,23 @@ public class NotificationWindow extends JDialog {
 		Color BURGANDY = new Color(148, 28, 10);
 		//Color ORANGE = new Color(255, 128, 0);
 		Color ORANGE = new Color(255, 176, 13);
+		
 		String msg = generateMsg(event, message);	
+		
+		
+			if (!oldMsgCache.equals(msg)
+					&& (messageCounter <= maxNumMsg) ) {		
 
-			if (!oldMsgCache.equals(msg)) {		
-				header = "<html><CENTER><I><b><h1>" 
-						+ header + "</h1></b></I></CENTER></html>";
+				telegraphConfig = new TelegraphConfig();
+				messageCounter++;
+
+				header = "<html><CENTER><i><b><h3>" 
+						+ header + "</h3></b></i></CENTER></html>";
 				//System.out.println("sendAlert() : msg is "+ msg);
 				//System.out.println("sendAlert() : header is "+ header);
-				telegraphConfig = new TelegraphConfig();
-				
 				//telegraphConfig.setButtonIcon();
-				//telegraphConfig.setWindowWidth(100);
-				//telegraphConfig.setWindowWidth(100);
+				telegraphConfig.setWindowWidth(80);
+				telegraphConfig.setWindowHeight(80);
 
 				telegraphConfig.setBackgroundColor(ORANGE);
 				telegraphConfig.setTitleColor(BURGANDY);
@@ -90,7 +202,7 @@ public class NotificationWindow extends JDialog {
 				telegraphConfig.setAudioEnabled(false);
 				//telegraphConfig.setAudioInputStream(null);
 				//telegraphConfig.setButtonEnabled(true);
-				telegraphConfig.setDuration(2500);
+				telegraphConfig.setDuration(displayTime*1000);
 				telegraphConfig.setBorderColor(Color.YELLOW);
 				telegraphConfig.setBorderThickness(5);
 				telegraphConfig.setTelegraphPosition(TelegraphPosition.BOTTOM_RIGHT);
@@ -100,14 +212,15 @@ public class NotificationWindow extends JDialog {
 						msg,
 						telegraphConfig) ;
 
-				queue.add(telegraph);	
+				telegraphQueue.add(telegraph);
+
 				oldMsgCache = msg;
+				//messageCounter--;
 			}
 		}
-	
-	
-	public void validateMsg(HistoricalEvent event)  {
-		
+
+	public void validateMsg(HistoricalEvent event) {
+			
 		String header = "";
 		String message = event.getDescription(); //.toUpperCase();
 		// reset willNotify to false
@@ -117,20 +230,22 @@ public class NotificationWindow extends JDialog {
 			//System.out.println("validateMsg() : message is "+ message);
 			if ( message.toLowerCase().contains(matchedWord1.toLowerCase()) ||
 					message.toLowerCase().contains(matchedWord2.toLowerCase())	) {
-					willNotify = false; // it ends here
+					willNotify = false; // do not send 
 				}
 			else {
-				// reset willNotify to false
+				// first reset willNotify to false
 				willNotify = false;
 
 				HistoricalEventCategory category = event.getCategory();
 
-				if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+				if (category.equals(HistoricalEventCategory.MALFUNCTION)
+						&& showMalfunction ) {
 					header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 					willNotify = true;
 				}
 				
-				if (category.equals(HistoricalEventCategory.MEDICAL))	{
+				else if (category.equals(HistoricalEventCategory.MEDICAL)
+						&& showMedical )	{
 					header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
 					willNotify = true;
 				}
@@ -138,16 +253,14 @@ public class NotificationWindow extends JDialog {
 			}
 	
 		}
-
-		if (willNotify == true)
-			sendAlert(event, message, header);
-		
+		if (willNotify) sendAlert(event, message, header);
 	}
 	
 	// 2014-11-16 Added modifyMsg()
 	//TODO: 
 	public String parseMsg(String msg) {
 		
+		// or use String replaced = string.replace("abcd", "dddd");
 		msg = msg.toUpperCase();
 		msg = msg.replaceAll("OCCURRED", "");
 
@@ -162,20 +275,27 @@ public class NotificationWindow extends JDialog {
 
 		msg = "a " + msg;
 		
-		msg = msg.replaceAll("a AIRLEAK", "an AIRLEAK");
-		msg = msg.replaceAll("a ELECTRICAL", "an ELECTRICAL");
+		if (showMedical) {
+			msg = msg.replaceAll("had a STARVATION", "was STARVING");
+			msg = msg.replaceAll("a MENINGITIS", "MENINGITIS");
+			msg = msg.replaceAll("had a SUFFOCATION", "was SUFFOCATING");
+			msg = msg.replaceAll("had a DEHYDRATION", "was DEHYDRATING");
+			//msg = msg.replaceAll("a BROKEN", "BROKEN");
+			msg = msg.replaceAll("a MINOR BURNS", "MINOR BURNS");
+		}
 		
-		msg = msg.replaceAll("a FOOD", "FOOD");
-		msg = msg.replaceAll("a WATER", "WATER");
-		msg = msg.replaceAll("a NAVIGATION", "NAVIGATION");
-		msg = msg.replaceAll("a BROKEN", "BROKEN");
-		msg = msg.replaceAll("a MINOR BURNS", "MINOR BURNS");
-		msg = msg.replaceAll("a GENERATOR", "GENERATOR");
-		msg = msg.replaceAll("a STARVATION", "STARVATION");
-		msg = msg.replaceAll("a MENINGITIS", "MENINGITIS");
-		msg = msg.replaceAll("a SUFFOCATION", "SUFFOCATION");
-		msg = msg.replaceAll("a DEHYDRATION", "DEHYDRATION");
-
+		if (showMalfunction) {
+			msg = msg.replaceAll("a EVA", "an EVA");
+			msg = msg.replaceAll("a AIRLEAK", "an AIRLEAK");
+			msg = msg.replaceAll("a ELECTRICAL", "an ELECTRICAL");
+			
+			msg = msg.replaceAll("a FOOD", "FOOD");
+			//msg = msg.replaceAll("a WATER", "WATER");
+			
+			msg = msg.replaceAll("a NAVIGATION", "NAVIGATION");
+			msg = msg.replaceAll("a GENERATOR", "GENERATOR");
+		}
+		
 		return msg;
 	}
 	
@@ -363,11 +483,12 @@ public class NotificationWindow extends JDialog {
 		
 		} // end of if (willNotify == true)
 
-		msg = "<html><i><b>" 
-				+ msg + "</b></i></html>";
+		//msg = "<html><i><b>" + msg + "</b></i></html>";
 		
 		message = "<html><CENTER><FONT COLOR=RED>" + message + "</FONT COLOR=RED></CENTER></html>";
 
+		
+		
 		// 2014-11-16 Added modifyMsg()
 		return message;
 	}
