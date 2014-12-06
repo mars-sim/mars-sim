@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 //import java.util.logging.Logger;
 
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -21,8 +23,7 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import org.mars_sim.msp.ui.swing.tool.NotificationWindow;
+import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -412,7 +413,9 @@ implements MonitorModel, HistoricalEventListener {
 	    }
 	    
 	    public void run() {
-	        notifyBox.validateMsg(event);
+	        //Thread.sleep(50);
+			notifyBox.validateMsg(event);
+			// Note: adding try-catch can cause UI significant slow down here
 	    }
 	}
 }

@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.NotificationWindow;
+import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /**
@@ -68,6 +68,7 @@ implements TableModelListener, ActionListener {
 	private JButton buttonFilter;
 	private JButton buttonProps;
 
+	private MainDesktopPane desktop;
 	/**
 	 * Constructor.
 	 * @param desktop the desktop pane
@@ -76,7 +77,8 @@ implements TableModelListener, ActionListener {
 
 		// Use TableWindow constructor
 		super(NAME, desktop);
-
+		this.desktop = desktop;
+		
 		setMaximizable(true);
 
 		// Get content pane
@@ -156,7 +158,7 @@ implements TableModelListener, ActionListener {
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		
 		// 2014-11-29 Added notifyBox
-		NotificationWindow notifyBox = new NotificationWindow();
+		NotificationWindow notifyBox = new NotificationWindow(desktop);
 		
 		addTab(new UnitTab(this,new PersonTableModel(unitManager), true));
 		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
