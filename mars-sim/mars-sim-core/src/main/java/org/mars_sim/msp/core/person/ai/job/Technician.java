@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-12-06
  * @author Scott Davis
  */
 
