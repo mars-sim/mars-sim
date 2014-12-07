@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -79,7 +79,7 @@ extends TabPanel {
 		// create a new mealMenu for this settlement
 		mealMenu = new ReadyMealMenu();
 
-		mealMenu = updateMealMenu(settlement, mealMenu);
+		updateMealMenu(settlement);
 
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -135,7 +135,7 @@ extends TabPanel {
 		//cookingTablePanel.add(cookingTable, BorderLayout.CENTER);
 	}
 
-	public ReadyMealMenu updateMealMenu(Settlement settlement, ReadyMealMenu mealMenu) {
+	public void updateMealMenu(Settlement settlement) {
 		
 		List<CookedMeal> mealList = new ArrayList<CookedMeal>();
 		
@@ -184,7 +184,7 @@ extends TabPanel {
 	    			}	
 	        	}  	
     		} // end of while (i.hasNext()) {
-        return mealMenu;
+        //return mealMenu;
 	}
 	
 	
@@ -307,7 +307,7 @@ extends TabPanel {
 		// TODO: decide in what situation it needs update and at what time ?
 		// update every second or after each meal or once a day ?
 		public void update() {
-			mealMenu = updateMealMenu(settlement, mealMenu);
+			updateMealMenu(settlement);
 			fireTableDataChanged();
 		}
 	}

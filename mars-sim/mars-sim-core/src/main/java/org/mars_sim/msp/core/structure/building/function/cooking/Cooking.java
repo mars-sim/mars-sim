@@ -61,6 +61,7 @@ implements Serializable {
     private Inventory inv ;
     
     private HotMeal aMeal;
+    private int number;
 
     /**
      * Constructor.
@@ -245,10 +246,11 @@ implements Serializable {
  	  	int upperbound = 10;
     	int lowerbound = 0;
 
-    	int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
+    	//int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
     	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
     	//logger.info(" random # is " + number);
- 		
+ 		number = number % 11;
+    	
 	 	HotMeal aMeal = new HotMeal(this);
     	
     	if (number == 0) {
@@ -391,6 +393,7 @@ implements Serializable {
 			} 
     	//logger.info(" meal# is " + number);
     	
+    	number++;
     	return aMeal;
 	}
 	
@@ -509,9 +512,9 @@ implements Serializable {
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();    	
      	String nameOfMeal = hotMeal.getMealName();
-        boolean isAmountAV = checkAmountAvailable(hotMeal);
+        //boolean isAmountAV = checkAmountAvailable(hotMeal);
         
-        if (isAmountAV) {
+        //if (isAmountAV) {
         	
 	        Iterator<Ingredient> i = ingredientList.iterator();
 	        
@@ -545,7 +548,7 @@ implements Serializable {
 	        //logger.info(" BestMealQuality : " + getBestMealQuality());      
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
 	  	        
-        }
+        //}
         
     }
     

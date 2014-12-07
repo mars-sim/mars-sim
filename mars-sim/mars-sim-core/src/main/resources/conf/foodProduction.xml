@@ -228,9 +228,8 @@
 	</process>
 	
 	
-	
 	<process name="Process Soybean into Soy Flour" 
-		tech="1" skill="2" work-time="50" process-time="500" 
+		tech="1" skill="2" work-time="50" process-time="400" 
 			power-required="5.0">
 		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybean at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
 		<inputs>
@@ -243,6 +242,22 @@
 		</outputs>
 	</process>
 
+	
+	<process name="Process White Rice into Rice Flour" 
+		tech="1" skill="2" work-time="50" process-time="400" 
+			power-required="5.0">
+		<description> Cover Rice with cold water. Soak for 3 hours. Finely grind the rice
+		Heat and stir. Cool and dry. </description>
+		<inputs>
+			<!--<equipment name="oven" number="1" />-->
+			<resource name="White Rice" amount="1.0" />
+			<resource name="Water" amount="3.0" />
+		</inputs>
+		<outputs>
+			<resource name="Rice Flour" amount="1.0" />
+		</outputs>
+	</process>
+	
 	<process name="Extract Soy Protein from Soy Flour" 
 		tech="2" skill="2" work-time="50" process-time="400" 
 			power-required="1.0">
@@ -333,7 +348,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Make Wheat Bread from Wheat Flour " 
+	<process name="Bake Wheat Bread from Wheat Flour " 
 		tech="1" skill="2" work-time="50" process-time="250" 
 			power-required="1.0">		
 		<description>Bake Wheat Bread from Wheat Flour </description>
@@ -348,6 +363,43 @@
 		</outputs>
 	</process>
 	
+	<process name="Make Wheat Noodles from Wheat Flour " 
+		tech="1" skill="1" work-time="50" process-time="100" 
+			power-required="0.5">		
+		<description> mix flour with water and knead to form dough. Heat paste into flat sheet. 
+		 cut sheet into different thickness.  </description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" /> -->
+			<!-- <equipment name="pasta machine" number="1" /> -->
+			<resource name="Wheat Flour" amount="1.0" />
+			<resource name="Water" amount="1" />
+			<resource name="Yeast" amount="0.01" />			
+			<resource name="Soy Protein" amount="0.08" />
+		</inputs>
+		<outputs>
+			<resource name="Wheat Noodle" amount="1.0" />
+		</outputs>
+	</process>
+		
+
+	<process name="Make Rice Noodles from Rice Flour " 
+		tech="1" skill="1" work-time="50" process-time="100" 
+			power-required="0.5">		
+		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet. 
+		 cut sheet into different thickness.</description>
+		<inputs>
+			<!-- <equipment name="oven" number="1" /> -->
+			<!-- <equipment name="pasta machine" number="1" /> -->
+			<resource name="Rice Flour" amount="1.0" />
+			<resource name="Water" amount="1" />
+			<resource name="Yeast" amount="0.01" />			
+			<resource name="Soy Protein" amount="0.08" />
+		</inputs>
+		<outputs>
+			<resource name="Rice Noodle" amount="1.0" />
+		</outputs>
+	</process>
+			
 	<process name="Make Rice Vinegar by Fermentation" 
 		tech="1" skill="2" work-time="50" process-time="30000" 
 			power-required="1.0">		
