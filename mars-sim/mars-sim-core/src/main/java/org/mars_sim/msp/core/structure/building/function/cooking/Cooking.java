@@ -54,8 +54,9 @@ implements Serializable {
     //private boolean foodIsAvailable = true;
     //private boolean soyIsAvailable = true;
     private int cookCapacity;
-    private List<CookedMeal> meals;
+    private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
     private double cookingWorkTime;
+	private List<HotMeal> hotMeals = new ArrayList<HotMeal>();
     
     private int numOfCookedMealCache; // in use in timePassing()
     private Inventory inv ;
@@ -76,7 +77,7 @@ implements Serializable {
         //logger.info("just called Cooking's constructor");
         
         cookingWorkTime = 0D;
-        meals = new ArrayList<CookedMeal>();
+        //meals = new ArrayList<CookedMeal>();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -85,6 +86,13 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
     
+        // 2014-12-06 Added calling getMealList() from MealConfig
+    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+
+        hotMeals = mealConfig.getMealList();
+        
+    	//System.out.println("Cooking.java : Meal menu size is " + hotMeals.size());
+    	//System.out.println("Cooking.java : Meal 1 is " + hotMeals.get(0).getMealName());
     }
 
     /**
@@ -185,7 +193,13 @@ implements Serializable {
      * @return true if cooked meals
      */
     public boolean hasCookedMeal() {
-        return (meals.size() > 0);
+    	int size = 0;
+    	if (cookedMeals == null)
+    		size = 0;
+    	else 
+    		size = cookedMeals.size();
+    	//System.out.println(" cookedMealList.size() is " + size);
+        return (size > 0);
     }
 
     /**
@@ -193,7 +207,7 @@ implements Serializable {
      * @return number of meals
      */
     public int getNumberOfCookedMeals() {
-        return meals.size();
+        return cookedMeals.size();
     }
 
     /**
@@ -203,7 +217,7 @@ implements Serializable {
     public CookedMeal getCookedMeal() {
         CookedMeal bestMeal = null;
         int bestQuality = -1;
-        Iterator<CookedMeal> i = meals.iterator();
+        Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
             if (meal.getQuality() > bestQuality) {
@@ -212,7 +226,7 @@ implements Serializable {
             }
         }
 
-        if (bestMeal != null) meals.remove(bestMeal);
+        if (bestMeal != null) cookedMeals.remove(bestMeal);
 
         return bestMeal;
     }
@@ -223,7 +237,7 @@ implements Serializable {
      */
     public int getBestMealQuality() {
         int bestQuality = 0;
-        Iterator<CookedMeal> i = meals.iterator();
+        Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
             if (meal.getQuality() > bestQuality) 
@@ -242,155 +256,25 @@ implements Serializable {
 
     // 2014-11-30 Added pickAMeal() 
  	public HotMeal pickAMeal() {
-
- 	  	int upperbound = 10;
-    	int lowerbound = 0;
-
+ 
+ 		int size = 0;
+    	if (hotMeals == null)
+    		size = 0;
+    	else 
+    		size = hotMeals.size();
+    	//System.out.println(" hotMeals.size() is " + size);
+        
+ 	  	//int upperbound = 10;
+    	//int lowerbound = 0;
     	//int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
     	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
     	//logger.info(" random # is " + number);
- 		number = number % 11;
+ 		number = number % size;
     	
 	 	HotMeal aMeal = new HotMeal(this);
     	
-    	if (number == 0) {
-    	
-	    	aMeal.addMealName("Kidney Bean Fried Rice with Onion");
-	    	aMeal.add("Kidney Bean", .19);
-	      	aMeal.add("White Rice", .20);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
-	      	aMeal.add("White Onion", .08);
-	      	aMeal.add("Table Salt", .01);
-	      	
-    	} else if (number == 1) {
-    	
-	    	aMeal.addMealName("Carrot Soup");
-	    	aMeal.add("Cabbage", .19);
-	      	aMeal.add("Carrot", .17);
-	      	aMeal.add("Sesame", .01);
-	      	aMeal.add(aMeal.getAvailableOil(), .02);
-	      	aMeal.add("Green Onion", .05);
-	      	aMeal.add("Tomato", .05);
-	      	aMeal.add("Table Salt", .01);
-	      	
-	      	
-    	}  else if (number == 2) {
-    	
-    		// Garnish the Coleslaw with toasted sesame seeds/chopped 
-			//roasted peanuts and shredded carrot and cabbage 
-    		
-	    	aMeal.addMealName("Cabbage & Carrot Slaw Plate");
-	    	aMeal.add("Cabbage", .20);
-	      	aMeal.add("Carrot", .20);
-	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	aMeal.add("Sesame", .06);
-	      	aMeal.add("Table Salt", .01);
-	      	
-    	} else if (number == 3) {
-    	
-    		// clove garlic, finely chopped, shredded carrots
-    		// thinly sliced green onions
-    		//	Ground black pepper, to taste
-    		
-	    	aMeal.addMealName("Roasted Garlic, Potato & Lettuce Salad");
-	    	aMeal.add("Potato", .22);
-	      	aMeal.add("Lettuce", .12);
-	      	aMeal.add("Garlic", .08);
-	      	aMeal.add("Sesame", .04);
-	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	aMeal.add("Table Salt", .01);
-		      	
-	    	
-		} else if (number == 4) {
-	    	
-			// 
-	    	aMeal.addMealName("Bean Sprout Garlic Stir Fry");
-	    	aMeal.add("Soy Sprout", .27);
-	      	aMeal.add("Garlic", .04);
-	      	aMeal.add("Green Onion", .15);
-	      	aMeal.add(aMeal.getAvailableOil(), .03);
-	      	aMeal.add("Table Salt", .01);
-	      	
-		} 
-    	
-			else if (number == 5) {
-	    	
-			// 
-	    	aMeal.addMealName("Veggie Burger & French Fries");
-	    	aMeal.add("Wheat Bun", .05);
-	      	aMeal.add("Veggie Patty", .13);
-	      	aMeal.add("French Fries", .10);	
-	      	aMeal.add("Peanut Butter", .02);
-	      	aMeal.add("Lettuce", .10);
-	      	aMeal.add("Tomato", .08);
-	      	aMeal.add("White Onion", .02);
-
-		} 
-    	
-			else if (number == 6) {
-		    	
-				// 
-		    	aMeal.addMealName("Sauteed Swiss Chard w/ Onions Fried Rice");
-		    	aMeal.add("Swiss Chard", .25);
-		      	aMeal.add("Carrot", .05);
-		      	aMeal.add("Garlic", .05);
-		      	aMeal.add("White Rice", .13);
-		      	aMeal.add("White Onion", .02);
-
-			} 
-    	
-			else if (number == 7) {
-		    	
-				// 
-		    	aMeal.addMealName("Veggie Sandwich & Peas");
-		    	aMeal.add("White Bread", .5);
-		      	aMeal.add("Veggie Patty", .13);
-		      	aMeal.add("Peas", .09);	      	
-		      	aMeal.add("Lettuce", .1);
-		      	aMeal.add("Tomato", .08);
-		      	aMeal.add("Peanut Butter", .02);
-		      	aMeal.add("White Onion", .02);
-		      	aMeal.add("Table Salt", .01);
-
-			} 
-    	
-			else if (number == 8) {
-		    	
-				// 3 stalks celery, rinsed and trimmed, leaves chopped
-		    	aMeal.addMealName("Braised Celery, Carrot and Roasted Peanuts");
-		    	aMeal.add("Celery", .20);
-		      	aMeal.add("Carrot", .15);
-		      	aMeal.add("Roasted Peanut", .07);
-		      	aMeal.add("Peanut Butter", .07);
-		      	aMeal.add("Table Salt", .01);
-
-			} 
-		
-			else if (number == 9) {
-		    	
-				// 
-		    	aMeal.addMealName("Tofu Menudo");
-		    	aMeal.add("Tofu", .15);
-		      	aMeal.add("Carrot", .12);
-		      	aMeal.add("Potato", .1);
-		      	aMeal.add("Tomato", .05);		      	
-		      	aMeal.add("Peas", .05);
-		      	aMeal.add("White Onion", .02);
-		      	aMeal.add("Table Salt", .01);
-			} 
-    	
-			else if (number == 10) {
-		    	
-				// 
-		    	aMeal.addMealName("Spaghetti");
-		    	aMeal.add("Tofu", .15);
-		      	aMeal.add("Carrot", .12);
-		      	aMeal.add("Potato", .1);
-		      	aMeal.add("Tomato", .05);		      	
-		      	aMeal.add("Peas", .05);
-		      	aMeal.add("White Onion", .02);
-		      	aMeal.add("Table Salt", .01);
-			} 
+	 	aMeal = hotMeals.get(number);
+			
     	//logger.info(" meal# is " + number);
     	
     	number++;
@@ -435,7 +319,7 @@ implements Serializable {
 		int num = 0;
 		String name = meal.getName();
 		
-		Iterator<CookedMeal> j = meals.iterator();
+		Iterator<CookedMeal> j = cookedMeals.iterator();
 			while (j.hasNext()) {
     			CookedMeal nowMeal = j.next();
     			String nowMealName = nowMeal.getName();
@@ -446,7 +330,7 @@ implements Serializable {
 	}
 
 
-		
+		/*
 		public String getAnOil() {
 			// 
 			int upperbound = 4;
@@ -473,9 +357,9 @@ implements Serializable {
 	    	//logger.info(" Oil is " + oilName);
 
 	    	return oilName;
-
 		}
-    
+    */
+	
     // 2014-11-29 Created checkAmountAvailable()
     public boolean checkAmountAvailable(HotMeal aMeal) {
     	boolean result = true;
@@ -489,7 +373,7 @@ implements Serializable {
 	        Ingredient oneIngredient;
 	        oneIngredient = i.next();
 	        String ingredientName = oneIngredient.getName();
-	        double amount = oneIngredient.getAmount();
+	        double amount = oneIngredient.getProportion();
 	            	
 	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 	        double ingredientAvailable = getFreshFood(ingredientAR);
@@ -523,7 +407,7 @@ implements Serializable {
 		        Ingredient oneIngredient;
 		        oneIngredient = i.next();
 		        String ingredientName = oneIngredient.getName();
-		        double amount = oneIngredient.getAmount();
+		        double amount = oneIngredient.getProportion();
 		            	
 		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 		        //double ingredientAvailable = getFreshFood(ingredientAR);
@@ -537,11 +421,11 @@ implements Serializable {
 
 	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, time);
 	        //logger.info("New meal : " + meal.getName());    
-	    	meals.add(meal);
+	    	cookedMeals.add(meal);
 	  	        
 	  	    if (logger.isLoggable(Level.FINEST)) {
 	  	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-	  	        			" has " + meals.size() + " meal(s) with quality score of " + mealQuality);
+	  	        			" has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
 	  	    }
 	        //logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
   	        //			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
@@ -554,7 +438,7 @@ implements Serializable {
     
     // 2014-12-01 Added getCookedMealList()
     public List<CookedMeal> getCookedMealList() {
-    	return meals;
+    	return cookedMeals;
     }
 
     /**
@@ -606,10 +490,10 @@ implements Serializable {
      boolean hasAMeal = hasCookedMeal(); 
      //logger.info(" hasAMeal : "+ hasAMeal);
      if ( hasAMeal ) {
-         int newNumOfCookedMeal = meals.size();
+         int newNumOfCookedMeal = cookedMeals.size();
          //if ( numOfCookedMealCache != newNumOfCookedMeal)
          //	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
-         Iterator<CookedMeal> i = meals.iterator();
+         Iterator<CookedMeal> i = cookedMeals.iterator();
          while (i.hasNext()) {
             CookedMeal meal = i.next();
             //logger.info("CookedMeal : " + meal.getName());
@@ -667,8 +551,8 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        meals.clear();
-        meals = null;
+        cookedMeals.clear();
+        cookedMeals = null;
     }
 
 	@Override

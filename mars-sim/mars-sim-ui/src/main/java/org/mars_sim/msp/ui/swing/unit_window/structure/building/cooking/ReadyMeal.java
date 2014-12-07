@@ -24,19 +24,19 @@ import org.mars_sim.msp.core.time.MarsClock;
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
  	
- 	ReadyMeal(String name, int numServings, int quality, MarsClock expiration){
- 		this.name = name;
- 		this.numServings = numServings;
- 		//this.numKitchens = numKitchens;
- 		this.quality = quality;
- 		this.expiration = expiration;
- 		
- 		if (quality > bestQuality)
- 			ReadyMeal.bestQuality = quality;
- 		if (quality < worstQuality)
- 			ReadyMeal.worstQuality = quality;
- 		//this.expiration = expiration;
- 	}
+	 	ReadyMeal(String name, int numServings, int quality, MarsClock expiration){
+	 		this.name = name;
+	 		this.numServings = numServings;
+	 		//this.numKitchens = numKitchens;
+	 		this.quality = quality;
+	 		this.expiration = expiration;
+	 		
+	 		if (quality > bestQuality)
+	 			ReadyMeal.bestQuality = quality;
+	 		if (quality < worstQuality)
+	 			ReadyMeal.worstQuality = quality;
+	 		//this.expiration = expiration;
+	 	}
 	    //public ReadyMeal() {
 			// TODO Auto-generated constructor stub
 		//}
@@ -46,6 +46,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 	    public int getNumServings() {
 	    		return numServings;
 	    	}
+	    public void setNumServings(int servings) {
+    		numServings = servings;
+    	}
 	    public int getBestQuality() {
 	    	return bestQuality;
 	    }
@@ -56,10 +59,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 	    //	return numKitchens;
 	    //}
 	    public MarsClock getExpiration() {
- 		return expiration;
- 	}
-		public void setNumServings(int d) {
-			numServings = d + numServings;
+	    	return expiration;
+	    }
+		public void addNumServings(int newServings) {
+			numServings = newServings + numServings;
 		}
  
 	}

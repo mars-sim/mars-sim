@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookedMeal.java
- * @version 3.07 2014-12-02
+ * @version 3.07 2014-12-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * This class represents a cooked meal from a kitchen.
  */
 public class CookedMeal
-implements Serializable {
+implements Serializable, Cloneable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -38,6 +38,12 @@ implements Serializable {
 		this.name = name;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
+	}
+	// 2014-12-07 Added this copy constructor
+	public CookedMeal(CookedMeal cookedMeal) {
+		this.quality = cookedMeal.quality;
+		this.name = cookedMeal.name;
+		this.expirationTime = cookedMeal.expirationTime;
 	}
 	
 	// 2014-11-28 Added getName()
