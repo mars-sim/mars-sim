@@ -1,0 +1,11 @@
+<!ELEMENT meal-list (meal+)>
+<!ELEMENT meal (ingredient+)>
+<!ATTLIST meal id CDATA #REQUIRED>
+<!ATTLIST meal name CDATA #REQUIRED>
+<!ATTLIST meal oil CDATA #REQUIRED>
+<!ATTLIST meal salt CDATA #REQUIRED>
+<!ATTLIST meal category CDATA #REQUIRED>
+<!ELEMENT ingredient (#PCDATA) >
+<!ATTLIST ingredient id CDATA #REQUIRED>
+<!ATTLIST ingredient name CDATA #REQUIRED>
+<!ATTLIST ingredient proportion CDATA #REQUIRED>

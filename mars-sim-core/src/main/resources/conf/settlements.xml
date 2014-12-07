@@ -69,6 +69,32 @@
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="waste water" amount="100.0" />
 			<resource type="carbon dioxide" amount="1000.0" />
+
+			<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+			
 			
 			<!-- Part packages (see part_packages.xml) -->
 			<!-- name: the part package name. -->
@@ -145,6 +171,32 @@
 			<equipment type="Specimen Box" number="100" />
 			<resource type="waste water" amount="200.0" />
 			<resource type="carbon dioxide" amount="1000.0" />
+			
+						<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
 			<part-package name="package 2" number="1" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
@@ -237,6 +289,32 @@
 			<equipment type="Specimen Box" number="140" />
 			<resource type="waste water" amount="300.0" />
 			<resource type="carbon dioxide" amount="2000.0" />
+			
+						<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
 			<part-package name="package 3" number="1" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
@@ -429,6 +507,32 @@
 			<equipment type="Specimen Box" number="260" />
 			<resource type="waste water" amount="1000.0" />
 			<resource type="carbon dioxide" amount="5000.0" />
+			
+						<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
 			<part-package name="package 4" number="1" />
 		</template>
 		
@@ -556,6 +660,32 @@
 			<resource type="water" amount="42752.0" />
 			<resource type="food" amount="16512.0" />
 			<resource type="methane" amount="16000.0" />
+			
+						<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
 			<part-package name="package 1" number="1" />
 		</template>
 		
@@ -698,6 +828,32 @@
 			<resource type="water" amount="42752.0" />
 			<resource type="food" amount="16512.0" />
 			<resource type="methane" amount="16000.0" />
+			
+						<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
 			<part-package name="package 1" number="1" />
 		</template>
 
@@ -798,6 +954,32 @@
             <equipment type="Specimen Box" number="140" />
             <resource type="waste water" amount="300.0" />
             <resource type="carbon dioxide" amount="2000.0" />
+            
+            			<!-- Food Resources -->			
+			<resource type="Celery" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />			
+			<resource type="White Rice" amount="50.0" />
+									
+			<!--<resource type="Tofu" amount="50.0" />-->
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />			
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />			
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+						
             <part-package name="package 3" number="1" />
             <resupply>
                 <resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />

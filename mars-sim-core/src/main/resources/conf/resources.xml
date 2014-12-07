@@ -39,6 +39,7 @@
 	<resource name="Epsom Salt" phase="solid" life-support="true" edible="true">Magnesium Sulfate, as bath salt to soothe sore muscles or 
 	for gardeners to improve crops. </resource>
 	<resource name="White Bread" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="White Bun" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>	
 	<resource name="Veggie Patty" phase="solid" life-support="true" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
 	<resource name="Wheat Flour" phase="solid" life-support="true" edible="true">Flour made from wheat kernel.</resource>
 	<resource name="Wheat Bun" phase="solid" life-support="true" edible="true">fluffy Buns for holding Veggie Patty.</resource>
@@ -55,8 +56,9 @@
 	<resource name="Sugar" phase="solid" life-support="true" edible="true">Sugar processed from sugarcane.</resource>
 	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from sugarcane.</resource>
 	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
-
-
+	<resource name="Wheat Noodle" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="Rice Noodle" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="Rice Flour" phase="solid" life-support="true" edible="true">French bread or loaves of bread made from flour. </resource>
 
 	<resource name="Soybean" phase="solid" life-support="true" edible="true">Soybean seeds.</resource>
 	<resource name="Soy Sprout" phase="solid" life-support="true" edible="true">Sprouted Soybean.</resource>
@@ -77,6 +79,7 @@
 	<resource name="Tomato" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Garlic" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Sugarcane" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Ginger" phase="solid" life-support="true" edible="true"></resource>
 
 	
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
