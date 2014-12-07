@@ -31,14 +31,15 @@ public class ReadyMealMenu implements Serializable {
 			return readyMealList.size();
 		}
 
-	public void change(String name, int moreServings, int quality) {
+	public void change(String name, int nowServings, int quality) {
 		Iterator<ReadyMeal> i = readyMealList.iterator();
 		while (i.hasNext()) {
 			ReadyMeal existingMeal = i.next();
 			String existingName = existingMeal.getName();
 			
 			if (name == existingName) {
-				existingMeal.setNumServings(moreServings + existingMeal.getNumServings());
+				//existingMeal.setNumServings(nowServings + existingMeal.getNumServings());
+				existingMeal.addNumServings(nowServings);
 			}
 		} 
 	}

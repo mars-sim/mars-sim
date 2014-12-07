@@ -136,9 +136,7 @@ extends TabPanel {
 	}
 
 	public void updateMealMenu(Settlement settlement) {
-		
-		List<CookedMeal> mealList = new ArrayList<CookedMeal>();
-		
+			
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		
         while (i.hasNext()) { 		// for each building's kitchen in the settlement
@@ -147,13 +145,18 @@ extends TabPanel {
         	if (building.hasFunction(BuildingFunction.COOKING)) {
         		
 				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-	    		mealList = kitchen.getCookedMealList();
-	    		Iterator<CookedMeal> j = mealList.iterator();
+				
+				List<CookedMeal> originalCookedMealList = kitchen.getCookedMealList();
+	    		// 2014-12-07 Made a copy of the originalCookedMealList
+				// using the given copy constructor
+				List<CookedMeal> copyCookedMealList = new ArrayList<CookedMeal>(originalCookedMealList);
+	    		
+	    		Iterator<CookedMeal> j = copyCookedMealList.iterator();
 	    		
 	    			while (j.hasNext()) { 		// for each CookedMeal in a kitchen
 	    				CookedMeal nowMeal = j.next();
 	    	    		String nowName = nowMeal.getName();
-	    		    	int nowServings = kitchen.getMealServings(mealList, nowMeal);
+	    		    	int nowServings = kitchen.getMealServings(copyCookedMealList, nowMeal);
 	    	    		//int numKitchens;
 	    	    		int nowQuality = nowMeal.getQuality();
 	    	    		MarsClock nowExpiration = nowMeal.getExpirationTime();
@@ -205,12 +208,16 @@ extends TabPanel {
 			int oldDayCache = existingMeal.getExpiration().getSolOfMonth();
 			int newDayCache  = currentTime.getSolOfMonth();
 
-			try {
+			try { 
 				if (currentTime.getSolOfMonth() != existingMeal.getExpiration().getSolOfMonth())	
+					// if a meal is expired
 					//logger.info(" Today is sol " + newDayCache);
 					//logger.info(" The meal was made on sol " + oldDayCache);
 					oldDayCache = newDayCache;
+					
 					i.remove();
+					//existingMeal.setNumServings(0);
+					
            	} catch (Exception e) {}
 		}
 		//logger.info(" update() : size is now " + readyMealList.size());

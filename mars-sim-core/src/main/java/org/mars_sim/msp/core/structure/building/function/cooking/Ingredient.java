@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Ingredient.java
- * @version 3.07 2014-12-02
+ * @version 3.07 2014-12-07
  * @author Manny Kung
  */
 
@@ -11,21 +11,25 @@ import java.io.Serializable;
 
 // 2014-11-29 Created Ingredient()
 public class Ingredient implements Serializable {
+	int id;
 	String name;
-	double amount;
+	double proportion;
 	
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	Ingredient(String name, double amount) {
+	Ingredient(int id, String name, double proportion) {
 			this.name = name;
-			this.amount = amount;
+			this.proportion = proportion;
 	}
 	    public String getName() {
 	    		return name;
 	    	}
-	    public double getAmount() {
-	    		return amount;
+	    public double getProportion() {
+	    		return proportion;
 	    	}
+	    public int getID() {
+    		return id;
+    	}
 }

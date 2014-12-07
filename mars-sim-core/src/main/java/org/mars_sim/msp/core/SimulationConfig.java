@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2014-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
@@ -70,6 +71,8 @@ public class SimulationConfig implements Serializable {
 	public static final String VALUE = "value";
 	// 2014-11-23 Added Food Production
 	public static final String FOODPRODUCTION_FILE = "foodProduction";
+	// 2014-12-06 Added meals
+	public static final String MEAL_FILE = "meals";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -110,6 +113,8 @@ public class SimulationConfig implements Serializable {
 
 	// 2014-11-23 Added Food Production
 	private FoodProductionConfig foodProductionConfig;
+	// 2014-12-06 Added mealConfig
+	private MealConfig mealConfig;
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
@@ -317,13 +322,25 @@ public class SimulationConfig implements Serializable {
 	
 	/**
 	 * Gets the foodProduction config subset.
-	 * @return foodProductione config
+	 * @return foodProduction config
 	 */
 	// 2014-11-23 Added Food Production
 	public FoodProductionConfig getFoodProductionConfiguration() {
 		return foodProductionConfig;
 	}
 
+	
+	/**
+	 * Gets the meal config subset.
+	 * @return meal config
+	 */
+	// 2014-12-06 Added getMealConfiguration()
+	public MealConfig getMealConfiguration() {
+		//logger.info("calling getMealConfiguration()");
+		return mealConfig;
+	}
+
+	
 	/**
 	 * Gets the construction config subset.
 	 * @return construction config
@@ -359,6 +376,9 @@ public class SimulationConfig implements Serializable {
 			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 			// 2014-11-23 Added Food Production
 			foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
+			// 2014-12-06 Added mealConfig
+			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
 			e.printStackTrace();
@@ -387,6 +407,8 @@ public class SimulationConfig implements Serializable {
 		constructionConfig.destroy();
 		// 2014-11-23 Added Food Production
 		foodProductionConfig.destroy();
+		// 2014-12-06 Added mealConfig
+		mealConfig.destroy();
 	}
 
 	/**
