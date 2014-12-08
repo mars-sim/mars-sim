@@ -259,9 +259,11 @@ public class MarsProject {
             }
         }
         
-        // starting the simulation
-        System.setProperty("swing.aatext", "true"); // general text antialiasing
+        // general text antialiasing
+        System.setProperty("swing.aatext", "true"); 
+        System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
+        // starting the simulation
         new MarsProject(args);
     }
 }
