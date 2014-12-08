@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  * MarsProjectStarter is the default main class for the main executable JAR.
- * It creates a new virtual machine with 512MB memory and logging properties.
+ * It creates a new virtual machine with 1GB memory and logging properties.
  * It isn't used in the webstart release.
  */
 public class MarsProjectStarter {
