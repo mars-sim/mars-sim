@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.07 2014-11-14
+ * @version 3.07 2014-11-08
  * @author Lars Næsbye Christensen
  */
 
@@ -14,11 +14,12 @@ import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 
 /**
- * The MainWindowFX class is the primary JavaFX frame for the project.
+ * The MainWindowFX class is the primary JavaFX frame for the project. It is to
+ * replace the MainWindow class in future MSP versions.
  */
 public class MainWindowFX {
 
-	public static final String WINDOW_TITLE = "4.0alpha";
+	public static final String WINDOW_TITLE = "4.0a";
 
 
 	/**
