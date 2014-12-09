@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-12-02
+ * @version 3.07 2014-12-08
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +30,10 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 
 /**
  * The Cooking class is a building function for cooking meals.
@@ -57,7 +60,14 @@ implements Serializable {
     private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
     private double cookingWorkTime;
 	private List<HotMeal> hotMeals = new ArrayList<HotMeal>();
-    
+	private int mealCounterPerSol = 0;
+	private int dayCache = 1;
+	
+	// 2014-12-08 Added multimaps
+	private Multimap<String, Integer> qualityMap;
+	private Multimap<String, MarsClock> timeMap;
+	//private Multiset<String> servingsSet;
+
     private int numOfCookedMealCache; // in use in timePassing()
     private Inventory inv ;
     
@@ -91,10 +101,48 @@ implements Serializable {
 
         hotMeals = mealConfig.getMealList();
         
+    	// 2014-12-08 Added multimaps
+        qualityMap = ArrayListMultimap.create();
+    	timeMap = ArrayListMultimap.create();
+    	
     	//System.out.println("Cooking.java : Meal menu size is " + hotMeals.size());
     	//System.out.println("Cooking.java : Meal 1 is " + hotMeals.get(0).getMealName());
     }
+ 
+    // 2014-12-07 Added nameMap
+    //public Multimap<String, Integer> getNameMap() {
+    //	return nameMap;
+    //};
+    
+    // 2014-12-08 Added servingsSet
+    //public Multiset<String> getServingsSet() {
+	//	return servingsSet;
+    //};
+    
+    // 2014-12-08 Added qualityMap
+    public Multimap<String, Integer> getQualityMap() {
+    	Multimap<String, Integer> qualityMapCache = ArrayListMultimap.create(qualityMap);
+    	
+    	// Empty out the map so that the next read by TabPanelCooking.java will be brand new cookedMeal
+		if (!qualityMap.isEmpty()) {
+			qualityMap.clear();	
+		}
+		
+    	return qualityMapCache;
+    };
 
+    // 2014-12-08 Added timeMap
+    public Multimap<String, MarsClock> getTimeMap() {
+    	Multimap<String, MarsClock> timeMapCache = ArrayListMultimap.create(timeMap);
+       	// Empty out the map so that the next read by TabPanelCooking.java will be brand new cookedMeal
+    	if (!timeMap.isEmpty()) {
+    			timeMap.clear();
+    		}
+       	
+    	return timeMapCache;
+    };
+    
+    
     /**
      * Gets the value of the function for a named building.
      * @param buildingName the building name.
@@ -298,36 +346,39 @@ implements Serializable {
   
     	while ( cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
  
-    		boolean exit = false;
+    		//boolean exit = false;
     		
     		// pick a meal whose ingredients are available
-    		while (!exit) {
+    		//while (!exit) {
     			aMeal = pickAMeal();
-    			boolean isAmountAV = checkAmountAvailable(aMeal);
-    			if (isAmountAV) {
+    			//boolean isAmountAV = checkAmountAvailable(aMeal);
+    			//if (isAmountAV) {
     				cookAHotMeal(aMeal);
-    				exit = true;
-    			}
-    		}
+    				//exit = true;
+    			//}
+    		//}
     		
     	}
      	
      } // end of void addWork()
 	
+   /* 
     // 2014-12-01 Created getMealServings()  
 	public int getMealServings(List<CookedMeal> mealList, CookedMeal meal) {
 		int num = 0;
 		String name = meal.getName();
 		
-		Iterator<CookedMeal> j = cookedMeals.iterator();
+		Iterator<CookedMeal> j = mealList.iterator();
 			while (j.hasNext()) {
     			CookedMeal nowMeal = j.next();
     			String nowMealName = nowMeal.getName();
+    			// count only those that have the same name
     			if (nowMealName == name)
     				num++;
 			}
 		return num;
 	}
+	*/
 
 
 		/*
@@ -365,7 +416,6 @@ implements Serializable {
     	boolean result = true;
 
        	List<Ingredient> ingredientList = aMeal.getIngredientList();
-        
         Iterator<Ingredient> i = ingredientList.iterator();
         
         while (i.hasNext()) {
@@ -396,10 +446,9 @@ implements Serializable {
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();    	
      	String nameOfMeal = hotMeal.getMealName();
-        //boolean isAmountAV = checkAmountAvailable(hotMeal);
+        boolean isAmountAV = checkAmountAvailable(hotMeal);
         
-        //if (isAmountAV) {
-        	
+        if (isAmountAV) {
 	        Iterator<Ingredient> i = ingredientList.iterator();
 	        
 	        while (i.hasNext()) {
@@ -411,18 +460,29 @@ implements Serializable {
 		            	
 		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 		        //double ingredientAvailable = getFreshFood(ingredientAR);
-                
 		        inv.retrieveAmountResource(ingredientAR, amount);
 	         
 	        } // end of while
 	
 	       	int mealQuality = getBestCookSkill();
-	        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-
-	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, time);
-	        //logger.info("New meal : " + meal.getName());    
+	        MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	        //int id = 0;
+	        //if (cookedMeals == null) 
+	        //	id = 0;
+	        //else id = cookedMeals.size();
+	        //int size = cookedMeals.size();
+	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration);
+	        //System.out.println("cooking.java : A new cookedMeal added : " + meal.getName());    
 	    	cookedMeals.add(meal);
-	  	        
+	    	mealCounterPerSol++;
+
+	        //System.out.println("cooking.java : cookedMeal's size is " + meal.getName());    
+
+	    	// 2014-12-08 Added multimaps
+	    	qualityMap.put(nameOfMeal, mealQuality);
+	    	timeMap.put(nameOfMeal, expiration);
+
+	    	
 	  	    if (logger.isLoggable(Level.FINEST)) {
 	  	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	  	        			" has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
@@ -430,10 +490,8 @@ implements Serializable {
 	        //logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
   	        //			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
 	        //logger.info(" BestMealQuality : " + getBestMealQuality());      
-	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
-	  	        
-        //}
-        
+	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
+        }
     }
     
     // 2014-12-01 Added getCookedMealList()
@@ -487,42 +545,59 @@ implements Serializable {
     // 2014-10-08: Currently converting each unit of expired meal into 0.5 kg of packed food 
     // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
-     boolean hasAMeal = hasCookedMeal(); 
-     //logger.info(" hasAMeal : "+ hasAMeal);
-     if ( hasAMeal ) {
-         int newNumOfCookedMeal = cookedMeals.size();
-         //if ( numOfCookedMealCache != newNumOfCookedMeal)
-         //	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
-         Iterator<CookedMeal> i = cookedMeals.iterator();
-         while (i.hasNext()) {
-            CookedMeal meal = i.next();
-            //logger.info("CookedMeal : " + meal.getName());
-            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-             // Move expired meals back to food again (refrigerate leftovers).
-             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-                try {
-                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
-                    double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-                    double foodCapacity = inv.getAmountResourceRemainingCapacity(
-                            food, false, false);
-                    if (foodAmount > foodCapacity) 
-                    	foodAmount = foodCapacity;
-                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
-                			// Turned 1 cooked meal unit into 1 food unit
-                    foodAmount = Math.round( foodAmount * 1000.0) / 1000.0;
-                    inv.storeAmountResource(food, foodAmount , false);
-                    i.remove();
 
-                    if(logger.isLoggable(Level.FINEST)) {
-                        logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
-                                getBuilding().getBuildingManager().getSettlement().getName());
-                    }
-                }
-                catch (Exception e) {}
-            }
-        }
-         numOfCookedMealCache = newNumOfCookedMeal;
+    	boolean hasAMeal = hasCookedMeal(); 
+	     //logger.info(" hasAMeal : "+ hasAMeal);
+	     if ( hasAMeal ) {
+	         int newNumOfCookedMeal = cookedMeals.size();
+	         //if ( numOfCookedMealCache != newNumOfCookedMeal)
+	         //	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+	         Iterator<CookedMeal> i = cookedMeals.iterator();
+	         while (i.hasNext()) {
+	            CookedMeal meal = i.next();
+	            //logger.info("CookedMeal : " + meal.getName());
+	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	             
+	            // Added 2014-12-08 : Sanity check for the passing of each day
+	            int newDay = currentTime.getSolOfMonth();
+	            if ( newDay != dayCache) {
+	            	// reset back to zero at the beginning of a new day.
+	            	System.out.println(" Cooking.java timePassing() Total # of meals made today : " + mealCounterPerSol);
+	            	mealCounterPerSol = 0;
+	            	if (!timeMap.isEmpty()) {
+	    				timeMap.clear();
+	    			}
+	    			if (!qualityMap.isEmpty()) {
+	    				qualityMap.clear();	
+	    			}
+	            	dayCache = newDay;
+	            }
+	         
+	            // Move expired meals back to food again (refrigerate leftovers).
+	             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
+	                try {
+	                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+	                    AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
+	                    double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
+	                    double foodCapacity = inv.getAmountResourceRemainingCapacity(
+	                            food, false, false);
+	                    if (foodAmount > foodCapacity) 
+	                    	foodAmount = foodCapacity;
+	                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
+	                			// Turned 1 cooked meal unit into 1 food unit
+	                    foodAmount = Math.round( foodAmount * 1000.0) / 1000.0;
+	                    inv.storeAmountResource(food, foodAmount , false);
+	                    i.remove();
+	 
+	                    if(logger.isLoggable(Level.FINEST)) {
+	                        logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
+	                                getBuilding().getBuildingManager().getSettlement().getName());
+	                    }
+	                }
+	                catch (Exception e) {}
+	            }
+	        }
+	         numOfCookedMealCache = newNumOfCookedMeal;
     	}
     }
 

@@ -128,7 +128,7 @@ implements Serializable {
 					aMeal.addIngredient(ingredientId, ingredientName, proportion);	
 				}
 			
-				System.out.println("meal name is " + aMeal.getMealName());
+				//System.out.println("meal name is " + aMeal.getMealName());
 				mealList.add(aMeal);
 			}
 			
