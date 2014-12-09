@@ -179,8 +179,8 @@ public class NotificationMenu implements ActionListener, MenuListener {
 				showMedical = true;
 			else 
 				showMedical = false;
-			System.out.println("selectedItem ==  medicalMenuItem");
-			System.out.println("showMedical is " + showMedical);
+			//System.out.println("selectedItem ==  medicalMenuItem");
+			//System.out.println("showMedical is " + showMedical);
 		}
 			
 		if (selectedItem ==  malfunctionMenuItem) {
@@ -188,8 +188,8 @@ public class NotificationMenu implements ActionListener, MenuListener {
 				showMalfunction = true;
 			else 
 				showMalfunction = false;		
-			System.out.println("selectedItem ==  malfunctionMenuItem");
-			System.out.println("showMalfunction is " + showMalfunction);			
+			//System.out.println("selectedItem ==  malfunctionMenuItem");
+			//System.out.println("showMalfunction is " + showMalfunction);			
 		}
 		
 		

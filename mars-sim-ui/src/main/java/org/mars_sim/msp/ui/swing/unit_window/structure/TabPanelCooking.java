@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2014-12-07
+ * @version 3.07 2014-12-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -11,9 +11,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
@@ -34,8 +38,12 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.ReadyMeal;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.ReadyMealMenu;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+
 
 /** 
  * This is a tab panel for displaying a settlement's Food Menu.
@@ -47,17 +55,37 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
+    //private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
 	// Data Members
-    private ReadyMealMenu mealMenu;
-    // Cache
-	//private int numMealsCache;
-	//private int mealQualityCache;
-	private CookingTableModel cookingTableModel;
+private CookingTableModel cookingTableModel;
+/*
+	private Multiset<String> servingsSet;
+	private Multiset<String> allServingsSet;
 	
+	//private Multimap<String, Integer> bestQualityMap;
+	private Multimap<String, Integer> qualityMap;
+	private Multimap<String, Integer> allQualityMap;
+	
+	private Multimap<String, MarsClock> timeMap;	
+	private Multimap<String, MarsClock> allTimeMap;
+	
+	private List<Multimap<String, Integer>> qualityMapList;
+	private List<Multimap<String, MarsClock>> timeMapList;	
+	
+	private Collection<Map.Entry<String,Integer>> allQualityMapE ;
+	private Collection<Entry<String, MarsClock>> allTimeMapE;
+	*/
+	private int numRow = 0;
+	private int dayCache = 1;
+	private MarsClock expirationCache = null;
+	
+	private Set<String> nameSet;
+	private List<String> nameList;
+	private List<Integer> servingsList = new ArrayList<Integer>();
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -72,15 +100,10 @@ extends TabPanel {
 			Msg.getString("TabPanelCooking.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-		
-		//Cooking kitchen = null;
+
 		Settlement settlement = (Settlement) unit;
 		
-		// create a new mealMenu for this settlement
-		mealMenu = new ReadyMealMenu();
-
-		updateMealMenu(settlement);
-
+		
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel cookingLabelPanel = new JPanel(new GridLayout(2,1,0,0));
@@ -90,7 +113,6 @@ extends TabPanel {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		cookingLabelPanel.add(titleLabel);
-
 		
 		// Prepare cooking label.
 		JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
@@ -103,17 +125,6 @@ extends TabPanel {
 		cookingScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		centerContentPanel.add(cookingScrollPane,BorderLayout.CENTER);
 
-		// Prepare outer table panel.
-		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//cookingScrollPane.setViewportView(outerTablePanel);
-
-		// Prepare cooking table panel.
-		//JPanel cookingTablePanel = new JPanel(new BorderLayout(0, 0));
-		//outerTablePanel.add(cookingTablePanel);
-		//cookingScrollPanel.setViewportView(cookingTablePanel);
-
-		
 		// Prepare cooking table model.
 		cookingTableModel = new CookingTableModel(settlement);
 
@@ -122,7 +133,6 @@ extends TabPanel {
 		cookingScrollPane.setViewportView(cookingTable);
 		cookingTable.setCellSelectionEnabled(false);
 		cookingTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		//cookingTable.getColumnModel().getColumn(0).setPreferredWidth(15);
 		cookingTable.getColumnModel().getColumn(0).setPreferredWidth(140);
 		cookingTable.getColumnModel().getColumn(1).setPreferredWidth(47);
 		cookingTable.getColumnModel().getColumn(2).setPreferredWidth(45);
@@ -131,100 +141,24 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		cookingTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		cookingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		//cookingTablePanel.add(cookingTable.getTableHeader(), BorderLayout.NORTH);
-		//cookingTablePanel.add(cookingTable, BorderLayout.CENTER);
-	}
 
-	public void updateMealMenu(Settlement settlement) {
-			
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-		
-        while (i.hasNext()) { 		// for each building's kitchen in the settlement
-            Building building = i.next();
-            
-        	if (building.hasFunction(BuildingFunction.COOKING)) {
-        		
-				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-				
-				List<CookedMeal> originalCookedMealList = kitchen.getCookedMealList();
-	    		// 2014-12-07 Made a copy of the originalCookedMealList
-				// using the given copy constructor
-				List<CookedMeal> copyCookedMealList = new ArrayList<CookedMeal>(originalCookedMealList);
-	    		
-	    		Iterator<CookedMeal> j = copyCookedMealList.iterator();
-	    		
-	    			while (j.hasNext()) { 		// for each CookedMeal in a kitchen
-	    				CookedMeal nowMeal = j.next();
-	    	    		String nowName = nowMeal.getName();
-	    		    	int nowServings = kitchen.getMealServings(copyCookedMealList, nowMeal);
-	    	    		//int numKitchens;
-	    	    		int nowQuality = nowMeal.getQuality();
-	    	    		MarsClock nowExpiration = nowMeal.getExpirationTime();
-	    	    		int size = mealMenu.size();
-	    	    		//logger.info(" updateMealMenu() : size was " + size);
-	    	    		
-	    	    		if (size == 0) // size = 0 signify the beginning of each day
-	    	    						// when # of mealMenu is reset to zero.
-	    	    		  	mealMenu.add(nowName, nowServings, nowQuality, nowExpiration);
-	    	    		else {
-	    	    			List<ReadyMeal> readyMealList = mealMenu.getReadyMealList();
-	    	    			Iterator<ReadyMeal> k = readyMealList.iterator();
-	    	    			
-	    	    			while (k.hasNext()) {		// for each readyMeal on the list
-	    	    				ReadyMeal existingMeal = k.next();
-	    	    				String existingMealName = existingMeal.getName();
-	    	    				MarsClock existingExpiration = existingMeal.getExpiration();
-	    	    				if (nowName == existingMealName) 
-	    	    					//if ( nowExpiration != existingExpiration) 
-	    	    						// if identical meal, do nothing
-	    	    				    		mealMenu.change(nowName, nowServings, nowQuality);
-	    	    				else mealMenu.add(nowName, nowServings, nowQuality, nowExpiration);
-	    	    			} // end of while (k.hasNext()) {
-	    	    		}
-	    	    		
-	    	    		//int size2 = mealMenu.size();
-	    	    		//logger.info(" updateMealMenu() : size is now " + size2);
-	    			}	
-	        	}  	
-    		} // end of while (i.hasNext()) {
-        //return mealMenu;
+	
 	}
 	
+    
 	
 	/**
 	 * Updates the info on this panel.
 	 */
+		// Called by TabPanel whenever the Cooking tab is opened
 	public void update() {
-	
-		List<ReadyMeal> readyMealList = mealMenu.getReadyMealList();
-		Iterator<ReadyMeal> i = readyMealList.iterator();
-		
-		//logger.info(" update() : size was " + readyMealList.size());
-		while (i.hasNext()) {		// for each readyMeal on the list
-			
-			ReadyMeal existingMeal = i.next();
-           //logger.info(" Meal : " + meal.getName());
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			int oldDayCache = existingMeal.getExpiration().getSolOfMonth();
-			int newDayCache  = currentTime.getSolOfMonth();
-
-			try { 
-				if (currentTime.getSolOfMonth() != existingMeal.getExpiration().getSolOfMonth())	
-					// if a meal is expired
-					//logger.info(" Today is sol " + newDayCache);
-					//logger.info(" The meal was made on sol " + oldDayCache);
-					oldDayCache = newDayCache;
-					
-					i.remove();
-					//existingMeal.setNumServings(0);
-					
-           	} catch (Exception e) {}
-		}
-		//logger.info(" update() : size is now " + readyMealList.size());
+		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		cookingTableModel.update();
 	}
 
+	
+	
 	/** 
 	 * Internal class used as model for the cooking table.
 	 */
@@ -234,24 +168,45 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private Settlement settlement;
-		//private ReadyMealMenu updatedMealMenu;
 		//private java.util.List<Building> buildings;
 		//private ImageIcon dotRed; // ingredients missing
 		//private ImageIcon dotYellow; // meal not available
 		//private ImageIcon dotGreen; // meal available
 
+		//private Multiset<String> servingsSet;
+		private Multiset<String> allServingsSet;
+		
+		private Multimap<String, Integer> qualityMap;
+		private Multimap<String, Integer> allQualityMap;
+		
+		private Multimap<String, MarsClock> timeMap;	
+		private Multimap<String, MarsClock> allTimeMap;
+			
+		private Collection<Map.Entry<String,Integer>> allQualityMapE ;
+		private Collection<Entry<String, MarsClock>> allTimeMapE;
+		
+		
+		//private List<Multimap<String, Integer>> qualityMapList;
+		//private List<Multimap<String, MarsClock>> timeMapList;	
+	
 		private CookingTableModel(Settlement settlement) {
-		//, ReadyMealMenu updatedMealMenu) {
 			this.settlement = settlement;
-			//this.updatedMealMenu = updatedMealMenu;
-			//buildings = settlement.getBuildingManager().getBuildings();
+	
 			//dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			//dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			//dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
+		
+			//multimap = Multimaps.synchronizedMultimap(
+			//       HashMultimap.<K, V>create());
+			allServingsSet = HashMultiset.create();
+			allQualityMap = ArrayListMultimap.create();
+			allTimeMap = ArrayListMultimap.create();
+
 		}
 
 		public int getRowCount() {
-			return mealMenu.size();
+			return numRow;
+
 		}
 
 		public int getColumnCount() {
@@ -290,32 +245,170 @@ extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			//boolean haveAllIngredients = false;
+			//System.out.println("entering getValueAt()");
+			Object result = null;
 			/* if (column == 0) {
 				if (haveAllIngredients) 
 					return dotGreen;
 				else return dotRed;
 			} else */
+
+	    	
+			String name = nameList.get(row);
+
 			if (column == 0) 
-				return mealMenu.getMealName(row);
+				result = name;
 			
-			else if (column == 1) 
-				return mealMenu.getNumServings(row);
-			
-			else if (column == 2) 
-				return mealMenu.getBestQuality(row);
-			
-			else if (column == 3) 
-				return mealMenu.getWorstQuality(row);
-			
-			else return null;
+			else if (column == 1) {		
+			    // use Multimap.get(key) returns a view of the values associated with the specified key				
+				//int numServings = servingsList.addAll(timeMap.get(name));	
+		        int numServings = allServingsSet.count(name);
+		        //System.out.println(" numServings is "+ numServings);
+				result = numServings;
+				//allServingsSet.clear();
+			}
+			else if (column == 2) {
+				int best = 0;
+				int value = 0;
+				for (Map.Entry<String, Integer> entry : allQualityMapE) {
+				    String key = entry.getKey();
+				    if (name == key) {
+				    	value = entry.getValue();
+				    	if (value > best )
+				    		best = value;
+				    }
+				    result = best; 
+				    //allQualityMap.clear();
+				    	//System.out.println(" best is " +best);
+				}
+			}
+			else if (column == 3) {
+				int worst = 10;
+				int value = 0;
+				for (Map.Entry<String, Integer> entry : allQualityMapE) {
+				    String key = entry.getKey();
+				    if (name == key) {
+				    	value = entry.getValue();
+				    	
+				    	if (value < worst )
+				    		worst = value;
+				    }
+				    	result = worst;  
+				    	//allTimeMap.clear();
+				    	//System.out.println(" worst is " + worst);
+				}
+			}
+			else result = null;
+			return result;
 		}
 
 		// TODO: decide in what situation it needs update and at what time ?
 		// update every second or after each meal or once a day ?
 		public void update() {
-			updateMealMenu(settlement);
+			//System.out.println("CookingTableModel : entering update()");
+			cleanUpTable();
+			getMultimap();
 			fireTableDataChanged();
+			/*
+			if (!allTimeMap.isEmpty()) {
+				allTimeMap.clear();
+				allTimeMapE.clear();
+			}
+			if (!allQualityMap.isEmpty()) {
+				allQualityMap.clear();
+				allQualityMapE.clear();
+			}
+			if (!allServingsSet.isEmpty()) 
+				allServingsSet.clear();
+			System.out.println("CookingTableModel : update() : deleted all maps and sets");
+		*/
+		}
+		
+		public void getMultimap() {
+			/*
+			Multiset<String> allServingsSet;
+			
+			Multimap<String, Integer> qualityMap;
+			Multimap<String, Integer> allQualityMap = null;
+			
+			Multimap<String, MarsClock> timeMap;	
+			Multimap<String, MarsClock> allTimeMap = null;
+				
+			Collection<Map.Entry<String,Integer>> allQualityMapE ;
+			Collection<Entry<String, MarsClock>> allTimeMapE;
+			*/
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+			
+	        while (i.hasNext()) { 		// for each building's kitchen in the settlement
+
+	        	Building building = i.next();
+	    		//System.out.println("Building is " + building.getNickName());
+	            
+	        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
+					Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);			
+					
+					qualityMap = kitchen.getQualityMap();
+					timeMap = kitchen.getTimeMap();
+					
+					allQualityMap.putAll(qualityMap);
+					allTimeMap.putAll(timeMap);
+	        	}
+	        }
+	
+	    	allQualityMapE = allQualityMap.entries();
+	    	allTimeMapE = allTimeMap.entries();
+			allServingsSet = allQualityMap.keys();
+	    	
+	    	numRow = allTimeMap.keySet().size();
+			//System.out.println(" numRow : " + numRow);
+	    	nameSet = allTimeMap.keySet(); 
+	        //nameSet = servingsSet.elementSet(); // or using servingsSet
+	    	nameList = new ArrayList<String>(nameSet);
+	    	
+	    	//nameList.addAll(listOfNames);
+	    	//System.out.println("nameSet's size : " + nameSet.size());
+		}
+
+		/**
+		 * Removes all entries on all maps at the beginning of each new sol.
+		 */
+		public void cleanUpTable() {
+			// 1. find any expired meals  
+			// 2. remove any expired meals from all 3 maps
+			// 3. call cookingTableModel.update()
+		    
+			// TODO: optimize it so that it doesn't have to check it on every update
+			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			int currentDay  = currentTime.getSolOfMonth();
+			//logger.info
+			//System.out.println("cleanUpTable() : Today is sol " + currentDay);
+		
+			if (dayCache != currentDay) {
+				if (!allTimeMap.isEmpty()) {
+					allTimeMap.clear();
+					allTimeMapE.clear();
+				}
+				if (!allQualityMap.isEmpty()) {
+					allQualityMap.clear();
+					allQualityMapE.clear();
+				}
+				if (!allServingsSet.isEmpty()) 
+					allServingsSet.clear();
+				//System.out.println("cleanUpTable() : all maps deleted");
+				/*
+				// TODO: is it better to use .remove() to remove entries and when?
+					timeMap.remove(key, value);
+					timeMapE.remove(key);
+					bestQualityMap.remove(key, value);
+					bestQualityMapE.remove(key);
+					worstQualityMap.remove(key, value);
+					worstQualityMapE.remove(key);	
+					servingsSet.remove(key);
+		*/
+				dayCache = currentDay;
+				
+			}
+			
 		}
 	}
 }

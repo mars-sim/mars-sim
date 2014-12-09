@@ -37,7 +37,7 @@
 		</meal>				
 		
 		
-		<meal id="3" name="Roasted Garlic and Potato Salad" oil="0.05" salt="0.02" category="meal">
+		<meal id="3" name="Potato Salad" oil="0.05" salt="0.02" category="meal">
 		
 			<ingredient id="0" name="Potato" proportion="0.5"/>
 
@@ -45,7 +45,7 @@
 			<ingredient id="1" name="Lettuce" proportion="0.4"/>
 
 
-			<ingredient id="2" name="Garlic" proportion="0.1"/>
+			<ingredient id="2" name="Green Onion" proportion="0.1"/>
 
 		</meal>		
 	      	
@@ -62,7 +62,7 @@
 		</meal>		
 		
 	      	
-		<meal id="5" name="Veggie Delight with French Fries" oil="0.05" salt="0.02" category="meal">
+		<meal id="5" name="Veggie Burger with French Fries" oil="0.05" salt="0.02" category="meal">
 		
 			<ingredient id="0" name="Veggie Patty" proportion="0.3"/>
 
@@ -101,7 +101,7 @@
 		</meal>		
 		
 		
-		<meal id="7" name="Veggie Sandwich and Peas" oil="0.05" salt="0.02" category="breakfast">
+		<meal id="7" name="Peas and Veggie Sandwich" oil="0.05" salt="0.02" category="breakfast">
 		
 			<ingredient id="0" name="Veggie Patty" proportion="0.4"/>
 
@@ -124,7 +124,7 @@
 		</meal>		
 		
 		
-		<meal id="8" name="Braised Celery, Carrot and Roasted Peanuts" oil="0.05" salt="0.02" category="breakfast">
+		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.02" category="breakfast">
 		
 			<ingredient id="0" name="Celery" proportion="0.4"/>
 
