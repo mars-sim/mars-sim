@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NotificationWindow.java
- * @version 3.07 2014-12-05
+ * @version 3.07 2014-12-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.notification;
@@ -19,9 +19,9 @@ import org.mars_sim.msp.ui.swing.notification.TelegraphPosition;
 import org.mars_sim.msp.ui.swing.notification.TelegraphQueue;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -64,8 +64,8 @@ public class NotificationWindow extends JDialog {
 	private TelegraphQueue telegraphQueue;
 	private boolean willNotify= false;
 	//private String message = "";		
-	private String matchedWord1 = "fixed";
-	private String matchedWord2 = "recovering";
+//	private String matchedWord1 = "fixed";
+//	private String matchedWord2 = "recovering";
 	private String oldMsgCache = "";
 	private boolean isSettingChange = false;
 	
@@ -227,32 +227,32 @@ public class NotificationWindow extends JDialog {
 		willNotify = false;
 		
 		if ( message != null && message != "" ) {
-			//System.out.println("validateMsg() : message is "+ message);
-			if ( message.toLowerCase().contains(matchedWord1.toLowerCase()) ||
-					message.toLowerCase().contains(matchedWord2.toLowerCase())	) {
-					willNotify = false; // do not send 
-				}
-			else {
-				// first reset willNotify to false
-				willNotify = false;
 
-				HistoricalEventCategory category = event.getCategory();
+		    HistoricalEventCategory category = event.getCategory();
 
-				if (category.equals(HistoricalEventCategory.MALFUNCTION)
-						&& showMalfunction ) {
-					header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
-					willNotify = true;
-				}
-				
-				else if (category.equals(HistoricalEventCategory.MEDICAL)
-						&& showMedical )	{
-					header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
-					willNotify = true;
-				}
-	
-			}
-	
+		    if (category.equals(HistoricalEventCategory.MALFUNCTION)
+		            && showMalfunction ) {
+		        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+
+		        // Only display notification window when malfunction has occurred, not when fixed.
+		        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+		            willNotify = true;
+		        }
+		    }
+
+		    else if (category.equals(HistoricalEventCategory.MEDICAL)
+		            && showMedical )	{
+
+		        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+
+		        // Only display notification windows when medical problems are starting or person has died.
+		        if ((event.getType() == EventType.MEDICAL_STARTS) || 
+		                (event.getType() == EventType.MEDICAL_DEATH)) {
+		            willNotify = true;
+		        }
+		    }
 		}
+		
 		if (willNotify) sendAlert(event, message, header);
 	}
 	
@@ -296,6 +296,9 @@ public class NotificationWindow extends JDialog {
 			msg = msg.replaceAll("a GENERATOR", "GENERATOR");
 		}
 		
+		// Remove any white space at the start or end of message.
+		msg = msg.trim();
+		
 		return msg;
 	}
 	
@@ -303,198 +306,266 @@ public class NotificationWindow extends JDialog {
 	public String generateMsg(HistoricalEvent event, String msg)  {
 		//count++;
 
-		String name = "";
+//		String name = "";
 		//String category = "";
-		String buildingName = "";
-		String settlementName = "";
-		String equipmentName = "";
-		String vehicleName = "";
+//		String buildingName = "";
+//		String settlementName = "";
+//		String equipmentName = "";
+//		String vehicleName = "";
 		String message = parseMsg(msg);
-		String personName = "";
+//		String personName = "";
 		String locationName = "";
-		String unitName = "";
+		String action = "";
+//		String unitName = "";
 	
 		if (willNotify == true) {
 			// if the condition is true,
 			//category = category + event.getCategory();		
 			Object source = event.getSource();
-			try {
-			if (source instanceof Person) {
-				Person p =((Person) source);
-				personName = p.getName();
-				Unit container = p.getContainerUnit();
-				// test if the person has a valid container
-				if (container == null) {
-	                locationName = "outside";
-	                logger.info("Someone had an accident : " +
-	                		personName +
-							" had " + message + " " +
-							locationName);
-	    		 	message = formatMsg(message);
-	                message = personName +
-							" had " + message + " " +
-							locationName ; 
-				} // for a person
-	            else if (container instanceof Settlement) {
-	                settlementName = p.getSettlement().getName();
-	                BuildingManager bm = p.getSettlement().getBuildingManager();
-	                buildingName = bm.getBuilding(p).getNickName();
-	                logger.info("Someone had an accident : " +
-	                		personName +
-							" had " + message + 
-							" at " + buildingName + 
-							" in " + settlementName);
-	    		 	message = formatMsg(message);
-	                message = personName +
-							" had " + message + 
-							" at " + buildingName + 
-							" in " + settlementName;
-	            } // for a person
-	            else if (container instanceof Vehicle) {
-	                vehicleName = p.getVehicle().getName();
-	                logger.info("Someone had an accident : " 
-	                		+ personName +
-							" had " + message + 
-							" in " + vehicleName);
-	    		 	message = formatMsg(message);
-	                message = personName +
-							" had " + message + 
-							" in " + vehicleName ;
-				} // for a person
-				
-		}// end of Person
-		else if (source instanceof Equipment) {
-				Equipment e = ((Equipment) source);
-				
-				try { // test if the equipment has a name
-					equipmentName = (String)e.getName();
-					
-					if (!equipmentName.equals(null)) {
-					
-						try { // yes the equipment does have a name
-						  // test if the equipment has a location container
-							Unit u = e.getContainerUnit();
-							unitName = u.getName();
-							// yes the equipment does have a location container
-							// TODO: in future test if the equipment belongs to a person
-							// Person p = e.getUnitManager().getPerson();
-							logger.info("Equipment malfunction : " + equipmentName +
-									" had " + message + 
-									" in " + unitName);
-						 	message = formatMsg(message);
-							message = equipmentName + 
-									" had " + message + 
-									" in " + unitName ;
-						} catch (Exception e1) { 
-							// No, the equipment does NOT have a location container
-							System.err.println("Exception Caught Successfully: equipment's container is" + e1.getMessage());
-							//e1.printStackTrace();
-							unitName = "outside";
-							// TODO: in future test if the equipment belongs to a person
-							// Person p = e.getUnitManager().getPerson();
-							logger.info("Equipment malfunction : " + equipmentName +
-									" had " + message + " " +
-									unitName);
-						 	message = formatMsg(message);
-							message = equipmentName + 
-									" had " + message + 
-									" " + unitName ;	
-							} // end of 2nd try for Equipment
-					} // end of if  (equipmentName != "null")
-
-				} catch (Exception e1) { 
-					// No, the equipment does NOT have a name
-					System.err.println("Exception Caught Successfully: equipment's name is " + e1.getMessage());
-					//e1.printStackTrace();
-					equipmentName = "";
-					try { // test if the equipment has a location/person container
-						Unit u = e.getContainerUnit();
-						unitName = u.getName();
-						// yes the equipment does have a location/person container
-						logger.info("Equipment malfunction : just had " + message + 
-								" in " + unitName);
-					 	message = formatMsg(message);
-						message = "Just had " + message + 
-								" in " + unitName;
-					} catch (Exception e2) { 
-						// No, the equipment does NOT have a location container
-						System.err.println("Exception Caught Successfully : equipment's container is" + e2.getMessage());
-						//e1.printStackTrace();
-						unitName = "outside";
-						logger.info("Equipment malfunction : just had " + message + 
-							unitName);
-					 	message = formatMsg(message);
-						message = "Just had " + message + 
-							" " + unitName;
-					} // end of test if the equipment has a location/person container
-				} // end of catch for No the equipment does NOT have a name
-		} // end of Equipment
-		else if (source instanceof Vehicle) {
-				Vehicle v =((Vehicle) source);
-				vehicleName = v.getName();		
-				try {  // test if the Vehicle has a location container
-					Unit u = v.getTopContainerUnit();
-					//if (!u.equals(null))	
-					unitName = u.getName();
-					
-					if (!unitName.equals(null)) {
-					// Yes, the Vehicle does have a location container
-					logger.info("Vehicle malfunction : " + vehicleName +
-							" had " + message + 
-							 " at " + unitName + "\n");
-				 	message = formatMsg(message);
-					message = vehicleName + 
-							 " had " + message + 
-							 " at " + unitName ;
-					}
-				} catch (Exception e) { 
-					// No, the Vehicle does NOT have a location container
-					System.err.println("Exception Caught Successfully : vehicle's container is " + e.getMessage());
-					//e.printStackTrace();
-				 	unitName = "outside";
-				 	logger.info("Vehicle malfunction : " + vehicleName +
-							" had " + message + " " +
-							 unitName + "\n");
-				 	message = formatMsg(message);
-				 	message = vehicleName + 
-							 " had " + message + 
-							 "  " + unitName;
-				}
-				
-		} // end of Vehicle
-		else if (source instanceof Building) {
-				Building b = ((Building) source);
-				buildingName = b.getNickName();
-				//System.out.println("buildingName is " + buildingName);
-				Settlement s = b.getBuildingManager().getSettlement();
-				settlementName = s.getName();
-			 	logger.info("Building malfunction : " + buildingName + 
-						" had " + message + 
-						" in " + settlementName) ;
-			 	message = formatMsg(message);
-				message = buildingName + 
-						" had " + message + 
-						" in " + settlementName ;
-			} // end of Building
-		} catch (Exception e) {
-				//e.printStackTrace();
-				System.err.println("Exception Caught. Reasons: " + e.getMessage());
-		};
+			
+			if (event.getType() == EventType.MEDICAL_DEATH) {
+			    action = "died from";
+			}
+			else {
+			    action = "had";
+			}
+			
+			StringBuffer locationBuff = new StringBuffer("");
+			
+			if (source instanceof Unit) {
+			    Unit unit = (Unit) source;
+			    
+			    // Loop through the hierarchy of container units for this source unit.
+			    Unit tempUnit = unit;
+			    Unit containerUnit = unit.getContainerUnit();
+			    while (containerUnit != null) {
+			        
+			        if (containerUnit instanceof Person) {
+			            locationBuff.append(" carried by " + containerUnit.getName());
+			        }
+			        else if (containerUnit instanceof Vehicle) {
+			            locationBuff.append(" in " + containerUnit.getName());
+			        }
+			        else if (containerUnit instanceof Settlement) {
+			            
+			            // Determine the building the source is in, if a person or vehicle.
+			            Building building = null;
+			            if (tempUnit instanceof Person) {
+			                building = BuildingManager.getBuilding((Person) tempUnit);
+			            }
+			            else if (tempUnit instanceof Vehicle) {
+			                building = BuildingManager.getBuilding((Vehicle) tempUnit);
+			            }
+			            
+			            if (building != null) {
+			                locationBuff.append(" at " + building.getNickName() + " in " + containerUnit.getName());
+			            }
+			            else {
+			                locationBuff.append(" in " + containerUnit.getName());
+			            }
+			        }
+			        
+			        tempUnit = containerUnit;
+			        containerUnit = tempUnit.getContainerUnit();
+			    }
+			    
+			    // If top container unit is a person, add that he/she is outside.
+			    Unit topContainerUnit = unit.getTopContainerUnit();
+			    if (((topContainerUnit == null) && (unit instanceof Person)) || (topContainerUnit instanceof Person)) {
+			        locationBuff.append(" outside");
+			    }
+			    
+			    locationName = locationBuff.toString().trim();
+			    
+			    message = unit.getName() + " " + action + " " + formatMsg(message) + " " + locationName;
+			}
+			else if (source instanceof Building) {
+			    
+			    Building building = (Building) source;
+			    Settlement settlement = building.getBuildingManager().getSettlement();
+			    locationName = "in " + settlement.getName();
+			    
+			    message = building.getNickName() + " " + action + " " + formatMsg(message) + " " + locationName;
+			}
+			
+			
+//			try {
+//			if (source instanceof Person) {
+//				Person p =((Person) source);
+//				personName = p.getName();
+//				Unit container = p.getContainerUnit();
+//				// test if the person has a valid container
+//				if (container == null) {
+//	                locationName = "outside";
+//	                logger.info("Someone had an accident : " +
+//	                		personName +
+//							" had " + message + " " +
+//							locationName);
+//	    		 	message = formatMsg(message);
+//	                message = personName +
+//							" had " + message + " " +
+//							locationName ; 
+//				} // for a person
+//	            else if (container instanceof Settlement) {
+//	                settlementName = p.getSettlement().getName();
+//	                BuildingManager bm = p.getSettlement().getBuildingManager();
+//	                buildingName = bm.getBuilding(p).getNickName();
+//	                logger.info("Someone had an accident : " +
+//	                		personName +
+//							" had " + message + 
+//							" at " + buildingName + 
+//							" in " + settlementName);
+//	    		 	message = formatMsg(message);
+//	                message = personName +
+//							" had " + message + 
+//							" at " + buildingName + 
+//							" in " + settlementName;
+//	            } // for a person
+//	            else if (container instanceof Vehicle) {
+//	                vehicleName = p.getVehicle().getName();
+//	                logger.info("Someone had an accident : " 
+//	                		+ personName +
+//							" had " + message + 
+//							" in " + vehicleName);
+//	    		 	message = formatMsg(message);
+//	                message = personName +
+//							" had " + message + 
+//							" in " + vehicleName ;
+//				} // for a person
+//				
+//		}// end of Person
+//		else if (source instanceof Equipment) {
+//				Equipment e = ((Equipment) source);
+//				
+//				try { // test if the equipment has a name
+//					equipmentName = (String)e.getName();
+//					
+//					if (!equipmentName.equals(null)) {
+//					
+//						try { // yes the equipment does have a name
+//						  // test if the equipment has a location container
+//							Unit u = e.getContainerUnit();
+//							unitName = u.getName();
+//							// yes the equipment does have a location container
+//							// TODO: in future test if the equipment belongs to a person
+//							// Person p = e.getUnitManager().getPerson();
+//							logger.info("Equipment malfunction : " + equipmentName +
+//									" had " + message + 
+//									" in " + unitName);
+//						 	message = formatMsg(message);
+//							message = equipmentName + 
+//									" had " + message + 
+//									" in " + unitName ;
+//						} catch (Exception e1) { 
+//							// No, the equipment does NOT have a location container
+//							System.err.println("Exception Caught Successfully: equipment's container is" + e1.getMessage());
+//							//e1.printStackTrace();
+//							unitName = "outside";
+//							// TODO: in future test if the equipment belongs to a person
+//							// Person p = e.getUnitManager().getPerson();
+//							logger.info("Equipment malfunction : " + equipmentName +
+//									" had " + message + " " +
+//									unitName);
+//						 	message = formatMsg(message);
+//							message = equipmentName + 
+//									" had " + message + 
+//									" " + unitName ;	
+//							} // end of 2nd try for Equipment
+//					} // end of if  (equipmentName != "null")
+//
+//				} catch (Exception e1) { 
+//					// No, the equipment does NOT have a name
+//					System.err.println("Exception Caught Successfully: equipment's name is " + e1.getMessage());
+//					//e1.printStackTrace();
+//					equipmentName = "";
+//					try { // test if the equipment has a location/person container
+//						Unit u = e.getContainerUnit();
+//						unitName = u.getName();
+//						// yes the equipment does have a location/person container
+//						logger.info("Equipment malfunction : just had " + message + 
+//								" in " + unitName);
+//					 	message = formatMsg(message);
+//						message = "Just had " + message + 
+//								" in " + unitName;
+//					} catch (Exception e2) { 
+//						// No, the equipment does NOT have a location container
+//						System.err.println("Exception Caught Successfully : equipment's container is" + e2.getMessage());
+//						//e1.printStackTrace();
+//						unitName = "outside";
+//						logger.info("Equipment malfunction : just had " + message + 
+//							unitName);
+//					 	message = formatMsg(message);
+//						message = "Just had " + message + 
+//							" " + unitName;
+//					} // end of test if the equipment has a location/person container
+//				} // end of catch for No the equipment does NOT have a name
+//		} // end of Equipment
+//		else if (source instanceof Vehicle) {
+//				Vehicle v =((Vehicle) source);
+//				vehicleName = v.getName();		
+//				try {  // test if the Vehicle has a location container
+//					Unit u = v.getTopContainerUnit();
+//					//if (!u.equals(null))	
+//					unitName = u.getName();
+//					
+//					if (!unitName.equals(null)) {
+//					// Yes, the Vehicle does have a location container
+//					logger.info("Vehicle malfunction : " + vehicleName +
+//							" had " + message + 
+//							 " at " + unitName + "\n");
+//				 	message = formatMsg(message);
+//					message = vehicleName + 
+//							 " had " + message + 
+//							 " at " + unitName ;
+//					}
+//				} catch (Exception e) { 
+//					// No, the Vehicle does NOT have a location container
+//					System.err.println("Exception Caught Successfully : vehicle's container is " + e.getMessage());
+//					//e.printStackTrace();
+//				 	unitName = "outside";
+//				 	logger.info("Vehicle malfunction : " + vehicleName +
+//							" had " + message + " " +
+//							 unitName + "\n");
+//				 	message = formatMsg(message);
+//				 	message = vehicleName + 
+//							 " had " + message + 
+//							 "  " + unitName;
+//				}
+//				
+//		} // end of Vehicle
+//		else if (source instanceof Building) {
+//				Building b = ((Building) source);
+//				buildingName = b.getNickName();
+//				//System.out.println("buildingName is " + buildingName);
+//				Settlement s = b.getBuildingManager().getSettlement();
+//				settlementName = s.getName();
+//			 	logger.info("Building malfunction : " + buildingName + 
+//						" had " + message + 
+//						" in " + settlementName) ;
+//			 	message = formatMsg(message);
+//				message = buildingName + 
+//						" had " + message + 
+//						" in " + settlementName ;
+//			} // end of Building
+//		} catch (Exception e) {
+//				//e.printStackTrace();
+//				System.err.println("Exception Caught. Reasons: " + e.getMessage());
+//		};
 		
 		} // end of if (willNotify == true)
 
 		//msg = "<html><i><b>" + msg + "</b></i></html>";
 		
+		logger.info(message);
 		message = "<html><CENTER><FONT COLOR=RED>" + message + "</FONT COLOR=RED></CENTER></html>";
 
-		
-		
 		// 2014-11-16 Added modifyMsg()
 		return message;
 	}
 	
 	public String formatMsg(String msg) {
-		return 	"<html><i><b>" 
-				+ msg + "</b></i></html>";
+//		return 	"<html><i><b>" 
+//				+ msg + "</b></i></html>";
+	    return "<i><b>" + msg + "</b></i>";
 	};
 }
