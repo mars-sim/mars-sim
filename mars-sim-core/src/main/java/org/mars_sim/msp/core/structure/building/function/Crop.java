@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2014-10-14
+ * @version 3.07 2014-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,7 +48,6 @@ implements Serializable {
 	// Data members
 	/** The type of crop. */
 	private CropType cropType;
-
 	/** Maximum possible food harvest for crop. (kg) */
 	private double maxHarvest;
 	/** Farm crop being grown in. */
@@ -87,6 +87,10 @@ implements Serializable {
 		this.farm = farm;
 		this.settlement = settlement;
 
+		//cropTypeList = new ArrayList<CropType>();
+		//cropType.getCropList(); 
+
+		
 		// Determine work required.
 		// TODO: need further debugging !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		plantingWorkRequired = maxHarvest;
@@ -121,7 +125,7 @@ implements Serializable {
 	public CropType getCropType() {
 		return cropType;
 	}
-
+	
 	/**
 	 * Gets the phase of the crop.
 	 * @return phase
@@ -361,11 +365,24 @@ implements Serializable {
 	 * @return crop type
 	 * @throws Exception if crops could not be found.
 	 */
-	public static CropType getRandomCropType() {
+   	// 2014-12-09 Added new param cropInQueue and changed method name to getNewCrop()
+	public static CropType getNewCrop(String cropInQueue) {
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		List<CropType> cropTypes = cropConfig.getCropList();
-		int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
-		return cropTypes.get(r);
+		//cropTypeList = cropTypes;
+		if (cropInQueue == null) {
+			int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
+			return cropTypes.get(r);
+		} else {
+			CropType crop = null;
+			Iterator<CropType> i = cropTypes.iterator();
+			while (i.hasNext()) {
+				CropType c = i.next();
+				if (c.getName() == cropInQueue)
+					crop = c;
+			}
+			return crop;	
+		}
 	}
 
 	/**

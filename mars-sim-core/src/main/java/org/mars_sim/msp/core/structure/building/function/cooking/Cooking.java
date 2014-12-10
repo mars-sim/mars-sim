@@ -562,7 +562,8 @@ implements Serializable {
 	            int newDay = currentTime.getSolOfMonth();
 	            if ( newDay != dayCache) {
 	            	// reset back to zero at the beginning of a new day.
-	            	System.out.println(" Cooking.java timePassing() Total # of meals made today : " + mealCounterPerSol);
+	            	//System.out.println(" Cooking.java timePassing() " 
+	            	//+ mealCounterPerSol + " meals made today at " + settlement);
 	            	mealCounterPerSol = 0;
 	            	if (!timeMap.isEmpty()) {
 	    				timeMap.clear();

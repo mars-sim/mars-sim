@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFoodProduction.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -90,6 +90,7 @@ extends TabPanel {
 	 * @param unit {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
@@ -183,6 +184,11 @@ extends TabPanel {
 								if (FoodProductionUtil.canProcessBeStarted(selectedProcess, foodFactory)) {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
+									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+									buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+									buildingSelection.setSelectedIndex(-1);
+									processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
+									processSelection.setSelectedIndex(-1);
 								}
 						
 							}
@@ -218,6 +224,8 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 		private String prompt;
 
+		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
 		/*
 		 *  Set the text to display when no item has been selected.
 		 */
@@ -229,18 +237,35 @@ extends TabPanel {
 		/*
 		 *  Custom rendering to display the prompt text when no item is selected
 		 */
+		// 2014-12-09 Added color rendering
 		public Component getListCellRendererComponent(
 			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 		{
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null)
+			
+			Component c = defaultRenderer.getListCellRendererComponent(
+	                list, value, index, isSelected, cellHasFocus);
+			
+			if (value == null) {
 				setText( prompt );
-
-			return this;
+				return this;
+			}
+			if (c instanceof JLabel) {
+	            if (isSelected) {
+	                c.setBackground(Color.orange);
+	            } else {
+	                c.setBackground(Color.white);
+	            }
+	        } else {
+	            c.setBackground(Color.white);
+	            c = super.getListCellRendererComponent(
+	                    list, value, index, isSelected, cellHasFocus);
+	        }
+	        return c;
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 

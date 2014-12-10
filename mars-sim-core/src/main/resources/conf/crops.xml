@@ -170,8 +170,28 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	/>		
     	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
     	 100-300 MT/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%) 
-
-    	  -->    	  
+    	  -->    	
+    	    
+     <crop name="Ginger"
+        growing-time="180" 
+    	crop-category="Roots" 
+    	edible-biomass="18" 
+    	edible-water-content=".12" 
+    	inedible-biomass="2" 
+    	/>		
+    	<!-- http://faostat.fao.org/site/339/default.aspx
+    	http://agritech.tnau.ac.in/org_farm/orgfarm_ginger.html
+    	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
+    	 Average yields in central Jamaica are 13-18 tonnes/ hectare
+    	 harvesting is done from the 6th month onwards.
+    	 
+    	 Ginger Tea
+    	 
+    	 -->    	   	  
     	  
-    	
+    	 <!-- Rhizomes vs. roots 
+    	 Tumeric
+    	 Green Pepper 
+    	 Radish -->
+    	  
 </crop-list>

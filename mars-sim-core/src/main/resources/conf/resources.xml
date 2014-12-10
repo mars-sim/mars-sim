@@ -30,7 +30,7 @@
 	<resource name="Soy Flour" phase="solid" life-support="true" edible="true">Flour made from ground Soybean.</resource>
 	<resource name="Soy Fiber" phase="solid" life-support="true" edible="true">Light yellow, silky protein Soybean fiber .</resource>
 	<resource name="Soy Protein" phase="solid" life-support="true">Protein extract derived from Soybean.</resource>
-	<resource name="Soybean Ash" phase="solid" life-support="true" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, and Calcium.</resource>
+	<resource name="Soybean Ash" phase="solid" life-support="true" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
 	<resource name="Okara" phase="solid" life-support="true" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="Sodium Hypochlorite" phase="solid" >For sanitization of Soybean.</resource>
@@ -81,6 +81,10 @@
 	<resource name="Sugarcane" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Ginger" phase="solid" life-support="true" edible="true"></resource>
 
+	
+	<resource name="Phosphorus" phase="solid">A mineral.</resource>
+	<resource name="Potassium" phase="solid">A mineral.</resource>
+	<resource name="Calcium" phase="solid">A mineral.</resource>
 	
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>

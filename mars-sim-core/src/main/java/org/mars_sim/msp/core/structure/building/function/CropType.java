@@ -120,12 +120,14 @@ implements Serializable {
 	public double getInedibleBiomass() {
 		return inedibleBiomass;
 	}
-	
+
 	/**
-	* Gets the average harvest index 
-	* @return crop's harvest index (from 0 to 1) [dimenionsion-less]
-	*/
-	//public double getHarvestIndex() {
-	//	return harvestIndex;
-	//}
+	 * String representation of this cropType.
+	 * @return The settlement and cropType's name.
+	 */
+	// 2014-12-09 Added toString() 
+	public String toString() {
+		return name;	
+	}
+	
 }

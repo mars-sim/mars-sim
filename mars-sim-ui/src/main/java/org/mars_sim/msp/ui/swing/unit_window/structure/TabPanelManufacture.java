@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -182,6 +182,7 @@ extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent event) {
 				try {
 					Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
@@ -194,6 +195,13 @@ extends TabPanel {
 								if (ManufactureUtil.canProcessBeStarted(selectedProcess, workshop)) {
 									workshop.addProcess(new ManufactureProcess(selectedProcess, workshop));
 									update();
+									
+									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+									buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+									buildingSelection.setSelectedIndex(-1);
+									processSelection.setSelectedIndex(-1);
+									processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
+
 								}
 							}
 							else if (selectedItem instanceof SalvageProcessInfo) {
@@ -202,6 +210,8 @@ extends TabPanel {
 									Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, settlement);
 									workshop.addSalvageProcess(new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
 									update();
+									
+									
 								}
 							}
 						}
@@ -233,6 +243,9 @@ extends TabPanel {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
+		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	    // Width doesn't matter as the combo box will size
+	    //private Dimension preferredSize = new Dimension(0, 20);
 
 		/*
 		 *  Set the text to display when no item has been selected.
@@ -245,15 +258,30 @@ extends TabPanel {
 		/*
 		 *  Custom rendering to display the prompt text when no item is selected
 		 */
+		// 2014-12-09 Added color rendering
 		public Component getListCellRendererComponent(
 			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 		{
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-			if (value == null)
+			Component c = defaultRenderer.getListCellRendererComponent(
+	                list, value, index, isSelected, cellHasFocus);
+			
+			if (value == null) {
 				setText( prompt );
-
-			return this;
+				return this;
+			}
+			if (c instanceof JLabel) {
+	            if (isSelected) {
+	                c.setBackground(Color.orange);
+	            } else {
+	                c.setBackground(Color.white);
+	            }
+	        } else {
+	            c.setBackground(Color.white);
+	            c = super.getListCellRendererComponent(
+	                    list, value, index, isSelected, cellHasFocus);
+	        }
+	        return c;
 		}
 	}
 	

@@ -433,9 +433,9 @@
 		</outputs>
 	</process>
 	
-	<!-- Produce Fiber Cloth from Cane and Soy Fiber. -->
-	<process name="Fiber cloth weaving" tech="2" skill="3" work-time="100" process-time="200" 
+	<process name="Produce Fiber Cloth from Cane and Soy Fiber" tech="2" skill="3" work-time="100" process-time="200" 
 			power-required="3.0">
+		<description>Fiber cloth Weaving </description>
 		<inputs>
 			<resource name="Cane Fiber" amount="2" />
 			<resource name="Soy Fiber" amount="2" />			
@@ -445,6 +445,24 @@
 		</outputs>
 	</process>
 
+
+	<process name="Extract minerals from Soybean Ash. " tech="3" skill="4" work-time="100" process-time="500" 
+			power-required="1.0">
+		<description>Extract minerals from Soybean Ash. </description>
+		<inputs>
+			<resource name="Soybean Ash" amount="1" />	
+				
+		</inputs>
+		<outputs>
+			<resource name="Potassium" amount=".018" />
+			<resource name="Calcium" amount=".028" />
+			<resource name="Magnesium" amount=".028" />
+			<resource name="Phosphorus" amount=".07" />
+		</outputs>
+	</process>
+<!-- http://www.soya.be/nutritional-values-of-soybeans.php -->
+
+	
 	
 	<!-- Make Sugarcane juice from Sugarcane-->
 		

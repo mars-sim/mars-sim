@@ -1,39 +1,67 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2014-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.Crop;
+import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing 
  * the crop farming status of a settlement building.
  */
 public class BuildingPanelFarming
-extends BuildingFunctionPanel {
-
+extends BuildingFunctionPanel 
+implements MouseListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final int CENTER = 0;
 
 	// Data members
 	/** The farming building. */
@@ -51,6 +79,18 @@ extends BuildingFunctionPanel {
 	/** The number of crops cache. */
 	private int cropsCache;
 
+	// 2014-12-09 Added comboBox for crop queue
+	private DefaultComboBoxModel<CropType> comboBoxModel;
+	private JComboBoxMW<CropType> comboBox;
+	private List<CropType> cropCache;
+	private CropType cropType;
+	//private String cropInQueue;
+	private ListModel listModel;
+	private JList<CropType> list;
+	private JScrollPane scrollPanel;
+	private String deletingCrop = "";
+	private int deletingCropIndex;
+	private CropType deletingCropType;
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
@@ -158,7 +198,166 @@ extends BuildingFunctionPanel {
 		// 2014-10-10 mkung: added column 4 showing the crop's category
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		cropScrollPanel.setViewportView(cropTable);
+		
+		
+       	// 2014-12-09 Added crop combo box model.
+        CropConfig config = SimulationConfig.instance().getCropConfiguration();
+		List<CropType> cropTypeList = config.getCropList();
+		//Collections.sort(cropTypeList);
+		JPanel queuePanel = new JPanel(new BorderLayout());
+	    add(queuePanel, BorderLayout.SOUTH);  
+	    
+	    JPanel selectPanel = new JPanel(new FlowLayout());
+	        //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+	    JLabel selectLabel = new JLabel(" Select from : ");
+	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
+	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
+	    selectPanel.add(selectLabel);
+	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
+	    // Create comboBoxModel
+		comboBoxModel = new DefaultComboBoxModel<CropType>();
+		cropCache = new ArrayList<CropType>(cropTypeList);
+		Iterator<CropType> i = cropCache.iterator();		
+		while (i.hasNext()) {
+			CropType c = i.next();
+			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
+			// b.setType(b.getNickName());
+	    	comboBoxModel.addElement(c);
+		}
+		//cropType = cropTypeList.get(0);
+		// Create comboBox.
+		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
+		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setSelectedIndex(-1);
+
+		comboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	cropType = (CropType) comboBox.getSelectedItem();
+            	//System.out.println("BuildingPanelFarming.java: Selected cropType is " + cropType );
+            }
+            });  
+		comboBox.setMaximumRowCount(10);
+		selectPanel.add(comboBox);
+
+		//2014-12-09 Added addButton for adding a crop to queue
+		JPanel buttonPanel = new JPanel(new BorderLayout());
+		JButton addButton = new JButton(Msg.getString(
+				"BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		addButton.setPreferredSize(new Dimension(60, 20));
+		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		addButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
+			public void actionPerformed(ActionEvent evt) {
+				cropType = (CropType) comboBox.getSelectedItem();
+				farm.addCropListInQueue(cropType);
+            	//System.out.println("BuildingPanelFarming.java: Just added " + cropType );
+		        listUpdate();
+			}
+			});
+		buttonPanel.add(addButton, BorderLayout.NORTH);	
+		
+		selectPanel.add(buttonPanel);
+		
+
+		JButton delButton = new JButton(Msg.getString(
+				"BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		delButton.setPreferredSize(new Dimension(60, 20));
+		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		delButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
+			public void actionPerformed(ActionEvent evt) {
+				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+		           	selectCrop();
+	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
+		           	//System.out.println("BuildingPanelFarming.java: Just deleted " + cropType );
+				}
+			}
+			});
+		buttonPanel.add(delButton, BorderLayout.CENTER);	
+	    
+	    
+		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
+		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout()); //new FlowLayout(FlowLayout.CENTER));
+
+	    JLabel queueListLabel = new JLabel("<html><center>Crop(s)<br>in<br>Queue:</center><br><br><br></html>");
+	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
+		queueListPanel.add(queueButtonLabelPanel);
+		
+	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+
+		// Create scroll panel for population list.
+		scrollPanel = new JScrollPane();
+		scrollPanel.setPreferredSize(new Dimension(150, 200));
+		// Create list model
+		listModel = new ListModel(); //settlement);
+		// Create list
+		list = new JList<CropType>(listModel);
+		scrollPanel.setViewportView(list);
+		list.addListSelectionListener(new ListSelectionListener() {
+		    @SuppressWarnings("unchecked")
+			public void valueChanged(ListSelectionEvent event) {
+		        if (!event.getValueIsAdjusting() && event != null){
+					selectCrop();
+		            //JList source = (JList)event.getSource();  
+		            //deletingCropIndex = source.getSelectedIndex();
+		            //deletingCrop = source.getSelectedValue().toString();
+					//if (listModel.getSize() > 0) listModel.removeElementAt(deletingCropIndex);
+		        }
+		    }
+		});
+		queueListPanel.add(scrollPanel); 
+	
 	}
+	public void selectCrop() {
+		
+		CropType cropType = (CropType) list.getSelectedValue();
+		if (cropType != null) {
+			deletingCropType = cropType;
+			deletingCropIndex = list.getSelectedIndex();
+		} else
+			
+		//System.out.println( " deletingCropIndex is " + deletingCropIndex);
+        //System.out.println( " deletingCropType is " + deletingCropType);
+        listUpdate();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void listUpdate() {
+
+		listModel.update();
+ 		list.validate();
+ 		list.revalidate();
+ 		list.repaint();
+		scrollPanel.validate();
+		scrollPanel.revalidate();
+		scrollPanel.repaint();
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setSelectedIndex(-1);
+    	//list.clearSelection(); // cause setting deletingCropIndex to -1
+    	//list.setSelectedIndex(0);
+	}
+	
+	/** 
+	 * Mouse clicked event occurs.
+	 * @param event the mouse event
+	 */
+	public void mouseClicked(MouseEvent event) {
+
+		// TODO: If double-click, open tooltip for the selected crop?
+		if (event.getClickCount() >= 2) {
+			selectCrop();
+			if (deletingCropType != null) {
+            	//farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
+            	//listModel.update();
+			}
+		}
+	}
+
+	public void mousePressed(MouseEvent event) {}
+	public void mouseReleased(MouseEvent event) {}
+	public void mouseEntered(MouseEvent event) {}
+	public void mouseExited(MouseEvent event) {}
 
 	
 	/**
@@ -180,8 +379,88 @@ extends BuildingFunctionPanel {
 
 		// Update crop table.
 		cropTableModel.update();
+		
+		// Update list
+		listModel.update();
+		scrollPanel.validate();
+	}
+    
+	
+	/**
+	 * List model for the crops in queue.
+	 */
+	private class ListModel extends AbstractListModel<CropType> {
+
+	    /** default serial id. */
+	    private static final long serialVersionUID = 1L;
+	    
+	    //private Settlement settlement;
+	    private List<CropType> list;
+	    
+	    private ListModel() {
+	    	//System.out.println("ListModel constructor"); 
+	 
+        	List<CropType> c = farm.getCropListInQueue();
+	        if (c != null)
+	        	list = new ArrayList<CropType>(c);
+	        else list = null;
+	        //Collections.sort(list);
+	    }
+	    
+        @Override
+        public CropType getElementAt(int index) {
+        	//System.out.println("ListModel : index is " + index); 
+        	//System.out.println("ListModel : list.size() is " + list.size()); 
+
+        	CropType result = null;
+            
+            if ((index >= 0) && (index < list.size())) {
+                result = list.get(index);
+            }
+            
+            return result;
+        }
+
+        @Override
+        public int getSize() {
+         	//System.out.println("ListModel : index is " + index); 
+        	//System.out.println("ListModel : list.size() is " + list.size()); 
+        	if (list == null)
+        		return 0;
+        	else return list.size();
+        }
+        
+        /**
+         * Update the list model.
+         */
+        public void update() {
+            
+        	List<CropType> c = farm.getCropListInQueue(); 
+        	
+        		//System.out.println("listModel.update() : Size is different. Proceed...");
+        		// if the list contains duplicate items, it somehow pass this test
+	         
+        		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) { 
+	                List<CropType> oldList = list;
+	            	//System.out.println("listModel.update() : oldList.size() is " + oldList.size());          
+	                List<CropType> tempList = new ArrayList<CropType>(c);
+	                //Collections.sort(tempList);
+	                
+	             	//System.out.println("ListModel : index is " + index); 
+	            	//System.out.println("listModel.update() : tempList.size() is " + tempList.size()); 
+	
+	                list = tempList;
+	                fireContentsChanged(this, 0, getSize());
+	                
+	                oldList.clear();
+	           }
+        	
+        }
 	}
 
+    //public void setCropInQueue(String cropInQueue) {
+    //	this.cropInQueue = cropInQueue;
+    //}
 	/** 
 	 * Internal class used as model for the crop table.
 	 */
@@ -267,4 +546,55 @@ extends BuildingFunctionPanel {
 			fireTableDataChanged();
 		}
 	}
+
+
+	// 2014-12-09 Added PromptComboBoxRenderer()
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer
+	{
+
+		private static final long serialVersionUID = 1L;
+		private String prompt;
+
+		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	    // Width doesn't matter as the combo box will size
+	    //private Dimension preferredSize = new Dimension(0, 20);
+
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		public PromptComboBoxRenderer(String prompt)
+		{
+			this.prompt = prompt;
+		}
+
+		/*
+		 *  Custom rendering to display the prompt text when no item is selected
+		 */
+		// 2014-12-09 Added color rendering
+		public Component getListCellRendererComponent(
+			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+		{
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			Component c = defaultRenderer.getListCellRendererComponent(
+	                list, value, index, isSelected, cellHasFocus);
+			
+			if (value == null) {
+				setText( prompt );
+				return this;
+			}
+			if (c instanceof JLabel) {
+	            if (isSelected) {
+	                c.setBackground(Color.orange);
+	            } else {
+	                c.setBackground(Color.white);
+	            }
+	        } else {
+	            c.setBackground(Color.white);
+	            c = super.getListCellRendererComponent(
+	                    list, value, index, isSelected, cellHasFocus);
+	        }
+	        return c;
+		}	
+	}
+
 }

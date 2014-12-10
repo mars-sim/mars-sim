@@ -1,15 +1,19 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-11-29
+ * @version 3.07 2014-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -18,6 +22,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -40,7 +45,7 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	//private static Logger logger = Logger.getLogger(Farming.class.getName());
+	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
@@ -49,7 +54,11 @@ implements Serializable {
     private double powerSustainingCrop;
     private double growingArea;
     private double maxHarvestinKg;
-    private List<Crop> crops;
+    private List<Crop> crops = new ArrayList<Crop>();
+    
+  	// 2014-12-09 Added cropInQueue, cropListInQueue
+    private String cropInQueue;
+    private List<CropType> cropListInQueue = new ArrayList<CropType>();
 
     /**
      * Constructor.
@@ -70,25 +79,96 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getFarmingActivitySpots(building.getBuildingType()));
 
-        // Create initial crops.
-        crops = new ArrayList<Crop>();
         Settlement settlement = building.getBuildingManager().getSettlement();
+        
+        // 2014-12-09 Added this.crop = crop
+        //cropListInQueue.add();
         
         for (int x=0; x < cropNum; x++) {
         	// 2014-10-14 Implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop 
-        	CropType cropType = Crop.getRandomCropType();
+           	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
+        	CropType cropType = Crop.getNewCrop(null);
+        	//System.out.println(" crop name : " + cropType.getName());
         	// edibleBiomass is in  [ gram / m^2 / day ]
         	double edibleBiomass = cropType.getEdibleBiomass();
         	// growing-time is in millisol vs. growingDay is in sol
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	// maxHarvest is in kg
         	maxHarvestinKg = edibleBiomass * growingDay * (growingArea / (double) cropNum)/1000;
-        	      //logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
+        	     //logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
             Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, false);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
-        }
-        
+        }  
+    }
+    
+    //2014-12-09 Added setCropInQueue()
+    public void setCropInQueue(String cropInQueue) {
+    	this.cropInQueue = cropInQueue;
+    }
+    
+    //2014-12-09 Added getCropInQueue()
+    public String getCropInQueue() {
+    	return cropInQueue;
+    }
+    
+    /**
+     * Gets a collection of the CropType.
+     * @return Collection of CropType
+     */
+    //2014-12-09 Added getCropListInQueue()
+    public List<CropType> getCropListInQueue() {
+       	//System.out.println("Farming.java : getCropListInQueue() : cropListInQueue size " + cropListInQueue.size());        	
+        return cropListInQueue;
+      //CollectionUtils.getPerson(getInventory().getContainedUnits());
+    }
+    
+    /**
+     * Adds a cropType to cropListInQueue.
+     * @param cropType
+     */
+    //2014-12-09 Added addCropListInQueue()
+    public void addCropListInQueue(CropType cropType) {
+    	if (cropType != null) {
+    		cropListInQueue.add(cropType);
+       	//System.out.println("Farming.java : addCropListInQueue() : added " + cropType); 
+       	//System.out.println("Farming.java : addCropListInQueue() : cropListInQueue size " + cropListInQueue.size());        	
+    	}
+    }
+    
+    /**
+     * Deletes a cropType to cropListInQueue.
+     * @param cropType
+     */
+    //2014-12-09 Added deleteCropListInQueue()
+    public void deleteACropFromQueue(int index, CropType cropType) {
+     	//cropListInQueue.remove(index);
+     	// Safer removal than cropListInQueue.remove(index)
+    	int size = cropListInQueue.size();
+       	//System.out.println("Farming.java: deleteCropListInQueue() : queue size was " + size ); 
+     	//System.out.println("Farming.java: deleteCropListInQueue() : index is " + index); 
+     	//System.out.println("Farming.java: deleteCropListInQueue() : selected cropType is " + cropType);     	 
+       	if ( size > 0) {
+     		Iterator<CropType> j = cropListInQueue.iterator();
+     		int i = 0;
+    		while (j.hasNext()) {
+    			CropType c = j.next();
+    			if ( i == index) {
+    		    	//System.out.println("Farming.java: deleteCropListInQueue() : i is at " + i);     	  
+    				String name = c.getName();
+    		    	//System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);     	     		        
+    	 			if (cropType.getName() != name) 
+    	 				logger.log(java.util.logging.Level.SEVERE, "The crop queue encounters a problem removing a crop");
+    	 			else {
+    	 				j.remove();
+    	 		       	//System.out.println("Farming.java: deleteCropListInQueue() : queue size is now " + cropListInQueue.size()); 
+        				break; // remove the first entry only
+    	 			}
+    			}
+    			i++;
+    		}
+    	}
+    	
     }
 
     /**
@@ -262,7 +342,8 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    public void timePassing(double time) {
+    @SuppressWarnings("unused")
+	public void timePassing(double time) {
 
         // Determine resource processing production level.
         double productionLevel = 0D;
@@ -286,8 +367,29 @@ implements Serializable {
         // Add any new crops.
         Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         for (int x=0; x < newCrops; x++) {
+           	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
+        	//CropType cropType = Crop.getNewCrop();
+        	CropType cropType = null;
+        	int size = cropListInQueue.size();
+           	//System.out.println("Farming.java: queue size was " + size ); 
+        	if ( size > 0) {
+         		// Safer to remove using iterator than just cropListInQueue.remove(0);
+        		Iterator<CropType> j = cropListInQueue.iterator();
+        		while (j.hasNext()) {
+        			cropType = j.next();
+        			cropInQueue = cropType.getName();
+        			j.remove();
+        			break; // remove the first entry only
+        		}
+  
+            	//System.out.println("Farming.java: After adding a crop from the queue");
+            	//System.out.println("Farming.java: cropType is " + cropType ); 
+            	//System.out.println("Farming.java: cropInQueue is " + cropInQueue ); 
+               	//System.out.println("Farming.java: queue size is now" + cropListInQueue.size() ); 
+        	} else
+        		// TODO: put in the crop with highest demand into getNewCrop()
+        		cropType = Crop.getNewCrop(null); //
         	
-        	CropType cropType = Crop.getRandomCropType();
         	double edibleBiomassPerDay = cropType.getEdibleBiomass();
         	double growingDay = cropType.getGrowingTime() / 1000 ;
         	maxHarvestinKg = edibleBiomassPerDay * growingDay * (growingArea / (double) cropNum) /1000;
