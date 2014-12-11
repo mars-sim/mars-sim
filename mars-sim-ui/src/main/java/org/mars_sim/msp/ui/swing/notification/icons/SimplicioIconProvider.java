@@ -33,9 +33,6 @@
  */
 package org.mars_sim.msp.ui.swing.notification.icons;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.net.URL;
 import java.text.MessageFormat;
 
 import javax.swing.ImageIcon;
@@ -69,12 +66,6 @@ public enum SimplicioIconProvider implements IconProvider {
 	 */
 	String ICON_PATH = "/notification/simplicio/{0}.png";
 
-    //private final static String IMAGE_DIR = "/images/simplicio/";
-    
-    //private Image img;
-    
-	//String fullImageName = "{0}.png";
-  
 	
 	/**
 	 * @see IconProvider#getIcon()
@@ -82,15 +73,7 @@ public enum SimplicioIconProvider implements IconProvider {
 	 */
 	@Override
 	public ImageIcon getIcon() {
-		
-		/*
-		  String fileName = fullImageName.startsWith("/") ?
-				  fullImageName :
-		        	IMAGE_DIR + fullImageName;
-		    URL resource = ImageLoader.class.getResource(fileName);
-			Toolkit kit = Toolkit.getDefaultToolkit();
-			img = kit.createImage(resource);
-			*/
+	
 			ImageIcon i = new ImageIcon(ImageLoader.class.getResource(
 					MessageFormat.format(ICON_PATH, toString().toLowerCase())));
 		return i;

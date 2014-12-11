@@ -37,6 +37,7 @@ import java.text.MessageFormat;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.notification.IconProvider;
 
 /**
@@ -63,7 +64,7 @@ public enum BatchIconProvider implements IconProvider {
 	/**
 	 * Defines the path where the icons are stored
 	 */
-	String ICON_PATH = "/batch/{0}.png";
+	String ICON_PATH = "/notification/batch/{0}.png";
 
 	/**
 	 * @see IconProvider#getIcon()
@@ -71,7 +72,7 @@ public enum BatchIconProvider implements IconProvider {
 	 */
 	@Override
 	public ImageIcon getIcon() {
-		return new ImageIcon(getClass().getResource(
+		return new ImageIcon(ImageLoader.class.getResource(
 				MessageFormat.format(ICON_PATH, toString().toLowerCase()
 						.replace("_", "-"))));
 	}
