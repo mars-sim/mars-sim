@@ -38,8 +38,6 @@ public class NotificationMenu implements ActionListener, MenuListener {
 	// 2014-12-04 Added notification related items
 	private JCheckBoxMenuItem medicalMenuItem;
 	private JCheckBoxMenuItem malfunctionMenuItem;	
-	private JCheckBoxMenuItem emptyMenuItem;
-	private JButton btn;
 	private JRadioButtonMenuItem threeMenuItem;
 	private JRadioButtonMenuItem twoMenuItem;
 	private JRadioButtonMenuItem oneMenuItem;

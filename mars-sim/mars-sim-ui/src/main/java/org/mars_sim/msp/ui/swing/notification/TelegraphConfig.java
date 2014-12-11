@@ -45,6 +45,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.notification.icons.SimplicioIconProvider;
 
 /**
@@ -217,8 +218,8 @@ public class TelegraphConfig {
 		audioEnabled = true;
 		try {
 			audioInputStream = AudioSystem
-					.getAudioInputStream(new BufferedInputStream(getClass()
-							.getResourceAsStream("/notify.wav")));
+					.getAudioInputStream(new BufferedInputStream(ImageLoader.class
+							.getResourceAsStream("/notification/notify.wav")));
 		} catch (final Exception e) {
 			audioEnabled = false;
 			e.printStackTrace();

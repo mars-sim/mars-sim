@@ -174,16 +174,15 @@ public class NotificationWindow extends JDialog {
 			messageCounter = 0;
 		}
 
-		Color GREEN_CYAN = new Color(0, 255, 128);
-		Color PURPLE_BLUE = new Color(39, 16, 167);		
-		Color BLUE_CYAN = new Color(0, 128, 255);
+		//Color GREEN_CYAN = new Color(0, 255, 128);
+		//Color PURPLE_BLUE = new Color(39, 16, 167);		
+		//Color BLUE_CYAN = new Color(0, 128, 255);
 		Color BURGANDY = new Color(148, 28, 10);
 		//Color ORANGE = new Color(255, 128, 0);
 		Color ORANGE = new Color(255, 176, 13);
 		
 		String msg = generateMsg(event, message);	
-		
-		
+				
 			if (!oldMsgCache.equals(msg)
 					&& (messageCounter <= maxNumMsg) ) {		
 
@@ -192,8 +191,6 @@ public class NotificationWindow extends JDialog {
 
 				header = "<html><CENTER><i><b><h3>" 
 						+ header + "</h3></b></i></CENTER></html>";
-				//System.out.println("sendAlert() : msg is "+ msg);
-				//System.out.println("sendAlert() : header is "+ header);
 				//telegraphConfig.setButtonIcon();
 				telegraphConfig.setWindowWidth(80);
 				telegraphConfig.setWindowHeight(80);
