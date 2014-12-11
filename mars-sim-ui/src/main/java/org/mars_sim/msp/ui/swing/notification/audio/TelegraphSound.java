@@ -43,8 +43,8 @@ import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
-import org.jtelegraph.Telegraph;
-import org.jtelegraph.TelegraphConfig;
+import org.mars_sim.msp.ui.swing.notification.Telegraph;
+import org.mars_sim.msp.ui.swing.notification.TelegraphConfig;
 
 /**
  * A simple Thread which allows to play a notification sound. It's called from

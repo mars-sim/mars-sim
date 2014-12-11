@@ -33,10 +33,14 @@
  */
 package org.mars_sim.msp.ui.swing.notification.icons;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
 import java.text.MessageFormat;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.notification.IconProvider;
 
 /**
@@ -63,15 +67,32 @@ public enum SimplicioIconProvider implements IconProvider {
 	/**
 	 * Defines the path where the icons are stored
 	 */
-	String ICON_PATH = "/simplicio/{0}.png";
+	String ICON_PATH = "/notification/simplicio/{0}.png";
 
+    //private final static String IMAGE_DIR = "/images/simplicio/";
+    
+    //private Image img;
+    
+	//String fullImageName = "{0}.png";
+  
+	
 	/**
 	 * @see IconProvider#getIcon()
 	 * @return Icon associated to the enumeration member.
 	 */
 	@Override
 	public ImageIcon getIcon() {
-		return new ImageIcon(getClass().getResource(
-				MessageFormat.format(ICON_PATH, toString().toLowerCase())));
+		
+		/*
+		  String fileName = fullImageName.startsWith("/") ?
+				  fullImageName :
+		        	IMAGE_DIR + fullImageName;
+		    URL resource = ImageLoader.class.getResource(fileName);
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			img = kit.createImage(resource);
+			*/
+			ImageIcon i = new ImageIcon(ImageLoader.class.getResource(
+					MessageFormat.format(ICON_PATH, toString().toLowerCase())));
+		return i;
 	}
 }

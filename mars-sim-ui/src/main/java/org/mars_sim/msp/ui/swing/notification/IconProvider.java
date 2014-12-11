@@ -35,8 +35,8 @@ package org.mars_sim.msp.ui.swing.notification;
 
 import javax.swing.ImageIcon;
 
-import org.jtelegraph.icons.BatchIconProvider;
-import org.jtelegraph.icons.SimplicioIconProvider;
+import org.mars_sim.msp.ui.swing.notification.icons.BatchIconProvider;
+import org.mars_sim.msp.ui.swing.notification.icons.SimplicioIconProvider;
 
 /**
  * This interface allows to define an {@link IconProvider}. This kind of object
