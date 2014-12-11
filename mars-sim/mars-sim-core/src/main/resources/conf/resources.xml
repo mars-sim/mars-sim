@@ -80,6 +80,8 @@
 	<resource name="Garlic" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Sugarcane" phase="solid" life-support="true" edible="true"></resource>
 	<resource name="Ginger" phase="solid" life-support="true" edible="true"></resource>
+	<resource name="Quinoa" phase="solid" life-support="true" edible="true">A nutritious grain suitable for long endurance flight</resource>
+	<resource name="Grain Bar" phase="solid" life-support="true" edible="true">A nutritious grain suitable for long endurance flight</resource>
 
 	
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>
