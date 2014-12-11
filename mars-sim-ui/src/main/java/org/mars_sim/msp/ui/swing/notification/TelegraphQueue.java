@@ -37,6 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Timer;
 
@@ -71,7 +72,8 @@ public class TelegraphQueue implements ActionListener {
 	public TelegraphQueue() {
 
 		// set everything
-		queue = new LinkedList<Telegraph>();
+		//queue = new LinkedList<Telegraph>();//
+		queue = new ConcurrentLinkedQueue<Telegraph>();
 		timer = new Timer(100, this);
 		current = null;
 	}

@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.notification;
 import java.awt.Color;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import javax.swing.JDialog;
@@ -45,6 +47,9 @@ public class NotificationWindow extends JDialog {
 	// default logger.
 	private static Logger logger = Logger.getLogger(NotificationWindow.class.getName());
 
+	private boolean isSetQueueEmpty = false;
+	private boolean isSetQueueEmptyCache = false;
+	
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
 	private boolean showMalfunction = true;
@@ -67,7 +72,8 @@ public class NotificationWindow extends JDialog {
 //	private String matchedWord1 = "fixed";
 //	private String matchedWord2 = "recovering";
 	private String oldMsgCache = "";
-	private boolean isSettingChange = false;
+	private boolean areAnySettingsChanged = false;
+	private Timer timer;
 	
 	private MainDesktopPane desktop;
 	
@@ -78,97 +84,95 @@ public class NotificationWindow extends JDialog {
 
 	public void checkSetting() {
 		NotificationMenu nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+
+		isSetQueueEmpty = nMenu.getIsSetQueueEmpty();	
+		if (isSetQueueEmpty != isSetQueueEmptyCache ) {
+			areAnySettingsChanged = true;
+			isSetQueueEmptyCache = isSetQueueEmpty;
+		}
+		
+		
 		showMedical = nMenu.getShowMedical();	
 		if (showMedical != showMedicalCache ) {
-			isSettingChange = true;
+			areAnySettingsChanged = true;
 			showMedicalCache = showMedical;
 		}
 
 		showMalfunction = nMenu.getShowMalfunction();
 		if (showMalfunction != showMalfunctionCache ) {
-			isSettingChange = true;
+			areAnySettingsChanged = true;
 			showMalfunctionCache = showMalfunction;
 		}
 		
 		maxNumMsg = nMenu.getMaxNumMsg();
-		//System.out.println("maxNumMsgCache : "+ maxNumMsgCache);
-		//System.out.println("maxNumMsg : "+ maxNumMsg);
 		if (maxNumMsg != maxNumMsgCache ) {
-			isSettingChange = true;		
-			//maxNumMsgCache = 0;	
-			//emptyQueue();
-			// call run() 
-			// set maxNumMsgCache = 0
-			// sleep(5000);
+			areAnySettingsChanged = true;	
+			
+			maxNumMsg = 0;
+
+			timer = new Timer();
+			// 2014-12-10 Hold off so that no new messages will 
+			// display messages next 5 seconds. 
+			int seconds = 5;
+			timer.schedule(new NextTask(), seconds * 1000);		
+
 			maxNumMsgCache = maxNumMsg;
 		}
-		//System.out.println("maxNumMsgCache : "+ maxNumMsgCache);
-		//System.out.println("maxNumMsg : "+ maxNumMsg);
 		
 		displayTime = nMenu.getDisplayTime();
 		if (displayTime != displayTimeCache ) {
-			isSettingChange = true;
+			areAnySettingsChanged = true;
 			displayTimeCache = displayTime;
 		}
 		
 	}
 	
+
+	public class NextTask extends TimerTask {
+		@Override
+		public void run() {
+			System.out.println("Terminated the Timer Thread!");
+			timer.cancel(); // Terminate the thread
+		}
+	}
 	
 	public void emptyQueue() {
-		
-		Queue<Telegraph> telegraphList = telegraphQueue.getQueue();
-		
-		telegraphQueue.getTimer().stop();		
-		//telegraph.getTimelineStay().suspend();
-		
-		//System.out.println("entering emptyQueue() : " + telegraphList.size());// + telegraphList.element());
-		
-		Iterator i = telegraphList.iterator();
-		
-		int temp = maxNumMsg;
-		
-		maxNumMsg = 0;
-		
-		while(i.hasNext()){
-		  Telegraph oneTelegraph = (Telegraph) i.next();
-		  oneTelegraph.dispose();
-		  oneTelegraph = telegraphList.remove();
-		  telegraphList.remove(oneTelegraph);
-		}
-		
-		maxNumMsg = temp;
-		
-		
-		//telegraph.getTimelineStay().resume();
-		//telegraphQueue.getTimer().start();		
-		
-		//System.out.println("leaving emptyQueue() : " + telegraphList.size());// + telegraphList.element());
-
+		if (telegraphQueue != null) {
+			int qSize = 0;
+			Queue<Telegraph> telegraphList = telegraphQueue.getQueue();
+			//if (telegraphList != null)
+			//	qSize = telegraphList.size();
+			//System.out.println("emptyQueue(); queue size was " + telegraphList.size());
+	
+			Iterator<Telegraph> i = telegraphList.iterator();
+			while(i.hasNext()){
+			  Telegraph oneTelegraph = i.next();
+			  telegraphList.remove(oneTelegraph);
+			}
+			//if (telegraphList != null)
+			//	qSize = telegraphList.size();
+			//System.out.println("emptyQueue(); queue size is now " + telegraphList.size());
+		}	
 	}
 
 	// 2014-11-15 Created sendAlert()
-	public void sendAlert(HistoricalEvent event, 
-			String message,
-			String header) {
+	// 2014-12-10 Renamed to setupTelegraph() and moved some codes to setupTelegraph()
+	public void setupTelegraph(HistoricalEvent event, 
+			String message, String header) {
+
+		int qSize = 0;
+		Queue<Telegraph> telegraphList = telegraphQueue.getQueue();
+		if (telegraphList != null)
+			qSize = telegraphList.size();
+		//System.out.println("sendAlert(); queue size was " + telegraphList.size());// + telegraphList.element());
 
 		checkSetting();
-		if (isSettingChange) {
+		
+		if (areAnySettingsChanged) {
 			// start a new queue
-			//queue = null;
-
 			emptyQueue();
-			
-			//telegraph.dispose();
-
-			//queue = new TelegraphQueue();
 			messageCounter = 0;
 		}
-
-    	//System.out.println("validateMsg() : showMedical is " + showMedical);
-		//System.out.println("validateMsg() : showMalfunction is " + showMalfunction);
-		//System.out.println("validateMsg() : displayTime is " + displayTime);
-		//System.out.println("validateMsg() : maxNumMsg is " + maxNumMsg);
-		//System.out.println("validateMsg() : messageCounter is " + messageCounter);
 
 		Color GREEN_CYAN = new Color(0, 255, 128);
 		Color PURPLE_BLUE = new Color(39, 16, 167);		
@@ -206,7 +210,15 @@ public class NotificationWindow extends JDialog {
 				telegraphConfig.setBorderColor(Color.YELLOW);
 				telegraphConfig.setBorderThickness(5);
 				telegraphConfig.setTelegraphPosition(TelegraphPosition.BOTTOM_RIGHT);
-		
+			
+				sendTelegraph(telegraphConfig, msg, header);
+			}	
+	}
+	
+	public void sendTelegraph(
+			TelegraphConfig telegraphConfig, 
+			String msg, String header) {
+				
 				telegraph = new Telegraph(
 						header, 
 						msg,
@@ -216,7 +228,7 @@ public class NotificationWindow extends JDialog {
 
 				oldMsgCache = msg;
 				//messageCounter--;
-			}
+			
 		}
 
 	public void validateMsg(HistoricalEvent event) {
@@ -253,7 +265,7 @@ public class NotificationWindow extends JDialog {
 		    }
 		}
 		
-		if (willNotify) sendAlert(event, message, header);
+		if (willNotify) setupTelegraph(event, message, header);
 	}
 	
 	// 2014-11-16 Added modifyMsg()

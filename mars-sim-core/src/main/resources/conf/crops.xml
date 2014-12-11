@@ -182,12 +182,25 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	<!-- http://faostat.fao.org/site/339/default.aspx
     	http://agritech.tnau.ac.in/org_farm/orgfarm_ginger.html
     	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
-    	 Average yields in central Jamaica are 13-18 tonnes/ hectare
-    	 harvesting is done from the 6th month onwards.
-    	 
-    	 Ginger Tea
+   		1. Average yields in central Jamaica are 13-18 tonnes/ hectare
+    	2. Harvesting is done from the 6th month onwards. 
+    	3.  TODO: making ginger Tea
     	 
     	 -->    	   	  
+    <crop name="Quinoa"
+        growing-time="89" 
+    	crop-category="Grains" 
+    	edible-biomass="5" 
+    	edible-water-content=".1" 
+    	inedible-biomass="7" 
+    	/>		
+    	<!-- http://en.wiki2.org/wiki/Quinoa
+    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
+    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
+    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
+    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%. 
+    	3. TODO: 
+    	 -->    	    	  
     	  
     	 <!-- Rhizomes vs. roots 
     	 Tumeric

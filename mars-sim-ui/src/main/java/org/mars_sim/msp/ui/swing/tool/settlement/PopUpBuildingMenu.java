@@ -143,7 +143,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			        	 //d.revalidate();
 			        	 //d.setVisible(true);
 			        	 try {
-							Thread.sleep(50);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -251,5 +251,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
 		public void destroy() {
 			settlement.destroy();
 			building.destroy();
+			itemOne = null;
+			itemTwo = null;			
 		}
 }
