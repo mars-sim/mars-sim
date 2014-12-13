@@ -111,6 +111,7 @@ implements Serializable {
 	* @return crop's edible water content
 	*/
 	public double getEdibleWaterContent() {
+		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);	
 		return edibleWaterContent;
 	}
 	/**

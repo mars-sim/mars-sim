@@ -5,174 +5,78 @@
 <meal-list>
 		<meal id="0" name="Kidney Bean Fried Rice with Onion" oil="0.05" salt="0.02" category="meal">
 			<ingredient id="0" name="Kidney Bean" proportion="0.4"/>
-
 			<ingredient id="1" name="White Rice" proportion="0.5"/>
-
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
-
 		</meal>				
 	
-		<meal id="1" name="Roasted Carrot Soup" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Carrot" proportion="0.5"/>
-
-				
+		<meal id="1" name="Roasted Carrot Soup" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Carrot" proportion="0.5"/>				
 			<ingredient id="1" name="Green Onion" proportion="0.2"/>
-
-
 			<ingredient id="2" name="Celery" proportion="0.3"/>
-
 		</meal>				
 	
-		<meal id="2" name="Cabbage and Carrot Slaw Plate" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Cabbage" proportion="0.5"/>
-
-				
+		<meal id="2" name="Cabbage and Carrot Slaw Plate" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Cabbage" proportion="0.5"/>			
 			<ingredient id="1" name="Carrot" proportion="0.4"/>
-
-
 			<ingredient id="2" name="Sesame" proportion="0.1"/>
-
 		</meal>				
-		
-		
-		<meal id="3" name="Potato Salad" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Potato" proportion="0.5"/>
-
 				
+		<meal id="3" name="Potato Salad" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Potato" proportion="0.5"/>				
 			<ingredient id="1" name="Lettuce" proportion="0.4"/>
-
-
 			<ingredient id="2" name="Green Onion" proportion="0.1"/>
-
 		</meal>		
 	      	
-		<meal id="4" name="Bean Sprout Garlic Stir Fry" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Soy Sprout" proportion="0.7"/>
-
-				
+		<meal id="4" name="Bean Sprout Garlic Stir Fry" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Soy Sprout" proportion="0.7"/>			
 			<ingredient id="1" name="Green Onion" proportion="0.2"/>
-
-
-			<ingredient id="2" name="Garlic " proportion="0.1"/>
-
-		</meal>		
-		
+			<ingredient id="2" name="Garlic" proportion="0.1"/>
+		</meal>				
 	      	
-		<meal id="5" name="Veggie Burger with French Fries" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Veggie Patty" proportion="0.3"/>
-
-				
+		<meal id="5" name="Veggie Burger with French Fries" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Veggie Patty" proportion="0.3"/>				
 			<ingredient id="1" name="Wheat Bun" proportion="0.25"/>
-
-
-			<ingredient id="2" name="French Fries" proportion="0.35"/>
-
-				
-			<ingredient id="3" name="Lettuce" proportion="0.05"/>
-
-				
-			<ingredient id="4" name="Tomato" proportion="0.05"/>
-	
+			<ingredient id="2" name="French Fries" proportion="0.35"/>				
+			<ingredient id="3" name="Lettuce" proportion="0.05"/>				
+			<ingredient id="4" name="Tomato" proportion="0.05"/>	
 		</meal>		
-		
-	
-		
-		<meal id="6" name="Sauteed Swiss Chard with Onions Fried Rice" oil="0.05" salt="0.02" category="meal">
-		
-			<ingredient id="0" name="Swiss Chard" proportion="0.3"/>
-
 				
+		<meal id="6" name="Sauteed Swiss Chard with Onions Fried Rice" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Swiss Chard" proportion="0.3"/>				
 			<ingredient id="1" name="White Rice" proportion="0.5"/>
-
-
-			<ingredient id="2" name="White Onion" proportion="0.1"/>
-
-				
-			<ingredient id="3" name="Lettuce" proportion="0.05"/>
-
-				
-			<ingredient id="4" name="Garlic" proportion="0.05"/>
-	
+			<ingredient id="2" name="White Onion" proportion="0.1"/>				
+			<ingredient id="3" name="Lettuce" proportion="0.05"/>				
+			<ingredient id="4" name="Garlic" proportion="0.05"/>	
 		</meal>		
-		
-		
-		<meal id="7" name="Peas and Veggie Sandwich" oil="0.05" salt="0.02" category="breakfast">
-		
-			<ingredient id="0" name="Veggie Patty" proportion="0.4"/>
-
 				
+		<meal id="7" name="Peas and Veggie Sandwich" oil="0.05" salt="0.02" category="breakfast">		
+			<ingredient id="0" name="Veggie Patty" proportion="0.4"/>				
 			<ingredient id="1" name="White Bread" proportion="0.20"/>
-
-
-			<ingredient id="2" name="Peas" proportion="0.25"/>
-
-				
-			<ingredient id="3" name="Lettuce" proportion="0.05"/>
-
-				
-			<ingredient id="4" name="Tomato" proportion="0.05"/>
-	
-		
-			<ingredient id="5" name="Peanut Butter" proportion="0.05"/>
-	
-						
+			<ingredient id="2" name="Peas" proportion="0.25"/>				
+			<ingredient id="3" name="Lettuce" proportion="0.05"/>				
+			<ingredient id="4" name="Tomato" proportion="0.05"/>		
+			<ingredient id="5" name="Peanut Butter" proportion="0.05"/>						
 		</meal>		
-		
-		
-		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.02" category="breakfast">
-		
-			<ingredient id="0" name="Celery" proportion="0.4"/>
-
 				
+		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.02" category="breakfast">		
+			<ingredient id="0" name="Celery" proportion="0.4"/>				
 			<ingredient id="1" name="Roasted Peanut" proportion="0.30"/>
-
-
-			<ingredient id="2" name="Carrot" proportion="0.25"/>
-
-				
-			<ingredient id="3" name="Peanut Butter" proportion="0.05"/>
-
-						
+			<ingredient id="2" name="Carrot" proportion="0.25"/>				
+			<ingredient id="3" name="Peanut Butter" proportion="0.05"/>						
 		</meal>		
-		
-		      	
-		<meal id="9" name="Tofu Menudo" oil="0.05" salt="0.02" category="breakfast">
-		
-			<ingredient id="0" name="Tofu" proportion="0.4"/>
-
-				
+				      	
+		<meal id="9" name="Tofu Menudo" oil="0.05" salt="0.02" category="breakfast">		
+			<ingredient id="0" name="Tofu" proportion="0.4"/>				
 			<ingredient id="1" name="Potato" proportion="0.30"/>
-
-
-			<ingredient id="2" name="Peas" proportion="0.25"/>
-
-				
-			<ingredient id="3" name="Tomato" proportion="0.05"/>
-
-
-						
+			<ingredient id="2" name="Peas" proportion="0.25"/>				
+			<ingredient id="3" name="Tomato" proportion="0.05"/>						
 		</meal>		
-		
-		      	
-		<meal id="10" name="Garlic Bread and Spaghetti" oil="0.05" salt="0.02" category="breakfast">
-		
-			<ingredient id="0" name="Wheat Noodle" proportion="0.4"/>
-
-				
+				      	
+		<meal id="10" name="Garlic Bread and Spaghetti" oil="0.05" salt="0.02" category="breakfast">		
+			<ingredient id="0" name="Wheat Noodle" proportion="0.4"/>				
 			<ingredient id="1" name="White Bread" proportion="0.20"/>
-
-
-			<ingredient id="2" name="Garlic Oil" proportion="0.25"/>
-
-				
-			<ingredient id="3" name="Tomato" proportion="0.05"/>
-
-						
+			<ingredient id="2" name="Garlic Oil" proportion="0.25"/>				
+			<ingredient id="3" name="Tomato" proportion="0.05"/>						
 		</meal>		
 
 </meal-list>

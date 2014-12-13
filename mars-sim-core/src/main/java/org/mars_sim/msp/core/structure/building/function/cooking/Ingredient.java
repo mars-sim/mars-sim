@@ -11,17 +11,21 @@ import java.io.Serializable;
 
 // 2014-11-29 Created Ingredient()
 public class Ingredient implements Serializable {
-	int id;
-	String name;
-	double proportion;
-	
+	private int id;
+	private String name;
+	private double proportion;
+	//2014-12-11 Added isItAvailable
+	private boolean isItAvailable;	
+	private double ingredientDryWeight;
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	Ingredient(int id, String name, double proportion) {
-			this.name = name;
-			this.proportion = proportion;
+	Ingredient(int id, String name, double proportion) {//, boolean isItAvailable) {
+		this.id = id;
+		this.name = name;
+		this.proportion = proportion;
+		//this.isItAvailable = isItAvailable;
 	}
 	    public String getName() {
 	    		return name;
@@ -31,5 +35,22 @@ public class Ingredient implements Serializable {
 	    	}
 	    public int getID() {
     		return id;
+    	}
+		//2014-12-11 Added isItAvailable, setDryWeight
+	    public boolean getIsItAvailable() {
+	    	return isItAvailable;
+	    }
+	    public void setIsItAvailable(boolean value) {
+	    	isItAvailable = value;
+	    }
+	    public void setDryWeight(double ingredientDryWeight) {
+	    	this.ingredientDryWeight = ingredientDryWeight;
+	    }
+	    public double getDryWeight() {
+
+	    	return ingredientDryWeight;
+	    }
+	    public String toString() {
+    		return name;
     	}
 }
