@@ -12,9 +12,17 @@
 	<!-- Default: 4.0 -->
 	<water-consumption-rate value="4.0" />
 
-	<!-- The average amount of food (kg) eaten by a person each Martian Sol -->
-	<!-- Default: 1.5 -->
-	<food-consumption-rate value="1.5" />
+	<!-- The average amount of food (kg) in dry weight eaten by a person each Martian Sol -->
+	<!-- Default: 0.62 (Dry Weight) -->
+	<food-consumption-rate value="0.62" />
+	<!-- TODO: account for carbohydrates & protein content
+	(1). http://settlement.arc.nasa.gov/75SummerStudy/Chapt3.html#Food 
+		consist of 2000 g of water, 470 g dry weight of various carbohydrates and fats, 
+		60 to 70 g dry weight of proteins, and adequate quantities of various minerals and vitamins
+	(2). http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN 
+			Food solids: 0,62Kg ,  Water in food: 1,15Kg 
+	-->
+
 
 	<!-- Number of millisols a person can survive without oxygen -->
 	<!-- Note: 1 millisol = 88.77 seconds -->

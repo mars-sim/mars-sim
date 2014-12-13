@@ -1,16 +1,15 @@
 /**
  * Mars Simulation Project
  * HotMeal.java
- * @version 3.07 2014-12-07
+ * @version 3.07 2014-12-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 
@@ -33,14 +32,17 @@ public class HotMeal implements Serializable {
 	private double proportion;
 	
 	private Cooking kitchen;
-
+	//2014-12-12 Added isItAvailable, ingredientDryWeight
+	private boolean isItAvailable;
+	private double ingredientDryWeight;
+	
 	public HotMeal(Cooking kitchen) {
 		this.kitchen = kitchen;
 		//setUpMeal(); 
 	}
 	
 	public HotMeal(int mealID, String nameOfMeal, double oil, double salt, 
-			String mealCategory) {
+			String mealCategory) { //, boolean isItAvailable) {
 		
 		this.mealID = mealID;
 		this.mealName = nameOfMeal;
@@ -49,47 +51,53 @@ public class HotMeal implements Serializable {
 		this.mealCategory = mealCategory;
 	}
 	
-	
-	public HotMeal() {
-		
-	}
-	
-	public HotMeal(int mealID, String mealName) {	
-		prepareMeal(mealID, mealName);
-	}
-	
-	public HotMeal(HotMeal meal) {
-		ingredientList = meal.ingredientList;
-		mealName = meal.mealName;
-		mealID = meal.mealID;
-	}
 
-	public void prepareMeal(int id, String name) {
-		this.mealID = id;
-		this.mealName = name;
+	// called by constructor in Cooking.java
+	public void addIngredient(int ingredientID, String name, double proportion) {//, boolean isItAvailable) {
+		ingredientList.add(new Ingredient(ingredientID, name, proportion));//, isItAvailable));
+		//System.out.println("ingredientList is " +	ingredientList);
 	}
 	
-	// called by constructor in Cooking.java
-	public void addIngredient(int ingredientID, String name, double proportion) {
-		ingredientList.add(new Ingredient(ingredientID, name, proportion));
-		
+	//2014-12-11 Added setIngredient
+	public void setIngredient(List<Ingredient> ingredientList, Ingredient ingredient) {
+	    int ingredientIndex = ingredientList.indexOf(ingredient);
+	    if (ingredientIndex != -1) {
+	        ingredientList.set(ingredientIndex, ingredient);
+	    }
 	}
+	
 	public void addMealName(String nameOfMeal) {
 		this.mealName = nameOfMeal;
 	}
 	public void addMeal(int mealID, String nameOfMeal, double oil, double salt, 
-			String mealCategory) {
+			String mealCategory, boolean isItAvailable) {
 		
 		this.mealID = mealID;
 		this.mealName = nameOfMeal;
 		this.oil = oil;
 		this.salt = salt;
 		this.mealCategory = mealCategory;
+		this.isItAvailable = isItAvailable;
 	}
-	
-	
+	//2014-12-11 Added isItAvailable
+    public boolean getIsItAvailable() {
+    	return isItAvailable;
+    }
+	public void setIngredientDryWeight(int id, double ingredientDryWeight) {
+		Ingredient ingredient = ingredientList.get(id);
+		ingredient.setDryWeight(ingredientDryWeight);
+		ingredientList.set(id, ingredient);
+	}
+    public void setIsItAvailable(boolean value) {
+    	isItAvailable = value;
+    }
+    
 	public String getMealName() {
 		return mealName;
+	}
+
+	public String toString() {
+		return mealName;	
 	}
 	public int getMealID() {
 		return mealID;
@@ -102,7 +110,6 @@ public class HotMeal implements Serializable {
 	public List<Ingredient> getIngredientList() {
 		return ingredientList;
 	}
-
 	
 	//public HotMeal getMeal(int mealID) {	
 		//return new HotMeal(mealID);	
@@ -111,6 +118,8 @@ public class HotMeal implements Serializable {
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;
+        kitchen = null;
+        
     }
 
  	

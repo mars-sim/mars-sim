@@ -8,10 +8,12 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.
@@ -91,7 +93,6 @@ implements Serializable {
 				// Get edible biomass water content [ from 0 to 1 ]
 				String edibleWaterContentStr = crop.getAttributeValue(EDIBLE_WATER_CONTENT);
 				double edibleWaterContent = Double.parseDouble(edibleWaterContentStr);
-	
 				// Get inedibleBiomass
 				String inedibleBiomassStr = crop.getAttributeValue(INEDIBLE_BIOMASS);
 				double inedibleBiomass = Double.parseDouble(inedibleBiomassStr);
@@ -112,6 +113,7 @@ implements Serializable {
 
 		return cropList;
 	}
+
 
 	/**
 	 * Prepare object for garbage collection.

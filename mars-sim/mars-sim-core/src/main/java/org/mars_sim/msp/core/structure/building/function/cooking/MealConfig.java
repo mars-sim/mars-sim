@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MealConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2014-12-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 //import java.util.HashSet;
 import java.util.List;
 //import java.util.Set;
+
+
 
 
 import org.jdom.Document;
@@ -46,8 +48,9 @@ implements Serializable {
 	private static final String OIL = "oil";
 	//private static final String EDIBLE_WATER_CONTENT = "edible-water-content";
 	private static final String SALT = "salt";
-
-
+	//2014-12-11 Added isItAvailable
+	//private boolean isItAvailable = false;
+	
 	private Document mealDoc;
 	private List<HotMeal> mealList;
 	//private HotMeal meal;
@@ -68,12 +71,11 @@ implements Serializable {
 	 * @throws Exception when meal could not be parsed.
 	 */
 	public List<HotMeal> getMealList() {
-
+		//System.out.println("calling getMealList()");
 		if (mealList == null) {
 			mealList = new ArrayList<HotMeal>();
 
 			Element root = mealDoc.getRootElement();
-			@SuppressWarnings("unchecked")
 			List<Element> meals = root.getChildren(MEAL);
 
 			//Set<Integer> mealIDs = new HashSet<Integer>();
@@ -101,21 +103,21 @@ implements Serializable {
 				mealCategory = meal.getAttributeValue(MEAL_CATEGORY);
 				
 				// Create meal
-				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory);
-
-	
-
-				//Element root = mealDoc.getRootElement();
-				List<Element> ingredients = root.getChildren(INGREDIENT);
-
-				//Set<Integer> ingredientIDs = new HashSet<Integer>();
-					
+				
+				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); //, isItAvailable);
+	    		//System.out.println("MealConfig.java : aMeal is " + aMeal);
+				
+				//2014-12-11 Modified to ingredients = meal.getChildren(INGREDIENT);
+				List<Element> ingredients = meal.getChildren(INGREDIENT);
+	    		//System.out.println("MealConfig.java : ingredients is " + ingredients);
+		
 				for (Element ingredient : ingredients) {
 
 					// Get id.
 					String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
 					int ingredientId = Integer.parseInt(ingredientIdStr);
-
+					//System.out.println(" ingredientId is " + ingredientId);
+					
 					// Get name.
 					String ingredientName = "";
 					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME);
@@ -124,8 +126,12 @@ implements Serializable {
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
 		
+					//2014-12-11 Added isItAvailable
+					aMeal.addIngredient(ingredientId, ingredientName, proportion);//, isItAvailable);	
 				
-					aMeal.addIngredient(ingredientId, ingredientName, proportion);	
+					//System.out.println("proportion is "+ proportion);
+		    		//System.out.println("MealConfig.java : aMeal.getIngredientList() is " + aMeal.getIngredientList());
+
 				}
 			
 				//System.out.println("meal name is " + aMeal.getMealName());
