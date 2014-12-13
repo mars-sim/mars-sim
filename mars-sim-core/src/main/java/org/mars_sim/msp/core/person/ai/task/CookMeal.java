@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-12
  * @author Scott Davis
  * 
  * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
@@ -61,10 +61,10 @@ implements Serializable {
 	private static final double BREAKFAST_START = 250D; // at 6am
 	private static final double LUNCH_START = 500D; // at 12 am
 	private static final double DINNER_START = 750D; // at 6 pm
-	private static final double MIDNIGHT_SHIFT_MEAL_START = 0D; // at 0 am 
+	private static final double MIDNIGHT_SHIFT_MEAL_START = 050D; // at 1:15 am avoid conflict with TabPanelCooking when at 0D all yesterday's cookedMeals are removed
 
 	// Time (millisols) duration of meals.
-	private static final double MEALTIME_DURATION = 100D;
+	private static final double MEALTIME_DURATION = 50D;
 
 	// Data members
 	/** The kitchen the person is cooking at. */

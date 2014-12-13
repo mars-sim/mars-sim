@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * A panel for displaying the settlement map.
@@ -38,7 +38,7 @@ implements ClockListener {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
+	//private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
 	//public static final double DEFAULT_SCALE = 5D;

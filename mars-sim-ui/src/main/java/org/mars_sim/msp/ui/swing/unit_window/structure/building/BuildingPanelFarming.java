@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * FarmingBuildingPanel.java
- * @version 3.07 2014-12-09
+ * BuildingPanelFarming.java
+ * @version 3.07 2014-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -17,8 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +33,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -41,7 +40,6 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.CropType;
@@ -57,11 +55,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  */
 public class BuildingPanelFarming
 extends BuildingFunctionPanel 
-implements MouseListener {
+implements Serializable, MouseListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final int CENTER = 0;
+	//private static final int CENTER = 0;
 
 	// Data members
 	/** The farming building. */
@@ -176,12 +174,7 @@ implements MouseListener {
 	                	result.append(time); 
 	                	result.append("<br>&nbsp;Water Content:&emsp;");
 	                	result.append(water).append(" %"); 	                	
-                    //}
-                    //if (tip == "Soybean") {
-
-                    //"use soybeans to make soy products";
-                    //if (tip == "Kidney Bean")
-                    	//tip = "use soybeans to make soy products";
+      
                 } catch (RuntimeException e1) {
                     //catch null pointer exception if mouse is over an empty line
                 }
@@ -199,36 +192,34 @@ implements MouseListener {
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		cropScrollPanel.setViewportView(cropTable);
 		
-		
-       	// 2014-12-09 Added crop combo box model.
-        CropConfig config = SimulationConfig.instance().getCropConfiguration();
-		List<CropType> cropTypeList = config.getCropList();
-		//Collections.sort(cropTypeList);
 		JPanel queuePanel = new JPanel(new BorderLayout());
-	    add(queuePanel, BorderLayout.SOUTH);  
-	    
+	    add(queuePanel, BorderLayout.SOUTH);   
 	    JPanel selectPanel = new JPanel(new FlowLayout());
-	        //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
 	    JLabel selectLabel = new JLabel(" Select from : ");
 	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
 	    selectPanel.add(selectLabel);
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
-	    // Create comboBoxModel
-		comboBoxModel = new DefaultComboBoxModel<CropType>();
+	    
+       	// 2014-12-09 Added crop combo box model.
+        CropConfig config = SimulationConfig.instance().getCropConfiguration();
+		List<CropType> cropTypeList = config.getCropList();
+		//2014-12-12 Enabled Collections.sorts by implementing Comparable<CropType> 
+		Collections.sort(cropTypeList);
 		cropCache = new ArrayList<CropType>(cropTypeList);
-		Iterator<CropType> i = cropCache.iterator();		
+		comboBoxModel = new DefaultComboBoxModel<CropType>();
+		Iterator<CropType> i = cropCache.iterator();
+
 		while (i.hasNext()) {
 			CropType c = i.next();
-			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
-			// b.setType(b.getNickName());
 	    	comboBoxModel.addElement(c);
 		}
 		//cropType = cropTypeList.get(0);
+		
 		// Create comboBox.
 		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" List of Crops "));
 		comboBox.setSelectedIndex(-1);
 
 		comboBox.addActionListener(new ActionListener() {

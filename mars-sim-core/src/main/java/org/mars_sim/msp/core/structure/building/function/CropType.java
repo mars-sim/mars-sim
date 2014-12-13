@@ -1,19 +1,21 @@
 /**
  * Mars Simulation Project
  * CropType.java
-* @version 3.07 2014-10-14
+* @version 3.07 2014-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 
+
+
 /**
  * The CropType class is a type of crop.
  */
 //2014-10-14 mkung: added new attribute: edibleBiomass. commented out ppf and photoperiod
 public class CropType
-implements Serializable {
+implements Serializable, Comparable<CropType> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -129,6 +131,17 @@ implements Serializable {
 	// 2014-12-09 Added toString() 
 	public String toString() {
 		return name;	
+	}
+
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * equal to, or greater than the specified object.
+	 */
+	// 2014-12-09 Added compareTo()
+	public int compareTo(CropType c) {
+		return name.compareToIgnoreCase(c.name);
 	}
 	
 }

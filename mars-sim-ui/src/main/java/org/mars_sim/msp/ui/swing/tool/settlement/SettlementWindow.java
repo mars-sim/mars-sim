@@ -1,12 +1,15 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2014-12-12
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,6 +29,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -104,7 +108,9 @@ public class SettlementWindow extends ToolWindow {
 		this.desktop = desktop;
 		
 		final SettlementWindow settlementWindow = this;
-		
+	
+	       
+	      
 		// Set the tool window to be maximizable.
 		setMaximizable(true);
 
@@ -180,6 +186,8 @@ public class SettlementWindow extends ToolWindow {
 
 		// Create open info button.
 		JButton openInfoButton = new JButton(Msg.getString("SettlementWindow.button.info")); //$NON-NLS-1$
+		openInfoButton.setPreferredSize(new Dimension(60, 20));
+		openInfoButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		openInfoButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.info")); //$NON-NLS-1$
 		openInfoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -223,6 +231,8 @@ public class SettlementWindow extends ToolWindow {
 
 		// 2014-10-25 Added Rename button for settlement name change
 		settlementNameChangeBtn = new JButton(RENAMEBTN);
+		settlementNameChangeBtn.setPreferredSize(new Dimension(60, 20));
+		settlementNameChangeBtn.setFont(new Font("Serif", Font.PLAIN, 9));
 		settlementNameChangeBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				renameSettlement();
