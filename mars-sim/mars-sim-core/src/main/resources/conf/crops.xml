@@ -9,8 +9,15 @@
 2. NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
 http://sourceforge.net/p/mars-sim/code/2842/
 3. Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
+4. For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
+5. http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
+ a. Vegetables that contain 92 percent water include 
+	cauliflower, eggplant, red cabbage, peppers and spinach. 
+ b. Broccoli is 91 percent water by weight. 
+ c. Additional healthy hydrating foods include carrots with 87 percent water and 
+	green peas and white potatoes with 79 percent water.
+    	
 
-For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 -->
 
 	<crop name="Cabbage" 
@@ -83,15 +90,16 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
         growing-time="75.0" 
     	crop-category="Legumes" 
     	edible-biomass="12.20" 
-    	edible-water-content=".12"
+    	edible-water-content=".79"
     	inedible-biomass="161.00" 
     	/>    	
+
     	
     <crop name="Peanut"
         growing-time="104.0" 
     	crop-category="Legumes" 
     	edible-biomass="6" 
-    	edible-water-content="5.6"
+    	edible-water-content=".056"
     	inedible-biomass="18" 
     	/>  
     	    	
@@ -115,7 +123,7 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
     	growing-time="100.0" 
     	crop-category="Tubers" 
     	edible-biomass="30"
-    	edible-water-content=".8"
+    	edible-water-content=".79"
     	inedible-biomass="20" 
     	/>
     	    	   	
@@ -165,11 +173,14 @@ For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
         growing-time="180" 
     	crop-category="Grasses" 
     	edible-biomass="100" 
-    	edible-water-content=".948" 
+    	edible-water-content=".75" 
     	inedible-biomass="200" 
     	/>		
     	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
-    	 100-300 MT/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%) 
+    	http://www.fao.org/es/faodef/fdef03e.HTM
+    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants. The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent. 
+    	The protein and fat content of both beets and cane is almost nil. 
+    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%) 
     	  -->    	
     	    
      <crop name="Ginger"
