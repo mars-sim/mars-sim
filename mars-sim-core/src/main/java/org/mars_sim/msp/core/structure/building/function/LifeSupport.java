@@ -56,7 +56,7 @@ implements Serializable {
     // CAUTION: DO NOT SET TICKS_PER_UPDATE to a multiple of N if there are N buildings with life-support function
     // set TICKS_PER_UPDATE to a default of 5 for a MD1 base. 
     // The bigger the number, the more erratic (and the less frequent) the temperature update
-    private static final int TICKS_PER_UPDATE = 5; 
+    private static final int TICKS_PER_UPDATE = 9; 
   	private static int count;
     // thermostat's allowance temperature setting
     // if T_SENSITIVITY is set to 2.0, 
