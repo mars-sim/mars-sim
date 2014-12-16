@@ -8,13 +8,17 @@ package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,6 +29,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -41,6 +46,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 
 /**
@@ -63,6 +69,7 @@ extends JDialog {
 	private boolean hasError;
 	private JLabel errorLabel;
 	private JButton createButton;
+	private Window window;
 
 	/**
 	 * Constructor
@@ -75,8 +82,10 @@ extends JDialog {
 
 		// Initialize data members.
 		this.config = config;
+		this.window = owner;
 		hasError = false;
 
+		
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -118,7 +127,7 @@ extends JDialog {
 		add(configurationButtonOuterPanel, BorderLayout.EAST);
 
 		// Create configuration button inner top panel.
-		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(2, 1));
+		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
 
 		// Create add settlement button.
@@ -144,7 +153,7 @@ extends JDialog {
 		// Create configuration button inner bottom panel.
 		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
-
+		
 		// Create default button.
 		JButton defaultButton = new JButton(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
 		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
@@ -186,6 +195,16 @@ extends JDialog {
 		});
 		bottomButtonPanel.add(createButton);
 
+		// 2014-12-15 Added Edit Alpha Crew button.
+		JButton alphaButton = new JButton(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+		alphaButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				editCrewProile("alpha");
+			}
+		});
+		bottomButtonPanel.add(alphaButton);
+
 		pack();
 
 		// Set the location of the dialog at the center of the screen.
@@ -208,6 +227,38 @@ extends JDialog {
 		settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
 	}
 
+	
+	/**
+	 * Edits team profile.
+	 */
+	private void editCrewProile(String crew) {
+		CrewEditor c = new CrewEditor(this, config);
+
+		Image img;
+	   	String IMAGE_DIR = "/images/";
+        String fullImageName = "LanderHab.png";
+        String fileName = fullImageName.startsWith("/") ?
+            	fullImageName :
+            	IMAGE_DIR + fullImageName;
+        URL resource = ImageLoader.class.getResource(fileName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		img = kit.createImage(resource);
+		c.setIconImage(img);
+        c.setVisible(true);
+
+		/*
+		java.awt.EventQueue.invokeLater(new Runnable() {
+		    @Override
+		    public void run() {
+		        c.toFront();
+		        c.repaint();
+		    }
+		});
+		*/
+	}
+
+	
+	
 	/**
 	 * Sets the default settlements from the loaded configuration.
 	 */

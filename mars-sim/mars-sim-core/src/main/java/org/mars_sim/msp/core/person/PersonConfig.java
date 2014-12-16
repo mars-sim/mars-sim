@@ -25,6 +25,12 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private List<String> alphaCrewName; // = new ArrayList<String>();
+	private List<String> alphaCrewGender; // = new ArrayList<String>();
+	private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
+	private List<String> alphaCrewJob; //  = new ArrayList<String>();
+	
+	
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
@@ -290,7 +296,13 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index) {
-		return getValueAsString(index,NAME);
+		//String s = getValueAsString(index,NAME);
+		//alphaCrewName.add(s);
+		//return s;	
+		if (alphaCrewName != null)
+			return alphaCrewName.get(index) ;
+		else 
+			return getValueAsString(index,NAME);
 	}
 
 	/**
@@ -300,7 +312,10 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public PersonGender getConfiguredPersonGender(int index) {
-		return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
+		if (alphaCrewGender != null)
+			return PersonGender.valueOfIgnoreCase(alphaCrewGender.get(index)) ;
+		else 
+			return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
 	}
 
 	/**
@@ -310,7 +325,10 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonPersonalityType(int index) {
-		return getValueAsString(index,PERSONALITY_TYPE);
+		if (alphaCrewPersonality != null)
+			return alphaCrewPersonality.get(index) ;
+		else
+			return getValueAsString(index,PERSONALITY_TYPE);
 	}
 
 	/**
@@ -330,9 +348,48 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonJob(int index) {
-		return getValueAsString(index,JOB);
+		if (alphaCrewJob != null)
+			return alphaCrewJob.get(index) ;
+		else
+			return getValueAsString(index,JOB);
 	}
 
+	public void setPersonName(int index, String value) {
+		if (alphaCrewName == null) 
+			alphaCrewName = new ArrayList<String>(4);
+		if (alphaCrewName.size() == 4) {
+			alphaCrewName.set(index, value);
+		} else
+			alphaCrewName.add(value);
+	}
+
+	public void setPersonPersonality(int index, String value) {
+		if (alphaCrewPersonality == null)  
+			alphaCrewPersonality = new ArrayList<String>(4);
+		if (alphaCrewPersonality.size() == 4) {
+			alphaCrewPersonality.set(index, value);
+		} else
+			alphaCrewPersonality.add(value);
+	}
+
+	public void setPersonGender(int index, String value) {
+		if (alphaCrewGender == null)  
+			alphaCrewGender = new ArrayList<String>(4);
+		if (alphaCrewGender.size() == 4) {
+			alphaCrewGender.set(index, value);
+		} else
+			alphaCrewGender.add(value);
+	}
+
+	public void setPersonJob(int index,String value) {
+		if (alphaCrewJob == null)  
+			alphaCrewJob = new ArrayList<String>(4);
+		if (alphaCrewJob.size() == 4) {
+			alphaCrewJob.set(index, value);
+		} else
+			alphaCrewJob.add(value);
+	}
+	
 	/**
 	 * Gets a map of the configured person's natural attributes.
 	 * @param index the person's index.
