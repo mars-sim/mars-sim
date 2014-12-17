@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -95,31 +95,31 @@ extends UnitTableModel {
 	static {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = "<html>Settlement<br>Name</html>";
+		columnNames[NAME] = "Settlement";
 		columnTypes[NAME] = String.class;
 		columnNames[GREENHOUSES] = "Greenhouses";
 		columnTypes[GREENHOUSES] = Integer.class;
-		columnNames[CROPS] = "<html>Total<br>Crops</html>";
+		columnNames[CROPS] = "# Crops";
 		columnTypes[CROPS] = Integer.class;	
-		columnNames[BULBS] = "<html>Bulb<br>Group</html>";
+		columnNames[BULBS] = "Bulbs";
 		columnTypes[BULBS] = Integer.class;
-		columnNames[FLOWERS] = "<html>Flower<br>Group</html>";
+		columnNames[FLOWERS] = "Flowers";
 		columnTypes[FLOWERS] = Integer.class;
-		columnNames[FRUITS] = "<html>Fruit<br>Group</html>";
+		columnNames[FRUITS] = "Fruits";
 		columnTypes[FRUITS] = Integer.class;
-		columnNames[GRAINS] = "<html>Grain<br>Group</html>";
+		columnNames[GRAINS] = "Grains";
 		columnTypes[GRAINS] = Integer.class;
-		columnNames[GRASSES] = "<html>Grass<br>Group</html>";
+		columnNames[GRASSES] = "Grasses";
 		columnTypes[GRASSES] = Integer.class;
-		columnNames[LEGUMES] = "<html>Legume<br>Group</html>";
+		columnNames[LEGUMES] = "Legumes";
 		columnTypes[LEGUMES] = Integer.class;
-		columnNames[ROOTS] = "<html>Root<br>Group</html>";
+		columnNames[ROOTS] = "Roots";
 		columnTypes[ROOTS] = Integer.class;
-		columnNames[SPICES] = "<html>Spice<br>Group</html>";
+		columnNames[SPICES] = "Spices";
 		columnTypes[SPICES] = Integer.class;
-		columnNames[TUBERS] = "<html>Tuber<br>Group</html>";
+		columnNames[TUBERS] = "Tubers";
 		columnTypes[TUBERS] = Integer.class;
-		columnNames[VEGETABLES] = "<html>Vegetable<br>Group</html>";
+		columnNames[VEGETABLES] = "Vegetables";
 		columnTypes[VEGETABLES] = Integer.class;
 		
 

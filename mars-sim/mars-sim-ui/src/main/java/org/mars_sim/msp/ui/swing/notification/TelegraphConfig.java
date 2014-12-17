@@ -203,7 +203,7 @@ public class TelegraphConfig {
 		outDuration = 250;
 		duration = 2000;
 		buttonEnabled = false;
-		buttonCaption = "OK";
+		buttonCaption = " OK ";
 		buttonIcon = null;
 		buttonAction = null;
 		stopOnMouseOver = false;

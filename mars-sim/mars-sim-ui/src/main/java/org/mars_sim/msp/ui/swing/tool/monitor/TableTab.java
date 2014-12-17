@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -19,12 +20,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -134,6 +137,13 @@ extends MonitorTab {
 						icon = descendingIcon;
 				}
 				cell.setIcon(icon);
+				// 2014-12-17 Added 
+				cell.setOpaque(true); 
+				//cell.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
+				//cell.setForeground(Color.WHITE);
+				//cell.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
+				MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
+				cell.setBorder(border);
 			}
 			return theResult;
 		}
@@ -231,7 +241,30 @@ extends MonitorTab {
 
             // 2014-11-11 Added auto resize
     		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-            
+    		
+    		// 2014-12-16 Added
+    		table.getTableHeader().setOpaque(false);
+    		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
+    		table.getTableHeader().setForeground( Color.WHITE); 
+    		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+    		// Font doesn't get rendered yet
+    		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
+    		table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
+    		// 255 228 225	MistyRose1
+    		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
+			// Font doesn't get rendered yet
+    		table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
+    		//table.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
+			table.setShowGrid(true);
+		    table.setShowVerticalLines(true);
+			table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
+			//table.setBounds(0, 0, 450, 400);
+			//Color color = UIManager.getColor("Table.gridColor");
+			//MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
+			//table.setBorder(border);
+			table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
+			//table.getTableHeader().setReorderingAllowed(false); 
+			
         	// Get the TableColumn header to display sorted column
         	JTableHeader theHeader = table.getTableHeader();
         	TableHeaderRenderer theRenderer =
