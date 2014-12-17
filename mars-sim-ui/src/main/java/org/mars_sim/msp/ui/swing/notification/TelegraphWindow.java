@@ -33,19 +33,24 @@
  */
 package org.mars_sim.msp.ui.swing.notification;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
+import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.mars_sim.msp.core.Simulation;
 import org.pushingpixels.trident.Timeline;
 
 /**
@@ -79,7 +84,12 @@ public class TelegraphWindow extends JWindow {
 	 * not...
 	 */
 	private boolean discarded = false;
-
+	
+	//2014-12-17 Added telegraph
+	private Telegraph telegraph; 
+	
+	// 2014-12-17 Added Timer	
+	private Timer pauseTimer;
 	/**
 	 * Default constructor which initializes everything...
 	 * 
@@ -91,11 +101,12 @@ public class TelegraphWindow extends JWindow {
 	 *            {@link #config}
 	 */
 	public TelegraphWindow(final String theTitle, final String theDescription,
-			final TelegraphConfig theConfig) {
+			final TelegraphConfig theConfig, Telegraph telegraph) {
 		super();
 		title = theTitle;
 		description = theDescription;
 		config = theConfig;
+		this.telegraph = telegraph;
 
 		// Creating borders...
 		getRootPane().setBorder(
@@ -151,7 +162,7 @@ public class TelegraphWindow extends JWindow {
 
 		// Creating the description
 		final String strDescription = String.format(
-				"<html><div style=\"width:%dpx;\">%s</div><html>", 200,
+				"<html><div style=\"width:%dpx;\">%s</div><html>", 190,
 				description);
 		final JLabel lblDescription = new JLabel(strDescription);
 
@@ -175,6 +186,11 @@ public class TelegraphWindow extends JWindow {
 			if (config.getButtonIcon() != null)
 				// Add it to the button
 				button.setIcon(config.getButtonIcon());
+				//2014-12-17 Added modifiers to button
+				//button.setOpaque(false); 
+				button.setContentAreaFilled(false);
+				button.setBorder(new LineBorder(Color.gray, 1, true));
+				//button.setBorderPainted(true);
 			// Add listener
 			button.addActionListener(new ActionListener() {
 				@Override
@@ -188,6 +204,8 @@ public class TelegraphWindow extends JWindow {
 			});
 			// Adding the button to the panel
 			contentPanel.add(button, "cell 1 2, align right");
+		//}
+		
 		}
 		// Setting content to the window
 		setContentPane(contentPanel);

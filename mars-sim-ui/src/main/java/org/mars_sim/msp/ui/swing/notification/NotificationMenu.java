@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NotificationMenu.java
- * @version 3.07 2014-12-05
+ * @version 3.07 2014-12-17
  * @author Manny Kung
  */
 
@@ -37,14 +37,17 @@ public class NotificationMenu implements ActionListener, MenuListener {
 	
 	// 2014-12-04 Added notification related items
 	private JCheckBoxMenuItem medicalMenuItem;
-	private JCheckBoxMenuItem malfunctionMenuItem;	
+	private JCheckBoxMenuItem malfunctionMenuItem;
+	// 2014-12-17 Added confirmMenuItem
+	private JRadioButtonMenuItem confirmMenuItem;
 	private JRadioButtonMenuItem threeMenuItem;
 	private JRadioButtonMenuItem twoMenuItem;
 	private JRadioButtonMenuItem oneMenuItem;
 	private JRadioButtonMenuItem showAllMenuItem ;
 	private JRadioButtonMenuItem showLastThreeMenuItem ;
 	private JRadioButtonMenuItem showLastOneMenuItem ;
-	
+	// 2014-12-17 Added isConfirmButtonEnabled
+	private boolean isConfirmEachEnabled  = false;
 	private boolean showMedical = true;
 	private boolean showMalfunction = true;
 	private boolean isSetQueueToEmpty = false;
@@ -69,6 +72,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		//notificationMenu.add(new JSeparator());
 		
 		JMenu typeItem = new JMenu("Message Type");
+		typeItem.setMnemonic(KeyEvent.VK_M);
 		notificationMenu.add(typeItem);
 
 		medicalMenuItem = new JCheckBoxMenuItem("Medical");
@@ -81,13 +85,26 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		malfunctionMenuItem.addActionListener(this);
 		typeItem.add(malfunctionMenuItem);
 
-		//notificationMenu.addSeparator();
+		typeItem.addSeparator();
+		
+		JLabel resetLabel = new JLabel("<html><font size=-2>"
+				+ "<font color=red>&nbsp;&nbsp;Note: any changes<br>&nbsp;&nbsp;may RESET Queue</font></font></html>");
+		typeItem.add(resetLabel);
+		
+
 			
 		JMenu displayTimeItem = new JMenu("Display Time");
+		typeItem.setMnemonic(KeyEvent.VK_T);
 		notificationMenu.add(displayTimeItem);
 
 		
 		ButtonGroup group = new ButtonGroup();
+		confirmMenuItem = new JRadioButtonMenuItem("Confirm Each");
+		//three.setSelected(true);
+		group.add(confirmMenuItem);
+		confirmMenuItem.addActionListener(this);
+		displayTimeItem.add(confirmMenuItem);
+		
 		threeMenuItem = new JRadioButtonMenuItem("3 Seconds");
 		//three.setSelected(true);
 		group.add(threeMenuItem);
@@ -110,6 +127,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		//notificationMenu.add(new JSeparator());
 		
 		JMenu queueItem = new JMenu("Queue Size");
+		typeItem.setMnemonic(KeyEvent.VK_S);
 		notificationMenu.add(queueItem);
 		
 		ButtonGroup group2 = new ButtonGroup();
@@ -152,7 +170,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		
 		notificationMenu.add(new JSeparator());
 		JMenuItem noteItem = new JMenuItem("<html><font size=-2>"
-		+ "Note: May Take Time for <br>Changes to Take Effect</font></html>");
+		+ "<font color=blue>Note: May take a few seconds<br>for changes to Take Effect</font></font></html>");
 		notificationMenu.add(noteItem);
 
 
@@ -206,7 +224,16 @@ public class NotificationMenu implements ActionListener, MenuListener {
 	public int getDisplayTime() {
 		return displayTime;
 	}
-
+	
+	/**
+	 * Gets the value of isConfirmButtonEnabled.
+	 * @return isConfirmButtonEnabled
+	 */
+	// 2014-12-17 Added getIsConfirmButtonEnabled()
+	public boolean getIsConfirmEachEnabled() {
+		return isConfirmEachEnabled;
+	}
+	
 	
 	
 	
@@ -235,6 +262,13 @@ public class NotificationMenu implements ActionListener, MenuListener {
 			//System.out.println("showMalfunction is " + showMalfunction);			
 		}
 		
+		// 2014-12-17 confirmMenuItem
+		if (selectedItem ==  confirmMenuItem){
+			if (confirmMenuItem.isSelected()) 
+				isConfirmEachEnabled = true;
+			else 
+				isConfirmEachEnabled = false;	
+		}
 		
 		if (selectedItem ==  threeMenuItem) displayTime = 3;
 		if (selectedItem ==  twoMenuItem) displayTime = 2;

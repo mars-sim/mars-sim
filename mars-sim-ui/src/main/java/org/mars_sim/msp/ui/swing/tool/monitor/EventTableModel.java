@@ -1,28 +1,30 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2014-12-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
-
 /**
  * This class provides a table model for use with the MonitorWindow that
  * provides a mean to display the Historical Event. This is actually an
@@ -30,7 +32,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
  */
 public class EventTableModel
 extends AbstractTableModel
-implements MonitorModel, HistoricalEventListener {
+implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -46,6 +48,10 @@ implements MonitorModel, HistoricalEventListener {
 	private static final int DESC = 4;
 	private static final int COLUMNCOUNT = 5;
 
+	// 2014-12-17 Added Timer and isPaused	
+	private Timer timer;
+	private boolean isPaused = false;
+	
 	/** Names of the displayed columns. */
 	static private String columnNames[];
 	/** Types of the individual columns. */
@@ -288,12 +294,33 @@ implements MonitorModel, HistoricalEventListener {
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
 		
+		// 2014-12-17 Added isPaused and if then else clause
+		//boolean isPaused = Simulation.instance().getMasterClock().isPaused();
+		if (isPaused) {
+			//System.out.println("EventTableModel.java : eventAdded(): isPaused is true");
+			timer = new Timer();
+			// Hold off making telegraph 3 seconds later
+			int seconds = 3;
+			timer.schedule(new CancelTimer(), seconds * 1000);	
+		}
+		else {
 		//System.out.println("EventTableModel.java : eventAdded() : index is " + index + ", event is " + event);
-		if ((index == 0) && (event != null)) {
-		    SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+			if ((index == 0) && (event != null) ) {
+			    SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+			}
 		}
 	}
 
+	
+	// 2014-12-17 Added CancelTimer
+	public class CancelTimer extends TimerTask {
+		@Override
+		public void run() {
+			//System.out.println("Terminated the Timer Thread!");
+			timer.cancel(); // Terminate the thread
+		}
+	}
+	
 	/**
 	 * A consecutive sequence of events have been removed from the manager.
 	 *
@@ -416,4 +443,15 @@ implements MonitorModel, HistoricalEventListener {
 			// Note: adding try-catch can cause UI significant slow down here
 	    }
 	}
+	
+	// 2014-12-17 Added clockPulse()
+	public void clockPulse(double time) {
+		isPaused = false;
+	}
+
+	// 2014-12-17 Added pauseChange()
+	public void pauseChange(boolean isPaused) {
+		isPaused = true;
+	};
+	
 }

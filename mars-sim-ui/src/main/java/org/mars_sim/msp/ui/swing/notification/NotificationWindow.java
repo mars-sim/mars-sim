@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NotificationWindow.java
- * @version 3.07 2014-12-10
+ * @version 3.07 2014-12-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.notification;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.notification.TelegraphConfig;
 import org.mars_sim.msp.ui.swing.notification.TelegraphPosition;
 import org.mars_sim.msp.ui.swing.notification.TelegraphQueue;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -39,7 +41,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 // 2014-11-29 Renamed NotificationManager to NotificationWindow 
 // 2014-11-29 Relocated its instantiation from EventTableModel to MonitorWindow
 // 2014-12-05 Added notification settings to msp
-public class NotificationWindow extends JDialog {
+public class NotificationWindow extends JDialog implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
 	/** The name of the tool the window is for. */
@@ -58,7 +60,7 @@ public class NotificationWindow extends JDialog {
 	private int maxNumMsgCache = 99;
 	private int displayTime = 2;
 	private int displayTimeCache = 2;	
-	private int messageCounter = 0;
+	//private int messageCounter = 0;
 	
 	protected String name;
 	//TODO: need to create an array of two element with name 
@@ -74,20 +76,26 @@ public class NotificationWindow extends JDialog {
 	private String oldMsgCache = "";
 	private boolean areAnySettingsChanged = false;
 	private Timer timer;
-	
 	private MainDesktopPane desktop;
+	
+	// 2014-12-17 Added isPaused	
+	private boolean isPaused = false;
+	private NotificationMenu nMenu;
 	
 	public NotificationWindow(MainDesktopPane desktop) {
 		this.desktop = desktop;
 		telegraphQueue = new TelegraphQueue();
+		Simulation.instance().getMasterClock().addClockListener(this);
 	}
 
 	public void checkSetting() {
-		NotificationMenu nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+
+		nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 
 		isSetQueueEmpty = nMenu.getIsSetQueueEmpty();	
 		if (isSetQueueEmpty != isSetQueueEmptyCache ) {
 			areAnySettingsChanged = true;
+			emptyQueue();
 			isSetQueueEmptyCache = isSetQueueEmpty;
 		}
 		
@@ -95,12 +103,14 @@ public class NotificationWindow extends JDialog {
 		showMedical = nMenu.getShowMedical();	
 		if (showMedical != showMedicalCache ) {
 			areAnySettingsChanged = true;
+			emptyQueue();
 			showMedicalCache = showMedical;
 		}
 
 		showMalfunction = nMenu.getShowMalfunction();
 		if (showMalfunction != showMalfunctionCache ) {
 			areAnySettingsChanged = true;
+			emptyQueue();
 			showMalfunctionCache = showMalfunction;
 		}
 		
@@ -111,10 +121,9 @@ public class NotificationWindow extends JDialog {
 			maxNumMsg = 0;
 
 			timer = new Timer();
-			// 2014-12-10 Hold off so that no new messages will 
-			// display messages next 5 seconds. 
-			int seconds = 5;
-			timer.schedule(new NextTask(), seconds * 1000);		
+			// 2014-12-10 Hold off for 3 seconds. 
+			int seconds = 3;
+			timer.schedule(new CancelTimer(), seconds * 1000);		
 
 			maxNumMsgCache = maxNumMsg;
 		}
@@ -127,11 +136,11 @@ public class NotificationWindow extends JDialog {
 		
 	}
 	
-
-	public class NextTask extends TimerTask {
+	// 2014-12-10 Added Timer
+	public class CancelTimer extends TimerTask {
 		@Override
 		public void run() {
-			System.out.println("Terminated the Timer Thread!");
+			//System.out.println("Terminated the Timer Thread!");
 			timer.cancel(); // Terminate the thread
 		}
 	}
@@ -160,41 +169,41 @@ public class NotificationWindow extends JDialog {
 	public void setupTelegraph(HistoricalEvent event, 
 			String message, String header) {
 
-		int qSize = 0;
+		int sizeOfQueue = 0;
 		Queue<Telegraph> telegraphList = telegraphQueue.getQueue();
 		if (telegraphList != null)
-			qSize = telegraphList.size();
+			sizeOfQueue = telegraphList.size();
 		//System.out.println("sendAlert(); queue size was " + telegraphList.size());// + telegraphList.element());
-
 		checkSetting();
 		
 		if (areAnySettingsChanged) {
-			// start a new queue
-			emptyQueue();
-			messageCounter = 0;
+			//emptyQueue();
+			//messageCounter = 0;
 		}
-
 		//Color GREEN_CYAN = new Color(0, 255, 128);
 		//Color PURPLE_BLUE = new Color(39, 16, 167);		
 		//Color BLUE_CYAN = new Color(0, 128, 255);
-		Color BURGANDY = new Color(148, 28, 10);
 		//Color ORANGE = new Color(255, 128, 0);
+		Color BURGANDY = new Color(148, 28, 10);
 		Color ORANGE = new Color(255, 176, 13);
 		
 		String msg = generateMsg(event, message);	
-				
-			if (!oldMsgCache.equals(msg)
-					&& (messageCounter <= maxNumMsg) ) {		
 
+			if (!oldMsgCache.equals(msg)
+					&& (sizeOfQueue <= maxNumMsg) ) {		
+				
 				telegraphConfig = new TelegraphConfig();
-				messageCounter++;
 
 				header = "<html><CENTER><i><b><h3>" 
 						+ header + "</h3></b></i></CENTER></html>";
 				//telegraphConfig.setButtonIcon();
 				telegraphConfig.setWindowWidth(80);
 				telegraphConfig.setWindowHeight(80);
-
+				
+				// 2014-12-17 Added if clause 
+				if (nMenu.getIsConfirmEachEnabled()) 
+					telegraphConfig.setButtonEnabled(true);
+				
 				telegraphConfig.setBackgroundColor(ORANGE);
 				telegraphConfig.setTitleColor(BURGANDY);
 				//telegraphConfig.setTitleFont(font);
@@ -212,21 +221,25 @@ public class NotificationWindow extends JDialog {
 			}	
 	}
 	
-	public void sendTelegraph(
-			TelegraphConfig telegraphConfig, 
+	public void sendTelegraph(TelegraphConfig telegraphConfig, 
 			String msg, String header) {
 				
-				telegraph = new Telegraph(
-						header, 
-						msg,
-						telegraphConfig) ;
-
-				telegraphQueue.add(telegraph);
-
-				oldMsgCache = msg;
-				//messageCounter--;
-			
+		// 2014-12-17 Added isPaused and if then else clause
+		//boolean isPaused = Simulation.instance().getMasterClock().isPaused();
+		if (isPaused) {
+			System.out.println("NotificationWindow.java : sendTelegraph() : isPaused is true");
+			timer = new Timer();
+			// Hold off 3 seconds
+			int seconds = 3;
+			timer.schedule(new CancelTimer(), seconds * 1000);	
 		}
+		else {
+			telegraph = new Telegraph(header, msg, telegraphConfig) ;
+			telegraphQueue.add(telegraph);
+			oldMsgCache = msg;
+			//messageCounter++;	
+		}
+	}
 
 	public void validateMsg(HistoricalEvent event) {
 			
@@ -576,5 +589,16 @@ public class NotificationWindow extends JDialog {
 //		return 	"<html><i><b>" 
 //				+ msg + "</b></i></html>";
 	    return "<i><b>" + msg + "</b></i>";
+	}
+
+
+	// 2014-12-17 Added clockPulse()
+	public void clockPulse(double time) {
+		isPaused = false;
+	}
+
+	// 2014-12-17 Added pauseChange()
+	public void pauseChange(boolean isPaused) {
+		isPaused = true;
 	};
 }

@@ -35,7 +35,11 @@ package org.mars_sim.msp.ui.swing.notification;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.swing.notification.audio.AudioCallback;
 import org.pushingpixels.trident.Timeline;
 
@@ -47,7 +51,7 @@ import org.pushingpixels.trident.Timeline;
  * @version 2.1
  * @since 2.0
  */
-public class Telegraph {
+public class Telegraph implements ClockListener {
 	/**
 	 * The message title
 	 */
@@ -81,6 +85,10 @@ public class Telegraph {
 	 */
 	private Timeline timelineAway;
 
+	// 2014-12-17 Added Timer	
+	private Timer pauseTimer;
+	private boolean isPaused = false;
+	
 	/**
 	 * @param title
 	 *            The telegraph title.
@@ -94,6 +102,9 @@ public class Telegraph {
 		config = new TelegraphConfig();
 		// Use it right now for this object
 		configure();
+		// 2014-12-17 Added addClockListener()
+		Simulation.instance().getMasterClock().addClockListener(this);
+
 	}
 
 	/**
@@ -112,6 +123,8 @@ public class Telegraph {
 		this.config = config;
 		// Call the configuration of this object
 		configure();
+		// 2014-12-17 Added addClockListener()
+		Simulation.instance().getMasterClock().addClockListener(this);
 	}
 
 	/**
@@ -124,12 +137,22 @@ public class Telegraph {
 	public TelegraphConfig getConfig() {
 		return config;
 	}
-
+/*	
+	// 2014-12-17 Added
 	public Timeline getTimelineStay() {
 		return timelineStay;
 	}
 
+	// 2014-12-17 Added
+	public Timeline getTimelineIntro() {
+		return timelineIntro;
+	}
 	
+	// 2014-12-17 Added
+	public Timeline getTimelineAway() {
+		return timelineAway;
+	}
+	*/
 	
 	/**
 	 * Checks if the animation is still running.
@@ -144,12 +167,23 @@ public class Telegraph {
 				.isDone() && timelineStay.isDone() && timelineAway.isDone());
 	}
 
+	
+	// 2014-12-17 Added CancelTimer
+	public class CancelTimer extends TimerTask {
+		@Override
+		public void run() {
+			//System.out.println("Terminated the Timer Thread!");
+			pauseTimer.cancel(); // Terminate the thread
+		}
+	}
+
+	
 	/**
 	 * Applies the configuration to the current {@link Telegraph} object.
 	 */
 	private void configure() {
 		// Create a new telegraph window
-		window = new TelegraphWindow(title, description, config);
+		window = new TelegraphWindow(title, description, config, this);
 
 		// Set the window height and width
 		config.setWindowHeight(window.getHeight());
@@ -167,59 +201,83 @@ public class Telegraph {
 		// Add the callback to the main timeline
 		AudioCallback audioCallback = new AudioCallback(this, timelineStay);
 		timelineIntro.addCallback(audioCallback);
-
-		// If the window doesn't have a button
-		if (!config.isButtonEnabled()) {
-			// If there's a stop on mouse over
-			if (config.isStoppedOnMouseOver())
-				// Add a new listener
-				window.addMouseListener(new MouseListener() {
-					@Override
-					public void mouseClicked(final MouseEvent e) {
-					}
-
-					@Override
-					public void mousePressed(final MouseEvent e) {
-					}
-
-					@Override
-					public void mouseReleased(final MouseEvent e) {
-					}
-
-					@Override
-					public void mouseEntered(final MouseEvent e) {
-						// If the window is in position
-						if (timelineIntro.isDone() && !timelineStay.isDone())
-							// Suspend animation
-							timelineStay.suspend();
-					}
-
-					@Override
-					public void mouseExited(final MouseEvent e) {
-						// Window is still in position
-						if (timelineIntro.isDone() && !timelineStay.isDone())
-							// Resume animation
-							timelineStay.resume();
-					}
-				});
-
-			// Configure the time the window should wait in the screen
-			timelineStay.setDuration(config.getDuration());
-			timelineStay.addCallback(new SimpleCallback(timelineAway));
-		}
-		// Add duration
-		timelineIntro.setDuration(config.getInDuration());
-
-		// Configure the end animation, when the window goes away
-		timelineAway.addPropertyToInterpolate("position",
-				config.getFinalCoordinates(), config.getInitialCoordinates());
-		timelineAway.setDuration(config.getOutDuration());
-		timelineAway.addCallback(new EndCallback(window));
-
-		// Set the last timeline
-		window.setTimeline(timelineAway);
+	
+			// If the window doesn't have a button
+			if (!config.isButtonEnabled()) {
+				// If there's a stop on mouse over
+				if (config.isStoppedOnMouseOver())
+					// Add a new listener
+					window.addMouseListener(new MouseListener() {
+						@Override
+						public void mouseClicked(final MouseEvent e) {
+						}
+	
+						@Override
+						public void mousePressed(final MouseEvent e) {
+						}
+	
+						@Override
+						public void mouseReleased(final MouseEvent e) {
+						}
+	
+						@Override
+						public void mouseEntered(final MouseEvent e) {
+							// If the window is in position
+							if (timelineIntro.isDone() && !timelineStay.isDone())
+								// Suspend animation
+								timelineStay.suspend();
+						}
+	
+						@Override
+						public void mouseExited(final MouseEvent e) {
+							// Window is still in position
+							if (timelineIntro.isDone() && !timelineStay.isDone())
+								// Resume animation
+								timelineStay.resume();
+						}
+					});
+	
+				// Configure the time the window should wait in the screen
+				timelineStay.setDuration(config.getDuration());
+				timelineStay.addCallback(new SimpleCallback(timelineAway));
+			}
+			// Add duration
+			timelineIntro.setDuration(config.getInDuration());
+	
+			// Configure the end animation, when the window goes away
+			timelineAway.addPropertyToInterpolate("position",
+					config.getFinalCoordinates(), config.getInitialCoordinates());
+			timelineAway.setDuration(config.getOutDuration());
+			timelineAway.addCallback(new EndCallback(window));
+	
+			// Set the last timeline
+			window.setTimeline(timelineAway);
+			
+			checkSimulationPause();
 	}
 
+	// 2014-12-17 Added checkSimulationPause()
+	public void checkSimulationPause() {
+		if (isPaused) {
+			// If the window is in position
+			if (timelineIntro.isDone() && !timelineStay.isDone())
+				// Suspend animation
+			timelineStay.suspend();
+	    	//System.out.println("checkSimulationPause() : timelineStay just got suspended");
+			pauseTimer = new Timer();
+			// Hold off 3 seconds 
+			int seconds = 3;
+			pauseTimer.schedule(new CancelTimer(), seconds * 1000);	
+			//timelineStay.resume();
+			isPaused = Simulation.instance().getMasterClock().isPaused();
+		}
+		else {		
+			// Window is still in position
+			if (timelineIntro.isDone() && !timelineStay.isDone())
+				// Resume animation
+			timelineStay.resume();
+		}	
+	}
 	/**
 	 * Plays the animation.
 	 */
@@ -235,5 +293,34 @@ public class Telegraph {
 		// If there's still an object reference, dispose it
 		if (window != null)
 			window.dispose();
+	}
+
+
+	// 2014-12-17 Added clockPulse()
+	public void clockPulse(double time) {
+		/* // 2014-12-17 Added Thread t
+		Thread t = new Thread(new Runnable() {
+		    public void run() { 
+		    	checkSimulationPause();
+		    	//System.out.println("just got out of checkSimulationPause()");
+		    }});
+		t.start();	
+		*/
+		// Window is still in position
+		isPaused = false;
+		if (timelineIntro.isDone() && !timelineStay.isDone())
+			// Resume animation
+			timelineStay.resume();
+	}
+
+
+	// 2014-12-17 Added pauseChange()
+	public void pauseChange(boolean isPaused) {
+		// If the window is in position
+		isPaused = true;
+		if (timelineIntro.isDone() && !timelineStay.isDone())
+			// Suspend animation
+			timelineStay.suspend();
+		
 	}
 }
