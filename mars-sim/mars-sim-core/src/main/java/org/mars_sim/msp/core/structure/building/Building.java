@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -62,7 +64,8 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  * The Building class is a settlement's building.
  */
 public class Building
-implements Malfunctionable, Serializable, Comparable<Building>,
+extends Unit
+implements Malfunctionable, Serializable, // Comparable<Building>,
 LocalBoundedObject, InsidePathLocation {
 
 	/** default serial id. */
@@ -119,6 +122,9 @@ LocalBoundedObject, InsidePathLocation {
 	// 2014-11-27 Added description
 	protected String description = "Stay tuned";
 	
+	/** Unit location coordinates. */
+	private Coordinates location;// = manager.getSettlement().getCoordinates();
+	
 	/** Constructor 1
 	 * Constructs a Building object.
 	 * @param template the building template.
@@ -138,6 +144,7 @@ LocalBoundedObject, InsidePathLocation {
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
 		
 		this.manager = manager;
+		this.location = manager.getSettlement().getCoordinates();
 		
 		heatMode = HeatMode.POWER_DOWN;
 		//count++;
@@ -160,6 +167,9 @@ LocalBoundedObject, InsidePathLocation {
 	//2014-10-27  changed variable "name" to "buildingType"
 	public Building(int id, String buildingType, String nickName, double width, double length, 
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
+		
+		super(nickName, manager.getSettlement().getCoordinates());
+		
 		//logger.info("constructor2 : purple width is " + width);	
 		//logger.info("constructor2 : purple length is " + length);	
 		//logger.info("constructor2 : blue width is " + this.width);
@@ -240,7 +250,9 @@ LocalBoundedObject, InsidePathLocation {
 
 	//Constructor 3
 	/** Empty constructor. */
-	protected Building() {}
+	protected Building(BuildingManager manager) {
+		super("Mock Building", null);
+	}
 
 
 	/**

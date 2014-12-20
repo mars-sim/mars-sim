@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2014-11-18
+ * @version 3.07 2014-12-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -34,6 +34,15 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -45,6 +54,7 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -59,7 +69,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class MainDesktopPane
 extends JDesktopPane
-implements ComponentListener {
+implements ComponentListener, UnitListener, UnitManagerListener { // addBuildingPlacementListener
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -86,7 +96,13 @@ implements ComponentListener {
 	private final AudioPlayer soundPlayer;
 	/** The desktop popup announcement window. */
 	private final AnnouncementWindow announcementWindow;
-
+	
+	// 2014-12-19 Added settlementWindow
+	private SettlementWindow settlementWindow;
+	private Building building;
+	private Settlement settlement;
+	private boolean isTransportingBuilding = false;
+	
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main outer window
@@ -132,6 +148,19 @@ implements ComponentListener {
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
+		
+		// 2014-12-19 Added addUnitManagerListener & addUnitListener()
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		unitManager.addUnitManagerListener(this);		
+		Collection<Settlement> settlements = unitManager.getSettlements();
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		//settlement = settlementList.get(0);
+		//List<Building> buildings = settlement.getBuildingManager().getBuildings();
+		//building = buildings.get(0);
+		Iterator<Settlement> i = settlementList.iterator();
+		while (i.hasNext()) {
+			i.next().addUnitListener(this);			
+		}
 	}
 
 	/** Returns the MainWindow instance
@@ -232,6 +261,13 @@ implements ComponentListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(settlementWindow);
 
+		setSettlementWindow(settlementWindow);
+		// Prepare Building Editor
+		//BuildingEditor buildingEditor = new BuildingEditor(this, building);
+		//try { buildingEditor.setClosed(true); }
+		//catch (PropertyVetoException e) { }
+		//toolWindows.add(buildingEditor);
+		
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try { scienceWindow.setClosed(true); }
@@ -752,5 +788,67 @@ implements ComponentListener {
 	 */
 	public static EmptyBorder newEmptyBorder() {
 		return new EmptyBorder(1,1,1,1);
+	}
+
+	public void setSettlementWindow(SettlementWindow settlementWindow) {
+		this.settlementWindow = settlementWindow;
+	}
+
+	public boolean getIsTransportingBuilding() {
+		return isTransportingBuilding;
+	}
+	
+	public Settlement getSettlement() {
+		return settlement;
+	}
+	
+	// 2014-12-19 Added unitUpdate()
+	public void unitUpdate(UnitEvent event) {
+		UnitEventType eventType = event.getType();
+		if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			//logger.info(" The building from ADD_BUILDING_EVENT is " + building);
+			isTransportingBuilding = true;
+			closeToolWindow(SettlementWindow.NAME);
+			Object target = event.getTarget();
+			building = (Building) target; // overwrite the dummy building object made by the constructor
+			BuildingManager mgr = building.getBuildingManager();
+			settlement = mgr.getSettlement();
+			//System.out.println("MainDesktopPane : The settlement is " + settlement);
+			// Select the relevant settlement
+			settlementWindow.setCurrentSettlement(settlement);
+			// Open Settlement Map Tool
+			openToolWindow(SettlementWindow.NAME);	
+			SettlementMapPanel settlementMapPanel = settlementWindow.getMapPanel();
+			//settlementMapPanel.setSettlement(settlement); // not working
+			double xLoc = building.getXLocation();
+			double yLoc = building.getYLocation();
+			double scale = settlementMapPanel.getScale();
+			//System.out.println("scale is " + scale + "  xLoc is "+ xLoc + "  yLoc is "+yLoc);
+			settlementMapPanel.reCenter();
+			settlementMapPanel.moveCenter(xLoc*scale, yLoc*scale);
+			settlementMapPanel.setShowBuildingLabels(true);
+			repaint();		
+			isTransportingBuilding = false;
+			//openToolWindow(BuildingEditor.NAME);
+			// Q: should I pause? desktop.getMainWindow().pauseSimulation();
+		    /*EventQueue.invokeLater(new Runnable() {
+		            public void run() {
+		                new JOptionTimeTest().createGUI();
+		            }
+		        });*/
+		}
+	}
+
+	// 2014-12-19 Added unitManagerUpdate
+	public void unitManagerUpdate(UnitManagerEvent event) {
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		Collection<Settlement> settlements = unitManager.getSettlements();
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		Iterator<Settlement> i = settlementList.iterator();
+		while (i.hasNext()) {
+			if (!i.next().hasUnitListener(this))
+				i.next().addUnitListener(this);			
+		}
+	
 	}
 }

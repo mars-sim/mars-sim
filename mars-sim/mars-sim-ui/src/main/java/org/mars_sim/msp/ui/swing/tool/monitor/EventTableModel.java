@@ -299,7 +299,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		if (isPaused) {
 			//System.out.println("EventTableModel.java : eventAdded(): isPaused is true");
 			timer = new Timer();
-			// Hold off making telegraph 3 seconds later
+			// Hold off 3 seconds
 			int seconds = 3;
 			timer.schedule(new CancelTimer(), seconds * 1000);	
 		}

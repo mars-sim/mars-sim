@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-12
+ * @version 3.07 2014-12-20
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +19,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +29,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,11 +39,15 @@ import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.JSliderMW;
@@ -100,7 +103,7 @@ public class SettlementWindow extends ToolWindow {
 	 * Constructor.
 	 * @param desktop the main desktop panel.
 	 */
-	public SettlementWindow(MainDesktopPane desktop) {
+	public SettlementWindow(final MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
@@ -108,12 +111,11 @@ public class SettlementWindow extends ToolWindow {
 		this.desktop = desktop;
 		
 		final SettlementWindow settlementWindow = this;
-	
-	       
-	      
+	 
 		// Set the tool window to be maximizable.
 		setMaximizable(true);
 
+		
 		// Create content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
@@ -191,12 +193,10 @@ public class SettlementWindow extends ToolWindow {
 		openInfoButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.info")); //$NON-NLS-1$
 		openInfoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				Settlement settlement = mapPane.getSettlement();
-				
+				Settlement settlement = mapPane.getSettlement();				
 				if (settlement != null) {
 					// 2014-10-26 obtained settlement object
-					setCurrentSettlement(settlement);
-					
+					setCurrentSettlement(settlement);					
 					getDesktop().openUnitWindow(settlement, false);
 				}
 			}
@@ -210,23 +210,40 @@ public class SettlementWindow extends ToolWindow {
 			@Override
 			public void itemStateChanged(ItemEvent event) {
 				// Set settlement to draw map for.
-				Settlement settlement = (Settlement) event.getItem();
-				mapPane.setSettlement(settlement);
-				// 2014-10-26 obtained settlement object
-				setCurrentSettlement(settlement);
-				
-				// Note: should we recenter map each time we change settlements?
+				// 2014-12-19 Added if else clause for selecting the settlement at which the new building is arriving 
+				if (desktop.getIsTransportingBuilding()) {
+					// may sometimes cause StackOverflowError
+					//if (desktop.getSettlement() =! null) {
+						settlementListBox.setSelectedItem(settlement); //desktop.getSettlement()); 
+						//settlement = desktop.getSettlement();
+					//}
+				}
+				else {
+					settlement = (Settlement) event.getItem();
+				//}
+					mapPane.setSettlement(settlement);
+					// 2014-10-26 obtained settlement object
+					//setCurrentSettlement(settlement);	
+					// Note: should we recenter map each time we change settlements?
+				}
+				repaint();
 			} 
 		});
 		widgetPane.add(settlementListBox);
 
 		if (settlementListBox.getModel().getSize() > 0) {
-			settlementListBox.setSelectedIndex(0);
-			settlement = (Settlement) settlementListBox.getSelectedItem();
+			//settlementListBox.setSelectedIndex(0);
+			//settlement = (Settlement) settlementListBox.getSelectedItem();
+			// 2014-12-20 Added if else clause in support of transporting/placing a new building
+			if (desktop.getIsTransportingBuilding()) 
+				settlement = desktop.getSettlement();
+			else
+				settlement = (Settlement) settlementListBox.getSelectedItem();
 			// 2014-10-25 obtained settlement object
 			mapPane.setSettlement(settlement);
 			setCurrentSettlement(settlement);
-				//System.out.println("settlement is "+ settlement);
+			settlementListBox.setSelectedItem(settlement);
+			//System.out.println("settlement is "+ settlement);
 		}
 
 		// 2014-10-25 Added Rename button for settlement name change
@@ -336,7 +353,18 @@ public class SettlementWindow extends ToolWindow {
 			}
 		});
 		buttonsPane.add(labelsButton);
-		
+		/*
+		// Create editor button.
+		JButton editorButton = new JButton(Msg.getString("SettlementWindow.button.editor")); //$NON-NLS-1$
+		editorButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.editor")); //$NON-NLS-1$
+		editorButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				//desktop.unitUpdate(null);
+					new BuildingEditor(desktop, settlement);
+			}
+		});
+		buttonsPane.add(editorButton);
+		*/
 		// Pack window.
 		pack();
 	}
@@ -454,7 +482,9 @@ public class SettlementWindow extends ToolWindow {
 	 */
 	private class SettlementComboBoxModel
 	extends DefaultComboBoxModel<Object>
-	implements UnitManagerListener {
+	implements 
+	UnitManagerListener,
+	UnitListener {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -463,30 +493,34 @@ public class SettlementWindow extends ToolWindow {
 		 * Constructor.
 		 */
 		public SettlementComboBoxModel() {
-
 			// User DefaultComboBoxModel constructor.
 			super();
-
 			// Initialize settlement list.
 			updateSettlements();
-
 			// Add this as a unit manager listener.
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
+			// 2014-12-19 Added addUnitListener
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+			Iterator<Settlement> i = settlementList.iterator();
+			while (i.hasNext()) {
+				i.next().addUnitListener(this);			
+			}
 		}
 
 		/**
 		 * Update the list of settlements.
 		 */
 		private void updateSettlements() {
-
-			Settlement selectedSettlement = (Settlement) getSelectedItem();
-
+			//Settlement selectedSettlement = (Settlement) getSelectedItem();
 			// 2014-10-26 obtained settlement object
-			setCurrentSettlement(selectedSettlement);
-			
+			//if (selectedSettlement != null) {
+			//	setSelectedItem(selectedSettlement);
+				// 2014-10-26 obtained settlement object
+			//	setCurrentSettlement(selectedSettlement);
+			//}
 			removeAllElements();
-
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 			Collections.sort(settlements);
@@ -494,12 +528,6 @@ public class SettlementWindow extends ToolWindow {
 			Iterator<Settlement> i = settlements.iterator();
 			while (i.hasNext()) {
 				addElement(i.next());
-			}
-
-			if (selectedSettlement != null) {
-				setSelectedItem(selectedSettlement);
-				// 2014-10-26 obtained settlement object
-				setCurrentSettlement(selectedSettlement);
 			}
 		}
 
@@ -509,7 +537,24 @@ public class SettlementWindow extends ToolWindow {
 				updateSettlements();
 			}
 		}
-
+		
+		//2014-12-19 Added unitUpdate()
+		public void unitUpdate(UnitEvent event) {	
+			// Note: Easily 100+ UnitEvent calls every second
+			UnitEventType eventType = event.getType();
+			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+				Object target = event.getTarget();
+				Building building = (Building) target; // overwrite the dummy building object made by the constructor
+				BuildingManager mgr = building.getBuildingManager();
+				settlement = mgr.getSettlement();
+				mapPane.setSettlement(settlement);
+				settlementListBox.setSelectedItem(settlement);
+				//System.out.println("SettlementWindow : The settlement the new building is transporting to is " + settlement);
+				// Select the relevant settlement
+				pack();
+			}
+		}
+		
 		/**
 		 * Prepare class for deletion.
 		 */
@@ -517,6 +562,13 @@ public class SettlementWindow extends ToolWindow {
 			removeAllElements();
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.removeUnitManagerListener(this);
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+			Iterator<Settlement> i = settlementList.iterator();
+			while (i.hasNext()) {
+				i.next().removeUnitListener(this);			
+			}
+			
 		}
 	}
 }

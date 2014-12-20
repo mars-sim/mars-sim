@@ -151,7 +151,7 @@ implements Serializable {
 				String buildingType = buildingElement.getAttributeValue(TYPE);				
 				// 2014-10-28  Created a building nickname for every building 
 				// by appending the settlement id and building id to that building's type.
-				UnitManager unitManager = Simulation.instance().getUnitManager();				
+				//UnitManager unitManager = Simulation.instance().getUnitManager();				
 				int sid;
 				String settlementID;
 				sid = scenarioID + 1;

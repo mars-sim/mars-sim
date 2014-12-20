@@ -224,6 +224,7 @@ extends JPanel {
 //			}
 //			catch (BuildingException e) {}
 		}		
+		
         // Prepare medical care panel if building has medical care.
         if (building.hasFunction(BuildingFunction.MEDICAL_CARE)) {
 //        	try {

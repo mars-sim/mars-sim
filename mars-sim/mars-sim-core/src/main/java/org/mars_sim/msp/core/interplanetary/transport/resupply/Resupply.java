@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2014-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -81,6 +83,7 @@ implements Serializable, Transportable {
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
+	private boolean isTransportingBuilding = false;
 	/**
 	 * Constructor.
 	 * @param arrivalDate the arrival date of the supplies. 
@@ -314,11 +317,9 @@ implements Serializable, Transportable {
         // Deliver buildings.
         BuildingManager buildingManager = settlement.getBuildingManager();
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
-        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
+        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();      
         while (buildingI.hasNext()) {
-            BuildingTemplate template = buildingI.next();
-            
-            
+            BuildingTemplate template = buildingI.next();    
             // Check if building template position/facing collides with any 
             // existing buildings/vehicles/construction sites.
             if (checkBuildingTemplatePosition(template)) {
@@ -346,15 +347,18 @@ implements Serializable, Transportable {
                 BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), template.getNickName(), width, 
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
                 
-                buildingManager.addBuilding(correctedTemplate,  true);
+                //buildingManager.addBuilding(correctedTemplate,  true);
+                confirmBuildingLocation(correctedTemplate, buildingManager);
             }
             else {
-                // Determine location and facing for the new building.
-                BuildingTemplate positionedTemplate = positionNewResupplyBuilding(template.getType());
-                buildingManager.addBuilding(positionedTemplate, true);
-            }
-        }
+                // 2014-12-19 Added confirmBuildingLocation()
+            	//isTransportingBuilding = true;
+                confirmBuildingLocation(template, buildingManager);        	
+            } // end of else {    
+        } // end of while (buildingI.hasNext())
         
+        //isTransportingBuilding = false;
+ 
         // Deliver vehicles.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<String> vehicleI = getNewVehicles().iterator();
@@ -405,6 +409,7 @@ implements Serializable, Transportable {
         }
         
         // Deliver immigrants.
+        // TODO : add a crew editor for user to define what team and who to send
         Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
         for (int x = 0; x < getNewImmigrantNum(); x++) {
@@ -419,8 +424,37 @@ implements Serializable, Transportable {
             immigrants.add(immigrant);
             logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
         }
+    
     }
     
+    // 2014-12-19 Added confirmBuildingLocation()
+	public void confirmBuildingLocation(BuildingTemplate template, BuildingManager buildingManager) {
+		BuildingTemplate positionedTemplate = null;
+         // Determine location and facing for the new building.
+  		positionedTemplate = positionNewResupplyBuilding(template.getType());
+  		//buildingManager.setBuildingArrived(true);
+  		Building newBuilding = buildingManager.addOneBuilding(positionedTemplate, true);
+  		// set settlement based on where this building is located
+  		// important for MainDesktopPane to look up this settlement variable when placing/transporting building 
+  		settlement = newBuilding.getBuildingManager().getSettlement();
+  		String name = newBuilding.getNickName();
+        String message = "Do you like to place " + name + " at this location on the map?";
+        String title = "Building Transport";
+		int reply = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+				try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {}
+			    }
+			else {
+			    buildingManager.removeBuilding(newBuilding);
+			    confirmBuildingLocation(template, buildingManager);
+			    try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e2) {}
+			    }
+	}
+		
     /**
      * Orders the new buildings with non-connector buildings first and connector buildings last.
      * @return list of new buildings.
@@ -558,7 +592,7 @@ implements Serializable, Transportable {
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
                 // TODO : 2014-10-29 Added buildingNickName
                 String buildingNickName = settlement.getBuildingManager().getBuildingNickName(buildingType);                
-                
+                // TODO : ask for user to define the location for the new building as well
                 newPosition = new BuildingTemplate(buildingID, buildingType, buildingNickName, width, length, 0D, 0D, 
                         RandomUtil.getRandomDouble(360D));
             }

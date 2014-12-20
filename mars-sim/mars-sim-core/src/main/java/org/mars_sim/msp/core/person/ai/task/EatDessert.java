@@ -46,7 +46,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatDessert.class.getName());
+	//private static Logger logger = Logger.getLogger(EatDessert.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(

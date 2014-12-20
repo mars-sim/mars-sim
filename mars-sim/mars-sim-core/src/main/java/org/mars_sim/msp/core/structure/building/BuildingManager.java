@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2014-12-20
  * @author Scott Davis
  */
 
@@ -68,8 +68,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The BuildingManager manages the settlement's buildings.
  */
-public class BuildingManager
-implements Serializable {
+public class BuildingManager implements Serializable {
+//,ClockListener, BuildingListener{
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -117,11 +117,12 @@ implements Serializable {
                 addBuilding(template, false);
             }
         }
-
-
         // Initialize building value caches.
         buildingValuesNewCache = new HashMap<String, Double>();
         buildingValuesOldCache = new HashMap<String, Double>();
+        
+        // 2014-12-19 Added listeners
+    	//listeners = Collections.synchronizedList(new ArrayList<BuildingListener>());
     }
 
     /**
@@ -133,6 +134,7 @@ implements Serializable {
         return settlement;
     }
 
+ 
     /**
      * Adds a new building to the settlement.
      * @param newBuilding the building to add.
@@ -141,13 +143,14 @@ implements Serializable {
     public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
         if (!buildings.contains(newBuilding)) {
             buildings.add(newBuilding);
-
+    		//logger.info("addBuilding() : a new building has just been added");
             // Create new building connections if needed.
             if (createBuildingConnections) {
                 settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
             }
-
-            settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+            //((Object) newBuilding).fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
+            //unitManager.addUnit(newBuilding);
         }
     }
 
@@ -165,6 +168,7 @@ implements Serializable {
             oldBuilding.removeFunctionsFromSettlement();
 
             buildings.remove(oldBuilding);
+    		logger.info("removeBuilding() : a new building has just been removed");
 
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }
@@ -176,10 +180,27 @@ implements Serializable {
      * @param createBuildingConnections true if automatically create building connections.
      */
     public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-        Building newBuilding = new Building(template, this);
+        Building newBuilding = new Building(template, this); 
         addBuilding(newBuilding, createBuildingConnections);
     }
+    
+    /**
+     * Adds a building with a template to the settlement.
+     * @param template the building template.
+     * @param createBuildingConnections true if automatically create building connections.
+     * @return newBuilding
+     */
+    // 2014-12-19 Added addOneBuilding()
+    public Building addOneBuilding(BuildingTemplate template, boolean createBuildingConnections) {
+        Building newBuilding = new Building(template, this);
+		//System.out.println("BuildingManager.java : addBuilding() : isBuildingArrived is " + isBuildingArrived);
+        //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);            
+    	//logger.info("addBuilding() : just fired PLACE_BUILDING_EVENT");
+        addBuilding(newBuilding, createBuildingConnections);
+        return newBuilding;
+    }
 
+    
     /**
      * Gets the settlement's collection of buildings.
      *
@@ -198,8 +219,7 @@ implements Serializable {
         return new ArrayList<Building>(buildingsNickNames);
     }
 
-    
-    
+  
     /**
      * Checks if the settlement contains a given building.
      * @param building the building.
@@ -1024,4 +1044,5 @@ implements Serializable {
         buildingValuesOldCache = null;
         lastBuildingValuesUpdateTime = null;
     }
+
 }
