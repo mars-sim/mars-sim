@@ -3,16 +3,26 @@ package org.mars_sim.msp.core.structure.building;
 import java.util.ArrayList;
 
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 
+@SuppressWarnings("serial")
 public class MockBuilding extends Building {
 
     public MockBuilding() {
-        this(null);
+        this(null, null);
     }
-    
-	public MockBuilding(BuildingManager manager)  {
+    public MockBuilding(BuildingManager manager)  {
+		super(null, manager);
+		buildingType = "Mock Building";
+		this.manager = manager;
+		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
+		functions = new ArrayList<Function>();
+		functions.add(new LifeSupport(this, 10, 1));
+	}
+	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
+		super(template, manager);
 		buildingType = "Mock Building";
 		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
@@ -24,7 +34,7 @@ public class MockBuilding extends Building {
 	    this.id = id;
 	}
 	
-	public void setName(String type) {
+	public void setBuildingType(String type) {
 	    this.buildingType = type;
 	}
 	

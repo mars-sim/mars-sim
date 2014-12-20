@@ -108,10 +108,11 @@ implements ClockListener {
 	}
 	
 	/** Constructor 2
-	 * A panel for displaying a settlement map.
+	 * A panel for initializing the display of a building svg image.
 	 */
 	// 2014-11-04 Added this constructor for loading an svg image
 	// for the selected building in unit window's building tab
+	// Called by BuildingPanel.java
 	public SettlementMapPanel(Settlement settlement, Building building) {
 		// Use JPanel constructor.
 		super();
@@ -153,6 +154,7 @@ implements ClockListener {
 	public Settlement getSettlement() {
 		return settlement;
 	}
+
 
 	/**
 	 * Sets the settlement to display.

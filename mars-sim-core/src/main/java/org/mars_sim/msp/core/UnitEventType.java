@@ -3,7 +3,7 @@ package org.mars_sim.msp.core;
 /**
  * Mars Simulation Project
  * UnitEventType.java
- * @version 3.07 2014-10-17 
+ * @version 3.07 2014-12-19 
  * @author stpa
  * 
  */
@@ -56,6 +56,7 @@ public enum UnitEventType {
 
 	// from BuildingManager.java
 	ADD_BUILDING_EVENT				("add building"),
+	//PLACE_BUILDING_EVENT			("place building"),
 	REMOVE_BUILDING_EVENT			("remove building"),
 
 	// from Farming.java

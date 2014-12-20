@@ -388,7 +388,12 @@ implements ActionListener, MenuListener {
 			if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
 			else desktop.closeToolWindow(SettlementWindow.NAME);
 		}
-
+		// 	2014-12-19 Added buildingEditorWindow
+		//if (selectedItem == buildingEditorToolItem) {
+		//	if (buildingEditorToolItem.isSelected()) desktop.openToolWindow(BuildingEditorWindow.NAME);
+		//	else desktop.closeToolWindow(BuildingEditorWindow.NAME);
+		//}
+		
 		if (selectedItem == scienceToolItem) {
 			if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
 			else desktop.closeToolWindow(ScienceWindow.NAME);
