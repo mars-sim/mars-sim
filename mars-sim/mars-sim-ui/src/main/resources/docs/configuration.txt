@@ -17,6 +17,8 @@ construction.xml: Modify or create new construction sites for constructing
                
 crops.xml:        Modify or add new crops that settlers can grow in 
                   greenhouses.
+
+foodProduction.xml  Modify or add food technology related processes.
            
 landmarks.xml:    Modify or add landmarks.
                
@@ -24,6 +26,8 @@ malfunctions.xml: Modify or create new malfunctions that can occur
                   in the simulation.
                   
 manufacturing.xml: Modify or create new manufacturing processes.  
+
+meals.xml:		Modify or create new meal recipes.                  
                   
 medical.xml:      Modify or create new illnesses or treatments.
 
