@@ -11,13 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 //import java.util.logging.Logger;
 
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 
 /**
  * A building template information.
  */
+// 2014-12-23 Added Comparable<BuildingTemplate>
 public class BuildingTemplate
-implements Serializable {
+implements Serializable , Comparable<BuildingTemplate>{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -204,4 +207,11 @@ implements Serializable {
 			return result;
 		}
 	}
+
+    // 2014-12-23 Added compareTo()
+	public int compareTo(BuildingTemplate o) {
+		int compareId = ((BuildingTemplate) o).id;
+		return this.id - compareId;
+	}
+	
 }
