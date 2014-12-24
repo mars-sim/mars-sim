@@ -331,6 +331,8 @@ implements Serializable, Transportable {
         buildingManager.setResupply(this);
         
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+        // 2014-12-23 Added sorting orderedBuildings according to its building id
+        Collections.sort(orderedBuildings);
         Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
         int size = orderedBuildings.size();
         int i = 0;
@@ -371,8 +373,10 @@ implements Serializable, Transportable {
                 else 
                 	buildingManager.addBuilding(correctedTemplate,  true);
 
-            }
-            else { // when building is not a default MD Phase 1 Resupply Mission and NO pre-made template is available
+            } // end of if (checkBuildingTemplatePosition(template)) {
+            
+            else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
+            	   // or when the building's designated location has already been occupied 
             	if (UITakeOver)
                     // 2014-12-19 Added confirmBuildingLocation()
             		// 2014-12-23 Added 2nd and 3rd parameter
