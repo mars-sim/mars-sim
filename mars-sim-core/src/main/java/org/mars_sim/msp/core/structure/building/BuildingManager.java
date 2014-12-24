@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -87,6 +88,9 @@ public class BuildingManager implements Serializable {
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private MarsClock lastBuildingValuesUpdateTime;
+    
+    // 2014-12-23 Added resupply
+    private Resupply resupply;
 
     /**
      * Constructor to construct buildings from settlement config template.
@@ -149,7 +153,7 @@ public class BuildingManager implements Serializable {
                 settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
             }
              settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-            //((Object) newBuilding).fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
+            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
             //unitManager.addUnit(newBuilding);
         }
     }
@@ -190,17 +194,25 @@ public class BuildingManager implements Serializable {
      * @param createBuildingConnections true if automatically create building connections.
      * @return newBuilding
      */
-    // 2014-12-19 Added addOneBuilding()
-    public Building addOneBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-        Building newBuilding = new Building(template, this);
+    // 2014-12-19 Added addOneBuilding(). Called by confirmBuildingLocation() in Resupply.java
+    public Building addOneBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
+        this.resupply = resupply;
+    	Building newBuilding = new Building(template, this);
 		//System.out.println("BuildingManager.java : addBuilding() : isBuildingArrived is " + isBuildingArrived);
         //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);            
     	//logger.info("addBuilding() : just fired PLACE_BUILDING_EVENT");
         addBuilding(newBuilding, createBuildingConnections);
         return newBuilding;
     }
-
     
+    // 2014-12-23 Added getResupply()
+    public Resupply getResupply() {
+    	return resupply;
+    }
+    // 2014-12-23 Added setResupply()
+    public void setResupply(Resupply resupply) {
+    	this.resupply= resupply; 
+    }
     /**
      * Gets the settlement's collection of buildings.
      *

@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
@@ -102,7 +103,10 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 	private Building building;
 	private Settlement settlement;
 	private boolean isTransportingBuilding = false;
-	
+
+	// 2014-12-23 Added transportWizard
+	private final TransportWizard transportWizard;
+
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main outer window
@@ -148,6 +152,12 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
+		
+		// 2014-12-23 Added transportWizard
+		// Prepare announcementWindow.
+		transportWizard = new TransportWizard(this);
+		try { transportWizard.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
 		
 		// 2014-12-19 Added addUnitManagerListener & addUnitListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -685,7 +695,6 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		announcementWindow.pack();
 		announcementWindow.setVisible(true);
 	}
-
 	/**
 	 * Removes the popup announcement window from the desktop.
 	 */
@@ -693,6 +702,57 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		announcementWindow.dispose();
 	}
 
+	
+	/**
+	 * Updates the look & feel of the announcement window.
+	 */
+	void updateAnnouncementWindowLF() {
+	    if (announcementWindow != null) {
+	        SwingUtilities.updateComponentTreeUI(announcementWindow);
+	    }
+	}
+
+	/**
+	 * Opens a transport wizard on the desktop.
+	 * @param announcement the announcement text to display.
+	 */
+	// 2014-12-23 Added openTransportWizard()
+	public void openTransportWizard(BuildingManager mgr, Building building) {
+		//transportWizard.setAnnouncement(announcement);
+		transportWizard.setup(mgr, building);
+		transportWizard.pack();
+		add(transportWizard, 0);
+		//int Xloc = (getWidth() - transportWizard.getWidth()) / 2;
+		//int Yloc = (getHeight() - transportWizard.getHeight()) / 2;
+		//transportWizard.setLocation(Xloc, Yloc);
+		Point location = MouseInfo.getPointerInfo().getLocation();
+		transportWizard.setLocation(location);		
+		
+
+		// Note: second window packing seems necessary to get window
+		// to display components correctly.
+		transportWizard.pack();
+		transportWizard.setVisible(true);
+	}
+	/**
+	 * Removes the transport wizard from the desktop.
+	 */
+	// 2014-12-23 Added disposeTransportWizard()
+	public void disposeTransportWizard() {
+		transportWizard.dispose();
+	}
+
+	
+	/**
+	 * Updates the look & feel of the Transport Wizard.
+	 */
+	// 2014-12-23 Added updateTransportWizardLF()
+	void updateTransportWizardLF() {
+	    if (transportWizard != null) {
+	        SwingUtilities.updateComponentTreeUI(transportWizard);
+	    }
+	}
+	
 	/**
 	 * Updates the look & feel for all tool windows.
 	 */
@@ -704,15 +764,7 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 //			toolWindow.pack();
 		}
 	}
-	
-	/**
-	 * Updates the look & feel of the announcement window.
-	 */
-	void updateAnnouncementWindowLF() {
-	    if (announcementWindow != null) {
-	        SwingUtilities.updateComponentTreeUI(announcementWindow);
-	    }
-	}
+
 
 	/**
 	 * Opens all initial windows based on UI configuration.
@@ -805,14 +857,28 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
-		if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-			//logger.info(" The building from ADD_BUILDING_EVENT is " + building);
-			isTransportingBuilding = true;
-			closeToolWindow(SettlementWindow.NAME);
-			Object target = event.getTarget();
+		Object target = event.getTarget();
+		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
+			//Settlement s = (Settlement) target; // overwrite the dummy building object made by the constructor
+			//BuildingManager mgr = s.getBuildingManager();
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
+			mgr.getResupply().setUITakeOver(true);
+		}
+		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
+			disposeTransportWizard();
+			getMainWindow().unpauseSimulation();
+		}		
+		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			//logger.info(" The building from ADD_BUILDING_EVENT is " + building);
+			building = (Building) target; // overwrite the dummy building object made by the constructor
+			BuildingManager mgr = building.getBuildingManager();
+			disposeTransportWizard();
+			//isTransportingBuilding = true;
+			closeToolWindow(SettlementWindow.NAME);
 			settlement = mgr.getSettlement();
+			
+			openTransportWizard(mgr, building); 
 			//System.out.println("MainDesktopPane : The settlement is " + settlement);
 			// Select the relevant settlement
 			settlementWindow.setCurrentSettlement(settlement);
@@ -827,10 +893,8 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 			settlementMapPanel.reCenter();
 			settlementMapPanel.moveCenter(xLoc*scale, yLoc*scale);
 			settlementMapPanel.setShowBuildingLabels(true);
-			repaint();		
-			isTransportingBuilding = false;
-			//openToolWindow(BuildingEditor.NAME);
-			// Q: should I pause? desktop.getMainWindow().pauseSimulation();
+			repaint();
+			getMainWindow().pauseSimulation();
 		    /*EventQueue.invokeLater(new Runnable() {
 		            public void run() {
 		                new JOptionTimeTest().createGUI();
