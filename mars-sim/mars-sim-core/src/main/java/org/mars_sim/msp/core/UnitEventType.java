@@ -8,7 +8,7 @@ package org.mars_sim.msp.core;
  * 
  */
 public enum UnitEventType {
-
+	
 	// from Crewable.java but was never used
 	CREW_CAPACITY_EVENT				("crew capacity event"),
 
@@ -56,8 +56,9 @@ public enum UnitEventType {
 
 	// from BuildingManager.java
 	ADD_BUILDING_EVENT				("add building"),
-	//PLACE_BUILDING_EVENT			("place building"),
 	REMOVE_BUILDING_EVENT			("remove building"),
+	START_BUILDING_PLACEMENT_EVENT	("start building placement"),
+	FINISH_BUILDING_PLACEMENT_EVENT	("finish building placement"),
 
 	// from Farming.java
 	CROP_EVENT						("crop event"),

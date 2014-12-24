@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -25,6 +27,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -83,7 +86,13 @@ implements Serializable, Transportable {
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
-	private boolean isTransportingBuilding = false;
+	//private boolean isTransportingBuilding = false;
+	//2014-12-23 Added data members
+	private boolean userAcceptance;
+	private Timer pauseTimer;
+	private boolean UITakeOver = false;
+	private BuildingManager buildingManager;
+	
 	/**
 	 * Constructor.
 	 * @param arrivalDate the arrival date of the supplies. 
@@ -316,9 +325,18 @@ implements Serializable, Transportable {
         
         // Deliver buildings.
         BuildingManager buildingManager = settlement.getBuildingManager();
+        
+        // 2014-12-23 Added setBuildingManager() and setResupply()
+        setBuildingManager(buildingManager);
+        buildingManager.setResupply(this);
+        
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
-        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();      
+        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
+        int size = orderedBuildings.size();
+        int i = 0;
+        Building aBuilding = buildingManager.getBuildings().get(0);
         while (buildingI.hasNext()) {
+	        settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);  
             BuildingTemplate template = buildingI.next();    
             // Check if building template position/facing collides with any 
             // existing buildings/vehicles/construction sites.
@@ -347,17 +365,27 @@ implements Serializable, Transportable {
                 BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), template.getNickName(), width, 
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
                 
-                //buildingManager.addBuilding(correctedTemplate,  true);
-                confirmBuildingLocation(correctedTemplate, buildingManager);
+                if (UITakeOver)
+                	// 2014-12-23 Added 2nd and 3rd parameter
+                	confirmBuildingLocation(correctedTemplate, buildingManager, true);
+                else 
+                	buildingManager.addBuilding(correctedTemplate,  true);
+
             }
-            else {
-                // 2014-12-19 Added confirmBuildingLocation()
-            	//isTransportingBuilding = true;
-                confirmBuildingLocation(template, buildingManager);        	
-            } // end of else {    
+            else { // when building is not a default MD Phase 1 Resupply Mission and NO pre-made template is available
+            	if (UITakeOver)
+                    // 2014-12-19 Added confirmBuildingLocation()
+            		// 2014-12-23 Added 2nd and 3rd parameter
+            		confirmBuildingLocation(template, buildingManager, false);    
+            	else 
+            		buildingManager.addBuilding(template, false);
+            } // end of else {  
+            i++;
+	        if (i == size) 
+	        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
         } // end of while (buildingI.hasNext())
         
-        //isTransportingBuilding = false;
+        UITakeOver = false;
  
         // Deliver vehicles.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -427,34 +455,80 @@ implements Serializable, Transportable {
     
     }
     
+    public void setBuildingManager(BuildingManager buildingManager) {
+    	this.buildingManager = buildingManager;
+    }
+    
+    
+    /**
+     * Asks user to confirm the location of the new building.
+     * @param template
+     * @param buildingManager 
+     * @param isMarsDirectResupplyMission
+     */
     // 2014-12-19 Added confirmBuildingLocation()
-	public void confirmBuildingLocation(BuildingTemplate template, BuildingManager buildingManager) {
+    // 2014-12-23 Added isMarsDirectResupplyMission parameter
+	public synchronized void confirmBuildingLocation(BuildingTemplate template, BuildingManager buildingManager, boolean isMarsDirectResupplyMission) {
 		BuildingTemplate positionedTemplate = null;
+		Building newBuilding = null;
+	    //final int TIME_OUT = 20;
+	    //int count = TIME_OUT;
+	    //pauseTimer = new Timer();
+		// Hold off 10 seconds 
+		//int seconds = 10;
+
          // Determine location and facing for the new building.
-  		positionedTemplate = positionNewResupplyBuilding(template.getType());
-  		//buildingManager.setBuildingArrived(true);
-  		Building newBuilding = buildingManager.addOneBuilding(positionedTemplate, true);
+		if (isMarsDirectResupplyMission)
+			newBuilding = buildingManager.addOneBuilding(template, this, true);
+		else {
+			positionedTemplate = positionNewResupplyBuilding(template.getType());
+			//buildingManager.setBuildingArrived(true);
+			newBuilding = buildingManager.addOneBuilding(positionedTemplate, this, true);
+		}
   		// set settlement based on where this building is located
   		// important for MainDesktopPane to look up this settlement variable when placing/transporting building 
   		settlement = newBuilding.getBuildingManager().getSettlement();
   		String name = newBuilding.getNickName();
         String message = "Do you like to place " + name + " at this location on the map?";
-        String title = "Building Transport";
+        String title = "Transport Wizard";
 		int reply = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION);
-			if (reply == JOptionPane.YES_OPTION) {
-				try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {}
-			    }
-			else {
-			    buildingManager.removeBuilding(newBuilding);
-			    confirmBuildingLocation(template, buildingManager);
-			    try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e2) {}
-			    }
+			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
+  		//Simulation.instance().getMasterClock().setPaused(true);	
+		//pauseTimer.schedule(new CancelTimer(), seconds * 1000);	
+  		//logger.info("userAcceptance is " + userAcceptance);
+  		//if (userAcceptance) {
+		if (reply == JOptionPane.YES_OPTION) {
+	        //settlement.fireUnitUpdate(UnitEventType.BUILDING_PLACED_EVENT, newBuilding);  
+            logger.info("Building in Placed : " + newBuilding.toString());
+		}
+		else { //userAcceptance = false;
+			buildingManager.removeBuilding(newBuilding);
+			confirmBuildingLocation(template, buildingManager, false);
+			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
+		}
 	}
 		
+	public class CancelTimer extends TimerTask {
+		@Override
+		public void run() {
+			//System.out.println("Terminated the Timer Thread!");
+			pauseTimer.cancel(); // Terminate the thread
+		}
+	}
+	
+	public void setUserAcceptance(boolean value) {
+		userAcceptance = value;
+	}
+	
+	public void setUITakeOver(boolean value) {
+		UITakeOver = value;
+	}
+	
+	
+	public boolean getUserAcceptance() {
+		return userAcceptance;
+	}
+	
     /**
      * Orders the new buildings with non-connector buildings first and connector buildings last.
      * @return list of new buildings.
