@@ -265,6 +265,7 @@
 			<entity name="manufacture" />
 			<entity name="eva suit" />
 			<entity name="areothermal power source" />
+			<entity name="cooking" />
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-.1" />
@@ -311,6 +312,7 @@
 			<entity name="farming" />
 			<entity name="manufacture" />
 			<entity name="rover" />
+			<entity name="cooking" />
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
@@ -331,7 +333,7 @@
 		<repair-time value="500.0" />
 		<emergency-repair-time value="100.0" />
 		<entity-list>
-			<entity name="dining" />
+			<entity name="cooking" />
 			<entity name="rover" />
 		</entity-list>
 		<effect-list>
