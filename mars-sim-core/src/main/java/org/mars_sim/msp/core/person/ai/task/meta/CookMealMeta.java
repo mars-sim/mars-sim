@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMealMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-12-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -48,9 +48,7 @@ public class CookMealMeta implements MetaTask {
 
             try {
                 // See if there is an available kitchen.
- 			        Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
-			        Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
-			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
+                Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
 
 				if (kitchenBuilding != null) {
 				 
@@ -60,13 +58,11 @@ public class CookMealMeta implements MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
 
-                    
-                    // Check if there is enough food available to cook.
-                    //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    //double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    //double freshFoodAvailable = kitchen.getTotalFreshFood();
-                 	//logger.info(" freshFoodAvailable : " + freshFoodAvailable);
-                    //if (freshFoodAvailable < foodRequired) result = 0D;
+                    // Check if there are any meal recipes with available ingredients at kitchen.
+                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+                    if (kitchen.getMealRecipesWithAvailableIngredients().size() == 0) {
+                        result = 0D;
+                    }
                 }
             }
             catch (Exception e) {

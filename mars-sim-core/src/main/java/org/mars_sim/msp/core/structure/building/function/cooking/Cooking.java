@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-12-12
+ * @version 3.07 2014-12-25
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -35,7 +36,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 
 /**
  * The Cooking class is a building function for cooking meals.
@@ -166,7 +166,7 @@ implements Serializable {
 		    // get ingredientDryWeight for each ingredient
 	        double ingredientDryWeight = 0;
 	        int l;
-	        for(l = 1; l < ingredientList.size(); l++) {
+	        for(l = 0; l < ingredientList.size(); l++) {
 	        	ingredientDryWeight = fraction * waterContentList.get(l) + proportionList.get(l) ;
 	        	ingredientDryWeight = Math.round(ingredientDryWeight* 1000000.0) / 1000000.0; // round up to 0.0000001 or 1mg
 	        	//System.out.println("ingredientDryWeight is " + ingredientDryWeight);
@@ -379,43 +379,50 @@ implements Serializable {
         cookingWorkTime = 0D;
     }
 
-    // 2014-11-30 Added pickAMeal() 
+    /**
+     * Chooses a hot meal recipe that can be cooked here.
+     * @return hot meal or null if none available.
+     */
  	public HotMeal pickAMeal() {
  
- 		int size = 0;
-    	if (mealConfigMealList == null)
-    		size = 0;
-    	else 
-    		size = mealConfigMealList.size();
-    	//System.out.println(" hotMeals.size() is " + size);
-        
- 	  	//int upperbound = 10;
-    	//int lowerbound = 0;
-    	//int number = ThreadLocalRandom.current().nextInt(upperbound + 1);
-    	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
-    	//logger.info(" random # is " + number);
- 		availableNumOfMeals = availableNumOfMeals % size;
-    	
-	 	HotMeal aMeal; // = new HotMeal();
-    	
-	 	aMeal = mealConfigMealList.get(availableNumOfMeals);
-			
-    	//logger.info(" meal# is " + number);
-    	
-    	availableNumOfMeals++;
-    	return aMeal;
+ 	    HotMeal result = null;
+ 	    
+ 	    // Determine list of meal recipes with available ingredients.
+ 	    List<HotMeal> availableMeals = getMealRecipesWithAvailableIngredients();
+ 	    
+ 	    // Randomly choose a meal recipe from those available.
+ 	    if (availableMeals.size() > 0) {
+ 	        int mealIndex = RandomUtil.getRandomInt(availableMeals.size() - 1);
+ 	        result = availableMeals.get(mealIndex);
+ 	    }
+ 	    
+ 	    return result;
 	}
+ 	
+ 	/**
+ 	 * Gets a list of hot meal recipes that have available ingredients.
+ 	 * @return list of hot meal recipes.
+ 	 */
+ 	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
+ 	    
+ 	    List<HotMeal> result = new ArrayList<HotMeal>(mealConfigMealList.size());
+ 	    
+ 	    Iterator<HotMeal> i = mealConfigMealList.iterator();
+ 	    while (i.hasNext()) {
+ 	        HotMeal meal = i.next();
+ 	        if (checkAmountAvailable(meal)) {
+ 	            result.add(meal);
+ 	        }
+ 	    }
+ 	    
+ 	    return result;
+ 	}
 	
     /**
      * Adds cooking work to this facility. 
      * The amount of work is dependent upon the person's cooking skill.
      * @param workTime work time (millisols) 
      */
-    // 2014-10-08 Rewrote this function to highlight the while loop. 
-    // 					moved remaining tasks into a new method cookingChoice()
-    // 2014-10-15 Fixed the no available food crash by checking if the total food available
-    //  				is more than 0.5 kg
- 	// 2014-11-30 Added new features to cooking by calling pickAMeal() and cookAHotMeal()
     public void addWork(double workTime) {
     	cookingWorkTime += workTime;       
         //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
@@ -428,16 +435,21 @@ implements Serializable {
     		// pick a meal whose ingredients are available
     		while (!exit) {
     			aMeal = pickAMeal();
-    			boolean isAmountAV = checkAmountAvailable(aMeal);
-    			if (isAmountAV) {
-    				cookAHotMeal(aMeal);
-    				exit = true;
+    			if (aMeal != null) {
+    			    boolean isAmountAV = checkAmountAvailable(aMeal);
+    			    if (isAmountAV) {
+    			        cookAHotMeal(aMeal);
+    			        exit = true;
+    			    }
+    			}
+    			else {
+    			    exit = true;
     			}
     		}
     		
     	}
      	
-     } // end of void addWork()
+     }
 	
    /* 
     // 2014-12-01 Created getMealServings()  

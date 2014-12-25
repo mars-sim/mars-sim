@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2014-11-30
+ * @version 3.07 2014-12-25
  * @author Scott Davis
  * 
  */
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -67,9 +69,14 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
+import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
+import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -119,6 +126,8 @@ implements Serializable {
     private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .6D;
+    private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
+    private static final double SOYMILK_DESSERT_FACTOR = 1D;
 
     // Data members
     private Settlement settlement;
@@ -313,6 +322,12 @@ implements Serializable {
  
             //2014-11-25 Add Food Production demand.
             demand += getResourceFoodProductionDemand(resource);
+            
+            // Add demand for the resource as a cooked meal ingredient.
+            demand += getResourceCookedMealIngredientDemand(resource);
+            
+            // Add soy milk dessert demand.
+            demand += getSoymilkDessertDemand(resource);
 
             // Add construction demand.
             demand += getResourceConstructionDemand(resource);
@@ -341,30 +356,22 @@ implements Serializable {
      * @return demand (kg)
      * @throws Exception if error getting life support demand.
      */
-    // 2014-12-03 Added if (resource.isEdible()) 
     private double getLifeSupportDemand(AmountResource resource) {
-    	
-		String resourceName = resource.getName();
-    	//logger.info(" resource is " + resource.getName());
 		
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-            //if (resource.equals(oxygen)) 
-            	if (resourceName == "oxygen")
-            		amountNeededSol = config.getOxygenConsumptionRate();
-            //AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-            //if (resource.equals(water)) 
-            	if (resourceName == "water")
-            		amountNeededSol = config.getWaterConsumptionRate();
-            //AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-            //if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
-
-            // 2014-12-03 Added checking for a variety of food items
-   			if ( resource.isEdible() )
-				amountNeededSol = config.getFoodConsumptionRate();
-  
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            if (resource.equals(oxygen)) 
+                amountNeededSol = config.getOxygenConsumptionRate();
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            if (resource.equals(water)) 
+                amountNeededSol = config.getWaterConsumptionRate();
+            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+            if (resource.equals(food)) {
+                amountNeededSol = config.getFoodConsumptionRate();
+            }
+   			
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
@@ -523,34 +530,32 @@ implements Serializable {
             double spicesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(spices));
             double grainsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(grains));
             */            
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING).iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                if (building.hasFunction(BuildingFunction.FARMING)) {
-                    Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
+                Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
-                    double amountNeeded = 0D;
-                    if (resource.equals(wasteWater)) 
-                        amountNeeded = Crop.WASTE_WATER_NEEDED;
-                    else if (resource.equals(carbonDioxide))
-                        amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
+                double amountNeeded = 0D;
+                if (resource.equals(wasteWater)) 
+                    amountNeeded = Crop.WASTE_WATER_NEEDED;
+                else if (resource.equals(carbonDioxide))
+                    amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
-                    // 2014-11-30 Created getTotalDemand()
-                    demand = getTotalDemand(foodValueList, farm, amountNeeded);
-                    
-                    //demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
-                    // 2014-11-06 Added soybeans and soymilk
-                    //demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
-                    //demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
-                    
-                    // 2014-10-15 Added 5 new food groups
-                    /*demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
+                // 2014-11-30 Created getTotalDemand()
+                demand += getTotalDemand(foodValueList, farm, amountNeeded);
+
+                //demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
+                // 2014-11-06 Added soybeans and soymilk
+                //demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
+                //demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
+
+                // 2014-10-15 Added 5 new food groups
+                /*demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * fruitsValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * spicesValue) / amountNeeded;
                     demand += (farm.getEstimatedHarvestPerOrbit() * grainsValue) / amountNeeded;
-					*/
-                }
+                 */
             }
         }
 
@@ -782,6 +787,59 @@ implements Serializable {
             demand = (1D / totalItems) * totalInputsValue;
         }
 
+        return demand;
+    }
+    
+    /**
+     * Gets the demand for a resource as a cooked meal ingredient.
+     * @param resource the amount resource.
+     * @return demand (kg)
+     */
+    private double getResourceCookedMealIngredientDemand(AmountResource resource) {
+        double demand = 0D;
+        
+        // Determine total demand for cooked meal mass for the settlement.
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+        double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        int numPeople = settlement.getAllAssociatedPeople().size();
+        double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+        
+        // Determine demand for the resource as an ingredient for each cooked meal recipe.
+        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+        Iterator<HotMeal> i = mealConfig.getMealList().iterator();
+        while (i.hasNext()) {
+            HotMeal meal = i.next();
+            Iterator<Ingredient> j = meal.getIngredientList().iterator();
+            while (j.hasNext()) {
+                Ingredient ingredient = j.next();
+                if (ingredient.getName().equalsIgnoreCase(resource.getName())) {
+                    demand += ingredient.getProportion() * cookedMealDemand * COOKED_MEAL_INPUT_FACTOR;
+                }
+            }
+        }
+        
+        return demand;
+    }
+    
+    /**
+     * Gets the demand for soymilk as a dessert food.
+     * @param resource the amount resource.
+     * @return demand (kg)
+     */
+    private double getSoymilkDessertDemand(AmountResource resource) {
+        double demand = 0D;
+        
+        AmountResource soymilk = AmountResource.findAmountResource("soymilk");
+        if (resource.equals(soymilk)) {
+        
+            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+            double amountNeededSol = config.getFoodConsumptionRate();
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            int numPeople = settlement.getAllAssociatedPeople().size();
+            return numPeople * amountNeededOrbit * SOYMILK_DESSERT_FACTOR;
+        }
+        
         return demand;
     }
 
@@ -1083,8 +1141,63 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
                 amount += person.getInventory().getAmountResourceStored(resource, false);
         }
+        
+        // Get the amount of the resource that will be produced by ongoing manufacturing processes.
+        Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+        amount += getManufacturingProcessOutput(amountResourceGood);
+        
+        // Get the amount of the resource that will be produced by ongoing food production processes.
+        Iterator<Building> p = settlement.getBuildingManager().getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+        while (p.hasNext()) {
+            Building building = p.next();
+            FoodProduction kitchen = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+            
+            // Go through each ongoing food production process.
+            Iterator<FoodProductionProcess> q = kitchen.getProcesses().iterator();
+            while (q.hasNext()) {
+                FoodProductionProcess process = q.next();
+                Iterator<FoodProductionProcessItem> r = process.getInfo().getOutputList().iterator();
+                while (r.hasNext()) {
+                    FoodProductionProcessItem item = r.next();
+                    if (item.getName().equalsIgnoreCase(resource.getName())) {
+                        amount += item.getAmount();
+                    }
+                }
+            }
+        }
 
         return amount;
+    }
+    
+    /**
+     * Gets the amount of the good being produced at the settlement by ongoing manufacturing processes. 
+     * @param good the good.
+     * @return amount (kg for amount resources, number for parts, equipment, and vehicles).
+     */
+    private double getManufacturingProcessOutput(Good good) {
+        
+        double result = 0D;
+        
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+            
+            // Go through each ongoing manufacturing process.
+            Iterator<ManufactureProcess> j = workshop.getProcesses().iterator();
+            while (j.hasNext()) {
+                ManufactureProcess process = j.next();
+                Iterator<ManufactureProcessItem> k = process.getInfo().getOutputList().iterator();
+                while (k.hasNext()) {
+                    ManufactureProcessItem item = k.next();
+                    if (item.getName().equalsIgnoreCase(good.getName())) {
+                        result += item.getAmount();
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
 
     /**
@@ -1525,6 +1638,10 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
                 number += person.getInventory().getItemResourceNum(resource);
         }
+        
+        // Get the number of resources that will be produced by ongoing manufacturing processes.
+        Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+        number += getManufacturingProcessOutput(amountResourceGood);
 
         return number;
     }
@@ -1743,7 +1860,7 @@ implements Serializable {
         // Get number of the equipment in settlement storage.
         number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 
-        // Get number of resource out on mission vehicles.
+        // Get number of equipment out on mission vehicles.
         Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
@@ -1754,13 +1871,17 @@ implements Serializable {
             }
         }
 
-        // Get number of resource carried by people on EVA.
+        // Get number of equipment carried by people on EVA.
         Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
         while (j.hasNext()) {
             Person person = j.next();
             if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
                 number += person.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
         }
+        
+        // Get the number of equipment that will be produced by ongoing manufacturing processes.
+        Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
+        number += getManufacturingProcessOutput(equipmentGood);
 
         return number;
     }
@@ -2173,6 +2294,10 @@ implements Serializable {
             Vehicle vehicle = i.next();
             if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) number += 1D;
         }
+        
+        // Get the number of vehicles that will be produced by ongoing manufacturing processes.
+        Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
+        number += getManufacturingProcessOutput(vehicleGood);
 
         return number;
     }
