@@ -116,8 +116,7 @@ public class ResupplyConfig implements Serializable {
 				double facing = Double.parseDouble(buildingElement
 						.getAttributeValue(FACING));
 				
-				// 2014-10-28 use a dummy buildingType in place for now
-				// buildingNickName will be constructed in SettlementConfig.java
+				// 2014-10-28 Added buildingType (at the buildingNickName position)
 				template.buildings.add(new BuildingTemplate(0, buildingType,
 						buildingType, width, length, xLoc, yLoc, facing));
 

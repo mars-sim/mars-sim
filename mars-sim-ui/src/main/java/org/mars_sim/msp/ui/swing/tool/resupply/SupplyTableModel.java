@@ -69,7 +69,7 @@ extends AbstractTableModel {
 		List<String> buildingList = new ArrayList<String>(resupply.getNewBuildings().size());
 		Iterator<BuildingTemplate> l = resupply.getNewBuildings().iterator();
 		while(l.hasNext()) {
-			buildingList.add(l.next().getType());
+			buildingList.add(l.next().getBuildingType());
 		}
 		populateSupplyTypeList(BUILDING, buildingList);
 

@@ -53,7 +53,7 @@ public class BackgroundPanel extends JPanel
 	}
 
 	/*
-	 *  Set image as the backround with the specified style and alignment
+	 *  Set image as the background with the specified style and alignment
 	 */
 	public BackgroundPanel(Image image, int style, float alignmentX, float alignmentY)
 	{

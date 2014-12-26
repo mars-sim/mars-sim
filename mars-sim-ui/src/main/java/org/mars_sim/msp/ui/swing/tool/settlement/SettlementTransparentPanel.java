@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -40,8 +39,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-
-
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -83,8 +80,8 @@ public class SettlementTransparentPanel  {
 	//private String nameCache = "";
 	private JPopupMenu labelsMenu;
 	
-    public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel)
-    {
+    public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
+    	
         this.mapPanel = mapPanel;
         this.desktop = desktop;
         createAndShowGUI();
@@ -592,6 +589,7 @@ public class SettlementTransparentPanel  {
 			// Add this as a unit manager listener.
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
+			/*
 			// 2014-12-19 Added addUnitListener
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
@@ -599,6 +597,7 @@ public class SettlementTransparentPanel  {
 			while (i.hasNext()) {
 				i.next().addUnitListener(this);			
 			}
+			*/
 		}
 
 		/**

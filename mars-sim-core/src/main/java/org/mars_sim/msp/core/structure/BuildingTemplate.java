@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2014-12-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -9,11 +9,8 @@ package org.mars_sim.msp.core.structure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.logging.Logger;
-
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 
 /**
  * A building template information.
@@ -30,7 +27,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 
 	// Data members
 	private int id;
-	private String type;	
+	private String buildingType;	
 	private double width;
 	private double length;
 	private double xLoc;
@@ -38,20 +35,21 @@ implements Serializable , Comparable<BuildingTemplate>{
 	private double facing;
 	private List<BuildingConnectionTemplate> connectionList;
 
-
-   // 2014-10-28 Added nickName and count
+    // 2014-10-28 Added nickName
 	private String nickName;
-	//private static int count;
+
 		
-	/** constructor 1. */
-	// Called by ResupplyConfig.java as soon as the first group of buildings of the settlement arrived
-	// 2014-10-27 mkung: Added a new constructor with building nickName
-	public BuildingTemplate(int id, String type, String nickName,
+	/*
+	 * * BuildingTemplate Constructor. 
+	 */
+	// May also be called by ResupplyConfig.java when buildings arrived
+	// 2014-10-27 Added nickName
+	public BuildingTemplate(int id, String buildingType, String nickName,
 		double width, double length, double xLoc, 
 		double yLoc, double facing) {
 		    
 		this.id = id;
-		this.type = type;
+		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.width = width;
 		this.length = length;
@@ -59,8 +57,6 @@ implements Serializable , Comparable<BuildingTemplate>{
 		this.yLoc = yLoc;
 		this.facing = facing;
 		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
-		//count++;
-		//logger.info("const 1 : count is "+ count);
 	}
 	
 	/**
@@ -75,16 +71,17 @@ implements Serializable , Comparable<BuildingTemplate>{
 	 * Gets the building type.
 	 * @return building type.
 	 */
-	//2014-10-27 mkung: Switched from "name" to "type"
-	public String getType() {
-		return type;
+	// 2014-10-27 Switched from "name" to "buildingType"
+	// 2014-12-26 Changed method name from getType() to getBuildingType() for consistency
+	public String getBuildingType() {
+		return buildingType;
 	}
 
 	/**
 	 * Gets the building nickname.
 	 * @return building nickname.
 	 */
-	//2014-10-27 mkung: Added getNickName() 
+	//2014-10-27 Added getNickName() 
 	public String getNickName() {
 		return nickName;
 	}
@@ -211,7 +208,7 @@ implements Serializable , Comparable<BuildingTemplate>{
     // 2014-12-23 Added compareTo()
 	public int compareTo(BuildingTemplate o) {
 		int compareId = ((BuildingTemplate) o).id;
-		return this.id - compareId;
+		return this.id - compareId ;
 	}
 	
 }

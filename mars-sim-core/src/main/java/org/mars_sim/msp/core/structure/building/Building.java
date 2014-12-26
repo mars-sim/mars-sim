@@ -133,7 +133,7 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	//2014-10-27  Added getNickName() 
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getType(), template.getNickName(), template.getWidth(), 
+		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(), 
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
 				template.getFacing(), manager);		
 		

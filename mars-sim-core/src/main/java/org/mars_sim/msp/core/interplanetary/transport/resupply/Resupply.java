@@ -90,7 +90,7 @@ implements Serializable, Transportable {
 	//2014-12-23 Added data members
 	private boolean userAcceptance;
 	private Timer pauseTimer;
-	private boolean UITakeOver = false;
+	//private boolean UITakeOver = false;
 	private BuildingManager buildingManager;
 	
 	/**
@@ -332,14 +332,15 @@ implements Serializable, Transportable {
         
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
         // 2014-12-23 Added sorting orderedBuildings according to its building id
-        Collections.sort(orderedBuildings);
+        //Collections.sort(orderedBuildings);
         Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
         int size = orderedBuildings.size();
         int i = 0;
         Building aBuilding = buildingManager.getBuildings().get(0);
         while (buildingI.hasNext()) {
 	        settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);  
-            BuildingTemplate template = buildingI.next();    
+            BuildingTemplate template = buildingI.next();  
+            //System.out.println(template.getNickName());
             // Check if building template position/facing collides with any 
             // existing buildings/vehicles/construction sites.
             if (checkBuildingTemplatePosition(template)) {
@@ -348,7 +349,7 @@ implements Serializable, Transportable {
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
                 
                 // Replace width and length defaults to deal with variable width and length buildings.
-                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getType());
+                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
                 if (template.getWidth() > 0D) {
                     width = template.getWidth();
                 }
@@ -356,7 +357,7 @@ implements Serializable, Transportable {
                     width = DEFAULT_VARIABLE_BUILDING_WIDTH;
                 }
                 
-                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getType());
+                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
                 if (template.getLength() > 0D) {
                     length = template.getLength();
                 }
@@ -364,10 +365,14 @@ implements Serializable, Transportable {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
                 
-                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), template.getNickName(), width, 
-                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+                // 2014-12-26 Added the construction of buildingNickName
+                String settlementID = "A";
+                String buildingNickName = template.getBuildingType() + " " + settlementID + buildingID;
                 
-                if (UITakeOver)
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
+                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+                // 2014-12-26 Changed to using Simulation.getUseGUI()
+                if (Simulation.getUseGUI())
                 	// 2014-12-23 Added 2nd and 3rd parameter
                 	confirmBuildingLocation(correctedTemplate, buildingManager, true);
                 else 
@@ -377,7 +382,8 @@ implements Serializable, Transportable {
             
             else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
             	   // or when the building's designated location has already been occupied 
-            	if (UITakeOver)
+            	// 2014-12-26 Changed to using Simulation.getUseGUI()
+            	if (Simulation.getUseGUI())
                     // 2014-12-19 Added confirmBuildingLocation()
             		// 2014-12-23 Added 2nd and 3rd parameter
             		confirmBuildingLocation(template, buildingManager, false);    
@@ -389,7 +395,7 @@ implements Serializable, Transportable {
 	        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
         } // end of while (buildingI.hasNext())
         
-        UITakeOver = false;
+        //UITakeOver = false;
  
         // Deliver vehicles.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -485,7 +491,7 @@ implements Serializable, Transportable {
 		if (isMarsDirectResupplyMission)
 			newBuilding = buildingManager.addOneBuilding(template, this, true);
 		else {
-			positionedTemplate = positionNewResupplyBuilding(template.getType());
+			positionedTemplate = positionNewResupplyBuilding(template.getBuildingType());
 			//buildingManager.setBuildingArrived(true);
 			newBuilding = buildingManager.addOneBuilding(positionedTemplate, this, true);
 		}
@@ -524,9 +530,9 @@ implements Serializable, Transportable {
 		userAcceptance = value;
 	}
 	
-	public void setUITakeOver(boolean value) {
-		UITakeOver = value;
-	}
+	//public void setUITakeOver(boolean value) {
+	//	UITakeOver = value;
+	//}
 	
 	
 	public boolean getUserAcceptance() {
@@ -546,7 +552,7 @@ implements Serializable, Transportable {
         Iterator<BuildingTemplate> i = getNewBuildings().iterator();
         while (i.hasNext()) {
             BuildingTemplate newBuilding = i.next();
-            boolean isBuildingConnector = buildingConfig.hasBuildingConnection(newBuilding.getType());
+            boolean isBuildingConnector = buildingConfig.hasBuildingConnection(newBuilding.getBuildingType());
             if (isBuildingConnector) {
                 // Add connector to end of new building list.
                 result.add(newBuilding);
@@ -570,7 +576,7 @@ implements Serializable, Transportable {
         boolean result = true;
         
         // Replace width and length defaults to deal with variable width and length buildings.
-        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getType());
+        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
         if (template.getWidth() > 0D) {
             width = template.getWidth();
         }
@@ -578,7 +584,7 @@ implements Serializable, Transportable {
             width = DEFAULT_VARIABLE_BUILDING_WIDTH;
         }
         
-        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getType());
+        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
         if (template.getLength() > 0D) {
             length = template.getLength();
         }
