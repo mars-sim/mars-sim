@@ -171,6 +171,8 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);			
 		}
+		
+		openToolWindow(SettlementWindow.NAME);
 	}
 
 	/** Returns the MainWindow instance
@@ -608,7 +610,12 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 
 		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
 		int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
-
+		
+		// 2014-12-25 Added rX checking
+		if (rX < 0) {
+			rX = 0;
+		}
+		
 		// Make sure y position isn't < 0.
 		if (rY < 0) {
 			rY = 0;
@@ -637,6 +644,10 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 			rY = 0;
 		}
 
+		// 2014-12-25 Added rX checking
+		if (rX < 0) {
+			rX = 0;
+		}
 		return new Point(rX, rY);
 	}
 
@@ -859,7 +870,8 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
-			//Settlement s = (Settlement) target; // overwrite the dummy building object made by the constructor
+			isTransportingBuilding = true; // used by TransparentPanel.java
+			settlement = (Settlement) target; // overwrite the dummy building object made by the constructor
 			//BuildingManager mgr = s.getBuildingManager();
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
@@ -868,20 +880,20 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
 			disposeTransportWizard();
 			getMainWindow().unpauseSimulation();
+			isTransportingBuilding = false;
 		}		
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			//logger.info(" The building from ADD_BUILDING_EVENT is " + building);
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
 			disposeTransportWizard();
-			//isTransportingBuilding = true;
 			closeToolWindow(SettlementWindow.NAME);
 			settlement = mgr.getSettlement();
 			
 			openTransportWizard(mgr, building); 
 			//System.out.println("MainDesktopPane : The settlement is " + settlement);
 			// Select the relevant settlement
-			settlementWindow.setCurrentSettlement(settlement);
+			settlementWindow.setSettlement(settlement);
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);	
 			SettlementMapPanel settlementMapPanel = settlementWindow.getMapPanel();

@@ -48,6 +48,8 @@ extends JInternalFrame {
 		
 		Simulation.instance().getMasterClock().setPaused(false);
 		
+		setIconifiable(true);
+		setClosable(true);
 		//setTitle();
 		// Create the main panel
 		JPanel mainPane = new JPanel();

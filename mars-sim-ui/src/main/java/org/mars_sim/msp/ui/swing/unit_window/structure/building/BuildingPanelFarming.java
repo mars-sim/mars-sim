@@ -244,6 +244,7 @@ implements Serializable, MouseListener {
 				farm.addCropListInQueue(cropType);
             	//System.out.println("BuildingPanelFarming.java: Just added " + cropType );
 		        listUpdate();
+				repaint();
 			}
 			});
 		buttonPanel.add(addButton, BorderLayout.NORTH);	
@@ -262,6 +263,7 @@ implements Serializable, MouseListener {
 		           	selectCrop();
 	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
 		           	//System.out.println("BuildingPanelFarming.java: Just deleted " + cropType );
+	            	repaint();
 				}
 			}
 			});

@@ -6,14 +6,18 @@
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -65,20 +69,33 @@ implements ClockListener {
 	
 	// 2014-11-04 Added building
 	private Building building;
-
+	
+	// 2014-12-23 Added the data members
+	//private JLabel settlementNamelabel;
+	//private JButton settlementButton;
+	private MainDesktopPane desktop;
+	private SettlementWindow settlementWindow;
+	private SettlementMapPanel mapPanel;
+	private SettlementTransparentPanel transparentPanel;
+	
 	/** Constructor 1
 	 * A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel() {
+	public SettlementMapPanel(final MainDesktopPane desktop, final SettlementWindow settlementWindow) {//Settlement settlement) {
 		// Use JPanel constructor.
 		super();
-
+		this.settlementWindow = settlementWindow;
+		this.desktop = desktop;
+		
+		mapPanel = this;
+		setLayout(new BorderLayout());
+		
 		// Initialize data members.
 		xPos = 0D;
 		yPos = 0D;
 		rotation = 0D;
 		scale = DEFAULT_SCALE;
-		settlement = null;
+		//settlement = null;
 		showBuildingLabels = false;
 		showConstructionLabels = false;
 		showPersonLabels = false;
@@ -97,14 +114,21 @@ implements ClockListener {
 		mapLayers.add(new LabelMapLayer(this));
 
 		// Set preferred size.
-		setPreferredSize(new Dimension(400, 400));
+		setPreferredSize(new Dimension(600, 400));
+		setLocation(1000,800);
 
 		// Set foreground and background colors.
 		setOpaque(true);
 		setBackground(MAP_BACKGROUND);
-		setForeground(Color.WHITE);
+		setForeground(Color.ORANGE);
 
 		Simulation.instance().getMasterClock().addClockListener(this);
+		
+	    SwingUtilities.invokeLater(new Runnable(){
+	        public void run()  {
+		transparentPanel = new SettlementTransparentPanel(desktop, mapPanel);
+	        } });
+        setVisible(true);
 	}
 	
 	/** Constructor 2
@@ -131,9 +155,7 @@ implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 
 		mapLayers = new ArrayList<SettlementMapLayer>(1);
-		
-		StructureMapLayer layer = new StructureMapLayer(this);		
-	    
+		StructureMapLayer layer = new StructureMapLayer(this);		 
 		mapLayers.add(layer);
 
 		// Set preferred size.
@@ -145,6 +167,8 @@ implements ClockListener {
 		setForeground(Color.WHITE);
 
 		Simulation.instance().getMasterClock().addClockListener(this);
+		
+		repaint();
 	}
 	
 	/**
@@ -155,6 +179,13 @@ implements ClockListener {
 		return settlement;
 	}
 
+	/**
+	 * Gets the SettlementWindow class.
+	 * @return settlementWindow or null if none.
+	 */
+	public SettlementWindow getSettlementWindow() {
+		return settlementWindow;
+	}	
 
 	/**
 	 * Sets the settlement to display.
@@ -491,6 +522,19 @@ implements ClockListener {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
+        //Dimension dim = this.getSize();
+	    //panel.setPreferredSize(dim);
+	    //panel.revalidate();
+/*
+		if (settlement != null) 
+			name = settlement.getName();
+		else if (getSettlement() != null) 
+			name = settlementWindow.getSettlement().getName();
+		if (!name.equals(nameCache)) {
+			nameCache = name;
+			nameLabel.setText(nameCache);
+		}
+		*/
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
@@ -507,7 +551,7 @@ implements ClockListener {
 //		double timeDiff = (endTime - startTime) / 1000000D;
 //		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 	}
-
+	
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
