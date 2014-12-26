@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2014-12-26
 
  * @author Scott Davis
  */
@@ -89,6 +89,10 @@ implements ClockListener, Serializable {
 	private boolean defaultLoad = false;
 	private boolean initialSimulationCreated = false;
 
+	// 2014-12-26 Added useGUI
+    /** true if displaying graphic user interface. */
+    private static boolean useGUI = true;
+    
 	/** constructor. */
 	private Simulation() {
 		initializeTransientData();
@@ -498,4 +502,23 @@ implements ClockListener, Serializable {
     public boolean isDefaultLoad() {
         return defaultLoad;
     }
+
+    /**
+     * Sets if simulation was loaded with GUI.
+     * @param true if GUI is in use.
+     */
+	// 2014-12-26 Added setUseGUI()
+    public static void setUseGUI(boolean value) {
+    	useGUI = value;
+    }
+    
+    /**
+     * Checks if simulation was loaded with GUI.
+     * @return true if GUI is in use.
+     */
+	// 2014-12-26 Added getUseGUI()
+    public static boolean getUseGUI() {
+    	return useGUI;
+    }
+    
 }

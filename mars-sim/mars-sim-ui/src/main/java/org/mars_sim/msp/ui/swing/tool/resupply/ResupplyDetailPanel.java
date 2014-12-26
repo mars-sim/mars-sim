@@ -294,12 +294,12 @@ implements ClockListener, HistoricalEventListener {
 			Iterator<BuildingTemplate> i = buildings.iterator();
 			while (i.hasNext()) {
 				BuildingTemplate buildingTemplate = i.next();
-				if (buildingMap.containsKey(buildingTemplate.getType())) {
-					int num = buildingMap.get(buildingTemplate.getType()) + 1;
-					buildingMap.put(buildingTemplate.getType(), num);
+				if (buildingMap.containsKey(buildingTemplate.getBuildingType())) {
+					int num = buildingMap.get(buildingTemplate.getBuildingType()) + 1;
+					buildingMap.put(buildingTemplate.getBuildingType(), num);
 				}
 				else {
-					buildingMap.put(buildingTemplate.getType(), 1);
+					buildingMap.put(buildingTemplate.getBuildingType(), 1);
 				}
 			}
 

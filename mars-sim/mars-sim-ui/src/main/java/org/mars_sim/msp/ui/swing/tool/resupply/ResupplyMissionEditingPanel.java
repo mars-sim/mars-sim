@@ -635,7 +635,7 @@ extends TransportItemEditingPanel {
 		Iterator<BuildingTemplate> i = newBuildings.iterator();
 		while (i.hasNext()) {
 			BuildingTemplate template = i.next();
-			String type = template.getType();
+			String type = template.getBuildingType();
 			if (oldBuildings.containsKey(type)) {
 				int num = oldBuildings.get(type);
 				oldBuildings.put(type, num + 1);
@@ -676,7 +676,7 @@ extends TransportItemEditingPanel {
 						Iterator<BuildingTemplate> k = newBuildings.iterator();
 						while (k.hasNext()) {
 							BuildingTemplate template = k.next();
-							if (template.getType().equals(type)) {
+							if (template.getBuildingType().equals(type)) {
 								k.remove();
 								break;
 							}
@@ -706,7 +706,7 @@ extends TransportItemEditingPanel {
 				Iterator<BuildingTemplate> m = newBuildings.iterator();
 				while (m.hasNext()) {
 					BuildingTemplate template = m.next();
-					if (template.getType().equals(type)) {
+					if (template.getBuildingType().equals(type)) {
 						m.remove();
 					}
 				}

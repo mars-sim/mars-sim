@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2014-12-20
+ * @version 3.07 2014-12-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -70,8 +70,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class MainDesktopPane
 extends JDesktopPane
-implements ComponentListener, UnitListener, UnitManagerListener { // addBuildingPlacementListener
-
+implements ComponentListener, UnitListener {//, UnitManagerListener { 
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -158,7 +158,7 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		transportWizard = new TransportWizard(this);
 		try { transportWizard.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
-		
+		/*
 		// 2014-12-19 Added addUnitManagerListener & addUnitListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		unitManager.addUnitManagerListener(this);		
@@ -171,7 +171,7 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);			
 		}
-		
+		*/
 		openToolWindow(SettlementWindow.NAME);
 	}
 
@@ -871,11 +871,10 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
 			isTransportingBuilding = true; // used by TransparentPanel.java
-			settlement = (Settlement) target; // overwrite the dummy building object made by the constructor
-			//BuildingManager mgr = s.getBuildingManager();
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
-			mgr.getResupply().setUITakeOver(true);
+			settlement = mgr.getSettlement();
+			//mgr.getResupply().setUITakeOver(true);
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
 			disposeTransportWizard();
@@ -914,17 +913,20 @@ implements ComponentListener, UnitListener, UnitManagerListener { // addBuilding
 		        });*/
 		}
 	}
-
+/*
 	// 2014-12-19 Added unitManagerUpdate
 	public void unitManagerUpdate(UnitManagerEvent event) {
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		System.out.println(" # of settlements is " + settlementList.size());
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
-			if (!i.next().hasUnitListener(this))
-				i.next().addUnitListener(this);			
+			Settlement settlement = i.next();
+			if (!settlement.hasUnitListener(this))
+				settlement.addUnitListener(this);			
 		}
 	
 	}
+	*/
 }
