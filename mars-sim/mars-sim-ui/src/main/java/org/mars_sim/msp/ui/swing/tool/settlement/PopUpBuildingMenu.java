@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -29,6 +30,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -48,6 +50,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
     private Building building;
     private Settlement settlement;
 	private MainDesktopPane desktop;
+	private String buildingName ;
 	//private Color THEME_COLOR = Color.ORANGE;
 	
     public PopUpBuildingMenu(final SettlementWindow swindow, final Building building){
@@ -58,70 +61,37 @@ public class PopUpBuildingMenu extends JPopupMenu {
         itemTwo = new JMenuItem(Msg.getString("PopUpBuildingMenu.itemTwo"));       
         add(itemOne);
         add(itemTwo);
-        final String buildingName = building.getNickName();
+        
+        buildingName = building.getNickName();
 
+        buildItemOne();
+        buildItemTwo();
+    }
+       
+    public void buildItemOne() {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
         		final JDialog d = new JDialog();
-        		/*
-        		BackgroundPanel panel =
-        			    new BackgroundPanel(duke, BackgroundPanel.ACTUAL, 1.0f, 0.5f);
-        			GradientPaint paint =
-        			    new GradientPaint(0, 0, Color.BLUE, 600, 0, Color.RED);
-        			panel.setPaint(paint);
-        			
-        		BufferedImage img = null;
-                try {
-                     File f = new File("./images/mars.png");
-                     img = ImageIO.read(f);
-                     System.out.println("File " + f.toString());
-                } catch (Exception e1) {
-                    System.out.println("Cannot read file: " + e1);
-                }
-                 */
-                //final BackgroundPanel b = new BackgroundPanel(null, BackgroundPanel.TILED, 0.50f, 0.5f);
 
-                //d.add(b);
-                //Container c = getRootPane();
-                //c.add(d);
-                
-                //setRootPane(background);   
-        		
         		//2014-11-27 Added ComponentMover Class
+    	        // Make pane1 drag-able
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(d);
-            	//final JInternalFrame dialog = new JInternalFrame();			
-				JPanel panel = new JPanel();
-				
-                GradientPaint paint =
-        			    new GradientPaint(0, 0, Color.BLUE, 600, 0, Color.RED);
-        		//	((BackgroundPanel) panel).setPaint(paint);
-                //b.setPaint(paint);
+		
 				final BuildingPanel buildingPanel = new BuildingPanel("Default", building, desktop);				
-		    
-				//b.add(buildingPanel);	
-		        //panel.setForeground(new Color(102, 51, 0)); // dark brown
-				
+					
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location);
-				//dialog.add(panel);	
-                
+			
 			    // 2014-11-27 Added AlphaContainer()
 			    // 2014-11-27 Added setBackground( new Color(255, 0, 0, 20) );
-                buildingPanel.setBackground( new Color(255, 0, 0, 20) );
-			    //b.add(new AlphaContainer(buildingPanel));
-			    //d.add(new AlphaContainer(b));
+                //buildingPanel.setBackground( new Color(255, 0, 0, 20) );
+                buildingPanel.setBackground( new Color(0, 0, 0, 20) );
 			    d.add(new AlphaContainer(buildingPanel));
 				//dialog.setResizable(true);
 				d.setSize(280,320);  // if undecorated, add 20 to height
 				d.setLayout(new FlowLayout()); 
-				//dialog.setModal(false);
-				//d.setTitle(buildingName);
-				//removeButtons(dialog);
 				d.setUndecorated(true);
-				
-				//d.getRootPane().setBorder(BorderFactory.createLineBorder(Color.orange) );
-				
 				d.setVisible(true);
 				/*
 				SwingUtilities.invokeLater(new Runnable() {
@@ -133,24 +103,27 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			        	 dialog.revalidate();
 			        	 dialog.setVisible(true);
 					}
-				});
-				*/
+
+	    	    SwingUtilities.invokeLater(new Runnable(){
+	    	        public void run()  {
+	    	        	buildingPanel.update();
+			        	 d.repaint();
+	    	        } });
+	    	   */ 
 				Runnable r = new Runnable() {
 			         public void run() {
 			        	 //dialog.setVisible(false);
 			        	 buildingPanel.update();
+			        	 d.revalidate();
 			        	 d.repaint();
-			        	 //d.revalidate();
 			        	 //d.setVisible(true);
 			        	 try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+							Thread.sleep(200);
+						} catch (InterruptedException e) {e.printStackTrace();}
 			         }
 			     };
 			     new Thread(r).start();
+			     /**/
 			     
 			     d.addWindowFocusListener(new WindowFocusListener() {            
 					    public void windowLostFocus(WindowEvent e) {
@@ -164,29 +137,27 @@ public class PopUpBuildingMenu extends JPopupMenu {
             }
         });
         
+    }
+    
+    public void buildItemTwo() {
+    	
         itemOne.addActionListener(new ActionListener() {
        	 
             public void actionPerformed(ActionEvent e) {
-				//if (settlement != null) {
-				//	desktop.openUnitWindow(settlement, false);
-				//}	
             	final JDialog dialog = new JDialog();
+        		//dialog.setBackground(new Color(0,0,0,0));
             	//2014-11-27 Added ComponentMover Class
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(dialog);
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 dialog.setLocation(location);
             	JLabel dialogLabel = new JLabel(buildingName, JLabel.CENTER);
-				//dialogLabel.setOpaque(false);
-				//dialog.setResizable(true);
 			    dialogLabel.setFont(new Font("Serif", Font.ITALIC, 16));
-			    //dialog.setForeground(new Color(102, 51, 0)); // dark brown
 			   	// 2014-11-27 Added building.getDescription() for loading text
 			    String str = building.getDescription();
 			    JTextArea ta = new JTextArea();
 			   	//label2.setText("<html>"+ str +"</html>");
 			   	ta.setOpaque(false);
-			   	//ta.setForeground(Color.orange);
 				ta.setFont(new Font("AvantGarde", Font.PLAIN, 14));
 				//ta.setForeground(new Color(102, 51, 0)); // dark brown
 			    ta.setText(str);
@@ -198,25 +169,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			    panel.add(dialogLabel, BorderLayout.NORTH);
 			    panel.add(ta, BorderLayout.CENTER);
 			    panel.setPreferredSize(new Dimension(180, 300));
-			    
-			    // 2014-11-27 Added AlphaContainer()
-			    // 2014-11-27 Added setBackground( new Color(255, 0, 0, 20) );
 			    panel.setBackground( new Color(255, 0, 0, 20) );
-			    dialog.add(new AlphaContainer(panel));
-			    
-				//dialog.add(panel);
-			    //JPanel panel = new JPanel(new GridLayout(2,1,0,0));
-				//panel.setOpaque(false);
-		        //panel.setBorder(MainDesktopPane.newEmptyBorder());
-		        //panel.setPreferredSize(new Dimension(120, 300));
-				//dialog.setBackground(THEME_COLOR);
+			    dialog.add(new AlphaContainer(panel));			    
 		        setBorder(new MarsPanelBorder());
-			
-				//dialog.setForeground(Color.orange);
 				dialog.setSize(200,320); // panel size is 180,300
 				dialog.setLayout(new FlowLayout()); 
 				dialog.setModal(false);
-				//removeButtons(dialog);
 				dialog.setUndecorated(true);
 				dialog.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
 				dialog.setVisible(true);
@@ -232,12 +190,10 @@ public class PopUpBuildingMenu extends JPopupMenu {
             	
              }
         });
-        
-        //itemThree....
-        
+     
     }
     
-	   public void removeButtons(Component comp) {
+	 public void removeButtons(Component comp) {
 	        if(comp instanceof AbstractButton) 
 	            comp.getParent().remove(comp);
 	        if (comp instanceof Container) {
@@ -246,12 +202,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
 	                removeButtons(comps[x]);
 	            }
 	        }
-	    }
+	}
 	   
-		public void destroy() {
+	public void destroy() {
 			settlement.destroy();
 			building.destroy();
 			itemOne = null;
 			itemTwo = null;			
-		}
+	}
 }
