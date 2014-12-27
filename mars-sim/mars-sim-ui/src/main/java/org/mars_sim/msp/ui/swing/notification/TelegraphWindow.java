@@ -39,7 +39,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -50,7 +49,6 @@ import javax.swing.border.MatteBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.mars_sim.msp.core.Simulation;
 import org.pushingpixels.trident.Timeline;
 
 /**
@@ -89,7 +87,7 @@ public class TelegraphWindow extends JWindow {
 	private Telegraph telegraph; 
 	
 	// 2014-12-17 Added Timer	
-	private Timer pauseTimer;
+	//private Timer pauseTimer;
 	/**
 	 * Default constructor which initializes everything...
 	 * 
@@ -152,7 +150,7 @@ public class TelegraphWindow extends JWindow {
 
 		// Setting default font if nothing's provided
 		if (config.getTitleFont() == null)
-			lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 14f));
+			lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 16f));
 		else
 			// Set the one provided in the configuration
 			lblTitle.setFont(config.getTitleFont());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2014-12-26
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
@@ -96,17 +95,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/** The sound player. */
 	private final AudioPlayer soundPlayer;
 	/** The desktop popup announcement window. */
-	private final AnnouncementWindow announcementWindow;
+	private AnnouncementWindow announcementWindow;
 	
 	// 2014-12-19 Added settlementWindow
 	private SettlementWindow settlementWindow;
 	private Building building;
 	private Settlement settlement;
 	// 2014-12-23 Added transportWizard
-	private final TransportWizard transportWizard;
+	private TransportWizard transportWizard;
 	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 	private boolean isTransportingBuilding = false;
-
+	
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main outer window
@@ -143,24 +142,16 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Prepare tool windows.
 		prepareToolWindows();
 
-		// Prepare announcementWindow.
-		announcementWindow = new AnnouncementWindow(this);
-		try { announcementWindow.setClosed(true); }
-		catch (java.beans.PropertyVetoException e) { }
-
 		// Create update thread.
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
 		
-		// 2014-12-23 Added transportWizard
-		transportWizard = new TransportWizard(this);
-		try { transportWizard.setClosed(true); }
-		catch (java.beans.PropertyVetoException e) { }
-		
+		// 2014-12-26 Added prepareListeners
 		prepareListeners();
-		
-		openToolWindow(SettlementWindow.NAME);
+				
+		// 2014-12-27 Added prepareWindows
+		prepareWindows();
 	}
 	
 	/** 
@@ -243,7 +234,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	@Override
 	public void componentHidden(ComponentEvent e) {}
 
-	/** Creates tool windows */
+	/*
+	 * Creates tool windows 
+	 */
 	private void prepareToolWindows() {
 
 		toolWindows.clear();
@@ -285,12 +278,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		toolWindows.add(settlementWindow);
 
 		setSettlementWindow(settlementWindow);
-		// Prepare Building Editor
-		//BuildingEditor buildingEditor = new BuildingEditor(this, building);
-		//try { buildingEditor.setClosed(true); }
-		//catch (PropertyVetoException e) { }
-		//toolWindows.add(buildingEditor);
-		
+
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try { scienceWindow.setClosed(true); }
@@ -308,6 +296,23 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
+		
+	}
+	
+	/*
+	 * * Creates announcement windows & transportWizard
+	 */
+	private void prepareWindows() {
+		// Prepare announcementWindow.
+		announcementWindow = new AnnouncementWindow(this);
+		try { announcementWindow.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
+		
+		// 2014-12-23 Added transportWizard
+		transportWizard = new TransportWizard(this);
+		try { transportWizard.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
+		
 	}
 
 	/** Returns a tool window for a given tool name
@@ -746,14 +751,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		transportWizard.initialize(buildingManager);//, building);
 		transportWizard.deliverBuildings();
 		transportWizard.pack();
-		add(transportWizard, 0);
+		//add(transportWizard, 0);
 		//int Xloc = (getWidth() - transportWizard.getWidth()) / 2;
 		//int Yloc = (getHeight() - transportWizard.getHeight()) / 2;
-		//transportWizard.setLocation(Xloc, Yloc);
-		Point location = MouseInfo.getPointerInfo().getLocation();
-		transportWizard.setLocation(location);		
-		
-
+		//transportWizard.setLocation(Xloc, Yloc);		
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
 		transportWizard.pack();
@@ -764,6 +765,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	// 2014-12-23 Added disposeTransportWizard()
 	public void disposeTransportWizard() {
+		//System.out.println("MainDesktopPane : running disposeTransportWizard()");
+		//transportWizard.setVisible(false);
+		try { transportWizard.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
 		transportWizard.dispose();
 	}
 
@@ -875,6 +880,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return transportWizard;
 	}
 	
+	public AnnouncementWindow getAnnouncementWindow() {
+		return announcementWindow;
+	}
+	
+	
+	
 	public Settlement getSettlement() {
 		return settlement;
 	}
@@ -912,8 +923,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			isTransportingBuilding = false;
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
-			disposeTransportWizard();
+			//System.out.println("MainDesktopPane : FINISH_BUILDING_PLACEMENT_EVENT");
 			getMainWindow().unpauseSimulation();
+			disposeTransportWizard();
 			isTransportingBuilding = false;
             mgr.getResupply().deliverOthers();
 		}	

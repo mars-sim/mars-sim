@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-26
+ * @version 3.07 2014-12-27
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,7 +23,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -64,6 +64,10 @@ public class SettlementWindow extends ToolWindow {
 	 
 		setMaximizable(true);
 
+		// 2014-12-27 Added preferred size and initial location
+		setPreferredSize(new Dimension(1024, 768));
+		setLocation(600,600);
+		
 		mapPanel = new SettlementMapPanel(desktop, this);
 	      
 		setContentPane(mapPanel);
