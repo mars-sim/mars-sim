@@ -127,7 +127,7 @@ public class UIConfig {
             outputDoc.addContent(uiElement);
             outputDoc.setRootElement(uiElement);
 
-            uiElement.setAttribute(USE_DEFAULT, "false"); // lechimp 10/9/13: why is this always set to false upon save?
+            uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
     		
             
             uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(window.getToolToolBar().isVisible()));

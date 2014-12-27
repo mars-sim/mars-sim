@@ -1,13 +1,13 @@
 /**
  * Mars Simulation Project
  * msp.css
- * @version 3.07 2014-12-01
+ * @version 3.07 2014-12-27
  * @author Lars Naesbye Christensen
  */
 
 a:link{color:#00F;}
 a:visited{color:#F000F0;}
-body{background-color:#D9D6D6;color:#000;font-family:serif;}
+body{background-color:#DDD3D3;color:#000;font-family:serif;}
 body,h3{font-size:13pt;line-height:1.1em;}
 h2{font-family:sans-serif;font-size:14pt;line-height:1.2em;text-align:center;text-decoration:underline;}
 h2,h3{font-weight:700;}
