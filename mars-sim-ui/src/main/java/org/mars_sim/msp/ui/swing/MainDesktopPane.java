@@ -18,6 +18,7 @@ import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,6 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -70,7 +70,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class MainDesktopPane
 extends JDesktopPane
-implements ComponentListener, UnitListener {//, UnitManagerListener { 
+implements ComponentListener, UnitListener, UnitManagerListener {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -102,10 +102,10 @@ implements ComponentListener, UnitListener {//, UnitManagerListener {
 	private SettlementWindow settlementWindow;
 	private Building building;
 	private Settlement settlement;
-	private boolean isTransportingBuilding = false;
-
 	// 2014-12-23 Added transportWizard
 	private final TransportWizard transportWizard;
+	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
+	private boolean isTransportingBuilding = false;
 
 	/** 
 	 * Constructor.
@@ -154,27 +154,38 @@ implements ComponentListener, UnitListener {//, UnitManagerListener {
 		updateThread.start();
 		
 		// 2014-12-23 Added transportWizard
-		// Prepare announcementWindow.
 		transportWizard = new TransportWizard(this);
 		try { transportWizard.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
-		/*
-		// 2014-12-19 Added addUnitManagerListener & addUnitListener()
+		
+		prepareListeners();
+		
+		openToolWindow(SettlementWindow.NAME);
+	}
+	
+	/** 
+	 * sets up this class with two listeners 
+	 */
+	// 2014-12-19 Added prepareListeners()
+	public void prepareListeners() {
+		
+		// Add addUnitManagerListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		unitManager.addUnitManagerListener(this);		
+				
+		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		//settlement = settlementList.get(0);
-		//List<Building> buildings = settlement.getBuildingManager().getBuildings();
-		//building = buildings.get(0);
+		settlement = settlementList.get(0);
+		List<Building> buildings = settlement.getBuildingManager().getBuildings();
+		building = buildings.get(0);
+		//building.addUnitListener(this); // not working
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);			
 		}
-		*/
-		openToolWindow(SettlementWindow.NAME);
 	}
-
+	
 	/** Returns the MainWindow instance
 	 *  @return MainWindow instance
 	 */
@@ -699,7 +710,9 @@ implements ComponentListener, UnitListener {//, UnitManagerListener {
 		announcementWindow.pack();
 		add(announcementWindow, 0);
 		int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
-		int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
+		//int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
+		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop 
+		int Yloc = 0;
 		announcementWindow.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
@@ -728,9 +741,10 @@ implements ComponentListener, UnitListener {//, UnitManagerListener {
 	 * @param announcement the announcement text to display.
 	 */
 	// 2014-12-23 Added openTransportWizard()
-	public void openTransportWizard(BuildingManager mgr, Building building) {
+	public void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
 		//transportWizard.setAnnouncement(announcement);
-		transportWizard.setup(mgr, building);
+		transportWizard.initialize(buildingManager);//, building);
+		transportWizard.deliverBuildings();
 		transportWizard.pack();
 		add(transportWizard, 0);
 		//int Xloc = (getWidth() - transportWizard.getWidth()) / 2;
@@ -857,76 +871,74 @@ implements ComponentListener, UnitListener {//, UnitManagerListener {
 		this.settlementWindow = settlementWindow;
 	}
 
-	public boolean getIsTransportingBuilding() {
-		return isTransportingBuilding;
+	public TransportWizard getTransportWizard() {
+		return transportWizard;
 	}
 	
 	public Settlement getSettlement() {
 		return settlement;
 	}
 	
+	public SettlementWindow getSettlementWindow() {
+		return settlementWindow;
+	}
+	
+	public boolean getIsTransportingBuilding() {
+		return isTransportingBuilding;
+	}
+	
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
+		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
 		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
-			isTransportingBuilding = true; // used by TransparentPanel.java
+			//	|| eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			isTransportingBuilding = true;
+			disposeTransportWizard();
+			closeToolWindow(SettlementWindow.NAME);
+			//System.out.println("MainDesktopPane : unitUpdate() START_BUILDING_PLACEMENT_EVENT is true");
+			//isTransportingBuilding = true; // does not get updated for the next building unless ADD_BUILDING_EVENT is used
 			building = (Building) target; // overwrite the dummy building object made by the constructor
-			BuildingManager mgr = building.getBuildingManager();
+			mgr = building.getBuildingManager();
 			settlement = mgr.getSettlement();
-			//mgr.getResupply().setUITakeOver(true);
+			// System.out.println("MainDesktopPane : The settlement is " + settlement);
+			// Select the relevant settlement
+			settlementWindow.getMapPanel().setSettlement(settlement);
+			// Open Settlement Map Tool
+			openToolWindow(SettlementWindow.NAME);	
+			getMainWindow().pauseSimulation();
+			openTransportWizard(mgr);//, building); 
+			isTransportingBuilding = false;
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
 			disposeTransportWizard();
 			getMainWindow().unpauseSimulation();
 			isTransportingBuilding = false;
-		}		
-		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-			//logger.info(" The building from ADD_BUILDING_EVENT is " + building);
-			building = (Building) target; // overwrite the dummy building object made by the constructor
-			BuildingManager mgr = building.getBuildingManager();
-			disposeTransportWizard();
-			closeToolWindow(SettlementWindow.NAME);
-			settlement = mgr.getSettlement();
-			
-			openTransportWizard(mgr, building); 
-			//System.out.println("MainDesktopPane : The settlement is " + settlement);
-			// Select the relevant settlement
-			settlementWindow.setSettlement(settlement);
-			// Open Settlement Map Tool
-			openToolWindow(SettlementWindow.NAME);	
-			SettlementMapPanel settlementMapPanel = settlementWindow.getMapPanel();
-			//settlementMapPanel.setSettlement(settlement); // not working
-			double xLoc = building.getXLocation();
-			double yLoc = building.getYLocation();
-			double scale = settlementMapPanel.getScale();
-			//System.out.println("scale is " + scale + "  xLoc is "+ xLoc + "  yLoc is "+yLoc);
-			settlementMapPanel.reCenter();
-			settlementMapPanel.moveCenter(xLoc*scale, yLoc*scale);
-			settlementMapPanel.setShowBuildingLabels(true);
-			repaint();
-			getMainWindow().pauseSimulation();
-		    /*EventQueue.invokeLater(new Runnable() {
-		            public void run() {
-		                new JOptionTimeTest().createGUI();
-		            }
-		        });*/
-		}
+            mgr.getResupply().deliverOthers();
+		}	
+
 	}
-/*
-	// 2014-12-19 Added unitManagerUpdate
-	public void unitManagerUpdate(UnitManagerEvent event) {
-		UnitManager unitManager = Simulation.instance().getUnitManager();
-		Collection<Settlement> settlements = unitManager.getSettlements();
-		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		System.out.println(" # of settlements is " + settlementList.size());
-		Iterator<Settlement> i = settlementList.iterator();
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			if (!settlement.hasUnitListener(this))
-				settlement.addUnitListener(this);			
-		}
+
 	
+	@Override
+	public void unitManagerUpdate(UnitManagerEvent event) {
+		if (event.getUnit() instanceof Settlement) {
+			
+			//removeAllElements();
+			UnitManager unitManager = Simulation.instance().getUnitManager();
+			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+			Collections.sort(settlements);
+
+			Iterator<Settlement> i = settlements.iterator();
+			while (i.hasNext()) {
+				i.next().removeUnitListener(this);			
+			}
+			Iterator<Settlement> j = settlements.iterator();
+			while (j.hasNext()) {
+				j.next().addUnitListener(this);
+			}
+		}
 	}
-	*/
+
 }

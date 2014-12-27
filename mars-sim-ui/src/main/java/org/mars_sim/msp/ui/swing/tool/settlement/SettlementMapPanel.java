@@ -1,12 +1,12 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2014-12-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import org.mars_sim.msp.core.Msg;
+//import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -124,10 +123,10 @@ implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 		
-	    SwingUtilities.invokeLater(new Runnable(){
-	        public void run()  {
+	    //SwingUtilities.invokeLater(new Runnable(){
+	    //    public void run()  {
 		transparentPanel = new SettlementTransparentPanel(desktop, mapPanel);
-	        } });
+	    //    } });
         setVisible(true);
 	}
 	
@@ -191,9 +190,12 @@ implements ClockListener {
 	 * Sets the settlement to display.
 	 * @param settlement the settlement.
 	 */
-	public void setSettlement(Settlement settlement) {
-		this.settlement = settlement;
-		repaint();
+	public void setSettlement(Settlement newSettlement) {
+		if (newSettlement != settlement) {
+			// TODO : inform SettlementTransparentPanel to update settlement ?
+			this.settlement = newSettlement;
+			repaint();
+		}
 	}
 
 	/**
