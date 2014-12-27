@@ -3,7 +3,7 @@
 # Mars Simulation Project
 # Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.07 2014-11-28
+# @version 3.07 2014-12-27
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.4 or later and the 'SearchResults' file to be in the
@@ -30,7 +30,9 @@ index_target = 1
 index_diameter = 2
 index_lat = 3
 index_long = 4
+# 5 is not used yet
 index_feature_type = 6
+# 7 is not used yet
 index_approval = 8
 index_origin = 9
 
