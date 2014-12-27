@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.07 2014-12-25
+ * @version 3.07 2014-12-26
  * @author Manny Kung
  */
 
@@ -61,7 +61,7 @@ public class SettlementTransparentPanel  {
 	
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
-	private Settlement settlement;
+	//private Settlement settlement;
 	private JSliderMW zoomSlider;
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -180,35 +180,41 @@ public class SettlementTransparentPanel  {
 	    //((JTextField)settlementListBox.getEditor().getEditorComponent()).setOpaque(false); 
 		settlementListBox.addItemListener(new ItemListener() {
 			@Override
+			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
-				// 2014-12-19 Added if else clause for selecting the settlement 
-				// that the new building is arriving 
+				Settlement s;
+				// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving 
 				if (desktop.getIsTransportingBuilding()) {
-					settlement = desktop.getSettlement();
-					settlementListBox.setSelectedItem(settlement);
+					s = desktop.getSettlement();
+					settlementListBox.setSelectedItem(s);
 				}
 				else {
-					settlement = (Settlement) event.getItem();
+					s = (Settlement) event.getItem();
 				}
 				//System.out.println(" settlement is " + settlement.getName());
-				mapPanel.setSettlement(settlement);
+				mapPanel.setSettlement(s);
 			} 
 		});
 
+		
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
-			// 2014-12-20 Added if else clause in support of transporting/placing a new building
-			if (desktop.getIsTransportingBuilding()) 
-				settlement = desktop.getSettlement();
+			Settlement s;
+			// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving 
+			if (desktop.getIsTransportingBuilding()) {
+				s = desktop.getSettlement();
+				settlementListBox.setSelectedItem(s);
+			}
 			else {
-				settlement = (Settlement) settlementListBox.getSelectedItem();
+				s = (Settlement) settlementListBox.getSelectedItem();
 			}
 			//System.out.println(" settlement is " + settlement.getName());
-			mapPanel.setSettlement(settlement);
+			mapPanel.setSettlement(s);
 		}
     
 	}
     /*
+     * settlement = (Settlement) settlementListBox.getSelectedItem();
 	public void makeTransparent(Component[] comp)  
 	  {  
 	    for(int x = 0; x < comp.length; x++)  
@@ -631,9 +637,10 @@ public class SettlementTransparentPanel  {
 				Object target = event.getTarget();
 				Building building = (Building) target; // overwrite the dummy building object made by the constructor
 				BuildingManager mgr = building.getBuildingManager();
-				settlement = mgr.getSettlement();
-				mapPanel.setSettlement(settlement);
-				settlementListBox.setSelectedItem(settlement);
+				Settlement s = mgr.getSettlement();
+				mapPanel.setSettlement(s);
+				// Updated ComboBox
+				settlementListBox.setSelectedItem(s);
 				//System.out.println("SettlementWindow : The settlement the new building is transporting to is " + settlement);
 				// Select the relevant settlement
 				//this.pack();

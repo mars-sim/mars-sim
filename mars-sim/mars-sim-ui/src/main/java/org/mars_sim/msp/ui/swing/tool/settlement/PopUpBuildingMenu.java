@@ -78,15 +78,17 @@ public class PopUpBuildingMenu extends JPopupMenu {
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(d);
 		
-				final BuildingPanel buildingPanel = new BuildingPanel("Default", building, desktop);				
-					
+        		final BuildingPanel buildingPanel;
+        		
+	    		buildingPanel = new BuildingPanel("Default", building, desktop);				
+				
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location);
 			
 			    // 2014-11-27 Added AlphaContainer()
 			    // 2014-11-27 Added setBackground( new Color(255, 0, 0, 20) );
                 //buildingPanel.setBackground( new Color(255, 0, 0, 20) );
-                buildingPanel.setBackground( new Color(0, 0, 0, 20) );
+                //buildingPanel.setBackground( new Color(0, 0, 0, 20) );
 			    d.add(new AlphaContainer(buildingPanel));
 				//dialog.setResizable(true);
 				d.setSize(280,320);  // if undecorated, add 20 to height
@@ -115,11 +117,10 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			        	 //dialog.setVisible(false);
 			        	 buildingPanel.update();
 			        	 d.revalidate();
+			        	 d.pack();
 			        	 d.repaint();
 			        	 //d.setVisible(true);
-			        	 try {
-							Thread.sleep(200);
-						} catch (InterruptedException e) {e.printStackTrace();}
+			        	 try { Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			         }
 			     };
 			     new Thread(r).start();

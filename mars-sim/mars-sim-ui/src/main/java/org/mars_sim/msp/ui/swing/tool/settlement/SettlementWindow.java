@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-20
+ * @version 3.07 2014-12-26
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
 import java.awt.Color;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +19,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -42,7 +41,7 @@ public class SettlementWindow extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	private Settlement settlement;
+	//private Settlement settlement;
 	private PopUpBuildingMenu menu;
 
 	/** The main desktop. */
@@ -102,16 +101,17 @@ public class SettlementWindow extends ToolWindow {
 					yLast = evt.getY();
 		    }
 
-		    private void doPop(MouseEvent evt){
+		    private void doPop(final MouseEvent evt){
 		    	final Building building = mapPanel.selectBuildingAt(evt.getX(), evt.getY());
 		        // if NO building is selected, do NOT call popup menu
 		    	if (building != null) {
 		    		
-		    	    //SwingUtilities.invokeLater(new Runnable(){
-		    	        //public void run()  {
+		    	    SwingUtilities.invokeLater(new Runnable(){
+		    	        public void run()  {
 				        	menu = new PopUpBuildingMenu(settlementWindow, building);
-		    	       // } });
-		        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
+				        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		    	        } });
+
 		        }
 		    }
 		}
@@ -160,21 +160,27 @@ public class SettlementWindow extends ToolWindow {
 		if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
 			settlementNewName = askNameDialog();
 		else {
-			settlement.changeName(settlementNewName);
+			mapPanel.getSettlement().changeName(settlementNewName);
 		}
 		// desktop.clearDesktop();
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		desktop.openToolWindow(SettlementWindow.NAME);	
 	}
 	
-	public void setSettlement(Settlement settlement) {
-		this.settlement = settlement;
+	/*
+	public void setSettlement(Settlement newSettlement) {
+		if (newSettlement != settlement) {
+			// TODO : inform SettlementTransparentPanel to update settlement ?
+			this.settlement = newSettlement;
+			mapPanel.setSettlement(newSettlement);
+			repaint();
+		}
 	}
 	
 	public Settlement getSettlement() {
-		return settlement ;
+		return mapPanel.getSettlement();
 	}
-	
+	*/
 	public class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
 
 		public JCustomCheckBoxMenuItem(String s, boolean b) {

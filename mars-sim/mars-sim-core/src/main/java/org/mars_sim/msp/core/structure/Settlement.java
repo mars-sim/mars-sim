@@ -54,7 +54,7 @@ implements LifeSupport {
     private static final long serialVersionUID = 1L;
 
     /* default logger.*/
-	private static Logger logger = Logger.getLogger(Settlement.class.getName());
+	//private static Logger logger = Logger.getLogger(Settlement.class.getName());
      
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;

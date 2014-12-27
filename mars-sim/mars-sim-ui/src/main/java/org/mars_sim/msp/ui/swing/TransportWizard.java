@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.07 2014-12-23
+ * @version 3.07 2014-12-26
 
  * @author Manny Kung
  */
@@ -10,16 +10,22 @@ package org.mars_sim.msp.ui.swing;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
-import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The TransportWizard class is an internal frame for building transport event.
@@ -31,22 +37,34 @@ extends JInternalFrame {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TransportWizard.class.getName());
+
+    // Default width and length for variable size buildings if not otherwise determined.
+    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	
 	private JLabel announcementLabel;
 	private BuildingManager mgr;
-	private Building building;
+	//private Building building;
 	private MainDesktopPane desktop;
+	private Settlement settlement;
+	private SettlementWindow settlementWindow;
+	private SettlementMapPanel mapPanel;
+	private Resupply resupply;
+
 	/** 
 	 * Constructor .
 	 * @param desktop the main desktop pane.
 	 */
 	public TransportWizard(final MainDesktopPane desktop) {
-
-		// Use JDialog constructor
 		super("Transport Wizard", false, false, false, false); //$NON-NLS-1$
+		this.desktop = desktop;		
+		//Simulation.instance().getMasterClock().setPaused(false);
+		//createGUI();
+	}
 
-		this.desktop = desktop;
-		
-		Simulation.instance().getMasterClock().setPaused(false);
+	public void createGUI(Building newBuilding) {
 		
 		setIconifiable(true);
 		setClosable(true);
@@ -58,7 +76,7 @@ extends JInternalFrame {
 		setContentPane(mainPane);
 
 		announcementLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
-		announcementLabel.setText("Do you like this location for the new building " + building + " ?");
+		announcementLabel.setText("Do you like this location for the new building " + newBuilding + " ?");
 		announcementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.add(announcementLabel, BorderLayout.NORTH);
 		//mainPane.setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
@@ -69,8 +87,8 @@ extends JInternalFrame {
 		JButton b1 = new JButton("Accept");
 		b1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				mgr.getResupply().setUserAcceptance(true);
-				desktop.getMainWindow().unpauseSimulation();
+				//resupply.setUserAcceptance(true);
+				//desktop.getMainWindow().unpauseSimulation();
 			}
 		});
 		btnPane.add(b1);
@@ -89,13 +107,157 @@ extends JInternalFrame {
 		JButton b3 = new JButton("Next Location");
 		b3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				mgr.getResupply().setUserAcceptance(false);				
-				desktop.getMainWindow().unpauseSimulation();
+				//resupply.setUserAcceptance(false);				
+				//desktop.getMainWindow().unpauseSimulation();
 			}
 		});
 		btnPane.add(b3);
 	}
+	
+	
+	public void initialize(BuildingManager mgr) {//, Building building) {
+		this.mgr = mgr;
+		//this.building = building;
+		this.settlement = mgr.getSettlement();
+		this.resupply = mgr.getResupply();
+		this.settlementWindow = desktop.getSettlementWindow();
+		this.mapPanel = settlementWindow.getMapPanel();
+	}
+	
+	/**
+     * Delivers supplies to the destination settlement.
+     */
+    public void deliverBuildings() {  
+    	//System.out.println("TransportWizard : running deliverBuildings()");
 
+        List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
+        // 2014-12-23 Added sorting orderedBuildings according to its building id
+        //Collections.sort(orderedBuildings);
+        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
+        int size = orderedBuildings.size();
+        int i = 0;
+        Building aBuilding = mgr.getBuildings().get(0);
+        while (buildingI.hasNext()) {
+           BuildingTemplate template = buildingI.next();  
+            //System.out.println(template.getNickName());
+            // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
+            if (resupply.checkBuildingTemplatePosition(template)) {
+                
+                // Correct length and width in building template.
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                
+                // Replace width and length defaults to deal with variable width and length buildings.
+                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
+                if (template.getWidth() > 0D) {
+                    width = template.getWidth();
+                }
+                if (width <= 0D) {
+                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+                }
+                
+                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
+                if (template.getLength() > 0D) {
+                    length = template.getLength();
+                }
+                if (length <= 0D) {
+                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+                }
+                
+                // 2014-12-26 Added the construction of buildingNickName
+                String settlementID = "A";
+                String buildingNickName = template.getBuildingType() + " " + settlementID + buildingID;
+                
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
+                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+
+                confirmBuildingLocation(correctedTemplate, true);
+ 
+            } // end of if (checkBuildingTemplatePosition(template)) {
+            
+            else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
+            	   // or when the building's designated location has already been occupied 
+            		confirmBuildingLocation(template, false);    
+            } // end of else {  
+            i++;
+	        if (i == size) {
+	        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
+	        }
+	    } // end of while (buildingI.hasNext())
+    }
+    
+    
+    /**
+     * Asks user to confirm the location of the new building.
+     * @param template
+     * @param buildingManager 
+     * @param isMarsDirectResupplyMission
+     */
+    // 2014-12-19 Added confirmBuildingLocation()
+    // 2014-12-23 Added isMarsDirectResupplyMission parameter
+	public synchronized void confirmBuildingLocation(BuildingTemplate template, boolean isMarsDirectResupplyMission) {
+	   	//System.out.println("TransportWizard : running confirmBuildingLocation()");
+	    
+		BuildingTemplate positionedTemplate = null;
+		Building newBuilding = null;
+	    //final int TIME_OUT = 20;
+	    //int count = TIME_OUT;
+	    //pauseTimer = new Timer();
+		// Hold off 10 seconds 
+		//int seconds = 10;
+
+         // Determine location and facing for the new building.
+		if (isMarsDirectResupplyMission)
+			newBuilding = mgr.addOneBuilding(template, resupply, true);
+		else {
+			positionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
+			//buildingManager.setBuildingArrived(true);
+			newBuilding = mgr.addOneBuilding(positionedTemplate, resupply, true);
+		}
+	   	//System.out.println("TransportWizard : new Building is " + newBuilding);
+
+  		// set settlement based on where this building is located
+  		// important for MainDesktopPane to look up this settlement variable when placing/transporting building 
+  		settlement = newBuilding.getBuildingManager().getSettlement();
+  		String name = newBuilding.getNickName();
+  		
+		//mapPanel.setSettlement(settlement); // not working
+		double xLoc = newBuilding.getXLocation();
+		double yLoc = newBuilding.getYLocation();
+		double scale = mapPanel.getScale();
+		//System.out.println("scale is " + scale + "  xLoc is "+ xLoc + "  yLoc is "+yLoc);
+		mapPanel.reCenter();
+		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+		mapPanel.setShowBuildingLabels(true);
+		repaint();
+		desktop.getMainWindow().pauseSimulation();
+
+		createGUI(newBuilding);
+		
+        String message = "Do you like to place " + name + " at this location on the map?";
+        String title = "Transport Wizard";
+		int reply = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION);
+			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
+  		//Simulation.instance().getMasterClock().setPaused(true);	
+		//pauseTimer.schedule(new CancelTimer(), seconds * 1000);	
+  		//logger.info("userAcceptance is " + userAcceptance);
+  		//if (userAcceptance) {
+		if (reply == JOptionPane.YES_OPTION) {
+			
+	        //settlement.fireUnitUpdate(UnitEventType.BUILDING_PLACED_EVENT, newBuilding);  
+            logger.info("Building in Placed : " + newBuilding.toString());
+		}
+		else { //userAcceptance = false;
+			mgr.removeBuilding(newBuilding);
+			confirmBuildingLocation(template, false);
+			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
+		}
+	}
+
+	public Settlement getSettlement() {
+		return settlement;
+	}
+
+	
 	/**
 	 * Sets the announcement text for the window.
 	 * @param announcement the announcement text.
@@ -103,8 +265,6 @@ extends JInternalFrame {
 	//public void setAnnouncement(String announcement) {
 	//	announcementLabel.setText(announcement);
 	//}
-	public void setup(BuildingManager mgr, Building building) {
-		this.mgr = mgr;
-		this.building = building;
-	}
+
+			 			
 }
