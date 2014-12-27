@@ -44,6 +44,7 @@ extends JInternalFrame {
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 	
+	private JPanel mainPane ;
 	private JLabel announcementLabel;
 	private BuildingManager mgr;
 	//private Building building;
@@ -52,6 +53,7 @@ extends JInternalFrame {
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
 	private Resupply resupply;
+
 
 	/** 
 	 * Constructor .
@@ -66,11 +68,14 @@ extends JInternalFrame {
 
 	public void createGUI(Building newBuilding) {
 		
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setIconifiable(true);
 		setClosable(true);
+		Point location = MouseInfo.getPointerInfo().getLocation();
+		setLocation(location);	
 		//setTitle();
 		// Create the main panel
-		JPanel mainPane = new JPanel();
+		mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());
 		mainPane.setBorder(new EmptyBorder(10, 20, 10, 20));
 		setContentPane(mainPane);
@@ -112,6 +117,7 @@ extends JInternalFrame {
 			}
 		});
 		btnPane.add(b3);
+		
 	}
 	
 	
@@ -183,6 +189,8 @@ extends JInternalFrame {
 	        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
 	        }
 	    } // end of while (buildingI.hasNext())
+		try { this.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
     }
     
     
@@ -213,12 +221,13 @@ extends JInternalFrame {
 			//buildingManager.setBuildingArrived(true);
 			newBuilding = mgr.addOneBuilding(positionedTemplate, resupply, true);
 		}
+		createGUI(newBuilding);
+
 	   	//System.out.println("TransportWizard : new Building is " + newBuilding);
 
   		// set settlement based on where this building is located
   		// important for MainDesktopPane to look up this settlement variable when placing/transporting building 
   		settlement = newBuilding.getBuildingManager().getSettlement();
-  		String name = newBuilding.getNickName();
   		
 		//mapPanel.setSettlement(settlement); // not working
 		double xLoc = newBuilding.getXLocation();
@@ -231,19 +240,11 @@ extends JInternalFrame {
 		repaint();
 		desktop.getMainWindow().pauseSimulation();
 
-		createGUI(newBuilding);
-		
+		String name = newBuilding.getNickName();
         String message = "Do you like to place " + name + " at this location on the map?";
         String title = "Transport Wizard";
-		int reply = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION);
-			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
-  		//Simulation.instance().getMasterClock().setPaused(true);	
-		//pauseTimer.schedule(new CancelTimer(), seconds * 1000);	
-  		//logger.info("userAcceptance is " + userAcceptance);
-  		//if (userAcceptance) {
+		int reply = JOptionPane.showConfirmDialog(desktop.getAnnouncementWindow(), message, title, JOptionPane.YES_NO_OPTION);
 		if (reply == JOptionPane.YES_OPTION) {
-			
-	        //settlement.fireUnitUpdate(UnitEventType.BUILDING_PLACED_EVENT, newBuilding);  
             logger.info("Building in Placed : " + newBuilding.toString());
 		}
 		else { //userAcceptance = false;
@@ -251,20 +252,53 @@ extends JInternalFrame {
 			confirmBuildingLocation(template, false);
 			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
 		}
+		
+		//SwingUtilities.invokeLater(new TransportWizardLauncher(newBuilding, template));
 	}
 
+	/**
+	 * Internal class for launching the JOption window.
+	
+	private class TransportWizardLauncher implements Runnable {
+	    private Building newBuilding;  
+	    private BuildingTemplate template;
+		private String name = newBuilding.getNickName();
+	    private TransportWizardLauncher(Building newBuilding, BuildingTemplate template) {
+	        this.newBuilding = newBuilding;
+	        this.template = template;
+	    }
+	    
+	    public void run() {
+	        //Thread.sleep(50);
+	        String message = "Do you like to place " + name + " at this location on the map?";
+	        String title = "Transport Wizard";
+			int reply = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+	            logger.info("Building in Placed : " + newBuilding.toString());
+			}
+			else { //userAcceptance = false;
+				mgr.removeBuilding(newBuilding);
+				confirmBuildingLocation(template, false);
+				//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
+			}
+			// Note: adding try-catch can cause UI significant slow down here
+	    }
+	}
+	 */
 	public Settlement getSettlement() {
 		return settlement;
 	}
 
-	
 	/**
-	 * Sets the announcement text for the window.
-	 * @param announcement the announcement text.
+	 * Prepares tool window for deletion.
 	 */
-	//public void setAnnouncement(String announcement) {
-	//	announcementLabel.setText(announcement);
-	//}
-
+	public void destroy() {
+		mgr = null;
+		desktop = null;
+		settlement = null;
+		settlementWindow = null;
+		mapPanel = null;
+		resupply = null;
+	}
 			 			
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2014-12-23
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 
@@ -13,6 +13,8 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +35,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -62,7 +65,9 @@ public class MainWindow {
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
-
+	
+	// 2014-12-27 Added delay timer
+	private Timer timer;
 	/**
 	 * Constructor.
 	 * @param cleanUI true if window should display a clean UI.
@@ -151,8 +156,23 @@ public class MainWindow {
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		
+		// 2014-12-27 Added OpenSettlementWindow with delay timer
+		timer = new Timer();
+		int seconds = 2;
+		timer.schedule(new OpenSettlementWindow(), seconds * 1000);	
+
 	}
 
+
+	// 2014-12-27 Added OpenSettlementWindow
+	public class OpenSettlementWindow extends TimerTask {
+		public void run() {
+			desktop.openToolWindow(SettlementWindow.NAME);
+			timer.cancel(); // Terminate the thread
+		}
+	}
+	
 	/**
 	 * Get the window's frame.
 	 * @return the frame.

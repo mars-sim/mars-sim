@@ -112,9 +112,6 @@ implements ClockListener {
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
-		// Set preferred size.
-		setPreferredSize(new Dimension(600, 400));
-		setLocation(1000,800);
 
 		// Set foreground and background colors.
 		setOpaque(true);
