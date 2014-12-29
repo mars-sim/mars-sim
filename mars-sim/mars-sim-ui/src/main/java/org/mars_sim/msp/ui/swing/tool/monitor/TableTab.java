@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
@@ -35,6 +36,8 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
+import org.mars_sim.msp.ui.swing.tool.settlement.PopUpBuildingMenu;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -265,6 +268,7 @@ extends MonitorTab {
 			table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
 			//table.getTableHeader().setReorderingAllowed(false); 
 			
+			
         	// Get the TableColumn header to display sorted column
         	JTableHeader theHeader = table.getTableHeader();
         	TableHeaderRenderer theRenderer =
@@ -332,6 +336,12 @@ extends MonitorTab {
 
         setName(model.getName());
         setSortColumn(0);
+        
+        final JTable ctable = table;
+	    SwingUtilities.invokeLater(new Runnable(){
+	        public void run()  {
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	         } });
     }
 
     /**
