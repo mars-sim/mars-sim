@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2014-12-28
  * @author Scott Davis
  */
 
@@ -251,7 +251,7 @@ LocalBoundedObject, InsidePathLocation {
 	//Constructor 3
 	/** Empty constructor. */
 	protected Building(BuildingManager manager) {
-		super("Mock Building", null);
+		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
 
