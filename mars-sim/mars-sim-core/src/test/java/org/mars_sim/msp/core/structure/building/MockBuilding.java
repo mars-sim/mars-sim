@@ -11,10 +11,10 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 public class MockBuilding extends Building {
 
     public MockBuilding() {
-        this(null, null);
+        this(null);
     }
     public MockBuilding(BuildingManager manager)  {
-		super(null, manager);
+		super(manager);
 		buildingType = "Mock Building";
 		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
