@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-12-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,7 +76,7 @@ implements Repair, Serializable {
         }
 
         // Create starting task event if needed.
-        if (getCreateEvents()) {
+        if (getCreateEvents() && !isDone()) {
             TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }

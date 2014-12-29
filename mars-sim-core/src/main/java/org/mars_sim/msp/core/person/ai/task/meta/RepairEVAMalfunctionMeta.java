@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunctionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -15,11 +15,11 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.Task;
 
 public class RepairEVAMalfunctionMeta implements MetaTask {
@@ -43,10 +43,13 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
         
         double result = 0D;
 
-        // Total probabilities for all malfunctionable entities in person's local.
+        // Add probability for all malfunctionable entities in person's local.
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
+            Malfunctionable entity = i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            
+            // Check if entity has any EVA malfunctions.
             Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
             while (j.hasNext()) {
                 Malfunction malfunction = j.next();
@@ -58,6 +61,22 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);
+                }
+            }
+            
+            // Check if entity requires an EVA and has any normal malfunctions.
+            if (RepairEVAMalfunction.requiresEVA(person, entity)) {
+                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+                while (k.hasNext()) {
+                    Malfunction malfunction = k.next();
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+                            result += 100D;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
             }
         }
@@ -78,12 +97,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 
-        // Check if person is in vehicle.
-        boolean inVehicle = LocationSituation.IN_VEHICLE == person.getLocationSituation();
-
         // Job modifier if not in vehicle.
         Job job = person.getMind().getJob();
-        if ((job != null) && !inVehicle) {
+        if ((job != null)) {
             result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
         }
 

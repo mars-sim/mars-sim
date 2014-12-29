@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.07 2014-11-30
+ * @version 3.07 2014-12-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -408,7 +408,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			descriptionLabel.setText(Msg.getString("MainDetailPanel.description","")); //$NON-NLS-1$ //$NON-NLS-2$
 			typeLabel.setText(Msg.getString("MainDetailPanel.type","")); //$NON-NLS-1$ //$NON-NLS-2$
 			phaseLabel.setText(Msg.getString("MainDetailPanel.phase","")); //$NON-NLS-1$ //$NON-NLS-2$
-			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax","")); //$NON-NLS-1$ //$NON-NLS-2$
+			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", "", "", "")); //$NON-NLS-1$ //$NON-NLS-2$
 			memberTableModel.setMission(null);
 			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
@@ -517,7 +517,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
 				}
 				memberNumLabel.setText(Msg.getString(
-					"", //$NON-NLS-1$
+				    "MainDetailPanel.missionMembersMinMax", //$NON-NLS-1$
 					memberNum,minMembers,maxMembers
 				));
 				memberTableModel.updateMembers();

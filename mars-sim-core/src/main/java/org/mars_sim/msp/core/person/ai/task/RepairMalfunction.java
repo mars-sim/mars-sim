@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,8 +28,10 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
@@ -96,11 +98,43 @@ implements Repair, Serializable {
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext() && (result == null)) {
             Malfunctionable entity = i.next();
-            if (hasMalfunction(person, entity)) {
-                result = entity;
+            if (!requiresEVA(person, entity)) {
+                if (hasMalfunction(person, entity)) {
+                    result = entity;
+                }
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Check if a malfunctionable entity requires an EVA to repair.
+     * @param person the person doing the repair.
+     * @param entity the entity with a malfunction.
+     * @return true if entity requires an EVA repair.
+     */
+    public static boolean requiresEVA(Person person, Malfunctionable entity) {
+        
+        boolean result = false;
+        
+        if (entity instanceof Vehicle) {
+            // Requires EVA repair on outside vehicles that the person isn't inside.
+            Vehicle vehicle = (Vehicle) entity;
+            boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+            boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
+            if (outsideVehicle && personNotInVehicle) {
+                result = true;
+            }
+        }
+        else if (entity instanceof Building) {
+            // Requires EVA repair on uninhabitable buildings.
+            Building building = (Building) entity;
+            if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                result = true;
+            }
+        }
+        
         return result;
     }
 
@@ -233,7 +267,7 @@ implements Repair, Serializable {
         // Add experience
         addExperience(time);
 
-        // Check if an accident happens during maintenance.
+        // Check if an accident happens during repair.
         checkForAccident(time);
 
         // Check if there are no more malfunctions.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +31,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an EVA.
@@ -58,6 +60,13 @@ implements Repair, Serializable {
     // Data members
     /** The malfunctionable entity being repaired. */
     private Malfunctionable entity;
+    
+    /** The malfunction to be repaired. */
+    private Malfunction malfunction;
+    
+    /** True if repairing the EVA part of the malfunction. */
+    private boolean isEVAMalfunction;
+    
     /** The container unit the person started the mission in. */
     private Unit containerUnit;
 
@@ -71,15 +80,21 @@ implements Repair, Serializable {
         containerUnit = person.getTopContainerUnit();
 
         // Get the malfunctioning entity.
-        entity = getEVAMalfunctionEntity(person, containerUnit);
-        if (entity == null) {
-            endTask();
-            return;
+        entity = getEVAMalfunctionEntity(person);
+        if (entity != null) {
+            malfunction = getMalfunction(person, entity);
+            isEVAMalfunction = canRepairEVA(malfunction);
+            
+            setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", 
+                  malfunction.getName(), entity.getName())); //$NON-NLS-1$
+            
+            // Determine location for repairing malfunction.
+            Point2D malfunctionLoc = determineMalfunctionLocation();
+            setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
         }
-
-        // Determine location for repairing malfunction.
-        Point2D malfunctionLoc = determineMalfunctionLocation();
-        setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+        else {
+            endTask();
+        }
 
         // Initialize phase
         addPhase(REPAIRING);
@@ -88,53 +103,145 @@ implements Repair, Serializable {
     }
 
     /**
-     * Checks if the malfunctionable entity has a local EVA malfunction.
-     * @param containerUnit the unit the person is doing an EVA from.
-     * @return true if malfunction, false if none.
+     * Gets a malfunctionable entity with an EVA-required malfunction.
+     * @param person the person.
+     * @return malfunctionable entity.
      */
-    private static boolean hasEVAMalfunction(Person person, Unit containerUnit, 
-            Malfunctionable entity) {
+    private Malfunctionable getEVAMalfunctionEntity(Person person) {
+        Malfunctionable result = null;
 
-        boolean result = false;
-
-        MalfunctionManager manager = entity.getMalfunctionManager();
-        Iterator<Malfunction> i = manager.getEVAMalfunctions().iterator();
-        while (i.hasNext() && !result) {
-            if (hasRepairPartsForMalfunction(person, containerUnit, i.next())) {
-                result = true;
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext() && (result == null)) {
+            Malfunctionable entity = i.next();
+            if (getMalfunction(person, entity) != null) {
+                result = entity;
+            }
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            
+            // Check if entity has any EVA malfunctions.
+            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+            while (j.hasNext() && (result == null)) {
+                Malfunction malfunction = j.next();
+                try {
+                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
+                            malfunction)) {
+                        result = entity;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            
+            // Check if entity requires an EVA and has any normal malfunctions.
+            if ((result == null) && requiresEVA(person, entity)) {
+                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+                while (k.hasNext() && (result == null)) {
+                    Malfunction malfunction = k.next();
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+                            result = entity;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
             }
         }
 
         return result;
     }
-
+    
     /**
-     * Gets a malfunctionable entity with an EVA malfunction for a user.
-     * @param person the person.
-     * @param containerUnit the unit the person is doing an EVA from.
-     * @return malfunctionable entity.
+     * Check if a malfunctionable entity requires an EVA to repair.
+     * @param person the person doing the repair.
+     * @param entity the entity with a malfunction.
+     * @return true if entity requires an EVA repair.
      */
-    private static Malfunctionable getEVAMalfunctionEntity(Person person, Unit containerUnit) {
-        Malfunctionable result = null;
-
-        Collection<Malfunctionable> malfunctionables = null;
-        if (containerUnit instanceof Malfunctionable) {
-            malfunctionables = MalfunctionFactory.getMalfunctionables((Malfunctionable) containerUnit);
+    public static boolean requiresEVA(Person person, Malfunctionable entity) {
+        
+        boolean result = false;
+        
+        if (entity instanceof Vehicle) {
+            // Requires EVA repair on outside vehicles that the person isn't inside.
+            Vehicle vehicle = (Vehicle) entity;
+            boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+            boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
+            if (outsideVehicle && personNotInVehicle) {
+                result = true;
+            }
         }
-        else if (containerUnit instanceof Settlement) {
-            malfunctionables = MalfunctionFactory.getMalfunctionables((Settlement) containerUnit);
+        else if (entity instanceof Building) {
+            // Requires EVA repair on uninhabitable buildings.
+            Building building = (Building) entity;
+            if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                result = true;
+            }
         }
-
-        if (malfunctionables != null) {
-            Iterator<Malfunctionable> i = malfunctionables.iterator();
-            while (i.hasNext() && (result == null)) {
-                Malfunctionable entity = i.next();
-                if (hasEVAMalfunction(person, containerUnit, entity)) {
-                    result = entity;
+        
+        return result;
+    }
+    
+    /**
+     * Gets a reparable malfunction requiring an EVA for a given entity.
+     * @param person the person to repair.
+     * @param entity the entity with a malfunction.
+     * @return malfunction requiring an EVA repair or null if none found.
+     */
+    private Malfunction getMalfunction(Person person, Malfunctionable entity) {
+        
+        Malfunction result = null;
+        
+        MalfunctionManager manager = entity.getMalfunctionManager();
+        
+        // Check if entity has any EVA malfunctions.
+        Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+        while (j.hasNext() && (result == null)) {
+            Malfunction malfunction = j.next();
+            try {
+                if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
+                        malfunction)) {
+                    result = malfunction;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        
+        // Check if entity requires an EVA and has any normal malfunctions.
+        if ((result == null) && requiresEVA(person, entity)) {
+            Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+            while (k.hasNext() && (result == null)) {
+                Malfunction malfunction = k.next();
+                try {
+                    if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+                        result = malfunction;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
                 }
             }
         }
-
+        
+        return result;
+    }
+    
+    /**
+     * Checks if a malfunction requires EVA repair.
+     * @param malfunction the malfunction.
+     * @return true if malfunction requires EVA repair.
+     */
+    private boolean canRepairEVA(Malfunction malfunction) {
+        
+        boolean result = false;
+        
+        if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
+            result = true;
+        }
+        
         return result;
     }
 
@@ -250,8 +357,19 @@ implements Repair, Serializable {
      */
     private double repairMalfunctionPhase(double time) {
 
-        if (!hasEVAMalfunction(person, containerUnit, entity) || shouldEndEVAOperation() || 
-                addTimeOnSite(time)) {
+        boolean finishedRepair = false;
+        if (isEVAMalfunction) {
+            if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) <= 0D) {
+                finishedRepair = true;
+            }
+        }
+        else {
+            if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
+                finishedRepair = true;
+            }
+        }
+        
+        if (finishedRepair || shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
@@ -261,18 +379,6 @@ implements Repair, Serializable {
         int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
-
-        // Get a local malfunction.
-        Malfunction malfunction = null;
-        Iterator<Malfunction> i = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
-        while (i.hasNext() && (malfunction == null)) {
-            Malfunction tempMalfunction = i.next();
-            if (hasRepairPartsForMalfunction(person, containerUnit, tempMalfunction)) {
-                malfunction = tempMalfunction;
-                setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", 
-                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
-            }
-        }
 
         // Add repair parts if necessary.
         Inventory inv = containerUnit.getInventory();
@@ -292,15 +398,18 @@ implements Repair, Serializable {
         }
 
         // Add EVA work to malfunction.
-        double workTimeLeft = malfunction.addEVAWorkTime(workTime);
+        double workTimeLeft = 0D;
+        if (isEVAMalfunction) {
+            workTimeLeft = malfunction.addEVAWorkTime(workTime);
+        }
+        else {
+            workTimeLeft = malfunction.addWorkTime(workTime);
+        }
 
         // Add experience points
         addExperience(time);
 
-        // Check if there are no more malfunctions. 
-        if (!hasEVAMalfunction(person, containerUnit, entity)) setPhase(WALK_BACK_INSIDE);
-
-        // Check if an accident happens during maintenance.
+        // Check if an accident happens during repair.
         checkForAccident(time);
 
         return (workTimeLeft / workTime) * time;
