@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2014-12-28
 
  * @author Scott Davis 
  */
@@ -102,25 +102,11 @@ implements Serializable {
 		LocationSituation location = person.getLocationSituation();
 
 		if (location == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = person.getSettlement();
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-			while (i.hasNext()) {
-				entities.add(i.next());
-			}
+		    entities = getMalfunctionables(person.getSettlement());
 		}
 
 		if (location == LocationSituation.IN_VEHICLE) {
-			entities.add(person.getVehicle());
-		}
-
-		if (location != LocationSituation.OUTSIDE) {
-			Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
-				if (unit instanceof Malfunctionable) {
-					entities.add((Malfunctionable) unit);
-				}
-			}
+		    entities = getMalfunctionables(person.getVehicle());
 		}
 
 		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
@@ -128,7 +114,7 @@ implements Serializable {
 			Iterator<Unit> i = inventoryUnits.iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
-				if (unit instanceof Malfunctionable) {
+				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
 					entities.add((Malfunctionable)unit);
 				}
 			}
@@ -158,7 +144,7 @@ implements Serializable {
 			Iterator<Unit> j = inventoryUnits.iterator();
 			while (j.hasNext()) {
 				Unit unit = j.next();
-				if (unit instanceof Malfunctionable) {
+				if ((unit instanceof Malfunctionable) && (!entities.contains(unit))) {
 					entities.add((Malfunctionable)unit);
 				}
 			}

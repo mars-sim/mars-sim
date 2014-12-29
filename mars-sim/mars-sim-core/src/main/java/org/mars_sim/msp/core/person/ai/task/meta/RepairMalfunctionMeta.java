@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunctionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -42,21 +42,23 @@ public class RepairMalfunctionMeta implements MetaTask {
         
         double result = 0D;
 
-        // Total probabilities for all malfunctionable entities in person's local.
+        // Add probability for all malfunctionable entities in person's local.
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                try {
-                    if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-                        result += 100D;
+            if (!RepairMalfunction.requiresEVA(person, entity)) {
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+                while (j.hasNext()) {
+                    Malfunction malfunction = j.next();
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+                            result += 100D;
+                        }
                     }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
             }
         }

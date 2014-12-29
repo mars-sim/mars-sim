@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2014-11-29
+ * @version 3.07 2014-12-28
  * @author Scott Davis
  */
 
@@ -76,6 +76,9 @@ implements ActionListener {
     public LocationTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
         super("Location", null, "Location", unit, desktop);
+        
+        // Initialize locationLabel.
+        locationLabel = new JLabel("");
         
         // Create location panel
         JPanel locationPanel = new JPanel(new BorderLayout(0,0));

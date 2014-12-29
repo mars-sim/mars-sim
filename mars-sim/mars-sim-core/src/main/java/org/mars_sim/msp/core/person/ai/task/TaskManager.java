@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.07 2014-11-30
+ * @version 3.07 2014-12-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
@@ -179,10 +181,20 @@ implements Serializable {
 	 * @throws Exception if error checking for emergency.
 	 */
 	private void checkForEmergency() {
+	    
+	    Person person = mind.getPerson();
+	    
 		// Check for emergency malfunction.
-		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
-			boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
+			
+		    // Check if person is already repairing an emergency.
+		    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
 					instanceof RepairEmergencyMalfunction));
+			if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
+			    hasEmergencyRepair = true;
+			}
+			
+			// Check if person is performing an airlock task.
 			boolean hasAirlockTask = false;
 			Task task = currentTask;
 			while (task != null) {
@@ -191,11 +203,22 @@ implements Serializable {
 				}
 				task = task.getSubTask();
 			}
-			if (!hasEmergencyRepair && !hasAirlockTask) {
-				logger.fine(mind.getPerson() + " cancelling task " + currentTask + 
+			
+			// Check if person is outside.
+			boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+			
+			// Cancel current task and start emergency repair task.
+			if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
+				logger.fine(person + " cancelling task " + currentTask + 
 						" due to emergency repairs.");
 				clearTask();
-				addTask(new RepairEmergencyMalfunction(mind.getPerson()));
+				
+				if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
+				    addTask(new RepairEmergencyMalfunctionEVA(person));
+				}
+				else {
+				    addTask(new RepairEmergencyMalfunction(person));
+				}
 			}
 		}
 	}
