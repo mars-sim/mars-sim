@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -385,42 +386,50 @@ implements VehicleOperator, Serializable {
      */
     private LifeSupport getLifeSupport() {
 
-        Collection<Unit> lifeSupportUnits = new ConcurrentLinkedQueue<Unit>();
+        LifeSupport result = null;
+        List<LifeSupport> lifeSupportUnits = new ArrayList<LifeSupport>();
 
-        // Get all container units.
-        Unit container = getContainerUnit();
-        while (container != null) {
-            if (container instanceof LifeSupport)
-                lifeSupportUnits.add(container);
-            container = container.getContainerUnit();
+        Settlement settlement = getSettlement();
+        if (settlement != null) {
+            lifeSupportUnits.add(settlement);
+        }
+        else {
+            Vehicle vehicle = getVehicle();
+            if ((vehicle != null) && (vehicle instanceof LifeSupport)) {
+                
+                if (BuildingManager.getBuilding(vehicle) != null) {
+                    lifeSupportUnits.add(vehicle.getSettlement());
+                }
+                else {
+                    lifeSupportUnits.add((LifeSupport) vehicle);
+                }
+            }
         }
 
         // Get all contained units.
         Iterator<Unit> i = getInventory().getContainedUnits().iterator();
         while (i.hasNext()) {
             Unit contained = i.next();
-            if (contained instanceof LifeSupport)
-                lifeSupportUnits.add(contained);
+            if (contained instanceof LifeSupport) {
+                lifeSupportUnits.add((LifeSupport) contained);
+            }
         }
 
         // Get first life support unit that checks out.
-        i = lifeSupportUnits.iterator();
-        while (i.hasNext()) {
-            LifeSupport goodUnit = (LifeSupport) i.next();
-            try {
-                if (goodUnit.lifeSupportCheck())
-                    return goodUnit;
-            } catch (Exception e) {
+        Iterator<LifeSupport> j = lifeSupportUnits.iterator();
+        while (j.hasNext() && (result == null)) {
+            LifeSupport goodUnit = j.next();
+            if (goodUnit.lifeSupportCheck()) {
+                result = goodUnit;
             }
         }
 
         // If no good units, just get first life support unit.
-        i = lifeSupportUnits.iterator();
-        if (i.hasNext())
-            return (LifeSupport) i.next();
+        if ((result == null) && (lifeSupportUnits.size() > 0)) {
+            result = lifeSupportUnits.get(0);
+        }
 
-        // If no life support units at all, return null.
-        return null;
+        return result;
     }
 
     /**
