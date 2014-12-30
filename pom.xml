@@ -130,7 +130,7 @@
 	<modules>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-		<module>mars-sim-fxui</module>
+		<!-- <module>mars-sim-fxui</module> -->
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module> 
 	</modules>
@@ -145,8 +145,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>2.0.2</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
+						<source>1.7</source>
+						<target>1.7</target>
 					</configuration>
 				</plugin>
 				<plugin>
