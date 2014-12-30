@@ -74,14 +74,19 @@
 	<resource name="White Onion" phase="solid" edible="true"></resource>	
 	<resource name="Peas" phase="solid" edible="true"></resource>
 	<resource name="Peanut" phase="solid" edible="true"></resource>
+	<resource name="Rice" phase="solid" edible="true"></resource>
 	<resource name="White Rice" phase="solid" edible="true"></resource>
+	<resource name="Brown Rice" phase="solid" edible="true"></resource>
 	<resource name="Potato" phase="solid" edible="true"></resource>
 	<resource name="Tomato" phase="solid" edible="true"></resource>
 	<resource name="Garlic" phase="solid" edible="true"></resource>
 	<resource name="Sugarcane" phase="solid" edible="true"></resource>
 	<resource name="Ginger" phase="solid" edible="true"></resource>
-	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain suitable for long endurance flight</resource>
+	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
 	<resource name="Grain Bar" phase="solid" edible="true">A nutritious grain suitable for long endurance flight</resource>
+	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
+	<resource name="Soy Sauce" phase="liquid" edible="true">Sprouts from Quinoa</resource>
+
 
 	
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>

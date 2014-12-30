@@ -200,6 +200,7 @@
 				<resource-storage resource="Table Salt" capacity="500.0" />
 				<resource-storage resource="Sugar" capacity="500.0" />
 				<resource-storage resource="Rice Vinegar" capacity="500.0" />
+				<resource-storage resource="Soy Sauce" capacity="500.0" />
 																				
 				<resource-storage resource="Soybean Oil" capacity="500.0" />
 				<resource-storage resource="White Onion" capacity="500.0" />
@@ -240,6 +241,8 @@
 				<resource-initial resource="Table Salt" amount="100.0" />
 				<resource-initial resource="Sugar" amount="100.0" />
 				<resource-initial resource="Rice Vinegar" amount="50.0" />
+				<resource-initial resource="Soy Sauce" amount="50.0" />										
+										
 										
 				<resource-initial resource="Soybean Oil" amount="50.0" />	
 				<resource-initial resource="White Onion" amount="50.0" />

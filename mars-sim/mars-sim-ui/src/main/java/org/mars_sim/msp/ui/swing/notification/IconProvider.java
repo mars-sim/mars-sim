@@ -1,5 +1,14 @@
+/**
+ * Mars Simulation Project 
+ * IconProvider.java
+ * @version 3.07 2014-12-10
+
+ * @author Modified by Manny Kung
+ */
+
 /*
- *   JTelegraph -- a Java message notification library
+ 
+*   JTelegraph -- a Java message notification library
  *   Copyright (c) 2012, Paulo Roberto Massa Cereda
  *   All rights reserved.
  *
