@@ -1,4 +1,13 @@
+/**
+ * Mars Simulation Project 
+ * SimplicioIconProvider.java
+ * @version 3.07 2014-12-10
+
+ * @author Modified by Manny Kung
+ */
+
 /*
+
  *   JTelegraph -- a Java message notification library
  *   Copyright (c) 2012, Paulo Roberto Massa Cereda
  *   All rights reserved.
@@ -66,14 +75,13 @@ public enum SimplicioIconProvider implements IconProvider {
 	 */
 	String ICON_PATH = "/notification/simplicio/{0}.png";
 
-	
 	/**
 	 * @see IconProvider#getIcon()
 	 * @return Icon associated to the enumeration member.
 	 */
 	@Override
 	public ImageIcon getIcon() {
-	
+
 			ImageIcon i = new ImageIcon(ImageLoader.class.getResource(
 					MessageFormat.format(ICON_PATH, toString().toLowerCase())));
 		return i;

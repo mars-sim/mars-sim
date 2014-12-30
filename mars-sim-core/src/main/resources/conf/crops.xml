@@ -103,7 +103,7 @@ http://sourceforge.net/p/mars-sim/code/2842/
     	inedible-biomass="18" 
     	/>  
     	    	
-     <crop name="White Rice"
+     <crop name="Rice"
         growing-time="100.0" 
     	crop-category="Grains" 
     	edible-biomass="10.3" 

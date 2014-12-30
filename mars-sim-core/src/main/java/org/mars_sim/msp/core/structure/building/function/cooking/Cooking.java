@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -468,35 +469,54 @@ implements Serializable {
 		return num;
 	}
 	*/
-		/*
+		
 		public String getAnOil() {
-			// 
+			 
 			int upperbound = 4;
 	    	int lowerbound = 0;
 	    	String oilName = "";
-	    	int index = ThreadLocalRandom.current().nextInt(upperbound + 1);
-	    	//int index = ThreadLocalRandom.current().nextInt(10); // 0 to 9
-	    	//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+	    	boolean notFound = true;
+	    	String result = "";
+	    	int count = 0;
 	    	
-	    	//HotMeal aMeal = new HotMeal();
 	    	
-	    	if (index == 0) {
-	    		oilName = "Soybean Oil";
-	    	} else if (index == 1) {
-	    		oilName = "Garlic Oil";
-	    	} else if (index == 2) {
-	    		oilName = "Sesame Oil";
-	    	} else if (index == 3) {
-	    		oilName = "Peanut Oil";
-	    	} else if (index == 4) {
-	    		oilName = "Soybean Oil";
-	    	} 
+	    	while (notFound) {
+		    	int index = ThreadLocalRandom.current().nextInt(upperbound + 1);
+		    	//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+		    	
+		    	if (index == 0) {
+		    		oilName = "Soybean Oil";
+		    	} else if (index == 1) {
+		    		oilName = "Garlic Oil";
+		    	} else if (index == 2) {
+		    		oilName = "Sesame Oil";
+		    	} else if (index == 3) {
+		    		oilName = "Peanut Oil";
+		    	} else if (index == 4) {
+		    		// Soybean oil is repeat here
+		    		oilName = "Soybean Oil";
+		    	} 
+		
+		        AmountResource oilAR = getFreshFoodAR(oilName);
+		        double oilAvailable = getFreshFood(oilAR);
 	
-	    	//logger.info(" Oil is " + oilName);
-
-	    	return oilName;
+		        if (oilAvailable > 0.2)  {
+			    	//logger.info(" Oil selected is " + oilName);
+			    	result = oilName;
+			    	notFound = false;
+		        }
+		        else {
+		        	notFound = true; 
+		        	if (count > 15) {
+		        		notFound = false;
+		        		result = "None";
+		        	}
+		        }
+	        	count++;
+	    	}
+	    	return result;
 		}
-    */
+    
 	
     // 2014-11-29 Created checkAmountAvailable()
     public boolean checkAmountAvailable(HotMeal aMeal) {
@@ -557,6 +577,24 @@ implements Serializable {
 	         
 	        } // end of while
 	        
+	        // 2014-12-29 Added oil and salt
+		    String oil = getAnOil();
+		    double oilAmount = .05;
+		    String salt = "Table Salt";
+		    double saltAmount = .01;
+		    if (!oil.equals("None")) {
+		        AmountResource oilAR = getFreshFoodAR(oil);
+		        // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
+		        inv.retrieveAmountResource(oilAR, oilAmount);
+		    }
+		    
+		    AmountResource saltAR = getFreshFoodAR(salt);
+		    double saltAvailable = getFreshFood(saltAR);
+		        // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
+			if (saltAvailable > saltAmount) {
+		        inv.retrieveAmountResource(saltAR, saltAmount);
+		    }    
+    
 	    	String nameOfMeal = hotMeal.getMealName();
 	    	//TODO: kitchen equipment and quality of food should affect mealQuality
 	       	int mealQuality = getBestCookSkill();
