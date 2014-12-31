@@ -160,7 +160,7 @@ implements TableModelListener, ActionListener {
 		// 2014-11-29 Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
 		
-		addTab(new UnitTab(this,new PersonTableModel(unitManager), true));
+		addTab(new UnitTab(this,new PersonTableModel(unitManager, desktop), true));
 		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
 		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
 		// 2014-10-14 mkung: added FoodTableModel

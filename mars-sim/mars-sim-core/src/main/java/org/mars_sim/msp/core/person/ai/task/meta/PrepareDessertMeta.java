@@ -68,15 +68,13 @@ public class PrepareDessertMeta implements MetaTask {
 
                     // Check if there is enough food available to cook.
                     PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    double soymilkRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    //AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
-                    //double soymilkAvailable = person.getSettlement().getInventory().getAmountResourceStored(soymilkAR, false);                    
-                    
-                    double soymilkAvailable = kitchen.checkAmountOfDessert();
-
-                    //logger.info("getProbability() : soymilkAvailable : " + soymilkAvailable);
-
-                    if (soymilkAvailable < soymilkRequired) result = 0D;
+                    double amountRequired = config.getFoodConsumptionRate() * (1D / 3D);
+                    // 2014-12-30 Added sugarcaneJuiceAvailable
+                    double soymilkAvailable = kitchen.checkAmountAV("Soymilk");
+                    double sugarcaneJuiceAvailable = kitchen.checkAmountAV("Sugarcane Juice");
+                    if (soymilkAvailable < amountRequired
+                    		&& sugarcaneJuiceAvailable < amountRequired) 
+                    	result = 0D;
                 }
             }
             catch (Exception e) {

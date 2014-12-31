@@ -68,6 +68,7 @@ public class MainWindow {
 	
 	// 2014-12-27 Added delay timer
 	private Timer timer;
+
 	/**
 	 * Constructor.
 	 * @param cleanUI true if window should display a clean UI.
@@ -480,12 +481,4 @@ public class MainWindow {
 		return toolToolbar;
 	}
 	
-	/**
-	 * Gets the Notification.
-	 * @return tool toolbar.
-	 
-	public NotificationSetting getNotification() {
-		return notificationSetting;
-	}
-	 */
 }

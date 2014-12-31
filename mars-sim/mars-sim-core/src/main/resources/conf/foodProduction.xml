@@ -530,19 +530,20 @@
 	</process>
 		
 	
-	<process name="Derive Sugar from Sugarcane" 
-		tech="1" skill="2" work-time="50" process-time="200" 
+	<process name="Derive Sugar and sugarcane juice from Sugarcane" 
+		tech="1" skill="2" work-time="50" process-time="100" 
 			power-required="1.0">		
-		<description>Derive Sugar from Sugarcane. </description>
+		<description>Derive Sugar from Sugarcane. The juice is obtained by 
+		crushing peeled sugarcane in a mill or by hand cranked machine. </description>
 		<inputs>
 			<!-- <equipment name="oven" number="1" /> -->
-			<resource name="Sugarcane" amount="10.0" />
-			<resource name="Water" amount="20.0" />				
+			<resource name="Sugarcane" amount="8.0" />
+			<resource name="Water" amount="10.0" />				
 		</inputs>
 		<outputs>
 			<resource name="Sugar" amount="2" />
-			<resource name="Cane Fiber" amount="2" />
-			
+			<resource name="Cane Fiber" amount="6" />
+			<resource name="Sugarcane Juice" amount="10" />			
 		</outputs>
 	</process>
 	

@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -105,6 +106,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private TransportWizard transportWizard;
 	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 	private boolean isTransportingBuilding = false;
+	private MarqueeBanner marqueeBanner;
 	
 	/** 
 	 * Constructor.
@@ -152,6 +154,45 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				
 		// 2014-12-27 Added prepareWindows
 		prepareWindows();
+		
+		//openMarqueeBanner("");
+	}
+	
+
+	/**
+	 * Opens a popup announcement window on the desktop.
+	 * @param announcement the announcement text to display.
+	 */
+	// 2014-12-30 Added openMarqueeBanner()
+	public void openMarqueeBanner(String announcement) {
+		
+		final MainDesktopPane d = this;
+		final String text = announcement;
+		EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+            	marqueeBanner = new MarqueeBanner(d);
+            	marqueeBanner.setAnnouncement(text);
+        		int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
+          		int Yloc = 0;
+        		setLocation(Xloc, Yloc);
+        		marqueeBanner.display();
+            }
+        });
+		
+  	  	//marqueeBanner.display();
+  	  	//marqueeBanner.pack();
+		//add(announcementWindow, 0);
+		//int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
+		//int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
+		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop 
+		//int Yloc = 0;
+		//marqueeBanner.setLocation(Xloc, Yloc);
+		// Note: second window packing seems necessary to get window
+		// to display components correctly.
+		//marqueeBanner.pack();
+		//marqueeBanner.setVisible(true);
 	}
 	
 	/** 
@@ -312,6 +353,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		transportWizard = new TransportWizard(this);
 		try { transportWizard.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
+		
+		// 2014-12-30 Added marqueeBanner
+		marqueeBanner = new MarqueeBanner(this);
+      	try { marqueeBanner.setClosed(true); }
+      	catch (java.beans.PropertyVetoException e) { }
 		
 	}
 
@@ -771,7 +817,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (java.beans.PropertyVetoException e) { }
 		transportWizard.dispose();
 	}
-
+	/**
+	 * Removes the marquee banner from the desktop.
+	 */
+	// 2014-12-30 Added disposeMarqueeBanner()
+	public void disposeMarqueeBanner() {
+		try { marqueeBanner.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) { }
+		marqueeBanner.dispose();
+	}
 	
 	/**
 	 * Updates the look & feel of the Transport Wizard.
@@ -897,6 +951,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public boolean getIsTransportingBuilding() {
 		return isTransportingBuilding;
 	}
+	
+	
 	
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {

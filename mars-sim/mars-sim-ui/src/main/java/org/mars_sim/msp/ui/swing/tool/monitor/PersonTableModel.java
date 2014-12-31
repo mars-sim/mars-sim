@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -36,6 +37,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
@@ -48,8 +51,11 @@ extends UnitTableModel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
+	//private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
 
+	@SuppressWarnings("unused")
+	private static MainDesktopPane desktop;
+	
 	// Column indexes
 	/** Person name column. */
 	private final static int NAME = 0;
@@ -162,7 +168,7 @@ extends UnitTableModel {
 	 * Constructs a PersonTableModel object that displays all people in the simulation.
 	 * @param unitManager Manager containing Person objects.
 	 */
-	public PersonTableModel(UnitManager unitManager) {
+	public PersonTableModel(UnitManager unitManager, MainDesktopPane desktop ) {
 		super(
 			Msg.getString("PersonTableModel.allPeople"), //$NON-NLS-1$
 			"PersonTableModel.countingPeople", //$NON-NLS-1$
@@ -174,6 +180,10 @@ extends UnitTableModel {
 		setSource(unitManager.getPeople());
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
+		
+		//2014-12-30 Added desktop
+		this.desktop = desktop;
+
 	}
 
 	/**
@@ -564,8 +574,30 @@ extends UnitTableModel {
 			else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
 			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
 			else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
-			eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
-			 */
+			*/
+			
+			if (eventType == UnitEventType.DEATH_EVENT) {
+				if (event.getTarget() instanceof Person) {
+					Unit unit = (Unit) event.getTarget();
+					String personName  = unit.getName();
+					String announcement = personName + " has just passed away. ";
+					desktop.openMarqueeBanner(announcement);
+					System.out.println(announcement);
+				}
+			}
+
+			else if (eventType == UnitEventType.ILLNESS_EVENT) {
+				if (event.getTarget() instanceof Person) {
+					Unit unit = (Unit) event.getTarget();
+					String personName  = unit.getName();
+					String announcement = personName + " got sick. ";
+					desktop.disposeMarqueeBanner();
+					desktop.openMarqueeBanner(announcement);
+					System.out.println(announcement);
+				}
+			}
+			
+			 
 			if (column != null && column> -1) {
 				Unit unit = (Unit) event.getSource();
 				tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);

@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,12 +16,22 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.peer.ComponentPeer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -29,17 +40,19 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.ui.swing.AlphaContainer;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
+
+import com.sun.jna.platform.WindowUtils;
 
 // TODO: is extending to JInternalFrame better?
 public class PopUpBuildingMenu extends JPopupMenu {
@@ -68,96 +81,33 @@ public class PopUpBuildingMenu extends JPopupMenu {
         buildItemTwo();
     }
        
+
     public void buildItemOne() {
-        itemTwo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-        		final JDialog d = new JDialog();
-
-        		//2014-11-27 Added ComponentMover Class
-    	        // Make pane1 drag-able
-        		ComponentMover cm = new ComponentMover();
-        		cm.registerComponent(d);
-		
-        		final BuildingPanel buildingPanel;
-        		
-	    		buildingPanel = new BuildingPanel("Default", building, desktop);				
-				
-                Point location = MouseInfo.getPointerInfo().getLocation();
-                d.setLocation(location);
-			
-			    // 2014-11-27 Added AlphaContainer()
-			    // 2014-11-27 Added setBackground( new Color(255, 0, 0, 20) );
-                //buildingPanel.setBackground( new Color(255, 0, 0, 20) );
-                //buildingPanel.setBackground( new Color(0, 0, 0, 20) );
-			    d.add(new AlphaContainer(buildingPanel));
-				//dialog.setResizable(true);
-				d.setSize(280,320);  // if undecorated, add 20 to height
-				d.setLayout(new FlowLayout()); 
-				d.setUndecorated(true);
-				d.setVisible(true);
-				/*
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						//fireTableStructureChanged();
-						buildingPanel.update();
-			        	 dialog.repaint();
-			        	 dialog.revalidate();
-			        	 dialog.setVisible(true);
-					}
-
-	    	    SwingUtilities.invokeLater(new Runnable(){
-	    	        public void run()  {
-	    	        	buildingPanel.update();
-			        	 d.repaint();
-	    	        } });
-	    	   */ 
-				Runnable r = new Runnable() {
-			         public void run() {
-			        	 //dialog.setVisible(false);
-			        	 buildingPanel.update();
-			        	 d.revalidate();
-			        	 d.pack();
-			        	 d.repaint();
-			        	 //d.setVisible(true);
-			        	 try { Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
-			         }
-			     };
-			     new Thread(r).start();
-			     /**/
-			     
-			     d.addWindowFocusListener(new WindowFocusListener() {            
-					    public void windowLostFocus(WindowEvent e) {
-					    	//dialog.setVisible(false);
-					    	d.dispose();
-					    }            
-					    public void windowGainedFocus(WindowEvent e) {
-					    }
-					});
-					
-            }
-        });
-        
-    }
-    
-    public void buildItemTwo() {
     	
         itemOne.addActionListener(new ActionListener() {
        	 
             public void actionPerformed(ActionEvent e) {
+ 
             	final JDialog dialog = new JDialog();
-        		//dialog.setBackground(new Color(0,0,0,0));
+              	if (!"Mac OS X".equals(System.getProperty("os.name"))) {
+              		dialog.setVisible(true);
+            	}
+                if (WindowUtils.isWindowAlphaSupported()) {
+                    WindowUtils.setWindowAlpha(dialog, .2f);
+                }
             	//2014-11-27 Added ComponentMover Class
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(dialog);
+	    		// Make the buildingPanel to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 dialog.setLocation(location);
+                
             	JLabel dialogLabel = new JLabel(buildingName, JLabel.CENTER);
 			    dialogLabel.setFont(new Font("Serif", Font.ITALIC, 16));
 			   	// 2014-11-27 Added building.getDescription() for loading text
 			    String str = building.getDescription();
 			    JTextArea ta = new JTextArea();
-			   	//label2.setText("<html>"+ str +"</html>");
+
 			   	ta.setOpaque(false);
 				ta.setFont(new Font("AvantGarde", Font.PLAIN, 14));
 				//ta.setForeground(new Color(102, 51, 0)); // dark brown
@@ -169,19 +119,19 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			    JPanel panel = new JPanel(new BorderLayout());
 			    panel.add(dialogLabel, BorderLayout.NORTH);
 			    panel.add(ta, BorderLayout.CENTER);
-			    panel.setPreferredSize(new Dimension(180, 300));
-			    panel.setBackground( new Color(255, 0, 0, 20) );
-			    dialog.add(new AlphaContainer(panel));			    
+			    panel.setOpaque(false);
+			    //panel.setBackground( new Color(255, 0, 0, 20) );
+			    dialog.add(panel);			    
 		        setBorder(new MarsPanelBorder());
-				dialog.setSize(200,320); // panel size is 180,300
+				dialog.setSize(220,360);
 				dialog.setLayout(new FlowLayout()); 
 				dialog.setModal(false);
-				dialog.setUndecorated(true);
+				//dialog.setUndecorated(false);
 				dialog.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
 				dialog.setVisible(true);
+				setOpaque(false);
 				dialog.addWindowFocusListener(new WindowFocusListener() {            
 				    public void windowLostFocus(WindowEvent e) {
-				    	//dialog.setVisible(false);
 				    	dialog.dispose();
 				    }            
 				    public void windowGainedFocus(WindowEvent e) {
@@ -192,6 +142,73 @@ public class PopUpBuildingMenu extends JPopupMenu {
              }
         });
      
+
+    }
+        
+    
+    public void buildItemTwo() {
+        itemTwo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+        		final JDialog d = new JDialog();
+             	if (!"Mac OS X".equals(System.getProperty("os.name"))) {
+              		d.setVisible(true);
+            	}
+                if (WindowUtils.isWindowAlphaSupported()) {
+                    WindowUtils.setWindowAlpha(d, .2f);
+                }
+
+        		//2014-11-27 Added ComponentMover Class
+    	        // Make panel drag-able
+        		ComponentMover cm = new ComponentMover();
+        		cm.registerComponent(d);
+		
+        		final BuildingPanel buildingPanel;
+	    		buildingPanel = new BuildingPanel("Default", building, desktop);				
+	    		
+	    		// Make the buildingPanel to appear at the mouse cursor
+                Point location = MouseInfo.getPointerInfo().getLocation();
+                d.setLocation(location);
+			    d.add(buildingPanel);
+				//dialog.setResizable(true);
+				d.setSize(310,370);  // if undecorated, add 20 to height
+				d.setLayout(new FlowLayout()); 
+				//d.setUndecorated(true);
+				d.setVisible(true);
+
+			    d.addWindowFocusListener(new WindowFocusListener() {            
+					public void windowLostFocus(WindowEvent e) {
+					    d.dispose();
+					}            
+					public void windowGainedFocus(WindowEvent e) {
+					}
+				});
+					
+            }
+        });
+        
+    }
+    
+
+    public static void setWindowAlpha(Window w, float alpha) {
+        ComponentPeer peer = w.getPeer();
+        if (peer == null) {
+            return;
+        }
+        Class< ? extends ComponentPeer> peerClass = peer.getClass();
+
+        //noinspection EmptyCatchBlock
+        try {
+            Class< ?> nativeClass = Class.forName("apple.awt.CWindow");
+            if (nativeClass.isAssignableFrom(peerClass)) {
+                Method setAlpha = nativeClass.getMethod(
+                        "setAlpha", float.class);
+                setAlpha.invoke(peer, Math.max(0.0f, Math.min(alpha, 1.0f)));
+          }
+        } catch (ClassNotFoundException e) {
+        } catch (NoSuchMethodException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        }
     }
     
 	 public void removeButtons(Component comp) {

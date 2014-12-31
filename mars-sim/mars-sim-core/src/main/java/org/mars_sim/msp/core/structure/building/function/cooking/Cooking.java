@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-12-25
+ * @version 3.07 2014-12-30
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -92,11 +92,11 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
         
-        inv = getBuilding().getInventory();
-        //logger.info("just called Cooking's constructor");
+        // 2014-12-30 Changed inv to include the whole settlement
+        //inv = getBuilding().getInventory();
+        inv = getBuilding().getBuildingManager().getSettlement().getInventory();
         
         cookingWorkTime = 0D;
-        //meals = new ArrayList<CookedMeal>();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         this.cookCapacity = config.getCookCapacity(building.getBuildingType());
