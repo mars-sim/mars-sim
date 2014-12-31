@@ -259,7 +259,7 @@ public class BuildingConfig implements Serializable {
         //Element textElement = descriptionElement.getChild(buildingName);
         String str = descriptionElement.getValue().trim();
         //str = str.replaceAll("\\t\\t", "").replaceAll("\\t", "").replaceAll("\\n", "").replaceAll("  ", " ");
-        str = str.replaceAll("\\t+", "").replaceAll("\\s+", " ");
+        str = str.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
         return str;
 	}
 	
