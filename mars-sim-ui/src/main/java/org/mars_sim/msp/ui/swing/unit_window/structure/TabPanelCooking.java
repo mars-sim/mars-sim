@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -18,13 +19,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -32,11 +38,11 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -80,12 +86,18 @@ private CookingTableModel cookingTableModel;
 	*/
 	private int numRow = 0;
 	private int dayCache = 1;
-	private MarsClock expirationCache = null;
+	//private MarsClock expirationCache = null;
 	
 	private Set<String> nameSet;
 	private List<String> nameList;
-	private List<Integer> servingsList = new ArrayList<Integer>();
+	//private List<Integer> servingsList = new ArrayList<Integer>();
 
+	//private TableSorter sortedModel;
+	/** Constructor will flip this. */
+	private boolean sortAscending = true;
+	/** Sort column is defined. */
+	private int sortedColumn = 0;
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -129,24 +141,103 @@ private CookingTableModel cookingTableModel;
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		JTable cookingTable = new JTable(cookingTableModel);
-		cookingScrollPane.setViewportView(cookingTable);
-		cookingTable.setCellSelectionEnabled(false);
-		cookingTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		cookingTable.getColumnModel().getColumn(0).setPreferredWidth(140);
-		cookingTable.getColumnModel().getColumn(1).setPreferredWidth(47);
-		cookingTable.getColumnModel().getColumn(2).setPreferredWidth(45);
-		cookingTable.getColumnModel().getColumn(3).setPreferredWidth(45);
+		JTable table = new JTable(cookingTableModel);
+
+		cookingScrollPane.setViewportView(table);
+		table.setCellSelectionEnabled(false);
+		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
+		table.getColumnModel().getColumn(0).setPreferredWidth(140);
+		table.getColumnModel().getColumn(1).setPreferredWidth(47);
+		table.getColumnModel().getColumn(2).setPreferredWidth(45);
+		table.getColumnModel().getColumn(3).setPreferredWidth(45);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
-		cookingTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		cookingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-	
+		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		// 2014-12-30 Added setTableStyle()
+		setTableStyle(table);
 	}
 	
-    
+	/**
+	 * Sets the style for the table
+	 * @param table
+	 */
+	// 2014-12-30 Added setTableStyle()
+	public void setTableStyle(JTable table) {
+		
+		//JTableHeader header = table.getTableHeader();
+    	//TableHeaderRenderer theRenderer =
+    	//	new TableHeaderRenderer(header.getDefaultRenderer());
+    	//header.setDefaultRenderer(theRenderer);
+    	
+		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
+		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
+		headerRenderer.setForeground( Color.WHITE); 
+		headerRenderer.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+
+		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+			table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+		}
+		MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
+		// set cell to have a light color border
+		table.setBorder(border);
+		//table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
+		//table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
+		//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
+		//table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
+		table.setShowGrid(true);
+	    table.setShowVerticalLines(true);
+		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
 	
+
+        final JTable ctable = table;
+	    SwingUtilities.invokeLater(new Runnable(){
+	        public void run()  {
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	         } });
+		
+	}
+
+	
+	/**
+	 * Delegates the rendering of the table cell header to add
+	 *  in an icon on the cells that can be sorted.
+	 *
+	// 2014-12-30 Added TableHeaderRenderer
+	class TableHeaderRenderer implements TableCellRenderer {
+		private TableCellRenderer defaultRenderer;
+
+		public TableHeaderRenderer(TableCellRenderer theRenderer) {
+			defaultRenderer = theRenderer;
+		}
+		
+		 //Renderer the specified Table Header cell
+		public Component getTableCellRendererComponent(JTable table,
+				Object value,
+				boolean isSelected,
+				boolean hasFocus,
+				int row,
+				int column) {
+			Component theResult = defaultRenderer.getTableCellRendererComponent(
+					table, value, isSelected, hasFocus,
+					row, column);
+			if (theResult instanceof JLabel) {
+				JLabel cell = (JLabel)theResult;
+				cell.setOpaque(true); 
+				MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.white);
+				cell.setBorder(border);
+				//cell.setBackground(new Color(205, 133, 63));//Color.ORANGE);
+				//cell.setForeground( Color.WHITE); 
+				//cell.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+
+			}
+			return theResult;
+		}
+	}
+*/
+
 	/**
 	 * Updates the info on this panel.
 	 */
