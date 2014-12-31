@@ -351,10 +351,9 @@ implements Serializable {
     public void timePassing(double time) {
       boolean hasAServing = hasFreshDessert(); 
       if ( hasAServing ) {
-           int newNumOfServings = servingsOfDessertList.size();
-           if ( NumOfServingsCache != newNumOfServings)
-           	logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
-        
+           //int newNumOfServings = servingsOfDessertList.size();
+           //if ( NumOfServingsCache != newNumOfServings)
+           	//logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
         // Toss away expired servingsOfDessertList
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         while (i.hasNext()) {

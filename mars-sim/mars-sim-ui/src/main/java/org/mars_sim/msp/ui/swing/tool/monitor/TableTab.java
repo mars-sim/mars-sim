@@ -37,7 +37,6 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
-import org.mars_sim.msp.ui.swing.tool.settlement.PopUpBuildingMenu;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -242,32 +241,8 @@ extends MonitorTab {
     		);
             sortedModel.addTableModelListener(table);
 
-            // 2014-11-11 Added auto resize
-    		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-    		
-    		// 2014-12-16 Added
-    		table.getTableHeader().setOpaque(false);
-    		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
-    		table.getTableHeader().setForeground( Color.WHITE); 
-    		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-    		// Font doesn't get rendered yet
-    		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
-    		table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
-    		// 255 228 225	MistyRose1
-    		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-			// Font doesn't get rendered yet
-    		table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
-    		//table.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
-			table.setShowGrid(true);
-		    table.setShowVerticalLines(true);
-			table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-			//table.setBounds(0, 0, 450, 400);
-			//Color color = UIManager.getColor("Table.gridColor");
-			//MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
-			//table.setBorder(border);
-			table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
-			//table.getTableHeader().setReorderingAllowed(false); 
-			
+        	// 2014-12-30 Added setTableStyle()
+            setTableStyle(table);
 			
         	// Get the TableColumn header to display sorted column
         	JTableHeader theHeader = table.getTableHeader();
@@ -337,6 +312,7 @@ extends MonitorTab {
         setName(model.getName());
         setSortColumn(0);
         
+        // 2014-12-29 Added ColumnResizer
         final JTable ctable = table;
 	    SwingUtilities.invokeLater(new Runnable(){
 	        public void run()  {
@@ -344,6 +320,27 @@ extends MonitorTab {
 	         } });
     }
 
+	// 2014-12-30 Added setTableStyle()
+    public void setTableStyle(JTable table) {
+	    // 2014-11-11 Added auto resize
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+		table.getTableHeader().setOpaque(false);
+		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
+		table.getTableHeader().setForeground( Color.WHITE); 
+		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+		// Font doesn't get rendered yet
+		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
+		table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
+		// 255 228 225	MistyRose1
+		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
+		table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
+			table.setShowGrid(true);
+	    table.setShowVerticalLines(true);
+		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
+	
+	}
     /**
      * Display property window anchored to a main desktop.
      *
