@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessert.java
- * @version 3.07 2014-11-28
+ * @version 3.07 2014-12-30
  * @author Manny Kung
  * 
  *   
@@ -89,24 +89,16 @@ implements Serializable {
         
         if (kitchenBuilding != null) {
             kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
-
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding);
-            
-            //2014-10-15 mkung: check if there are any, if not, endTask()
-            double soymilkAvailable = kitchen.checkAmountOfDessert();
-            
         }
         else endTask();
 
-        //2014-10-15 mkung: check if there are any, if not, endTask()
-        double soymilkAvailable = kitchen.checkAmountOfDessert();
-        
-        //logger.info("constructor : soyAvailble is " + soyAvailable);
-        
-        if (soymilkAvailable < 0.5) {
-            logger.severe("less than 0.5 kg soymilk left!");
-            
+        // 2014-12-30 Added sugarcaneJuiceAvailable
+        double soymilkAvailable = kitchen.checkAmountAV("Soymilk");
+        double sugarcaneJuiceAvailable = kitchen.checkAmountAV("Sugarcane Juice");
+        if (soymilkAvailable < 0.5 && sugarcaneJuiceAvailable < 0.5) {
+            logger.severe("less than 0.5 kg soymilk and sugarcane juice left!");
         	endTask();
         } else  {
                 

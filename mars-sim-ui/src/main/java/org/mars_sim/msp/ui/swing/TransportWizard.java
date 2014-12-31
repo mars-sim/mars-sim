@@ -134,8 +134,6 @@ extends JInternalFrame {
      * Delivers supplies to the destination settlement.
      */
     public void deliverBuildings() {  
-    	//System.out.println("TransportWizard : running deliverBuildings()");
-
         List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
         // 2014-12-23 Added sorting orderedBuildings according to its building id
         //Collections.sort(orderedBuildings);
@@ -145,7 +143,6 @@ extends JInternalFrame {
         Building aBuilding = mgr.getBuildings().get(0);
         while (buildingI.hasNext()) {
            BuildingTemplate template = buildingI.next();  
-            //System.out.println(template.getNickName());
             // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
             if (resupply.checkBuildingTemplatePosition(template)) {
                 
@@ -222,14 +219,12 @@ extends JInternalFrame {
 			newBuilding = mgr.addOneBuilding(positionedTemplate, resupply, true);
 		}
 		createGUI(newBuilding);
-
 	   	//System.out.println("TransportWizard : new Building is " + newBuilding);
 
   		// set settlement based on where this building is located
   		// important for MainDesktopPane to look up this settlement variable when placing/transporting building 
   		settlement = newBuilding.getBuildingManager().getSettlement();
-  		
-		//mapPanel.setSettlement(settlement); // not working
+
 		double xLoc = newBuilding.getXLocation();
 		double yLoc = newBuilding.getYLocation();
 		double scale = mapPanel.getScale();

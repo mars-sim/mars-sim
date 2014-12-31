@@ -63,7 +63,7 @@
 	<resource name="Soybean" phase="solid" edible="true">Soybean seeds.</resource>
 	<resource name="Soy Sprout" phase="solid" edible="true">Sprouted Soybean.</resource>
 	<resource name="Wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop. 
-	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and  endosperm – protected by an inedible husk </resource>
+	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 	<resource name="Cabbage" phase="solid" edible="true"></resource>
 	<resource name="Carrot" phase="solid" edible="true"></resource>
 	<resource name="Swiss Chard" phase="solid" edible="true"></resource>
@@ -81,13 +81,12 @@
 	<resource name="Tomato" phase="solid" edible="true"></resource>
 	<resource name="Garlic" phase="solid" edible="true"></resource>
 	<resource name="Sugarcane" phase="solid" edible="true"></resource>
+	<resource name="Sugarcane Juice" phase="liquid" edible="true">Juice made from Sugarcane</resource>
 	<resource name="Ginger" phase="solid" edible="true"></resource>
 	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
-	<resource name="Grain Bar" phase="solid" edible="true">A nutritious grain suitable for long endurance flight</resource>
 	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
-	<resource name="Soy Sauce" phase="liquid" edible="true">Sprouts from Quinoa</resource>
-
-
+	<resource name="Grain Bar" phase="solid" edible="true"></resource>
+	<resource name="Soy Sauce" phase="liquid" edible="true">Made from fermented soybeans</resource>
 	
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>
 	<resource name="Potassium" phase="solid">A mineral.</resource>

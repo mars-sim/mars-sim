@@ -770,14 +770,14 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets the value of a named building at the settlement.
-     * @param buildingName the building name.
+     * @param buildingType the building name.
      * @param newBuilding true if adding a new building.
      * @return building value (VP).
      */
-    public double getBuildingValue(String buildingName, boolean newBuilding) {
+    public double getBuildingValue(String buildingType, boolean newBuilding) {
 
         // Make sure building name is lower case.
-        buildingName = buildingName.toLowerCase().trim();
+        buildingType = buildingType.toLowerCase().trim();
 
         // Update building values cache once per Sol.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -788,73 +788,73 @@ public class BuildingManager implements Serializable {
             lastBuildingValuesUpdateTime = (MarsClock) currentTime.clone();
         }
 
-        if (newBuilding && buildingValuesNewCache.containsKey(buildingName)) {
-            return buildingValuesNewCache.get(buildingName);
+        if (newBuilding && buildingValuesNewCache.containsKey(buildingType)) {
+            return buildingValuesNewCache.get(buildingType);
         }
-        else if (!newBuilding && buildingValuesOldCache.containsKey(buildingName)) {
-            return buildingValuesOldCache.get(buildingName);
+        else if (!newBuilding && buildingValuesOldCache.containsKey(buildingType)) {
+            return buildingValuesOldCache.get(buildingType);
         }
         else {
             double result = 0D;
 
             // Determine value of all building functions.
             BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            if (config.hasCommunication(buildingName))
-                result += Communication.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasCooking(buildingName)) {
-                result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasCommunication(buildingType))
+                result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasCooking(buildingType)) {
+                result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
                 // 2014-11-06 Added MakingSoy
-                result += PreparingDessert.getFunctionValue(buildingName, newBuilding, settlement);                
+                result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);                
             }
-            if (config.hasDining(buildingName))
-                result += Dining.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasEVA(buildingName))
-                result += EVA.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasExercise(buildingName))
-                result += Exercise.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasFarming(buildingName))
-                result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasDining(buildingType))
+                result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasEVA(buildingType))
+                result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasExercise(buildingType))
+                result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasFarming(buildingType))
+                result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
           //2014-11-24 Added FoodProduction
-            if (config.hasFoodProduction(buildingName)) 
-                result += FoodProduction.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasGroundVehicleMaintenance(buildingName))
-                result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasFoodProduction(buildingType)) 
+                result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasGroundVehicleMaintenance(buildingType))
+                result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
             //2014-10-17 Added the effect of heating requirement
-            if (config.hasThermalGeneration(buildingName)) 
-                result += ThermalGeneration.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasThermalStorage(buildingName))
-                result += ThermalStorage.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasThermalGeneration(buildingType)) 
+                result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasThermalStorage(buildingType))
+                result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
  
-            if (config.hasLifeSupport(buildingName))
-                result += LifeSupport.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasLivingAccommodations(buildingName))
-                result += LivingAccommodations.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasManufacture(buildingName))
-                result += Manufacture.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasMedicalCare(buildingName))
-                result += MedicalCare.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasPowerGeneration(buildingName)) 
-                result += PowerGeneration.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasPowerStorage(buildingName))
-                result += PowerStorage.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasRecreation(buildingName))
-                result += Recreation.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasResearchLab(buildingName))
-                result += Research.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasResourceProcessing(buildingName))
-                result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasStorage(buildingName))
-                result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasAstronomicalObservation(buildingName))
-                result += AstronomicalObservation.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasManagement(buildingName))
-                result += Management.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasEarthReturn(buildingName))
-                result += EarthReturn.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasBuildingConnection(buildingName))
-                result += BuildingConnection.getFunctionValue(buildingName, newBuilding, settlement);
-            if (config.hasAdministration(buildingName))
-                result += Administration.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasLifeSupport(buildingType))
+                result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasLivingAccommodations(buildingType))
+                result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasManufacture(buildingType))
+                result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasMedicalCare(buildingType))
+                result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasPowerGeneration(buildingType)) 
+                result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasPowerStorage(buildingType))
+                result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasRecreation(buildingType))
+                result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasResearchLab(buildingType))
+                result += Research.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasResourceProcessing(buildingType))
+                result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasStorage(buildingType))
+                result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasAstronomicalObservation(buildingType))
+                result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasManagement(buildingType))
+                result += Management.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasEarthReturn(buildingType))
+                result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasBuildingConnection(buildingType))
+                result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
+            if (config.hasAdministration(buildingType))
+                result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
 
             // Multiply value.
             result *= 1000D;
@@ -862,7 +862,7 @@ public class BuildingManager implements Serializable {
             // TODO: mkung to subtract heating costs per Sol???
             
             // Subtract power costs per Sol.
-            double power = config.getBasePowerRequirement(buildingName);
+            double power = config.getBasePowerRequirement(buildingType);
             double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
             double powerPerSol = power * hoursInSol;
             double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
@@ -872,7 +872,7 @@ public class BuildingManager implements Serializable {
 
             // Check if a new non-constructable building has a frame that already exists at the settlement. 
             if (newBuilding) {
-                ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingName);
+                ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingType);
                 if (buildingConstInfo != null) {
                     ConstructionStageInfo frameConstInfo = ConstructionUtil.getPrerequisiteStage(buildingConstInfo);
                     if (frameConstInfo != null) {
@@ -888,10 +888,10 @@ public class BuildingManager implements Serializable {
                 }
             }
 
-            //System.out.println("Building " + buildingName + " value: " + (int) result);
+            //System.out.println("Building " + buildingType + " value: " + (int) result);
 
-            if (newBuilding) buildingValuesNewCache.put(buildingName, result);
-            else buildingValuesOldCache.put(buildingName, result);
+            if (newBuilding) buildingValuesNewCache.put(buildingType, result);
+            else buildingValuesOldCache.put(buildingType, result);
 
             return result;
         }
@@ -907,7 +907,7 @@ public class BuildingManager implements Serializable {
     public double getBuildingValue(Building building) {
         double result = 0D;
         // 2014-10-29 TODO: Should we change getName() to getNickName()?
-        result = getBuildingValue(building.getName(), false);
+        result = getBuildingValue(building.getBuildingType(), false);
         
         // Modify building value by its wear condition.
         double wearCondition = building.getMalfunctionManager().getWearCondition();
