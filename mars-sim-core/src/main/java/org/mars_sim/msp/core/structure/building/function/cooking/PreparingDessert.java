@@ -304,14 +304,17 @@ implements Serializable {
 	        int size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
 	        double maxServings = size * MAX_NUM_SERVING_PER_PERSON;
 	
-	        // 2015-01-02 Added random selection of a dessert item and Added Strawberry
+	        // 2015-01-02 Added random selection of a dessert item 
+	        // 2015-01-02 Added Strawberry, Granola Bar
 	 	    double soymilkAvailable = checkAmountAV("Soymilk");
 	 	    double sugarcaneJuiceAvailable = checkAmountAV("Sugarcane Juice");
 	 	    double strawberryAvailable = checkAmountAV("Strawberry");
+	 	    double granolaBarAvailable = checkAmountAV("Granola Bar");
 	 	   
 	 	    boolean hasSoymilk = false;
 	 	    boolean hasSugarcaneJuice = false;
 	 	    boolean hasStrawberry = false;
+	 	    boolean hasGranolaBar = false;
 	 	    
 	    	// Existing # of servings of dessert already been made
 	    	double numServings = servingsOfDessertList.size();	
@@ -329,8 +332,12 @@ implements Serializable {
 	    		hasStrawberry = true;
 	    		dessertList.add("Strawberry");
 	    	}
-
-	    	if ( ( hasSoymilk || hasSugarcaneJuice || hasStrawberry) 
+	    	if (granolaBarAvailable > getMassPerServing()) {
+	    		hasGranolaBar = true;
+	    		dessertList.add("Granola Bar");
+	    	}
+	    	
+	    	if (  dessertList.size() > 0 
 	    			&& numServings < maxServings ) {
     	
 				int upperbound = dessertList.size();

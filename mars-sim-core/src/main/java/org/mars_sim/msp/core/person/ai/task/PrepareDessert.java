@@ -96,14 +96,17 @@ implements Serializable {
         else endTask();
 
         // 2014-12-30 Added sugarcaneJuiceAvailable 
-        // 2015-01-02 Added strawberryAvailable
+        // 2015-01-02 Added Strawberry, Granola Bar
         double soymilkAvailable = kitchen.checkAmountAV("Soymilk");
         double sugarcaneJuiceAvailable = kitchen.checkAmountAV("Sugarcane Juice");
  	    double strawberryAvailable = kitchen.checkAmountAV("Strawberry");
+ 	    double granolaBarAvailable = kitchen.checkAmountAV("Granola Bar");
+ 	    
         
-        if (soymilkAvailable < 0.5 && sugarcaneJuiceAvailable < 0.5 && strawberryAvailable < 0.5) {
+        if (soymilkAvailable < 0.5 && sugarcaneJuiceAvailable < 0.5 
+        		&& strawberryAvailable < 0.5 && granolaBarAvailable < 0.5) {
             
-        	logger.severe("less than 0.5 kg remaining soymilk, sugarcane juice and strawberry !");
+        	logger.severe("less than 0.5 kg remaining dessert and snacks !");
         	endTask();
         	
         } else  {

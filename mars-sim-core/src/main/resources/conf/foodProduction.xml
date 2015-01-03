@@ -71,45 +71,51 @@
 		</outputs>
 	</process>
 	
-	<process name="Package Quinoa into Grain Bar"
+	<process name="Package Quinoa into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Cook, dry Quinoa and package into grain bar.</description>	
+		<description>Package puffed Quinoa, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
-			<resource name="Quinoa" amount="5.0" />
+			<resource name="Quinoa" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />
 		</inputs>	
 		<outputs>
-			<resource name="Grain Bar" amount="4.5" />
+			<resource name="Granola Bar" amount="3" />
 		</outputs>
 	</process>
 
-	<process name="Package Rice into Grain Bar"
+	<process name="Package Rice into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Cook, dry white rice and package into grain bar.</description>	
+		<description>Package puffed rice, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
-			<resource name="Rice" amount="5.0" />
+			<resource name="Rice" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />			
 		</inputs>	
 		<outputs>
-			<resource name="Grain Bar" amount="4.5" />
+			<resource name="Granola Bar" amount="3" />
 		</outputs>
 	</process>
 	
-		<process name="Package Wheat into Grain Bar"
+		<process name="Package Wheat into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Cook, dry wheat and package into grain bar.</description>	
+		<description>Package puffed wheat, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
-			<resource name="Wheat" amount="5.0" />
+			<resource name="Wheat" amount="4.0" />
+			<resource name="Strawberry" amount="0.5" />
+			<resource name="Peanut" amount="1.0" />		
 		</inputs>	
 		<outputs>
-			<resource name="Grain Bar" amount="4.5" />
+			<resource name="Granola Bar" amount="3" />
 		</outputs>
 	</process>
 	
