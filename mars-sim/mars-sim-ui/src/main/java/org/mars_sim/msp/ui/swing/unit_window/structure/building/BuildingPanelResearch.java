@@ -57,7 +57,9 @@ extends BuildingFunctionPanel {
 		// Prepare label panel
 		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+		
 		// Prepare research label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
@@ -87,7 +89,9 @@ extends BuildingFunctionPanel {
 		// Prepare specialtiesListPanel
 		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 10, 3));
 		specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
-
+		specialtiesListPanel.setOpaque(false);
+		specialtiesListPanel.setBackground(new Color(0,0,0,128));
+		
 		//add(specialtiesListPanel, BorderLayout.CENTER);
 
 		// For each specialty, add specialty name panel.
@@ -103,6 +107,8 @@ extends BuildingFunctionPanel {
 		listPanel.add(specialtiesListPanel);
 		specialtiesListPanel.setBorder(new MarsPanelBorder());
 		add(listPanel, BorderLayout.CENTER);
+		listPanel.setOpaque(false);
+		listPanel.setBackground(new Color(0,0,0,128));
 		
 	}
 

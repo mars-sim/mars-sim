@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2015-01-01
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -65,15 +66,15 @@ extends BuildingFunctionPanel {
 	private Manufacture workshop;
 	/** Panel for displaying process panels. */
 	private JPanel processListPane;
-	private JScrollPane processScrollPane;
+	private JScrollPane scrollPanel;
 	/** List of manufacture processes in building. */
 	private List<ManufactureProcess> processCache;
 	/** List of salvage processes in building. */
 	private List<SalvageProcess> salvageCache;
 	/** Process selector. */
-	private JComboBoxMW processSelection;
+	private JComboBoxMW processComboBox;
 	/** List of available processes. */
-	private Vector<ManufactureProcessInfo> processSelectionCache;
+	private Vector<ManufactureProcessInfo> processComboBoxCache;
 	/** List of available salvage processes. */
 	private Vector<SalvageProcessInfo> salvageSelectionCache;
 	/** Process selection button. */
@@ -98,7 +99,9 @@ extends BuildingFunctionPanel {
         //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
         JPanel labelPane = new JPanel();
         labelPane.setLayout(new GridLayout(3, 1, 0, 0));
-        
+        labelPane.setOpaque(false);
+        labelPane.setBackground(new Color(0,0,0,128));
+		
         add(labelPane, BorderLayout.NORTH);
         
         // Prepare manufacturing label
@@ -116,18 +119,27 @@ extends BuildingFunctionPanel {
         labelPane.add(processCapacityLabel);
         
         // Create scroll pane for manufacturing processes
-        processScrollPane = new JScrollPane();
-        processScrollPane.setPreferredSize(new Dimension(170, 90));
-        add(processScrollPane, BorderLayout.CENTER);
+        scrollPanel = new JScrollPane();
+        scrollPanel.setPreferredSize(new Dimension(170, 90));
+        add(scrollPanel, BorderLayout.CENTER);
+        scrollPanel.setOpaque(false);
+        scrollPanel.setBackground(new Color(0,0,0,128));
+        scrollPanel.getViewport().setOpaque(false);
+        scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
         
         // Create process list main panel
         JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
-        processScrollPane.setViewportView(processListMainPane);
+        scrollPanel.setViewportView(processListMainPane);
+        processListMainPane.setOpaque(false);
+        processListMainPane.setBackground(new Color(0,0,0,128));
         
         // Create process list panel
         processListPane = new JPanel();
         processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
         processListMainPane.add(processListPane, BorderLayout.NORTH);
+        processListPane.setOpaque(false);
+        processListPane.setBackground(new Color(0,0,0,128));
         
         // Create process panels
         processCache = new ArrayList<ManufactureProcess>(workshop.getProcesses());
@@ -142,27 +154,36 @@ extends BuildingFunctionPanel {
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
+        interactionPanel.setOpaque(false);
+        interactionPanel.setBackground(new Color(0,0,0,128));
         
         // Create new manufacture process selection.
-        processSelectionCache = getAvailableProcesses();
-        processSelection = new JComboBoxMW(processSelectionCache);
-        processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
-        processSelection.setToolTipText("Select an Available Manufacturing Process");
-        interactionPanel.add(processSelection);
+        processComboBoxCache = getAvailableProcesses();
+        processComboBox = new JComboBoxMW(processComboBoxCache);
+        processComboBox.setOpaque(false);
+        processComboBox.setBackground(new Color(51,25,0,128));
+        //processComboBox.setBackground(Color.LIGHT_GRAY);
+        processComboBox.setForeground(Color.orange);
+        processComboBox.setRenderer(new ManufactureSelectionListCellRenderer());
+        processComboBox.setToolTipText("Select an Available Manufacturing Process");
+        interactionPanel.add(processComboBox);
         
         // Add available salvage processes.
         salvageSelectionCache = getAvailableSalvageProcesses();
         Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
-        while (k.hasNext()) processSelection.addItem(k.next());
+        while (k.hasNext()) processComboBox.addItem(k.next());
         
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
-        newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+        newProcessButton.setOpaque(false);
+        newProcessButton.setBackground(new Color(51,25,0,128));
+        //newProcessButton.setForeground(Color.ORANGE);
+        newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
         newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
-        		    Object selectedItem = processSelection.getSelectedItem();
+        		    Object selectedItem = processComboBox.getSelectedItem();
         		    if (selectedItem != null) {
         		        if (selectedItem instanceof ManufactureProcessInfo) {
         		            ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) selectedItem;
@@ -244,7 +265,7 @@ extends BuildingFunctionPanel {
 			salvageCache.clear();
 			salvageCache.addAll(salvages);
 			
-			processScrollPane.validate();
+			scrollPanel.validate();
 		}
 		
 		// Update all process panels.
@@ -264,27 +285,27 @@ extends BuildingFunctionPanel {
 		// Update process selection list.
 		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses();
 		Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
-		if (!newProcesses.equals(processSelectionCache) || 
+		if (!newProcesses.equals(processComboBoxCache) || 
 		        !newSalvages.equals(salvageSelectionCache)) {
-			processSelectionCache = newProcesses;
+			processComboBoxCache = newProcesses;
 			salvageSelectionCache = newSalvages;
-			Object currentSelection = processSelection.getSelectedItem();
-			processSelection.removeAllItems();
+			Object currentSelection = processComboBox.getSelectedItem();
+			processComboBox.removeAllItems();
 			
-			Iterator<ManufactureProcessInfo> k = processSelectionCache.iterator();
-			while (k.hasNext()) processSelection.addItem(k.next());
+			Iterator<ManufactureProcessInfo> k = processComboBoxCache.iterator();
+			while (k.hasNext()) processComboBox.addItem(k.next());
 			
 			Iterator<SalvageProcessInfo> l = salvageSelectionCache.iterator();
-            while (l.hasNext()) processSelection.addItem(l.next());
+            while (l.hasNext()) processComboBox.addItem(l.next());
 			
 			if (currentSelection != null) {
-				if (processSelectionCache.contains(currentSelection)) 
-					processSelection.setSelectedItem(currentSelection);
+				if (processComboBoxCache.contains(currentSelection)) 
+					processComboBox.setSelectedItem(currentSelection);
 			}
 		}
 		
 		// Update new process button.
-		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
 	}
 	
 	/**

@@ -470,51 +470,52 @@ implements Serializable {
 	}
 	*/
 		
-		public String getAnOil() {
-			 
-			int upperbound = 4;
-	    	int lowerbound = 0;
-	    	String oilName = "";
-	    	boolean notFound = true;
-	    	String result = "";
-	    	int count = 0;
-	    	
-	    	
-	    	while (notFound) {
-		    	int index = ThreadLocalRandom.current().nextInt(upperbound + 1);
-		    	//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-		    	
-		    	if (index == 0) {
-		    		oilName = "Soybean Oil";
-		    	} else if (index == 1) {
-		    		oilName = "Garlic Oil";
-		    	} else if (index == 2) {
-		    		oilName = "Sesame Oil";
-		    	} else if (index == 3) {
-		    		oilName = "Peanut Oil";
-		    	} else if (index == 4) {
-		    		// Soybean oil is repeat here
-		    		oilName = "Soybean Oil";
-		    	} 
-		
-		        AmountResource oilAR = getFreshFoodAR(oilName);
-		        double oilAvailable = getFreshFood(oilAR);
+    /**
+     * Gets the amount of the food item in the whole settlement.
+     * @return foodAvailable
+     */
+    // 2015-01-02 Added checkAmountAV
+    public double checkAmountAV(String name) {
+	    AmountResource foodAR = AmountResource.findAmountResource(name);  
+		double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+		foodAvailable = Math.round(foodAvailable * 1000.0) / 1000.0;
+		return foodAvailable;
+	}
+   
+    /**
+     * Gets the amount of the food item in the whole settlement.
+     * @return dessertAvailable
+     */
+    // 2015-01-02 Modified getAnOil()
+	public String getAnOil() {
+		    
+	    	List<String> oilList = new ArrayList<String>();
+
+	 	    if (checkAmountAV("Soybean Oil") > 0.05)
+	 	    	oilList.add("Soybean Oil");
+	 	    if (checkAmountAV("Garlic Oil") > 0.05)
+	 	    	oilList.add("Garlic Oil");
+	 	    if (checkAmountAV("Sesame Oil") > 0.05)
+	 	    	oilList.add("Sesame Oil");
+	 	    if (checkAmountAV("Peanut Oil") > 0.05)
+	 	    	oilList.add("Peanut Oil");
 	
-		        if (oilAvailable > 0.2)  {
-			    	//logger.info(" Oil selected is " + oilName);
-			    	result = oilName;
-			    	notFound = false;
-		        }
-		        else {
-		        	notFound = true; 
-		        	if (count > 15) {
-		        		notFound = false;
-		        		result = "None";
-		        	}
-		        }
-	        	count++;
+			int upperbound = oilList.size();
+	    	int lowerbound = 1;
+	    	String selectedOil = "None";
+	    	
+	    	if (upperbound > 1) {
+	    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
+	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+		    	selectedOil = oilList.get(index);
 	    	}
-	    	return result;
+	    	else if (upperbound == 1) {
+		    	selectedOil = oilList.get(0);
+	    	}
+	    	else if (upperbound == 0)
+	    		selectedOil = "none";
+
+	    	return selectedOil;
 		}
     
 	

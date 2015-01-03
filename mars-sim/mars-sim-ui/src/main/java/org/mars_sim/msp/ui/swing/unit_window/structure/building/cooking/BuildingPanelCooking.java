@@ -58,7 +58,9 @@ extends BuildingFunctionPanel {
 		// Prepare label panel
 		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+		
 		// Prepare cooking label
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$

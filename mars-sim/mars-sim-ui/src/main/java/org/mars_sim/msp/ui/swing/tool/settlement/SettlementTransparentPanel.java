@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.07 2014-12-26
+ * @version 3.07 2015-01-01
  * @author Manny Kung
  */
 
@@ -70,14 +70,10 @@ public class SettlementTransparentPanel  {
 	JPanel topPanel, rightPane, borderPane, nameBtnPane, namePane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ; 
 	JButton renameBtn, infoButton;
 	JLabel zoomLabel; 
-	//JLabel nameLabel; see line 112
 	/** Lists all settlements. */
 	JComboBoxMW<?> settlementListBox;
 	/** Combo box model. */
 	SettlementComboBoxModel settlementCBModel;
-	//private JLabel nameLabel;
-	//private String name = "";
-	//private String nameCache = "";
 	private JPopupMenu labelsMenu;
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
@@ -140,7 +136,6 @@ public class SettlementTransparentPanel  {
         // Make panel drag-able
   		ComponentMover cmZoom = new ComponentMover();
 		cmZoom.registerComponent(rightPane);
-		//cmZoom.registerComponent(zoomPane);
 		
 	    controlPane.add(buttonPane);
 	    controlPane.add(zoomLabel);
@@ -154,7 +149,6 @@ public class SettlementTransparentPanel  {
         
         mapPanel.add(topPanel, BorderLayout.NORTH);   
         mapPanel.add(rightPane, BorderLayout.EAST);      
-        //mapPanel.setSize(600,400);
         mapPanel.setVisible(true);
     }
      
@@ -164,20 +158,14 @@ public class SettlementTransparentPanel  {
 		
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new JComboBoxMW(settlementCBModel);
+		//settlementListBox.setBorder(null);
 		settlementListBox.setOpaque(false);//setBackground(new Color(139,69,19));
-		settlementListBox.setForeground(Color.green);
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-		//((JLabel)settlementListBox.getRenderer()).setHorizontalAlignment(JLabel.CENTER);//SwingConstants.CENTER);
-		settlementListBox.setBackground(new Color(0,0,0,15));
+		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
+		settlementListBox.setBackground(new Color(51,25,0,128));
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
-		//settlementListBox.setRenderer(new MyCellRenderer());
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$ 
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
-		//settlementListBox.setSelectedIndex(-1);
-		//settlementListBox.setUI(new BasicComboBoxUI());
-		//settlementListBox.setEditable(true);  
-		//makeTransparent(settlementListBox.getComponents());  
-	    //((JTextField)settlementListBox.getEditor().getEditorComponent()).setOpaque(false); 
 		settlementListBox.addItemListener(new ItemListener() {
 			@Override
 			// unitUpdate will update combobox when a new building is added
@@ -187,6 +175,7 @@ public class SettlementTransparentPanel  {
 				if (desktop.getIsTransportingBuilding()) {
 					s = desktop.getSettlement();
 					settlementListBox.setSelectedItem(s);
+					//settlementListBox.setForeground(Color.green);
 				}
 				else {
 					s = (Settlement) event.getItem();
@@ -204,6 +193,7 @@ public class SettlementTransparentPanel  {
 			if (desktop.getIsTransportingBuilding()) {
 				s = desktop.getSettlement();
 				settlementListBox.setSelectedItem(s);
+				//settlementListBox.setForeground(Color.green);
 			}
 			else {
 				s = (Settlement) settlementListBox.getSelectedItem();
@@ -242,7 +232,7 @@ public class SettlementTransparentPanel  {
 		public PromptComboBoxRenderer(){	
 			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		    //settlementListBox.setRenderer(defaultRenderer);		
-		    setOpaque(false);
+		    //setOpaque(false);
 		    setHorizontalAlignment(CENTER);
 		    setVerticalAlignment(CENTER);
 		}
@@ -259,17 +249,20 @@ public class SettlementTransparentPanel  {
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);		        
 				if (value == null) {
 					setText( prompt );
+					//this.setForeground(Color.green);
+			        //this.setBackground(new Color(184,134,11));
 					return this;
 				}
 				
 				if (isSelected) {
-					result.setForeground(Color.black);
-			        result.setBackground(Color.orange); //brown
+					result.setForeground(Color.green);
+			        result.setBackground(new Color(184,134,11));
 		
 		          // unselected, and not the DnD drop location
 		          } else {
 		        	  result.setForeground(Color.green);
-				      result.setBackground(new Color(184,134,11)); //brown
+		        	  result.setBackground(new Color(255,229,204));
+				      //result.setBackground(new Color(184,134,11)); //brown
 		          }
 				
 		        //result.setOpaque(false);
@@ -347,7 +340,7 @@ public class SettlementTransparentPanel  {
     public void buildInfoP() {
        
 		infoP = new JPanel(new FlowLayout());
-		infoP.setBackground(new Color(0,0,0,15));
+		infoP.setBackground(new Color(0,0,0,0));
 		infoP.setAlignmentX(FlowLayout.CENTER); 
 		
 		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
@@ -404,7 +397,7 @@ public class SettlementTransparentPanel  {
     public void buildrenameBtn() {
 	    	
 		renameP  = new JPanel(new FlowLayout());
-		renameP.setBackground(new Color(0,0,0,15));
+		renameP.setBackground(new Color(0,0,0,0));
 		renameP.setAlignmentX(FlowLayout.CENTER); 
 
 		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
@@ -427,11 +420,7 @@ public class SettlementTransparentPanel  {
     public void buildButtonPane() {
   		
         buttonPane = new JPanel();
-        buttonPane.setBackground(new Color(0,0,0,15));
-  		//ComponentMover cmButton = new ComponentMover();
-		//cmButton.registerComponent(buttonPane);
-		//JPanel cw = new JPanel();
-        //cw.setOpaque(false);
+        buttonPane.setBackground(new Color(0,0,0,0));
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
 		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateClockwiseButton.setOpaque(false);
@@ -444,14 +433,9 @@ public class SettlementTransparentPanel  {
 				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
 			}
 		});
-		//buttonsPane.add(rotateClockwiseButton);
-		//cw.add(rotateClockwiseButton);//, BorderLayout.SOUTH);
-		//buttonPane.add(cw);	
+
 		buttonPane.add(rotateClockwiseButton);
-				
-		//JPanel rc = new JPanel();
-        //rc.setOpaque(false);
-		// Create recenter button.		
+	
 		JButton recenterButton = new JButton(" + ");//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
 		recenterButton.setPreferredSize(new Dimension(20, 20));
 		recenterButton.setOpaque(false);
@@ -465,13 +449,9 @@ public class SettlementTransparentPanel  {
 				zoomSlider.setValue(0);
 			}
 		});
-		//buttonsPane.add(recenterButton);
-		//rc.add(recenterButton);
-		//buttonPane.add(rc);
+
 		buttonPane.add(recenterButton);
-		
-		//JPanel ccw = new JPanel();
-		//ccw.setOpaque(false);
+
 		// Create rotate counter-clockwise button.
 		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
 		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
@@ -485,9 +465,7 @@ public class SettlementTransparentPanel  {
 				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
 			}
 		});
-		//buttonsPane.add(rotateCounterClockwiseButton);
-		//ccw.add(rotateCounterClockwiseButton);
-		//buttonPane.add(ccw);
+
 		buttonPane.add(rotateCounterClockwiseButton);
 		
     }
@@ -497,16 +475,13 @@ public class SettlementTransparentPanel  {
         labelPane = new JPanel();
         labelPane.setBackground(new Color(0,0,0,0));      
         
-  		//ComponentMover cmLabel = new ComponentMover();
-  		//cmLabel.registerComponent(labelPane);
-
 		JButton labelsButton = new JButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
 		labelsButton.setOpaque(false);
-		labelsButton.setPreferredSize(new Dimension(80, 20));
-		labelsButton.setForeground(Color.green);
-		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
+		//labelsButton.setFont(new Font("Dialog", Font.BOLD, 16));
 		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
 		labelsButton.setBackground(new Color(0,0,0,0)); 
+		labelsButton.setPreferredSize(new Dimension(80, 20));
+		labelsButton.setForeground(Color.green);
 		labelsButton.setVerticalAlignment(JLabel.TOP);
 		labelsButton.setHorizontalAlignment(JLabel.CENTER);
 		//labelsButton.setContentAreaFilled(false);

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -303,39 +304,65 @@ implements Serializable {
 	        int size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
 	        double maxServings = size * MAX_NUM_SERVING_PER_PERSON;
 	
+	        // 2015-01-02 Added random selection of a dessert item and Added Strawberry
 	 	    double soymilkAvailable = checkAmountAV("Soymilk");
 	 	    double sugarcaneJuiceAvailable = checkAmountAV("Sugarcane Juice");
+	 	    double strawberryAvailable = checkAmountAV("Strawberry");
+	 	   
 	 	    boolean hasSoymilk = false;
 	 	    boolean hasSugarcaneJuice = false;
+	 	    boolean hasStrawberry = false;
 	 	    
 	    	// Existing # of servings of dessert already been made
 	    	double numServings = servingsOfDessertList.size();	
-	    	if (soymilkAvailable > getMassPerServing()) 
-	    		hasSoymilk = true;
-	    	if (sugarcaneJuiceAvailable > getMassPerServing()) 
-	    		hasSugarcaneJuice = true;
+	    	List<String> dessertList = new ArrayList<String>();
 	    	
-	    	if ( ( hasSoymilk || hasSugarcaneJuice ) 
+	    	if (soymilkAvailable > getMassPerServing()) {
+	    		hasSoymilk = true;
+	    		dessertList.add("Soymilk");
+	    	}
+	    	if (sugarcaneJuiceAvailable > getMassPerServing()) {
+	    		hasSugarcaneJuice = true;
+	    		dessertList.add("Sugarcane Juice");
+	    	}
+	    	if (strawberryAvailable > getMassPerServing()) {
+	    		hasStrawberry = true;
+	    		dessertList.add("Strawberry");
+	    	}
+
+	    	if ( ( hasSoymilk || hasSugarcaneJuice || hasStrawberry) 
 	    			&& numServings < maxServings ) {
-	    		if (hasSoymilk) {
-	     		// Take out one serving of Soymilk from the fridge 
-	    			removeDessertFromAmountResource("Soymilk");
-		            MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		            int dessertQuality = getBestDessertSkill();
-		            // Create a serving of dessert and add it into the list
-			        servingsOfDessertList.add(new PreparedDessert("Soymilk", dessertQuality, time));
-	    		}
-	    		else if (hasSugarcaneJuice) {
-		     		// Take out one serving of Sugarcane Juice from the fridge 
-		    		removeDessertFromAmountResource("Sugarcane Juice");
-			        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-			         int dessertQuality = getBestDessertSkill();
-			        // Create a serving of dessert and add it into the list
-				    servingsOfDessertList.add(new PreparedDessert("Sugarcane Juice", dessertQuality, time));
-	    		}
-	 
+    	
+				int upperbound = dessertList.size();
+		    	int lowerbound = 1;
+		    	String selectedDessert = "None";
+		    	
+		    	if (upperbound > 1) {
+		    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
+		    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+		    		selectedDessert = dessertList.get(index);
+		    	}
+		    	else if (upperbound == 1) {
+		    		selectedDessert = dessertList.get(0);
+		    	}
+		    	else if (upperbound == 0)
+		    		selectedDessert = "None";
+		    	
+				//System.out.println("upperbound is "+ upperbound);
+		    	//System.out.println("index is "+ index);
+		    	//System.out.println("selectedDessert is "+selectedDessert);	
+		    	
+	     		// Take out one serving of the selected dessert from the fridge 
+	    		removeDessertFromAmountResource(selectedDessert);
+		        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		        int dessertQuality = getBestDessertSkill();
+		        
+		        // Create a serving of dessert and add it into the list
+			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
+
 		        // Reset workTime to zero for making the next serving      	
 	            workTime = 0; 
+	            
 	     	} // end of if ( soymilkAvailable > getMassPerServing() 
 	    } // end of if (workTime >= WORK_REQUIRED) 
     } // end of void addWork()

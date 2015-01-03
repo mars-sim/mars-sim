@@ -519,8 +519,8 @@
 	<building name="Lounge" width="7.0" length="9.0" base-level="0">
 		<description> The Lounge is a rest and relaxation living space furnished 
 			with dining tables and chairs for serving up to 33 occupants at a time. 
-			It has a well equipped kitchen for 7 food processes and a small gym room
-			 with exercise equipment accommodating up to 4 settlers.
+			It has a well furnished kitchen for many simultaneous food processing activities and a small gym room
+			 with exercise equipment.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
@@ -585,10 +585,13 @@
 					<activity-spot xloc="-1.7" yloc="3.2" />
 					<activity-spot xloc="-1.9" yloc="2.9" />
 					<activity-spot xloc="-2.4" yloc="2.9" />
+					<activity-spot xloc="-1.6" yloc="3.2" />
+					<activity-spot xloc="-1.8" yloc="2.9" />
+					<activity-spot xloc="-2.3" yloc="2.9" />
 				</activity>
 			</food-production>
 			
-			<life-support capacity="20" power-required="40.0" />
+			<life-support capacity="40" power-required="40.0" />
 			<recreation population-support="25">
 				<activity>
 					<activity-spot xloc="1.6" yloc="1.0" />
@@ -618,8 +621,8 @@
 	
 	<building name="Infirmary" width="7.0" length="9.0" base-level="0">
 		<description> 
-			The Infirmary is the first medical facility equipped to provide basic
-			medical care and research bench.
+			The Infirmary is the first medical facility equipped to provide more adequate
+			medical care for settlers. It houses one workbench with equipment for medical research.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
@@ -701,8 +704,8 @@
 
 	<building name="Large Greenhouse" width="12.0" length="18.0" base-level="0">
 		<description> 
-			The Large Greenhouse is furnished with botany lab and with spacious interior
-			for high volume crop cultivation and resource storage capability
+			The Large Greenhouse is furnished with a botany research lab with instruments. It has a spacious interior
+			for high volume crop cultivation and has a high resource storage capability
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>

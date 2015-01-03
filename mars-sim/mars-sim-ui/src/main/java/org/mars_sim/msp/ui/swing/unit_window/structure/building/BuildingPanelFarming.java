@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @version 3.07 2014-12-12
+ * @version 3.07 2015-01-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -33,9 +34,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
@@ -47,6 +51,8 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 
 
 /**
@@ -85,7 +91,7 @@ implements Serializable, MouseListener {
 	//private String cropInQueue;
 	private ListModel listModel;
 	private JList<CropType> list;
-	private JScrollPane scrollPanel;
+	private JScrollPane listScrollPanel;
 	private String deletingCrop = "";
 	private int deletingCropIndex;
 	private CropType deletingCropType;
@@ -109,7 +115,9 @@ implements Serializable, MouseListener {
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+		
 		// Prepare farming label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
@@ -129,10 +137,12 @@ implements Serializable, MouseListener {
 		labelPanel.add(cropsLabel);
 
 		// Create scroll panel for crop table
-		JScrollPane cropScrollPanel = new JScrollPane();
+		JScrollPane scrollPanel = new JScrollPane();
 		// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
-		cropScrollPanel.setPreferredSize(new Dimension(200, 130));
-		add(cropScrollPanel, BorderLayout.CENTER);
+		scrollPanel.setPreferredSize(new Dimension(200, 130));
+		scrollPanel.setOpaque(false);
+		scrollPanel.setBackground(new Color(0,0,0,128));
+		add(scrollPanel, BorderLayout.CENTER);
 
 		// Prepare crop table model
 		cropTableModel = new CropTableModel(farm);
@@ -183,6 +193,8 @@ implements Serializable, MouseListener {
             }
         }; // end of JTable
 		
+		
+		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false);
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		cropTable.getColumnModel().getColumn(1).setPreferredWidth(60);
@@ -190,11 +202,20 @@ implements Serializable, MouseListener {
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(40);
 		// 2014-10-10 mkung: added column 4 showing the crop's category
 		cropTable.getColumnModel().getColumn(4).setPreferredWidth(40);
-		cropScrollPanel.setViewportView(cropTable);
+		//cropTable.setOpaque(false);
+		//cropTable.setBackground(new Color(0,0,0,128));
+		setTableStyle(cropTable);
+		
+		scrollPanel.setViewportView(cropTable);
 		
 		JPanel queuePanel = new JPanel(new BorderLayout());
 	    add(queuePanel, BorderLayout.SOUTH);   
+	    queuePanel.setOpaque(false);
+	    queuePanel.setBackground(new Color(0,0,0,128));
+		
 	    JPanel selectPanel = new JPanel(new FlowLayout());
+	    selectPanel.setOpaque(false);
+	    selectPanel.setBackground(new Color(0,0,0,128));
 	    JLabel selectLabel = new JLabel(" Select from : ");
 	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
@@ -221,7 +242,9 @@ implements Serializable, MouseListener {
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 		comboBox.setRenderer(new PromptComboBoxRenderer(" List of Crops "));
 		comboBox.setSelectedIndex(-1);
-
+		comboBox.setOpaque(false);
+		comboBox.setBackground(new Color(51,25,0,128));
+		//comboBox.setBackground(Color.LIGHT_GRAY);
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	cropType = (CropType) comboBox.getSelectedItem();
@@ -233,10 +256,15 @@ implements Serializable, MouseListener {
 
 		//2014-12-09 Added addButton for adding a crop to queue
 		JPanel buttonPanel = new JPanel(new BorderLayout());
+		buttonPanel.setOpaque(false);
+		buttonPanel.setBackground(new Color(0,0,0,128));
 		JButton addButton = new JButton(Msg.getString(
 				"BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		addButton.setOpaque(false);
+		addButton.setBackground(new Color(0,0,0,128));
+		addButton.setForeground(Color.ORANGE);
 		addButton.addActionListener(new ActionListener() {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent evt) {
@@ -256,6 +284,10 @@ implements Serializable, MouseListener {
 				"BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		delButton.setOpaque(false);
+		delButton.setBackground(new Color(0,0,0,128));
+		delButton.setForeground(Color.ORANGE);
+
 		delButton.addActionListener(new ActionListener() {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent evt) {
@@ -271,8 +303,11 @@ implements Serializable, MouseListener {
 	    
 	    
 		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
+		queueListPanel.setOpaque(false);
+		queueListPanel.setBackground(new Color(0,0,0,128));
 		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout()); //new FlowLayout(FlowLayout.CENTER));
-
+		queueButtonLabelPanel.setOpaque(false);
+		queueButtonLabelPanel.setBackground(new Color(0,0,0,128));
 	    JLabel queueListLabel = new JLabel("<html><center>Crop(s)<br>in<br>Queue:</center><br><br><br></html>");
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
@@ -280,13 +315,21 @@ implements Serializable, MouseListener {
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 
 		// Create scroll panel for population list.
-		scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(150, 200));
+		listScrollPanel = new JScrollPane();
+		listScrollPanel.setPreferredSize(new Dimension(150, 200));
+		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+        //scrollPanel.setViewportBorder(null);
+        //scrollPanel.setBorder(BorderFactory.createEmptyBorder());
+		listScrollPanel.getViewport().setOpaque(false);
+		listScrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
+		listScrollPanel.setOpaque(false);
+		listScrollPanel.setBackground(new Color(0, 0, 0, 0));
+		
 		// Create list model
 		listModel = new ListModel(); //settlement);
 		// Create list
 		list = new JList<CropType>(listModel);
-		scrollPanel.setViewportView(list);
+		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
 		    @SuppressWarnings("unchecked")
 			public void valueChanged(ListSelectionEvent event) {
@@ -299,17 +342,63 @@ implements Serializable, MouseListener {
 		        }
 		    }
 		});
-		queueListPanel.add(scrollPanel); 
+		queueListPanel.add(listScrollPanel); 
+		list.setOpaque(false);
+		list.setBackground(new Color(0, 0, 0, 50));
 	
 	}
+	
+	
+	
+	/**
+	 * Sets the style for the table
+	 * @param table
+	 */
+	// 2015-01-01 Added setTableStyle()
+	public void setTableStyle(JTable table) {
+		
+		//JTableHeader header = table.getTableHeader();
+    	//TableHeaderRenderer theRenderer =
+    	//	new TableHeaderRenderer(header.getDefaultRenderer());
+    	//header.setDefaultRenderer(theRenderer);
+    	
+		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
+		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
+		headerRenderer.setForeground( Color.WHITE); 
+		headerRenderer.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
+
+		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+			table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+		}
+		MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
+		// set cell to have a light color border
+		table.setBorder(border);
+		table.setShowGrid(true);
+	    table.setShowVerticalLines(true);
+		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
+	
+
+        final JTable ctable = table;
+	    SwingUtilities.invokeLater(new Runnable(){
+	        public void run()  {
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	         } });
+		
+	}
+	
+	/**
+	 * Selects Crop
+	 * @param table
+	 */
 	public void selectCrop() {
 		
 		CropType cropType = (CropType) list.getSelectedValue();
 		if (cropType != null) {
 			deletingCropType = cropType;
 			deletingCropIndex = list.getSelectedIndex();
-		} else
-			
+		} else	
 		//System.out.println( " deletingCropIndex is " + deletingCropIndex);
         //System.out.println( " deletingCropType is " + deletingCropType);
         listUpdate();
@@ -322,9 +411,9 @@ implements Serializable, MouseListener {
  		list.validate();
  		list.revalidate();
  		list.repaint();
-		scrollPanel.validate();
-		scrollPanel.revalidate();
-		scrollPanel.repaint();
+ 		listScrollPanel.validate();
+ 		listScrollPanel.revalidate();
+ 		listScrollPanel.repaint();
 		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
 		comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
@@ -375,7 +464,7 @@ implements Serializable, MouseListener {
 		
 		// Update list
 		listModel.update();
-		scrollPanel.validate();
+		listScrollPanel.validate();
 	}
     
 	
@@ -580,9 +669,11 @@ implements Serializable, MouseListener {
 	                c.setBackground(Color.orange);
 	            } else {
 	                c.setBackground(Color.white);
+	                c.setBackground(new Color(51,25,0,128));
 	            }
 	        } else {
-	            c.setBackground(Color.white);
+	        	//c.setBackground(Color.white);
+	            c.setBackground(new Color(51,25,0,128));
 	            c = super.getListCellRendererComponent(
 	                    list, value, index, isSelected, cellHasFocus);
 	        }

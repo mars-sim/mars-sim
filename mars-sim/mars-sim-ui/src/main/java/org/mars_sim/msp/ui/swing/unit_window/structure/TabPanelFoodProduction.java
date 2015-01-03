@@ -73,9 +73,9 @@ extends TabPanel {
 	private List<FoodProductionProcess> processCache;
 
 	/** building selector. */
-	private JComboBoxMW<Building> buildingSelection;
+	private JComboBoxMW<Building> buildingComboBox;
 	/** List of available foodProduction buildings. */
-	private Vector<Building> buildingSelectionCache;
+	private Vector<Building> buildingComboBoxCache;
 	/** Process selector. */
 	private JComboBoxMW<Object> processSelection;
 	/** List of available processes. */
@@ -142,25 +142,30 @@ extends TabPanel {
 		topContentPanel.add(interactionPanel);
 		
 		// Create new building selection.
-		buildingSelectionCache = getFoodProductionBuildings();
+		buildingComboBoxCache = getFoodProductionBuildings();
 		// 2014-12-01 Added sorting
-		Collections.sort(buildingSelectionCache);
-		buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
+		Collections.sort(buildingComboBoxCache);
+		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
+		buildingComboBox.setOpaque(false);
+		buildingComboBox.setBackground(new Color(0,0,0,128));
+		buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
-		buildingSelection.setSelectedIndex(-1);
-		buildingSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
-		buildingSelection.addItemListener(new ItemListener() {
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingComboBox.setSelectedIndex(-1);
+		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
+		buildingComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				update();
 			}
 		});
-		interactionPanel.add(buildingSelection);
+		interactionPanel.add(buildingComboBox);
 
 		// Create new foodProduction process selection.
-		Building foodFactoryBuilding = (Building) buildingSelection.getSelectedItem();
+		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
+		processSelection.setOpaque(false);
+		processSelection.setBackground(new Color(0,0,0,128));
 		// 2014-12-01 Modified FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setSelectedIndex(-1);
@@ -171,10 +176,12 @@ extends TabPanel {
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.createNewProcess")); //$NON-NLS-1$
+		newProcessButton.setOpaque(false);
+		newProcessButton.setBackground(new Color(0,0,0,128));
 		newProcessButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-					Building foodFactoryBuilding = (Building) buildingSelection.getSelectedItem();
+					Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (foodFactoryBuilding != null) {
 						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
 						Object selectedItem = processSelection.getSelectedItem();
@@ -185,8 +192,8 @@ extends TabPanel {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
 									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-									buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
-									buildingSelection.setSelectedIndex(-1);
+									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 									processSelection.setSelectedIndex(-1);
 								}
@@ -310,21 +317,21 @@ extends TabPanel {
 
 		// Update building selection list.
 		Vector<Building> newBuildings = getFoodProductionBuildings();
-		if (!newBuildings.equals(buildingSelectionCache)) {
-			buildingSelectionCache = newBuildings;
-			Building currentSelection = (Building) buildingSelection.getSelectedItem();
-			buildingSelection.removeAllItems();
-			Iterator<Building> k = buildingSelectionCache.iterator();
-			while (k.hasNext()) buildingSelection.addItem(k.next());
+		if (!newBuildings.equals(buildingComboBoxCache)) {
+			buildingComboBoxCache = newBuildings;
+			Building currentSelection = (Building) buildingComboBox.getSelectedItem();
+			buildingComboBox.removeAllItems();
+			Iterator<Building> k = buildingComboBoxCache.iterator();
+			while (k.hasNext()) buildingComboBox.addItem(k.next());
 
 			if (currentSelection != null) {
-				if (buildingSelectionCache.contains(currentSelection)) 
-					buildingSelection.setSelectedItem(currentSelection);
+				if (buildingComboBoxCache.contains(currentSelection)) 
+					buildingComboBox.setSelectedItem(currentSelection);
 			}
 		}
 
 		// Update process selection list.
-		Building selectedBuilding = (Building) buildingSelection.getSelectedItem();
+		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
 			if (!newProcesses.equals(processSelectionCache)) {
 

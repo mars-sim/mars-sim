@@ -131,11 +131,14 @@ private CookingTableModel cookingTableModel;
 		cookingLabelPanel.add(label);
 
 		// Create scroll panel for the outer table panel.
-		JScrollPane cookingScrollPane = new JScrollPane();
-		cookingScrollPane.setPreferredSize(new Dimension(257, 230));
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setOpaque(false);
+		scrollPane.setBackground(new Color(0,0,0,128));
+		scrollPane.setForeground(Color.orange);
+		scrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
-		cookingScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(cookingScrollPane,BorderLayout.CENTER);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		centerContentPanel.add(scrollPane,BorderLayout.CENTER);
 
 		// Prepare cooking table model.
 		cookingTableModel = new CookingTableModel(settlement);
@@ -143,7 +146,7 @@ private CookingTableModel cookingTableModel;
 		// Prepare cooking table.
 		JTable table = new JTable(cookingTableModel);
 
-		cookingScrollPane.setViewportView(table);
+		scrollPane.setViewportView(table);
 		table.setCellSelectionEnabled(false);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		table.getColumnModel().getColumn(0).setPreferredWidth(140);

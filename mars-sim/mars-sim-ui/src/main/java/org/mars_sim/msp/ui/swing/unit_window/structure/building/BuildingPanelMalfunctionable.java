@@ -65,19 +65,28 @@ extends BuildingFunctionPanel {
 		add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunction list
-		JScrollPane malfunctionScrollPanel = new JScrollPane();
-		malfunctionScrollPanel.setPreferredSize(new Dimension(170, 90));
-		add(malfunctionScrollPanel, BorderLayout.CENTER);
+		JScrollPane scrollPanel = new JScrollPane();
+		scrollPanel.setPreferredSize(new Dimension(170, 90));
+		add(scrollPanel, BorderLayout.CENTER);
+        scrollPanel.setOpaque(false);
+        scrollPanel.setBackground(new Color(0,0,0,128));
+        scrollPanel.getViewport().setOpaque(false);
+        scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
+        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create malfunction list main panel.
 		JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
-		malfunctionScrollPanel.setViewportView(malfunctionListMainPanel);
-
+		scrollPanel.setViewportView(malfunctionListMainPanel);
+		malfunctionListMainPanel.setOpaque(false);
+		malfunctionListMainPanel.setBackground(new Color(0,0,0,128));
+		
 		// Create malfunction list panel
 		malfunctionListPanel = new JPanel();
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
-
+		malfunctionListPanel.setOpaque(false);
+		malfunctionListPanel.setBackground(new Color(0,0,0,128));
+		
 		// Create malfunction panels
 		malfunctionCache = new ArrayList<Malfunction>(malfunctionable.getMalfunctionManager().getMalfunctions());
 		malfunctionPanels = new ArrayList<MalfunctionPanel>();
@@ -104,6 +113,8 @@ extends BuildingFunctionPanel {
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction);
 					malfunctionPanels.add(panel);
 					malfunctionListPanel.add(panel);
+					panel.setOpaque(false);
+					panel.setBackground(new Color(0,0,0,128));
 				}
 			}
 

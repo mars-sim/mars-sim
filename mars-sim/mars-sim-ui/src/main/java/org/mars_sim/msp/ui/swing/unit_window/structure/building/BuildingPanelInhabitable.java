@@ -58,6 +58,8 @@ implements MouseListener {
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant label
 		// 2014-11-21 Changed font type, size and color of the title text
@@ -65,10 +67,14 @@ implements MouseListener {
 		inhabitantLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(inhabitantLabel);
+		inhabitantLabel.setOpaque(false);
+		inhabitantLabel.setBackground(new Color(0,0,0,128));
 
 		// Create number label
 		numberLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.number", inhabitable.getOccupantNumber()), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numberLabel);
+		numberLabel.setOpaque(false);
+		numberLabel.setBackground(new Color(0,0,0,128));
 
 		// Create capacity label
 		JLabel capacityLabel = new JLabel(
@@ -78,16 +84,28 @@ implements MouseListener {
 			),JLabel.CENTER
 		);
 		labelPanel.add(capacityLabel);
+		capacityLabel.setOpaque(false);
+		capacityLabel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant list panel
 		JPanel inhabitantListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(inhabitantListPanel, BorderLayout.CENTER);
+		inhabitantListPanel.setOpaque(false);
+		inhabitantListPanel.setBackground(new Color(0,0,0,128));
 
+		
 		// Create scroll panel for inhabitant list
-		JScrollPane inhabitantScrollPanel = new JScrollPane();
-		inhabitantScrollPanel.setPreferredSize(new Dimension(160, 60));
-		inhabitantListPanel.add(inhabitantScrollPanel);
+		JScrollPane scrollPanel = new JScrollPane();
+		scrollPanel.setPreferredSize(new Dimension(160, 60));
+		inhabitantListPanel.add(scrollPanel);
+		scrollPanel.setViewportView(inhabitantList);
+		scrollPanel.getViewport().setOpaque(false);
+		scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+		scrollPanel.setOpaque(false);
+		scrollPanel.setBackground(new Color(0,0,0,128));
+	    scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
+		
 		// Create inhabitant list model
 		inhabitantListModel = new DefaultListModel<Person>();
 		inhabitantCache = new ArrayList<Person>(inhabitable.getOccupants());
@@ -97,7 +115,10 @@ implements MouseListener {
 		// Create inhabitant list
 		inhabitantList = new JList<Person>(inhabitantListModel);
 		inhabitantList.addMouseListener(this);
-		inhabitantScrollPanel.setViewportView(inhabitantList);
+
+		inhabitantList.setOpaque(false);
+		inhabitantList.setBackground(new Color(0,0,0,128));
+
 	}
 
 	/**

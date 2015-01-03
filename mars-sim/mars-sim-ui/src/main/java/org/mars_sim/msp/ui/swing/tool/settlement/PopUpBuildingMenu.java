@@ -10,8 +10,17 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+
+import static java.awt.GraphicsDevice.WindowTranslucency.*;
+
+import java.awt.BasicStroke;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,10 +31,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.swing.BorderFactory;
-
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
+
+
+
+
+
+
+
 
 
 import org.mars_sim.msp.core.Msg;
@@ -33,7 +49,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 
@@ -60,6 +75,20 @@ public class PopUpBuildingMenu extends JPopupMenu {
         
         buildingName = building.getNickName();
 
+     // Determine what the GraphicsDevice can support.
+        GraphicsEnvironment ge = 
+            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        boolean isPerPixelTranslucencySupported = 
+            gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
+
+        //If translucent windows aren't supported, exit.
+        if (!isPerPixelTranslucencySupported) {
+            System.out.println(
+                "Per-pixel translucency is not supported");
+                System.exit(0);
+        }
+        
         buildItemOne();
         buildItemTwo();
     }
@@ -71,32 +100,32 @@ public class PopUpBuildingMenu extends JPopupMenu {
        	 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-            	/*
-                ((JComponent) d.getContentPane()).setOpaque(false);
-                //setOpaque(false);
-                //d.getContentPane();
-                //WindowUtils.setWindowTransparent(d, true); // 
-                */
+    
     		   	// 2014-11-27 Added building.getDescription() for loading text
 			    String description = building.getDescription();
-			    final BuildingInfoDialog d = new BuildingInfoDialog(buildingName, description);
-	
-          /*
-              	if (!"Mac OS X".equals(System.getProperty("os.name"))) {
-              		d.setVisible(true);
-            	}
-                if (WindowUtils.isWindowAlphaSupported()) {
-                    WindowUtils.setWindowAlpha(d, .2f);
-                }
-                */
-			    //2014-11-27 Added ComponentMover Class
-			    ComponentMover cm = new ComponentMover();
-            	cm.registerComponent(d);
+			    final JDialog d = new JDialog();
+			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
+		        d.setResizable(false);
+		        //d.setTitle(buildingName);
+		        d.setUndecorated(true);
+		        //d.setBackground(new Color(51,25,0,128)); // transparent pale orange
+		        d.setBackground(new Color(0,0,0,0));
+		        
+			    BuildingInfoPanel b = new BuildingInfoPanel();
+   	
+			    b.init(buildingName, description);
+			    
+			    d.add(b);
+
             	
             	// Make the buildingPanel to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location); 
-				d.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
+                
+                //d.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
+				
+                d.setVisible(true);
+                
 				d.addWindowFocusListener(new WindowFocusListener() {            
 				    public void windowLostFocus(WindowEvent e) {
 				    	d.dispose();
@@ -104,6 +133,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
 				    public void windowGainedFocus(WindowEvent e) {
 				    }
 				});	
+				
+			    //2014-11-27 Added ComponentMover Class
+			    ComponentMover mover = new ComponentMover(d,b);
+			    mover.registerComponent(b);	
+	
+				
              }
         });
     }
@@ -113,27 +148,30 @@ public class PopUpBuildingMenu extends JPopupMenu {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-            	//final JWindow d = new JWindow();
+
             	final JDialog d = new JDialog();
             	
         		//2014-11-27 Added ComponentMover Class
-    	        // Make panel drag-able
+                // Make panel drag-able
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(d);
-		
-        		final BuildingPanel buildingPanel;
-	    		buildingPanel = new BuildingPanel("Default", building, desktop);				
-                buildingPanel.setOpaque(false);
-                //WindowUtils.setWindowTransparent(buildingPanel, true);
-	    		
+ 
+        		@SuppressWarnings("serial")
+				final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
+               
+	    		buildingPanel.setOpaque(false);
+                buildingPanel.setBackground(new Color(0,0,0,150));
+                buildingPanel.setTheme(true);
+         		
 	    		// Make the buildingPanel to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location);
-			    d.add(buildingPanel);
-				//dialog.setResizable(true);
-				d.setSize(310,370);  // if undecorated, add 20 to height
-				d.setLayout(new FlowLayout()); 
 				d.setUndecorated(true);
+                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
+                d.add(buildingPanel);
+				d.setSize(300,335);  // undecorated: 300, 335; decorated: 310, 370
+				d.setLayout(new FlowLayout()); 
+
 				d.setVisible(true);
 				d.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
 
@@ -146,47 +184,13 @@ public class PopUpBuildingMenu extends JPopupMenu {
 					public void windowGainedFocus(WindowEvent e) {
 					}
 				});
-					
+
             }
         });
         
     }
     
 
-    public static void setWindowAlpha(Window w, float alpha) {
-        ComponentPeer peer = w.getPeer();
-        if (peer == null) {
-            return;
-        }
-        Class< ? extends ComponentPeer> peerClass = peer.getClass();
-
-        //noinspection EmptyCatchBlock
-        try {
-            Class< ?> nativeClass = Class.forName("apple.awt.CWindow");
-            if (nativeClass.isAssignableFrom(peerClass)) {
-                Method setAlpha = nativeClass.getMethod(
-                        "setAlpha", float.class);
-                setAlpha.invoke(peer, Math.max(0.0f, Math.min(alpha, 1.0f)));
-          }
-        } catch (ClassNotFoundException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        }
-    }
-    
-    /*
-	 public void removeButtons(Component comp) {
-	        if(comp instanceof AbstractButton) 
-	            comp.getParent().remove(comp);
-	        if (comp instanceof Container) {
-	            Component[] comps = ((Container)comp).getComponents();
-	            for(int x=0, y=comps.length; x<y; x++) {
-	                removeButtons(comps[x]);
-	            }
-	        }
-	}
-	 */  
 	public void destroy() {
 			settlement.destroy();
 			building.destroy();

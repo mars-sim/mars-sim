@@ -76,9 +76,9 @@ extends TabPanel {
 	private List<ManufactureProcess> processCache;
 	private List<SalvageProcess> salvageCache;
 	/** building selector. */
-	private JComboBoxMW<Building> buildingSelection;
+	private JComboBoxMW<Building> buildingComboBox;
 	/** List of available manufacture buildings. */
-	private Vector<Building> buildingSelectionCache;
+	private Vector<Building> buildingComboBoxCache;
 	/** Process selector. */
 	private JComboBoxMW<Object> processSelection;
 	/** List of available processes. */
@@ -149,21 +149,24 @@ extends TabPanel {
 		topContentPanel.add(interactionPanel);
 
 		// Create new building selection.
-		buildingSelectionCache = getManufacturingBuildings();
-		buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
+		buildingComboBoxCache = getManufacturingBuildings();
+		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
+		buildingComboBox.setOpaque(false);
+		buildingComboBox.setBackground(new Color(0,0,0,128));
+		buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
-		buildingSelection.setSelectedIndex(-1);
-		buildingSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectBuilding")); //$NON-NLS-1$
-		buildingSelection.addItemListener(new ItemListener() {
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingComboBox.setSelectedIndex(-1);
+		buildingComboBox.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectBuilding")); //$NON-NLS-1$
+		buildingComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				update();
 			}
 		});
-		interactionPanel.add(buildingSelection);
+		interactionPanel.add(buildingComboBox);
 
 		// Create new manufacture process selection.
-		Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
+		Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
 		// 2014-12-01 Modified ManufactureSelectionListCellRenderer() & Added setSelectedIndex(-1)
@@ -185,7 +188,7 @@ extends TabPanel {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent event) {
 				try {
-					Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
+					Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (workshopBuilding != null) {
 						Manufacture workshop = (Manufacture) workshopBuilding.getFunction(BuildingFunction.MANUFACTURE);
 						Object selectedItem = processSelection.getSelectedItem();
@@ -197,8 +200,8 @@ extends TabPanel {
 									update();
 									
 									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-									buildingSelection.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
-									buildingSelection.setSelectedIndex(-1);
+									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setSelectedIndex(-1);
 									processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
 
@@ -356,21 +359,21 @@ extends TabPanel {
 
 		// Update building selection list.
 		Vector<Building> newBuildings = getManufacturingBuildings();
-		if (!newBuildings.equals(buildingSelectionCache)) {
-			buildingSelectionCache = newBuildings;
-			Building currentSelection = (Building) buildingSelection.getSelectedItem();
-			buildingSelection.removeAllItems();
-			Iterator<Building> k = buildingSelectionCache.iterator();
-			while (k.hasNext()) buildingSelection.addItem(k.next());
+		if (!newBuildings.equals(buildingComboBoxCache)) {
+			buildingComboBoxCache = newBuildings;
+			Building currentSelection = (Building) buildingComboBox.getSelectedItem();
+			buildingComboBox.removeAllItems();
+			Iterator<Building> k = buildingComboBoxCache.iterator();
+			while (k.hasNext()) buildingComboBox.addItem(k.next());
 
 			if (currentSelection != null) {
-				if (buildingSelectionCache.contains(currentSelection)) 
-					buildingSelection.setSelectedItem(currentSelection);
+				if (buildingComboBoxCache.contains(currentSelection)) 
+					buildingComboBox.setSelectedItem(currentSelection);
 			}
 		}
 
 		// Update process selection list.
-		Building selectedBuilding = (Building) buildingSelection.getSelectedItem();
+		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
 		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
 		Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses(selectedBuilding);
 		if (!newProcesses.equals(processSelectionCache) || !newSalvages.equals(salvageSelectionCache)) {
