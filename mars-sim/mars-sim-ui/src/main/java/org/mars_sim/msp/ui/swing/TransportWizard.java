@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.07 2014-12-26
+ * @version 3.07 2015-01-02
 
  * @author Manny Kung
  */
@@ -133,7 +133,8 @@ extends JInternalFrame {
 	/**
      * Delivers supplies to the destination settlement.
      */
-    public void deliverBuildings() {  
+	// 2015-01-02 Added keyword synchronized to avoid JOption crash
+    public synchronized void deliverBuildings() {  
         List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
         // 2014-12-23 Added sorting orderedBuildings according to its building id
         //Collections.sort(orderedBuildings);
