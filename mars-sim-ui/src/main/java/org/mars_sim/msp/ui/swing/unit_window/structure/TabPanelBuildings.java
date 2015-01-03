@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -20,8 +21,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -43,8 +47,8 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DefaultComboBoxModel<Building> buildingComboBoxModel;
-	private JComboBoxMW<Building> buildingComboBox;
+	private DefaultComboBoxModel<Building> comboBoxModel;
+	private JComboBoxMW<Building> comboBox;
 	private List<Building> buildingsCache;
 	private JPanel buildingDisplayPanel;
 	private CardLayout buildingLayout;
@@ -52,6 +56,8 @@ implements ActionListener {
 	private int count;
 
 	private Building building;
+	
+	private List<JPanel> panelList = new ArrayList<JPanel>();
 
 	/**
 	 * Constructor
@@ -67,7 +73,9 @@ implements ActionListener {
 			Msg.getString("TabPanelBuildings.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-
+        this.setOpaque(false);
+        this.setBackground(new Color(0,0,0,128));
+        
 		Settlement settlement = (Settlement) unit;
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 		Collections.sort(buildings);
@@ -84,14 +92,18 @@ implements ActionListener {
 		JPanel buildingInfoPanel = new JPanel(new GridLayout(2,1,0,0));
 		//buildingInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(buildingInfoPanel);
-
+		panelList.add(buildingInfoPanel);
+		
         JLabel titleLabel = new JLabel("Buildings", JLabel.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
         titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         buildingInfoPanel.add(titleLabel);
-       
+        titleLabel.setOpaque(false);
+        titleLabel.setBackground(new Color(0,0,0,128));
+        
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingInfoPanel.add(buildingSelectPanel);
+		panelList.add(buildingSelectPanel);
 		
         //JLabel buildingLabel = new JLabel("Selected Building: ", JLabel.CENTER);
         //buildingLabel.setFont(new Font("Serif", Font.PLAIN, 12));
@@ -99,7 +111,8 @@ implements ActionListener {
         //buildingSelectPanel.add(buildingLabel);
 
 		// Create building combo box model.
-		buildingComboBoxModel = new DefaultComboBoxModel<Building>();
+		comboBoxModel = new DefaultComboBoxModel<Building>();
+
 		buildingsCache = new ArrayList<Building>(buildings);
 			//System.out.println("TabPanelBuildings.java : constructor : buildingsCache is "+ buildingsCache);
 		Iterator<Building> i = buildingsCache.iterator();		
@@ -107,13 +120,20 @@ implements ActionListener {
 			Building b = i.next();
 			// 2014-10-29: <<NOT USED>> Modified to load nickName instead of buildingType
 			// b.setType(b.getNickName());
-	    	buildingComboBoxModel.addElement(b);
+	    	comboBoxModel.addElement(b);
 		}
 		// Create building list.
-		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxModel);
-		buildingComboBox.addActionListener(this);
-		buildingComboBox.setMaximumRowCount(10);
-		buildingSelectPanel.add(buildingComboBox);
+		comboBox = new JComboBoxMW<Building>(comboBoxModel);
+		comboBox.setRenderer(new PromptComboBoxRenderer());
+		comboBox.setOpaque(false);
+		comboBox.setBackground(new Color(0,0,0,128));
+		comboBox.setBackground(new Color(255,229,204));
+		//comboBox.setForeground(Color.orange);
+		comboBox.addActionListener(this);
+		comboBox.setMaximumRowCount(10);
+		comboBox.setBorder(null);
+		
+		buildingSelectPanel.add(comboBox);
 		
 		// Create building display panel.
 		buildingDisplayPanel = new JPanel();
@@ -121,7 +141,8 @@ implements ActionListener {
 		buildingDisplayPanel.setLayout(buildingLayout);
 		buildingDisplayPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(buildingDisplayPanel);
-
+		panelList.add(buildingDisplayPanel);
+		
 		// Create building panels
 		buildingPanels = new ArrayList<BuildingPanel>();
 		count = 0;
@@ -133,6 +154,73 @@ implements ActionListener {
 			count++;
 		}
 	
+		setPanelTranslucent();
+	}
+	
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer {	
+		
+		private static final long serialVersionUID = 1L;
+		private String prompt;		
+		//public boolean isOptimizedDrawingEnabled();
+		//private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+		public PromptComboBoxRenderer(){	
+			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
+		    //settlementListBox.setRenderer(defaultRenderer);		
+		    //setOpaque(false);
+		    setHorizontalAlignment(CENTER);
+		    setVerticalAlignment(CENTER);
+		}
+		
+		public PromptComboBoxRenderer(String prompt){
+				this.prompt = prompt;
+			}
+			
+			@Override
+		    public Component getListCellRendererComponent(JList list, Object value,
+		            int index, boolean isSelected, boolean cellHasFocus) {
+		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);		        
+				if (value == null) {
+					setText( prompt );
+					//this.setForeground(Color.orange);
+			        //this.setBackground(new Color(184,134,11));
+					return this;
+				}
+				
+				if (isSelected) {
+					result.setForeground(new Color(184,134,11));
+			        result.setBackground(Color.orange); 
+		
+		          // unselected, and not the DnD drop location
+		          } else {
+		        	  result.setForeground(new Color(184,134,11));
+		        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
+				      //Color(184,134,11)) brown
+		          }
+				
+		        //result.setOpaque(false);
+
+		        return result;
+		    }
+	}
+
+	
+	public void setPanelStyle(JPanel p) {
+		//if (isTranslucent) {
+			p.setOpaque(false);
+			p.setBackground(new Color(0,0,0,128)); 
+		//}
+	}
+	
+	public void setPanelTranslucent() {	
+		//if (isTranslucent) {
+		    Iterator<JPanel> i = panelList.iterator();
+			 	while (i.hasNext()) {
+			 		JPanel pp = i.next();
+			 		setPanelStyle(pp);
+			 	}
+		//}
 	}
 	
 	/** Set the new name of a Building
@@ -161,9 +249,12 @@ implements ActionListener {
 				if (!buildingsCache.contains(building)) {
 					BuildingPanel panel = new BuildingPanel(String.valueOf(count), building, desktop);
 					buildingPanels.add(panel);
+					panel.setOpaque(false);//setBackground(new Color(139,69,19));
+					panel.setForeground(Color.green);
+					panel.setBackground(new Color(0,0,0,15));
 					buildingDisplayPanel.add(panel, panel.getPanelName());
 					// TODO: Modify to load building's nickName instead of buildingType
-					buildingComboBoxModel.addElement(building);
+					comboBoxModel.addElement(building);
 					count++;
 				}
 			}
@@ -177,7 +268,7 @@ implements ActionListener {
 					if (panel != null) {
 						buildingPanels.remove(panel);
 						buildingDisplayPanel.remove(panel);
-						buildingComboBoxModel.removeElement(building);
+						comboBoxModel.removeElement(building);
 					}
 				}
 			}
@@ -196,7 +287,7 @@ implements ActionListener {
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
-		Building building = (Building) buildingComboBox.getSelectedItem();
+		Building building = (Building) comboBox.getSelectedItem();
 		BuildingPanel panel = getBuildingPanel(building);
 		
 		if (panel != null) buildingLayout.show(buildingDisplayPanel, panel.getPanelName());
@@ -213,11 +304,9 @@ implements ActionListener {
 		Iterator<BuildingPanel> i = buildingPanels.iterator();
 		while (i.hasNext()) {
 			BuildingPanel panel = i.next();
-			if (panel.getBuilding() == building) {
-				
+			if (panel.getBuilding() == building) {				
 				// 2014-10-29 Set as current building object
-				setCurrentBuilding(building);
-	
+				//setCurrentBuilding(building);
 				result = panel;
 			}
 		}

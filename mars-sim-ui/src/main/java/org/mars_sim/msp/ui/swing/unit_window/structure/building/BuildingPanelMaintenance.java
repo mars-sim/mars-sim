@@ -86,7 +86,9 @@ extends BuildingFunctionPanel {
 		// Create maintenance progress bar panel.
 		JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		add(progressPanel);
-
+		progressPanel.setOpaque(false);
+		progressPanel.setBackground(new Color(0,0,0,128));
+		
 		// Prepare progress bar.
 		JProgressBar progressBar = new JProgressBar();
 		progressBarModel = progressBar.getModel();

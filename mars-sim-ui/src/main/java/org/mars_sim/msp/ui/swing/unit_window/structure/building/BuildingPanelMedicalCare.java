@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,7 +65,9 @@ extends BuildingFunctionPanel {
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+        
 		// Create medical care label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
@@ -85,17 +88,23 @@ extends BuildingFunctionPanel {
 		labelPanel.add(physicianLabel);
 
 		// Create scroll panel for medical table
-		JScrollPane medicalScrollPanel = new JScrollPane();
-		medicalScrollPanel.setPreferredSize(new Dimension(160, 80));
-		add(medicalScrollPanel, BorderLayout.CENTER);
+		JScrollPane scrollPanel = new JScrollPane();
+		scrollPanel.setPreferredSize(new Dimension(160, 80));
+		add(scrollPanel, BorderLayout.CENTER);
+	    scrollPanel.getViewport().setOpaque(false);
+	    scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
+	    scrollPanel.setOpaque(false);
+	    scrollPanel.setBackground(new Color(0, 0, 0, 0));
+        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.orange) );
 
+		
 		// Prepare medical table model
 		medicalTableModel = new MedicalTableModel(medical);
 
 		// Prepare medical table
 		JTable medicalTable = new JTable(medicalTableModel);
 		medicalTable.setCellSelectionEnabled(false);
-		medicalScrollPanel.setViewportView(medicalTable);
+		scrollPanel.setViewportView(medicalTable);
 	}
 
 	/**

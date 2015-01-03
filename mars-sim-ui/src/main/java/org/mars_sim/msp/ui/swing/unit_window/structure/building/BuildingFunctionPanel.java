@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * BuildingFunctionPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-01
 
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
+
+import java.awt.Color;
 
 import javax.swing.JPanel;
 
@@ -41,6 +43,9 @@ extends JPanel {
 		this.building = building;
 		this.desktop = desktop;
 
+        //this.setOpaque(false);
+        //this.setBackground(new Color(0,0,0,0));
+        
 		setBorder(new MarsPanelBorder());
 	}
 

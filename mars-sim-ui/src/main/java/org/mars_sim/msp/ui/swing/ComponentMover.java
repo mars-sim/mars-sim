@@ -76,7 +76,7 @@ public class ComponentMover extends MouseAdapter
 	 *  Constructor to specify a parent component that will be moved when drag
 	 *  events are generated on a registered child component.
 	 *
-	 *  @param destinationComponent  the component drage events should be forwareded to
+	 *  @param destinationComponent  the component drag events should be forwarded to
 	 *  @param components    the Components to be registered for forwarding drag
 	 *                       events to the parent component to be moved
 	 */

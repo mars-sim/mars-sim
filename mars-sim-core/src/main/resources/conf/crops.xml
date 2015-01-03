@@ -213,6 +213,18 @@ http://sourceforge.net/p/mars-sim/code/2842/
     	3. TODO: 
     	 -->    	    	  
     	  
+   	<crop name="Strawberry"
+        growing-time="45" 
+    	crop-category="Fruits" 
+    	edible-biomass="60" 
+    	edible-water-content=".92" 
+    	inedible-biomass="20" 
+    	/>		
+    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
+    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
+    	TODO: 
+    	 -->      
+    	  
     	 <!-- Rhizomes vs. roots 
     	 Tumeric
     	 Green Pepper 

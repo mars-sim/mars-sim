@@ -46,9 +46,13 @@ extends BuildingFunctionPanel {
 		JLabel storageLabel = new JLabel(Msg.getString("BuildingPanelStorage.title"), JLabel.CENTER);
 		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
+
+		
 		JPanel titlePanel = new JPanel(new GridLayout(2,1,0,0));
 		add(titlePanel, BorderLayout.NORTH);
 		titlePanel.add(storageLabel);
+		titlePanel.setOpaque(false);
+		titlePanel.setBackground(new Color(0,0,0,128));
 		
 		JLabel maxCapLabel = new JLabel(Msg.getString("BuildingPanelStorage.maxCap"), JLabel.CENTER);
 		titlePanel.add(maxCapLabel);
@@ -58,6 +62,9 @@ extends BuildingFunctionPanel {
 		// Create resource storage panel.
 		JPanel resourceStoragePanel = new JPanel(new GridLayout(resourceStorage.size(), 2, 0, 0));
 		add(resourceStoragePanel, BorderLayout.CENTER);
+		resourceStoragePanel.setOpaque(false);
+		resourceStoragePanel.setBackground(new Color(0,0,0,128));
+		
 		Iterator<AmountResource> i = resourceStorage.keySet().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();

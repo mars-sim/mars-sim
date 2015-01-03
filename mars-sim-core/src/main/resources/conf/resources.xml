@@ -87,6 +87,9 @@
 	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
 	<resource name="Grain Bar" phase="solid" edible="true"></resource>
 	<resource name="Soy Sauce" phase="liquid" edible="true">Made from fermented soybeans</resource>
+	<resource name="Strawberry" phase="solid" edible="true"></resource>
+	
+	
 	
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>
 	<resource name="Potassium" phase="solid">A mineral.</resource>

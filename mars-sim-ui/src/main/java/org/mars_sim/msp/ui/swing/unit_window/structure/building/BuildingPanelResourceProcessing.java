@@ -14,6 +14,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,11 +69,15 @@ extends BuildingFunctionPanel {
 		// Prepare resource processes list panel.
 		JPanel resourceProcessesListPanel = new JPanel(new GridLayout(processes.size(), 2, 10, 3));
 		resourceProcessesListPanel.setBorder(new EmptyBorder(3, 20, 3, 20)); //(int top, int left, int bottom, int right)
+		resourceProcessesListPanel.setOpaque(false);
+		resourceProcessesListPanel.setBackground(new Color(0,0,0,128));
+		
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));		
 		resourceProcessesListPanel.setBorder(new MarsPanelBorder());
 		listPanel.add(resourceProcessesListPanel);
 		add(listPanel, BorderLayout.SOUTH);
-
+		listPanel.setOpaque(false);
+		listPanel.setBackground(new Color(0,0,0,128));
 		
 		// Load green and red dots.
 		greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");

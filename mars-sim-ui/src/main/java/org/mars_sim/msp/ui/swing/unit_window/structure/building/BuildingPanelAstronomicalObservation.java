@@ -71,6 +71,13 @@ extends BuildingFunctionPanel {
 			),JLabel.CENTER
 		);
 		labelPanel.add(observerCapacityLabel);
+		
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+		astronomyLabel.setOpaque(false);
+		astronomyLabel.setBackground(new Color(0,0,0,128));
+		observersLabel.setOpaque(false);
+		observersLabel.setBackground(new Color(0,0,0,128));
 	}
 
 	@Override

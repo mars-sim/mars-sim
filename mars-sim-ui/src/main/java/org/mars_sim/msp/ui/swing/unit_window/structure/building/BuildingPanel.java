@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.07 2014-11-24
+ * @version 3.07 2015-01-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -49,6 +50,7 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.settlement.CustomScroll;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelFoodProduction;
@@ -76,8 +78,11 @@ extends JPanel {
 	private MainDesktopPane desktop;
 	private JLabel buildingNameLabel;
 	private String newName;
+	
+	private boolean isTranslucent = false;
+	
 	/**
-	 * Constructor
+	 * Constructor 1
 	 *
 	 * @param panelName the name of the panel.
 	 * @param building the building this panel is for.
@@ -91,22 +96,65 @@ extends JPanel {
         this.panelName = panelName;
         this.building = building;
         this.desktop = desktop;
-        //buildingType = building.getBuildingType();
+        
+        init();
+	}
+	
+	/**
+	 * Constructor 2
+	 *
+	 * @param isTranslucent
+	 * @param panelName the name of the panel.
+	 * @param building the building this panel is for.
+	 * @param desktop the main desktop. 
+	 */
+	// 2014-11-27 Added Constructor 2
+	public BuildingPanel(boolean isTranslucent, String panelName, Building building, MainDesktopPane desktop) {
+
+        // Initialize data members
+        this.panelName = panelName;
+        this.building = building;
+        this.desktop = desktop;
+		this.isTranslucent = isTranslucent;
+		
+		init();
+	}
+	
+	
+	/**
+	 * Initializes the BuildingPanel
+	 */
+	// 2015-01-01 init()
+	public void init() {
+	
+        setPanelStyle(this);
+        
+        //if (isTranslucent) {
+        	//JComponent c = getRootPane();
+        	//c.setOpaque(false);
+        	//c.setBackground(new Color(0,0,0,128));
+        //}
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
-        
+  
         // Set layout
         setLayout(new BorderLayout(0, 0));
  
         // 2014-11-27 Added namePanel and buildingNameLabel
         JPanel namePanel = new JPanel(new FlowLayout());
-        //functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+        //scrollPanel.setPreferredSize(new Dimension(200, 220));
         buildingNameLabel = new JLabel(building.getNickName());
+        
         buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        if (isTranslucent) {
+        	buildingNameLabel.setForeground(Color.YELLOW);
+        } else
+        	buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
+       	
         namePanel.add(buildingNameLabel);
         add(namePanel, BorderLayout.NORTH);
-        
+		setPanelStyle(namePanel);
+		
     
 		//2014-11-27  Added renameBtn for renaming a building
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -124,18 +172,35 @@ extends JPanel {
 		});
 		btnPanel.add(renameBtn);		
 		namePanel.add(btnPanel);
-		
-        // Prepare function scroll panel.
-        JScrollPane functionScrollPanel = new JScrollPane();
-        functionScrollPanel.setPreferredSize(new Dimension(290, 280));
-        add(functionScrollPanel, BorderLayout.CENTER);
-        
-        // Prepare function list panel.
+        //if (isTranslucent) {
+        	renameBtn.setOpaque(false);
+        	renameBtn.setBackground(new Color(0,0,0,128));
+        	renameBtn.setForeground(Color.ORANGE);
+        //}
+		setPanelStyle(btnPanel);
+		 
+	    // Prepare function list panel.
         JPanel functionListPanel = new JPanel();
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
-        functionScrollPanel.setViewportView(functionListPanel);
-        
-        // 2014-11-04 Added SVG Image loading for the building
+ 
+        // Prepare function scroll panel.
+        //JScrollPane scrollPanel = new JScrollPane();
+        CustomScroll scrollPanel = new CustomScroll(functionListPanel);
+        scrollPanel.setPreferredSize(new Dimension(290, 280));
+        add(scrollPanel, BorderLayout.CENTER);
+    
+        //scrollPanel.setViewportView(functionListPanel);
+        setPanelStyle(functionListPanel);
+		
+		if (isTranslucent) {
+			scrollPanel.setOpaque(false);
+			//scrollPanel.getViewport().setOpaque(false);
+			scrollPanel.setBorder(BorderFactory.createLineBorder(Color.orange));
+			//scrollPanel.setViewportBorder(BorderFactory.createLineBorder(Color.orange));
+			scrollPanel.setBackground(new Color(0,0,0,128));        
+		}
+		
+		// 2014-11-04 Added SVG Image loading for the building
   	    Dimension expectedDimension = new Dimension(100, 100);
 	        //GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType); 
 	    Settlement settlement = building.getBuildingManager().getSettlement();
@@ -145,16 +210,19 @@ extends JPanel {
 	    svgPanel.setPreferredSize(expectedDimension);
 	    svgPanel.setMaximumSize(expectedDimension);
 	    svgPanel.setMinimumSize(expectedDimension);
-	        
+		setPanelStyle(svgPanel);
+		
+		
 	    Box box = new Box(BoxLayout.Y_AXIS);
 	    box.add(Box.createVerticalGlue());
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	        // 2014-11-05 Added setBorder()
-	    box.setBorder(BorderFactory.createLineBorder(Color.black));
+	    box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	    box.add(svgPanel);
 	    box.add(Box.createVerticalGlue());
-
-	        functionListPanel.add(box);
+		box.setOpaque(false);
+		box.setBackground(new Color(0,0,0,128));
+	    functionListPanel.add(box);
 	        
         // Prepare inhabitable panel if building has lifeSupport.
         if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
@@ -208,6 +276,7 @@ extends JPanel {
 				BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
+				//if (isTranslucent)setPanelStyle(powerPanel);
 //			}
 //			catch (BuildingException e) {}
 		}
@@ -220,6 +289,7 @@ extends JPanel {
 				BuildingFunctionPanel preparingDessertPanel = new BuildingPanelPreparingDessert(kitchen, desktop);
 				functionPanels.add(preparingDessertPanel);
 				functionListPanel.add(preparingDessertPanel);
+				//if (isTranslucent) setPanelStyle(powerPanel);
 //			}
 //			catch (BuildingException e) {}
 		}		
@@ -231,6 +301,7 @@ extends JPanel {
             	BuildingFunctionPanel medicalCarePanel = new BuildingPanelMedicalCare(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
+            	//if (isTranslucent) setPanelStyle(powerPanel);
 //        	}
 //        	catch (BuildingException e) {}
         }
@@ -242,6 +313,7 @@ extends JPanel {
 				BuildingFunctionPanel vehicleMaintenancePanel = new BuildingPanelVehicleMaintenance(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
+				//if (isTranslucent) setPanelStyle(powerPanel);
 //			}
 //			catch (BuildingException e) {}
 		}
@@ -253,6 +325,7 @@ extends JPanel {
             	BuildingFunctionPanel researchPanel = new BuildingPanelResearch(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
+            	//if (isTranslucent) setPanelStyle(powerPanel);
 //        	}
 //        	catch (BuildingException e) {}
         }
@@ -265,6 +338,7 @@ extends JPanel {
             	BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
+            	//if (isTranslucent) setPanelStyle(observationPanel);
 //        	}
 //        	catch (BuildingException e) {}
         }
@@ -273,6 +347,7 @@ extends JPanel {
         BuildingFunctionPanel powerPanel = new BuildingPanelPower(building, desktop);
         functionPanels.add(powerPanel);
         functionListPanel.add(powerPanel);
+    	//setPanelStyle(powerPanel);
         
         // Prepare power storage panel if building has power storage.
         if (building.hasFunction(BuildingFunction.POWER_STORAGE)) {
@@ -281,6 +356,7 @@ extends JPanel {
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
+                //if (isTranslucent) setPanelStyle(powerStoragePanel);
 //            }
 //            catch (BuildingException e) {}
         }
@@ -291,6 +367,7 @@ extends JPanel {
 		        BuildingFunctionPanel heatPanel = new BuildingPanelThermal(building, desktop);
 		        functionPanels.add(heatPanel);
 		        functionListPanel.add(heatPanel);
+		        //if (isTranslucent) setPanelStyle(heatPanel);
 //        }
 //      catch (BuildingException e) {}
   }
@@ -302,6 +379,7 @@ extends JPanel {
                 BuildingFunctionPanel heatStoragePanel = new BuildingPanelThermalStorage(storage, desktop);
                 functionPanels.add(heatStoragePanel);
                 functionListPanel.add(heatStoragePanel);
+                //if (isTranslucent) setPanelStyle(heatStoragePanel);
 //            }
 //            catch (BuildingException e) {}
         }
@@ -313,6 +391,7 @@ extends JPanel {
             	BuildingFunctionPanel resourceProcessingPanel = new BuildingPanelResourceProcessing(processor, desktop);
             	functionPanels.add(resourceProcessingPanel);
             	functionListPanel.add(resourceProcessingPanel);
+            	//if (isTranslucent) setPanelStyle(resourceProcessingPanel);
 //        	}
 //        	catch (BuildingException e) {}
         }
@@ -324,6 +403,7 @@ extends JPanel {
                 BuildingFunctionPanel storagePanel = new BuildingPanelStorage(storage, desktop);
                 functionPanels.add(storagePanel);
                 functionListPanel.add(storagePanel);
+                //if (isTranslucent) setPanelStyle(storagePanel);
 //            }
 //            catch (BuildingException e) {}
         }
@@ -333,15 +413,36 @@ extends JPanel {
             new BuildingPanelMalfunctionable(building, desktop);
         functionPanels.add(malfunctionPanel);
         functionListPanel.add(malfunctionPanel);
+        //setPanelStyle(malfunctionPanel);
         
         // Prepare maintenance panel.
         BuildingFunctionPanel maintenancePanel = 
             new BuildingPanelMaintenance(building, desktop);
         functionPanels.add(maintenancePanel);
         functionListPanel.add(maintenancePanel);
+        //setPanelStyle(maintenancePanel);
+        
+        setPanelTranslucent();
     }
-
-
+	
+	public void setPanelTranslucent() {
+		if (isTranslucent) {
+	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
+	   	 	while (i.hasNext()) {
+	   	 		BuildingFunctionPanel p = i.next();
+	   	 		setPanelStyle(p);
+	   	 	}
+		}
+	}
+	
+	public void setPanelStyle(JPanel p) {
+		//System.out.println("BuildingPanel.java : isTranslucent is "+ isTranslucent);
+		//if (isTranslucent) {
+			p.setOpaque(false);
+			p.setBackground(new Color(0,0,0,128)); 
+		//}
+	}
+	
 	/**
 	 * Ask for a new building name
 	 * @return pop up jDialog
@@ -401,5 +502,14 @@ extends JPanel {
         // Update each building function panel.
         Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
         while (i.hasNext()) i.next().update();
+    }
+    
+    /**
+     * Sets the panel's color theme.
+     * @return panel name
+     */
+    public void setTheme(boolean value) {
+        isTranslucent = value;
+		//System.out.println("BuildingPanel.java : setTheme() : isTranslucent is " + isTranslucent);
     }
 }

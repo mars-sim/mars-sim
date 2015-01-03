@@ -58,7 +58,9 @@ implements MouseListener {
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
-
+		labelPanel.setOpaque(false);
+		labelPanel.setBackground(new Color(0,0,0,128));
+		
 		// Create vehicle maintenance label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
@@ -82,12 +84,18 @@ implements MouseListener {
 		// Create vehicle list panel
 		JPanel vehicleListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(vehicleListPanel, BorderLayout.CENTER);
-
+		vehicleListPanel.setOpaque(false);
+		vehicleListPanel.setBackground(new Color(0,0,0,128));
+		
 		// Create scroll panel for vehicle list
 		JScrollPane vehicleScrollPanel = new JScrollPane();
 		vehicleScrollPanel.setPreferredSize(new Dimension(160, 60));
 		vehicleListPanel.add(vehicleScrollPanel);
-
+		vehicleScrollPanel.setOpaque(false);
+		vehicleScrollPanel.setBackground(new Color(0,0,0,128));
+		vehicleScrollPanel.getViewport().setOpaque(false);
+		vehicleScrollPanel.getViewport().setBackground(new Color(0,0,0,128));
+		
 		// Create vehicle list model
 		vehicleListModel = new DefaultListModel<Vehicle>();
 		vehicleCache = new ArrayList<Vehicle>(garage.getVehicles());

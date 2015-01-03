@@ -846,14 +846,17 @@ implements Serializable {
 
         // TODO: change health status as well in all of the following cases
         // High fatigue reduces performance.
-        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
+        //if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
+        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .003D;
 
         // High hunger reduces performance.
-        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-
+        //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
+        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .001D;
+        
         // High stress reduces performance.
-        if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
-
+        //if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
+        if (stress >= 80D) tempPerformance -= (stress - 80D) * .04D;
+        
         if (tempPerformance < 0D) tempPerformance = 0D;
 
         setPerformanceFactor(tempPerformance);
