@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 /**
  * This class represents servings of prepared dessert from a kitchen.
@@ -21,7 +21,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(PreparedDessert.class.getName());
+	//private static Logger logger = Logger.getLogger(PreparedDessert.class.getName());
 
 	/** The time (millisols) between when the dessert is made and when it expires. */
 	private static final double SHELF_LIFE = 400D;
