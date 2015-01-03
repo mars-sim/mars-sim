@@ -85,11 +85,11 @@
 	<resource name="Ginger" phase="solid" edible="true"></resource>
 	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
 	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
-	<resource name="Grain Bar" phase="solid" edible="true"></resource>
+	<resource name="Granola Bar" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
 	<resource name="Soy Sauce" phase="liquid" edible="true">Made from fermented soybeans</resource>
 	<resource name="Strawberry" phase="solid" edible="true"></resource>
-	
-	
+	<resource name="Blueberry" phase="solid" edible="true"></resource>
+	<resource name="Cranberry" phase="solid" edible="true"></resource>	
 	
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>
 	<resource name="Potassium" phase="solid">A mineral.</resource>

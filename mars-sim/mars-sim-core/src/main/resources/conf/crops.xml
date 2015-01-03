@@ -16,7 +16,8 @@ http://sourceforge.net/p/mars-sim/code/2842/
  b. Broccoli is 91 percent water by weight. 
  c. Additional healthy hydrating foods include carrots with 87 percent water and 
 	green peas and white potatoes with 79 percent water.
-    	
+ d. water content:
+	http://www2.ca.uky.edu/enri/pubs/enri129.pdf    	
 
 -->
 
@@ -224,7 +225,41 @@ http://sourceforge.net/p/mars-sim/code/2842/
     	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
     	TODO: 
     	 -->      
-    	  
+
+   	<crop name="Blueberry"
+        growing-time="600" 
+    	crop-category="Fruits" 
+    	edible-biomass="14" 
+    	edible-water-content=".87" 
+    	inedible-biomass="5" 
+    	/>		
+    	<!-- http://www.nasa.gov/pdf/190544main_SFN_Appendices.pdf
+    	http://blueberries.ces.ncsu.edu/wp-content/uploads/2012/10/evaluating-the-profitability-of-blueberry-production.pdf
+    	http://homeguides.sfgate.com/long-blueberry-plants-produce-60750.html
+    	A blueberry bush is at least 2 or 3 years old before it is mature and established enough to bear fruit.
+    	6k - 8k per acre or ~10-14k per hectare
+    	The irrigated planting on good blueberry soil reaches a peak
+		production of 8,000 pounds per acre 
+
+    	TODO: multi-year plants
+
+    	 --> 
+    	     	
+   	<crop name="Cranberry"
+        growing-time="300" 
+    	crop-category="Fruits" 
+    	edible-biomass="11" 
+    	edible-water-content=".87" 
+    	inedible-biomass="5" 
+    	/>		
+    	<!-- http://www.umass.edu/cranberry/downloads/Homeowner's%20fact%20sheet%202010.pdf
+    	http://www.ecologynorth.ca/wp-content/uploads/2012/03/Stimulating-Commercial-Berry-Production-FINAL-FEB-2012.pdf
+    	Production from mature plants is about 11 tonnes per hectare.
+    	Well-managed bogs should produce 100 to 200 barrels of cranberries per acre,
+    	
+    	TODO: multi-year plants
+    	-->     	     	
+    	     	  
     	 <!-- Rhizomes vs. roots 
     	 Tumeric
     	 Green Pepper 
