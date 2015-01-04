@@ -546,7 +546,7 @@ implements Serializable {
                 endMission(person.getName() + " unable to enter rover " + getVehicle());
             }
             
-            if (isRoverInAGarage()) {
+            if (!isDone() && isRoverInAGarage()) {
 
                 // Store one EVA suit for person (if possible).
                 if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {

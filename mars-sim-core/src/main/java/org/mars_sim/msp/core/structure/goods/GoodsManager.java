@@ -88,7 +88,6 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 /**
  * A manager for goods values at a settlement.
  */
-// 2014-11-06 Added soybeans and soymilk
 public class GoodsManager
 implements Serializable {
 
@@ -326,8 +325,8 @@ implements Serializable {
             // Add demand for the resource as a cooked meal ingredient.
             demand += getResourceCookedMealIngredientDemand(resource);
             
-            // Add soy milk dessert demand.
-            demand += getDessertDemand(resource);
+            // Add dessert food demand.
+            demand += getResourceDessertDemand(resource);
 
             // Add construction demand.
             demand += getResourceConstructionDemand(resource);
@@ -827,7 +826,7 @@ implements Serializable {
      * @param resource the amount resource.
      * @return demand (kg)
      */
-    private double getDessertDemand(AmountResource resource) {
+    private double getResourceDessertDemand(AmountResource resource) {
         double demand = 0D;
         // 2015-01-03 Added more food dessert item
         String [] dessert = { 	"soymilk",
@@ -842,8 +841,9 @@ implements Serializable {
         boolean hasDessert = false;
         
         for(String n : dessert) {
-        	if (n == dessertName)
+        	if (n.equalsIgnoreCase(dessertName)) {
         		hasDessert = true;
+        	}
         }	
         
         if (hasDessert) {
