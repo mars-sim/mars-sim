@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreparingDessert.java
- * @version 3.07 2014-12-30
+ * @version 3.07 2015-01-03
  * @author Manny Kung				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -58,7 +58,10 @@ implements Serializable {
     // the chef will make up to # of serving of soymilk per person in a settlement
     // It's an arbitrary (decimal) number, preventing the chef from making too many servings of soymilk
     public static final double MAX_NUM_SERVING_PER_PERSON = 1.5;
-
+    
+    //  SERVING_FRACTION also used in GoodsManager
+    public static final double SERVING_FRACTION = 1D / 6D;
+    
     // Data members
     private int cookCapacity;
     private List<PreparedDessert> servingsOfDessertList;
@@ -255,7 +258,8 @@ implements Serializable {
   	    inv.retrieveAmountResource(dessertAR, dessertPerServing);
   	    
   	    if (name.equals("Soymilk")) {
-	  	    // 2014-12-29 Added sugar dependency
+	  	    // 2014-12-29 Added sugar usage when preparing Soymilk
+  	    	// TODO: Is it better to incorporate this into foodProduction.xml ?
 	        String sugar = "Sugar";
 	        double sugarAmount = 0.01;
 	        AmountResource sugarAR = getFreshFoodAR(sugar);
@@ -267,7 +271,7 @@ implements Serializable {
     
     public double getMassPerServing() {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getFoodConsumptionRate() * (1D / 3D);    
+        return config.getFoodConsumptionRate() * SERVING_FRACTION;    
     }
     /**
      * Gets the quality of the best quality fresh Dessert at the facility.
@@ -290,7 +294,7 @@ implements Serializable {
     public void cleanup() {
         workTime = 0D;
     }
-
+    
     /**
      * Adds work to this facility. 
      * The amount of work is dependent upon the person's skill.
@@ -304,40 +308,27 @@ implements Serializable {
 	        int size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
 	        double maxServings = size * MAX_NUM_SERVING_PER_PERSON;
 	
-	        // 2015-01-02 Added random selection of a dessert item 
-	        // 2015-01-02 Added Strawberry, Granola Bar
-	 	    double soymilkAvailable = checkAmountAV("Soymilk");
-	 	    double sugarcaneJuiceAvailable = checkAmountAV("Sugarcane Juice");
-	 	    double strawberryAvailable = checkAmountAV("Strawberry");
-	 	    double granolaBarAvailable = checkAmountAV("Granola Bar");
-	 	   
-	 	    boolean hasSoymilk = false;
-	 	    boolean hasSugarcaneJuice = false;
-	 	    boolean hasStrawberry = false;
-	 	    boolean hasGranolaBar = false;
+	        // 2015-01-03 Added dessert[] 
+	        String [] dessert = { 	"soymilk",
+	        						"Sugarcane Juice",
+	        						"Strawberry",
+	        						"Granola Bar",
+	        						"Blueberry Muffin", 
+	        						"Cranberry Juice"  };
+
+	    	List<String> dessertList = new ArrayList<String>();
+		
+	    	// Put together a list of available dessert 
+	        for(String n : dessert) {
+	        	if (checkAmountAV(n) > getMassPerServing()) {
+	        		dessertList.add(n);
+	        	}
+	        }
 	 	    
 	    	// Existing # of servings of dessert already been made
 	    	double numServings = servingsOfDessertList.size();	
-	    	List<String> dessertList = new ArrayList<String>();
 	    	
-	    	if (soymilkAvailable > getMassPerServing()) {
-	    		hasSoymilk = true;
-	    		dessertList.add("Soymilk");
-	    	}
-	    	if (sugarcaneJuiceAvailable > getMassPerServing()) {
-	    		hasSugarcaneJuice = true;
-	    		dessertList.add("Sugarcane Juice");
-	    	}
-	    	if (strawberryAvailable > getMassPerServing()) {
-	    		hasStrawberry = true;
-	    		dessertList.add("Strawberry");
-	    	}
-	    	if (granolaBarAvailable > getMassPerServing()) {
-	    		hasGranolaBar = true;
-	    		dessertList.add("Granola Bar");
-	    	}
-	    	
-	    	if (  dessertList.size() > 0 
+	    	if ( dessertList.size() > 0 
 	    			&& numServings < maxServings ) {
     	
 				int upperbound = dessertList.size();

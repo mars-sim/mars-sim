@@ -76,14 +76,15 @@
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Package puffed Quinoa, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed Quinoa, honey, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
 			<resource name="Quinoa" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
+			<resource name="Honey" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />
 		</inputs>	
 		<outputs>
-			<resource name="Granola Bar" amount="3" />
+			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
 	</process>
 
@@ -92,14 +93,15 @@
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Package puffed rice, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed rice, honey, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
 			<resource name="Rice" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
+			<resource name="Honey" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />			
 		</inputs>	
 		<outputs>
-			<resource name="Granola Bar" amount="3" />
+			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
 	</process>
 	
@@ -108,14 +110,15 @@
 			work-time="50"
 			process-time="100" 
 			power-required="0.1">
-		<description>Package puffed wheat, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed wheat, honey, nuts and dried fruits into Granola Bar.</description>	
 		<inputs>
 			<resource name="Wheat" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
+			<resource name="Honey" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />		
 		</inputs>	
 		<outputs>
-			<resource name="Granola Bar" amount="3" />
+			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
 	</process>
 	
@@ -411,7 +414,7 @@
 	</process>
 	
 	<process name="Make Veggie Patty from Veg, Tofu and Spice" 
-		tech="2" skill="2" work-time="70" process-time="300" 
+		tech="2" skill="2" work-time="70" process-time="200" 
 			power-required="2.0">	
 		<description>A Veggie patty imitates a burger patty and is made of
 			textured vegetable protein (like soy), legumes (beans), tofu,
@@ -425,7 +428,8 @@
 			<resource name="Sesame" amount=".05" />
 			<resource name="Table Salt" amount=".05" />	
 			<resource name="Soybean" amount="0.5" />
-			<resource name="Soybean Oil" amount="0.1" />		
+			<resource name="Soybean Oil" amount="0.1" />
+			<resource name="Sugar" amount=".05" />		
 		</inputs>
 		<outputs>
 			<resource name="Veggie Patty" amount="3.0" />			
@@ -472,7 +476,7 @@
 			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Wheat Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Yeast" amount="0.01" />			
+			<resource name="Baking Powder" amount="0.02" />			
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
@@ -491,7 +495,7 @@
 			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Rice Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Yeast" amount="0.01" />			
+			<resource name="Baking Powder" amount="0.02" />			
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
@@ -584,8 +588,37 @@
 	</process>
 <!-- http://www.soya.be/nutritional-values-of-soybeans.php -->
 
+	<process name="Make Blueberry Muffin" 
+		tech="2" skill="2" work-time="100" process-time="100" 
+			power-required="1.0">
+		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry and bake in preheated oven at 200 deg C. </description>
+		<inputs>
+			<resource name="Blueberry" amount="0.2" />
+			<resource name="Sugar" amount="0.2" />
+			<resource name="Table Salt" amount="0.1" />			
+			<resource name="Water" amount="2.0" />
+			<resource name="Honey" amount="0.1" />			
+			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Wheat Flour" amount="1.5" />
+		</inputs>
+		<outputs>
+			<resource name="Blueberry Muffin" amount="2.0" />
+		</outputs>
+	</process>
+
+	<process name="Make Cranberry Juice from Cranberry" 
+		tech="1" skill="2" work-time="50" process-time="100" 
+			power-required="1.0">		
+		<description>The juice is obtained by 
+		crushing cranberries in a mill or by hand cranked machine. </description>
+		<inputs>
+			<resource name="Cranberry" amount="2.0" />
+			<resource name="Water" amount="7.0" />		
+			<resource name="Sugar" amount="1" />		
+		</inputs>
+		<outputs>
+			<resource name="Cranberry Juice" amount="10" />			
+		</outputs>
+	</process>
 	
-	
-	<!-- FUTURE: Make Sugarcane juice from Sugarcane-->
-		
 </foodProduction-processes>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2014-12-25
+ * @version 3.07 2015-01-03
  * @author Scott Davis
  * 
  */
@@ -127,7 +127,7 @@ implements Serializable {
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .6D;
     private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
-    private static final double SOYMILK_DESSERT_FACTOR = 1D;
+    private static final double DESSERT_FACTOR = 1D;
 
     // Data members
     private Settlement settlement;
@@ -327,7 +327,7 @@ implements Serializable {
             demand += getResourceCookedMealIngredientDemand(resource);
             
             // Add soy milk dessert demand.
-            demand += getSoymilkDessertDemand(resource);
+            demand += getDessertDemand(resource);
 
             // Add construction demand.
             demand += getResourceConstructionDemand(resource);
@@ -823,21 +823,41 @@ implements Serializable {
     }
     
     /**
-     * Gets the demand for soymilk as a dessert food.
+     * Gets the demand for a food dessert item.
      * @param resource the amount resource.
      * @return demand (kg)
      */
-    private double getSoymilkDessertDemand(AmountResource resource) {
+    private double getDessertDemand(AmountResource resource) {
         double demand = 0D;
+        // 2015-01-03 Added more food dessert item
+        String [] dessert = { 	"soymilk",
+        						"Sugarcane Juice",
+        						"Strawberry",
+        						"Granola Bar",
+        						"Blueberry Muffin", 
+        						"Cranberry Juice"  };
         
-        AmountResource soymilk = AmountResource.findAmountResource("soymilk");
-        if (resource.equals(soymilk)) {
         
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            double amountNeededSol = config.getFoodConsumptionRate();
+        String dessertName = resource.getName();
+        boolean hasDessert = false;
+        
+        for(String n : dessert) {
+        	if (n == dessertName)
+        		hasDessert = true;
+        }	
+        
+        if (hasDessert) {
+        	
+            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();      
+            //  SERVING_FRACTION was used in PreparingDessert.java
+            double SERVING_FRACTION = 1D / 6D;
+            // see PrepareDessert.java for the number of dessert served per sol
+            double NUM_DESSERT_PER_SOL = 3D;
+            // Note: getFoodConsumptionRate has already been used by meal
+            double amountNeededSol = config.getFoodConsumptionRate() * SERVING_FRACTION * NUM_DESSERT_PER_SOL / dessert.length;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
-            return numPeople * amountNeededOrbit * SOYMILK_DESSERT_FACTOR;
+            return numPeople * amountNeededOrbit * DESSERT_FACTOR;
         }
         
         return demand;
