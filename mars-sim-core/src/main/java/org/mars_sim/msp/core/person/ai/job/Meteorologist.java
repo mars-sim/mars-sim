@@ -21,9 +21,11 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
@@ -49,6 +51,10 @@ implements Serializable {
 	public Meteorologist() {
 		// Use Job constructor
 		super(Meteorologist.class);
+
+		// 2015-01-03 Added CookMeal and PrepareDessert
+		jobTasks.add(CookMeal.class);
+		jobTasks.add(PrepareDessert.class);
 
 		// Add meteorologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);

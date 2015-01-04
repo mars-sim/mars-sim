@@ -18,7 +18,9 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -40,6 +42,9 @@ implements Serializable {
 		// Use Job constructor.
 		super(Architect.class);
 
+		// 2015-01-03 Added PrepareDessert
+		jobTasks.add(PrepareDessert.class);
+	
 		// Add architect-related tasks.
 		jobTasks.add(ManufactureConstructionMaterials.class);
 		jobTasks.add(ConstructBuilding.class);

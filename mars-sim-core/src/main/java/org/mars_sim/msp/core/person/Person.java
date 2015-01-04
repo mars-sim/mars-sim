@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2014-11-13
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 
@@ -436,7 +436,7 @@ implements VehicleOperator, Serializable {
      * Person consumes given amount of food.
      * @param amount the amount of food to consume (in kg)
      * @param takeFromInv is food taken from local inventory?
-     */
+     
     public void consumeFood(double amount, boolean takeFromInv) {
         if (takeFromInv) {
             health.consumeFood(amount, getContainerUnit());
@@ -446,18 +446,19 @@ implements VehicleOperator, Serializable {
             health.consumeFood(amount);
         }
     }
-
+*/
     /**
      * Person consumes given amount of food.
      * @param amount the amount of food to consume (in kg)
      * @param takeFromInv is food taken from local inventory?
-     */
+     
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, boolean takeFromInv) {
         if (takeFromInv) {
             health.consumeDessert(amount, getContainerUnit());
         }
     }
+    */
     /**
      * Person consumes given amount of water.
      * @param amount the amount of water to consume (in kg)

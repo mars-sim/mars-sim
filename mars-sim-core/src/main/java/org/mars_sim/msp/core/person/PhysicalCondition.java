@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2015-01-04
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -405,7 +405,7 @@ implements Serializable {
 
     }
 */
-    
+   /* 
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
@@ -427,20 +427,21 @@ implements Serializable {
 		// subtract food from container
 		container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);
     }
+    */
     
     /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.
-     */
+     
 	// 2014-11-06 Toss a dice to decide what food category to eat
 	// Spice Group is excluded from the selection
     // 2014-11-28 Temporarily disable selection of other fresh food
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container, LifeSupport.FOOD);
-        /*
+       
     	int choice = RandomUtil.getRandomInt(9);
 
         switch (choice) {
@@ -472,15 +473,15 @@ implements Serializable {
        		consumePackedFood(amount, container, LifeSupport.FOOD);
        		break;
     	}
-    	*/
-    }
     	
+    }
+    */
     /**
      * Person consumes given amount of packed food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.  
-     */
+     
 	// 2014-11-07 Added consumePackedFood()
     //
     	public void consumePackedFood(double amount, Unit container, String foodType) {
@@ -508,18 +509,18 @@ implements Serializable {
             container.getInventory().retrieveAmountResource(food, foodEaten);
             //logger.info("consumePackedFood() : food Eaten : "
             //	+ foodEaten +  ", food remaining : " + (foodAvailable-foodEaten));
-    }
+    }*/
 
     /**
      * Person consumes a given amount of food not taken from local container.
      * @param amount the amount of food to consume (in kg).
-     */
+     
     public void consumeFood(double amount) {
         //System.out.println("PhysicalCondition.java : just called consumeFood(double amount) : food NOT taken from local container. amount is " + amount);
         // if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation()))
         // 	recalculate();
     }
-
+*/
     /**
      * Person consumes given amount of oxygen
      * @param support Life support system providing oxygen.

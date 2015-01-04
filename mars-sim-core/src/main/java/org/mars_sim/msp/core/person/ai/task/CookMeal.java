@@ -64,7 +64,7 @@ implements Serializable {
 	private static final double MIDNIGHT_SHIFT_MEAL_START = 050D; // at 1:15 am avoid conflict with TabPanelCooking when at 0D all yesterday's cookedMeals are removed
 
 	// Time (millisols) duration of meals.
-	private static final double MEALTIME_DURATION = 50D;
+	private static final double MEALTIME_DURATION = 150D;
 
 	// Data members
 	/** The kitchen the person is cooking at. */
@@ -88,34 +88,34 @@ implements Serializable {
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
 
-	        if (kitchenBuilding != null) {
-	            kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
-	
-	            // Walk to kitchen building.
-	            walkToActivitySpotInBuilding(kitchenBuilding);
-	            
-	            //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-	            //double freshFoodAvailable = kitchen.getTotalFreshFood();
-	            
-	            //if (freshFoodAvailable < 0.5) {
-	            //    logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
-	                
-	             //   endTask();
-      
-	           // } else {
-	            	 // Add task phase
-	            	 addPhase(COOKING);
-		    	     setPhase(COOKING);
+	    if (kitchenBuilding != null) {
+	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	        // Walk to kitchen building.
+	    	walkToActivitySpotInBuilding(kitchenBuilding);
+	         
+	    //}
+	    //else endTask();
+
+        //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
+        //double freshFoodAvailable = kitchen.getTotalFreshFood();
+        
+        //if (freshFoodAvailable < 0.5) {
+        //    logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
+
+	    //endTask();
+	        	
+	    //} else {
+
+	      // Add task phase
+	      addPhase(COOKING);
+		  setPhase(COOKING);
 		    	
-		    	     String jobName = person.getMind().getJob().getName(person.getGender());
-		    	     logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
+		  String jobName = person.getMind().getJob().getName(person.getGender());
+		  logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
 		    	                " in " + person.getSettlement());
-		            
-	            	
-	            //}
 	            
-	        }
-	        else endTask();
+	    }
+	    else endTask();
     }
     
     @Override

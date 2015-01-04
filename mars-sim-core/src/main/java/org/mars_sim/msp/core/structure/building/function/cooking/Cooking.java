@@ -53,15 +53,16 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
-    /** The base amount of work time (cooking skill 0) to produce a cooked meal. */
-    public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
+    /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
+    public static final double COOKED_MEAL_WORK_REQUIRED = 5D; // 5 is 8 mins
 
     // Data members
     private int cookCapacity;
     private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
     private double cookingWorkTime;
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
-	private int mealCounterPerSol = 0;
+	@SuppressWarnings("unused")
+	private int mealCounterPerSol = 0; // used in cookAHotMeal()
 	private int dayCache = 1;
 	
 	// 2014-12-08 Added multimaps
@@ -69,11 +70,12 @@ implements Serializable {
 	private Multimap<String, MarsClock> timeMap;
 	//private Multiset<String> servingsSet;
 
-    private int numOfCookedMealCache; // still in use in timePassing()
+    @SuppressWarnings("unused")
+	private int numOfCookedMealCache; // still in use in timePassing()
     private Inventory inv ;
     
     private HotMeal aMeal;
-    private int availableNumOfMeals;
+    //private int availableNumOfMeals;
 
 	// 2014-12-12 Added the followings:
     private double dryWeightPerMeal;
@@ -340,6 +342,7 @@ implements Serializable {
      * Gets a cooked meal from this facility.
      * @return the meal
      */
+    // Called by EatMeal.java's constructor
     public CookedMeal getCookedMeal() {
         CookedMeal bestMeal = null;
         int bestQuality = -1;
@@ -604,13 +607,14 @@ implements Serializable {
 	        //if (cookedMeals == null) 
 	        //	id = 0;
 	        //else id = cookedMeals.size();
-	        //int size = cookedMeals.size();
+	        
 	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration);
-	        //System.out.println("cooking.java : A new cookedMeal added : " + meal.getName());    
+	        logger.info("a new cookedMeal just added : " + meal.getName());    
 	    	cookedMeals.add(meal);
+	    	int size = cookedMeals.size();
 	    	mealCounterPerSol++;
-
-	        //System.out.println("cooking.java : cookedMeal's size is " + meal.getName());    
+	    	logger.info("# of available meals : " + size);    
+	    	logger.info("meals maded today : " + mealCounterPerSol);    
 
 	    	// 2014-12-08 Added to Multimaps
 	    	qualityMap.put(nameOfMeal, mealQuality);
@@ -710,14 +714,16 @@ implements Serializable {
 	            // Move expired meals back to food again (refrigerate leftovers).
 	             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 	                try {
+	                	
 	      	            double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
 	                    if (dryWeightPerMeal > foodCapacity) 
 	                    	dryWeightPerMeal = foodCapacity;
 	                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
 	                			// Turned 1 cooked meal unit into 1 food unit
 	                    dryWeightPerMeal = Math.round( dryWeightPerMeal * 1000000.0) / 1000000.0;
-	                    inv.storeAmountResource(dryFoodAR, dryWeightPerMeal , false);
 	                    // remove the cookedMeal and store it
+	                    inv.storeAmountResource(dryFoodAR, dryWeightPerMeal , false);
+	                    //logger.info("TimePassing() : Refrigerate " + dryWeightPerMeal + " kg " + dryFoodAR.getName());
 	                    i.remove();
 	 
 	                    if(logger.isLoggable(Level.FINEST)) {

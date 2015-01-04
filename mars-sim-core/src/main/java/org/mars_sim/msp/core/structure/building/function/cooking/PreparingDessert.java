@@ -55,19 +55,22 @@ implements Serializable {
     // The number of sols the dessert can be preserved
     //public static final double SHELF_LIFE = .4D;
        
-    // the chef will make up to # of serving of soymilk per person in a settlement
-    // It's an arbitrary (decimal) number, preventing the chef from making too many servings of soymilk
+    // the chef will make up to # of serving of dessert per person in a settlement
+    // It's an arbitrary (decimal) number, preventing the chef from making too many servings of dessert
     public static final double MAX_NUM_SERVING_PER_PERSON = 1.5;
     
     //  SERVING_FRACTION also used in GoodsManager
     public static final double SERVING_FRACTION = 1D / 6D;
+    public static final double NUM_OF_DESSERT_PER_SOL = 3D;
     
     // Data members
     private int cookCapacity;
     private List<PreparedDessert> servingsOfDessertList;
-    private double workTime; // used in numerous places
+    @SuppressWarnings("unused")
+	private double workTime; // used in numerous places
 
-    private int NumOfServingsCache; // used in timePassing
+    @SuppressWarnings("unused")
+	private int NumOfServingsCache; // used in timePassing
     private Building building;
     
     private Inventory inv ;
@@ -257,9 +260,9 @@ implements Serializable {
         // 2014-11-29 TODO: need to prevent IllegalStateException
   	    inv.retrieveAmountResource(dessertAR, dessertPerServing);
   	    
+  	    /* // sugar is added to Soymilk production in foodProduction.xml 
   	    if (name.equals("Soymilk")) {
 	  	    // 2014-12-29 Added sugar usage when preparing Soymilk
-  	    	// TODO: Is it better to incorporate this into foodProduction.xml ?
 	        String sugar = "Sugar";
 	        double sugarAmount = 0.01;
 	        AmountResource sugarAR = getFreshFoodAR(sugar);
@@ -267,11 +270,12 @@ implements Serializable {
 	        if (sugarAvailable > 0.01) 
 	        	inv.retrieveAmountResource(sugarAR, sugarAmount);
   	    }
+  	    */
     }
     
     public double getMassPerServing() {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getFoodConsumptionRate() * SERVING_FRACTION;    
+        return config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
     }
     /**
      * Gets the quality of the best quality fresh Dessert at the facility.
@@ -326,7 +330,8 @@ implements Serializable {
 	        }
 	 	    
 	    	// Existing # of servings of dessert already been made
-	    	double numServings = servingsOfDessertList.size();	
+	    	int numServings = servingsOfDessertList.size();	
+	    	//logger.info("addWork() : available # of dessert servings : "+ numServings);
 	    	
 	    	if ( dessertList.size() > 0 
 	    			&& numServings < maxServings ) {
@@ -357,7 +362,9 @@ implements Serializable {
 		        
 		        // Create a serving of dessert and add it into the list
 			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
+		    	//logger.info("addWork() : a new dessert just added : " + selectedDessert);
 
+			    
 		        // Reset workTime to zero for making the next serving      	
 	            workTime = 0; 
 	            
@@ -387,8 +394,21 @@ implements Serializable {
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
             	
+            	String dessert = aServingOfDessert.getName();
+            	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
+            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
+                double weightPerServing = getMassPerServing()  ;
+            	
+            	if (weightPerServing > capacity) 
+            		weightPerServing = capacity;
+            	
+            	weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
+            	// 2015-01-03 Put back to storage or freezer if not eaten
+                inv.storeAmountResource(dessertAR, weightPerServing , false);
+                //logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " + dessertAR.getName());
+
             	i.remove();
-               	
+  	
                 if(logger.isLoggable(Level.FINEST)) {
                      logger.finest("The dessert has lost its freshness at " + 
                      getBuilding().getBuildingManager().getSettlement().getName());

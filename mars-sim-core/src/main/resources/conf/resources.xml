@@ -49,6 +49,7 @@
 	<resource name="Brown Rice" phase="solid" edible="true"></resource>
 	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
 	<resource name="Cranberry Juice" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
+	<resource name="Cranberry Sauce" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>	
 	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
 	<resource name="French Fries" phase="solid" edible="true">French fries made from potatoes.</resource>
 	<resource name="Garlic Oil" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
@@ -131,19 +132,24 @@
 	<resource name="sylvite" phase="solid" />
 
 	<!-- Mineral Elements -->
-	<resource name="nickel" phase="solid" />
-	<resource name="sulfur" phase="solid" />
-	<resource name="magnesium" phase="solid" />
-	<resource name="silicon" phase="solid" />
-	<resource name="copper" phase="solid" />
+	<resource name="Nickel" phase="solid" />
+	<resource name="Zinc" phase="solid" />
+	<resource name="Sulfur" phase="solid" />
+	<resource name="Magnesium" phase="solid" />
+	<resource name="Silicon" phase="solid" />
+	<resource name="Copper" phase="solid" />
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>
 	<resource name="Potassium" phase="solid">A mineral.</resource>
 	<resource name="Calcium" phase="solid">A mineral.</resource>
-	<resource name="carbon" phase="solid">Carbon powder</resource>
+	<resource name="Carbon" phase="solid">Carbon powder</resource>
 	
 	<!-- Building Material -->
 	<resource name="cement" phase="solid" />
 	<resource name="concrete" phase="solid" />
 	<resource name="mortar" phase="solid" />
+	
+	<!-- Drugs and Supplements -->	
+	<resource name="Immunue Booster" phase="solid" />
+
 
 </resource-list>

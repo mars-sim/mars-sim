@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
+
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
@@ -49,6 +51,9 @@ implements Serializable {
 	public Driver() {
 		// Use Job constructor
 		super(Driver.class);
+
+		// 2015-01-03 Added PrepareDessert
+		jobTasks.add(PrepareDessert.class);
 
 		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);

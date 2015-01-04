@@ -147,7 +147,7 @@ implements Serializable {
 
         PhysicalCondition condition = person.getPhysicalCondition();
 
-        // If person has a cooked meal, additional stress is reduced.
+        // If person consumes a cooked meal, stress is reduced.
         if (meal != null) {
             double stress = condition.getStress();
             condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
@@ -156,7 +156,12 @@ implements Serializable {
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             try {
-                person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
+            	
+            	String nameMeal = meal.getName();
+            	String namePerson = person.getName();
+            	System.out.println( namePerson + " has just eaten " + nameMeal);
+                //person.consumeFood(config.getFoodConsumptionRate() * (1D / 4D), (meal == null));
+                
                 condition.setHunger(0D);
             }
             catch (Exception e) {

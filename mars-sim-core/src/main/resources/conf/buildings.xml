@@ -225,6 +225,10 @@
 				<resource-storage resource="Sugarcane" capacity="100.0" />
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
+				<resource-storage resource="Cranberry" capacity="100.0" />
+				<resource-storage resource="Blueberry" capacity="100.0" />
+				
+				
 															
 															
 																			
@@ -272,7 +276,9 @@
 				<resource-initial resource="Sugarcane" amount="50.0" />	
 				<resource-initial resource="Strawberry" amount="50.0" />	
 				<resource-initial resource="Quinoa" amount="50.0" />													
-														
+				<resource-initial resource="Cranberry" amount="50.0" />	
+				<resource-initial resource="Blueberry" amount="50.0" />	
+																						
 			</storage>
 			
 			<!-- The building is capable of producing heat. -->
