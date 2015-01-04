@@ -382,6 +382,7 @@ implements Serializable {
                     Airlock airlock = step.airlock;
                     if (!ExitAirlock.canExitAirlock(person, airlock)) {
                         result = false;
+                        logger.severe(person + " cannot exit airlock at " + airlock.getEntityName());
                     }
                 }
             }

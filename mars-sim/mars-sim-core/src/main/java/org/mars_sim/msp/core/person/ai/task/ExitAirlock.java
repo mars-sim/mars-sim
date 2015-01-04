@@ -442,21 +442,21 @@ implements Serializable {
         // Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
-            logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to already being outside.");
         }
 
         // Check if EVA suit is available.
         if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
             result = false;
-            logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to not able to find good EVA suit.");
         }
 
         // Check if person is incapacitated.
         if (person.getPerformanceRating() == 0D) {
             result = false;
-            logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to performance rating is 0.");
         }
 
