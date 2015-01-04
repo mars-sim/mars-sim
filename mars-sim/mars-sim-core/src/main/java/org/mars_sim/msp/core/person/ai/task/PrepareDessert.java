@@ -59,15 +59,17 @@ implements Serializable {
 	// Starting time (millisol) for making soy product in 0 degrees longitude.
 
 	// 2015-01-03 Added EVENING_START
-	private static final double EVENING_START = 900D;
+	private static final double EVENING_START = 850D;
 
-	private static final double AFTERNOON_START = 650D;
+	private static final double AFTERNOON_START = 600D;
 
-    private static final double MORNING_START = 400D;
+    private static final double MORNING_START = 350D;
     
- 
+    private static final double NIGHT_START = 150D;
+
+    
 	// Time (millisols) duration.
-	private static final double DURATION = 80D;
+	private static final double DURATION = 200D;
 
 	// Data members
 	/** The kitchen the person is making soymmlk. */
@@ -96,7 +98,6 @@ implements Serializable {
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding);
         }
-        
         else endTask();
         
         // 2015-01-03 Added dessert[] 
@@ -107,16 +108,16 @@ implements Serializable {
         						"Blueberry Muffin", 
         						"Cranberry Juice"  };
     	
-        boolean remainingDessert = false; 	
+        boolean hasDessert = false; 	
     	// Put together a list of available dessert 
         for(String n : dessert) {
-        	if (kitchen.checkAmountAV(n) < kitchen.getMassPerServing()) {
-        		remainingDessert = remainingDessert && true;
+        	if (kitchen.checkAmountAV(n) > kitchen.getMassPerServing()) {
+        		hasDessert = hasDessert || true;
         	}
         }
  
-        if (remainingDessert) {
-        	logger.severe("all dessert items have less than 0.5 kg remaining!");
+        if (!hasDessert) {
+        	logger.severe("The food desserts are running out!");
         	endTask();
         	
         } else  {
@@ -254,6 +255,9 @@ implements Serializable {
             modifiedTime -= 1000D;
         }
 
+        if ((modifiedTime >= NIGHT_START) && (modifiedTime <= (NIGHT_START + DURATION))) {
+        	result = true;
+        }
         if ((modifiedTime >= MORNING_START) && (modifiedTime <= (MORNING_START + DURATION))) {
             result = true;
         }        
@@ -263,6 +267,7 @@ implements Serializable {
         if ((modifiedTime >= EVENING_START) && (modifiedTime <= (EVENING_START + DURATION))) {
         	result = true;
         }
+        
         
         
         return result;

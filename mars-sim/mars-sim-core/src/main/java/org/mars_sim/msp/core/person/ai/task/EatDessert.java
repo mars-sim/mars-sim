@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
+
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -64,7 +65,7 @@ implements Serializable {
     private PreparedDessert aServingOfDessert;
 
     // 2014-11-28 Added HUNGER_REDUCTION_PERCENT
-    private static final double HUNGER_REDUCTION_PERCENT = 20D;
+    private static final double HUNGER_REDUCTION_PERCENT = 50D;
     
     /** 
      * Constructs a EatMeal object, hence a constructor.
@@ -161,8 +162,18 @@ implements Serializable {
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             try {
+            	
+              	String nameDessert = aServingOfDessert.getName();
+            	String namePerson = person.getName();
+            	System.out.println( namePerson + " has just eaten " + nameDessert);
+            	
+                //  SERVING_FRACTION was used in PreparingDessert.java
+                final double SERVING_FRACTION = 1D / 6D;
+                // see PrepareDessert.java for the number of dessert served per sol
+                final double NUM_OF_DESSERT_PER_SOL = 3D;
+            	
             	//logger.info("eatingPhase() : (aServingOfDessert == null) is " + (aServingOfDessert == null));
-                person.consumeDessert(config.getFoodConsumptionRate() * (1D / 3D), (aServingOfDessert == null));
+                //person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
                 // 2014-11-28 Computed new hunger level
                 double hunger = condition.getHunger();
                 hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);

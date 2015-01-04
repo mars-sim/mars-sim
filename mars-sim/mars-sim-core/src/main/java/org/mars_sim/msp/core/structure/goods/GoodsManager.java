@@ -850,11 +850,12 @@ implements Serializable {
         	
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();      
             //  SERVING_FRACTION was used in PreparingDessert.java
-            double SERVING_FRACTION = 1D / 6D;
+            final double SERVING_FRACTION = 1D / 6D;
             // see PrepareDessert.java for the number of dessert served per sol
-            double NUM_DESSERT_PER_SOL = 3D;
+            //final double NUM_OF_DESSERT_PER_SOL = 3D;
+            
             // Note: getFoodConsumptionRate has already been used by meal
-            double amountNeededSol = config.getFoodConsumptionRate() * SERVING_FRACTION * NUM_DESSERT_PER_SOL / dessert.length;
+            double amountNeededSol = config.getFoodConsumptionRate() * SERVING_FRACTION / dessert.length;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * DESSERT_FACTOR;
