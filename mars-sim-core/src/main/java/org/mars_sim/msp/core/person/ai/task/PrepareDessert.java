@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessert.java
- * @version 3.07 2015-01-02
+ * @version 3.07 2015-01-03
  * @author Manny Kung
  * 
  *   
@@ -57,6 +57,10 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = -.1D;
 
 	// Starting time (millisol) for making soy product in 0 degrees longitude.
+
+	// 2015-01-03 Added EVENING_START
+	private static final double EVENING_START = 900D;
+
 	private static final double AFTERNOON_START = 650D;
 
     private static final double MORNING_START = 400D;
@@ -94,19 +98,25 @@ implements Serializable {
         }
         
         else endTask();
-
-        // 2014-12-30 Added sugarcaneJuiceAvailable 
-        // 2015-01-02 Added Strawberry, Granola Bar
-        double soymilkAvailable = kitchen.checkAmountAV("Soymilk");
-        double sugarcaneJuiceAvailable = kitchen.checkAmountAV("Sugarcane Juice");
- 	    double strawberryAvailable = kitchen.checkAmountAV("Strawberry");
- 	    double granolaBarAvailable = kitchen.checkAmountAV("Granola Bar");
- 	    
         
-        if (soymilkAvailable < 0.5 && sugarcaneJuiceAvailable < 0.5 
-        		&& strawberryAvailable < 0.5 && granolaBarAvailable < 0.5) {
-            
-        	logger.severe("less than 0.5 kg remaining dessert and snacks !");
+        // 2015-01-03 Added dessert[] 
+        String [] dessert = { 	"soymilk",
+        						"Sugarcane Juice",
+        						"Strawberry",
+        						"Granola Bar",
+        						"Blueberry Muffin", 
+        						"Cranberry Juice"  };
+    	
+        boolean remainingDessert = false; 	
+    	// Put together a list of available dessert 
+        for(String n : dessert) {
+        	if (kitchen.checkAmountAV(n) < kitchen.getMassPerServing()) {
+        		remainingDessert = remainingDessert && true;
+        	}
+        }
+ 
+        if (remainingDessert) {
+        	logger.severe("all dessert items have less than 0.5 kg remaining!");
         	endTask();
         	
         } else  {
@@ -224,7 +234,7 @@ implements Serializable {
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident while making soy products.");
+            // logger.info(person.getName() + " has accident while making dessert");
             kitchen.getBuilding().getMalfunctionManager().accident();
         }
     }	
@@ -232,7 +242,7 @@ implements Serializable {
     /**
      * Checks if it is currently the time at the chef's location.
      * @param person the person to check for.
-     * @return true if it is soy product making time
+     * @return true if it is time
      */
     public static boolean isDessertTime(Person person) {
         boolean result = false;
@@ -248,21 +258,23 @@ implements Serializable {
             result = true;
         }        
         if ((modifiedTime >= AFTERNOON_START) && (modifiedTime <= (AFTERNOON_START + DURATION))) {
-        	//logger.info("isSoyTime() : Yes it's time for making soy products!");
         	result = true;
         }
-
+        if ((modifiedTime >= EVENING_START) && (modifiedTime <= (EVENING_START + DURATION))) {
+        	result = true;
+        }
+        
         
         return result;
     }
 
     /**
-     * Gets the name of soy product the chef is making based on the time.
-     * @return "Soymilk"
+     * Gets the name of dessert the chef is making based on the time.
+     * @return result
      */
     //TODO: May change to specific products such as Soymilk, Soybean oil and Tofu in near future
     private String getSoyProductName() {        
-    	String result = "Soymilk";
+    	String result = "Dessert";
         return result;
     }
 
