@@ -65,16 +65,25 @@ public class PrepareDessertMeta implements MetaTask {
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-
-                    // Check if there is enough food available to cook.
-                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    double amountRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    // 2014-12-30 Added sugarcaneJuiceAvailable
-                    double soymilkAvailable = kitchen.checkAmountAV("Soymilk");
-                    double sugarcaneJuiceAvailable = kitchen.checkAmountAV("Sugarcane Juice");
-                    if (soymilkAvailable < amountRequired
-                    		&& sugarcaneJuiceAvailable < amountRequired) 
-                    	result = 0D;
+                    
+                    String [] dessert = {   "soymilk",
+                            "Sugarcane Juice",
+                            "Strawberry",
+                            "Granola Bar",
+                            "Blueberry Muffin", 
+                            "Cranberry Juice"  };
+                    
+                    boolean hasDessert = false;     
+                    // Put together a list of available dessert 
+                    for(String n : dessert) {
+                        if (kitchen.checkAmountAV(n) > kitchen.getMassPerServing()) {
+                            hasDessert = hasDessert || true;
+                        }
+                    }
+                    
+                    if (!hasDessert) {
+                        result = 0D;
+                    }
                 }
             }
             catch (Exception e) {
