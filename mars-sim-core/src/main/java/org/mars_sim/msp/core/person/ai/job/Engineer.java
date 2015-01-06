@@ -50,7 +50,7 @@ implements Serializable {
 		super(Engineer.class);
 
 		// 2015-01-03 Added PrepareDessert
-		jobTasks.add(PrepareDessert.class);
+		//jobTasks.add(PrepareDessert.class);
 
 		// Add engineer-related tasks.
 		jobTasks.add(UnloadVehicleEVA.class);

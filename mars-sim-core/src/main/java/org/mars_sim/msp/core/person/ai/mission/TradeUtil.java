@@ -732,6 +732,13 @@ public final class TradeUtil {
 		Good foodGood = GoodsUtil.getResourceGood(food);
 		neededResources.put(foodGood, (int) foodAmount);
 
+		// Get dessert amount.
+		double dessertAmount = PhysicalCondition.getFoodConsumptionRate() /6D * tripTimeSols * Trade.MAX_MEMBERS * 
+				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+		Good dessertGood = GoodsUtil.getResourceGood(dessert);
+		neededResources.put(dessertGood, (int) dessertAmount);
+		
 		// Get cost of resources.
 		return determineLoadValue(neededResources, startingSettlement, false);
 	}

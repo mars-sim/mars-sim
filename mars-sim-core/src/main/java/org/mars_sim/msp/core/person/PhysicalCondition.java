@@ -78,15 +78,6 @@ implements Serializable {
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
 
-    /*
-    //2014-11-16 Added boolean values
-    private boolean noMoreFruits;
-    private boolean noMoreVeggies;
-    private boolean noMoreLegumes;
-    private boolean noMoreSpices;
-    private boolean noMoreGrains;
-	private boolean noMorePackedFood;
-    */
     /**
      * Constructor.
      * @param newPerson The person requiring a physical presence.
@@ -262,265 +253,89 @@ implements Serializable {
             recalculate();
         }
     }
-
-    /**
-	* Person consumes given amount of Legumes
-	* @param amount amount of Legumes to consume (in kg).
-	* @param container unit to get Legumes from
-	* @throws Exception if error consuming Legumes.
-	
-    // 2014-11-06 Added consumeLegumes() 
-	// TODO: find a way to elegantly handle more one legume food in future
-	public void consumeLegumes(double amount, Unit container, String foodType) {
-
-		AmountResource foodAR = AmountResource.findAmountResource(foodType);
-		AmountResource soybeansAR = AmountResource.findAmountResource("soybeans");
-		
-		double foodEaten = amount;
-		double foodAvailable = container.getInventory().getAmountResourceStored(foodAR, false);
-		double soybeansAvailable = container.getInventory().getAmountResourceStored(soybeansAR, false);
-
-		// NOTE: foodAvailable can be reported as ZERO if a person is in a vehicle outside
-		// and only food is available (not legumes)
-		//logger.info("consumeLegumes() : Legumes available : " + foodAvailable);
-		//logger.info("consumeLegumes() : Soybean available : " + soybeansAvailable);
-		
-		if (foodAvailable < 0.5D) {
-			noMoreLegumes = true;
-			consumePackedFood(amount, container, LifeSupport.FOOD);
-			//throw new IllegalStateException("No more " + foodType + " available.");
-		}
-
-		// if container has less than enough food, finish up all food in the container
-		if (foodEaten > foodAvailable)
-			foodEaten = foodAvailable;
-		
-        //2014-11-19 Truncated foodEaten to 4 decimal places
-        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-			// subtract food from container
-		container.getInventory().retrieveAmountResource(foodAR, foodEaten);
-		container.getInventory().retrieveAmountResource(soybeansAR, foodEaten);
-		//logger.info("consumeLegumes() : Just consumed " + foodEaten + " kg of soybeans");
-	}
-	*/
-		/**
-     * Person consumes given amount of Grains
-     * @param amount amount of Grains to consume (in kg).
-     * @param container unit to get Grains from
-     * @throws Exception if error consuming Grains.
-     * 	2014-10-08 mkung : the person decides to eat grains 
-     *  TODO: consolidate all four similar methods into one
-     
-    public void consumeGrains(double amount, Unit container, String foodType) {
-
-        AmountResource food = AmountResource.findAmountResource(foodType);
-        double foodEaten = amount;
-        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
-			if (foodAvailable < 0.5D) {
-				noMoreGrains = true;
-				//consumeLegumes(amount, container, "Legume Group");
-				consumePackedFood(amount, container, LifeSupport.FOOD);
-				//throw new IllegalStateException("No more " + foodType + " available.");
-			}
-        // if container has less than enough food, finish up all food in the container
-        if (foodEaten > foodAvailable)
-            foodEaten = foodAvailable;
-
-        //2014-11-19 Truncated foodEaten to 4 decimal places
-        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-        // subtract food from container
-        container.getInventory().retrieveAmountResource(food, foodEaten);
-        //System.out.println("PhysicalCondition.java : consumeGrains() : Grains Eaten is " 
-        //	+ foodEaten +  ", Grains remaining is " + (foodAvailable-foodEaten));
-    }
-*/
-    /**
-     * Person consumes given amount of Vegetables
-     * @param amount amount of Vegetables to consume (in kg).
-     * @param container unit to get Vegetables from
-     * @param type of food
-     * @throws Exception if error consuming Vegetables.
-     * 2014-10-08 mkung : the person decides to eat vegetables 
-     *  TODO: consolidate all four similar methods into one
-     
-    public void consumeVegetables(double amount, Unit container, String foodType) {
-
-        AmountResource food = AmountResource.findAmountResource(foodType);
-        double foodEaten = amount;
-        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
-
-        if (foodAvailable < .5D) {
-			noMoreVeggies= true;
-				//consumeGrains(amount, container, "Grain Group");
-				consumePackedFood(amount, container, LifeSupport.FOOD);
-				//throw new IllegalStateException("No more " + foodType + " available.");
-        }
-
-        // if container has less than enough food, finish up all food in the container
-        if (foodEaten > foodAvailable)
-            foodEaten = foodAvailable;
-
-        //2014-11-19 Truncated foodEaten to 4 decimal places
-        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-        // subtract food from container
-        container.getInventory().retrieveAmountResource(food, foodEaten);
-        //System.out.println("PhysicalCondition.java : consumeVegetables() :  Vegetables Eaten is "
-        //	+ foodEaten +  ",  Vegetables remaining is " + (foodAvailable-foodEaten));
-
-    }
-*/
-    /**
-     * Person consumes given amount of fruits
-     * @param amount amount of fruits to consume (in kg).
-     * @param container unit to get fruits from
-     * @param type of food
-     * @throws Exception if error consuming fruits.
-     *  2014-10-08 mkung : the person decides to eat fruits 
-     *  TODO: consolidate all four similar methods into one
-     
-    public void consumeFruits(double amount, Unit container, String foodType) {
-
-        AmountResource food = AmountResource.findAmountResource(foodType);
-        double foodEaten = amount;
-        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
-
-        if (foodAvailable < .5D) {
-			noMoreFruits = true;
-				//consumeVegetables(amount, container, "Vegetable Group");
-				consumePackedFood(amount, container, LifeSupport.FOOD);
-				//throw new IllegalStateException("No more " + foodType + " available.");
-        }
-
-        // if container has less than enough food, finish up all food in the container
-        if (foodEaten > foodAvailable)
-            foodEaten = foodAvailable;
-
-        //2014-11-19 Truncated foodEaten to 4 decimal places
-        foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-        
-        // subtract food from container
-        container.getInventory().retrieveAmountResource(food, foodEaten);
-        //System.out.println("PhysicalCondition.java : consumeFruits() : fruit Eaten is "
-        //	+ foodEaten +  ", fruit remaining is "  + (foodAvailable-foodEaten));
-
-    }
-*/
-   /* 
+    
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 	
 		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
-		
+	
 		double foodEaten = amount;
 		double soymilkAvailable = container.getInventory().getAmountResourceStored(soymilkAR, false);
-	
-		if (soymilkAvailable < 0.5D) {
-			throw new IllegalStateException("No more serving of soymilk available. Each serving is 0.5 kg");
+
+		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
+		
+		if (soymilkAvailable < 0.01D) {
+			throw new IllegalStateException( container.getName() + " has " + " very little soymilk remaining!");
 		}
-
-		// if container has less than enough food, finish up all food in the container
-		if (foodEaten > soymilkAvailable)
-			foodEaten = soymilkAvailable;
-
-		foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-		// subtract food from container
-		container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);
+		else {
+			// if container has less than enough food, finish up all food in the container
+			if (foodEaten > soymilkAvailable)
+				foodEaten = soymilkAvailable;
+	
+			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+			// subtract food from container
+			container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);	
+			//System.out.println("PhysicalCondition : " + foodEaten + " kg of soymilk was just consumed");
+		}
     }
-    */
+   
     
     /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.
-     
+     */
 	// 2014-11-06 Toss a dice to decide what food category to eat
 	// Spice Group is excluded from the selection
     // 2014-11-28 Temporarily disable selection of other fresh food
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container, LifeSupport.FOOD);
-       
-    	int choice = RandomUtil.getRandomInt(9);
-
-        switch (choice) {
-
-    	case 0:    	
-            //System.out.println("PhysicalCondition.java : consumeFood() : case 0"); 
-            consumeFruits(amount, container, "Fruit Group");
-            break;
-
-    	case 1: 	
-            //System.out.println("PhysicalCondition.java : consumeFood() : case 1");
-            consumeVegetables(amount, container, "Vegetable Group");
-            break;
-
-    	case 2:  	
-            //System.out.println("PhysicalCondition.java : consumeFood() : case 2");
-            consumeGrains(amount, container, "Grain Group");	
-            break;
-
-        case 3:
-    		consumeLegumes(amount, container, "Legume Group");	
-    		break;
-        case 4:
-        case 5:
-       	case 6:
-       	case 7:
-    	case 8:
-       	case 9: 	// 2014-11-07 Added consumePackedFood()
-       		consumePackedFood(amount, container, LifeSupport.FOOD);
-       		break;
-    	}
-    	
+ 
     }
-    */
+    
     /**
      * Person consumes given amount of packed food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.  
-     
+     */
 	// 2014-11-07 Added consumePackedFood()
-    //
     	public void consumePackedFood(double amount, Unit container, String foodType) {
 	    	AmountResource food = AmountResource.findAmountResource(foodType);
             double foodEaten = amount;
             double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
 
-            if (foodAvailable < 0.5D) {
-    			//noMorePackedFood = true;
-    		//2014-11-19 Fixed endless loop with the following if-then-else clauses
-    			//if (!noMoreLegumes) consumeLegumes(amount, container, "Legume Group");
-    			//else if (!noMoreFruits) consumeFruits(amount, container, "Fruit Group");
-    			//else if (!noMoreVeggies) consumeVegetables(amount, container, "Vegetable Group");
-       			//else if (!noMoreGrains) consumeGrains(amount, container, "Grain Group");
-       			//else if (!noMoreSpices) consumeSpices(amount, container, "Spice Group");
-                throw new IllegalStateException("Warning: less than 0.5 kg packed food remaining.");   
+            if (foodAvailable < 0.01D) {
+                throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");   
             }
-
             // if container has less than enough food, finish up all food in the container
-            if (foodEaten > foodAvailable)
-                foodEaten = foodAvailable;
-            //2014-11-19 Truncated foodEaten to 4 decimal places
-            foodEaten = Math.round(foodEaten * 10000.0) / 10000.0;
-            // subtract food from container
-            container.getInventory().retrieveAmountResource(food, foodEaten);
-            //logger.info("consumePackedFood() : food Eaten : "
-            //	+ foodEaten +  ", food remaining : " + (foodAvailable-foodEaten));
-    }*/
+            else { 
+            	
+            	if (foodEaten > foodAvailable)
+            		foodEaten = foodAvailable;
+            
+            	foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+            	// subtract food from container
+            	container.getInventory().retrieveAmountResource(food, foodEaten);
+    			//System.out.println("PhysicalCondition : " + foodEaten + " kg of dried food was just consumed");
+            	//logger.info("consumePackedFood() : food Eaten : "
+            	//	+ foodEaten +  ", food remaining : " + (foodAvailable-foodEaten));
+            }
+    }
 
     /**
      * Person consumes a given amount of food not taken from local container.
      * @param amount the amount of food to consume (in kg).
-     
+     */
     public void consumeFood(double amount) {
         //System.out.println("PhysicalCondition.java : just called consumeFood(double amount) : food NOT taken from local container. amount is " + amount);
         // if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation()))
         // 	recalculate();
     }
-*/
+
     /**
      * Person consumes given amount of oxygen
      * @param support Life support system providing oxygen.

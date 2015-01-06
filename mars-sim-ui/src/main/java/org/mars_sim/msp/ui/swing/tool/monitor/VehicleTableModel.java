@@ -75,10 +75,11 @@ extends UnitTableModel {
 	private final static int METHANE = 14;
 	private final static int WATER = 15;
 	private final static int FOOD = 16;
-	private final static int ROCK_SAMPLES = 17;
-	private final static int ICE = 18;
+	private final static int DESSERT = 17;
+	private final static int ROCK_SAMPLES = 18;
+	private final static int ICE = 19;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 19;
+	private final static int COLUMNCOUNT = 20;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Names of Columns. */
@@ -118,6 +119,8 @@ extends UnitTableModel {
 		columnTypes[MISSION] = String.class;
 		columnNames[FOOD] = "Food";
 		columnTypes[FOOD] = Integer.class;
+		columnNames[DESSERT] = "Dessert";
+		columnTypes[DESSERT] = Integer.class;
 		columnNames[OXYGEN] = "Oxygen";
 		columnTypes[OXYGEN] = Integer.class;
 		columnNames[WATER] = "Water";
@@ -196,6 +199,11 @@ extends UnitTableModel {
 					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD));
 				} break;
 
+				case DESSERT : {
+					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
+					result = resourceMap.get(AmountResource.findAmountResource("Soymilk"));
+				} break;
+				
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
 					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN));
@@ -341,6 +349,8 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.FOOD))) 
 					tempColumnNum = FOOD;
+				else if (target.equals(AmountResource.findAmountResource("Soymilk"))) 
+					tempColumnNum = DESSERT;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
@@ -350,7 +360,11 @@ extends UnitTableModel {
 
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
-					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
+					// 2015-01-05 Used Math.ceil to round up the value
+					//double value =  (double) getValueAt(unitIndex, tempColumnNum) ;
+					//value = Math.ceil(value);
+					//int currentValue = (int) value;
+					int currentValue =  (Integer) getValueAt(unitIndex, tempColumnNum) ;
 					int newValue = getResourceStored(unit, (AmountResource) target);
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
@@ -385,9 +399,11 @@ extends UnitTableModel {
 		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
-				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
+				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(7);
 				AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 				resourceMap.put(food, getResourceStored(newUnit, food));
+				AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+				resourceMap.put(dessert, getResourceStored(newUnit, dessert));
 				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
 				AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);

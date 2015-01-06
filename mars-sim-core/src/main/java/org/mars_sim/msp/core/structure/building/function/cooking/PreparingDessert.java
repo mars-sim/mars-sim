@@ -50,24 +50,30 @@ implements Serializable {
 
     /** The base amount of work time in milliSols (for cooking skill 0) 
      * to prepare fresh dessert . */
-    public static final double WORK_REQUIRED = 5D;
-   
+    public static final double PREPARE_DESSERT_WORK_REQUIRED = 5D;
+    
     // The number of sols the dessert can be preserved
     //public static final double SHELF_LIFE = .4D;
        
-    // the chef will make up to # of serving of dessert per person in a settlement
-    // It's an arbitrary (decimal) number, preventing the chef from making too many servings of dessert
-    public static final double MAX_NUM_SERVING_PER_PERSON = 1.5;
+    // the chef will make up to an arbitrary number of serving of dessert per person in a settlement
+    public static final double MAX_NUM_SERVING_PER_PERSON = .9;
     
     //  SERVING_FRACTION also used in GoodsManager
     public static final double SERVING_FRACTION = 1D / 6D;
-    public static final double NUM_OF_DESSERT_PER_SOL = 3D;
+    public static final double NUM_OF_DESSERT_PER_SOL = 4D;
     
+    private boolean makeNoMoreDessert = false;
+    
+	@SuppressWarnings("unused")
+	private int dessertCounterPerSol = 0;
+	private int dayCache = 1;
+	private int maxServingsCache = 0;
+	
     // Data members
     private int cookCapacity;
     private List<PreparedDessert> servingsOfDessertList;
     @SuppressWarnings("unused")
-	private double workTime; // used in numerous places
+	private double preparingWorkTime; // used in numerous places
 
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
@@ -85,7 +91,7 @@ implements Serializable {
         super(FUNCTION, building);
         this.building = building; 
         
-        workTime = 0D;
+        preparingWorkTime = 0D;
         servingsOfDessertList = new ArrayList<PreparedDessert>();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -296,8 +302,16 @@ implements Serializable {
      * Cleanup kitchen after eating.
      */
     public void cleanup() {
-        workTime = 0D;
+    	preparingWorkTime = 0D;
+        makeNoMoreDessert = false;
     }
+    
+ 	
+    // 2015-01-04a Added getCookNoMore()
+ 	public boolean getCookNoMore() {
+ 		return makeNoMoreDessert;
+ 	}
+ 	
     
     /**
      * Adds work to this facility. 
@@ -305,71 +319,85 @@ implements Serializable {
      * @param workTime work time (millisols)
       */
     public void addWork(double workTime) {
-    	workTime += workTime; 
-
-    	if (workTime >= WORK_REQUIRED) {
-	    	// TODO: check if this is proportional to the population
-	        int size = building.getBuildingManager().getSettlement().getAllAssociatedPeople().size();
-	        double maxServings = size * MAX_NUM_SERVING_PER_PERSON;
-	
-	        // 2015-01-03 Added dessert[] 
-	        String [] dessert = { 	"soymilk",
-	        						"Sugarcane Juice",
-	        						"Strawberry",
-	        						"Granola Bar",
-	        						"Blueberry Muffin", 
-	        						"Cranberry Juice"  };
-
-	    	List<String> dessertList = new ArrayList<String>();
-		
-	    	// Put together a list of available dessert 
-	        for(String n : dessert) {
-	        	if (checkAmountAV(n) > getMassPerServing()) {
-	        		dessertList.add(n);
-	        	}
-	        }
-	 	    
-	    	// Existing # of servings of dessert already been made
-	    	int numServings = servingsOfDessertList.size();	
-	    	//logger.info("addWork() : available # of dessert servings : "+ numServings);
-	    	
-	    	if ( dessertList.size() > 0 
-	    			&& numServings < maxServings ) {
+    	preparingWorkTime += workTime; 
+        //logger.info("addWork() : preparingWorkTime is " + Math.round(preparingWorkTime *100.0)/100.0);
+        //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
     	
-				int upperbound = dessertList.size();
-		    	int lowerbound = 1;
-		    	String selectedDessert = "None";
-		    	
-		    	if (upperbound > 1) {
-		    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
-		    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-		    		selectedDessert = dessertList.get(index);
-		    	}
-		    	else if (upperbound == 1) {
-		    		selectedDessert = dessertList.get(0);
-		    	}
-		    	else if (upperbound == 0)
-		    		selectedDessert = "None";
-		    	
-				//System.out.println("upperbound is "+ upperbound);
-		    	//System.out.println("index is "+ index);
-		    	//System.out.println("selectedDessert is "+selectedDessert);	
-		    	
-	     		// Take out one serving of the selected dessert from the fridge 
-	    		removeDessertFromAmountResource(selectedDessert);
-		        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		        int dessertQuality = getBestDessertSkill();
-		        
-		        // Create a serving of dessert and add it into the list
-			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
-		    	//logger.info("addWork() : a new dessert just added : " + selectedDessert);
+    	if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) {
+	    	// TODO: check if this is proportional to the population
+	        double population = building.getBuildingManager().getSettlement().getCurrentPopulationNum();
+	        int maxServings =  (int) (population * MAX_NUM_SERVING_PER_PERSON);
+	        int numServings = servingsOfDessertList.size();
+	        
+	        if ( maxServingsCache != maxServings ) { 	
+	        	//System.out.println("addWork() : " + maxServings + " is the max allowable # of dessert servings per sol");
+	        	maxServingsCache = maxServings;
+	        }
+	        if (numServings > maxServings )
+	        	makeNoMoreDessert = true;
 
-			    
-		        // Reset workTime to zero for making the next serving      	
-	            workTime = 0; 
-	            
-	     	} // end of if ( soymilkAvailable > getMassPerServing() 
-	    } // end of if (workTime >= WORK_REQUIRED) 
+	        //else {
+		        
+		        // 2015-01-03 Added dessert[] 
+		        String [] dessert = { 	"soymilk",
+		        						"Sugarcane Juice",
+		        						"Strawberry",
+		        						"Granola Bar",
+		        						"Blueberry Muffin", 
+		        						"Cranberry Juice"  };
+	
+		    	List<String> dessertList = new ArrayList<String>();
+			
+		    	// Put together a list of available dessert 
+		        for(String n : dessert) {
+		        	if (checkAmountAV(n) > getMassPerServing()) {
+		        		dessertList.add(n);
+		        	}
+		        }
+		 	    
+		    	// Existing # of servings of dessert already been made
+	
+		    	if ( dessertList.size() > 0 
+		    			&& numServings < maxServings ) {
+	    	
+					int upperbound = dessertList.size();
+			    	int lowerbound = 1;
+			    	String selectedDessert = "None";
+			    	
+			    	if (upperbound > 1) {
+			    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
+			    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+			    		selectedDessert = dessertList.get(index);
+			    	}
+			    	else if (upperbound == 1) {
+			    		selectedDessert = dessertList.get(0);
+			    	}
+			    	else if (upperbound == 0)
+			    		selectedDessert = "None";	    	
+					//System.out.println("upperbound is "+ upperbound);
+			    	//System.out.println("index is "+ index);
+			    	//System.out.println("selectedDessert is "+selectedDessert);	
+			    	
+		     		// Take out one serving of the selected dessert from the fridge 
+		    		removeDessertFromAmountResource(selectedDessert);
+		    		
+			    	dessertCounterPerSol++;
+	
+			        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			        int dessertQuality = getBestDessertSkill();
+			        
+			        // Create a serving of dessert and add it into the list
+				    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
+			    	//logger.info("addWork() : new dessert just added : " + selectedDessert);
+				    //System.out.println("# of available desserts : " + servingsOfDessertList.size());    
+			    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
+				    
+			        // Reset workTime to zero for making the next serving      	
+				    // preparingWorkTime = 0; 
+				    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
+		     	} // end of if ( soymilkAvailable > getMassPerServing() 
+		    //} // end of else
+    	} // end of if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED)
     } // end of void addWork()
    
  
@@ -388,10 +416,23 @@ implements Serializable {
            	//logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
         // Toss away expired servingsOfDessertList
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
+        
         while (i.hasNext()) {
+  
             PreparedDessert aServingOfDessert = i.next();
             //logger.info("Dessert : " + aServingOfDessert.getName());
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+            
+        	// Added 2015-01-04 : Sanity check for the passing of each day
+            int newDay = currentTime.getSolOfMonth();
+            if ( newDay != dayCache) {
+            	// reset back to zero at the beginning of a new day.
+            	//System.out.println("PreparingDessert.java timePassing() New Sol :" + newDay );// + settlement);
+		    	//System.out.println("desserts made today : " + dessertCounterPerSol);
+            	dessertCounterPerSol = 0;
+            	dayCache = newDay;
+            }
+            
             if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
             	
             	String dessert = aServingOfDessert.getName();
@@ -414,10 +455,11 @@ implements Serializable {
                      getBuilding().getBuildingManager().getSettlement().getName());
 
                 }         
-            }
-        }
+            } //end of if (MarsClock.getTimeDiff(
+        } // end of  while (i.hasNext()) {
+  
         //NumOfServingsCache = newNumOfServings;
-      }
+      } 
     }
 
     

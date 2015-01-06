@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -309,7 +309,8 @@ implements Serializable {
 	 */
 	public Double getCargoCapacity(String vehicleType, String resource) {
 		parseIfNeccessary();
-		Double value = map.get(vehicleType.toLowerCase()).cargoCapacity.get(resource);
+		//2015-01-05 Changed to resource.toLowerCase()
+		Double value = map.get(vehicleType.toLowerCase()).cargoCapacity.get(resource.toLowerCase());
 		if (value == null) return 0d;
 		return value;
 	}

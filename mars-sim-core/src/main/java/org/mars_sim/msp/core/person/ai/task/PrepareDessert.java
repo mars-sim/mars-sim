@@ -61,18 +61,18 @@ implements Serializable {
 	// 2015-01-03 Added EVENING_START
 	private static final double EVENING_START = 850D;
 
-	private static final double AFTERNOON_START = 600D;
+	private static final double AFTERNOON_START = 650D;
 
-    private static final double MORNING_START = 350D;
+    private static final double MORNING_START = 400D;
     
-    private static final double NIGHT_START = 150D;
+    private static final double NIGHT_START = 100D;
 
     
-	// Time (millisols) duration.
-	private static final double DURATION = 200D;
+	// The duration of time the dessert is good before getting refrigerated
+	private static final double DURATION = 200D; // 300 millisols = 7.2 hrs
 
 	// Data members
-	/** The kitchen the person is making soymmlk. */
+	/** The kitchen the person is making dessert. */
 	private PreparingDessert kitchen;
 
 	/**
@@ -101,7 +101,7 @@ implements Serializable {
         else endTask();
         
         // 2015-01-03 Added dessert[] 
-        String [] dessert = { 	"soymilk",
+        String [] dessert = { 	"Soymilk",
         						"Sugarcane Juice",
         						"Strawberry",
         						"Granola Bar",
@@ -173,11 +173,19 @@ implements Serializable {
             return time;
         }
 
+        // 2015-01-04a Added getCookNoMore() condition
+        if (kitchen.getCookNoMore()) {
+        	//System.out.println("PrepareDessert.java : cookNoMore = true. calling endTask() ");
+        	endTask();
+        	kitchen.cleanup();
+        	return time;
+        }
+        
         // Determine amount of effective work time based on "MakingSoy" skill.
         double workTime = time;
-        int soyMakingSkill = getEffectiveSkillLevel();
-        if (soyMakingSkill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) soyMakingSkill);
+        int dessertMakingSkill = getEffectiveSkillLevel();
+        if (dessertMakingSkill == 0) workTime /= 2;
+        else workTime += workTime * (.2D * (double) dessertMakingSkill);
 
         // round off to 2 decimal places
         double roundOffWorkTime = Math.round(workTime * 100.0) / 100.0;

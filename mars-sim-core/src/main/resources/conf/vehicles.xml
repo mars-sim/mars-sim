@@ -24,8 +24,8 @@
 
 		<!-- Cargo capacity list -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
-		<!-- Default: 5500.0 -->
-		<cargo total-capacity="5500.0">
+		<!-- Default: 5800.0 -->
+		<cargo total-capacity="5800.0">
  
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
@@ -47,6 +47,11 @@
 			<!-- Default: 210.0 -->
 			<capacity resource="Food" value="210.0" />
 
+			<!-- The dessert cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 300.0 -->
+			<capacity resource="Soymilk" value="300.0" />
+			
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
@@ -99,11 +104,12 @@
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
 		<crew-size value="8" />
-		<cargo total-capacity="7000.0">
+		<cargo total-capacity="7300.0">
 			<capacity resource="Methane" value="2000.0" />
 			<capacity resource="Oxygen" value="350.0" />
 			<capacity resource="Water" value="1400.0" />
 			<capacity resource="Food" value="525.0" />
+			<capacity resource="Soymilk" value="300.0" />
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
@@ -128,11 +134,12 @@
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
 		<crew-size value="2" />
-		<cargo total-capacity="10000.0">
+		<cargo total-capacity="10300.0">
 			<capacity resource="Methane" value="2000.0" />
 			<capacity resource="Oxygen" value="350.0" />
 			<capacity resource="Water" value="1400.0" />
 			<capacity resource="Food" value="525.0" />
+			<capacity resource="Soymilk" value="300.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0" 

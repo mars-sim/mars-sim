@@ -829,7 +829,7 @@ implements Serializable {
     private double getResourceDessertDemand(AmountResource resource) {
         double demand = 0D;
         // 2015-01-03 Added more food dessert item
-        String [] dessert = { 	"soymilk",
+        String [] dessert = { 	"Soymilk",
         						"Sugarcane Juice",
         						"Strawberry",
         						"Granola Bar",

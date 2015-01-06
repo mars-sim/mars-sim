@@ -53,7 +53,7 @@ implements Serializable {
 		super(Driver.class);
 
 		// 2015-01-03 Added PrepareDessert
-		jobTasks.add(PrepareDessert.class);
+		//jobTasks.add(PrepareDessert.class);
 
 		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.07 2014-09-17
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -275,6 +275,16 @@ implements Serializable {
 			timeLimit = foodTimeLimit;
 		}
 
+        // 2015-01-04 Added Soymilk
+        // Check dessert1 capacity as time limit.
+        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
+        double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D;
+        double dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false);
+        double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
+        if (dessert1TimeLimit < timeLimit)
+            timeLimit = dessert1TimeLimit;
+        
+		
 		// Check water capacity as time limit.
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -640,6 +650,13 @@ implements Serializable {
 		}
 		result.put(food, foodAmount);
 
+	       // 2015-01-04 Added Soymilk
+        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
+        double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;
+        if (result.containsKey(dessert1))
+            dessert1Amount += (Double) result.get(dessert1);
+        result.put(dessert1, dessert1Amount);
+        
 		return result;
 	}
 

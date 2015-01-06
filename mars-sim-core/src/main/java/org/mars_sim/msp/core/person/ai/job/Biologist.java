@@ -68,8 +68,9 @@ implements Serializable {
 		super(Biologist.class);
 
 		// 2015-01-03 Added PrepareDessert
-		jobTasks.add(PrepareDessert.class);
-
+		//jobTasks.add(PrepareDessert.class);
+		//jobTasks.add(CookMeal.class);
+		
 		// Add biologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
