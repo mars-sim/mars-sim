@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -57,8 +58,9 @@ implements Serializable {
 		super(Chemist.class);
 
 		// 2015-01-03 Added PrepareDessert
-		jobTasks.add(PrepareDessert.class);
-
+		//jobTasks.add(PrepareDessert.class);
+		//jobTasks.add(CookMeal.class);
+		
 		// Add chemist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);

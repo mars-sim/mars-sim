@@ -211,6 +211,7 @@ class StartingSettlementPanel extends WizardPanel {
 			columns.add("Oxygen");
 			columns.add("Water");
 			columns.add("Food");
+			columns.add("Dessert");
 			columns.add("Methane");
 			columns.add("EVA Suits");
 		}
@@ -247,10 +248,14 @@ class StartingSettlementPanel extends WizardPanel {
 						result = (int) inv.getAmountResourceStored(food, false);
 					}
 					else if (column == 6) {
+						AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+						result = (int) inv.getAmountResourceStored(dessert, false);
+					}
+					else if (column == 7) {
 						AmountResource methane = AmountResource.findAmountResource("methane");
 						result = (int) inv.getAmountResourceStored(methane, false);
 					}
-					else if (column == 7) 
+					else if (column == 8) 
 						result = inv.findNumUnitsOfClass(EVASuit.class);
 
 					String type = getWizard().getMissionData().getType();
@@ -336,40 +341,44 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
 				}
 				else if (column == 6) {
+					AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
+				}
+				else if (column == 7) {
 					AmountResource methane = AmountResource.findAmountResource("methane");
 					if (inv.getAmountResourceStored(methane, false) < 100D) result = true;
 				}
-				else if (column == 7) {
+				else if (column == 8) {
 					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
 				}
 
 				String type = getWizard().getMissionData().getType();
 				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-					if (column == 8) {
+					if (column == 9) {
 						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) < 
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.ICE_MISSION) || 
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
-					if (column == 8) {
+					if (column == 9) {
 						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.MINING_MISSION)) {
-					if (column == 8) {
+					if (column == 9) {
 						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
-					if (column == 9) {
+					if (column == 10) {
 						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
 					}
-					else if (column == 10) {
+					else if (column == 11) {
 						Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
 						if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
 					}
-					else if (column == 11) {
+					else if (column == 12) {
 						Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
 						if (inv.getItemResourceNum(backhoe) == 0) result = true;
 					}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 
@@ -94,6 +94,10 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, LifeSupport.WATER));
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, LifeSupport.FOOD));
+		  // 2015-01-04 Added Soymilk
+		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+		inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, "Soymilk"));
+
 		AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 		inv.addAmountResourceTypeCapacity(rockSamples, config.getCargoCapacity(description, "rock samples"));
 		AmountResource ice = AmountResource.findAmountResource("ice");
@@ -396,6 +400,15 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
+	       // 2015-01-04 Added Soymilk
+    	// Check dessert capacity as range limit.
+    	AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+    	double dessertConsumptionRate = config.getFoodConsumptionRate() / 6D;
+    	double dessertCapacity = getInventory().getAmountResourceCapacity(dessert, false);
+    	double dessertSols = dessertCapacity / (dessertConsumptionRate * crewCapacity);
+    	double dessertRange = distancePerSol * dessertSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	if (dessertRange < range) range = dessertRange;
+    	
     	// Check water capacity as range limit.
     	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
     	double waterConsumptionRate = config.getWaterConsumptionRate();

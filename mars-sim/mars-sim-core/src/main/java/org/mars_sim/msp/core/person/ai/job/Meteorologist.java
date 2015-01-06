@@ -53,8 +53,8 @@ implements Serializable {
 		super(Meteorologist.class);
 
 		// 2015-01-03 Added CookMeal and PrepareDessert
-		jobTasks.add(CookMeal.class);
-		jobTasks.add(PrepareDessert.class);
+		//jobTasks.add(CookMeal.class);
+		//jobTasks.add(PrepareDessert.class);
 
 		// Add meteorologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);

@@ -323,7 +323,7 @@ implements Serializable {
                     owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
             } else {
-                throw new IllegalStateException("Insufficiant capacity to store " + resource.getName() + 
+                throw new IllegalStateException("Insufficient capacity to store " + resource.getName() + 
                         ", capacity: " + getAmountResourceRemainingCapacity(resource, useContainedUnits, 
                                 false) + ", attempted: " + amount);
             }
@@ -593,7 +593,7 @@ implements Serializable {
                 }
             } 
             else {
-                throw new IllegalStateException("Insufficiant stored number to retrieve " + 
+                throw new IllegalStateException("Insufficient stored number to retrieve " + 
                         resource.getName() + ", stored: " + getItemResourceNum(resource) + 
                         ", attempted: " + number);
             }

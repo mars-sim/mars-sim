@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-12-12
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  * 
  * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
@@ -61,10 +61,10 @@ implements Serializable {
 	private static final double BREAKFAST_START = 250D; // at 6am
 	private static final double LUNCH_START = 500D; // at 12 am
 	private static final double DINNER_START = 750D; // at 6 pm
-	private static final double MIDNIGHT_SHIFT_MEAL_START = 050D; // at 1:15 am avoid conflict with TabPanelCooking when at 0D all yesterday's cookedMeals are removed
+	private static final double MIDNIGHT_SHIFT_MEAL_START = 005D; // avoid conflict with TabPanelCooking when at 0D all yesterday's cookedMeals are removed
 
 	// Time (millisols) duration of meals.
-	private static final double MEALTIME_DURATION = 150D;
+	private static final double MEALTIME_DURATION = 245D; // 250 milliSol = 6 hours
 
 	// Data members
 	/** The kitchen the person is cooking at. */
@@ -91,29 +91,21 @@ implements Serializable {
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	        // Walk to kitchen building.
-	    	walkToActivitySpotInBuilding(kitchenBuilding);
-	         
+	    	walkToActivitySpotInBuilding(kitchenBuilding);	
 	    //}
 	    //else endTask();
-
         //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
         //double freshFoodAvailable = kitchen.getTotalFreshFood();
-        
         //if (freshFoodAvailable < 0.5) {
         //    logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
-
-	    //endTask();
-	        	
+	    //endTask();     	
 	    //} else {
-
 	      // Add task phase
 	      addPhase(COOKING);
-		  setPhase(COOKING);
-		    	
+		  setPhase(COOKING);		    	
 		  String jobName = person.getMind().getJob().getName(person.getGender());
 		  logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
-		    	                " in " + person.getSettlement());
-	            
+		    	                " in " + person.getSettlement());      
 	    }
 	    else endTask();
     }
@@ -146,7 +138,8 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the cooking phase.
      */
     private double cookingPhase(double time) {
-
+    	//System.out.println("CookMeal.java entering cookingPhase() ");
+    	
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
@@ -161,21 +154,30 @@ implements Serializable {
             return time;
         }
 
-        // Determine amount of effective work time based on "Cooking" skill.
+        // 2015-01-04a Added getCookNoMore() condition
+        if (kitchen.getCookNoMore()) {
+        	//System.out.println("CookMeal.java cookingPhase() : cookNoMore = true. calling endTask() ");
+        	endTask();
+        	kitchen.cleanup();
+        	return time;
+        }
+    		
+        
+	        // Determine amount of effective work time based on "Cooking" skill.
         double workTime = time;
-        int cookingSkill = getEffectiveSkillLevel();
-        if (cookingSkill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) cookingSkill);
-
-        // Add this work to the kitchen.
-        kitchen.addWork(workTime);
-
-        // Add experience
-        addExperience(time);
-
-        // Check for accident in kitchen.
-        checkForAccident(time);
-
+	    int cookingSkill = getEffectiveSkillLevel();
+	    if (cookingSkill == 0) workTime /= 2;
+	    	else workTime += workTime * (.2D * (double) cookingSkill);
+	
+	    // Add this work to the kitchen.
+	    kitchen.addWork(workTime);
+	
+	    // Add experience
+	    addExperience(time);
+	
+	    // Check for accident in kitchen.
+	    checkForAccident(time);
+        
         return 0D;
     }
 

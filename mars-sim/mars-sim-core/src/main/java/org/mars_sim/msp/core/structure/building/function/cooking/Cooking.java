@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-12-30
+ * @version 3.07 2015-01-04
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -54,8 +54,12 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
-    public static final double COOKED_MEAL_WORK_REQUIRED = 5D; // 5 is 8 mins
+    public static final double COOKED_MEAL_WORK_REQUIRED = 10D; // 10 milli-sols is 15 mins
 
+    public static final double MAX_MEAL_PER_PERSON = 1.1;
+    
+    private boolean cookNoMore = false;
+    
     // Data members
     private int cookCapacity;
     private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
@@ -381,6 +385,7 @@ implements Serializable {
      */
     public void cleanup() {
         cookingWorkTime = 0D;
+        cookNoMore = false;
     }
 
     /**
@@ -421,39 +426,58 @@ implements Serializable {
  	    
  	    return result;
  	}
-	
+	/*
+ 	public void setCookNoMore(boolean value) {
+ 		cookNoMore = value;
+ 	}
+ 	*/
+ 	
+    // 2015-01-04a Added getCookNoMore()
+ 	public boolean getCookNoMore() {
+ 		return cookNoMore;
+ 	}
+ 	
+ 	
     /**
      * Adds cooking work to this facility. 
      * The amount of work is dependent upon the person's cooking skill.
      * @param workTime work time (millisols) 
      */
+ 	// Called by CookMeal.java
     public void addWork(double workTime) {
+    	
     	cookingWorkTime += workTime;       
         //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
         //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
-  
+
     	while ( cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
- 
-    		boolean exit = false;
+	    	
+      		boolean exit = false;
     		
-    		// pick a meal whose ingredients are available
-    		while (!exit) {
-    			aMeal = pickAMeal();
-    			if (aMeal != null) {
-    			    boolean isAmountAV = checkAmountAvailable(aMeal);
-    			    if (isAmountAV) {
-    			        cookAHotMeal(aMeal);
-    			        exit = true;
-    			    }
-    			}
-    			else {
-    			    exit = true;
-    			}
-    		}
+            double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
+            double maxServings = population * MAX_MEAL_PER_PERSON;
     		
+            double numServings = cookedMeals.size();	
+            //System.out.println( " pop is " + population);
+            //System.out.println( " numServings is " + numServings);
+            //System.out.println( " maxServings is " + maxServings);
+            
+            if (numServings > maxServings)
+            	cookNoMore = true;
+    		
+    		
+	    	while (!cookNoMore) {
+	    		aMeal = pickAMeal();
+	    		if (aMeal != null) {
+	    			cookAHotMeal(aMeal);
+	    			cookNoMore = true;
+	    			//exit = true;
+	    		}
+	    	}
     	}
-     	
-     }
+    }
+ 
+
 	
    /* 
     // 2014-12-01 Created getMealServings()  
@@ -609,12 +633,12 @@ implements Serializable {
 	        //else id = cookedMeals.size();
 	        
 	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration);
-	        logger.info("a new cookedMeal just added : " + meal.getName());    
+	        //logger.info("a new meal made : " + meal.getName());    
 	    	cookedMeals.add(meal);
 	    	int size = cookedMeals.size();
 	    	mealCounterPerSol++;
-	    	logger.info("# of available meals : " + size);    
-	    	logger.info("meals maded today : " + mealCounterPerSol);    
+	    	//logger.info("# of available meals : " + size);    
+	    	//logger.info(mealCounterPerSol + " meals made today");    
 
 	    	// 2014-12-08 Added to Multimaps
 	    	qualityMap.put(nameOfMeal, mealQuality);
@@ -699,8 +723,8 @@ implements Serializable {
 	            int newDay = currentTime.getSolOfMonth();
 	            if ( newDay != dayCache) {
 	            	// reset back to zero at the beginning of a new day.
-	            	//System.out.println(" Cooking.java timePassing() " 
-	            	//+ mealCounterPerSol + " meals made today at " + settlement);
+	            	//System.out.println("Sol : " + newDay );// + settlement);
+	            	
 	            	mealCounterPerSol = 0;
 	            	if (!timeMap.isEmpty()) {
 	    				timeMap.clear();
@@ -718,7 +742,7 @@ implements Serializable {
 	      	            double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
 	                    if (dryWeightPerMeal > foodCapacity) 
 	                    	dryWeightPerMeal = foodCapacity;
-	                			//logger.info("timePassing() : pack & convert .5 kg expired meal into .5 kg food");
+	                			//logger.info("timePassing() : pack & convert expired meal into dried food");
 	                			// Turned 1 cooked meal unit into 1 food unit
 	                    dryWeightPerMeal = Math.round( dryWeightPerMeal * 1000000.0) / 1000000.0;
 	                    // remove the cookedMeal and store it

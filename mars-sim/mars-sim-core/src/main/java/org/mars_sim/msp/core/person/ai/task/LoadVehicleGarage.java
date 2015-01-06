@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -843,13 +843,17 @@ implements Serializable {
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
     	
+    	// 2015-01-04 Added Soymilk
     	// Only life support resources are required at settlement at this time.
     	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
     	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
     	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+    	AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+
     	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
     	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
     	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
+    	else if (resource.equals(soymilk)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate()/6D;
     	
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }

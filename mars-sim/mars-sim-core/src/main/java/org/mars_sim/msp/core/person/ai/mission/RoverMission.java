@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2014-11-28
+ * @version 3.07 2015-01-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -610,6 +610,14 @@ extends VehicleMission {
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		result.put(food, foodAmount);
 
+		// 2015-01-04 Added Soymilk
+		double soymilkAmount = PhysicalCondition.getFoodConsumptionRate() / 6D
+				* timeSols * crewNum;
+		if (useBuffer)
+			soymilkAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+		AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+		result.put(soymilk, soymilkAmount);
+		
 		return result;
 	}
 
@@ -664,6 +672,12 @@ extends VehicleMission {
 			if (inv.getAmountResourceStored(food, false) < 50D) {
 				hasBasicResources = false;
 			}
+	    	// 2015-01-04 Added Soymilk
+			AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+			if (inv.getAmountResourceStored(soymilk, false) < 20D) {
+				hasBasicResources = false;
+			}
+			
 			AmountResource methane = AmountResource
 					.findAmountResource("methane");
 			if (inv.getAmountResourceStored(methane, false) < 100D) {

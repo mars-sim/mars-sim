@@ -436,29 +436,33 @@ implements VehicleOperator, Serializable {
      * Person consumes given amount of food.
      * @param amount the amount of food to consume (in kg)
      * @param takeFromInv is food taken from local inventory?
-     
+     */
     public void consumeFood(double amount, boolean takeFromInv) {
         if (takeFromInv) {
-            health.consumeFood(amount, getContainerUnit());
+        	// takeFrom Inv is true if meal == null, meaning that the person is on an excursion
+            //System.out.println(this.getName() + " is calling consumeFood() in Person.java");
+        	health.consumeFood(amount, getContainerUnit());
         }
-        else { // TODO: mkung: figure out what the intended consequence of calling 
-        	   // this "empty" health.consumFood() method is
-            health.consumeFood(amount);
+        else { 	// The person is in a settlement, a cookedMeal has been eaten 
+        		// no need to call health.consumeFood()   
+            //health.consumeFood(amount);
         }
     }
-*/
+
     /**
      * Person consumes given amount of food.
      * @param amount the amount of food to consume (in kg)
-     * @param takeFromInv is food taken from local inventory?
-     
+     * @param takeFromInv 
+      */
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, boolean takeFromInv) {
         if (takeFromInv) {
+        	// takeFrom Inv is true if meal == null, meaning that the person is on an excursion
+            //System.out.println(this.getName() + " is is calling consumeDessert() in Person.java");
             health.consumeDessert(amount, getContainerUnit());
         }
     }
-    */
+   
     /**
      * Person consumes given amount of water.
      * @param amount the amount of water to consume (in kg)

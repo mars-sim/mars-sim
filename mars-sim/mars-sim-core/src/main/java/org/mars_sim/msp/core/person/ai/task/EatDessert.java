@@ -14,6 +14,13 @@ import java.util.Map;
 //import java.util.logging.Logger;
 
 
+
+
+
+
+
+
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -35,9 +42,9 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * The EatDessert class is a task for eating soymilk.
+ * The EatDessert class is a task for eating dessert.
  * The duration of the task is 40 millisols.
- * Note: Eating soymilk reduces hunger to 0 and reduce stress.
+ * Note: Eating dessert reduces hunger to 0 and reduce stress.
  */
 public class EatDessert 
 extends Task 
@@ -65,7 +72,17 @@ implements Serializable {
     private PreparedDessert aServingOfDessert;
 
     // 2014-11-28 Added HUNGER_REDUCTION_PERCENT
-    private static final double HUNGER_REDUCTION_PERCENT = 50D;
+    private static final double HUNGER_REDUCTION_PERCENT = 40D;
+    
+    //  SERVING_FRACTION was used in PreparingDessert.java
+    @SuppressWarnings("unused")
+	private static final double SERVING_FRACTION = 1D / 6D;
+    // see PrepareDessert.java for the number of dessert served per sol
+    @SuppressWarnings("unused")
+	private static final double NUM_OF_DESSERT_PER_SOL = 4D;
+	
+    private String dessertLocation ;
+    private PreparingDessert kitchen;
     
     /** 
      * Constructs a EatMeal object, hence a constructor.
@@ -74,7 +91,6 @@ implements Serializable {
     public EatDessert(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
                 RandomUtil.getRandomDouble(30D));
-
         //logger.info("just called EatDessert's constructor");
 
         boolean walkSite = false;
@@ -89,16 +105,14 @@ implements Serializable {
                 walkToActivitySpotInBuilding(diningBuilding);
                 walkSite = true;
             }
-
-            // If fresh dessert is available in a local kitchen, go there.
-            PreparingDessert kitchen = getKitchenWithDessert(person);
+                // If fresh dessert is available in a local kitchen, go there.
+            kitchen = getKitchenWithDessert(person);
             if (kitchen != null) {
-                aServingOfDessert = kitchen.getFreshDessert();
-                //TODO: check if dessert is deleted from AmountResource                
+            	dessertLocation = kitchen.getBuilding().getNickName();   
             }
-            if (aServingOfDessert != null) {
-                setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
-            }
+           	if (aServingOfDessert != null) {
+           		aServingOfDessert = kitchen.getFreshDessert();
+           	}
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -114,6 +128,8 @@ implements Serializable {
             else {
                 // Walk to random location.
                 walkToRandomLocation();
+             	//System.out.println(person.getName() + " is not in a vehicle and is walking to another location in " + person.getContainerUnit());
+        		//System.out.println("EatDessert constructor : other circumstances calling walkToRandomLocation()");
             }
         }
 
@@ -149,11 +165,13 @@ implements Serializable {
      * @param time the amount of time (millisol) to perform the eating phase.
      * @return the amount of time (millisol) left after performing the eating phase.
      */
+	// 2015-01-05 Reworked if-then-else clauses
     private double eatingPhase(double time) {
-
+    	String namePerson = person.getName();
+    	//System.out.println(namePerson + " is entering the eatingPhase() in EatDessert.java");	
         PhysicalCondition condition = person.getPhysicalCondition();
 
-        // If person drinks fresh soymilk, additional stress is reduced.
+        // If a person has a serving of dessert, stress is reduced.
         if (aServingOfDessert != null) {
             double stress = condition.getStress();
             condition.setStress(stress - (STRESS_MODIFIER * (aServingOfDessert.getQuality() + 1D)));
@@ -162,21 +180,32 @@ implements Serializable {
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             try {
-            	
-              	String nameDessert = aServingOfDessert.getName();
-            	String namePerson = person.getName();
-            	System.out.println( namePerson + " has just eaten " + nameDessert);
-            	
-                //  SERVING_FRACTION was used in PreparingDessert.java
-                final double SERVING_FRACTION = 1D / 6D;
-                // see PrepareDessert.java for the number of dessert served per sol
-                final double NUM_OF_DESSERT_PER_SOL = 3D;
-            	
-            	//logger.info("eatingPhase() : (aServingOfDessert == null) is " + (aServingOfDessert == null));
-                //person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
-                // 2014-11-28 Computed new hunger level
+      	
+            	if (aServingOfDessert != null) {
+                	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
+                  	//String nameDessert = aServingOfDessert.getName();
+                  	//a serving of dessert has already been
+            		//System.out.println( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
+            	}
+            	else { // if a person does not get a hold of a piece of cooked meal 
+            		
+            		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
+            			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit());
+            			// the vehicle " + person.getVehicle().getName() + " or
+            		}
+            		else 
+            		{
+            			//System.out.println(namePerson + " not in a vehicle. can't obtain food from container, end the task.");
+                        //endTask();
+            		}
+            	}
+            		// 2014-11-28 Computed new hunger level
                 double hunger = condition.getHunger();
-                hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);
+                if (hunger < 900) 
+                	hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);
+                else if (hunger > 900)
+                	hunger = 9000;
                 condition.setHunger(hunger);
             }
             catch (Exception e) {
