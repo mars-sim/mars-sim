@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -154,23 +154,53 @@ implements Serializable {
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            try {
-            	
-            	String nameMeal = meal.getName();
-            	String namePerson = person.getName();
-            	System.out.println( namePerson + " has just eaten " + nameMeal);
-                //person.consumeFood(config.getFoodConsumptionRate() * (1D / 4D), (meal == null));
-                
+            if (meal != null) {
+                // Person consumes the cooked meal.
+                String nameMeal = meal.getName();
+                System.out.println(person + " has just eaten " + nameMeal);
                 condition.setHunger(0D);
             }
-            catch (Exception e) {
-                // If person can't obtain food from container, end the task.
-                endTask();
+            else {
+                // Person consumes preserved food.
+                try {
+                    eatPreservedFood();
+                    System.out.println(person + " has just eaten preserved food");
+                    condition.setHunger(0D);
+                }
+                catch (Exception e) {
+                    // If person can't obtain food from container, end the task.
+                    endTask();
+                }
             }
         }
 
         return 0D; 
+    }
+    
+    /**
+     * Eat a meal of preserved food.
+     * @throws Exception if problems finding preserved food to eat.
+     */
+    private void eatPreservedFood() throws Exception {
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        double foodAmount = config.getFoodConsumptionRate() * .25D;
+        Unit containerUnit = person.getContainerUnit();
+        if (containerUnit != null) {
+            Inventory inv = containerUnit.getInventory();
+            AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
+            double foodAvailable = inv.getAmountResourceStored(food, false);
+            if (foodAvailable >= foodAmount) {
+                // Remove preserved food amount from container unit.
+                inv.retrieveAmountResource(food, foodAmount);
+            }
+            else {
+                throw new Exception(person + " doesn't have enough preserved food to eat in " + containerUnit + 
+                        " - food available: " + foodAvailable);
+            }
+        }
+        else {
+            throw new Exception(person + " does not have a container unit to get preserved food from.");
+        }
     }
 
     /**
