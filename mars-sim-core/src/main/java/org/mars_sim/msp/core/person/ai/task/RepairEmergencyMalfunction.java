@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2014-12-28
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -216,18 +216,18 @@ implements Repair, Serializable {
             if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 
                 // Walk to malfunctioning building.
-                walkToRandomLocInBuilding(building);
+                walkToRandomLocInBuilding(building, true);
                 isWalk = true;
             }
         }
         else if (malfunctionable instanceof Rover) {
             // Walk to malfunctioning rover.
-            walkToRandomLocInRover((Rover) malfunctionable);
+            walkToRandomLocInRover((Rover) malfunctionable, true);
             isWalk = true;
         }
 
         if (!isWalk) {
-            walkToRandomLocation();
+            walkToRandomLocation(true);
         }
     }
 

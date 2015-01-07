@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,7 +62,7 @@ implements Serializable {
             Building gymBuilding = getAvailableGym(person);
             if (gymBuilding != null) {
                 // Walk to gym building.
-                walkToActivitySpotInBuilding(gymBuilding);
+                walkToActivitySpotInBuilding(gymBuilding, false);
 
                 gym = (Exercise) gymBuilding.getFunction(BuildingFunction.EXERCISE);
             } 

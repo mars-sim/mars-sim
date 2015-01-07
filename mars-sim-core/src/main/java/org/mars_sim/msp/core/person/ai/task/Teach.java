@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -85,11 +85,11 @@ implements Serializable {
                     BuildingFunction teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
                     if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
                         // Walk to relevant activity spot in student's building.
-                        walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction);
+                        walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
                     }
                     else {
                         // Walk to random location in student's building.
-                        walkToRandomLocInBuilding(BuildingManager.getBuilding(student));
+                        walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
                     }
                     walkToBuilding = true;
                 }
@@ -100,12 +100,12 @@ implements Serializable {
                 if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
-                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
                     }
                 }
                 else {
                     // Walk to random location.
-                    walkToRandomLocation();
+                    walkToRandomLocation(true);
                 }
             }
         } 

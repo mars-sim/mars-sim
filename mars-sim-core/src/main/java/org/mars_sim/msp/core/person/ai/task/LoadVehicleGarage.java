@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2015-01-04
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -117,7 +117,7 @@ implements Serializable {
             if (garageBuilding != null) {
                 
                 // Walk to garage.
-                walkToActivitySpotInBuilding(garageBuilding);
+                walkToActivitySpotInBuilding(garageBuilding, false);
             }
             
             // End task if vehicle or garage not available.
@@ -173,7 +173,7 @@ implements Serializable {
         if (garage != null) {
             
             // Walk to garage.
-            walkToActivitySpotInBuilding(garage);
+            walkToActivitySpotInBuilding(garage, false);
         }
         
         // Initialize task phase

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -82,7 +82,7 @@ implements Serializable {
 			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 
 			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding);
+			walkToActivitySpotInBuilding(manufactureBuilding, false);
 		} 
 		else {
 			endTask();

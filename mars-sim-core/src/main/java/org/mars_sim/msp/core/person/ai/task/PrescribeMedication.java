@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -72,7 +72,7 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 
                 // Walk to patient's building.
-                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient));
+                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
             
             logger.info(person.getName() + " prescribing " + medication.getName() + 
