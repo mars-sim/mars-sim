@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -18,13 +19,18 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
+import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /**
@@ -52,6 +58,20 @@ public class SettlementWindow extends ToolWindow {
 	private int xLast;
 	/** Last Y mouse drag position. */
 	private int yLast;
+	
+    //protected ShowMarsDateTime showMarsDateTime;
+    private JStatusBar statusBar;
+    private JLabel leftLabel;
+    private JLabel maxMemLabel;
+    private JLabel memUsedLabel;
+    //private JLabel dateLabel;
+    private JLabel timeLabel;
+    private int maxMem;
+    private int memAV;
+    private int memUsed;
+    private String statusText;
+	private String marsTime;
+    
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -68,9 +88,12 @@ public class SettlementWindow extends ToolWindow {
 		setPreferredSize(new Dimension(1024, 768));
 		setLocation(600,600);
 		
-		mapPanel = new SettlementMapPanel(desktop, this);
-	      
-		setContentPane(mapPanel);
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		setContentPane(mainPanel);
+		
+		mapPanel = new SettlementMapPanel(desktop, this); 
+		mainPanel.add(mapPanel, BorderLayout.CENTER);
+		
 		mapPanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
@@ -134,10 +157,40 @@ public class SettlementWindow extends ToolWindow {
 			}
 		});
 
+		// 2015-01-07 Added statusBar
+        statusBar = new JStatusBar();
+        //statusText = "News Today on the Settlement";
+        leftLabel = new JLabel(statusText);
+		statusBar.setLeftComponent(leftLabel);
+
+        timeLabel = new JLabel();
+        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        statusBar.addRightComponent(timeLabel, false);
+
+        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+   
+        mainPanel.add(statusBar, BorderLayout.SOUTH);	   
+		
+		int timeDelay = 1000;
+		ActionListener timeListener;
+		timeListener = new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent evt) {
+		    	marsTime = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+				timeLabel.setText(marsTime);
+		    }
+		};
+		new javax.swing.Timer(timeDelay, timeListener).start();
+		
 		pack();
 		setVisible(true);
 	}
 
+	  
+    //public void exitProcedure() {
+    //    showMarsDateTime.setRunning(false);
+    //    System.exit(0);
+    //}
     
 	/**
 	 * Ask for a new Settlement name
@@ -171,20 +224,6 @@ public class SettlementWindow extends ToolWindow {
 		desktop.openToolWindow(SettlementWindow.NAME);	
 	}
 	
-	/*
-	public void setSettlement(Settlement newSettlement) {
-		if (newSettlement != settlement) {
-			// TODO : inform SettlementTransparentPanel to update settlement ?
-			this.settlement = newSettlement;
-			mapPanel.setSettlement(newSettlement);
-			repaint();
-		}
-	}
-	
-	public Settlement getSettlement() {
-		return mapPanel.getSettlement();
-	}
-	*/
 	public class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
 
 		public JCustomCheckBoxMenuItem(String s, boolean b) {

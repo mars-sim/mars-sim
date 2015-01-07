@@ -56,7 +56,7 @@ implements Serializable {
     //public static final double SHELF_LIFE = .4D;
        
     // the chef will make up to an arbitrary number of serving of dessert per person in a settlement
-    public static final double MAX_NUM_SERVING_PER_PERSON = .9;
+    public static final double MAX_NUM_SERVING_PER_PERSON = .8;
     
     //  SERVING_FRACTION also used in GoodsManager
     public static final double SERVING_FRACTION = 1D / 6D;
