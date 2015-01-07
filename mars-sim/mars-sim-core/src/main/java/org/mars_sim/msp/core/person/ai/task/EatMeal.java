@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2015-01-05
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -61,6 +61,8 @@ implements Serializable {
 
     // Data members
     private CookedMeal meal;
+    
+    private Person person;
 
     /** 
      * Constructs a EatMeal object, hence a constructor.
@@ -70,6 +72,7 @@ implements Serializable {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
                 RandomUtil.getRandomDouble(30D));
 
+        this.person = person;
         //logger.info("just called EatMeal's constructor");
         
         boolean walkSite = false;
@@ -88,11 +91,13 @@ implements Serializable {
             // If cooked meal in a local kitchen available, take it to eat.
             Cooking kitchen = getKitchenWithFood(person);
             if (kitchen != null) {
-                meal = kitchen.getCookedMeal();
-            }
-            if (meal != null) {
-                setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
-            }
+                meal = kitchen.eatAMeal();
+                if (meal != null) {
+                	//2015-01-06 Added setConsumerName()
+                   	meal.setConsumerName(person.getName());
+                    setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
+                }
+            }   
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -157,14 +162,14 @@ implements Serializable {
             if (meal != null) {
                 // Person consumes the cooked meal.
                 String nameMeal = meal.getName();
-                System.out.println(person + " has just eaten " + nameMeal);
+                //System.out.println(person + " has just eaten " + nameMeal);
                 condition.setHunger(0D);
             }
             else {
                 // Person consumes preserved food.
                 try {
                     eatPreservedFood();
-                    System.out.println(person + " has just eaten preserved food");
+                    //System.out.println(person + " has just eaten preserved food");
                     condition.setHunger(0D);
                 }
                 catch (Exception e) {

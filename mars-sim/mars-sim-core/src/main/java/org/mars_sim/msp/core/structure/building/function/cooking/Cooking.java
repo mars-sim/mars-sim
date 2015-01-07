@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2015-01-04
+ * @version 3.07 2015-01-06
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -56,44 +56,43 @@ implements Serializable {
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
     public static final double COOKED_MEAL_WORK_REQUIRED = 10D; // 10 milli-sols is 15 mins
 
-    public static final double MAX_MEAL_PER_PERSON = 1.1;
+    // MEAL_REPLENISHED_RATE should account for the case when a person has already 
+    // eaten a meal within a period of time. Therefore < 1.0, or else a lot 
+    // of meals will need to be refrigerated. 
+    public static final double MEAL_REPLENISHED_RATE = 0.8;
     
     private boolean cookNoMore = false;
     
     // Data members
-    private int cookCapacity;
     private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
-    private double cookingWorkTime;
+    private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
-	@SuppressWarnings("unused")
-	private int mealCounterPerSol = 0; // used in cookAHotMeal()
-	private int dayCache = 1;
+    private List<CropType> cropTypeList;
+    
+    private int cookCapacity;
+	private int mealCounterPerSol = 0;
+	private int solCache = 1;
+	private int numOfCookedMealCache = 0;
+    private double cookingWorkTime;
+    private double dryWeightPerMeal;
+    private static int NUMBER_OF_MEAL_PER_SOL = 4;
+    private String producerName;
 	
 	// 2014-12-08 Added multimaps
 	private Multimap<String, Integer> qualityMap;
 	private Multimap<String, MarsClock> timeMap;
-	//private Multiset<String> servingsSet;
 
-    @SuppressWarnings("unused")
-	private int numOfCookedMealCache; // still in use in timePassing()
     private Inventory inv ;
-    
     private HotMeal aMeal;
-    //private int availableNumOfMeals;
-
-	// 2014-12-12 Added the followings:
-    private double dryWeightPerMeal;
+    private Settlement settlement;
     private AmountResource dryFoodAR;
-    private static int NUMBER_OF_MEAL_PER_SOL = 4;
-    private List<CropType> cropTypeList;
-    
+
     /**
      * Constructor.
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
      */
     //TODO: create a CookingManager so that many parameters don't have to load multiple times
- 
     public Cooking(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
@@ -102,6 +101,7 @@ implements Serializable {
         //inv = getBuilding().getInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
         
+        settlement = getBuilding().getBuildingManager().getSettlement();
         cookingWorkTime = 0D;
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -149,12 +149,10 @@ implements Serializable {
 		        Ingredient oneIngredient = j.next();
 		        String ingredientName = oneIngredient.getName();
 		        double proportion = oneIngredient.getProportion();
-		        //System.out.println(ingredientName + "'s proportion is " + proportion);
 		        proportionList.add(proportion);
 		            	
 		        // get totalDryWeight
 				double waterContent = getWaterContent(ingredientName);
-				//System.out.println(ingredientName + "'s water content is "+ waterContent);
 		        waterContentList.add(waterContent);
 	        }
 	              
@@ -163,12 +161,10 @@ implements Serializable {
 	        int k;
 	        for(k = 1; k < waterContentList.size(); k++)
 	        	totalDryWeight += waterContentList.get(k) + proportionList.get(k) ;
-	        //System.out.println("totalDryWeight is " + totalDryWeight);
 
 	        // get this fractional number
 	        double fraction = 0;
 	        fraction = dryWeightPerMeal / totalDryWeight;
-	        //System.out.println("fraction is " + fraction);
 	        
 		    // get ingredientDryWeight for each ingredient
 	        double ingredientDryWeight = 0;
@@ -176,7 +172,6 @@ implements Serializable {
 	        for(l = 0; l < ingredientList.size(); l++) {
 	        	ingredientDryWeight = fraction * waterContentList.get(l) + proportionList.get(l) ;
 	        	ingredientDryWeight = Math.round(ingredientDryWeight* 1000000.0) / 1000000.0; // round up to 0.0000001 or 1mg
-	        	//System.out.println("ingredientDryWeight is " + ingredientDryWeight);
 	        	aMeal.setIngredientDryWeight(l, ingredientDryWeight);  
 	        }
 
@@ -205,8 +200,7 @@ implements Serializable {
 
     // 2014-12-08 Added qualityMap
     public Multimap<String, Integer> getQualityMap() {
-    	Multimap<String, Integer> qualityMapCache = ArrayListMultimap.create(qualityMap);
-    	
+    	Multimap<String, Integer> qualityMapCache = ArrayListMultimap.create(qualityMap);  	
     	// Empty out the map so that the next read by TabPanelCooking.java will be brand new cookedMeal
 		if (!qualityMap.isEmpty()) {
 			qualityMap.clear();	
@@ -330,7 +324,6 @@ implements Serializable {
     		size = 0;
     	else 
     		size = cookedMeals.size();
-    	//System.out.println(" cookedMealList.size() is " + size);
         return (size > 0);
     }
 
@@ -342,12 +335,15 @@ implements Serializable {
         return cookedMeals.size();
     }
 
+    public int getNumberOfCookedMealsToday() {
+        return mealCounterPerSol;
+    }
     /**
-     * Gets a cooked meal from this facility.
+     * Eats a cooked meal from this facility.
      * @return the meal
      */
     // Called by EatMeal.java's constructor
-    public CookedMeal getCookedMeal() {
+    public CookedMeal eatAMeal() {
         CookedMeal bestMeal = null;
         int bestQuality = -1;
         Iterator<CookedMeal> i = cookedMeals.iterator();
@@ -359,7 +355,11 @@ implements Serializable {
             }
         }
 
-        if (bestMeal != null) cookedMeals.remove(bestMeal);
+        if (bestMeal != null) {
+        	cookedMeals.remove(bestMeal);
+        	// 2015-01-06 Added dailyMealList
+        	dailyMealList.add(bestMeal);
+        }
 
         return bestMeal;
     }
@@ -426,11 +426,6 @@ implements Serializable {
  	    
  	    return result;
  	}
-	/*
- 	public void setCookNoMore(boolean value) {
- 		cookNoMore = value;
- 	}
- 	*/
  	
     // 2015-01-04a Added getCookNoMore()
  	public boolean getCookNoMore() {
@@ -455,47 +450,27 @@ implements Serializable {
       		boolean exit = false;
     		
             double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
-            double maxServings = population * MAX_MEAL_PER_PERSON;
-    		
-            double numServings = cookedMeals.size();	
-            //System.out.println( " pop is " + population);
-            //System.out.println( " numServings is " + numServings);
-            //System.out.println( " maxServings is " + maxServings);
+            double maxServings = population * MEAL_REPLENISHED_RATE;
+            int numOfCookedMeal = cookedMeals.size();	
             
-            if (numServings > maxServings)
-            	cookNoMore = true;
-    		
+            if ( numOfCookedMealCache != numOfCookedMeal ) {
+            	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
+            	numOfCookedMealCache = numOfCookedMeal;
+            }
+
+            if (numOfCookedMeal > maxServings)
+            	cookNoMore = true;   		
     		
 	    	while (!cookNoMore) {
 	    		aMeal = pickAMeal();
 	    		if (aMeal != null) {
 	    			cookAHotMeal(aMeal);
 	    			cookNoMore = true;
-	    			//exit = true;
 	    		}
 	    	}
     	}
     }
  
-
-	
-   /* 
-    // 2014-12-01 Created getMealServings()  
-	public int getMealServings(List<CookedMeal> mealList, CookedMeal meal) {
-		int num = 0;
-		String name = meal.getName();
-		
-		Iterator<CookedMeal> j = mealList.iterator();
-			while (j.hasNext()) {
-    			CookedMeal nowMeal = j.next();
-    			String nowMealName = nowMeal.getName();
-    			// count only those that have the same name
-    			if (nowMealName == name) // use .equals() to compare value of a String
-    				num++;
-			}
-		return num;
-	}
-	*/
 		
     /**
      * Gets the amount of the food item in the whole settlement.
@@ -552,16 +527,13 @@ implements Serializable {
 
        	List<Ingredient> ingredientList = aMeal.getIngredientList();
         Iterator<Ingredient> i = ingredientList.iterator();
-        
-        //List<Double> proportionList = new ArrayList<Double>();
-        //int ii = 0;
+
         while (i.hasNext()) {
         	
 	        Ingredient oneIngredient;
 	        oneIngredient = i.next();
 	        String ingredientName = oneIngredient.getName();
 	        double dryWeight = oneIngredient.getDryWeight();
-	        //proportionList.add(proportion);
 	            	
 	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 	        double ingredientAvailable = getFreshFood(ingredientAR);
@@ -573,24 +545,17 @@ implements Serializable {
 	        }
 	        else { 
 	        	oneIngredient.setIsItAvailable(false);
-                //logger.info(ingredientName + 
-                //"  Required : " + amount + 
-                //"  Remaining : " +  ingredientAvailable); 
                 result = false;
                 }       
-	        //ii++;
         }
-        //logger.info(" result from checkAmountAvailable() : " + result);
 		return result;
     }
     
     // 2014-11-29 Created cookAHotMeal()
-    // 014-12-12 Revised to deduct the dry weight for each ingredient
+    // 2014-12-12 Revised to deduct the dry weight for each ingredient
     public void cookAHotMeal(HotMeal hotMeal) {
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();    	
-        //boolean isAmountAV = checkAmountAvailable(hotMeal);
-        //if (isAmountAV) {
 	    Iterator<Ingredient> i = ingredientList.iterator();
 	        
 	        while (i.hasNext()) {
@@ -627,17 +592,15 @@ implements Serializable {
 	    	//TODO: kitchen equipment and quality of food should affect mealQuality
 	       	int mealQuality = getBestCookSkill();
 	        MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	        //int id = 0;
-	        //if (cookedMeals == null) 
-	        //	id = 0;
-	        //else id = cookedMeals.size();
-	        
-	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration);
+	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration, producerName, this);
 	        //logger.info("a new meal made : " + meal.getName());    
 	    	cookedMeals.add(meal);
-	    	int size = cookedMeals.size();
+            int numOfCookedMeal = cookedMeals.size();	
+            if ( numOfCookedMealCache != numOfCookedMeal ) {
+            	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
+            	numOfCookedMealCache = numOfCookedMeal;
+            }
 	    	mealCounterPerSol++;
-	    	//logger.info("# of available meals : " + size);    
 	    	//logger.info(mealCounterPerSol + " meals made today");    
 
 	    	// 2014-12-08 Added to Multimaps
@@ -648,11 +611,12 @@ implements Serializable {
 	  	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
 	  	        			" has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
 	  	    }
-	        //logger.info(getBuilding().getBuildingManager().getSettlement().getName() + 
-  	        //			" has " + meals.size() + " meal(s) and quality is " + mealQuality);
-	        //logger.info(" BestMealQuality : " + getBestMealQuality());      
+     
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
-        //}
+    }
+    
+    public void setChef(String name) {
+    	this.producerName = name;
     }
     
     // 2014-12-01 Added getCookedMealList()
@@ -662,7 +626,6 @@ implements Serializable {
 
     /**
      * Gets the amount resource of the fresh food from a specified food group. 
-     * 
      * @param String food group
      * @return AmountResource of the specified fresh food 
      */
@@ -711,8 +674,7 @@ implements Serializable {
 	     //logger.info(" hasAMeal : "+ hasAMeal);
 	     if ( hasAMeal ) {
 	         int newNumOfCookedMeal = cookedMeals.size();
-	         //if ( numOfCookedMealCache != newNumOfCookedMeal)
-	         //	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+	         //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
 	         Iterator<CookedMeal> i = cookedMeals.iterator();
 	         while (i.hasNext()) {
 	            CookedMeal meal = i.next();
@@ -721,10 +683,9 @@ implements Serializable {
 	             
 	            // Added 2014-12-08 : Sanity check for the passing of each day
 	            int newDay = currentTime.getSolOfMonth();
-	            if ( newDay != dayCache) {
+	            if ( newDay != solCache) {
 	            	// reset back to zero at the beginning of a new day.
-	            	//System.out.println("Sol : " + newDay );// + settlement);
-	            	
+	    	    	logger.info("Sol " + newDay + " : " + mealCounterPerSol + " meals made today at " + settlement.getName()); 
 	            	mealCounterPerSol = 0;
 	            	if (!timeMap.isEmpty()) {
 	    				timeMap.clear();
@@ -732,7 +693,7 @@ implements Serializable {
 	    			if (!qualityMap.isEmpty()) {
 	    				qualityMap.clear();	
 	    			}
-	            	dayCache = newDay;
+	            	solCache = newDay;
 	            }
 	         
 	            // Move expired meals back to food again (refrigerate leftovers).
@@ -748,8 +709,9 @@ implements Serializable {
 	                    // remove the cookedMeal and store it
 	                    inv.storeAmountResource(dryFoodAR, dryWeightPerMeal , false);
 	                    //logger.info("TimePassing() : Refrigerate " + dryWeightPerMeal + " kg " + dryFoodAR.getName());
+	                    dailyMealList.add(meal);
 	                    i.remove();
-	 
+	                    
 	                    if(logger.isLoggable(Level.FINEST)) {
 	                        logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
 	                                getBuilding().getBuildingManager().getSettlement().getName());
@@ -786,9 +748,18 @@ implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-
+        inv = null;
         cookedMeals.clear();
         cookedMeals = null;
+        settlement = null;
+        dailyMealList.clear();
+        dailyMealList = null;
+        aMeal = null;
+        mealConfigMealList.clear();
+        mealConfigMealList = null;
+        dryFoodAR = null;
+        cropTypeList.clear();
+        cropTypeList = null;
     }
 
 	@Override
@@ -803,13 +774,4 @@ implements Serializable {
 		return 0;
 	}
 	
-    // 2014-12-07 Added nameMap
-    //public Multimap<String, Integer> getNameMap() {
-    //	return nameMap;
-    //};
-    
-    // 2014-12-08 Added servingsSet
-    //public Multiset<String> getServingsSet() {
-	//	return servingsSet;
-    //};
 }

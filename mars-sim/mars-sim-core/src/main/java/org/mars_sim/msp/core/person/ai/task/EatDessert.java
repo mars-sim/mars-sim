@@ -109,10 +109,10 @@ implements Serializable {
             kitchen = getKitchenWithDessert(person);
             if (kitchen != null) {
             	dessertLocation = kitchen.getBuilding().getNickName();   
+               	if (aServingOfDessert != null) {
+               		aServingOfDessert = kitchen.getFreshDessert();
+               	}
             }
-           	if (aServingOfDessert != null) {
-           		aServingOfDessert = kitchen.getFreshDessert();
-           	}
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -179,25 +179,22 @@ implements Serializable {
 
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            try {
-      	
-            	if (aServingOfDessert != null) {
+    		try {
+            if (aServingOfDessert != null) {
                 	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
                   	//String nameDessert = aServingOfDessert.getName();
-                  	//a serving of dessert has already been
             		//System.out.println( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
             	}
             	else { // if a person does not get a hold of a piece of cooked meal 
-            		
+
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
-            			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit());
-            			// the vehicle " + person.getVehicle().getName() + " or
+            			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()
             		}
             		else 
             		{
             			//System.out.println(namePerson + " not in a vehicle. can't obtain food from container, end the task.");
-                        //endTask();
+                        endTask();
             		}
             	}
             		// 2014-11-28 Computed new hunger level
@@ -205,7 +202,7 @@ implements Serializable {
                 if (hunger < 900) 
                 	hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);
                 else if (hunger > 900)
-                	hunger = 9000;
+                	hunger = 900;
                 condition.setHunger(hunger);
             }
             catch (Exception e) {
