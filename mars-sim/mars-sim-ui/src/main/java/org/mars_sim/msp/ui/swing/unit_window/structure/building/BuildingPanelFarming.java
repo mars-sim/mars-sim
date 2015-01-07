@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @version 3.07 2015-01-01
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -295,6 +295,8 @@ implements Serializable, MouseListener {
 		           	selectCrop();
 	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
 		           	//System.out.println("BuildingPanelFarming.java: Just deleted " + cropType );
+			        // 2015-01-06 Added listUpdate()
+	            	listUpdate(); 
 	            	repaint();
 				}
 			}
@@ -414,7 +416,7 @@ implements Serializable, MouseListener {
  		listScrollPanel.validate();
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
-		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Crops List "));
 		comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
     	//list.setSelectedIndex(0);
@@ -464,7 +466,12 @@ implements Serializable, MouseListener {
 		
 		// Update list
 		listModel.update();
-		listScrollPanel.validate();
+ 		list.validate();
+ 		list.revalidate();
+ 		list.repaint();
+ 		listScrollPanel.validate();
+ 		listScrollPanel.revalidate();
+ 		listScrollPanel.repaint();
 	}
     
 	
