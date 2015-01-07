@@ -445,7 +445,7 @@ implements Serializable {
         //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
         //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
 
-    	while ( cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
+    	if (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
 	    	
       		boolean exit = false;
     		
