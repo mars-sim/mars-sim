@@ -236,7 +236,9 @@ implements ActionListener, MenuListener {
 		showUnitBarItem.addActionListener(this);
 		showUnitBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_DOWN_MASK, false));
 		showUnitBarItem.setToolTipText(Msg.getString("mainMenu.tooltip.unitbar")); //$NON-NLS-1$
+		showUnitBarItem.setState(false);
 		settingsMenu.add(showUnitBarItem);
+
 		
 		// Create Show Tool Bar menu item
 		showToolBarItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.toolbar")); //$NON-NLS-1$

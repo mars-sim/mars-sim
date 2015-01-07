@@ -6,7 +6,7 @@
  * Courtesy of Vladimir Ikryanov
  */
 
-package org.mars_sim.msp.ui.swing.tool.settlement;
+package org.mars_sim.msp.ui.swing.tool;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;

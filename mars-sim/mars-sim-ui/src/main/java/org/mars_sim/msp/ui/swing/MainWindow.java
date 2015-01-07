@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2014-12-27
+ * @version 3.07 2015-01-07
  * @author Scott Davis
  */
 
@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -20,6 +22,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -33,6 +36,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
+import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -68,6 +73,19 @@ public class MainWindow {
 	
 	// 2014-12-27 Added delay timer
 	private Timer timer;
+
+    //protected ShowDateTime showDateTime;
+    private JStatusBar statusBar;
+    private JLabel leftLabel;
+    private JLabel maxMemLabel;
+    private JLabel memUsedLabel;
+    //private JLabel dateLabel;
+    private JLabel timeLabel;
+    private int maxMem;
+    private int memAV;
+    private int memUsed;
+    private String statusText;
+    private String earthTime;
 
 	/**
 	 * Constructor.
@@ -111,15 +129,48 @@ public class MainWindow {
 		toolToolbar = new ToolToolBar(this);
 		mainPane.add(toolToolbar, BorderLayout.NORTH);
 
+		
+		// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
+		JPanel bottomPane = new JPanel(new BorderLayout());
+		
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this);
-		mainPane.add(unitToolbar, BorderLayout.SOUTH);
-
+		mainPane.add(bottomPane, BorderLayout.SOUTH);
+		
+		bottomPane.add(unitToolbar, BorderLayout.CENTER);
+	
+		
 		// set the visibility of tool and unit bars from preferences
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
-		
+		// 2015-01-07 Added statusBar
+        statusBar = new JStatusBar();
+        //statusText = "Mars-Sim 3.07 is running";
+        leftLabel = new JLabel(statusText);
+		statusBar.setLeftComponent(leftLabel);
+    
+        maxMemLabel = new JLabel();
+        maxMemLabel.setHorizontalAlignment(JLabel.CENTER);
+        maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+        maxMemLabel.setText("Max Memory Used: " + maxMem +  " MB");
+        statusBar.addRightComponent(maxMemLabel, false);
+
+        memUsedLabel = new JLabel();
+        memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
+        memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+        memUsed = maxMem - memAV;
+        memUsedLabel.setText("Current Memory Usage : " + memUsed +  " MB");
+        statusBar.addRightComponent(memUsedLabel, false);       
+  
+        timeLabel = new JLabel();
+        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        statusBar.addRightComponent(timeLabel, false);
+
+        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+   
+        bottomPane.add(statusBar, BorderLayout.SOUTH);	        
+		   
 		// add mainpane
 		mainPane.add(desktop, BorderLayout.CENTER);
 
@@ -163,9 +214,26 @@ public class MainWindow {
 		int seconds = 2;
 		timer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
+		int timeDelay = 1000;
+		ActionListener timeListener;
+		timeListener = new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent evt) {
+        		//leftLabel.setText(statusText); 
+				earthTime = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
+				timeLabel.setText(earthTime);
+				maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+                memUsed = maxMem - memAV;
+                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
+                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
+		    }
+		};
+		
+		new javax.swing.Timer(timeDelay, timeListener).start();
+	
 	}
-
-
+	
 	// 2014-12-27 Added OpenSettlementWindow
 	public class OpenSettlementWindow extends TimerTask {
 		public void run() {

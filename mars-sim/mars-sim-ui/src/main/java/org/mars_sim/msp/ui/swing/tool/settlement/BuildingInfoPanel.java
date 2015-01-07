@@ -18,6 +18,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.*;
 
+import org.mars_sim.msp.ui.swing.tool.CustomScroll;
+
 
 @SuppressWarnings("serial")
 public class BuildingInfoPanel extends JPanel {// JDialog {
