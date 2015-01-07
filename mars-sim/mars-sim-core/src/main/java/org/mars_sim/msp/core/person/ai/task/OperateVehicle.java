@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.07 2014-11-17
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -89,7 +89,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		
 		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
-		    walkToOperatorActivitySpotInRover((Rover) vehicle);
+		    walkToOperatorActivitySpotInRover((Rover) vehicle, false);
 		}
 		
 		addPhase(MOBILIZE);

@@ -84,7 +84,7 @@ implements Serializable {
             if (diningBuilding != null) {
 
                 // Walk to dining building.
-                walkToActivitySpotInBuilding(diningBuilding);
+                walkToActivitySpotInBuilding(diningBuilding, true);
                 walkSite = true;
             }
 
@@ -107,12 +107,12 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
                 }
             }
             else {
                 // Walk to random location.
-                walkToRandomLocation();
+                walkToRandomLocation(true);
             }
         }
 
@@ -281,7 +281,11 @@ implements Serializable {
             try {
                 Inventory inv = containerUnit.getInventory();
                 AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
-                if (inv.getAmountResourceStored(food, false) > 0D) result = true;;
+                PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+                double foodAmount = config.getFoodConsumptionRate() * .25D;
+                if (inv.getAmountResourceStored(food, false) >= foodAmount) {
+                    result = true;;
+                }
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);

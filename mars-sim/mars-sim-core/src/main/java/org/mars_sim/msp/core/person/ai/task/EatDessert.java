@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatDessert.java
- * @version 3.07 2014-11-28
+ * @version 3.07 2015-01-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -102,7 +102,7 @@ implements Serializable {
             if (diningBuilding != null) {
 
                 // Walk to dining building.
-                walkToActivitySpotInBuilding(diningBuilding);
+                walkToActivitySpotInBuilding(diningBuilding, true);
                 walkSite = true;
             }
                 // If fresh dessert is available in a local kitchen, go there.
@@ -122,12 +122,12 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
                 }
             }
             else {
                 // Walk to random location.
-                walkToRandomLocation();
+                walkToRandomLocation(true);
              	//System.out.println(person.getName() + " is not in a vehicle and is walking to another location in " + person.getContainerUnit());
         		//System.out.println("EatDessert constructor : other circumstances calling walkToRandomLocation()");
             }
@@ -179,14 +179,15 @@ implements Serializable {
 
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-    		try {
-            if (aServingOfDessert != null) {
+            try {
+      	
+            	if (aServingOfDessert != null) {
                 	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
                   	//String nameDessert = aServingOfDessert.getName();
             		//System.out.println( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
             	}
             	else { // if a person does not get a hold of a piece of cooked meal 
-
+            		
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
             			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()

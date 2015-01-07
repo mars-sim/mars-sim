@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.07 2014-10-12
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -362,7 +362,7 @@ implements ResearchScientificStudy, Serializable {
                 Building labBuilding = ((Research) lab).getBuilding();
 
                 // Walk to lab building.
-                walkToActivitySpotInBuilding(labBuilding);
+                walkToActivitySpotInBuilding(labBuilding, false);
 
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
@@ -370,7 +370,7 @@ implements ResearchScientificStudy, Serializable {
             else if (location == LocationSituation.IN_VEHICLE) {
 
                 // Walk to lab internal location in rover.
-                walkToLabActivitySpotInRover((Rover) person.getVehicle());
+                walkToLabActivitySpotInRover((Rover) person.getVehicle(), false);
 
                 lab.addResearcher();
                 malfunctions = person.getVehicle().getMalfunctionManager();

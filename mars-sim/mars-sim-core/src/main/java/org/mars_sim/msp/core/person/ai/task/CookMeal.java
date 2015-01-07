@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2015-01-04
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  * 
  * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
@@ -91,7 +91,7 @@ implements Serializable {
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	        // Walk to kitchen building.
-	    	walkToActivitySpotInBuilding(kitchenBuilding);	
+	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
 	    //}
 	    //else endTask();
         //2014-10-15 mkung: check if there are any fresh food, if not, endTask()

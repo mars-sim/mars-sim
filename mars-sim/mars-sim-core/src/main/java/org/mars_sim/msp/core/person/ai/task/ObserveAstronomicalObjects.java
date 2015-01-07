@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -82,7 +82,7 @@ implements ResearchScientificStudy, Serializable {
             if (observatory != null) {
 
                 // Walk to observatory building.
-                walkToActivitySpotInBuilding(observatory.getBuilding());
+                walkToActivitySpotInBuilding(observatory.getBuilding(), false);
                 observatory.addObserver();
                 isActiveObserver = true;
             }

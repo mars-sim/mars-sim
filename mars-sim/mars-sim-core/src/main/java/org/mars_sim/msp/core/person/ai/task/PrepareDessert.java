@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessert.java
- * @version 3.07 2015-01-03
+ * @version 3.07 2015-01-06
  * @author Manny Kung
  * 
  *   
@@ -96,7 +96,7 @@ implements Serializable {
         if (kitchenBuilding != null) {
             kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
             // Walk to kitchen building.
-            walkToActivitySpotInBuilding(kitchenBuilding);
+            walkToActivitySpotInBuilding(kitchenBuilding, false);
         }
         else endTask();
         

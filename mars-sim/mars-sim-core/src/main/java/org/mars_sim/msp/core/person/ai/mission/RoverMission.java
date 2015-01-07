@@ -387,9 +387,8 @@ extends VehicleMission {
 		// Have person exit rover if necessary.
 		if (person.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
 
-			// Get random inhabitable building at settlement.
-			Building destinationBuilding = disembarkSettlement.getBuildingManager().
-					getRandomAirlockBuilding();
+			// Get closest airlock building at settlement.
+		    Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(person).getEntity();
 			if (destinationBuilding != null) {
 				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
@@ -425,8 +424,8 @@ extends VehicleMission {
 					logger.severe(Msg.getString("RoverMission.log.emergencyEnterSettlement",crewmember.getName(),disembarkSettlement.getName())); //$NON-NLS-1$
 					rover.getInventory().retrieveUnit(crewmember);
 					disembarkSettlement.getInventory().storeUnit(crewmember);
-					BuildingManager.addToRandomBuilding(crewmember,
-							disembarkSettlement);
+					Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(person).getEntity();
+					BuildingManager.addPersonToBuildingRandomLocation(crewmember, destinationBuilding);
 				}
 			}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -78,7 +78,7 @@ implements Serializable {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
-                    walkToActivitySpotInBuilding(adminBuilding);
+                    walkToActivitySpotInBuilding(adminBuilding, false);
                     adminWalk = true;
                 }
             }
@@ -88,12 +88,12 @@ implements Serializable {
                 if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
-                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
                     }
                 }
                 else {
                     // Walk to random location.
-                    walkToRandomLocation();
+                    walkToRandomLocation(true);
                 }
             }
         }

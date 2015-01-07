@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -74,7 +74,7 @@ public class Sleep extends Task implements Serializable {
             Building quarters = getAvailableLivingQuartersBuilding(person);
             if (quarters != null) {
                 // Walk to quarters.
-                walkToActivitySpotInBuilding(quarters);
+                walkToActivitySpotInBuilding(quarters, true);
                 accommodations = (LivingAccommodations) quarters.getFunction(
                         BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations.addSleeper();
@@ -87,12 +87,12 @@ public class Sleep extends Task implements Serializable {
             if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
                 }
             }
             else {
                 // Walk to random location.
-                walkToRandomLocation();
+                walkToRandomLocation(true);
             }
         }
 

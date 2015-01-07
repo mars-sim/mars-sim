@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -619,17 +619,18 @@ implements Serializable, Comparable<Task> {
     /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToActivitySpotInBuilding(Building building) {
+    protected void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
         
         BuildingFunction functionType = getRelatedBuildingFunction();
         
         if ((functionType != null) && (building.hasFunction(functionType))) {
-            walkToActivitySpotInBuilding(building, functionType);
+            walkToActivitySpotInBuilding(building, functionType, allowFail);
         }
         else {
             // If no available activity spot, go to random location in building.
-            walkToRandomLocInBuilding(building);
+            walkToRandomLocInBuilding(building, allowFail);
         }
     }
     
@@ -637,8 +638,10 @@ implements Serializable, Comparable<Task> {
      * Walk to an available activity spot in a building.
      * @param building the destination building.
      * @param functionType the building function type for the activity.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToActivitySpotInBuilding(Building building, BuildingFunction functionType) {
+    protected void walkToActivitySpotInBuilding(Building building, BuildingFunction functionType, 
+            boolean allowFail) {
         
         Function buildingFunction = building.getFunction(functionType);
         
@@ -647,67 +650,73 @@ implements Serializable, Comparable<Task> {
         if (settlementLoc != null) {
             
             // Create subtask for walking to destination.
-            createWalkingSubtask(building, settlementLoc);
+            createWalkingSubtask(building, settlementLoc, allowFail);
         }
         else {
             
             // If no available activity spot, go to random location in building.
-            walkToRandomLocInBuilding(building);
+            walkToRandomLocInBuilding(building, allowFail);
         }
     }
     
     /**
      * Walk to a random interior location in a building.
      * @param building the destination building.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToRandomLocInBuilding(Building building) {
+    protected void walkToRandomLocInBuilding(Building building, boolean allowFail) {
         
         Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(building);
         Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                 interiorPos.getX(), interiorPos.getY(), building);
         
         // Create subtask for walking to destination.
-        createWalkingSubtask(building, adjustedInteriorPos);
+        createWalkingSubtask(building, adjustedInteriorPos, allowFail);
     }
     
     /**
      * Walk to an available operator activity spot in a rover.
      * @param rover the rover.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToOperatorActivitySpotInRover(Rover rover) {
-        walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots());
+    protected void walkToOperatorActivitySpotInRover(Rover rover, boolean allowFail) {
+        walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots(), allowFail);
     }
     
     /**
      * Walk to an available passenger activity spot in a rover.
      * @param rover the rover.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToPassengerActivitySpotInRover(Rover rover) {
-        walkToActivitySpotInRover(rover, rover.getPassengerActivitySpots());
+    protected void walkToPassengerActivitySpotInRover(Rover rover, boolean allowFail) {
+        walkToActivitySpotInRover(rover, rover.getPassengerActivitySpots(), allowFail);
     }
     
     /**
      * Walk to an available lab activity spot in a rover.
      * @param rover the rover.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToLabActivitySpotInRover(Rover rover) {
-        walkToActivitySpotInRover(rover, rover.getLabActivitySpots());
+    protected void walkToLabActivitySpotInRover(Rover rover, boolean allowFail) {
+        walkToActivitySpotInRover(rover, rover.getLabActivitySpots(), allowFail);
     }
     
     /**
      * Walk to an available sick bay activity spot in a rover.
      * @param rover the rover.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToSickBayActivitySpotInRover(Rover rover) {
-        walkToActivitySpotInRover(rover, rover.getSickBayActivitySpots());
+    protected void walkToSickBayActivitySpotInRover(Rover rover, boolean allowFail) {
+        walkToActivitySpotInRover(rover, rover.getSickBayActivitySpots(), allowFail);
     }
     
     /**
      * Walk to an available activity spot in a rover from a list of activity spots.
      * @param rover the rover.
      * @param activitySpots list of activity spots.
+     * @param allowFail true if walking is allowed to fail.
      */
-    private void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots) {
+    private void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots, boolean allowFail) {
         
         // Determine available operator activity spots.
         Point2D activitySpot = null;
@@ -729,7 +738,7 @@ implements Serializable, Comparable<Task> {
             }
         }
         
-        walkToActivitySpotInRover(rover, activitySpot);
+        walkToActivitySpotInRover(rover, activitySpot, allowFail);
     }
     
     /**
@@ -763,39 +772,42 @@ implements Serializable, Comparable<Task> {
      * Walk to an available activity spot in a rover.
      * @param rover the destination rover.
      * @param activitySpot the activity spot as a Point2D object.
+     * @param allowFail true if walking is allowed to fail.
      */
-    private void walkToActivitySpotInRover(Rover rover, Point2D activitySpot) {
+    private void walkToActivitySpotInRover(Rover rover, Point2D activitySpot, boolean allowFail) {
         
         if (activitySpot != null) {
             
             // Create subtask for walking to destination.
-            createWalkingSubtask(rover, activitySpot);
+            createWalkingSubtask(rover, activitySpot, allowFail);
         }
         else {
             
             // Walk to a random location in the rover.
-            walkToRandomLocInRover(rover);
+            walkToRandomLocInRover(rover, allowFail);
         }
     }
     
     /**
      * Walk to a random interior location in a rover.
      * @param rover the destination rover.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToRandomLocInRover(Rover rover) {
+    protected void walkToRandomLocInRover(Rover rover, boolean allowFail) {
         
         Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
         Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                 interiorPos.getX(), interiorPos.getY(), rover);
         
         // Create subtask for walking to destination.
-        createWalkingSubtask(rover, adjustedInteriorPos);
+        createWalkingSubtask(rover, adjustedInteriorPos, allowFail);
     }
     
     /**
      * Walk to a random location.
+     * @param allowFail true if walking is allowed to fail.
      */
-    protected void walkToRandomLocation() {
+    protected void walkToRandomLocation(boolean allowFail) {
         
         // If person is in a settlement, walk to random building.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -806,7 +818,7 @@ implements Serializable, Comparable<Task> {
                 int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
                 Building building = buildingList.get(buildingIndex);
                 
-                walkToRandomLocInBuilding(building);
+                walkToRandomLocInBuilding(building, allowFail);
             }
         }
         // If person is in a vehicle, walk to random location within vehicle.
@@ -814,7 +826,7 @@ implements Serializable, Comparable<Task> {
             
             // Walk to a random location within rover if possible.
             if (person.getVehicle() instanceof Rover) {
-                walkToRandomLocInRover((Rover) person.getVehicle());
+                walkToRandomLocInRover((Rover) person.getVehicle(), allowFail);
             }
         }
     }
@@ -823,8 +835,9 @@ implements Serializable, Comparable<Task> {
      * Create a walk to an interior position in a building or vehicle.
      * @param interiorObject the destination interior object.
      * @param settlementPos the settlement local position destination.
+     * @param allowFail true if walking is allowed to fail.
      */
-    private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos) {
+    private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
         
         if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 
                 interiorObject)) {
@@ -835,7 +848,10 @@ implements Serializable, Comparable<Task> {
         }
         else {
             logger.fine(person.getName() + " unable to walk to " + interiorObject);
-            endTask();
+            
+            if (!allowFail) {
+                endTask();
+            }
         }
     }
 

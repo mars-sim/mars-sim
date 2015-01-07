@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RequestMedicalTreatment.java
- * @version 3.07 2014-11-13
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -71,7 +71,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 MedicalCare medicalCare = (MedicalCare) medicalAid;
 
                 // Walk to medical care building.
-                walkToActivitySpotInBuilding(medicalCare.getBuilding());
+                walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
             }
             else if (medicalAid instanceof SickBay) {
                 // Walk to medical activity spot in rover.
@@ -79,7 +79,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 if (vehicle instanceof Rover) {
                     
                     // Walk to rover sick bay activity spot.
-                    walkToSickBayActivitySpotInRover((Rover) vehicle);
+                    walkToSickBayActivitySpotInRover((Rover) vehicle, false);
                 }
             }
         }

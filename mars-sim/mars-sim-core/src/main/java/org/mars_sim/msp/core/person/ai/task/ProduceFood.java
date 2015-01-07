@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionGood.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2015-01-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -82,7 +82,7 @@ implements Serializable {
 			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
 
 			// Walk to foodProduction building.
-			walkToActivitySpotInBuilding(foodProductionBuilding);
+			walkToActivitySpotInBuilding(foodProductionBuilding, false);
 		} 
 		else {
 			endTask();

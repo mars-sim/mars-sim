@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -92,7 +92,7 @@ implements Serializable {
         			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         			
         			// Walk to garage.
-        			walkToActivitySpotInBuilding(building);
+        			walkToActivitySpotInBuilding(building, false);
         		}
         		catch (Exception e) {
         		    e.printStackTrace(System.err);
@@ -114,7 +114,7 @@ implements Serializable {
         					garage.addVehicle(vehicle);
         					
         					// Walk to garage.
-        					walkToActivitySpotInBuilding(garageBuilding);
+        					walkToActivitySpotInBuilding(garageBuilding, false);
         				} 
         			}
         			catch (Exception e) {
