@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2014-12-08
+ * @version 3.07 2015-01-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -29,8 +28,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -98,6 +95,15 @@ private CookingTableModel cookingTableModel;
 	/** Sort column is defined. */
 	private int sortedColumn = 0;
 	
+	/** The number of available meals. */
+	private JLabel numMealsLabel;
+	private int numMealsCache = 0;
+	/** The number of meals cooked today. */
+	private JLabel numMealsTodayLabel;
+	private int numMealsTodayCache = 0;
+	
+	private Settlement settlement;
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -113,12 +119,11 @@ private CookingTableModel cookingTableModel;
 			unit, desktop
 		);
 
-		Settlement settlement = (Settlement) unit;
-		
+		settlement = (Settlement) unit;
 		
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel cookingLabelPanel = new JPanel(new GridLayout(2,1,0,0));
+		JPanel cookingLabelPanel = new JPanel(new GridLayout(4,1,0,0));
 		topContentPanel.add(cookingLabelPanel);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -130,6 +135,15 @@ private CookingTableModel cookingTableModel;
 		JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
 		cookingLabelPanel.add(label);
 
+		// 2015-01-06 Added numMealsLabel, numMealsTodayLabel
+		// Prepare # of available meals label
+		numMealsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabelPanel.add(numMealsLabel);
+
+		// Prepare # of today cooked meals label
+		numMealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabelPanel.add(numMealsTodayLabel);
+		
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setOpaque(false);
@@ -249,6 +263,35 @@ private CookingTableModel cookingTableModel;
 		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		cookingTableModel.update();
+		
+		// 2015-01-06 Added numMealsTodayLabel, numMealsLabel
+		int numMeals = 0;
+		int numMealsToday = 0;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        while (i.hasNext()) { 		
+        	// for each building's kitchen in the settlement
+        	Building building = i.next();
+    		//System.out.println("Building is " + building.getNickName());
+        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
+				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);			
+				
+				numMeals += kitchen.getNumberOfCookedMeals();				
+				numMealsToday += kitchen.getNumberOfCookedMealsToday();
+        	}
+        }
+
+		// Update # of available meals
+		if (numMealsCache != numMeals) {
+			numMealsCache = numMeals;
+			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfAvailableMeals", numMeals)); //$NON-NLS-1$
+		}
+
+		// Update # of meals cooked today
+		if (numMealsTodayCache != numMealsToday) {
+			numMealsTodayCache = numMealsToday;
+			numMealsTodayLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMealsToday", numMealsToday)); //$NON-NLS-1$
+		}	
+		
 	}
 
 	
@@ -278,8 +321,7 @@ private CookingTableModel cookingTableModel;
 			
 		private Collection<Map.Entry<String,Integer>> allQualityMapE ;
 		private Collection<Entry<String, MarsClock>> allTimeMapE;
-		
-		
+				
 		//private List<Multimap<String, Integer>> qualityMapList;
 		//private List<Multimap<String, MarsClock>> timeMapList;	
 	

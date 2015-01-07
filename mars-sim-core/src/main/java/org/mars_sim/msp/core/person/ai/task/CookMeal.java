@@ -106,6 +106,8 @@ implements Serializable {
 		  String jobName = person.getMind().getJob().getName(person.getGender());
 		  logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
 		    	                " in " + person.getSettlement());      
+		  // 2015-01-06
+		  kitchen.setChef(person.getName());
 	    }
 	    else endTask();
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelCooking.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
@@ -17,7 +17,7 @@ import java.awt.*;
 
 /**
  * This class is a building function panel representing 
- * the cooking and food prep info of a settlement building.
+ * the cooking and food prepation info of a settlement building.
  */
 public class BuildingPanelCooking
 extends BuildingFunctionPanel {
@@ -29,8 +29,10 @@ extends BuildingFunctionPanel {
 	private Cooking kitchen;
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
-	/** The number of meals. */
+	/** The number of available meals. */
 	private JLabel numMealsLabel;
+	/** The number of meals cooked today. */
+	private JLabel numMealsTodayLabel;
 	/** The quality of the meals. */
 	private JLabel mealQualityLabel;
 
@@ -38,7 +40,8 @@ extends BuildingFunctionPanel {
 	private int numCooksCache;
 	private int numMealsCache;
 	private int mealQualityCache;
-
+	private int numMealsTodayCache;
+	
 	/**
 	 * Constructor.
 	 * @param kitchen the cooking building this panel is for.
@@ -56,7 +59,7 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(6, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -77,11 +80,18 @@ extends BuildingFunctionPanel {
 		JLabel cookCapacityLabel = new JLabel(Msg.getString("BuildingPanelCooking.cookCapacity", kitchen.getCookCapacity()), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(cookCapacityLabel);
 
-		// Prepare meal number label
+		// Prepare # of available meal label
 		numMealsCache = kitchen.getNumberOfCookedMeals();
-		numMealsLabel = new JLabel(Msg.getString("BuildingPanelCooking.numberOfMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
+		numMealsLabel = new JLabel(Msg.getString("BuildingPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsLabel);
 
+		// 2015-01-06 Added numMealsTodayLabel
+		// Prepare # of today cooked meal label
+		numMealsTodayCache = kitchen.getNumberOfCookedMealsToday();
+		numMealsTodayLabel = new JLabel(Msg.getString("BuildingPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
+		labelPanel.add(numMealsTodayLabel);
+
+		
 		// Prepare meal quality label
 		String mealQualityStr;
 		mealQualityCache = kitchen.getBestMealQuality();
@@ -108,12 +118,21 @@ extends BuildingFunctionPanel {
 
 		int numMeals = 0;
 		numMeals = kitchen.getNumberOfCookedMeals();
-		// Update meal number
+		// Update # of available meals
 		if (numMealsCache != numMeals) {
 			numMealsCache = numMeals;
-			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMeals", numMeals)); //$NON-NLS-1$
+			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfAvailableMeals", numMeals)); //$NON-NLS-1$
 		}
 
+		// 2015-01-06 Added numMealsTodayLabel
+		int numMealsToday = 0;
+		numMealsToday = kitchen.getNumberOfCookedMealsToday();
+		// Update # of meals cooked today
+		if (numMealsTodayCache != numMealsToday) {
+			numMealsTodayCache = numMealsToday;
+			numMealsTodayLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMealsToday", numMealsToday)); //$NON-NLS-1$
+		}	
+		
 		String mealQualityStr;
 		int mealQuality = 0;
 		mealQuality = kitchen.getBestMealQuality();

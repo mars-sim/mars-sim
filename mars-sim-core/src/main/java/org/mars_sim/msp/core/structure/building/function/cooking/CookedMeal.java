@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookedMeal.java
- * @version 3.07 2014-12-07
+ * @version 3.07 2015-01-06
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -26,29 +26,42 @@ implements Serializable, Cloneable {
 	private int quality;
 	private MarsClock expirationTime;
 	// 2014-11-28 Added name
-	private String name;
+	private String mealName;
+	
+	private String producerName;
+	private String consumerName;
+	private Cooking kitchen;
 	
 	/**
 	 * Constructor.
 	 * @param quality the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String name, int quality, MarsClock creationTime) {
+	public CookedMeal(String mealName, int quality, MarsClock creationTime, String producerName, Cooking kitchen) {
 		this.quality = quality;
-		this.name = name;
+		this.mealName = mealName;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
+		this.producerName = producerName;
+		this.kitchen = kitchen; 
+	}
+	// 2014-12-07 Added this constructor
+	public CookedMeal(CookedMeal cookedMeal, String consumerName) {
+		this.quality = cookedMeal.quality;
+		this.mealName = cookedMeal.mealName;
+		this.expirationTime = cookedMeal.expirationTime;
+		this.consumerName = consumerName;
 	}
 	// 2014-12-07 Added this copy constructor
 	public CookedMeal(CookedMeal cookedMeal) {
 		this.quality = cookedMeal.quality;
-		this.name = cookedMeal.name;
+		this.mealName = cookedMeal.mealName;
 		this.expirationTime = cookedMeal.expirationTime;
 	}
 	
 	// 2014-11-28 Added getName()
 	public String getName() {
-		return name;
+		return mealName;
 	}
 
 	/**
@@ -65,5 +78,9 @@ implements Serializable, Cloneable {
 	 */
 	public MarsClock getExpirationTime() {
 		return expirationTime;
+	}
+	
+	public void setConsumerName(String consumerName) {
+		this.consumerName = consumerName;
 	}
 }
