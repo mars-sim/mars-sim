@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2015-01-04
+ * @version 3.07 2015-01-06
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -88,7 +88,8 @@ implements Serializable {
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         fatigue = RandomUtil.getRandomDouble(1000D);
-        hunger = RandomUtil.getRandomDouble(1000D);
+        //2015-01-06 Changed hunger to less than 400D
+        hunger = RandomUtil.getRandomDouble(400D);
         stress = RandomUtil.getRandomDouble(100D);
         alive = true;
         medicationList = new ArrayList<Medication>();
@@ -276,7 +277,6 @@ implements Serializable {
 			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
 			// subtract food from container
 			container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);	
-			//System.out.println("PhysicalCondition : " + foodEaten + " kg of soymilk was just consumed");
 		}
     }
    
@@ -287,9 +287,6 @@ implements Serializable {
      * @param container unit to get food from
      * @throws Exception if error consuming food.
      */
-	// 2014-11-06 Toss a dice to decide what food category to eat
-	// Spice Group is excluded from the selection
-    // 2014-11-28 Temporarily disable selection of other fresh food
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container, LifeSupport.FOOD);
@@ -302,7 +299,7 @@ implements Serializable {
      * @param container unit to get food from
      * @throws Exception if error consuming food.  
      */
-	// 2014-11-07 Added consumePackedFood()
+		// 2014-11-07 Added consumePackedFood()
     	public void consumePackedFood(double amount, Unit container, String foodType) {
 	    	AmountResource food = AmountResource.findAmountResource(foodType);
             double foodEaten = amount;
@@ -320,22 +317,19 @@ implements Serializable {
             	foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
             	// subtract food from container
             	container.getInventory().retrieveAmountResource(food, foodEaten);
-    			//System.out.println("PhysicalCondition : " + foodEaten + " kg of dried food was just consumed");
-            	//logger.info("consumePackedFood() : food Eaten : "
-            	//	+ foodEaten +  ", food remaining : " + (foodAvailable-foodEaten));
-            }
+           }
     }
 
     /**
      * Person consumes a given amount of food not taken from local container.
      * @param amount the amount of food to consume (in kg).
-     */
+     
     public void consumeFood(double amount) {
         //System.out.println("PhysicalCondition.java : just called consumeFood(double amount) : food NOT taken from local container. amount is " + amount);
         // if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation()))
         // 	recalculate();
     }
-
+*/
     /**
      * Person consumes given amount of oxygen
      * @param support Life support system providing oxygen.
