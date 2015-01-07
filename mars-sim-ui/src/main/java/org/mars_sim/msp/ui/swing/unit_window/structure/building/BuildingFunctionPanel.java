@@ -7,8 +7,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Color;
-
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.structure.building.Building;

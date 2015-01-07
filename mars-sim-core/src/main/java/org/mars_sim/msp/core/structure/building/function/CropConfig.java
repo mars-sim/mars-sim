@@ -8,12 +8,10 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.

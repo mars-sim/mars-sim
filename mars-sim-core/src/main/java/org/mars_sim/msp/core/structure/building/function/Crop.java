@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;

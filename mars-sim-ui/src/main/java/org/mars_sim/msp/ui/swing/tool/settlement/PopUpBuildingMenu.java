@@ -13,23 +13,14 @@ import java.awt.FlowLayout;
 
 import static java.awt.GraphicsDevice.WindowTranslucency.*;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.awt.peer.ComponentPeer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;

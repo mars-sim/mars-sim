@@ -1,7 +1,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
