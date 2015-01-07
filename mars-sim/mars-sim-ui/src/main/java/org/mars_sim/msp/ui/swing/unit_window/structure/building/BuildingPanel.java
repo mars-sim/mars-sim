@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.07 2015-01-01
+ * @version 3.07 2015-01-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -28,6 +28,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -46,8 +47,9 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.settlement.CustomScroll;
+import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelFoodProduction;
@@ -497,10 +499,11 @@ extends JPanel {
      */
     public void update() {
         // Update each building function panel.
-        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
-        while (i.hasNext()) i.next().update();
+	    Iterator<BuildingFunctionPanel> i = functionPanels.iterator(); 
+	    while (i.hasNext())
+	    	i.next().update();
+
     }
-    
     /**
      * Sets the panel's color theme.
      * @return panel name
