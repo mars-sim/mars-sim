@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-07
+ * @version 3.07 2015-01-08
  * @author Scott Davis
  */
 
@@ -39,7 +39,6 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 /**
@@ -139,7 +138,7 @@ public class MainWindow {
 		
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 	
-		
+
 		// set the visibility of tool and unit bars from preferences
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
@@ -170,7 +169,7 @@ public class MainWindow {
         statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
    
         bottomPane.add(statusBar, BorderLayout.SOUTH);	        
-		   
+		
 		// add mainpane
 		mainPane.add(desktop, BorderLayout.CENTER);
 
@@ -210,9 +209,11 @@ public class MainWindow {
 		desktop.openInitialWindows();
 		
 		// 2014-12-27 Added OpenSettlementWindow with delay timer
-		timer = new Timer();
-		int seconds = 2;
-		timer.schedule(new OpenSettlementWindow(), seconds * 1000);	
+		// I'm commenting this out for now.  I would like the user guide tutorial
+		// to be the only initial tool window open for a new simulation. - Scott
+//		timer = new Timer();
+//		int seconds = 2;
+//		timer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
 		int timeDelay = 1000;
 		ActionListener timeListener;
@@ -231,9 +232,9 @@ public class MainWindow {
 		};
 		
 		new javax.swing.Timer(timeDelay, timeListener).start();
-	
+
 	}
-	
+
 	// 2014-12-27 Added OpenSettlementWindow
 	public class OpenSettlementWindow extends TimerTask {
 		public void run() {
@@ -307,7 +308,7 @@ public class MainWindow {
 			desktop.disposeAnnouncementWindow();
 
 			// Open navigator tool after loading.
-			desktop.openToolWindow(NavigatorWindow.NAME);
+//			desktop.openToolWindow(NavigatorWindow.NAME);
 		}
 	}
 

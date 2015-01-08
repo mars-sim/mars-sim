@@ -52,11 +52,11 @@ class PieChartTab extends MonitorTab {
      */
     private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
-    /** The category name for unknwown. */
+    /** The category name for unknown. */
     private final static String NONECAT = "None";
 
     /**
-     * Basic Pie Dataset with a method to recalculate.
+     * Basic Pie Data set with a method to recalculate.
      */
     @SuppressWarnings("rawtypes")
     static class TablePieDataset
@@ -185,7 +185,7 @@ class PieChartTab extends MonitorTab {
         
         /**
          * Returns the value (possibly null) for a given key.
-         * If the key is not recognised, the method should return null. 
+         * If the key is not recognized, the method should return null. 
          * @see org.jfree.data.KeyedValues#getValue(Comparable)
          * 
          * @param key the key.
@@ -305,7 +305,7 @@ class PieChartTab extends MonitorTab {
     }
 
     /**
-     * Define which column is used to generate the Pie dataset.
+     * Define which column is used to generate the Pie data set.
      *
      * @param column New column index in table model.
      */

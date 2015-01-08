@@ -55,7 +55,7 @@ extends MonitorTab {
 	private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
 	/**
-	 *  Basic Bar Dataset to map a table model onto a Category Data set for
+	 *  Basic Bar Data set to map a table model onto a Category Data set for
 	 *  display on the Bar chart. The Categories are mapped onto the individual
 	 *  rows of the Table Model. The Series are the columns specified to be
 	 *  displayed.
@@ -287,7 +287,7 @@ extends MonitorTab {
 				defaultPos.getLabelAnchor(), defaultPos.getRotationAnchor(), (3D * Math.PI / 2D));
 		hAxis.setBottomCategoryLabelPosition(verticalPosition);
 
-		// Estimate the width of the chart by multipling the categories by the
+		// Estimate the width of the chart by multiplying the categories by the
 		// number of series. First calculate the column width as this is
 		// dependent upon the categories, it can not be smaller than the
 		// label width.
@@ -304,8 +304,8 @@ extends MonitorTab {
 		int chartwidth = columnWidth * barModel.getCategoryCount();
 
 		if (chartwidth > SCROLLTHRESHOLD) {
-			// Scrolling will kick in, then fix the hieght so that it
-			// automatically adjusts to Scroll Viewport hieght; the width
+			// Scrolling will kick in, then fix the height so that it
+			// automatically adjusts to Scroll Viewport height; the width
 			// fix so that label are not too compressed.
 			Dimension preferredSize = new Dimension(chartwidth, 0);
 			panel.setPreferredSize(preferredSize);

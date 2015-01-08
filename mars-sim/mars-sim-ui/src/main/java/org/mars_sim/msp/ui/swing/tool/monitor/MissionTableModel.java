@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2015-01-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -32,7 +32,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
+	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
 	// Column indexes
 	/** Type column. */

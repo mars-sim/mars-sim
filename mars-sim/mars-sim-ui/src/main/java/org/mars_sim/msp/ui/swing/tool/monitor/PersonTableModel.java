@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-08
 
  * @author Barry Evans
  */
@@ -100,13 +100,13 @@ extends UnitTableModel {
 		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[HUNGER] = Msg.getString("PersonTableModel.column.hunger"); //$NON-NLS-1$
-		columnTypes[HUNGER] = Integer.class;
+		columnTypes[HUNGER] = String.class;
 		columnNames[FATIGUE] = Msg.getString("PersonTableModel.column.fatigue"); //$NON-NLS-1$
-		columnTypes[FATIGUE] = Integer.class;
+		columnTypes[FATIGUE] = String.class;
 		columnNames[STRESS] = Msg.getString("PersonTableModel.column.stress"); //$NON-NLS-1$
-		columnTypes[STRESS] = Integer.class;
+		columnTypes[STRESS] = String.class;
 		columnNames[PERFORMANCE] = Msg.getString("PersonTableModel.column.performance"); //$NON-NLS-1$
-		columnTypes[PERFORMANCE] = Integer.class;
+		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
 		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
