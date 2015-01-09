@@ -61,6 +61,8 @@ implements ActionListener {
 		// Fix tool bar
 		setFloatable(false);
 
+		//setPreferredSize(new Dimension(0, 57));
+
 		// Prepare tool buttons
 		prepareToolButtons();
 
@@ -91,7 +93,7 @@ implements ActionListener {
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(true);
+				parentMainWindow.saveSimulation(true, false);
 			};
 		});
 		add(saveButton);
@@ -99,7 +101,7 @@ implements ActionListener {
 		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("img.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveAsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.saveSimulation(false);
+				parentMainWindow.saveSimulation(false, false);
 			};
 		});
 		add(saveAsButton);
