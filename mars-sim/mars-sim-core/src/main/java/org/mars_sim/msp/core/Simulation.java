@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 
 /**
@@ -45,6 +46,9 @@ implements ClockListener, Serializable {
 	/** Version string. */
 	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 
+	/** Build string. */
+	public final static String BUILD = Msg.getString("Simulation.version.build"); //$NON-NLS-1$
+
 	/** Default save file. */
 	public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
 
@@ -56,6 +60,15 @@ implements ClockListener, Serializable {
 			File.separator +
 			Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
 
+	// 2015-01-08 Added autosave
+	/** Autosave directory. */
+	public final static String AUTOSAVE_DIR =
+			System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + 
+			Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
+			File.separator +
+			Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$	
+	
 	/** Singleton instance. */
 	private static final Simulation instance = new Simulation();
 
@@ -263,7 +276,7 @@ implements ClockListener, Serializable {
 	 * @param file the file to be saved to.
 	 * @throws Exception if simulation could not be saved.
 	 */
-	public void saveSimulation(File file) throws IOException {
+	public void saveSimulation(File file, boolean isAutosave) throws IOException {
 		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
 		Simulation simulation = instance();
@@ -273,7 +286,14 @@ implements ClockListener, Serializable {
 		/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
 		 * exist */
 		if (file == null) {
-			file = new File(DEFAULT_DIR, DEFAULT_FILE);
+			// 2015-01-08 Added isAutosave
+			if (isAutosave) {
+				String autosaveFilename = new SystemDateTime().getDateTimeStr() + " build " + BUILD;
+				file = new File(AUTOSAVE_DIR, autosaveFilename);
+				logger.info("Autosaving into " + autosaveFilename);
+			}
+			else
+				file = new File(DEFAULT_DIR, DEFAULT_FILE);
 
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();

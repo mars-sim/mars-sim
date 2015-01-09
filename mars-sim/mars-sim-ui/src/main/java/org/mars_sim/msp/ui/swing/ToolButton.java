@@ -8,8 +8,10 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JToolTip;
 import javax.swing.border.LineBorder;
+
 import java.awt.*;
 
 /**
@@ -50,8 +52,10 @@ extends JButton {
 		// Prepare default tool button values
 		setAlignmentX(.5F);
 		setAlignmentY(.5F);
+		
 	}
 
+	
 	/**
 	 * Returns tool name.
 	 * @return tool name

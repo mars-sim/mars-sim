@@ -49,7 +49,7 @@ public class MainWindow {
 
 	public static final String WINDOW_TITLE = Msg.getString(
 		"MainWindow.title", //$NON-NLS-1$
-		Simulation.VERSION
+		Simulation.VERSION + " build " + Simulation.BUILD
 	);
 
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
@@ -71,7 +71,10 @@ public class MainWindow {
 	private Thread saveSimThread;
 	
 	// 2014-12-27 Added delay timer
-	private Timer timer;
+	private Timer delayLaunchTimer;
+	private Timer autosaveTimer;
+	private javax.swing.Timer earthTimer = null;
+	private static int AUTOSAVE_MINUTES = 15;
 
     //protected ShowDateTime showDateTime;
     private JStatusBar statusBar;
@@ -84,8 +87,8 @@ public class MainWindow {
     private int memAV;
     private int memUsed;
     private String statusText;
-    private String earthTime;
-
+    private String earthTimeString = null;
+    
 	/**
 	 * Constructor.
 	 * @param cleanUI true if window should display a clean UI.
@@ -208,41 +211,70 @@ public class MainWindow {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
-		// 2014-12-27 Added OpenSettlementWindow with delay timer
 		// I'm commenting this out for now.  I would like the user guide tutorial
 		// to be the only initial tool window open for a new simulation. - Scott
-//		timer = new Timer();
-//		int seconds = 2;
-//		timer.schedule(new OpenSettlementWindow(), seconds * 1000);	
+		// 2014-12-27 Added OpenSettlementWindow with delay timer
+		//delayLaunchTimer = new Timer();
+		//int seconds = 2;
+		//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
-		int timeDelay = 1000;
-		ActionListener timeListener;
-		timeListener = new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent evt) {
-        		//leftLabel.setText(statusText); 
-				earthTime = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
-				timeLabel.setText(earthTime);
-				maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-                memUsed = maxMem - memAV;
-                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
-                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
-		    }
-		};
-		
-		new javax.swing.Timer(timeDelay, timeListener).start();
+		// 2015-01-07 Added startAutosaveTimer()
+		startAutosaveTimer();
+
+		// 2015-01-07 Added Earth Time on status bar 
+		int timeDelay = 900;
+		if (earthTimer == null) {
+			earthTimer = new javax.swing.Timer(timeDelay, 
+			new ActionListener() {
+			    @Override
+			    public void actionPerformed(ActionEvent evt) {
+	        		//leftLabel.setText(statusText); 
+			    	try {
+			    		// TODO: investigate why the line below is causing NullPointerException
+			    		earthTimeString = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
+			    	} catch (Exception ee) {
+						ee.printStackTrace(System.err);
+					}
+					timeLabel.setText("Earth Time: " + earthTimeString);
+					maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+	                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+	                memUsed = maxMem - memAV;
+	                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
+	                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
+			    }
+			});
+		}
+		earthTimer.start();
 
 	}
 
+	// 2015-01-07 Added startAutosaveTimer()	
+	public void startAutosaveTimer() {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //System.out.println("calling run()");
+                //autosaveUpdate();
+                autosaveTimer.cancel();
+    			saveSimulation(true,true);
+    			startAutosaveTimer();
+            }
+        };
+        autosaveTimer = new Timer();
+        autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
+
+    }
+
+	/*
 	// 2014-12-27 Added OpenSettlementWindow
 	public class OpenSettlementWindow extends TimerTask {
 		public void run() {
 			desktop.openToolWindow(SettlementWindow.NAME);
-			timer.cancel(); // Terminate the thread
+			delayLaunchTimer.cancel(); // Terminate the thread
 		}
 	}
-	
+	*/
+
 	/**
 	 * Get the window's frame.
 	 * @return the frame.
@@ -370,6 +402,9 @@ public class MainWindow {
 
 			try {
 				desktop.resetDesktop();
+				if (earthTimer != null) 
+					earthTimer.stop();
+				earthTimer.start();
 			}
 			catch (Exception e) {
 				// New simulation process should continue even if there's an exception in the UI.
@@ -391,12 +426,12 @@ public class MainWindow {
 	 * location to save the simulation if the default is not to be used.
 	 * @param useDefault Should the user be allowed to override location?
 	 */
-	public void saveSimulation(final boolean useDefault) {
+	public void saveSimulation(final boolean useDefault, final boolean isAutosave) {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
-				public void run() {
-					saveSimulationProcess(useDefault);
+				public void run() {		
+					saveSimulationProcess(useDefault, isAutosave);
 				}
 			};
 			saveSimThread.start();
@@ -408,7 +443,8 @@ public class MainWindow {
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-	private void saveSimulationProcess(boolean useDefault) {
+    // 2015-01-08 Added autosave
+	private void saveSimulationProcess(boolean useDefault, boolean isAutosave) {
 		File fileLocn = null;
 
 		if (!useDefault) {
@@ -421,10 +457,18 @@ public class MainWindow {
 			}
 		}
 
-		desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 		MasterClock clock = Simulation.instance().getMasterClock();
-		clock.saveSimulation(fileLocn);
-		while (clock.isSavingSimulation()) {
+		
+		if (isAutosave) {
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
+			clock.autosaveSimulation(fileLocn);			
+		}
+		else {
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
+			clock.saveSimulation(fileLocn);
+		}
+		
+		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
 			try {
 				Thread.sleep(100L);
 			} catch (InterruptedException e) {

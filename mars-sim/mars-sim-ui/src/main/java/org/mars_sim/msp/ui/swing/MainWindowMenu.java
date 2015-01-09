@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.07 2014-11-11
+ * @version 3.07 2015-01-08
  * @author Scott Davis
  */
 
@@ -355,8 +355,8 @@ implements ActionListener, MenuListener {
 
 		if (selectedItem == exitItem) mainWindow.exitSimulation();
 		else if (selectedItem == newItem) mainWindow.newSimulation();
-		else if (selectedItem == saveItem) mainWindow.saveSimulation(true);
-		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
+		else if (selectedItem == saveItem) mainWindow.saveSimulation(true, false);
+		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false, false);
 		else if (selectedItem == loadItem) mainWindow.loadSimulation();
 
 

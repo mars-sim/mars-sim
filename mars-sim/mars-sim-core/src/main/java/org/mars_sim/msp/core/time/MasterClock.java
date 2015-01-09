@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2015-01-08
  * @author Scott Davis
  */
 
@@ -70,6 +70,8 @@ public class MasterClock implements Runnable, Serializable {
 	private transient volatile boolean loadSimulation;
 	/** Flag for saving a simulation. */
 	private transient volatile boolean saveSimulation;
+	/** Flag for auto-saving a simulation. */
+	private transient volatile boolean autosaveSimulation;
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 	/** Flag for ending the simulation program. */
@@ -192,6 +194,17 @@ public class MasterClock implements Runnable, Serializable {
     }
 
     /**
+     * Sets the autosave simulation flag and the file to save to.
+     *
+     * @param file autosave to file or null if default file.
+     */
+    // 2015-01-08 Added autosaveSimulation
+    public void autosaveSimulation(File file) {
+        autosaveSimulation = true;
+        this.file = file;
+    }
+    
+    /**
      * Checks if in the process of saving a simulation.
      *
      * @return true if saving simulation.
@@ -200,6 +213,16 @@ public class MasterClock implements Runnable, Serializable {
         return saveSimulation;
     }
 
+    /**
+     * Checks if in the process of autosaving a simulation.
+     *
+     * @return true if autosaving simulation.
+     */
+    // 2015-01-08 Added isAutosavingSimulation
+    public boolean isAutosavingSimulation() {
+        return autosaveSimulation;
+    }
+    
     /**
      * Sets the exit program flag.
      */
@@ -306,7 +329,7 @@ public class MasterClock implements Runnable, Serializable {
             if (saveSimulation) {
                 // Save the simulation to a file.
                 try {
-                    Simulation.instance().saveSimulation(file);
+                    Simulation.instance().saveSimulation(file, false);
                 } catch (IOException e) {
 
                     logger.log(Level.SEVERE, "Could not save the simulation with file="
@@ -315,6 +338,20 @@ public class MasterClock implements Runnable, Serializable {
                 }
                 saveSimulation = false;
             } 
+            
+            else if (autosaveSimulation) {
+                // Autosave the simulation to a file.
+                try {
+                    Simulation.instance().saveSimulation(file, true);
+                } catch (IOException e) {
+
+                    logger.log(Level.SEVERE, "Could not autosave the simulation with file="
+                            + (file == null ? "null" : file.getPath()), e);
+                    e.printStackTrace();
+                }
+                autosaveSimulation = false;
+            } 
+            
             else if (loadSimulation) {
                 // Load the simulation from a file.
                 if (file.exists() && file.canRead()) {
