@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-08
 
  * @author Scott Davis
  */
@@ -68,8 +68,11 @@ implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 UT"
 	 * @deprecated
 	 */
+	//2015-01-08 Added if clause
 	public synchronized String getTimeStamp() {
-		return formatter.format(cal.getTime());// + " UT";
+		String result = formatter.format(cal.getTime());// + " UT";
+		if (result == null) result = "0";
+		return result;
 	}
 
 	/**

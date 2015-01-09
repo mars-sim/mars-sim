@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-27
+ * @version 3.07 2015-01-08
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -70,7 +70,8 @@ public class SettlementWindow extends ToolWindow {
     private int memAV;
     private int memUsed;
     private String statusText;
-	private String marsTime;
+	private String marsTimeString;
+	private javax.swing.Timer marsTimer = null;
     
 	/**
 	 * Constructor.
@@ -171,17 +172,23 @@ public class SettlementWindow extends ToolWindow {
    
         mainPanel.add(statusBar, BorderLayout.SOUTH);	   
 		
-		int timeDelay = 1000;
-		ActionListener timeListener;
-		timeListener = new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent evt) {
-		    	marsTime = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
-				timeLabel.setText(marsTime);
-		    }
-		};
-		new javax.swing.Timer(timeDelay, timeListener).start();
-		
+		// 2015-01-07 Added Martian Time on status bar 
+		int timeDelay = 900;
+		ActionListener timeListener = null;
+		if (timeListener == null) {
+			timeListener = new ActionListener() {
+			    @Override
+			    public void actionPerformed(ActionEvent evt) {
+			    	marsTimeString = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+					timeLabel.setText("Martian Time: " + marsTimeString);
+			    }
+			};
+		}
+    	if (marsTimer == null) {
+    		marsTimer = new javax.swing.Timer(timeDelay, timeListener);
+    		marsTimer.start();
+    	}
+    	
 		pack();
 		setVisible(true);
 	}
@@ -346,6 +353,8 @@ public class SettlementWindow extends ToolWindow {
 	public void destroy() {
 		//settlementCBModel.destroy();
 		mapPanel.destroy();
+		marsTimer.stop();
+		marsTimer = null;
 	}
 
 }
