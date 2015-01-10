@@ -227,8 +227,8 @@ implements Serializable {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
     	// 2015-01-09 Added addDemandTotalRequest()
-    	//inv.addDemandTotalRequest(dessertAR);
-		//dessertAvailable = Math.round(dessertAvailable * 1000.0) / 1000.0;
+    	inv.addDemandTotalRequest(dessertAR);
+		dessertAvailable = Math.round(dessertAvailable * 10000.0) / 10000.0;
 		return dessertAvailable;
 	}
     
@@ -250,9 +250,6 @@ implements Serializable {
 
         if (bestDessert != null) {
         	servingsOfDessertList.remove(bestDessert);
-        	// remove dessert from amount resource 
-        	// TODO: why calling this method ? plus it's causing IllegalStateException 
-        	//removeDessertFromAmountResource();
          }
         return bestDessert;
     }
@@ -269,7 +266,7 @@ implements Serializable {
   	    inv.retrieveAmountResource(dessertAR, dessertPerServing);
   	    
   		// 2015-01-09 addDemandRealUsage()
-  	    inv.addDemandTotalRequest(dessertAR);
+  	    // inv.addDemandTotalRequest(dessertAR);
   	   	inv.addDemandRealUsage(dessertAR, dessertPerServing);
   	    
   	    /* // sugar is added to Soymilk production in foodProduction.xml 
@@ -313,11 +310,62 @@ implements Serializable {
     }
     
  	
-    // 2015-01-04a Added getCookNoMore()
+    // 2015-01-04 Added getCookNoMore()
  	public boolean getCookNoMore() {
  		return makeNoMoreDessert;
  	}
  	
+ 	
+ 	// 2015-01-10 getAListOfDesserts()
+ 	public List<String> getAListOfDesserts() {
+ 		
+        // 2015-01-03 Added dessert[] 
+        String [] dessert = { 	"Soymilk",
+        						"Sugarcane Juice",
+        						"Strawberry",
+        						"Granola Bar",
+        						"Blueberry Muffin", 
+        						"Cranberry Juice"  };
+
+    	List<String> dessertList = new ArrayList<String>();
+	
+    	// Put together a list of available dessert 
+        for(String n : dessert) {
+        	if (checkAmountAV(n) > getMassPerServing()) {
+        		dessertList.add(n);
+        		// 2015-01-09 Added addDemandTotalRequest()
+        	}
+        }
+		return dessertList;
+ 	    
+ 	}
+ 
+	// 2015-01-10 getADessert()
+ 	public String getADessert(List<String> dessertList) {
+    	String selectedDessert = "None";
+    	
+    	if ( dessertList.size() > 0 ) {
+	
+			int upperbound = dessertList.size();
+	    	int lowerbound = 1;
+
+	    	
+	    	if (upperbound > 1) {
+	    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
+	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
+	    		selectedDessert = dessertList.get(index);
+	    	}
+	    	else if (upperbound == 1) {
+	    		selectedDessert = dessertList.get(0);
+	    	}
+	    	else if (upperbound == 0)
+	    		selectedDessert = "None";	    	
+			//System.out.println("upperbound is "+ upperbound);
+	    	//System.out.println("index is "+ index);
+	    	//System.out.println("selectedDessert is "+selectedDessert);	    	
+    	}
+		return selectedDessert;
+ 	}
     
     /**
      * Adds work to this facility. 
@@ -341,70 +389,29 @@ implements Serializable {
 	        }
 	        if (numServings > maxServings )
 	        	makeNoMoreDessert = true;
-
-	        //else {
+	        else {	        	
+	        	
+	        	List<String> dessertList = getAListOfDesserts();
+	        	
+	        	String selectedDessert = getADessert(dessertList);
+	        	
+	        	// Take out one serving of the selected dessert from the fridge 
+	    		removeDessertFromAmountResource(selectedDessert);
+	    		
+		        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		        int dessertQuality = getBestDessertSkill();
 		        
-		        // 2015-01-03 Added dessert[] 
-		        String [] dessert = { 	"soymilk",
-		        						"Sugarcane Juice",
-		        						"Strawberry",
-		        						"Granola Bar",
-		        						"Blueberry Muffin", 
-		        						"Cranberry Juice"  };
-	
-		    	List<String> dessertList = new ArrayList<String>();
-			
-		    	// Put together a list of available dessert 
-		        for(String n : dessert) {
-		        	if (checkAmountAV(n) > getMassPerServing()) {
-		        		dessertList.add(n);
-		        		// 2015-01-09 Added addDemandTotalRequest()
-		        	}
-		        }
-		 	    
-		    	// Existing # of servings of dessert already been made
-	
-		    	if ( dessertList.size() > 0 
-		    			&& numServings < maxServings ) {
-	    	
-					int upperbound = dessertList.size();
-			    	int lowerbound = 1;
-			    	String selectedDessert = "None";
-			    	
-			    	if (upperbound > 1) {
-			    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
-			    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-			    		selectedDessert = dessertList.get(index);
-			    	}
-			    	else if (upperbound == 1) {
-			    		selectedDessert = dessertList.get(0);
-			    	}
-			    	else if (upperbound == 0)
-			    		selectedDessert = "None";	    	
-					//System.out.println("upperbound is "+ upperbound);
-			    	//System.out.println("index is "+ index);
-			    	//System.out.println("selectedDessert is "+selectedDessert);	
-			    	
-		     		// Take out one serving of the selected dessert from the fridge 
-		    		removeDessertFromAmountResource(selectedDessert);
-		    		
-			    	dessertCounterPerSol++;
-	
-			        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	
-			        int dessertQuality = getBestDessertSkill();
-			        
-			        // Create a serving of dessert and add it into the list
-				    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
-			    	//logger.info("addWork() : new dessert just added : " + selectedDessert);
-				    //System.out.println("# of available desserts : " + servingsOfDessertList.size());    
-			    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
-				    
-			        // Reset workTime to zero for making the next serving      	
-				    // preparingWorkTime = 0; 
-				    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
-		     	} // end of if ( soymilkAvailable > getMassPerServing() 
-		    //} // end of else
+		        // Create a serving of dessert and add it into the list
+			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
+			    dessertCounterPerSol++;
+			    //logger.info("addWork() : new dessert just added : " + selectedDessert);
+			    //System.out.println("# of available desserts : " + servingsOfDessertList.size());    
+		    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
+			    
+		        // Reset workTime to zero for making the next serving      	
+			    // preparingWorkTime = 0; 
+			    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;	
+	        }
     	} // end of if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED)
     } // end of void addWork()
    
@@ -417,57 +424,60 @@ implements Serializable {
      */
   	// 2014-11-06 dessert cannot be preserved after a certain number of sols  
     public void timePassing(double time) {
-      boolean hasAServing = hasFreshDessert(); 
-      if ( hasAServing ) {
-           //int newNumOfServings = servingsOfDessertList.size();
-           //if ( NumOfServingsCache != newNumOfServings)
-           	//logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
-        // Toss away expired servingsOfDessertList
-        Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
+    	boolean hasAServing = hasFreshDessert(); 
+    	if ( hasAServing ) {
+    	  int newNumOfServings = servingsOfDessertList.size();
+          //if ( NumOfServingsCache != newNumOfServings)
+          //logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
+    		
+          // Toss away expired servingsOfDessertList
+          Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         
-        while (i.hasNext()) {
-  
-            PreparedDessert aServingOfDessert = i.next();
-            //logger.info("Dessert : " + aServingOfDessert.getName());
-            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            
-        	// Added 2015-01-04 : Sanity check for the passing of each day
-            int newDay = currentTime.getSolOfMonth();
-            if ( newDay != solCache) {
-        	    logger.info("Sol " + solCache + " : " + dessertCounterPerSol + " desserts made today in " 
-        	            	+ building.getNickName() + " at " + settlement.getName()); 
-                // reset back to zero at the beginning of a new day.
-            	dessertCounterPerSol = 0;
-            	solCache = newDay;
-            }
-            
-            if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
-            	   	            	
-            	String dessert = aServingOfDessert.getName();
-            	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
-            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
-                double weightPerServing = getMassPerServing()  ;
-            	
-            	if (weightPerServing > capacity) 
-            		weightPerServing = capacity;
-            	
-            	weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
-            	// 2015-01-03 Put back to storage or freezer if not eaten
-                inv.storeAmountResource(dessertAR, weightPerServing , false);
-                //logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " + dessertAR.getName());
+	      while (i.hasNext()) {
+	  
+	            PreparedDessert aServingOfDessert = i.next();
+	            //logger.info("Dessert : " + aServingOfDessert.getName());
+	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	            
+	            if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
+	            	   	            	
+	            	String dessert = aServingOfDessert.getName();
+	            	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
+	            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
+	                double weightPerServing = getMassPerServing()  ;
+	            	
+	            	if (weightPerServing > capacity) 
+	            		weightPerServing = capacity;
+	            	
+	            	weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
+	            	// 2015-01-03 Put back to storage or freezer if not eaten
+	                inv.storeAmountResource(dessertAR, weightPerServing , false);
+	                //logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " + dessertAR.getName());
+	
+	            	i.remove();
+	  	
+	                if(logger.isLoggable(Level.FINEST)) {
+	                     logger.finest("The dessert has lost its freshness at " + 
+	                     getBuilding().getBuildingManager().getSettlement().getName());
+	                }         
+	            } //end of if (MarsClock.getTimeDiff(
+	        } // end of  while (i.hasNext()) {
+	      NumOfServingsCache = newNumOfServings;
+    	} // end of if ( hasAServing ) {
+      
+    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();      
+    	// Added 2015-01-04 : Sanity check for the passing of each day
+    	int newSol = currentTime.getSolOfMonth();
+        int newMonth = currentTime.getMonth();
+    	if ( newSol != solCache) {
+    		solCache = newSol;
+    		logger.info("Month " + newMonth + " Sol " + newSol + " : " 
+    				+ dessertCounterPerSol + " desserts made yesterday in " 
+   	            	+ building.getNickName() + " at " + settlement.getName()); 
+            // reset back to zero at the beginning of a new day.
+    		dessertCounterPerSol = 0;
+    	}
 
-            	i.remove();
-  	
-                if(logger.isLoggable(Level.FINEST)) {
-                     logger.finest("The dessert has lost its freshness at " + 
-                     getBuilding().getBuildingManager().getSettlement().getName());
-
-                }         
-            } //end of if (MarsClock.getTimeDiff(
-        } // end of  while (i.hasNext()) {
-  
-        //NumOfServingsCache = newNumOfServings;
-      } 
     }
 
     

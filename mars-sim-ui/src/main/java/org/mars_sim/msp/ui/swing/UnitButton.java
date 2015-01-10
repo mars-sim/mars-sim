@@ -8,11 +8,13 @@
 
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Font;
+
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * The UnitButton class is a UI button for a given unit.
@@ -20,7 +22,8 @@ import java.awt.*;
  */
 public class UnitButton extends JButton {
 
-    // Data members	
+	private static final long serialVersionUID = 1L;
+	// Data members	
 	private Unit unit;
 
     /** 
