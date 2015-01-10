@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-10
  * @author Scott Davis
  * 
  */
@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.goods;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +69,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
+import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -128,7 +131,7 @@ implements Serializable {
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .6D;
 	// 2015-01-10 Added FARMING_FACTOR
-    private static final double FARMING_FACTOR = .5D;
+    private static final double FARMING_FACTOR = .01D;
     
     // Data members
     private Settlement settlement;
@@ -142,7 +145,7 @@ implements Serializable {
     private boolean initialized = false;
 
     private Inventory inv;
-	private int solCache = 1;
+	//private int solCache = 1;
 	
     /**
      * Constructor.
@@ -303,7 +306,7 @@ implements Serializable {
     	double value = 0D;
         double demand = 0D;
         double totalDemand = 0D;
-        double projectedDemand = 0D;
+        //double projectedDemand = 0D;
         
         supply++;
 
@@ -513,48 +516,49 @@ implements Serializable {
     // 2014-11-30 Created getValueList()    		
     public List<Double> getValueList(List<AmountResource> foodARList) {
     	
-    	double foodValue = 0;
-    	List<Double> foodValueList = new ArrayList<Double>();
+    	double cropValue = 0;
+    	List<Double> cropValueList = new ArrayList<Double>();
     	AmountResource ar = null;
     	
 		Iterator<AmountResource> i = foodARList.iterator();
 		while (i.hasNext()) 
 		{
 			ar = i.next();
-			foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ar));
-			foodValueList.add(foodValue);	
+			cropValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ar));
+			cropValueList.add(cropValue);	
 		}
-    	return foodValueList;
+    	return cropValueList;
     }
     
- // 2014-11-30 Created getARList()
-    public List<AmountResource> getARList() {
+    // 2015-01-10 Revised getCropARList()
+    public List<AmountResource> getCropARList() {
+    	List<AmountResource> cropARList = new ArrayList<AmountResource>();
     	
-    	boolean edible = false;
-		AmountResource ar = null;
-		
-		List<AmountResource> foodARList = new ArrayList<AmountResource>();
-		
-		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
-		while (i.hasNext()) 
-		{
-			ar = i.next();
-			edible = ar.isEdible();
-			if (edible == true) 
-				foodARList.add(ar);	
+    	CropConfig config = SimulationConfig.instance().getCropConfiguration();
+		List<CropType> cropTypeList = config.getCropList();
+		//2014-12-12 Enabled Collections.sorts by implementing Comparable<CropType> 
+		Collections.sort(cropTypeList);
+		List<CropType> cropCache = new ArrayList<CropType>(cropTypeList);
+		Iterator<CropType> i = cropCache.iterator();
+		while (i.hasNext()) {
+			CropType c = i.next();
+			String cropName = c.getName();
+			AmountResource ar = AmountResource.findAmountResource(cropName);
+			cropARList.add(ar);
 		}
-    	return foodARList;
+
+    	return cropARList;
     }
     
     // 2014-11-30 Created getTotalDemand()
-    public double getTotalDemand(List<Double> foodValueList, Farming farm, double amountNeeded) {
+    public double getTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
     	double demand = 0;
-    	//List<Double> foodValueList = new ArrayList<Double>();
-    	Iterator<Double> i = foodValueList.iterator();
+
+    	Iterator<Double> i = cropValueList.iterator();
     	
     	while (i.hasNext()) {	
-    		double foodValue = i.next();
-        	demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
+    		double cropValue = i.next();
+        	demand += (farm.getEstimatedHarvestPerOrbit() * cropValue) / amountNeeded;
     	}
     
     	return demand;
@@ -572,37 +576,14 @@ implements Serializable {
         double demand = 0D;
         AmountResource wasteWater = AmountResource.findAmountResource("waste water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-        //AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-        // 2014-11-06 Added soybeans and soymilk
-        //AmountResource soybean = AmountResource.findAmountResource("Soybean");
-        //AmountResource soymilk = AmountResource.findAmountResource("Soymilk"); 
-        
-        // 2014-11-30 Created foodARList() to Get a List<foodAR> of edible food 
-        List<AmountResource> foodARList = getARList();
-        
-        // 2014-10-15 mkung: added 5 new food groups
-        /*AmountResource veg = AmountResource.findAmountResource("Vegetable Group");
-        AmountResource legumes = AmountResource.findAmountResource("Legume Group")
-        AmountResource fruits = AmountResource.findAmountResource("Fruit Group");
-        AmountResource spices = AmountResource.findAmountResource("Spice Group");
-        AmountResource grains = AmountResource.findAmountResource("Grain Group");
-           */          
+
+        // 2015-01-10 Revised getCropARList()
+        List<AmountResource> cropARList = getCropARList();
+              
         if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
-            //double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
-            // 2014-11-06 Added soybeans and soymilk
-            //double soybeansValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soybean));
-            //double soymilkValue = getGoodValuePerItem(GoodsUtil.getResourceGood(soymilk));
-            
             // 2014-11-30 Created getValueList()
-            List<Double> foodValueList = getValueList(foodARList);
-            
-            // 2014-10-15 mkung: added 5 new food groups
-            /*double vegValue = getGoodValuePerItem(GoodsUtil.getResourceGood(veg));
-            double legumesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(legumes));
-            double fruitsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(fruits));
-            double spicesValue = getGoodValuePerItem(GoodsUtil.getResourceGood(spices));
-            double grainsValue = getGoodValuePerItem(GoodsUtil.getResourceGood(grains));
-            */            
+            List<Double> cropValueList = getValueList(cropARList);
+             
             Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING).iterator();
             while (i.hasNext()) {
                 Building building = i.next();
@@ -615,20 +596,7 @@ implements Serializable {
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 
                 // 2014-11-30 Created getTotalDemand()
-                demand += getTotalDemand(foodValueList, farm, amountNeeded);
-
-                //demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
-                // 2014-11-06 Added soybeans and soymilk
-                //demand += (farm.getEstimatedHarvestPerOrbit() * soybeansValue) / amountNeeded;                    
-                //demand += (farm.getEstimatedHarvestPerOrbit() * soymilkValue) / amountNeeded;
-
-                // 2014-10-15 Added 5 new food groups
-                /*demand += (farm.getEstimatedHarvestPerOrbit() * vegValue) / amountNeeded;
-                    demand += (farm.getEstimatedHarvestPerOrbit() * legumesValue) / amountNeeded;
-                    demand += (farm.getEstimatedHarvestPerOrbit() * fruitsValue) / amountNeeded;
-                    demand += (farm.getEstimatedHarvestPerOrbit() * spicesValue) / amountNeeded;
-                    demand += (farm.getEstimatedHarvestPerOrbit() * grainsValue) / amountNeeded;
-                 */
+                demand += getTotalDemand(cropValueList, farm, amountNeeded);
             }
         }
     	// 2015-01-10 Added FARMING_FACTOR

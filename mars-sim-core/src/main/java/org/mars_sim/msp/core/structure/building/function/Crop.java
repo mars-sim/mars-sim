@@ -33,7 +33,7 @@ implements Serializable {
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
 	/** Amount of waste water needed / harvest mass. */
-	public static final double WASTE_WATER_NEEDED = 5D;
+	public static final double WASTE_WATER_NEEDED = 2D;
 	/** Amount of carbon dioxide needed /harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
 
