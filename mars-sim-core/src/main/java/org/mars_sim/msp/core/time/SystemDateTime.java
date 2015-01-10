@@ -37,7 +37,7 @@ public class SystemDateTime {
                    .format(currentTime);
                timeStr = timeFormat
                    .format(currentTime);
-               dateTimeStr = dateStr + " " + timeStr;
+               dateTimeStr = dateStr + " T" + timeStr;
                //System.out.println("dateTimeStr : " + dateTimeStr);
     	   return dateTimeStr;
        }

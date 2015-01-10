@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.07 2014-10-10
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -503,8 +503,17 @@ implements Serializable {
             while (i.hasNext()) {
                 AmountResource resource = i.next();
                 double amount = constructionStage.getInfo().getResources().get(resource);
-                if (inv.getAmountResourceStored(resource, false) >= amount)
+            	
+                // 2015-01-09 Added addDemandTotalRequest()
+            	inv.addDemandTotalRequest(resource);
+                
+            	if (inv.getAmountResourceStored(resource, false) >= amount) {
+
                     inv.retrieveAmountResource(resource, amount);
+                    
+                	// 2015-01-09 addDemandRealUsage()
+                   	inv.addDemandRealUsage(resource,amount);
+                }
             }
 
             // Load parts.
@@ -723,8 +732,11 @@ implements Serializable {
         while (i.hasNext()) {
             AmountResource resource = i.next();
             double amount = stage.getResources().get(resource);
-            if (settlement.getInventory().getAmountResourceStored(resource, false) < amount) {
+            Inventory inv = settlement.getInventory();
+            if (inv.getAmountResourceStored(resource, false) < amount) {
                 result = false;
+            	// 2015-01-09 Added addDemandTotalRequest()
+                inv.addDemandTotalRequest(resource);
             }
         }
         

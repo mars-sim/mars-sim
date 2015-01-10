@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-09
 
  * @author Scott Davis
  */
@@ -245,9 +245,16 @@ implements Serializable {
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getAmountResourceStored(resource, false);
+				
+				// 2015-01-09 Added addDemandTotalRequest()
+				inventory.addDemandTotalRequest(resource);
+				
 				if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
+
+					// 2015-01-09 addDemandRealUsage()
+					inventory.addDemandRealUsage(resource,resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");

@@ -34,23 +34,10 @@ implements Serializable {
 	private int hashcode = -1;
 	private String name;
 	private String description;
-
+		
 	// 2014-11-25 Added edible
 	private boolean edible;
-	/**
-	 * Gets the resource's name.
-	 * @return name of resource.
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
+	
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
@@ -73,6 +60,25 @@ implements Serializable {
 		this.hashcode = getName().hashCode() * phase.hashCode();
 	}
 
+	/**
+	 * Gets the resource's name.
+	 * @return name of resource.
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Gets the resource's description.
+	 * @return description of resource.
+	 */
+	
+	@Override
+	public String getDescription() {
+		return description;
+	}
+	
 	/**
 	 * Gets the resources material phase.
 	 * @return phase value

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2015-01-03
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  * 
  */
@@ -139,6 +139,8 @@ implements Serializable {
     private Map<Part, Double> partsDemandCache;
     private boolean initialized = false;
 
+    private Inventory inv;
+    
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -146,6 +148,7 @@ implements Serializable {
      */
     public GoodsManager(Settlement settlement) {
         this.settlement = settlement;
+        inv = settlement.getInventory();
         populateGoodsValues();
     }
 
@@ -293,17 +296,23 @@ implements Serializable {
      * @throws Exception if error determining resource value.
      */
     private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-        double value = 0D;
-
-        supply++;
+    	//System.out.println( "entering determineAmountResourceGoodValue() ");
+    	double value = 0D;
         double demand = 0D;
-        AmountResource resource = (AmountResource) resourceGood.getObject();
+        double totalAveDemand = 0D;
+        
+        supply++;
 
+        AmountResource resource = (AmountResource) resourceGood.getObject();
+        
+        //System.out.println( resource.getName() + " supply is " + supply);
+        
         if (useCache) {
             if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood);
             else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
         }
         else {
+          
             // Add life support demand if applicable.
             demand += getLifeSupportDemand(resource);
 
@@ -331,16 +340,62 @@ implements Serializable {
             // Add construction demand.
             demand += getResourceConstructionDemand(resource);
 
+            double projectedDemand = demand;
+            
+            //System.out.println( resource.getName() + " projectedDemand is " + projectedDemand);
+
+        	// 2015-01-09 
+            // s = successful
+            // u = unsuccessful
+            // t = total
+            // note:  uRequest = tRequest - sRequest; 
+            double sDemand = inv.getDemandRealUsage(resource.getName());
+            double uDemand = 0;
+            int tRequest = inv.getDemandTotalRequest(resource.getName());
+            int sRequest = inv.getDemandSuccessfulRequest(resource.getName());
+            int uRequest = 0;
+            
+            //System.out.println( resource.getName() + " sDemand  is " + sDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR);
+            //System.out.println( resource.getName() + " tRequest is " + tRequest);
+            //System.out.println( resource.getName() + " sRequest is " + sRequest);
+
+            if (tRequest == 0 || sRequest == 0) 
+            	uDemand = 0;
+            if (tRequest < sRequest ) 
+            	uDemand = 0;
+            else {
+            	uRequest = tRequest - sRequest; 
+            	// unsuccessful demand usage approximately equals average successful demand * # of unsuccessful request
+            	uDemand = Math.round(sDemand / sRequest * uRequest * 100.0) / 100.0;
+            }
+ 	
+            //System.out.println( resource.getName() + " uDemand is " + uDemand* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR);
+
+            // Get the average demand per orbit 
+            // total average demand = (projected demand + real demand usage + unsuccessful demand usage) / 3 
+            totalAveDemand = ( 
+            		projectedDemand +
+            		sDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR +
+            		uDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
+            		) / 3.0;
+            totalAveDemand = Math.round(totalAveDemand* 100.0) / 100.0;
+            
+            //System.out.println( resource.getName() + " totalAveDemand is " + totalAveDemand);
+
             // Add trade value.
             double tradeDemand = determineTradeDemand(resourceGood, useCache);
-            if (tradeDemand > demand) {
-                demand = tradeDemand;
+            tradeDemand = Math.round(tradeDemand* 100.0) / 100.0;
+            
+            //System.out.println( resource.getName() + " tradeDemand is " + tradeDemand);
+
+            if (tradeDemand > totalAveDemand) {
+            	totalAveDemand = tradeDemand;
             }
 
-            goodsDemandCache.put(resourceGood, demand);
+            goodsDemandCache.put(resourceGood, totalAveDemand);
         }
 
-        value = demand / supply;
+        value = totalAveDemand / supply;
 
         // Use resource processing value if higher.
         double resourceProcessingValue = getResourceProcessingValue(resource, useCache);

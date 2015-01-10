@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-09
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -82,10 +82,11 @@ implements Serializable {
 	private Multimap<String, Integer> qualityMap;
 	private Multimap<String, MarsClock> timeMap;
 
-    private Inventory inv ;
+    private Inventory inv;
     private HotMeal aMeal;
     private Settlement settlement;
     private AmountResource dryFoodAR;
+    private Building building;
 
     /**
      * Constructor.
@@ -96,12 +97,14 @@ implements Serializable {
     public Cooking(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
+        this.building = building;
         
         // 2014-12-30 Changed inv to include the whole settlement
         //inv = getBuilding().getInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
         
         settlement = getBuilding().getBuildingManager().getSettlement();
+        
         cookingWorkTime = 0D;
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -480,7 +483,9 @@ implements Serializable {
     public double checkAmountAV(String name) {
 	    AmountResource foodAR = AmountResource.findAmountResource(name);  
 		double foodAvailable = inv.getAmountResourceStored(foodAR, false);
-		foodAvailable = Math.round(foodAvailable * 1000.0) / 1000.0;
+		// 2015-01-09 Added addDemandTotalRequest()
+    	//inv.addDemandTotalRequest(foodAR);
+		//foodAvailable = Math.round(foodAvailable * 1000.0) / 1000.0;
 		return foodAvailable;
 	}
    
@@ -567,25 +572,43 @@ implements Serializable {
 		        double dryWeight = oneIngredient.getDryWeight();  
 		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 		        inv.retrieveAmountResource(ingredientAR, dryWeight);
+		        // 2015-01-09 Added addDemandUsage()
+		    	inv.addDemandTotalRequest(ingredientAR);
+	        	inv.addDemandRealUsage(ingredientAR, dryWeight);
 	         
 	        } // end of while
+	        
+	        // TODO: Change the hardcoded oilAmount and saltAmount to what's on the meal recipe.xml
+
 	        
 	        // 2014-12-29 Added oil and salt
 		    String oil = getAnOil();
 		    double oilAmount = .05;
+		    
+	    	// 2015-01-09 Added addDemandTotalRequest()
+	    	AmountResource oilAR = AmountResource.findAmountResource(oil);
+	        inv.addDemandTotalRequest(oilAR);
+
+		    if (!oil.equals("None")) {
+		        //AmountResource oilAR = getFreshFoodAR(oil);
+		        inv.retrieveAmountResource(oilAR, oilAmount);
+		        // 2015-01-09 Added addDemandUsage()
+	        	inv.addDemandRealUsage(oilAR, oilAmount);
+		    }
+		    
 		    String salt = "Table Salt";
 		    double saltAmount = .01;
-		    if (!oil.equals("None")) {
-		        AmountResource oilAR = getFreshFoodAR(oil);
-		        // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
-		        inv.retrieveAmountResource(oilAR, oilAmount);
-		    }
 		    
 		    AmountResource saltAR = getFreshFoodAR(salt);
 		    double saltAvailable = getFreshFood(saltAR);
-		        // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
-			if (saltAvailable > saltAmount) {
+		    // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
+			// 2015-01-09 Added addDemandTotalRequest()
+		    inv.addDemandTotalRequest(saltAR);
+		    if (saltAvailable > saltAmount) {
 		        inv.retrieveAmountResource(saltAR, saltAmount);
+	        	// 2015-01-09 Added addDemandRealUsage()
+	        	inv.addDemandRealUsage(saltAR, saltAmount);
+	 
 		    }    
     
 	    	String nameOfMeal = hotMeal.getMealName();
@@ -644,6 +667,8 @@ implements Serializable {
      //2014-11-21 Added getFreshFood() 
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
+    	// 2015-01-09 Added addDemandTotalRequest()
+    	//inv.addDemandTotalRequest(ar);
         // 2014-11-29 Deleted the rounding or java.lang.IllegalStateException
         //return Math.round(freshFoodAvailable* 10000.0) / 10000.0;
         return freshFoodAvailable;
@@ -684,9 +709,11 @@ implements Serializable {
 	            // Added 2014-12-08 : Sanity check for the passing of each day
 	            int newDay = currentTime.getSolOfMonth();
 	            if ( newDay != solCache) {
+	    	    	logger.info("Sol " + solCache + " : " + mealCounterPerSol + " meals made today in " 
+	            	+ building.getNickName() + " at " + settlement.getName()); 
 	            	// reset back to zero at the beginning of a new day.
-	    	    	logger.info("Sol " + newDay + " : " + mealCounterPerSol + " meals made today at " + settlement.getName()); 
-	            	mealCounterPerSol = 0;
+
+	    	    	mealCounterPerSol = 0;
 	            	if (!timeMap.isEmpty()) {
 	    				timeMap.clear();
 	    			}
@@ -708,6 +735,7 @@ implements Serializable {
 	                    dryWeightPerMeal = Math.round( dryWeightPerMeal * 1000000.0) / 1000000.0;
 	                    // remove the cookedMeal and store it
 	                    inv.storeAmountResource(dryFoodAR, dryWeightPerMeal , false);
+	                    // TODO: need to adjust the supply for the storing the food back
 	                    //logger.info("TimePassing() : Refrigerate " + dryWeightPerMeal + " kg " + dryFoodAR.getName());
 	                    dailyMealList.add(meal);
 	                    i.remove();
@@ -749,6 +777,7 @@ implements Serializable {
     public void destroy() {
         super.destroy();
         inv = null;
+        building = null;
         cookedMeals.clear();
         cookedMeals = null;
         settlement = null;

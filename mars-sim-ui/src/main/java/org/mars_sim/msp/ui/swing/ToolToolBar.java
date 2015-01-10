@@ -174,7 +174,7 @@ implements ActionListener {
 
 	}
 
-	/** ActionListener method overriden */
+	/** ActionListener method overridden */
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		// show tool window on desktop

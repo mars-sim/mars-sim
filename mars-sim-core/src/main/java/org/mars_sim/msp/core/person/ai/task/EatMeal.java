@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -194,9 +194,13 @@ implements Serializable {
             Inventory inv = containerUnit.getInventory();
             AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
             double foodAvailable = inv.getAmountResourceStored(food, false);
+            // 2015-01-09 Added addDemandRequest()
+        	inv.addDemandTotalRequest(food);
             if (foodAvailable >= foodAmount) {
                 // Remove preserved food amount from container unit.
                 inv.retrieveAmountResource(food, foodAmount);
+            	// 2015-01-09 addDemandUsage()
+               	inv.addDemandRealUsage(food, foodAmount);
             }
             else {
                 throw new Exception(person + " doesn't have enough preserved food to eat in " + containerUnit + 

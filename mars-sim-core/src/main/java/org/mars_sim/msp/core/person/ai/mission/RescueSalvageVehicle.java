@@ -312,9 +312,17 @@ implements Serializable {
                 Inventory roverInv = getRover().getInventory();
                 Inventory targetInv = vehicleTarget.getInventory();
                 double amountNeeded = amount - targetInv.getAmountResourceStored(resource, false);
+               	
+                // 2015-01-09 Added addDemandTotalRequest()
+                //targetInv.addDemandTotalRequest(resource);
+        		
                 if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) > 
                 amountNeeded)) {
                     roverInv.retrieveAmountResource(resource, amountNeeded);
+         		
+                    // 2015-01-09 addDemandRealUsage()
+                    //roverInv.addDemandRealUsage(resource,amountNeeded);
+                    
                     targetInv.storeAmountResource(resource, amountNeeded, true);
                 }
             }

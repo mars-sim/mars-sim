@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
@@ -581,6 +582,8 @@ implements Serializable {
                     startingSettlement, resource);
             double amountAvailable = startingSettlement.getInventory().getAmountResourceStored(
                     resource, false);
+        	// 2015-01-09 Added addDemandTotalRequest()
+            startingSettlement.getInventory().addDemandTotalRequest(resource);
             if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
                 result = false;
             }
@@ -698,11 +701,15 @@ implements Serializable {
         double solsMonth = MarsClock.SOLS_IN_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        
+        Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
         AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         double oxygenAmountNeeded = config.getOxygenConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
+ 
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(oxygen);
+        
         oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygen);
         if (oxygenAmountAvailable < oxygenAmountNeeded) {
             double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
@@ -716,6 +723,10 @@ implements Serializable {
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(water, false);
+
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(water);  
+        
         waterAmountAvailable += getResourcesOnMissions(settlement, water);
         if (waterAmountAvailable < waterAmountNeeded) {
             double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
@@ -729,6 +740,10 @@ implements Serializable {
         AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(food, false);
+
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(food);
+        
         foodAmountAvailable += getResourcesOnMissions(settlement, food);
         if (foodAmountAvailable < foodAmountNeeded) {
             double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
@@ -742,6 +757,10 @@ implements Serializable {
         AmountResource methane = AmountResource.findAmountResource("methane");
         double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
         double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methane, false);
+
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(methane);
+        
         methaneAmountAvailable += getResourcesOnMissions(settlement, methane);
         if (methaneAmountAvailable < methaneAmountNeeded) {
             double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
@@ -775,6 +794,8 @@ implements Serializable {
                     Rover rover = roverMission.getRover();
                     if (rover != null) {
                         result += rover.getInventory().getAmountResourceStored(resource, false);
+                    	// 2015-01-09 Added addDemandTotalRequest()
+                        rover.getInventory().addDemandTotalRequest(resource);
                     }
                 }
             }
