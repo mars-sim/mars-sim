@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.07 2014-11-21
+ * @version 3.07 2015-01-09
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -74,6 +74,11 @@ implements Serializable {
     private transient double totalInventoryMassCache;
     private transient boolean totalInventoryMassCacheDirty = true;
 
+	// 2015-01-09 Added demandRequest, demandUsage
+	private Map<String, Integer> demandTotalRequestMap =  new HashMap<String, Integer>();
+	private Map<String, Integer> demandSuccessfulRequestMap =  new HashMap<String, Integer>();
+	private Map<String, Double> demandRealUsageMap = new HashMap<String, Double>();
+	
     /** 
      * Constructor
      * @param owner the unit that owns this inventory
@@ -81,8 +86,126 @@ implements Serializable {
     public Inventory(Unit owner) {
         // Set owning unit.
         this.owner = owner;
+        
     }
 
+   	// 2015-01-09 Added getDemandRealUsage()
+    public double getDemandRealUsage(String resourceName) {
+    	double result;
+    	
+       	if (demandRealUsageMap.containsKey(resourceName)) {      		
+       		result = demandRealUsageMap.get(resourceName);
+    	}
+    	else {
+    		demandRealUsageMap.put(resourceName, 0.0);
+    		result = 0.0;
+    	}
+    	return result;
+    }
+    
+   	// 2015-01-09 Added getDemandTotalRequest()
+    public int getDemandTotalRequest(String resourceName) {
+       	int result;
+       	
+       	if (demandTotalRequestMap.containsKey(resourceName)) {
+       		result = demandTotalRequestMap.get(resourceName);
+    	}
+    	else {
+    		demandTotalRequestMap.put(resourceName, 0);
+    		result = 0;
+    	}
+    	return result;
+    }
+   
+   	// 2015-01-09 Added getDemandSuccessfulRequest()
+    public int getDemandSuccessfulRequest(String resourceName) {
+       	int result;
+       	
+       	if (demandSuccessfulRequestMap.containsKey(resourceName)) {
+       		result = demandSuccessfulRequestMap.get(resourceName);
+    	}
+    	else {
+    		demandSuccessfulRequestMap.put(resourceName, 0);
+    		result = 0;
+    	}
+    	
+    	return result;
+    }
+    
+  	// 2015-01-09 Added getDemandRealUsageMapSize()
+    public int getDemandRealUsageMapSize() {
+    	return demandRealUsageMap.size();
+    }
+    
+   	// 2015-01-09 Added getDemandTotalRequestMapSize()
+    public int getDemandTotalRequestMapSize() {
+    	return demandTotalRequestMap.size();
+    }
+    
+   	// 2015-01-09 Added getDemandSuccessfulRequestMapSize()
+    public int getDemandSuccessfulRequestMapSize() {
+    	return demandSuccessfulRequestMap.size();
+    }
+    
+  	// 2015-01-09 Added clearDemandUsageMap()
+    public synchronized void clearDemandRealUsageMap() {
+    	demandRealUsageMap.clear();
+    }
+    
+   	// 2015-01-09 Added clearDemandTotalRequestMap()
+    public synchronized void clearDemandTotalRequestMap() {
+    	demandTotalRequestMap.clear();
+    }
+    
+   	// 2015-01-09 Added clearDemandRequestMap()
+    public synchronized void clearDemandSuccessfulRequestMap() {
+    	demandSuccessfulRequestMap.clear();
+    }
+    
+ 	// 2015-01-09 addDemandTotalRequest()
+	public synchronized void addDemandTotalRequest(AmountResource resource) {
+		
+		if (demandTotalRequestMap.containsKey(resource.getName())) {
+			
+			int oldNum = demandTotalRequestMap.get(resource.getName());
+			//System.out.println( resource.getName() + " demandTotal : " + oldNum+1);
+			demandTotalRequestMap.put(resource.getName(), oldNum + 1);
+		}
+		else
+	    	demandTotalRequestMap.put(resource.getName(), 1);
+	}
+
+ 	// 2015-01-09 addDemandRealUsage()
+   	public synchronized void addDemandRealUsage(AmountResource resource, double amount) {
+
+    	if (demandRealUsageMap.containsKey(resource.getName())) {
+    		
+    		double oldAmount = demandRealUsageMap.get(resource.getName());
+			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
+    		demandRealUsageMap.put(resource.getName(), amount + oldAmount);
+    		
+    	}
+    	else {
+    		demandRealUsageMap.put(resource.getName(), amount);     
+    	}
+    	
+    	addDemandSuccessfulRequest(resource, amount);
+   	}
+   	
+	// 2015-01-09 addDemandSuccessfulRequest()
+   	public synchronized void addDemandSuccessfulRequest(AmountResource resource, double amount) {
+
+    	if (demandSuccessfulRequestMap.containsKey(resource.getName())) {
+    		int oldNum = demandSuccessfulRequestMap.get(resource.getName());
+			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
+    		demandSuccessfulRequestMap.put(resource.getName(), oldNum + 1);
+    	}
+	
+    	else {
+    		demandSuccessfulRequestMap.put(resource.getName(), 1);
+    	}
+	}
+   	
     /**
      * Adds capacity for a resource type.
      * @param resource the resource.
@@ -196,8 +319,7 @@ implements Serializable {
      * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored amount (kg).
      */
-    public double getAmountResourceStored(AmountResource resource,boolean allowDirty) {
-        
+    public double getAmountResourceStored(AmountResource resource,boolean allowDirty) { 	    	
         return getAmountResourceStoredCacheValue(resource, allowDirty);
     }
 
@@ -261,7 +383,7 @@ implements Serializable {
         }
 
         if (amount > 0D) {
-
+       	
             if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits, false)) {
 
                 // Set modified cache values as dirty.

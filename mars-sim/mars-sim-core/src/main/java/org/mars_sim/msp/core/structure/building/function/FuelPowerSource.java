@@ -90,6 +90,11 @@ implements Serializable {
 		}
 
 		inv.retrieveAmountResource(resource, consumedFuel);
+		
+		// 2015-01-09 Added addDemandTotalRequest()
+	    inv.addDemandTotalRequest(resource);
+		// 2015-01-09 addDemandRealUsage()
+	   	inv.addDemandRealUsage(resource, consumedFuel);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProduction.java
- * @version 3.07 2014-11-24
+ * @version 3.07 2015-01-09
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -229,8 +229,13 @@ implements Serializable {
         Inventory inv = getBuilding().getInventory();
         for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
-                AmountResource resource = AmountResource.findAmountResource(item.getName());
+                AmountResource resource = AmountResource.findAmountResource(item.getName());               
                 inv.retrieveAmountResource(resource, item.getAmount());
+                
+            	// 2015-01-09 Added addDemandTotalRequest()
+                inv.addDemandTotalRequest(resource);
+            	// 2015-01-09 addDemandUsage()
+               	inv.addDemandRealUsage(resource,item.getAmount());     
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());

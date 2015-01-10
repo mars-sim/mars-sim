@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -144,12 +144,19 @@ implements LifeSupport, Serializable, Malfunctionable {
 		double oxygenTaken = amountRequested;
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
+    	
+
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
 		}
 
 		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
 
+		// 2015-01-09 Added addDemandTotalRequest()
+		getInventory().addDemandTotalRequest(oxygen);
+		// 2015-01-09 addDemandRealUsage()
+		getInventory().addDemandRealUsage(oxygen, oxygenTaken);
+		
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
@@ -163,12 +170,18 @@ implements LifeSupport, Serializable, Malfunctionable {
 		double waterTaken = amountRequested;
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		double waterLeft = getInventory().getAmountResourceStored(water, false);
+		
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
 		getInventory().retrieveAmountResource(water, waterTaken);
-
+		
+		// 2015-01-09 Added addDemandTotalRequest()
+		getInventory().addDemandTotalRequest(water);
+		// 2015-01-09 addDemandRealUsage()
+		getInventory().addDemandRealUsage(water, waterTaken);
+		
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 

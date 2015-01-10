@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-09
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -256,14 +257,20 @@ implements Serializable {
     }
     
     // 2014-11-28 Added consumeDessert()
-    public void consumeDessert(double amount, Unit container) {
-        if (container == null) throw new IllegalArgumentException("container is null");
-	
+    @SuppressWarnings("unused")
+	public void consumeDessert(double amount, Unit container) {
+        Inventory inv = container.getInventory();
+        
+    	if (container == null) throw new IllegalArgumentException("container is null");
+
 		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
 	
 		double foodEaten = amount;
-		double soymilkAvailable = container.getInventory().getAmountResourceStored(soymilkAR, false);
-
+		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
+    	
+		// 2015-01-09 Added addDemandTotalRequest()
+    	inv.addDemandTotalRequest(soymilkAR);
+    	
 		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
 		
 		if (soymilkAvailable < 0.01D) {
@@ -276,7 +283,10 @@ implements Serializable {
 	
 			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
 			// subtract food from container
-			container.getInventory().retrieveAmountResource(soymilkAR, foodEaten);	
+			inv.retrieveAmountResource(soymilkAR, foodEaten);	
+			
+			// 2015-01-09 addDemandRealUsage()
+		   	inv.addDemandRealUsage(soymilkAR, foodEaten);
 		}
     }
    
@@ -299,25 +309,36 @@ implements Serializable {
      * @param container unit to get food from
      * @throws Exception if error consuming food.  
      */
-		// 2014-11-07 Added consumePackedFood()
-    	public void consumePackedFood(double amount, Unit container, String foodType) {
-	    	AmountResource food = AmountResource.findAmountResource(foodType);
-            double foodEaten = amount;
-            double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
+	// 2014-11-07 Added consumePackedFood()
+    @SuppressWarnings("unused")
+	public void consumePackedFood(double amount, Unit container, String foodType) {    
+    	Inventory inv = container.getInventory();
+ 
+    	if (container == null) throw new IllegalArgumentException("container is null");
 
-            if (foodAvailable < 0.01D) {
-                throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");   
-            }
-            // if container has less than enough food, finish up all food in the container
-            else { 
+    	AmountResource foodAR = AmountResource.findAmountResource(foodType);
+        double foodEaten = amount;
+        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+        
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(foodAR);
+        	
+        if (foodAvailable < 0.01D) {
+           throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");   
+        }
+        // if container has less than enough food, finish up all food in the container
+        else { 
             	
-            	if (foodEaten > foodAvailable)
-            		foodEaten = foodAvailable;
+            if (foodEaten > foodAvailable)
+            	foodEaten = foodAvailable;
             
-            	foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
-            	// subtract food from container
-            	container.getInventory().retrieveAmountResource(food, foodEaten);
-           }
+            foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+            // subtract food from container
+            inv.retrieveAmountResource(foodAR, foodEaten);
+            
+    		// 2015-01-09 addDemandRealUsage()
+    		inv.addDemandRealUsage(foodAR, foodEaten);
+        }
     }
 
     /**

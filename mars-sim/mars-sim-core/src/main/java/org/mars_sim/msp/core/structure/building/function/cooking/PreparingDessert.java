@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreparingDessert.java
- * @version 3.07 2015-01-03
+ * @version 3.07 2015-01-09
  * @author Manny Kung				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -62,23 +62,20 @@ implements Serializable {
     public static final double SERVING_FRACTION = 1D / 6D;
     public static final double NUM_OF_DESSERT_PER_SOL = 4D;
     
+    private List<PreparedDessert> servingsOfDessertList;
+    
     private boolean makeNoMoreDessert = false;
     
-	@SuppressWarnings("unused")
 	private int dessertCounterPerSol = 0;
-	private int dayCache = 1;
+	private int solCache = 1;
 	private int maxServingsCache = 0;
-	
-    // Data members
     private int cookCapacity;
-    private List<PreparedDessert> servingsOfDessertList;
-    @SuppressWarnings("unused")
 	private double preparingWorkTime; // used in numerous places
-
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
-    private Building building;
     
+    private Building building;
+    private Settlement settlement;
     private Inventory inv ;
     
     /**
@@ -91,6 +88,12 @@ implements Serializable {
         super(FUNCTION, building);
         this.building = building; 
         
+        // 2014-12-30 Changed inv to include the whole settlement
+        //inv = getBuilding().getInventory();
+        inv = getBuilding().getBuildingManager().getSettlement().getInventory();
+        
+        settlement = getBuilding().getBuildingManager().getSettlement();
+        
         preparingWorkTime = 0D;
         servingsOfDessertList = new ArrayList<PreparedDessert>();
 
@@ -101,9 +104,6 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
     
-        // 2014-12-30 Changed inv to include the whole settlement
-        //inv = getBuilding().getInventory();
-        inv = getBuilding().getBuildingManager().getSettlement().getInventory();
     }
 
     /**
@@ -226,7 +226,9 @@ implements Serializable {
     public double checkAmountAV(String name) {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
-	    dessertAvailable = Math.round(dessertAvailable * 1000.0) / 1000.0;
+    	// 2015-01-09 Added addDemandTotalRequest()
+    	//inv.addDemandTotalRequest(dessertAR);
+		//dessertAvailable = Math.round(dessertAvailable * 1000.0) / 1000.0;
 		return dessertAvailable;
 	}
     
@@ -265,6 +267,10 @@ implements Serializable {
         double dessertPerServing = getMassPerServing();
         // 2014-11-29 TODO: need to prevent IllegalStateException
   	    inv.retrieveAmountResource(dessertAR, dessertPerServing);
+  	    
+  		// 2015-01-09 addDemandRealUsage()
+  	    inv.addDemandTotalRequest(dessertAR);
+  	   	inv.addDemandRealUsage(dessertAR, dessertPerServing);
   	    
   	    /* // sugar is added to Soymilk production in foodProduction.xml 
   	    if (name.equals("Soymilk")) {
@@ -352,6 +358,7 @@ implements Serializable {
 		        for(String n : dessert) {
 		        	if (checkAmountAV(n) > getMassPerServing()) {
 		        		dessertList.add(n);
+		        		// 2015-01-09 Added addDemandTotalRequest()
 		        	}
 		        }
 		 	    
@@ -384,6 +391,7 @@ implements Serializable {
 			    	dessertCounterPerSol++;
 	
 			        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	
 			        int dessertQuality = getBestDessertSkill();
 			        
 			        // Create a serving of dessert and add it into the list
@@ -425,16 +433,16 @@ implements Serializable {
             
         	// Added 2015-01-04 : Sanity check for the passing of each day
             int newDay = currentTime.getSolOfMonth();
-            if ( newDay != dayCache) {
-            	// reset back to zero at the beginning of a new day.
-            	//System.out.println("PreparingDessert.java timePassing() New Sol :" + newDay );// + settlement);
-		    	//System.out.println("desserts made today : " + dessertCounterPerSol);
+            if ( newDay != solCache) {
+        	    logger.info("Sol " + solCache + " : " + dessertCounterPerSol + " desserts made today in " 
+        	            	+ building.getNickName() + " at " + settlement.getName()); 
+                // reset back to zero at the beginning of a new day.
             	dessertCounterPerSol = 0;
-            	dayCache = newDay;
+            	solCache = newDay;
             }
             
             if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
-            	
+            	   	            	
             	String dessert = aServingOfDessert.getName();
             	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
             	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
@@ -485,6 +493,8 @@ implements Serializable {
      //2014-12-29 Added getFreshFood() 
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
+    	// 2015-01-09 Added addDemandTotalRequest()
+    	//inv.addDemandTotalRequest(ar);
         return freshFoodAvailable;
     }
     

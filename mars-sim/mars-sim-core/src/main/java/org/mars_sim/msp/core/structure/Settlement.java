@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  */
 
@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -38,6 +41,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -52,7 +56,7 @@ implements LifeSupport {
     private static final long serialVersionUID = 1L;
 
     /* default logger.*/
-	//private static Logger logger = Logger.getLogger(Settlement.class.getName());
+	private static Logger logger = Logger.getLogger(Settlement.class.getName());
      
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;
@@ -104,6 +108,10 @@ implements LifeSupport {
     //2014-11-23 Added foodProductionOverride
     private boolean foodProductionOverride;
     
+    private Inventory inv;
+	private int solCache = 1;
+	
+	
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
@@ -166,6 +174,8 @@ implements LifeSupport {
 
         // Initialize the initial population.
         initialPopulation = populationNumber;
+        
+        inv = getInventory();
         
 
     }
@@ -305,6 +315,16 @@ implements LifeSupport {
         double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
             oxygenTaken = oxygenLeft;
+        
+
+        getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+        
+    	// 2015-01-09 Added addDemandTotalRequest()
+    	inv.addDemandTotalRequest(oxygen);
+    	// 2015-01-09 addDemandRealUsage()
+    	inv.addDemandRealUsage(oxygen,oxygenTaken);
+    	
+		
         AmountResource carbonDioxide = AmountResource
                 .findAmountResource("carbon dioxide");
         double carbonDioxideProvided = oxygenTaken;
@@ -313,7 +333,6 @@ implements LifeSupport {
         if (carbonDioxideProvided > carbonDioxideCapacity)
             carbonDioxideProvided = carbonDioxideCapacity;
 
-        getInventory().retrieveAmountResource(oxygen, oxygenTaken);
         getInventory().storeAmountResource(carbonDioxide,
                 carbonDioxideProvided, true);
 
@@ -334,6 +353,11 @@ implements LifeSupport {
             waterTaken = waterLeft;
         getInventory().retrieveAmountResource(water, waterTaken);
 
+    	// 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(water);
+    	// 2015-01-09 addDemandRealUsage()
+       	inv.addDemandRealUsage(water, waterTaken);
+        
         return waterTaken;
     }
 
@@ -409,10 +433,67 @@ implements LifeSupport {
         thermalSystem.timePassing(time);
 
         buildingManager.timePassing(time);
+    
+        // 2015-01-09  Added calculateDemand()
+        calculateDemand();
 
         updateGoodsManager(time);
     }
 
+    /**
+     * Provides the daily demand statistics on sample amount resources 
+     */
+    // 2015-01-09  Added calculateDemand()
+    public void calculateDemand() {
+    	
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        
+        // check for the passing of each day
+        int newDay = currentTime.getSolOfMonth();
+        if ( newDay != solCache) {
+        	// reset back to zero at the beginning of a new day.
+	    	logger.info("Sol " + solCache +  " at " + this.getName()); 
+        	 
+        	solCache = newDay;
+        	
+        	// Sample demand statistics on Potato and Water
+        	double demandRealUsage1 = inv.getDemandRealUsage("Potato");
+        	double demandRealUsage2 = inv.getDemandRealUsage("Water");
+
+        	int totalRequest1 = inv.getDemandTotalRequest("Food");
+        	int totalRequest2 = inv.getDemandTotalRequest("Soymilk");
+
+        	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest("Food");
+        	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest("Soymilk");
+
+        	//int numOfGoodsInDemandRealUsageMap = inv.getDemandRealUsageMapSize();
+        	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
+        	//int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
+
+        	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
+        	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
+        	//logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
+        	
+        	logger.info(" Potato DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
+        	logger.info(" Water DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
+        	
+        	logger.info(" Potato DemandTotalRequest : " + totalRequest1);       	
+        	logger.info(" Water DemandTotalRequest : " + totalRequest2);
+        	
+        	logger.info(" Potato DemandSuccessfulRequest : " + demandSuccessfulRequest1);
+        	logger.info(" Water DemandSuccessfulRequest : " + demandSuccessfulRequest2);
+      	
+        	//inv.clearDemandTotalRequestMap();
+        	//inv.clearDemandRealUsageMap();
+        	//inv.clearDemandSuccessfulRequestMap();
+        }
+    }
+    
+    
+    /**
+     * Updates the GoodsManager
+     * @param time
+     */
     private void updateGoodsManager(double time) {
 
         // Randomly update goods manager 1 time per Sol.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.07 2014-11-13
+ * @version 3.07 2015-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -515,11 +515,19 @@ implements Serializable {
 						double amountDepleted = amount * time;
 						Inventory inv = entity.getInventory();
 						double amountStored = inv.getAmountResourceStored(resource, false);
+				    	
+						// 2015-01-09 Added addDemandTotalRequest()
+				    	inv.addDemandTotalRequest(resource);
+						
 						if (amountStored < amountDepleted) {
 						    amountDepleted = amountStored;
 						}
 						if(amountDepleted >= 0) {
 						    inv.retrieveAmountResource(resource, amountDepleted);
+						    
+							// 2015-01-09 addDemandRealUsage()
+						   	inv.addDemandRealUsage(resource, amountDepleted);
+						    
 						}
 					}
 				}

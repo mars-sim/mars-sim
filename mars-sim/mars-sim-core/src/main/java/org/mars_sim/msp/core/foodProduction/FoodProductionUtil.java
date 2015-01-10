@@ -263,6 +263,8 @@ public final class FoodProductionUtil {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
                 result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
+            	// 2015-01-09 Added addDemandTotalRequest()
+                inv.addDemandTotalRequest(resource);
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
