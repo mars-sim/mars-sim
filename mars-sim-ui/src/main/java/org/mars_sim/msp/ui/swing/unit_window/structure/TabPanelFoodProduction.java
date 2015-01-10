@@ -272,7 +272,6 @@ extends TabPanel {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 

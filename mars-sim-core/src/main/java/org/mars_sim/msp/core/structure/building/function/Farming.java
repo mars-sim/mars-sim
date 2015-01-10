@@ -340,7 +340,6 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    @SuppressWarnings("unused")
 	public void timePassing(double time) {
 
         // Determine resource processing production level.

@@ -266,7 +266,6 @@ implements Serializable, MouseListener {
 		addButton.setBackground(new Color(0,0,0,128));
 		addButton.setForeground(Color.ORANGE);
 		addButton.addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent evt) {
 				cropType = (CropType) comboBox.getSelectedItem();
 				farm.addCropListInQueue(cropType);
@@ -289,7 +288,6 @@ implements Serializable, MouseListener {
 		delButton.setForeground(Color.ORANGE);
 
 		delButton.addActionListener(new ActionListener() {
-			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent evt) {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
 		           	selectCrop();
@@ -333,7 +331,6 @@ implements Serializable, MouseListener {
 		list = new JList<CropType>(listModel);
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
-		    @SuppressWarnings("unchecked")
 			public void valueChanged(ListSelectionEvent event) {
 		        if (!event.getValueIsAdjusting() && event != null){
 					selectCrop();
