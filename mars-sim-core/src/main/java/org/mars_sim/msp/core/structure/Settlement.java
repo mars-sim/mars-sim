@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/**
+/**f
  * The Settlement class represents a settlement unit on virtual Mars. It contains information related to the state of
  * the settlement.
  */
