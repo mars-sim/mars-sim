@@ -1,5 +1,5 @@
 The Mars Simulation Project can be configured by editing the 
-XML files in the conf subdirectory.  You can then select the "new"
+XML files in the 'conf' subdirectory.  You can then select the "New"
 option in the project menu to start a new simulation that uses the 
 edited configuration.
 
