@@ -147,7 +147,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
         		ComponentMover cm = new ComponentMover();
         		cm.registerComponent(d);
  
-        		@SuppressWarnings("serial")
 				final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
                
 	    		buildingPanel.setOpaque(false);

@@ -75,10 +75,8 @@ implements Serializable {
     private static final double HUNGER_REDUCTION_PERCENT = 40D;
     
     //  SERVING_FRACTION was used in PreparingDessert.java
-    @SuppressWarnings("unused")
 	private static final double SERVING_FRACTION = 1D / 6D;
     // see PrepareDessert.java for the number of dessert served per sol
-    @SuppressWarnings("unused")
 	private static final double NUM_OF_DESSERT_PER_SOL = 4D;
 	
     private String dessertLocation ;

@@ -39,7 +39,6 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the

@@ -49,7 +49,6 @@ extends UnitTableModel {
 
 	//private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
 
-	@SuppressWarnings("unused")
 	private static MainDesktopPane desktop;
 	
 	// Column indexes
