@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatDessert.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,15 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 //import java.util.logging.Logger;
-
-
-
-
-
-
-
-
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -276,6 +267,22 @@ implements Serializable {
     }
 
     /**
+     * Gets the amount of dessert in the whole settlement.
+     * @return dessertAvailable
+     */
+
+    public static Boolean checkAmountAV(String name, Inventory inv) {
+	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
+		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
+		boolean result;
+		if (dessertAvailable > 0.001)
+			result = true;
+		else
+			result = false;
+		return result;
+    }
+    
+    /**
      * Checks if there is soymilk available for the person.
      * @param person the person to check.
      * @return true if soymilk is available.
@@ -286,8 +293,16 @@ implements Serializable {
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
-                AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
-                if (inv.getAmountResourceStored(soymilk, false) > 0D) result = true;;
+     
+                boolean d1 = checkAmountAV("Soymilk", inv);
+                boolean d2 = checkAmountAV("Sugarcane Juice", inv);
+                boolean d3 = checkAmountAV("Strawberry", inv);
+                boolean d4 = checkAmountAV("Granola Bar", inv);
+                boolean d5 = checkAmountAV("Blueberry Muffin", inv);
+                boolean d6 = checkAmountAV("Cranberry Juice", inv);
+                             
+            	result = d1 || d2 || d3 || d4 || d5 || d6;
+ 
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);

@@ -110,6 +110,7 @@ implements LifeSupport {
     
     private Inventory inv;
 	private int solCache = 1;
+	private boolean reportSample = true;
 	
 	
     /**
@@ -450,38 +451,47 @@ implements LifeSupport {
         
         // check for the passing of each day
         int newDay = currentTime.getSolOfMonth();
+        double mSol = currentTime.getMillisol();
         if ( newDay != solCache) {
-        	// reset back to zero at the beginning of a new day.
-	    	logger.info("Sol " + solCache +  " at " + this.getName()); 
-        	 
+        	reportSample = true;
         	solCache = newDay;
+        }
+        
+        if ( mSol > 990D && reportSample) {
         	
+        	reportSample = false;
+        	
+	    	logger.info("End of Day Report of Amount Resource Demand Statistics on Sol " + solCache +  " at " + this.getName()); 
+	    	 
+        	String sample1 = "Waste Water";
+        	String sample2 = "Water";
+	
         	// Sample demand statistics on Potato and Water
-        	double demandRealUsage1 = inv.getDemandRealUsage("Potato");
-        	double demandRealUsage2 = inv.getDemandRealUsage("Water");
+        	double demandRealUsage1 = inv.getDemandRealUsage(sample1);
+        	double demandRealUsage2 = inv.getDemandRealUsage(sample2);
 
-        	int totalRequest1 = inv.getDemandTotalRequest("Food");
-        	int totalRequest2 = inv.getDemandTotalRequest("Soymilk");
+        	int totalRequest1 = inv.getDemandTotalRequest(sample1);
+        	int totalRequest2 = inv.getDemandTotalRequest(sample2);
 
-        	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest("Food");
-        	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest("Soymilk");
+        	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest(sample1);
+        	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest(sample2);
 
-        	//int numOfGoodsInDemandRealUsageMap = inv.getDemandRealUsageMapSize();
-        	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
-        	//int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
+        	int numOfGoodsInDemandRealUsageMap = inv.getDemandRealUsageMapSize();
+        	int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
+        	int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
 
-        	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
-        	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
-        	//logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
+        	logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
+        	logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
+        	logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
         	
-        	logger.info(" Potato DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
-        	logger.info(" Water DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
+        	logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
+        	logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
+        	logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
+            
         	
-        	logger.info(" Potato DemandTotalRequest : " + totalRequest1);       	
-        	logger.info(" Water DemandTotalRequest : " + totalRequest2);
-        	
-        	logger.info(" Potato DemandSuccessfulRequest : " + demandSuccessfulRequest1);
-        	logger.info(" Water DemandSuccessfulRequest : " + demandSuccessfulRequest2);
+         	logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
+        	logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
+        	logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
       	
         	//inv.clearDemandTotalRequestMap();
         	//inv.clearDemandRealUsageMap();

@@ -542,7 +542,10 @@ implements Serializable {
 	            	
 	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 	        double ingredientAvailable = getFreshFood(ingredientAR);
-               
+            
+	    	// 2015-01-09 Added addDemandTotalRequest()
+	        inv.addDemandTotalRequest(ingredientAR);
+	        
 	        // set the safe threshold as dryWeight * 3 
 	        if (ingredientAvailable > dryWeight * 3 )  {
 	        	oneIngredient.setIsItAvailable(true);
@@ -705,24 +708,7 @@ implements Serializable {
 	            CookedMeal meal = i.next();
 	            //logger.info("CookedMeal : " + meal.getName());
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-	             
-	            // Added 2014-12-08 : Sanity check for the passing of each day
-	            int newDay = currentTime.getSolOfMonth();
-	            if ( newDay != solCache) {
-	    	    	logger.info("Sol " + solCache + " : " + mealCounterPerSol + " meals made today in " 
-	            	+ building.getNickName() + " at " + settlement.getName()); 
-	            	// reset back to zero at the beginning of a new day.
 
-	    	    	mealCounterPerSol = 0;
-	            	if (!timeMap.isEmpty()) {
-	    				timeMap.clear();
-	    			}
-	    			if (!qualityMap.isEmpty()) {
-	    				qualityMap.clear();	
-	    			}
-	            	solCache = newDay;
-	            }
-	         
 	            // Move expired meals back to food again (refrigerate leftovers).
 	             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 	                try {
@@ -750,6 +736,29 @@ implements Serializable {
 	        }
 	         numOfCookedMealCache = newNumOfCookedMeal;
     	}
+	     
+         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+         
+         // Added 2014-12-08 : Sanity check for the passing of each day
+         int newSol = currentTime.getSolOfMonth();
+         int newMonth = currentTime.getMonth();
+         if ( newSol != solCache) {
+
+ 	    	solCache = newSol;
+ 	    	
+         	if (!timeMap.isEmpty()) {
+ 				timeMap.clear();
+ 			}
+ 			if (!qualityMap.isEmpty()) {
+ 				qualityMap.clear();	
+ 			}
+ 			logger.info("Month " + newMonth + " Sol " + newSol + " : " 
+ 					+ mealCounterPerSol + " meals made yesterday in " 
+	            	+ building.getNickName() + " at " + settlement.getName());
+         	// reset back to zero at the beginning of a new day.
+ 	    	mealCounterPerSol = 0;
+         }
+	    	 
     }
 
     /**
