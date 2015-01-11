@@ -95,7 +95,7 @@ extends BuildingFunctionPanel {
 	    scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
 	    scrollPanel.setOpaque(false);
 	    scrollPanel.setBackground(new Color(0, 0, 0, 0));
-        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.orange) );
+        //scrollPanel.setBorder( BorderFactory.createLineBorder(Color.orange) );
 
 		
 		// Prepare medical table model

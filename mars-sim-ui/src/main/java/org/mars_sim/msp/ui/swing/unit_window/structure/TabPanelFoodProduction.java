@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFoodProduction.java
- * @version 3.07 2014-12-09
+ * @version 3.07 2015-01-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -53,6 +53,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food production information.
@@ -147,7 +148,7 @@ extends TabPanel {
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
 		buildingComboBox.setOpaque(false);
-		buildingComboBox.setBackground(new Color(0,0,0,128));
+		buildingComboBox.setBackground(new Color(51,25,0,128));
 		buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
@@ -165,7 +166,8 @@ extends TabPanel {
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
 		processSelection.setOpaque(false);
-		processSelection.setBackground(new Color(0,0,0,128));
+		processSelection.setBackground(new Color(51,25,0,128));
+		processSelection.setForeground(Color.ORANGE);
 		// 2014-12-01 Modified FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setSelectedIndex(-1);
@@ -176,8 +178,9 @@ extends TabPanel {
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.createNewProcess")); //$NON-NLS-1$
-		newProcessButton.setOpaque(false);
-		newProcessButton.setBackground(new Color(0,0,0,128));
+        newProcessButton.setOpaque(false);
+        newProcessButton.setBackground(new Color(51,25,0,128));
+        newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {

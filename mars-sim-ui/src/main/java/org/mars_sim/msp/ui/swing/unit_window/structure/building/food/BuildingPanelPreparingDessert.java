@@ -4,11 +4,12 @@
  * @version 3.07 2014-11-28
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure.building;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 import javax.swing.*;
 
@@ -16,7 +17,7 @@ import java.awt.*;
 
 /**
  * This class is a building function panel representing 
- * the soy product prep of a settlement building.
+ * the dessert preparation of a settlement building.
  */
 public class BuildingPanelPreparingDessert
 extends BuildingFunctionPanel {
@@ -76,9 +77,9 @@ extends BuildingFunctionPanel {
 		JLabel cookCapacityLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.cookCapacity", kitchen.getCookCapacity()), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(cookCapacityLabel);
 
-		// Prepare meal number label
+		// Prepare serving number label
 		servingsDessertCache = kitchen.getNumServingsFreshDessert();
-		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.servingsOfDessert", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
+		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.servingsOfDesserts", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertLabel);
 		
 		// 2014-11-30 Added dessertQualityStr

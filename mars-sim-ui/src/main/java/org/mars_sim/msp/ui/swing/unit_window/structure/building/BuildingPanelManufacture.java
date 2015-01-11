@@ -177,7 +177,7 @@ extends BuildingFunctionPanel {
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setOpaque(false);
         newProcessButton.setBackground(new Color(51,25,0,128));
-        //newProcessButton.setForeground(Color.ORANGE);
+        newProcessButton.setForeground(Color.ORANGE);
         newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
         newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");
         newProcessButton.addActionListener(new ActionListener() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 3.07 2014-12-09
+ * @version 3.07 2015-01-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -152,7 +152,7 @@ extends TabPanel {
 		buildingComboBoxCache = getManufacturingBuildings();
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
 		buildingComboBox.setOpaque(false);
-		buildingComboBox.setBackground(new Color(0,0,0,128));
+		buildingComboBox.setBackground(new Color(51,25,0,128));
 		buildingComboBox.setForeground(Color.orange);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
@@ -170,6 +170,9 @@ extends TabPanel {
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
 		// 2014-12-01 Modified ManufactureSelectionListCellRenderer() & Added setSelectedIndex(-1)
+		processSelection.setOpaque(false);
+		processSelection.setBackground(new Color(51,25,0,128));
+		processSelection.setForeground(Color.ORANGE);
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -182,6 +185,9 @@ extends TabPanel {
 
 		// Create new process button.
 		newProcessButton = new JButton(Msg.getString("TabPanelManufacture.button.createNewProcess")); //$NON-NLS-1$
+        newProcessButton.setOpaque(false);
+        newProcessButton.setBackground(new Color(51,25,0,128));
+        newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelManufacture.tooltip.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.addActionListener(new ActionListener() {

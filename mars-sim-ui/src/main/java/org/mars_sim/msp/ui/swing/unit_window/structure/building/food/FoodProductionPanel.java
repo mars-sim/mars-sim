@@ -4,7 +4,7 @@
  * @version 3.07 2014-11-24
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;

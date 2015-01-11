@@ -47,12 +47,12 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelCooking;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking.BuildingPanelFoodProduction;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelPreparingDessert;
 
 /**
  * The BuildingPanel class is a panel representing a settlement building.

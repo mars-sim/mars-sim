@@ -4,7 +4,7 @@
  * @version 3.07 2015-01-06
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure.building.cooking;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
