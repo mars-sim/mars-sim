@@ -480,6 +480,9 @@ implements Serializable {
 
     }
 
+    public int getNumberOfDessertsToday() {
+        return dessertCounterPerSol;
+    }
     
 
     /**

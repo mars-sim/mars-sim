@@ -4,7 +4,7 @@
  * @version 3.07 2015-01-06
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -64,32 +65,14 @@ extends TabPanel {
 
 	// Data Members
 private CookingTableModel cookingTableModel;
-/*
-	private Multiset<String> servingsSet;
-	private Multiset<String> allServingsSet;
-	
-	//private Multimap<String, Integer> bestQualityMap;
-	private Multimap<String, Integer> qualityMap;
-	private Multimap<String, Integer> allQualityMap;
-	
-	private Multimap<String, MarsClock> timeMap;	
-	private Multimap<String, MarsClock> allTimeMap;
-	
-	private List<Multimap<String, Integer>> qualityMapList;
-	private List<Multimap<String, MarsClock>> timeMapList;	
-	
-	private Collection<Map.Entry<String,Integer>> allQualityMapE ;
-	private Collection<Entry<String, MarsClock>> allTimeMapE;
-	*/
+
 	private int numRow = 0;
 	private int dayCache = 1;
 	//private MarsClock expirationCache = null;
 	
 	private Set<String> nameSet;
 	private List<String> nameList;
-	//private List<Integer> servingsList = new ArrayList<Integer>();
 
-	//private TableSorter sortedModel;
 	/** Constructor will flip this. */
 	private boolean sortAscending = true;
 	/** Sort column is defined. */
@@ -101,6 +84,13 @@ private CookingTableModel cookingTableModel;
 	/** The number of meals cooked today. */
 	private JLabel numMealsTodayLabel;
 	private int numMealsTodayCache = 0;
+	
+	/** The number of available Desserts. */
+	private JLabel numDessertsLabel;
+	private int numDessertsCache = 0;
+	/** The number of Desserts cooked today. */
+	private JLabel numDessertsTodayLabel;
+	private int numDessertsTodayCache = 0;
 	
 	private Settlement settlement;
 	
@@ -123,7 +113,7 @@ private CookingTableModel cookingTableModel;
 		
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel cookingLabelPanel = new JPanel(new GridLayout(4,1,0,0));
+		JPanel cookingLabelPanel = new JPanel(new GridLayout(5,1,0,0));
 		topContentPanel.add(cookingLabelPanel);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -132,15 +122,25 @@ private CookingTableModel cookingTableModel;
 		cookingLabelPanel.add(titleLabel);
 		
 		// Prepare cooking label.
-		JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(label);
+		//JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
+		//cookingLabelPanel.add(label);
 
+		// 2015-01-10 Added numDessertsLabel, numDessertsTodayLabel
+		// Prepare # of available Desserts label
+		numDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableDesserts", numDessertsCache), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabelPanel.add(numDessertsLabel);
+
+		// Prepare # of Desserts label
+		numDessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfDessertsToday", numDessertsTodayCache), JLabel.CENTER); //$NON-NLS-1$
+		cookingLabelPanel.add(numDessertsTodayLabel);
+	
+		
 		// 2015-01-06 Added numMealsLabel, numMealsTodayLabel
 		// Prepare # of available meals label
 		numMealsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
 		cookingLabelPanel.add(numMealsLabel);
 
-		// Prepare # of today cooked meals label
+		// Prepare # of cooked meals label
 		numMealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		cookingLabelPanel.add(numMealsTodayLabel);
 		
@@ -181,12 +181,7 @@ private CookingTableModel cookingTableModel;
 	 */
 	// 2014-12-30 Added setTableStyle()
 	public void setTableStyle(JTable table) {
-		
-		//JTableHeader header = table.getTableHeader();
-    	//TableHeaderRenderer theRenderer =
-    	//	new TableHeaderRenderer(header.getDefaultRenderer());
-    	//header.setDefaultRenderer(theRenderer);
-    	
+
 		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
 		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
 		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
@@ -199,10 +194,6 @@ private CookingTableModel cookingTableModel;
 		MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
 		// set cell to have a light color border
 		table.setBorder(border);
-		//table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
-		//table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
-		//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-		//table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
 		table.setShowGrid(true);
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
@@ -263,8 +254,14 @@ private CookingTableModel cookingTableModel;
 		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		cookingTableModel.update();
+		updateMeals();
+		updateDesserts();
 		
-		// 2015-01-06 Added numMealsTodayLabel, numMealsLabel
+	}
+	
+	// 2015-01-06 Added updateMeals()
+	public void updateMeals() {
+
 		int numMeals = 0;
 		int numMealsToday = 0;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
@@ -294,7 +291,37 @@ private CookingTableModel cookingTableModel;
 		
 	}
 
-	
+	// 2015-01-06 Added updateDesserts()
+	public void updateDesserts() {
+
+		int numDesserts = 0;
+		int numDessertsToday = 0;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        while (i.hasNext()) { 		
+        	// for each building's kitchen in the settlement
+        	Building building = i.next();
+    		//System.out.println("Building is " + building.getNickName());
+        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.COOKING);			
+				
+				numDesserts += kitchen.getNumServingsFreshDessert();				
+				numDessertsToday += kitchen.getNumberOfDessertsToday();
+        	}
+        }
+
+		// Update # of available Desserts
+		if (numDessertsCache != numDesserts) {
+			numDessertsCache = numDesserts;
+			numDessertsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfAvailableDesserts", numDesserts)); //$NON-NLS-1$
+		}
+
+		// Update # of Desserts cooked today
+		if (numDessertsTodayCache != numDessertsToday) {
+			numDessertsTodayCache = numDessertsToday;
+			numDessertsTodayLabel.setText(Msg.getString("BuildingPanelCooking.numberOfDessertsToday", numDessertsToday)); //$NON-NLS-1$
+		}	
+		
+	}
 	
 	/** 
 	 * Internal class used as model for the cooking table.
@@ -310,7 +337,6 @@ private CookingTableModel cookingTableModel;
 		//private ImageIcon dotYellow; // meal not available
 		//private ImageIcon dotGreen; // meal available
 
-		//private Multiset<String> servingsSet;
 		private Multiset<String> allServingsSet;
 		
 		private Multimap<String, Integer> qualityMap;
@@ -322,18 +348,13 @@ private CookingTableModel cookingTableModel;
 		private Collection<Map.Entry<String,Integer>> allQualityMapE ;
 		private Collection<Entry<String, MarsClock>> allTimeMapE;
 				
-		//private List<Multimap<String, Integer>> qualityMapList;
-		//private List<Multimap<String, MarsClock>> timeMapList;	
-	
 		private CookingTableModel(Settlement settlement) {
 			this.settlement = settlement;
 	
 			//dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			//dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			//dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
-		
-			//multimap = Multimaps.synchronizedMultimap(
-			//       HashMultimap.<K, V>create());
+		;
 			allServingsSet = HashMultiset.create();
 			allQualityMap = ArrayListMultimap.create();
 			allTimeMap = ArrayListMultimap.create();
@@ -445,34 +466,11 @@ private CookingTableModel cookingTableModel;
 			cleanUpTable();
 			getMultimap();
 			fireTableDataChanged();
-			/*
-			if (!allTimeMap.isEmpty()) {
-				allTimeMap.clear();
-				allTimeMapE.clear();
-			}
-			if (!allQualityMap.isEmpty()) {
-				allQualityMap.clear();
-				allQualityMapE.clear();
-			}
-			if (!allServingsSet.isEmpty()) 
-				allServingsSet.clear();
-			System.out.println("CookingTableModel : update() : deleted all maps and sets");
-		*/
+	
 		}
 		
 		public void getMultimap() {
-			/*
-			Multiset<String> allServingsSet;
-			
-			Multimap<String, Integer> qualityMap;
-			Multimap<String, Integer> allQualityMap = null;
-			
-			Multimap<String, MarsClock> timeMap;	
-			Multimap<String, MarsClock> allTimeMap = null;
-				
-			Collection<Map.Entry<String,Integer>> allQualityMapE ;
-			Collection<Entry<String, MarsClock>> allTimeMapE;
-			*/
+		
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 			
 	        while (i.hasNext()) { 		// for each building's kitchen in the settlement
