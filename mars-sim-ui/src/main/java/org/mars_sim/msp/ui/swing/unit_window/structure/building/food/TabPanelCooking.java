@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -113,7 +114,7 @@ private CookingTableModel cookingTableModel;
 		
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel cookingLabelPanel = new JPanel(new GridLayout(5,1,0,0));
+		JPanel cookingLabelPanel = new JPanel(new GridLayout(2,1,0,0));
 		topContentPanel.add(cookingLabelPanel);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
@@ -124,26 +125,45 @@ private CookingTableModel cookingTableModel;
 		// Prepare cooking label.
 		//JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
 		//cookingLabelPanel.add(label);
+		
+		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));
+		cookingLabelPanel.add(splitPanel);
 
-		// 2015-01-10 Added numDessertsLabel, numDessertsTodayLabel
+		// 2015-01-10 Added TitledBorder
+		JPanel d = new JPanel(new GridLayout(2,1,0,0));
+		TitledBorder dessertBorder = BorderFactory.createTitledBorder(
+				null, "Desserts", javax.swing.border.
+			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
+			      TitledBorder.DEFAULT_POSITION, null, java.awt.Color.darkGray);
+		d.setBorder(dessertBorder);
+		//dessertBorder.setTitleColor(Color.orange);
+
 		// Prepare # of available Desserts label
-		numDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableDesserts", numDessertsCache), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(numDessertsLabel);
-
+		numDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.servingsOfAvailableDesserts", numDessertsCache), JLabel.LEFT); //$NON-NLS-1$
+		d.add(numDessertsLabel);
 		// Prepare # of Desserts label
-		numDessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfDessertsToday", numDessertsTodayCache), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(numDessertsTodayLabel);
-	
-		
-		// 2015-01-06 Added numMealsLabel, numMealsTodayLabel
-		// Prepare # of available meals label
-		numMealsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(numMealsLabel);
+		numDessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.servingsOfDessertsToday", numDessertsTodayCache), JLabel.LEFT); //$NON-NLS-1$
+		d.add(numDessertsTodayLabel);
 
-		// Prepare # of cooked meals label
-		numMealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
-		cookingLabelPanel.add(numMealsTodayLabel);
+		splitPanel.add(d);
 		
+		JPanel m = new JPanel(new GridLayout(2,1,0,0));
+		TitledBorder mealBorder = BorderFactory.createTitledBorder(
+				null, "Meal", javax.swing.border.
+			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
+			      TitledBorder.DEFAULT_POSITION, null, java.awt.Color.darkGray);
+		m.setBorder(mealBorder);
+		//mealBorder.setTitleColor(Color.orange);
+
+		// Prepare # of available meals label
+		numMealsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.LEFT); //$NON-NLS-1$
+		m.add(numMealsLabel);				
+		// Prepare # of cooked meals label
+		numMealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
+		m.add(numMealsTodayLabel);
+
+		splitPanel.add(m);
+
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setOpaque(false);
@@ -173,6 +193,8 @@ private CookingTableModel cookingTableModel;
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		// 2014-12-30 Added setTableStyle()
 		setTableStyle(table);
+		
+		repaint();
 	}
 	
 	/**
@@ -280,13 +302,13 @@ private CookingTableModel cookingTableModel;
 		// Update # of available meals
 		if (numMealsCache != numMeals) {
 			numMealsCache = numMeals;
-			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfAvailableMeals", numMeals)); //$NON-NLS-1$
+			numMealsLabel.setText(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMeals)); //$NON-NLS-1$
 		}
 
 		// Update # of meals cooked today
 		if (numMealsTodayCache != numMealsToday) {
 			numMealsTodayCache = numMealsToday;
-			numMealsTodayLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMealsToday", numMealsToday)); //$NON-NLS-1$
+			numMealsTodayLabel.setText(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsToday)); //$NON-NLS-1$
 		}	
 		
 	}
@@ -302,7 +324,7 @@ private CookingTableModel cookingTableModel;
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
         	if (building.hasFunction(BuildingFunction.COOKING)) {      		
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.COOKING);			
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);			
 				
 				numDesserts += kitchen.getNumServingsFreshDessert();				
 				numDessertsToday += kitchen.getNumberOfDessertsToday();
@@ -312,13 +334,13 @@ private CookingTableModel cookingTableModel;
 		// Update # of available Desserts
 		if (numDessertsCache != numDesserts) {
 			numDessertsCache = numDesserts;
-			numDessertsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfAvailableDesserts", numDesserts)); //$NON-NLS-1$
+			numDessertsLabel.setText(Msg.getString("TabPanelCooking.servingsOfAvailableDesserts", numDesserts)); //$NON-NLS-1$
 		}
 
 		// Update # of Desserts cooked today
 		if (numDessertsTodayCache != numDessertsToday) {
 			numDessertsTodayCache = numDessertsToday;
-			numDessertsTodayLabel.setText(Msg.getString("BuildingPanelCooking.numberOfDessertsToday", numDessertsToday)); //$NON-NLS-1$
+			numDessertsTodayLabel.setText(Msg.getString("TabPanelCooking.servingsOfDessertsToday", numDessertsToday)); //$NON-NLS-1$
 		}	
 		
 	}
