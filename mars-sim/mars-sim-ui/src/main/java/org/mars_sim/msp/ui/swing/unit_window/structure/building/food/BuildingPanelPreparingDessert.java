@@ -105,7 +105,7 @@ extends BuildingFunctionPanel {
 		// Update meal number
 		if (servingsDessertCache != kitchen.getNumServingsFreshDessert()) {
 			servingsDessertCache = kitchen.getNumServingsFreshDessert();
-			servingsDessertLabel.setText(Msg.getString("BuildingPanelPreparingDessert.servingsOfDessert", servingsDessertCache)); //$NON-NLS-1$
+			servingsDessertLabel.setText(Msg.getString("BuildingPanelPreparingDessert.servingsOfDesserts", servingsDessertCache)); //$NON-NLS-1$
 		}
 
 		// 2014-11-30 Added dessertQualityStr

@@ -280,8 +280,8 @@ extends JPanel {
 //			catch (BuildingException e) {}
 		}
         
-		//2014-11-11 Added soy making function
-		// Prepare cooking panel if building has soy making function.
+		//2014-11-11 Added preparing dessert function
+		// Prepare dessert panel if building has preparing dessert function.
 		if (building.hasFunction(BuildingFunction.PREPARING_DESSERT)) {
 //			try {
 			PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);
