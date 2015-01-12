@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -62,8 +62,9 @@ extends TabPanel {
     /** default logger. */
     //private static Logger logger = Logger.getLogger(TabPanelCooking.class.getName());
 
-    private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
-
+    private static final BuildingFunction COOK_MEAL = BuildingFunction.COOKING;
+    private static final BuildingFunction PREPARE_DESSERT = BuildingFunction.PREPARING_DESSERT;
+    
 	// Data Members
 private CookingTableModel cookingTableModel;
 
@@ -75,23 +76,31 @@ private CookingTableModel cookingTableModel;
 	private List<String> nameList;
 
 	/** Constructor will flip this. */
-	private boolean sortAscending = true;
+	//private boolean sortAscending = true;
 	/** Sort column is defined. */
-	private int sortedColumn = 0;
+	//private int sortedColumn = 0;
 	
 	/** The number of available meals. */
-	private JLabel numMealsLabel;
-	private int numMealsCache = 0;
+	private JLabel availableMealsLabel;
+	private int availableMealsCache= 0;
 	/** The number of meals cooked today. */
-	private JLabel numMealsTodayLabel;
-	private int numMealsTodayCache = 0;
+	private JLabel mealsTodayLabel;
+	private int mealsTodayCache= 0;
 	
 	/** The number of available Desserts. */
-	private JLabel numDessertsLabel;
-	private int numDessertsCache = 0;
+	private JLabel availableDessertsLabel;
+	private int availableDessertsCache= 0;
 	/** The number of Desserts cooked today. */
-	private JLabel numDessertsTodayLabel;
-	private int numDessertsTodayCache = 0;
+	private JLabel dessertsTodayLabel;
+	private int dessertsTodayCache= 0;
+	
+	/** The number of cooks label. */
+	private JLabel numCooksLabel;
+	private int numCooksCache= 0;
+	
+	/** The cook capacity label. */	
+	private JLabel cookCapacityLabel;
+	private int cookCapacityCache= 0;
 	
 	private Settlement settlement;
 	
@@ -112,22 +121,59 @@ private CookingTableModel cookingTableModel;
 
 		settlement = (Settlement) unit;
 		
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
+        while (i.hasNext()) { 		
+        	// for each building's kitchen in the settlement
+        	Building building = i.next();
+    		//System.out.println("Building is " + building.getNickName());
+        	if (building.hasFunction(COOK_MEAL)) {      		
+				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
+				
+				availableMealsCache += kitchen.getNumberOfCookedMeals();				
+				mealsTodayCache += kitchen.getNumberOfCookedMealsToday();
+				cookCapacityCache += kitchen.getCookCapacity();
+				numCooksCache += kitchen.getNumCooks();	
+        	}
+        }
+
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
+        while (j.hasNext()) { 		
+        	// for each building's kitchen in the settlement
+        	Building building = j.next();
+    		//System.out.println("Building is " + building.getNickName());
+        	if (building.hasFunction(PREPARE_DESSERT)) {      		
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
+				
+				availableDessertsCache += kitchen.getServingsDesserts();				
+				dessertsTodayCache += kitchen.getServingsOfDessertsToday();
+        	}
+        }
 		// Prepare cooking label panel.
 		//JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel cookingLabelPanel = new JPanel(new GridLayout(2,1,0,0));
+		JPanel cookingLabelPanel = new JPanel(new BorderLayout());
 		topContentPanel.add(cookingLabelPanel);
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		cookingLabelPanel.add(titleLabel);
 		
-		// Prepare cooking label.
-		//JLabel label = new JLabel(Msg.getString("TabPanelCooking.label"), JLabel.CENTER); //$NON-NLS-1$
-		//cookingLabelPanel.add(label);
+		JPanel topPanel = new JPanel(new GridLayout(3,1,0,0));
+		topPanel.add(titleLabel);
+		cookingLabelPanel.add(topPanel, BorderLayout.NORTH);
 		
+		// Prepare cook number label
+
+		// Prepare cook capacity label		
+		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
+		topPanel.add(cookCapacityLabel);
+
+		//numCooksCache = kitchen.getNumCooks();
+		numCooksLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache), JLabel.CENTER); //$NON-NLS-1$
+		topPanel.add(numCooksLabel);
+
+				
 		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));
-		cookingLabelPanel.add(splitPanel);
+		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
 
 		// 2015-01-10 Added TitledBorder
 		JPanel d = new JPanel(new GridLayout(2,1,0,0));
@@ -139,28 +185,28 @@ private CookingTableModel cookingTableModel;
 		//dessertBorder.setTitleColor(Color.orange);
 
 		// Prepare # of available Desserts label
-		numDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.servingsOfAvailableDesserts", numDessertsCache), JLabel.LEFT); //$NON-NLS-1$
-		d.add(numDessertsLabel);
+		availableDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache), JLabel.LEFT); //$NON-NLS-1$
+		d.add(availableDessertsLabel);
 		// Prepare # of Desserts label
-		numDessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.servingsOfDessertsToday", numDessertsTodayCache), JLabel.LEFT); //$NON-NLS-1$
-		d.add(numDessertsTodayLabel);
+		dessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache), JLabel.LEFT); //$NON-NLS-1$
+		d.add(dessertsTodayLabel);
 
 		splitPanel.add(d);
 		
 		JPanel m = new JPanel(new GridLayout(2,1,0,0));
 		TitledBorder mealBorder = BorderFactory.createTitledBorder(
-				null, "Meal", javax.swing.border.
+				null, "Meals", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
 			      TitledBorder.DEFAULT_POSITION, null, java.awt.Color.darkGray);
 		m.setBorder(mealBorder);
 		//mealBorder.setTitleColor(Color.orange);
 
 		// Prepare # of available meals label
-		numMealsLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMealsCache), JLabel.LEFT); //$NON-NLS-1$
-		m.add(numMealsLabel);				
+		availableMealsLabel = new JLabel(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache), JLabel.LEFT); //$NON-NLS-1$
+		m.add(availableMealsLabel);				
 		// Prepare # of cooked meals label
-		numMealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
-		m.add(numMealsTodayLabel);
+		mealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
+		m.add(mealsTodayLabel);
 
 		splitPanel.add(m);
 
@@ -276,71 +322,88 @@ private CookingTableModel cookingTableModel;
 		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		cookingTableModel.update();
+		
 		updateMeals();
 		updateDesserts();
 		
 	}
 	
+
+	
 	// 2015-01-06 Added updateMeals()
 	public void updateMeals() {
-
-		int numMeals = 0;
-		int numMealsToday = 0;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		int numCooks = 0;
+		int cookCapacity = 0;
+		int availableMeals = 0;
+		int mealsToday = 0;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
         while (i.hasNext()) { 		
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
-				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);			
+        	if (building.hasFunction(COOK_MEAL)) {      		
+				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
 				
-				numMeals += kitchen.getNumberOfCookedMeals();				
-				numMealsToday += kitchen.getNumberOfCookedMealsToday();
+				availableMeals += kitchen.getNumberOfCookedMeals();				
+				mealsToday += kitchen.getNumberOfCookedMealsToday();
+				cookCapacity += kitchen.getCookCapacity();
+				numCooks += kitchen.getNumCooks();	
         	}
         }
 
 		// Update # of available meals
-		if (numMealsCache != numMeals) {
-			numMealsCache = numMeals;
-			numMealsLabel.setText(Msg.getString("TabPanelCooking.numberOfAvailableMeals", numMeals)); //$NON-NLS-1$
+		if (availableMealsCache != availableMeals) {
+			availableMealsCache = availableMeals;
+			availableMealsLabel.setText(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache)); //$NON-NLS-1$
 		}
 
 		// Update # of meals cooked today
-		if (numMealsTodayCache != numMealsToday) {
-			numMealsTodayCache = numMealsToday;
-			numMealsTodayLabel.setText(Msg.getString("TabPanelCooking.numberOfMealsToday", numMealsToday)); //$NON-NLS-1$
+		if (mealsTodayCache != mealsToday) {
+			mealsTodayCache = mealsToday;
+			mealsTodayLabel.setText(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache)); //$NON-NLS-1$
 		}	
 		
+		// Update cook number
+		if (numCooksCache != numCooks) {
+			numCooksCache = numCooks;
+			numCooksLabel.setText(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache)); //$NON-NLS-1$
+		}
+
+		// Update cook capacity
+		if (cookCapacityCache != cookCapacity) {
+			cookCapacityCache = cookCapacity;
+			cookCapacityLabel.setText(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache)); //$NON-NLS-1$
+		}
 	}
 
 	// 2015-01-06 Added updateDesserts()
 	public void updateDesserts() {
 
-		int numDesserts = 0;
-		int numDessertsToday = 0;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		int availableDesserts = 0;
+		int dessertsToday = 0;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
         while (i.hasNext()) { 		
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(BuildingFunction.PREPARING_DESSERT);			
+        	if (building.hasFunction(PREPARE_DESSERT)) {      		
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
 				
-				numDesserts += kitchen.getNumServingsFreshDessert();				
-				numDessertsToday += kitchen.getNumberOfDessertsToday();
+				availableDesserts += kitchen.getServingsDesserts();				
+				dessertsToday += kitchen.getServingsOfDessertsToday();
         	}
         }
 
 		// Update # of available Desserts
-		if (numDessertsCache != numDesserts) {
-			numDessertsCache = numDesserts;
-			numDessertsLabel.setText(Msg.getString("TabPanelCooking.servingsOfAvailableDesserts", numDesserts)); //$NON-NLS-1$
+		if (availableDessertsCache != availableDesserts) {
+			availableDessertsCache = availableDesserts;
+			availableDessertsLabel.setText(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache)); //$NON-NLS-1$
 		}
 
 		// Update # of Desserts cooked today
-		if (numDessertsTodayCache != numDessertsToday) {
-			numDessertsTodayCache = numDessertsToday;
-			numDessertsTodayLabel.setText(Msg.getString("TabPanelCooking.servingsOfDessertsToday", numDessertsToday)); //$NON-NLS-1$
+		if (dessertsTodayCache != dessertsToday) {
+			dessertsTodayCache = dessertsToday;
+			dessertsTodayLabel.setText(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache)); //$NON-NLS-1$
 		}	
 		
 	}
@@ -493,15 +556,15 @@ private CookingTableModel cookingTableModel;
 		
 		public void getMultimap() {
 		
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
 			
 	        while (i.hasNext()) { 		// for each building's kitchen in the settlement
 
 	        	Building building = i.next();
 	    		//System.out.println("Building is " + building.getNickName());
 	            
-	        	if (building.hasFunction(BuildingFunction.COOKING)) {      		
-					Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);			
+	        	if (building.hasFunction(COOK_MEAL)) {      		
+					Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
 					
 					qualityMap = kitchen.getQualityMap();
 					timeMap = kitchen.getTimeMap();

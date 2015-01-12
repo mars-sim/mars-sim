@@ -6,8 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Logger;
-
+//import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -28,7 +27,7 @@ public class PrepareDessertMeta implements MetaTask {
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(PrepareDessertMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(PrepareDessertMeta.class.getName());
     
     public PrepareDessertMeta() {
         //logger.info("just called MakeSoyMeta's constructor");
@@ -58,13 +57,13 @@ public class PrepareDessertMeta implements MetaTask {
 			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
 
                 if (kitchenBuilding != null) {
-                    result = 200D;
+                    result = 5D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                     
-                    String [] dessert = {   "soymilk",
+                    String [] dessert = {   "Soymilk",
                             "Sugarcane Juice",
                             "Strawberry",
                             "Granola Bar",
@@ -75,7 +74,8 @@ public class PrepareDessertMeta implements MetaTask {
                     // Put together a list of available dessert 
                     for(String n : dessert) {
                         if (kitchen.checkAmountAV(n) > kitchen.getMassPerServing()) {
-                            hasDessert = hasDessert || true;
+                        	result += 1D;
+                        	hasDessert = hasDessert || true;
                         }
                     }
                     
@@ -94,8 +94,11 @@ public class PrepareDessertMeta implements MetaTask {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) result *= job.getStartTaskProbabilityModifier(PrepareDessert.class);
+        
+            //System.out.println(" PrepareDessertMeta : getProbability " + result);
+            
         }
-
+        if (result < 0) result = 0;
         return result;
     }
 }

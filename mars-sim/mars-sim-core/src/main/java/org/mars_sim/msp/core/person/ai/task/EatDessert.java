@@ -270,16 +270,24 @@ implements Serializable {
      * Gets the amount of dessert in the whole settlement.
      * @return dessertAvailable
      */
-
     public static Boolean checkAmountAV(String name, Inventory inv) {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
 		boolean result;
-		if (dessertAvailable > 0.001)
+		if (dessertAvailable > getMassPerServing())
 			result = true;
 		else
 			result = false;
 		return result;
+    }
+    
+    /**
+     * Gets the quantity of one serving of dessert
+     * @return quantity
+     */
+    public static double getMassPerServing() {
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
     }
     
     /**

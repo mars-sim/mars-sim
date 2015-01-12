@@ -24,7 +24,7 @@ implements Serializable {
 	//private static Logger logger = Logger.getLogger(PreparedDessert.class.getName());
 
 	/** The time (millisols) between when the dessert is made and when it expires. */
-	private static final double SHELF_LIFE = 400D;
+	private static final double SHELF_LIFE = 150D;
 
 	// Data members
 	private int quality;

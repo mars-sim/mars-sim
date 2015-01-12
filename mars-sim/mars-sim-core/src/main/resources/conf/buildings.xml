@@ -207,6 +207,10 @@
 				<resource-storage resource="Granola Bar" capacity="500.0" />
 				<resource-storage resource="Honey" capacity="500.0" />
 				<resource-storage resource="Baking Powder" capacity="500.0" />
+				<resource-storage resource="Cranberry Juice" capacity="100.0" />				
+				<resource-storage resource="Sugarcane Juice" capacity="100.0" />								
+				<resource-storage resource="Blueberry Muffin" capacity="500.0" />
+				
 														
 				<resource-storage resource="Soybean" capacity="100.0" />	
 				<resource-storage resource="White Onion" capacity="100.0" />
@@ -226,11 +230,7 @@
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
 				<resource-storage resource="Cranberry" capacity="100.0" />
-				<resource-storage resource="Blueberry" capacity="100.0" />
-				
-				
-															
-															
+				<resource-storage resource="Blueberry" capacity="100.0" />																	
 																			
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially in the building. -->
@@ -548,9 +548,9 @@
 	
 	<building name="Lounge" width="7.0" length="9.0" base-level="0">
 		<description> The Lounge is a rest and relaxation living space furnished 
-			with dining tables and chairs for serving up to 33 occupants at a time. 
-			It has a well furnished kitchen for many simultaneous food processing activities and a small gym room
-			 with exercise equipment.
+			with dining tables and chairs for serving almost three dozens of people at a time. 
+			It has a well furnished kitchen supporting a lot of food processing activities and 
+			plenty of resource storage space. It also has a small gym room with exercise equipment.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
@@ -646,6 +646,60 @@
 					<activity-spot xloc="-1.25" yloc="-3.7" />
 				</activity>
 			</recreation>
+			
+			<storage>
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
+				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
+				<resource-storage resource="Ice" capacity="500.0" />
+				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />				
+				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
+
+				<resource-storage resource="Food" capacity="500.0" />
+							
+				<resource-storage resource="Cane Fiber" capacity="500.0" />							
+				<resource-storage resource="Yeast" capacity="500.0" />
+				<resource-storage resource="Epsom Salt" capacity="500.0" />
+				<resource-storage resource="Table Salt" capacity="500.0" />
+				<resource-storage resource="Sugar" capacity="500.0" />
+				<resource-storage resource="Rice Vinegar" capacity="500.0" />
+				<resource-storage resource="Soy Sauce" capacity="500.0" />
+				<resource-storage resource="Soymilk" capacity="500.0" />																																	
+				<resource-storage resource="Soybean Oil" capacity="500.0" />
+				<resource-storage resource="Soy Flour" capacity="500.0" />	
+				<resource-storage resource="Wheat Flour" capacity="500.0" />																																																						
+				<resource-storage resource="Granola Bar" capacity="500.0" />
+				<resource-storage resource="Honey" capacity="500.0" />
+				<resource-storage resource="Baking Powder" capacity="500.0" />
+				<resource-storage resource="Cranberry Juice" capacity="100.0" />				
+				<resource-storage resource="Sugarcane Juice" capacity="100.0" />				
+				<resource-storage resource="Blueberry Muffin" capacity="500.0" />
+													
+				<resource-storage resource="Soybean" capacity="100.0" />	
+				<resource-storage resource="White Onion" capacity="100.0" />
+				<resource-storage resource="Rice" capacity="100.0" />	
+				<resource-storage resource="Kidney Bean" capacity="100.0" />	
+				<resource-storage resource="Wheat" capacity="100.0" />	
+				<resource-storage resource="Cabbage" capacity="100.0" />
+				<resource-storage resource="Carrot" capacity="100.0" />
+				<resource-storage resource="Green Onion" capacity="100.0" />		
+				<resource-storage resource="Peanut" capacity="100.0" />
+				<resource-storage resource="Potato" capacity="100.0" />
+				<resource-storage resource="Sesame" capacity="100.0" />
+				<resource-storage resource="Garlic" capacity="100.0" />	
+				<resource-storage resource="Lettuce" capacity="100.0" />
+				<resource-storage resource="Ginger" capacity="100.0" />
+				<resource-storage resource="Sugarcane" capacity="100.0" />
+				<resource-storage resource="Strawberry" capacity="100.0" />
+				<resource-storage resource="Quinoa" capacity="100.0" />
+				<resource-storage resource="Cranberry" capacity="100.0" />
+				<resource-storage resource="Blueberry" capacity="100.0" />
+																						
+			</storage>
+			
 		</functions>
 	</building>
 	
