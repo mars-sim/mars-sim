@@ -395,9 +395,9 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			logger.info(entity.getName() + 
-					" has maintenance-triggered malfunction: " + 
+					" has a lack  of maintenance and wear condition malfunction: " + 
 					"time since late maintenance: " + 
-					solsLastMaint + " Sols.");
+					solsLastMaint + " Sols, wear condition: " + wearCondition + "%");
 			addMalfunction();
 		}
 	}

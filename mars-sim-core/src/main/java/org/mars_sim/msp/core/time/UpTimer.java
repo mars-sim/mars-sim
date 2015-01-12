@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UpTimer.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2015-01-12
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 
 /**
@@ -20,7 +21,13 @@ public class UpTimer implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = -4992839027918134952L;
 	
+	/** Initialized logger. */
+    private static Logger logger = Logger.getLogger(UpTimer.class.getName());
+	
 	private static final long NANOSECONDS_PER_MILLISECONDS = 1000000L;
+	
+	/** The time limit (ms) allowed between time pulses. */
+	private static final long TIME_LIMIT = 3000L;
 
 	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
@@ -81,10 +88,18 @@ public class UpTimer implements Serializable {
         thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
         if (paused) {
             return uptime;
-        } else {
-            uptime = uptime + (thiscall - lastcall);
-            lastcall = thiscall;
-            return uptime;
+        } 
+        else {
+            if ((thiscall - lastcall) < TIME_LIMIT) {
+                uptime = uptime + (thiscall - lastcall);
+                lastcall = thiscall;
+                return uptime;
+            }
+            else {
+                logger.severe("Too long since last time pulse, clearing update time");
+                thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
+                return uptime;
+            }
         }
     }
 
