@@ -60,6 +60,7 @@ implements Serializable {
     // eaten a meal within a period of time. Therefore < 1.0, or else a lot 
     // of meals will need to be refrigerated. 
     public static final double MEAL_REPLENISHED_RATE = 0.8;
+    private static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
     private boolean cookNoMore = false;
     
@@ -75,7 +76,7 @@ implements Serializable {
 	private int numOfCookedMealCache = 0;
     private double cookingWorkTime;
     private double dryWeightPerMeal;
-    private static int NUMBER_OF_MEAL_PER_SOL = 4;
+
     private String producerName;
 	
 	// 2014-12-08 Added multimaps
@@ -463,7 +464,7 @@ implements Serializable {
 
             if (numOfCookedMeal > maxServings)
             	cookNoMore = true;   		
-    		
+            
 	    	while (!cookNoMore) {
 	    		aMeal = pickAMeal();
 	    		if (aMeal != null) {

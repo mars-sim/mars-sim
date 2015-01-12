@@ -75,7 +75,9 @@ public class CookMealMeta implements MetaTask {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);
-        }
+        
+            //System.out.println(" cookMealMeta : getProbability " + result);
+      	}
 
         return result;
     }

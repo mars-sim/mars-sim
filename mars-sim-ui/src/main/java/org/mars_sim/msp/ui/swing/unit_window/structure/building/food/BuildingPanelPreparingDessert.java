@@ -29,14 +29,16 @@ extends BuildingFunctionPanel {
 	private PreparingDessert kitchen;
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
-	/** The number of soymilk. */
+	/** The number of desserts. */
 	private JLabel servingsDessertLabel;
-	/** The quality of the soymilk. */
+	private JLabel servingsDessertTodayLabel;
+	/** The quality of the desserts. */
 	private JLabel dessertQualityLabel;
 
 	// Cache
 	private int numCooksCache;
 	private int servingsDessertCache;
+	private int servingsDessertTodayCache;
 	private int dessertQualityCache;
 
 	/**
@@ -56,7 +58,7 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(6, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -78,9 +80,16 @@ extends BuildingFunctionPanel {
 		labelPanel.add(cookCapacityLabel);
 
 		// Prepare serving number label
-		servingsDessertCache = kitchen.getNumServingsFreshDessert();
-		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.servingsOfDesserts", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
+		servingsDessertCache = kitchen.getServingsDesserts();
+		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.availableDesserts", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertLabel);
+		
+		// 2015-01-06 Added servingsDessertTodayLabel
+		// Prepare servings dessert today label
+		servingsDessertTodayCache = kitchen.getServingsOfDessertsToday();
+		servingsDessertTodayLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache), JLabel.CENTER); //$NON-NLS-1$
+		labelPanel.add(servingsDessertTodayLabel);
+
 		
 		// 2014-11-30 Added dessertQualityStr
 		String dessertQualityStr;
@@ -102,12 +111,18 @@ extends BuildingFunctionPanel {
 			numCooksLabel.setText(Msg.getString("BuildingPanelPreparingDessert.numberOfCooks", numCooksCache)); //$NON-NLS-1$
 		}
 
-		// Update meal number
-		if (servingsDessertCache != kitchen.getNumServingsFreshDessert()) {
-			servingsDessertCache = kitchen.getNumServingsFreshDessert();
-			servingsDessertLabel.setText(Msg.getString("BuildingPanelPreparingDessert.servingsOfDesserts", servingsDessertCache)); //$NON-NLS-1$
+		// Update servings of dessert
+		if (servingsDessertCache != kitchen.getServingsDesserts()) {
+			servingsDessertCache = kitchen.getServingsDesserts();
+			servingsDessertLabel.setText(Msg.getString("BuildingPanelPreparingDessert.availableDesserts", servingsDessertCache)); //$NON-NLS-1$
 		}
 
+		// Update servings of dessert today
+		if (servingsDessertTodayCache != kitchen.getServingsOfDessertsToday()) {
+			servingsDessertTodayCache = kitchen.getServingsOfDessertsToday();
+			servingsDessertTodayLabel.setText(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache)); //$NON-NLS-1$
+		}
+				
 		// 2014-11-30 Added dessertQualityStr
 		String dessertQualityStr;
 		int dessertQuality = 0;

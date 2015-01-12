@@ -480,18 +480,18 @@ implements LifeSupport {
         	int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
         	int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
 
-        	logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
-        	logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
-        	logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
+        	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
+        	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
+        	//logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
         	
-        	logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
-        	logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
-        	logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
+        	//logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
+        	//logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
+        	//logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
             
         	
-         	logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
-        	logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
-        	logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
+         	//logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
+        	//logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
+        	//logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
       	
         	//inv.clearDemandTotalRequestMap();
         	//inv.clearDemandRealUsageMap();

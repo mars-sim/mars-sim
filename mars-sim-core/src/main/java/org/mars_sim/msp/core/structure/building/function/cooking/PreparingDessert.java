@@ -50,13 +50,13 @@ implements Serializable {
 
     /** The base amount of work time in milliSols (for cooking skill 0) 
      * to prepare fresh dessert . */
-    public static final double PREPARE_DESSERT_WORK_REQUIRED = 5D;
+    public static final double PREPARE_DESSERT_WORK_REQUIRED = 10D;
     
     // The number of sols the dessert can be preserved
     //public static final double SHELF_LIFE = .4D;
        
     // the chef will make up to an arbitrary number of serving of dessert per person in a settlement
-    public static final double MAX_NUM_SERVING_PER_PERSON = .8;
+    public static final double DESSERT_REPLENISHED_RATE = .2;
     
     //  SERVING_FRACTION also used in GoodsManager
     public static final double SERVING_FRACTION = 1D / 6D;
@@ -68,15 +68,24 @@ implements Serializable {
     
 	private int dessertCounterPerSol = 0;
 	private int solCache = 1;
-	private int maxServingsCache = 0;
+	private int numServingsCache = 0;
     private int cookCapacity;
 	private double preparingWorkTime; // used in numerous places
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
+    private double massPerServing;
     
     private Building building;
     private Settlement settlement;
     private Inventory inv ;
+    // 2015-01-03 Added availableDesserts
+    private String [] availableDesserts = 
+    	{ 	"Soymilk",
+			"Sugarcane Juice",
+			"Strawberry",
+			"Granola Bar",
+			"Blueberry Muffin", 
+			"Cranberry Juice"  };
     
     /**
      * Constructor.
@@ -94,15 +103,19 @@ implements Serializable {
         
         settlement = getBuilding().getBuildingManager().getSettlement();
         
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        massPerServing = personConfig.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
+        //System.out.println("massPerServing is " +massPerServing);
+        
         preparingWorkTime = 0D;
         servingsOfDessertList = new ArrayList<PreparedDessert>();
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-        this.cookCapacity = config.getCookCapacity(building.getBuildingType());
+        this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
     
     }
 
@@ -206,14 +219,14 @@ implements Serializable {
      * @return true if yes
      */
     public boolean hasFreshDessert() {
-        return (servingsOfDessertList.size() > 0);
+        return (getServingsDesserts() > 0);
     }
 
     /**
      * Gets the number of cups of fresh dessert in this facility.
      * @return number of servingsOfDessertList
      */
-    public int getNumServingsFreshDessert() {
+    public int getServingsDesserts() {
         return servingsOfDessertList.size();
     }
 
@@ -221,13 +234,17 @@ implements Serializable {
      * Gets the amount of dessert in the whole settlement.
      * @return dessertAvailable
      */
-    // 2014-11-28 this method checkAmountOfDessert() was called by PrepareDessert.java
     // 2014-12-30 Changed name to checkAmountAV() and added a param
     public double checkAmountAV(String name) {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
     	// 2015-01-09 Added addDemandTotalRequest()
-    	inv.addDemandTotalRequest(dessertAR);
+    	inv.addDemandTotalRequest(dessertAR);   	
+    		//System.out.println("Checking " 
+    		//		+ dessertAvailable + " kg " 
+    		//		+ name + " at " 
+    	    //    	+ getBuilding().getNickName() + " in "
+    	    //    	+ settlement.getName());
 		dessertAvailable = Math.round(dessertAvailable * 10000.0) / 10000.0;
 		return dessertAvailable;
 	}
@@ -261,13 +278,17 @@ implements Serializable {
     // 2014-12-30 Updated removeDessertFromAmountResource() with a param
     public void removeDessertFromAmountResource(String name) {
         AmountResource dessertAR = AmountResource.findAmountResource(name);  
-        double dessertPerServing = getMassPerServing();
+        
+        if (inv.getAmountResourceStored(dessertAR, false) < getMassPerServing() )
+        	System.out.println("Error retrieving " + name + " at " 
+        	+ getBuilding().getNickName() + " in " + settlement.getName());       			
+        
         // 2014-11-29 TODO: need to prevent IllegalStateException
-  	    inv.retrieveAmountResource(dessertAR, dessertPerServing);
+  	    inv.retrieveAmountResource(dessertAR, getMassPerServing());
   	    
   		// 2015-01-09 addDemandRealUsage()
   	    // inv.addDemandTotalRequest(dessertAR);
-  	   	inv.addDemandRealUsage(dessertAR, dessertPerServing);
+  	   	inv.addDemandRealUsage(dessertAR, getMassPerServing());
   	    
   	    /* // sugar is added to Soymilk production in foodProduction.xml 
   	    if (name.equals("Soymilk")) {
@@ -282,10 +303,14 @@ implements Serializable {
   	    */
     }
     
+    /**
+     * Gets the quantity of one serving of dessert
+     * @return quantity
+     */
     public double getMassPerServing() {
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
+        return massPerServing;
     }
+    
     /**
      * Gets the quality of the best quality fresh Dessert at the facility.
      * @return quality
@@ -310,29 +335,23 @@ implements Serializable {
     }
     
  	
-    // 2015-01-04 Added getCookNoMore()
- 	public boolean getCookNoMore() {
+    // 2015-01-04 Added getMakeNoMoreDessert()
+ 	public boolean getMakeNoMoreDessert() {
  		return makeNoMoreDessert;
  	}
  	
  	
  	// 2015-01-10 getAListOfDesserts()
  	public List<String> getAListOfDesserts() {
- 		
-        // 2015-01-03 Added dessert[] 
-        String [] dessert = { 	"Soymilk",
-        						"Sugarcane Juice",
-        						"Strawberry",
-        						"Granola Bar",
-        						"Blueberry Muffin", 
-        						"Cranberry Juice"  };
 
     	List<String> dessertList = new ArrayList<String>();
 	
     	// Put together a list of available dessert 
-        for(String n : dessert) {
-        	if (checkAmountAV(n) > getMassPerServing()) {
+        for(String n : availableDesserts) {
+        	if (checkAmountAV(n) > getMassPerServing()*2) {
         		dessertList.add(n);
+            	//logger.info("adding " + n + " into the dessertList at " 
+                //    	+ getBuilding().getNickName() + " in " + settlement.getName());
         		// 2015-01-09 Added addDemandTotalRequest()
         	}
         }
@@ -348,7 +367,6 @@ implements Serializable {
 	
 			int upperbound = dessertList.size();
 	    	int lowerbound = 1;
-
 	    	
 	    	if (upperbound > 1) {
 	    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
@@ -380,16 +398,19 @@ implements Serializable {
     	if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) {
 	    	// TODO: check if this is proportional to the population
 	        double population = building.getBuildingManager().getSettlement().getCurrentPopulationNum();
-	        int maxServings =  (int) (population * MAX_NUM_SERVING_PER_PERSON);
-	        int numServings = servingsOfDessertList.size();
-	        
-	        if ( maxServingsCache != maxServings ) { 	
-	        	//System.out.println("addWork() : " + maxServings + " is the max allowable # of dessert servings per sol");
-	        	maxServingsCache = maxServings;
-	        }
-	        if (numServings > maxServings )
+	        // max allowable # of dessert servings per sol
+	        int maxServings =  (int) (population * DESSERT_REPLENISHED_RATE);
+	        int numServings = getServingsDesserts();
+	
+        	//System.out.println("addWork() maxServings : " + maxServings);
+        	//System.out.println("addWork() numServings: " + numServings);
+
+	        //if ( numServingsCache != numServings )numServingsCache = numServings;
+
+	        if (maxServings < numServings )
 	        	makeNoMoreDessert = true;
-	        else {	        	
+        
+	        else  {	  // if (numServings >= maxServings ) 	
 	        	
 	        	List<String> dessertList = getAListOfDesserts();
 	        	
@@ -405,7 +426,7 @@ implements Serializable {
 			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
 			    dessertCounterPerSol++;
 			    //logger.info("addWork() : new dessert just added : " + selectedDessert);
-			    //System.out.println("# of available desserts : " + servingsOfDessertList.size());    
+			    //System.out.println("# of available desserts : " + getServingsDesserts());    
 		    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
 			    
 		        // Reset workTime to zero for making the next serving      	
@@ -426,7 +447,7 @@ implements Serializable {
     public void timePassing(double time) {
     	boolean hasAServing = hasFreshDessert(); 
     	if ( hasAServing ) {
-    	  int newNumOfServings = servingsOfDessertList.size();
+    	  int newNumOfServings = getServingsDesserts();
           //if ( NumOfServingsCache != newNumOfServings)
           //logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
     		
@@ -443,7 +464,7 @@ implements Serializable {
 	            	   	            	
 	            	String dessert = aServingOfDessert.getName();
 	            	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
-	            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
+	            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, true, false);            	        	
 	                double weightPerServing = getMassPerServing()  ;
 	            	
 	            	if (weightPerServing > capacity) 
@@ -451,8 +472,12 @@ implements Serializable {
 	            	
 	            	weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
 	            	// 2015-01-03 Put back to storage or freezer if not eaten
-	                inv.storeAmountResource(dessertAR, weightPerServing , false);
-	                //logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " + dessertAR.getName());
+	                inv.storeAmountResource(dessertAR, weightPerServing , true);
+	                logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " 
+	                		+ dessertAR.getName()
+	                		+  " at " + getBuilding().getNickName() 
+	                		+ " in " + settlement.getName()
+	                		);
 	
 	            	i.remove();
 	  	
@@ -475,12 +500,34 @@ implements Serializable {
     				+ dessertCounterPerSol + " desserts made yesterday in " 
    	            	+ building.getNickName() + " at " + settlement.getName()); 
             // reset back to zero at the beginning of a new day.
-    		dessertCounterPerSol = 0;
+    		
+    		Iterator<PreparedDessert> i = servingsOfDessertList.iterator();           
+  	      	while (i.hasNext()) {
+  	            PreparedDessert aServingOfDessert = i.next();
+  	            dessertCounterPerSol = 0;
+  	            String dessert = aServingOfDessert.getName();
+  	            AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
+  	            double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
+  	            double weightPerServing = getMassPerServing()  ;
+          	
+  	            if (weightPerServing > capacity) 
+  	            	weightPerServing = capacity;
+          	
+  	            weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
+  	            // 2015-01-03 Put back to storage or freezer if not eaten
+  	            inv.storeAmountResource(dessertAR, weightPerServing , false);
+  	            logger.info("TimePassing() : Refrigerate " + weightPerServing 
+  	            		+ " kg " + dessertAR.getName() 
+  	            		+ " in " + building.getNickName() 
+  	            		+ " at " + settlement.getName()); 
+
+  	            i.remove();
+  	      	}
     	}
 
     }
 
-    public int getNumberOfDessertsToday() {
+    public int getServingsOfDessertsToday() {
         return dessertCounterPerSol;
     }
     
@@ -536,6 +583,9 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
+        building = null;
+        inv = null;
+        settlement = null;
         servingsOfDessertList.clear();
         servingsOfDessertList = null;
     }

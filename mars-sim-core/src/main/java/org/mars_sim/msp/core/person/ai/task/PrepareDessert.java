@@ -32,8 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 /** 
  * The PrepareDessert class is a task for making dessert 
  */
-// 2014-11-06 Note that SkillType stays the same as COOKING
-// 2014-11-28 Changed Class name from MakeSoy to PrepareDessert
+
 public class PrepareDessert
 extends Task
 implements Serializable {
@@ -56,7 +55,7 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
 
-	// Starting time (millisol) for making soy product in 0 degrees longitude.
+	// Starting time (millisol) for making desserts in 0 degrees longitude.
 
 	// 2015-01-03 Added EVENING_START
 	private static final double EVENING_START = 850D;
@@ -67,9 +66,7 @@ implements Serializable {
     
     private static final double NIGHT_START = 100D;
 
-    
-	// The duration of time the dessert is good before getting refrigerated
-	private static final double DURATION = 200D; // 300 millisols = 7.2 hrs
+	private static final double DURATION = 150D; // 300 millisols = 7.2 hrs
 
 	// Data members
 	/** The kitchen the person is making dessert. */
@@ -84,11 +81,11 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
-        // logger.info("just called MakeSoy's constructor");
+        // logger.info("just called PrepareDessert constructor");
 
         // Initialize data members
         setDescription(Msg.getString("Task.description.prepareDessert.detail", 
-                getSoyProductName())); //$NON-NLS-1$
+                getDessertName())); //$NON-NLS-1$
         
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
@@ -155,7 +152,7 @@ implements Serializable {
     }
 
     /**
-     * Performs the soy product making phase of the task.
+     * Performs the dessert making phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left after performing the phase.
      */
@@ -174,18 +171,18 @@ implements Serializable {
         }
 
         // 2015-01-04a Added getCookNoMore() condition
-        if (kitchen.getCookNoMore()) {
+        if (kitchen.getMakeNoMoreDessert()) {
         	//System.out.println("PrepareDessert.java : cookNoMore = true. calling endTask() ");
         	endTask();
         	kitchen.cleanup();
         	return time;
         }
         
-        // Determine amount of effective work time based on "MakingSoy" skill.
+        // Determine amount of effective work time based on Cooking skill.
         double workTime = time;
         int dessertMakingSkill = getEffectiveSkillLevel();
         if (dessertMakingSkill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) dessertMakingSkill);
+        else workTime += workTime * (.05D * (double) dessertMakingSkill);
 
         // round off to 2 decimal places
         double roundOffWorkTime = Math.round(workTime * 100.0) / 100.0;
@@ -207,7 +204,7 @@ implements Serializable {
      * @param time the amount of time (ms) the person performed this task.
      */
     protected void addExperience(double time) {
-        // Add experience to "MakingSoy" skill
+        // Add experience to cooking skill
         // (1 base experience point per 25 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
@@ -219,7 +216,7 @@ implements Serializable {
     }
 
     /**
-     * Gets the kitchen the person is making soy products.
+     * Gets the kitchen the person is making desserts.
      * @return kitchen
      */
     public PreparingDessert getKitchen() {
@@ -234,7 +231,7 @@ implements Serializable {
 
         double chance = .001D;
 
-        // MakingSoy skill modification.
+        // cooking skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
@@ -286,7 +283,7 @@ implements Serializable {
      * @return result
      */
     //TODO: May change to specific products such as Soymilk, Soybean oil and Tofu in near future
-    private String getSoyProductName() {        
+    private String getDessertName() {        
     	String result = "Dessert";
         return result;
     }
