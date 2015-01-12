@@ -450,6 +450,9 @@ public class MasterClock implements Runnable, Serializable {
         return ((double) totalPulses / (uptimer.getUptimeMillis() / 1000D));
     }
 
+    /**
+     * Update the milliseconds elapsed since last time pulse.
+     */
     private void updateElapsedMilliseconds() {
         long tnow = uptimer.getUptimeMillis();
         elapsedMilliseconds = tnow - elapsedlast;

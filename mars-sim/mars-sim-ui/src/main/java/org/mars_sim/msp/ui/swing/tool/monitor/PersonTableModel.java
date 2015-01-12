@@ -450,11 +450,11 @@ extends UnitTableModel {
 	 */
 	public String getStressStatus(double value) {
 		String status= "N/A";
-		if (value == 0 ) status = Msg.getString("PersonTableModel.column.stress.level1");
-		else if (value < 15) status = Msg.getString("PersonTableModel.column.stress.level2");
-		else if (value < 40) status = Msg.getString("PersonTableModel.column.stress.level3");
-		else if (value < 75) status = Msg.getString("PersonTableModel.column.stress.level4");
-		else if (value < 95) status = Msg.getString("PersonTableModel.column.stress.level5");
+		if (value < 15) status = Msg.getString("PersonTableModel.column.stress.level1");
+		else if (value < 40) status = Msg.getString("PersonTableModel.column.stress.level2");
+		else if (value < 75) status = Msg.getString("PersonTableModel.column.stress.level3");
+		else if (value < 95) status = Msg.getString("PersonTableModel.column.stress.level4");
+		else status = Msg.getString("PersonTableModel.column.stress.level5");
 		return status;
 	}
 
