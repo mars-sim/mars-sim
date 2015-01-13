@@ -69,6 +69,7 @@ implements Serializable {
 	// Data members
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
+	private int counter;
 
 	/**
 	 * Constructor.
@@ -95,11 +96,18 @@ implements Serializable {
 		   
 		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();	       
 	        if (size == 0) {
-	            logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
-	            endTask();     	
+	        	counter++;
+	        	if (counter < 2)
+	        		logger.severe("Warning: cannot cook meals in " 
+	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName() 
+	            		+ " because none of the ingredients of a meal are available ");
+	            
+	            endTask();
+	            kitchen.cleanup();
 	        
 		    } else {
 		    	
+		    	counter = 0;
 				// 2015-01-06
 				kitchen.setChef(person.getName());
 				

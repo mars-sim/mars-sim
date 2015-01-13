@@ -299,6 +299,8 @@ extends MonitorTab {
                     return getCellText(e);
                 };
             };
+           	// 2015-01-13 Added setTableStyle()
+            setTableStyle(table);
         }
         
         // Set single selection mode if necessary.

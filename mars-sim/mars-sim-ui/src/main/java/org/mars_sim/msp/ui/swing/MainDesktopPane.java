@@ -162,7 +162,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * @param announcement the announcement text to display.
-	 */
+	 
 	// 2014-12-30 Added openMarqueeBanner()
 	public void openMarqueeBanner(String announcement) {
 		
@@ -194,6 +194,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//marqueeBanner.pack();
 		//marqueeBanner.setVisible(true);
 	}
+	*/
 	
 	/** 
 	 * sets up this class with two listeners 

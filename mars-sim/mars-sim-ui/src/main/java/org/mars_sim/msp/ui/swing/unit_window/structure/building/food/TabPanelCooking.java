@@ -275,13 +275,13 @@ private CookingTableModel cookingTableModel;
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
 		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
 	
-
+/*
         final JTable ctable = table;
 	    SwingUtilities.invokeLater(new Runnable(){
 	        public void run()  {
 	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
 	         } });
-		
+		*/
 	}
 
 	

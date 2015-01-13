@@ -576,7 +576,7 @@ extends UnitTableModel {
 					Unit unit = (Unit) event.getTarget();
 					String personName  = unit.getName();
 					String announcement = personName + " has just passed away. ";
-					desktop.openMarqueeBanner(announcement);
+					//desktop.openMarqueeBanner(announcement);
 					System.out.println(announcement);
 				}
 			}
@@ -586,8 +586,8 @@ extends UnitTableModel {
 					Unit unit = (Unit) event.getTarget();
 					String personName  = unit.getName();
 					String announcement = personName + " got sick. ";
-					desktop.disposeMarqueeBanner();
-					desktop.openMarqueeBanner(announcement);
+					//desktop.disposeMarqueeBanner();
+					//desktop.openMarqueeBanner(announcement);
 					System.out.println(announcement);
 				}
 			}

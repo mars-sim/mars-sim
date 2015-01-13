@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
@@ -76,6 +77,7 @@ public class MainWindow {
 	private Timer autosaveTimer;
 	private javax.swing.Timer earthTimer = null;
 	private static int AUTOSAVE_MINUTES = 15;
+	private static final int TIMEDELAY = 900;
 
     //protected ShowDateTime showDateTime;
     private JStatusBar statusBar;
@@ -88,8 +90,11 @@ public class MainWindow {
     private int memAV;
     private int memUsed;
     private String statusText;
-    private String earthTimeString = null;
+    String earthTimeString;
+    String t = null;
     
+    private SimulationConfig config = SimulationConfig.instance();
+
 	/**
 	 * Constructor.
 	 * @param cleanUI true if window should display a clean UI.
@@ -235,30 +240,8 @@ public class MainWindow {
 		startAutosaveTimer();
 
 		// 2015-01-07 Added Earth Time on status bar 
-		int timeDelay = 900;
-		if (earthTimer == null) {
-			earthTimer = new javax.swing.Timer(timeDelay, 
-			new ActionListener() {
-			    @Override
-			    public void actionPerformed(ActionEvent evt) {
-	        		//leftLabel.setText(statusText); 
-			    	try {
-			    		// TODO: investigate why the line below is causing NullPointerException
-			    		earthTimeString = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
-			    	} catch (Exception ee) {
-						ee.printStackTrace(System.err);
-					}
-					timeLabel.setText("Earth Time: " + earthTimeString);
-					maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	                memUsed = maxMem - memAV;
-	                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
-	                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
-			    }
-			});
-		}
-		earthTimer.start();
-
+		if (earthTimer == null) 
+			startEarthTimer(t);
 	}
 
 	// 2015-01-07 Added startAutosaveTimer()	
@@ -278,6 +261,42 @@ public class MainWindow {
 
     }
 
+	// 2015-01-13 Added startEarthTimer()
+	public void startEarthTimer(final String tt) {
+		//final String earthTimeString = null;
+		earthTimer = new javax.swing.Timer(TIMEDELAY, 
+			new ActionListener() {		
+			//String t = null;
+			    @SuppressWarnings("deprecation")
+				@Override
+			    public void actionPerformed(ActionEvent evt) {
+	        		String t = tt; 
+	        		MasterClock master = Simulation.instance().getMasterClock();
+	        		if (master == null) {
+	        		  throw new IllegalStateException("master clock is null");
+	        		}
+	        		EarthClock earthclock = master.getEarthClock();
+	        		if (earthclock == null) {
+	        		  throw new IllegalStateException("earthclock is null");
+	        		}
+	        		t = earthclock.getTimeStamp();
+			    	//try {
+					 //   t = earthclock.getTimeStamp();
+			    	//} catch (Exception ee) {
+					//	ee.printStackTrace(System.err);
+					//}
+					timeLabel.setText("Earth Time: " + t);
+					maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+	                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+	                memUsed = maxMem - memAV;
+	                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
+	                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
+			    }
+			});
+	
+		earthTimer.start();
+	}
+	
 	/*
 	// 2014-12-27 Added OpenSettlementWindow
 	public class OpenSettlementWindow extends TimerTask {
@@ -417,7 +436,7 @@ public class MainWindow {
 				desktop.resetDesktop();
 				if (earthTimer != null) 
 					earthTimer.stop();
-				earthTimer.start();
+				earthTimer = null;
 			}
 			catch (Exception e) {
 				// New simulation process should continue even if there's an exception in the UI.
@@ -431,6 +450,8 @@ public class MainWindow {
             desktop.openToolWindow(GuideWindow.NAME);
             GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+			// 2015-01-13 Added startEarthTimer()
+			startEarthTimer(t);
 		}
 	}
 
