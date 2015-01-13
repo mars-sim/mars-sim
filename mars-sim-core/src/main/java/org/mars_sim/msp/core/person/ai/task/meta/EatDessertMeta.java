@@ -38,25 +38,38 @@ public class EatDessertMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
+        double hunger = person.getPhysicalCondition().getHunger();
+        double result = 0D;
         
-        double result = person.getPhysicalCondition().getHunger() - 250D;
-        if (result < 0D) result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
-
-        Building building = EatDessert.getAvailableDiningBuilding(person);
-        if (building != null) {
-            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-        }
-
-        // Check if there's a cooked meal at a local kitchen.
-        if (EatDessert.getKitchenWithDessert(person) != null) result *= 5D;
+        if (hunger < 300 )
+        	result = 0D;
+        
         else {
-            // Check if there is food available to eat.
-            if (!EatDessert.isDessertAvailable(person)) result = 0D;
-        }
+	    	
+	        result =  0.4 * (hunger - 300D);
+	
+	        // TODO: if a person is very hungry, should he come inside and result > 0 ?
+	        if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
+	
+	        Building building = EatDessert.getAvailableDiningBuilding(person);
+	        if (building != null) {
+	        	result += 50D;
+	        	
+	            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+	            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	        }
+	
+	        // Check if there's a dessert at a local kitchen.
+	        if (EatDessert.getKitchenWithDessert(person) != null) 
+	        	result += 20D;
+	        else {
+	            // Check if there is food available to eat.
+	            if (!EatDessert.isDessertAvailable(person)) result = 0D;
+	        }
 
+        }
+       //TODO: if the kitchen has the person's favorite dessert
+        // result += 100D;
         return result;
     }
 }

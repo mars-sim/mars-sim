@@ -59,14 +59,11 @@ implements Serializable {
 
 	// 2015-01-03 Added EVENING_START
 	private static final double EVENING_START = 850D;
-
 	private static final double AFTERNOON_START = 650D;
-
-    private static final double MORNING_START = 400D;
-    
+    private static final double MORNING_START = 350D;   
     private static final double NIGHT_START = 100D;
 
-	private static final double DURATION = 150D; // 300 millisols = 7.2 hrs
+	private static final double DURATION = 140D; // 300 millisols = 7.2 hrs
 
 	// Data members
 	/** The kitchen the person is making dessert. */
@@ -94,39 +91,42 @@ implements Serializable {
             kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);
+
+	        // 2015-01-03 Added dessert[] 
+	        String [] dessert = { 	"Soymilk",
+	        						"Sugarcane Juice",
+	        						"Strawberry",
+	        						"Granola Bar",
+	        						"Blueberry Muffin", 
+	        						"Cranberry Juice"  };
+	    	
+	        boolean hasDessert = false; 	
+	    	// Put together a list of available dessert 
+	        for(String n : dessert) {
+	        	if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
+	        		hasDessert = true;
+	        	}
+	        }
+	 
+	        if (!hasDessert) {
+	        	logger.severe("The food desserts are running out!");
+	        	endTask();
+	        	
+	        } else  {
+	                
+		        // 2015-01-12 Added setChef()
+		        kitchen.setChef(person.getName());
+		        
+		        // Add task phase
+		        addPhase(PREPARING_DESSERT);
+		        setPhase(PREPARING_DESSERT);
+
+		        String jobName = person.getMind().getJob().getName(person.getGender());
+		        logger.finest(jobName + " " + person.getName() + " making dessert in " + kitchen.getBuilding().getNickName() + 
+		                " at " + person.getSettlement());
+	        }
         }
         else endTask();
-        
-        // 2015-01-03 Added dessert[] 
-        String [] dessert = { 	"Soymilk",
-        						"Sugarcane Juice",
-        						"Strawberry",
-        						"Granola Bar",
-        						"Blueberry Muffin", 
-        						"Cranberry Juice"  };
-    	
-        boolean hasDessert = false; 	
-    	// Put together a list of available dessert 
-        for(String n : dessert) {
-        	if (kitchen.checkAmountAV(n) > kitchen.getMassPerServing()) {
-        		hasDessert = hasDessert || true;
-        	}
-        }
- 
-        if (!hasDessert) {
-        	logger.severe("The food desserts are running out!");
-        	endTask();
-        	
-        } else  {
-                
-	        // Add task phase
-	        addPhase(PREPARING_DESSERT);
-	        setPhase(PREPARING_DESSERT);
-	
-	        String jobName = person.getMind().getJob().getName(person.getGender());
-	        logger.finest(jobName + " " + person.getName() + " making dessert in " + kitchen.getBuilding().getNickName() + 
-	                " at " + person.getSettlement());
-        }
     }
     
   	@Override
@@ -169,7 +169,7 @@ implements Serializable {
             kitchen.cleanup();
             return time;
         }
-
+        
         // 2015-01-04a Added getCookNoMore() condition
         if (kitchen.getMakeNoMoreDessert()) {
         	//System.out.println("PrepareDessert.java : cookNoMore = true. calling endTask() ");
@@ -182,7 +182,7 @@ implements Serializable {
         double workTime = time;
         int dessertMakingSkill = getEffectiveSkillLevel();
         if (dessertMakingSkill == 0) workTime /= 2;
-        else workTime += workTime * (.05D * (double) dessertMakingSkill);
+        else workTime += workTime * (.2D * (double) dessertMakingSkill);
 
         // round off to 2 decimal places
         double roundOffWorkTime = Math.round(workTime * 100.0) / 100.0;

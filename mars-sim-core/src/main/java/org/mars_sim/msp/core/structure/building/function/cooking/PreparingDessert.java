@@ -50,17 +50,16 @@ implements Serializable {
 
     /** The base amount of work time in milliSols (for cooking skill 0) 
      * to prepare fresh dessert . */
-    public static final double PREPARE_DESSERT_WORK_REQUIRED = 10D;
+    public static final double PREPARE_DESSERT_WORK_REQUIRED = 2D;
     
-    // The number of sols the dessert can be preserved
-    //public static final double SHELF_LIFE = .4D;
-       
-    // the chef will make up to an arbitrary number of serving of dessert per person in a settlement
-    public static final double DESSERT_REPLENISHED_RATE = .2;
-    
+    // 2015-01-12 Dynamically adjusted the rate of generating desserts
+    //public double dessertsReplenishmentRate;
+    public static double UP = 0.01;
+    public static double DOWN = 0.004;
     //  SERVING_FRACTION also used in GoodsManager
-    public static final double SERVING_FRACTION = 1D / 6D;
-    public static final double NUM_OF_DESSERT_PER_SOL = 4D;
+    public static final int NUM_OF_DESSERT_PER_SOL = 4;
+    
+    public static final double DESSERT_SERVING_FRACTION = 1D / 4D;
     
     private List<PreparedDessert> servingsOfDessertList;
     
@@ -74,6 +73,7 @@ implements Serializable {
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
     private double massPerServing;
+    private String producerName;
     
     private Building building;
     private Settlement settlement;
@@ -103,8 +103,10 @@ implements Serializable {
         
         settlement = getBuilding().getBuildingManager().getSettlement();
         
+        //dessertsReplenishmentRate = settlement.getDessertsReplenishmentRate();
+        
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        massPerServing = personConfig.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
+        massPerServing = personConfig.getFoodConsumptionRate() * DESSERT_SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
         //System.out.println("massPerServing is " +massPerServing);
         
         preparingWorkTime = 0D;
@@ -119,6 +121,11 @@ implements Serializable {
     
     }
 
+    // 2015-01-12 Added setChef()
+    public void setChef(String name) {
+    	this.producerName = name;
+    }
+    
     /**
      * Gets the value of the function for a named building.
      * @param buildingType the building name.
@@ -239,7 +246,7 @@ implements Serializable {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
     	// 2015-01-09 Added addDemandTotalRequest()
-    	inv.addDemandTotalRequest(dessertAR);   	
+    	// inv.addDemandTotalRequest(dessertAR);   	
     		//System.out.println("Checking " 
     		//		+ dessertAvailable + " kg " 
     		//		+ name + " at " 
@@ -250,10 +257,10 @@ implements Serializable {
 	}
     
     /**
-     * Gets freshDessert from this facility.
-     * @return freshDessert
+     * Gets a dessert from this facility.
+     * @return PreparedDessert
      */
-    public PreparedDessert getFreshDessert() {
+    public PreparedDessert eatADessert() {
         PreparedDessert bestDessert = null;
         int bestQuality = -1;
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
@@ -278,38 +285,27 @@ implements Serializable {
     // 2014-12-30 Updated removeDessertFromAmountResource() with a param
     public void removeDessertFromAmountResource(String name) {
         AmountResource dessertAR = AmountResource.findAmountResource(name);  
-        
-        if (inv.getAmountResourceStored(dessertAR, false) < getMassPerServing() )
+        double mass = getDryMass(name);
+        if (inv.getAmountResourceStored(dessertAR, false) < mass )
         	System.out.println("Error retrieving " + name + " at " 
         	+ getBuilding().getNickName() + " in " + settlement.getName());       			
         
         // 2014-11-29 TODO: need to prevent IllegalStateException
-  	    inv.retrieveAmountResource(dessertAR, getMassPerServing());
+  	    inv.retrieveAmountResource(dessertAR, mass);
   	    
   		// 2015-01-09 addDemandRealUsage()
   	    // inv.addDemandTotalRequest(dessertAR);
-  	   	inv.addDemandRealUsage(dessertAR, getMassPerServing());
-  	    
-  	    /* // sugar is added to Soymilk production in foodProduction.xml 
-  	    if (name.equals("Soymilk")) {
-	  	    // 2014-12-29 Added sugar usage when preparing Soymilk
-	        String sugar = "Sugar";
-	        double sugarAmount = 0.01;
-	        AmountResource sugarAR = getFreshFoodAR(sugar);
-	        double sugarAvailable = getFreshFood(sugarAR);
-	        if (sugarAvailable > 0.01) 
-	        	inv.retrieveAmountResource(sugarAR, sugarAmount);
-  	    }
-  	    */
+  	   	inv.addDemandRealUsage(dessertAR, mass);
+
     }
     
     /**
      * Gets the quantity of one serving of dessert
      * @return quantity
      */
-    public double getMassPerServing() {
-        return massPerServing;
-    }
+    //public double getMassPerServing() {
+    //    return massPerServing;
+    //}
     
     /**
      * Gets the quality of the best quality fresh Dessert at the facility.
@@ -348,7 +344,7 @@ implements Serializable {
 	
     	// Put together a list of available dessert 
         for(String n : availableDesserts) {
-        	if (checkAmountAV(n) > getMassPerServing()*2) {
+        	if (checkAmountAV(n) > getDryMass(n)) {
         		dessertList.add(n);
             	//logger.info("adding " + n + " into the dessertList at " 
                 //    	+ getBuilding().getNickName() + " in " + settlement.getName());
@@ -392,51 +388,87 @@ implements Serializable {
       */
     public void addWork(double workTime) {
     	preparingWorkTime += workTime; 
-        //logger.info("addWork() : preparingWorkTime is " + Math.round(preparingWorkTime *100.0)/100.0);
-        //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
+        //logger.info("addWork() : preparingWorkTime is " + preparingWorkTime );
+        //logger.info("addWork() : workTime is " + workTime);
     	
+    	//if (!makeNoMoreDessert && 
     	if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) {
 	    	// TODO: check if this is proportional to the population
 	        double population = building.getBuildingManager().getSettlement().getCurrentPopulationNum();
 	        // max allowable # of dessert servings per sol
-	        int maxServings =  (int) (population * DESSERT_REPLENISHED_RATE);
+	        double maxServings = population * settlement.getDessertsReplenishmentRate() / 10.0;
+	        
 	        int numServings = getServingsDesserts();
-	
         	//System.out.println("addWork() maxServings : " + maxServings);
         	//System.out.println("addWork() numServings: " + numServings);
-
 	        //if ( numServingsCache != numServings )numServingsCache = numServings;
 
 	        if (maxServings < numServings )
 	        	makeNoMoreDessert = true;
         
 	        else  {	  // if (numServings >= maxServings ) 	
-	        	
 	        	List<String> dessertList = getAListOfDesserts();
-	        	
 	        	String selectedDessert = getADessert(dessertList);
-	        	
-	        	// Take out one serving of the selected dessert from the fridge 
-	    		removeDessertFromAmountResource(selectedDessert);
-	    		
-		        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		        int dessertQuality = getBestDessertSkill();
-		        
-		        // Create a serving of dessert and add it into the list
-			    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, time));
-			    dessertCounterPerSol++;
-			    //logger.info("addWork() : new dessert just added : " + selectedDessert);
-			    //System.out.println("# of available desserts : " + getServingsDesserts());    
-		    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
-			    
-		        // Reset workTime to zero for making the next serving      	
-			    // preparingWorkTime = 0; 
-			    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;	
+	        	makeADessert(selectedDessert);
+			    makeNoMoreDessert = true; // This cause less dessert made
 	        }
     	} // end of if (preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED)
     } // end of void addWork()
    
- 
+    
+    /**
+     * Gets the dry mass of a dessert 
+     */
+    // 2015-01-12 Added getDryMass()
+    public double getDryMass(String selectedDessert) {
+    	double result = 0;
+    	/* availableDesserts = 
+        	{ 	"Soymilk",
+    			"Sugarcane Juice",
+    			"Strawberry",
+    			"Granola Bar",
+    			"Blueberry Muffin", 
+    			"Cranberry Juice"  };
+    	*/
+    	
+    	// TODO: get the real world figure on each serving
+    	double [] dryMass = 
+        	{ 	0.05,
+    			0.01,
+    			0.03,
+    			0.08,
+    			0.07, 
+    			0.01 };
+    	
+    	for(int i = 0; i <availableDesserts.length; i++) {
+        	if ( availableDesserts[i].equals(selectedDessert) ) {
+        		result = dryMass[i];
+        	}
+        }
+    	return result;
+    }
+    
+    public void makeADessert(String selectedDessert) {
+    	// Take out one serving of the selected dessert from the fridge 
+		removeDessertFromAmountResource(selectedDessert);
+		
+        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        int dessertQuality = getBestDessertSkill();
+        
+        double dryMass = getDryMass(selectedDessert);
+        
+        // Create a serving of dessert and add it into the list
+	    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
+	    dessertCounterPerSol++;
+	    //logger.info("addWork() : new dessert just added : " + selectedDessert);
+	    //System.out.println("# of available desserts : " + getServingsDesserts());    
+    	//System.out.println("desserts made today : " + dessertCounterPerSol);    
+	    
+        // Arbitrarily choice to reset workTime to zero for making the next serving      	
+	    // preparingWorkTime = 0; 
+	    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;	
+    }
+    
     /**
      * Time passing for the building.
      * 
@@ -448,85 +480,104 @@ implements Serializable {
     	boolean hasAServing = hasFreshDessert(); 
     	if ( hasAServing ) {
     	  int newNumOfServings = getServingsDesserts();
-          //if ( NumOfServingsCache != newNumOfServings)
-          //logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
+    	  double rate = settlement.getDessertsReplenishmentRate();
+          //if ( NumOfServingsCache != newNumOfServings) logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
     		
           // Toss away expired servingsOfDessertList
           Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
-        
-	      while (i.hasNext()) {
+          	while (i.hasNext()) {
 	  
-	            PreparedDessert aServingOfDessert = i.next();
-	            //logger.info("Dessert : " + aServingOfDessert.getName());
+	            PreparedDessert dessert = i.next();
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	            
-	            if (MarsClock.getTimeDiff(aServingOfDessert.getExpirationTime(), currentTime) < 0D) {
-	            	   	            	
-	            	String dessert = aServingOfDessert.getName();
-	            	AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
-	            	double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, true, false);            	        	
-	                double weightPerServing = getMassPerServing()  ;
-	            	
-	            	if (weightPerServing > capacity) 
-	            		weightPerServing = capacity;
-	            	
-	            	weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
-	            	// 2015-01-03 Put back to storage or freezer if not eaten
-	                inv.storeAmountResource(dessertAR, weightPerServing , true);
-	                logger.info("TimePassing() : Refrigerate " + weightPerServing + " kg " 
-	                		+ dessertAR.getName()
-	                		+  " at " + getBuilding().getNickName() 
-	                		+ " in " + settlement.getName()
-	                		);
-	
-	            	i.remove();
-	  	
-	                if(logger.isLoggable(Level.FINEST)) {
-	                     logger.finest("The dessert has lost its freshness at " + 
-	                     getBuilding().getBuildingManager().getSettlement().getName());
-	                }         
+	            if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {	            	   	      
+	            	try {
+		            	i.remove();
+		            	refrigerateFood(dessert);
+		            	//logger.info("Dessert Expired. Refrigerate " 
+		            	//		+ getDryMass(dessert.getName()) + " kg " 
+		                //		+ dessert.getName()
+		                //		+  " at " + getBuilding().getNickName() 
+		                //		+ " in " + settlement.getName()
+		                //		);
+		 	    		// 2015-01-12 For each dessert that needs to be refrigerated
+		  	    		// Adjust the rate to go down 
+			  	    	if (rate > 0 ) 
+			  	    		rate -= DOWN; 
+		                if(logger.isLoggable(Level.FINEST)) {
+		                     logger.finest("The dessert has lost its freshness at " + 
+		                     getBuilding().getBuildingManager().getSettlement().getName());
+		                }  
+	            	} catch (Exception e) {}
 	            } //end of if (MarsClock.getTimeDiff(
-	        } // end of  while (i.hasNext()) {
-	      NumOfServingsCache = newNumOfServings;
-    	} // end of if ( hasAServing ) {
-      
-    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();      
-    	// Added 2015-01-04 : Sanity check for the passing of each day
-    	int newSol = currentTime.getSolOfMonth();
-        int newMonth = currentTime.getMonth();
-    	if ( newSol != solCache) {
-    		solCache = newSol;
-    		logger.info("Month " + newMonth + " Sol " + newSol + " : " 
-    				+ dessertCounterPerSol + " desserts made yesterday in " 
-   	            	+ building.getNickName() + " at " + settlement.getName()); 
-            // reset back to zero at the beginning of a new day.
-    		
-    		Iterator<PreparedDessert> i = servingsOfDessertList.iterator();           
-  	      	while (i.hasNext()) {
-  	            PreparedDessert aServingOfDessert = i.next();
-  	            dessertCounterPerSol = 0;
-  	            String dessert = aServingOfDessert.getName();
-  	            AmountResource dessertAR = AmountResource.findAmountResource(dessert);            	
-  	            double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, false, false);            	        	
-  	            double weightPerServing = getMassPerServing()  ;
-          	
-  	            if (weightPerServing > capacity) 
-  	            	weightPerServing = capacity;
-          	
-  	            weightPerServing = Math.round( weightPerServing * 1000000.0) / 1000000.0;
-  	            // 2015-01-03 Put back to storage or freezer if not eaten
-  	            inv.storeAmountResource(dessertAR, weightPerServing , false);
-  	            logger.info("TimePassing() : Refrigerate " + weightPerServing 
-  	            		+ " kg " + dessertAR.getName() 
-  	            		+ " in " + building.getNickName() 
-  	            		+ " at " + settlement.getName()); 
-
-  	            i.remove();
-  	      	}
-    	}
-
+	        } // end of  while (i.hasNext())
+          	settlement.setDessertsReplenishmentRate(rate);
+	      //NumOfServingsCache = newNumOfServings;
+    	} // end of if ( hasAServing )
+ 
+    	checkEndOfDay();
     }
 
+    // 2015-01-12 Added checkEndOfDay()
+  	public synchronized void checkEndOfDay() {
+  			
+		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();      
+		// Added 2015-01-04 : Sanity check for the passing of each day
+		int newSol = currentTime.getSolOfMonth();
+	    int newMonth = currentTime.getMonth();
+	    double rate = settlement.getDessertsReplenishmentRate();
+		if ( newSol != solCache) {	
+			solCache = newSol;
+	        // reset back to zero at the beginning of a new day.
+	    	dessertCounterPerSol = 0;
+			// 2015-01-12 Adjust this rate to go up automatically by default
+	    	rate += UP;
+	      	settlement.setDessertsReplenishmentRate(rate);
+	    	/* 
+	    	// TODO: do we need to clear all desserts by the end of the day?
+	    	// It is causing the system to hang
+			// logger.info("Month " + newMonth + " Sol " + newSol + " : " 
+			//		+ dessertCounterPerSol + " desserts made yesterday in " 
+		    //    	+ building.getNickName() + " at " + settlement.getName()); 
+	
+			Iterator<PreparedDessert> i = servingsOfDessertList.iterator();           
+		      	while (i.hasNext()) {
+		      		try {
+			            PreparedDessert dessert = i.next();
+			            i.remove();
+			            refrigerateFood(dessert);
+			            logger.info("End of Day. Refrigerate " + getDryMass(dessert.getName()) 
+			            		+ " kg " + dessert.getName() 
+			            		+ " in " + building.getNickName() 
+			            		+ " at " + settlement.getName()); 
+			    		// 2015-01-12 For each dessert that needs to be refrigerated
+			    		// Adjust the rate to go down 
+			  	    	if (rate > 0 ) 
+			  	    		rate -= DOWN; 
+		      		} catch (Exception e) {}
+		      	}
+		      	*/
+		}
+  	}
+    
+	// 2015-01-12  Added refrigerateFood()
+	public void refrigerateFood(PreparedDessert dessert) {	
+		try {
+			String dessertName = dessert.getName();
+			AmountResource dessertAR = AmountResource.findAmountResource(dessertName);            	
+			double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, true, false);            	        	
+		    double massPerServing = getDryMass(dessertName)  ;
+			
+			if (massPerServing > capacity) 
+				massPerServing = capacity;
+			
+			massPerServing = Math.round( massPerServing * 100000.0) / 100000.0;
+			// 2015-01-03 Put back to storage or freezer if not eaten
+		    inv.storeAmountResource(dessertAR, massPerServing , false);
+		} catch (Exception e) {}
+	}
+    
+    
     public int getServingsOfDessertsToday() {
         return dessertCounterPerSol;
     }

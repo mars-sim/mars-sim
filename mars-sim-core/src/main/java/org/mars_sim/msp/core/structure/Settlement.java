@@ -67,6 +67,9 @@ implements LifeSupport {
     private static final double MIN_TEMP = 0.0D;
     private static final double MAX_TEMP = 48.0D;
 
+    public double mealsReplenishmentRate = 1.3;
+    public double dessertsReplenishmentRate = 1.7;
+    
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
      */
@@ -177,10 +180,43 @@ implements LifeSupport {
         initialPopulation = populationNumber;
         
         inv = getInventory();
-        
-
     }
 
+	/**
+	 * Gets the settlement's meals replenishment rate.
+	 * @return mealsReplenishmentRate
+	 */
+    // 2015-01-12 Added getMealsReplenishmentRate
+	public double getMealsReplenishmentRate() {
+		return mealsReplenishmentRate;
+	}
+
+	/**
+	 * Sets the settlement's meals replenishment rate.
+	 * @param rate
+	 */
+    // 2015-01-12 Added setMealsReplenishmentRate
+	public void setMealsReplenishmentRate(double rate) {
+		mealsReplenishmentRate = rate;
+	}
+    
+	/**
+	 * Gets the settlement's desserts replenishment rate.
+	 * @return DessertsReplenishmentRate
+	 */
+    // 2015-01-12 Added getDessertsReplenishmentRate
+	public double getDessertsReplenishmentRate() {
+		return dessertsReplenishmentRate;
+	}
+
+	/**
+	 * Sets the settlement's desserts replenishment rate.
+	 * @param rate
+	 */
+    // 2015-01-12 Added setDessertsReplenishmentRate
+	public void setDessertsReplenishmentRate(double rate) {
+		dessertsReplenishmentRate = rate;
+	}
 
 	/**
 	 * Gets the settlement template's unique ID.
@@ -435,33 +471,65 @@ implements LifeSupport {
 
         buildingManager.timePassing(time);
     
-        // 2015-01-09  Added calculateDemand()
-        calculateDemand();
+        // 2015-01-09  Added makeDailyReport()
+        makeDailyReport();
 
         updateGoodsManager(time);
     }
 
     /**
-     * Provides the daily demand statistics on sample amount resources 
+     * Provides the daily statistics on inhabitant's food energy intake
+     * 
      */
-    // 2015-01-09  Added calculateDemand()
-    public void calculateDemand() {
+    // 2015-01-09  Added getFoodEnergyIntakeReport()
+   	public synchronized void getFoodEnergyIntakeReport() {
+    	System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy Intake Report at " + this.getName() + " >>>"); 
+    	System.out.println("** An settler on Mars is estimated to consume about 10100 kJ per sol **");
+        //Iterator<Person> i = getInhabitants().iterator();
+        Iterator<Person> i = getAllAssociatedPeople().iterator(); 
+        while (i.hasNext()) {
+            Person p = i.next();
+        	PhysicalCondition condition = p.getPhysicalCondition();
+            double energy = Math.round(condition.getkJoules()*100.0)/100.0;
+            String name = p.getName();
+            System.out.print(name + " : " + energy + " kJ" + "\t");
+        }
+   	}
+
+    
+    /**
+     * Provides the daily reports for the settlement 
+     */
+    // 2015-01-09  Added makeDailyReport()
+    public synchronized void makeDailyReport() {
     	
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         
         // check for the passing of each day
         int newDay = currentTime.getSolOfMonth();
-        double mSol = currentTime.getMillisol();
+        //double mSol = currentTime.getMillisol();
         if ( newDay != solCache) {
-        	reportSample = true;
+        	//reportSample = true;
         	solCache = newDay;
+        	
+        	getFoodEnergyIntakeReport(); 	        	
+        	//getRealDemandReport();
+        	
         }
         
-        if ( mSol > 990D && reportSample) {
-        	
-        	reportSample = false;
-        	
-	    	logger.info("End of Day Report of Amount Resource Demand Statistics on Sol " + solCache +  " at " + this.getName()); 
+       // if ( mSol > 990D && reportSample) {
+        //	reportSample = false;	
+       // }
+    }
+    
+    /**
+     * Provides the daily demand statistics on sample amount resources 
+     */
+    // 2015-01-09  Added getRealDemandReport()
+   	public void getRealDemandReport() {
+   			
+   		//logger.info("<<< End of Day Report of Amount Resource Demand Statistics on Sol " 
+   		//+ solCache +  " at " + this.getName() + " >>>"); 
 	    	 
         	String sample1 = "Waste Water";
         	String sample2 = "Water";
@@ -480,23 +548,24 @@ implements LifeSupport {
         	int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
         	int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
 
-        	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
-        	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
-        	//logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
+        	logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
+        	logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
+        	logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
         	
-        	//logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
-        	//logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
-        	//logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
+        	logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
+        	logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
+        	logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
             
         	
-         	//logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
-        	//logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
-        	//logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
+         	logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
+        	logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
+        	logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
       	
+        	// TODO: should keep only the demand data of the last 5 days
+        	// Will clear all Maps
         	//inv.clearDemandTotalRequestMap();
         	//inv.clearDemandRealUsageMap();
-        	//inv.clearDemandSuccessfulRequestMap();
-        }
+        	//inv.clearDemandSuccessfulRequestMap();    
     }
     
     

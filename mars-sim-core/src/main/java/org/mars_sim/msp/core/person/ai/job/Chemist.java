@@ -59,6 +59,9 @@ implements Serializable {
 		//jobTasks.add(PrepareDessert.class);
 		//jobTasks.add(CookMeal.class);
 		
+		// 2015-01-12 Added ProduceFood
+		jobTasks.add(ProduceFood.class);
+		
 		// Add chemist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);

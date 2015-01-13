@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
  * This class represents the Physical Condition of a Person. It models the
@@ -57,6 +58,9 @@ implements Serializable {
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
+    // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
+    public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
+    
     // Data members
     /** Details of persons death. */
     private DeathInfo deathDetails;
@@ -79,6 +83,11 @@ implements Serializable {
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
 
+    // Person's energy level 
+    // 2015-01-12
+    private double kJoules;
+    private double dryMassPerServing;
+    
     /**
      * Constructor.
      * @param newPerson The person requiring a physical presence.
@@ -94,8 +103,16 @@ implements Serializable {
         stress = RandomUtil.getRandomDouble(100D);
         alive = true;
         medicationList = new ArrayList<Medication>();
+        
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / Cooking.NUMBER_OF_MEAL_PER_SOL);
+
     }
 
+    public double getMassPerServing() {
+        return dryMassPerServing;
+    }
+    
     /**
      * Gets the medical manager.
      * @return medical manager.
@@ -455,6 +472,22 @@ implements Serializable {
         return fatigue;
     }
 
+    /** Gets the person's daily food intake 
+     *  @return person's energy level in kilojoules
+     *  one large calorie is about 4.2 kilojoules
+     */
+    public double getkJoules() {
+        return kJoules;
+    }
+
+    /** Adds to the person's energy intake by eating
+     *  @param person's energy level in kilojoules
+     */
+    public void addkJoules(double foodAmount) {
+		// Each meal an average of 2525 kJ
+        kJoules = kJoules + foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
+    }
+    
     /**
      * Get the performance factor that effect Person with the complaint.
      * @return The value is between 0 -> 1.

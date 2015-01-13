@@ -20,6 +20,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -135,7 +137,19 @@ public class MainWindow {
 		JPanel bottomPane = new JPanel(new BorderLayout());
 		
 		// Prepare unit toolbar
-		unitToolbar = new UnitToolBar(this);
+		unitToolbar = new UnitToolBar(this) {
+	        /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+	        protected JButton createActionComponent(Action a) {
+	            JButton jb = super.createActionComponent(a);
+	            jb.setOpaque(false);
+	            return jb;
+	        }
+	    };
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
 		
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
 //import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -45,7 +47,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(EatDessert.class.getName());
+	private static Logger logger = Logger.getLogger(EatDessert.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -60,7 +62,7 @@ implements Serializable {
     private static final double STRESS_MODIFIER = -.2D;
 
     // Data members
-    private PreparedDessert aServingOfDessert;
+    private PreparedDessert dessert;
 
     // 2014-11-28 Added HUNGER_REDUCTION_PERCENT
     private static final double HUNGER_REDUCTION_PERCENT = 40D;
@@ -69,6 +71,8 @@ implements Serializable {
 	private static final double SERVING_FRACTION = 1D / 6D;
     // see PrepareDessert.java for the number of dessert served per sol
 	private static final double NUM_OF_DESSERT_PER_SOL = 4D;
+	
+//	private static final double AVE_WATER_CONTENT_FRACTION = .2;
 	
     private String dessertLocation ;
     private PreparingDessert kitchen;
@@ -97,11 +101,14 @@ implements Serializable {
                 // If fresh dessert is available in a local kitchen, go there.
             kitchen = getKitchenWithDessert(person);
             if (kitchen != null) {
-            	dessertLocation = kitchen.getBuilding().getNickName();   
-               	if (aServingOfDessert != null) {
-               		aServingOfDessert = kitchen.getFreshDessert();
+            	dessertLocation = kitchen.getBuilding().getNickName(); 
+            	dessert = kitchen.eatADessert();
+               	if (dessert != null) {
+               		//2015-01-12 Added setConsumerName()
+               		dessert.setConsumerName(person.getName());
                	}
             }
+            walkSite = true;
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -161,24 +168,23 @@ implements Serializable {
         PhysicalCondition condition = person.getPhysicalCondition();
 
         // If a person has a serving of dessert, stress is reduced.
-        if (aServingOfDessert != null) {
+        if (dessert != null) {
             double stress = condition.getStress();
-            condition.setStress(stress - (STRESS_MODIFIER * (aServingOfDessert.getQuality() + 1D)));
+            condition.setStress(stress - (STRESS_MODIFIER * (dessert.getQuality() + 1D)));
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             try {
       	
-            	if (aServingOfDessert != null) {
-                	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
-                  	//String nameDessert = aServingOfDessert.getName();
-            		//System.out.println( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
+            	if (dessert != null) {
+                   	String nameDessert = dessert.getName();
+            		//logger.info( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
             	}
             	else { // if a person does not get a hold of a piece of cooked meal 
             		
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (aServingOfDessert == null));
+            			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (dessert == null));
             			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()
             		}
             		else 
@@ -193,10 +199,13 @@ implements Serializable {
                 	hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);
                 else if (hunger > 900)
                 	hunger = 900;
+              	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
+                
                 condition.setHunger(hunger);
+                condition.addkJoules(dessert.getDryMass());
             }
             catch (Exception e) {
-                // If person can't obtain soymilk from container, end the task.
+                // If person can't obtain dessert from container, end the task.
                 endTask();
             }
         }
@@ -220,7 +229,7 @@ implements Serializable {
      * @return available dining building
      * @throws BuildingException if error finding dining building.
      */
-    //TODO: For now, get soymilk from refrigerator only from dining building  
+    //TODO: For now, get a dessert from refrigerator only from dining building  
     public static Building getAvailableDiningBuilding(Person person) {
 
         Building result = null;
@@ -244,7 +253,7 @@ implements Serializable {
     }
 
     /**
-     * Gets a kitchen in the person's settlement that currently has fresh soymilk.
+     * Gets a kitchen in the person's settlement that currently has a dessert.
      * @param person the person to check for
      * @return the kitchen or null if none.
      */
@@ -291,9 +300,9 @@ implements Serializable {
     }
     
     /**
-     * Checks if there is soymilk available for the person.
+     * Checks if there is a dessert available for the person.
      * @param person the person to check.
-     * @return true if soymilk is available.
+     * @return true if a dessert is available.
      */
     public static boolean isDessertAvailable(Person person) {
         boolean result = false;
@@ -334,6 +343,6 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        aServingOfDessert = null;
+        dessert = null;
     }
 }

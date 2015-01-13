@@ -92,24 +92,29 @@ implements Serializable {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
-	    //}
-	    //else endTask();
-        //2014-10-15 mkung: check if there are any fresh food, if not, endTask()
-        //double freshFoodAvailable = kitchen.getTotalFreshFood();
-        //if (freshFoodAvailable < 0.5) {
-        //    logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
-	    //endTask();     	
-	    //} else {
-	      // Add task phase
-	      addPhase(COOKING);
-		  setPhase(COOKING);		    	
-		  String jobName = person.getMind().getJob().getName(person.getGender());
-		  logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
-		    	                " in " + person.getSettlement());      
-		  // 2015-01-06
-		  kitchen.setChef(person.getName());
+		   
+		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();	       
+	        if (size == 0) {
+	            logger.severe("Warning: less than 0.5 kg total fresh (NOT packed) food remaining. cannot cook meal");
+	            endTask();     	
+	        
+		    } else {
+		    	
+				// 2015-01-06
+				kitchen.setChef(person.getName());
+				
+		    	// Add task phase
+			    addPhase(COOKING);
+				setPhase(COOKING);	
+				  
+				String jobName = person.getMind().getJob().getName(person.getGender());
+				logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
+				    	                " in " + person.getSettlement());      
+
+		    }
 	    }
 	    else endTask();
+	    
     }
     
     @Override
@@ -150,20 +155,19 @@ implements Serializable {
 
         // If meal time is over, clean up kitchen and end task.
         if (!isMealTime(person)) {
-            endTask();
+        	endTask();
             kitchen.cleanup();
             //logger.info(person.getName() + " just finished cooking.");
             return time;
         }
-
-        // 2015-01-04a Added getCookNoMore() condition
+        
+        // 2015-01-04a Added getCookNoMore() condition 
         if (kitchen.getCookNoMore()) {
         	//System.out.println("CookMeal.java cookingPhase() : cookNoMore = true. calling endTask() ");
         	endTask();
         	kitchen.cleanup();
         	return time;
         }
-    		
         
 	        // Determine amount of effective work time based on "Cooking" skill.
         double workTime = time;
@@ -179,7 +183,7 @@ implements Serializable {
 	
 	    // Check for accident in kitchen.
 	    checkForAccident(time);
-        
+
         return 0D;
     }
 

@@ -80,6 +80,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -132,6 +133,8 @@ implements Serializable {
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .6D;
 	// 2015-01-10 Added FARMING_FACTOR
     private static final double FARMING_FACTOR = .01D;
+    //  SERVING_FRACTION was used in PreparingDessert.java
+    public final double FRACTION = PreparingDessert.DESSERT_SERVING_FRACTION;
     
     // Data members
     private Settlement settlement;
@@ -418,7 +421,9 @@ implements Serializable {
         //+ "  uDemand is " + uDemand* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         //+ "  totalAveDemand is " + totalDemand);
 	
-        // The realtime demand data is cumulative and not to be reset to zero
+    	// TODO: should keep only the demand data of the last 5 days
+        // Should the realtime demand data be cumulative ?
+        
     	//inv.clearDemandTotalRequestMap();
     	//inv.clearDemandRealUsageMap();
     	//inv.clearDemandSuccessfulRequestMap();
@@ -893,13 +898,12 @@ implements Serializable {
         if (hasDessert) {
         	
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();      
-            //  SERVING_FRACTION was used in PreparingDessert.java
-            final double SERVING_FRACTION = 1D / 6D;
+
             // see PrepareDessert.java for the number of dessert served per sol
             //final double NUM_OF_DESSERT_PER_SOL = 3D;
             
             // Note: getFoodConsumptionRate has already been used by meal
-            double amountNeededSol = config.getFoodConsumptionRate() * SERVING_FRACTION / dessert.length;
+            double amountNeededSol = config.getFoodConsumptionRate() * FRACTION / dessert.length;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * DESSERT_FACTOR;

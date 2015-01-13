@@ -34,7 +34,7 @@ public class HotMeal implements Serializable {
 	private Cooking kitchen;
 	//2014-12-12 Added isItAvailable, ingredientDryWeight
 	private boolean isItAvailable;
-	private double ingredientDryWeight;
+	private double ingredientDryMass;
 	
 	public HotMeal(Cooking kitchen) {
 		this.kitchen = kitchen;
@@ -83,9 +83,9 @@ public class HotMeal implements Serializable {
     public boolean getIsItAvailable() {
     	return isItAvailable;
     }
-	public void setIngredientDryWeight(int id, double ingredientDryWeight) {
+	public void setIngredientDryMass(int id, double ingredientDryMass) {
 		Ingredient ingredient = ingredientList.get(id);
-		ingredient.setDryWeight(ingredientDryWeight);
+		ingredient.setDryMass(ingredientDryMass);
 		ingredientList.set(id, ingredient);
 	}
     public void setIsItAvailable(boolean value) {
@@ -111,10 +111,6 @@ public class HotMeal implements Serializable {
 		return ingredientList;
 	}
 	
-	//public HotMeal getMeal(int mealID) {	
-		//return new HotMeal(mealID);	
-	//}
-
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;
