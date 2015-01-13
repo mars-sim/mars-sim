@@ -94,6 +94,12 @@ private CookingTableModel cookingTableModel;
 	private JLabel dessertsTodayLabel;
 	private int dessertsTodayCache= 0;
 	
+	private JLabel mealsReplenishmentLabel;
+	private double mealsReplenishmentCache= 0;
+	private JLabel dessertsReplenishmentLabel;
+	private double dessertsReplenishmentCache= 0;
+	
+	
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
 	private int numCooksCache= 0;
@@ -176,7 +182,7 @@ private CookingTableModel cookingTableModel;
 		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
 
 		// 2015-01-10 Added TitledBorder
-		JPanel d = new JPanel(new GridLayout(2,1,0,0));
+		JPanel d = new JPanel(new GridLayout(3,1,0,0));
 		TitledBorder dessertBorder = BorderFactory.createTitledBorder(
 				null, "Desserts", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
@@ -190,10 +196,11 @@ private CookingTableModel cookingTableModel;
 		// Prepare # of Desserts label
 		dessertsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache), JLabel.LEFT); //$NON-NLS-1$
 		d.add(dessertsTodayLabel);
-
+		dessertsReplenishmentLabel = new JLabel(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishmentCache), JLabel.LEFT); //$NON-NLS-1$
+		d.add(dessertsReplenishmentLabel);
 		splitPanel.add(d);
 		
-		JPanel m = new JPanel(new GridLayout(2,1,0,0));
+		JPanel m = new JPanel(new GridLayout(3,1,0,0));
 		TitledBorder mealBorder = BorderFactory.createTitledBorder(
 				null, "Meals", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
@@ -207,7 +214,8 @@ private CookingTableModel cookingTableModel;
 		// Prepare # of cooked meals label
 		mealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
 		m.add(mealsTodayLabel);
-
+		mealsReplenishmentLabel = new JLabel(Msg.getString("TabPanelCooking.mealsReplenishment", mealsReplenishmentCache), JLabel.LEFT); //$NON-NLS-1$
+		m.add(mealsReplenishmentLabel);
 		splitPanel.add(m);
 
 		// Create scroll panel for the outer table panel.
@@ -336,6 +344,7 @@ private CookingTableModel cookingTableModel;
 		int cookCapacity = 0;
 		int availableMeals = 0;
 		int mealsToday = 0;
+		double mealsReplenishment = 0D;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
         while (i.hasNext()) { 		
         	// for each building's kitchen in the settlement
@@ -347,10 +356,19 @@ private CookingTableModel cookingTableModel;
 				availableMeals += kitchen.getNumberOfCookedMeals();				
 				mealsToday += kitchen.getNumberOfCookedMealsToday();
 				cookCapacity += kitchen.getCookCapacity();
-				numCooks += kitchen.getNumCooks();	
+				numCooks += kitchen.getNumCooks();
+				mealsReplenishment = settlement.getMealsReplenishmentRate();;
         	}
         }
+  
+        mealsReplenishment = Math.round(mealsReplenishment * 100.0)/100.0;
 
+		// Update # of meals replenishment rate
+		if (mealsReplenishmentCache != mealsReplenishment) {
+			mealsReplenishmentCache = mealsReplenishment;
+			mealsReplenishmentLabel.setText(Msg.getString("TabPanelCooking.mealsReplenishment", mealsReplenishmentCache)); //$NON-NLS-1$
+		}
+        
 		// Update # of available meals
 		if (availableMealsCache != availableMeals) {
 			availableMealsCache = availableMeals;
@@ -381,6 +399,7 @@ private CookingTableModel cookingTableModel;
 
 		int availableDesserts = 0;
 		int dessertsToday = 0;
+		double dessertsReplenishment = 0;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
         while (i.hasNext()) { 		
         	// for each building's kitchen in the settlement
@@ -391,9 +410,17 @@ private CookingTableModel cookingTableModel;
 				
 				availableDesserts += kitchen.getServingsDesserts();				
 				dessertsToday += kitchen.getServingsOfDessertsToday();
+				dessertsReplenishment = settlement.getDessertsReplenishmentRate();
         	}
         }
-
+        
+		dessertsReplenishment = Math.round(dessertsReplenishment * 100.0)/100.0;
+		
+		// Update # of desserts replenishment rate
+		if (dessertsReplenishmentCache != dessertsReplenishment) {
+			dessertsReplenishmentCache = dessertsReplenishment;
+			dessertsReplenishmentLabel.setText(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishmentCache)); //$NON-NLS-1$
+		}
 		// Update # of available Desserts
 		if (availableDessertsCache != availableDesserts) {
 			availableDessertsCache = availableDesserts;

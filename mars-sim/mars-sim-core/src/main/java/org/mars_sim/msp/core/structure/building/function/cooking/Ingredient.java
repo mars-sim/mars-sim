@@ -16,7 +16,7 @@ public class Ingredient implements Serializable {
 	private double proportion;
 	//2014-12-11 Added isItAvailable
 	private boolean isItAvailable;	
-	private double ingredientDryWeight;
+	private double ingredientDryMass;
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -43,12 +43,12 @@ public class Ingredient implements Serializable {
 	    public void setIsItAvailable(boolean value) {
 	    	isItAvailable = value;
 	    }
-	    public void setDryWeight(double ingredientDryWeight) {
-	    	this.ingredientDryWeight = ingredientDryWeight;
+	    public void setDryMass(double ingredientDryWeight) {
+	    	this.ingredientDryMass = ingredientDryWeight;
 	    }
-	    public double getDryWeight() {
+	    public double getDryMass() {
 
-	    	return ingredientDryWeight;
+	    	return ingredientDryMass;
 	    }
 	    public String toString() {
     		return name;

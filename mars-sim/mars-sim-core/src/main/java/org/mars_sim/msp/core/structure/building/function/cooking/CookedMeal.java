@@ -31,15 +31,17 @@ implements Serializable, Cloneable {
 	private String producerName;
 	private String consumerName;
 	private Cooking kitchen;
+	private double dryMass;
 	
 	/**
 	 * Constructor.
 	 * @param quality the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String mealName, int quality, MarsClock creationTime, String producerName, Cooking kitchen) {
+	public CookedMeal(String mealName, int quality, double dryMass, MarsClock creationTime, String producerName, Cooking kitchen) {
 		this.quality = quality;
 		this.mealName = mealName;
+		this.dryMass = dryMass;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
 		this.producerName = producerName;
@@ -72,6 +74,14 @@ implements Serializable, Cloneable {
 		return quality;
 	}
 
+	/**
+	 * Gets the dry mass of the meal.
+	 * @return dry mass
+	 */
+	public double getDryMass() {
+		return dryMass;
+	}
+	
 	/**
 	 * Gets the expiration time of the meal.
 	 * @return expiration time

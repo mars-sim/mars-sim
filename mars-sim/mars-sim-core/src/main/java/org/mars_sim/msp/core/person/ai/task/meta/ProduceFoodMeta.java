@@ -38,7 +38,13 @@ public class ProduceFoodMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 0D;
+        double result = 200D;
+        
+        // TODO: the cook should check if he himself or someone else is hungry, 
+        // he's more eager to cook except when he's tired
+        result = person.getPhysicalCondition().getHunger() - 400D;
+        result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
+        if (result < 0D) result = 0D;
 
         // Cancel any foodProduction processes that's beyond the skill of any people 
         // associated with the settlement.

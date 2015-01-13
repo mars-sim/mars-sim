@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -42,8 +43,19 @@ public class CookMealMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 20D;
+        double result = 300D;
  
+        // TODO: the cook should check if he himself or someone else is hungry, 
+        // he's more eager to cook except when he's tired
+        result = person.getPhysicalCondition().getHunger() - 300D;
+        result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
+        if (result < 0D) result = 0D;
+                
+        // TODO: if a person is very hungry, should he come inside and result > 0 ?
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+            result = 0D;
+        }
+        
       	if (CookMeal.isMealTime(person)) {
 
             try {
@@ -57,12 +69,17 @@ public class CookMealMeta implements MetaTask {
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-
-                    // Check if there are any meal recipes with available ingredients at kitchen.
+                   
                     Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
-                    if (kitchen.getMealRecipesWithAvailableIngredients().size() == 0) {
-                        result = 0D;
-                    }
+                    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+                    // if more meals (thus more ingredients) are available at kitchen.
+                    // to Chef's delight, he/she is more motivated to cook 
+                    result = result + size * 50D;
+  
+                    // TODO: if the person likes cooking 
+                    // result = result + 200D;
+                    //if (size == 0) result = 0D;
+                   
                 }
             }
             catch (Exception e) {

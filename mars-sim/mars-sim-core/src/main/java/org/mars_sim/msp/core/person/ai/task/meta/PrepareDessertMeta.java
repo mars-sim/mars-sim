@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 //import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
@@ -48,6 +49,17 @@ public class PrepareDessertMeta implements MetaTask {
              
         double result = 0D;
 
+        // TODO: the cook should check if he himself or someone else is hungry, 
+        // he's more eager to cook except when he's tired
+        result = person.getPhysicalCondition().getHunger() - 350D;
+        result -= person.getPhysicalCondition().getFatigue();
+        if (result < 0D) result = 0D;
+        
+        // TODO: if a person is very hungry, should he come inside and result > 0 ?
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+            result = 0D;
+        }
+        
         if (PrepareDessert.isDessertTime(person)) {
 
             try {
@@ -73,8 +85,8 @@ public class PrepareDessertMeta implements MetaTask {
                     boolean hasDessert = false;     
                     // Put together a list of available dessert 
                     for(String n : dessert) {
-                        if (kitchen.checkAmountAV(n) > kitchen.getMassPerServing()) {
-                        	result += 1D;
+                        if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
+                        	result += 5D;
                         	hasDessert = hasDessert || true;
                         }
                     }
@@ -82,6 +94,9 @@ public class PrepareDessertMeta implements MetaTask {
                     if (!hasDessert) {
                         result = 0D;
                     }
+                    // TODO: if the person likes making desserts
+                    // result = result + 200D;
+
                 }
             }
             catch (Exception e) {

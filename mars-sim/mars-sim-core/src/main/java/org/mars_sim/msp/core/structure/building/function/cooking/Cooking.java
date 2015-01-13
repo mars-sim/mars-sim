@@ -54,13 +54,13 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.COOKING;
 
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
-    public static final double COOKED_MEAL_WORK_REQUIRED = 10D; // 10 milli-sols is 15 mins
+    public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
 
-    // MEAL_REPLENISHED_RATE should account for the case when a person has already 
-    // eaten a meal within a period of time. Therefore < 1.0, or else a lot 
-    // of meals will need to be refrigerated. 
-    public static final double MEAL_REPLENISHED_RATE = 0.8;
-    private static final int NUMBER_OF_MEAL_PER_SOL = 4;
+    // 2015-01-12 Dynamically adjusted the rate of generating meals 
+    //public double mealsReplenishmentRate;
+    public static double UP = 0.01;
+    public static double DOWN = 0.004;
+    public static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
     private boolean cookNoMore = false;
     
@@ -75,7 +75,7 @@ implements Serializable {
 	private int solCache = 1;
 	private int numOfCookedMealCache = 0;
     private double cookingWorkTime;
-    private double dryWeightPerMeal;
+    private double dryMassPerServing;
 
     private String producerName;
 	
@@ -99,13 +99,15 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
         this.building = building;
-        
+
         // 2014-12-30 Changed inv to include the whole settlement
         //inv = getBuilding().getInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
         
         settlement = getBuilding().getBuildingManager().getSettlement();
         
+        //mealsReplenishmentRate = settlement.getMealsReplenishmentRate();
+        		
         cookingWorkTime = 0D;
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -127,17 +129,16 @@ implements Serializable {
         qualityMap = ArrayListMultimap.create();
     	timeMap = ArrayListMultimap.create();
            	
-    	// 2014-12-12 Moved these from timePassing() to constructor
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
-        dryWeightPerMeal = personConfig.getFoodConsumptionRate() * (1D / NUMBER_OF_MEAL_PER_SOL);
+        dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / NUMBER_OF_MEAL_PER_SOL);
         
-       	// 2014-12-12 Added computeDryWeight()
-        computeDryWeight();
+       	// 2014-12-12 Added computeDryMass()
+        computeDryMass();
     }
     
-    // 2014-12-12 Created computeDryWeight(). Called out once only in Cooking.java's constructor
-    public void computeDryWeight() {
+    // 2014-12-12 Created computeDryMass(). Called out once only in Cooking.java's constructor
+    public void computeDryMass() {
     	Iterator<HotMeal> i = mealConfigMealList.iterator();
 
     	while (i.hasNext()) {
@@ -155,28 +156,28 @@ implements Serializable {
 		        double proportion = oneIngredient.getProportion();
 		        proportionList.add(proportion);
 		            	
-		        // get totalDryWeight
+		        // get totalDryMass
 				double waterContent = getWaterContent(ingredientName);
 		        waterContentList.add(waterContent);
 	        }
 	              
 	        // get total dry weight (sum of each ingredient's dry weight) for a meal
-	        double totalDryWeight = 0;
+	        double totalDryMass = 0;
 	        int k;
 	        for(k = 1; k < waterContentList.size(); k++)
-	        	totalDryWeight += waterContentList.get(k) + proportionList.get(k) ;
+	        	totalDryMass += waterContentList.get(k) + proportionList.get(k) ;
 
 	        // get this fractional number
 	        double fraction = 0;
-	        fraction = dryWeightPerMeal / totalDryWeight;
+	        fraction = dryMassPerServing / totalDryMass;
 	        
-		    // get ingredientDryWeight for each ingredient
-	        double ingredientDryWeight = 0;
+		    // get ingredientDryMass for each ingredient
+	        double ingredientDryMass = 0;
 	        int l;
 	        for(l = 0; l < ingredientList.size(); l++) {
-	        	ingredientDryWeight = fraction * waterContentList.get(l) + proportionList.get(l) ;
-	        	ingredientDryWeight = Math.round(ingredientDryWeight* 1000000.0) / 1000000.0; // round up to 0.0000001 or 1mg
-	        	aMeal.setIngredientDryWeight(l, ingredientDryWeight);  
+	        	ingredientDryMass = fraction * waterContentList.get(l) + proportionList.get(l) ;
+	        	ingredientDryMass = Math.round(ingredientDryMass* 1000000.0) / 1000000.0; // round up to 0.0000001 or 1mg
+	        	aMeal.setIngredientDryMass(l, ingredientDryMass);  
 	        }
 
     	} // end of while (i.hasNext()) 	
@@ -324,9 +325,7 @@ implements Serializable {
      */
     public boolean hasCookedMeal() {
     	int size = 0;
-    	if (cookedMeals == null)
-    		size = 0;
-    	else 
+    	if (cookedMeals != null)
     		size = cookedMeals.size();
         return (size > 0);
     }
@@ -446,17 +445,17 @@ implements Serializable {
     public void addWork(double workTime) {
     	
     	cookingWorkTime += workTime;       
-        //logger.info("addWork() : cookingWorkTime is " + Math.round(cookingWorkTime *100.0)/100.0);
+        //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime );
         //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
 
-    	if (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED ) {
-	    	
-      		boolean exit = false;
-    		
+    	//if ( !cookNoMore && 
+    	if (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
+
             double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
-            double maxServings = population * MEAL_REPLENISHED_RATE;
+            double maxServings = population * settlement.getMealsReplenishmentRate() / 10.0;
             int numOfCookedMeal = cookedMeals.size();	
-            
+            //System.out.println( " maxServings is " + maxServings);
+            //System.out.println( " MEAL_REPLENISHED_RATE is " + MEAL_REPLENISHED_RATE);
             if ( numOfCookedMealCache != numOfCookedMeal ) {
             	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
             	numOfCookedMealCache = numOfCookedMeal;
@@ -465,14 +464,17 @@ implements Serializable {
             if (numOfCookedMeal > maxServings)
             	cookNoMore = true;   		
             
-	    	while (!cookNoMore) {
+            else {
+            	//System.out.println("calling pickAMeal()");
 	    		aMeal = pickAMeal();
 	    		if (aMeal != null) {
 	    			cookAHotMeal(aMeal);
-	    			cookNoMore = true;
+	    			cookNoMore = true; 
 	    		}
+	    		
 	    	}
     	}
+    	
     }
  
 		
@@ -539,7 +541,7 @@ implements Serializable {
 	        Ingredient oneIngredient;
 	        oneIngredient = i.next();
 	        String ingredientName = oneIngredient.getName();
-	        double dryWeight = oneIngredient.getDryWeight();
+	        double dryMass = oneIngredient.getDryMass();
 	            	
 	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 	        double ingredientAvailable = getFreshFood(ingredientAR);
@@ -547,8 +549,8 @@ implements Serializable {
 	    	// 2015-01-09 Added addDemandTotalRequest()
 	        inv.addDemandTotalRequest(ingredientAR);
 	        
-	        // set the safe threshold as dryWeight * 3 
-	        if (ingredientAvailable > dryWeight * 3 )  {
+	        // set the safe threshold as dryMass * 3 
+	        if (ingredientAvailable > dryMass * 3 )  {
 	        	oneIngredient.setIsItAvailable(true);
 	        	result = result && true;	        
 	        }
@@ -563,7 +565,7 @@ implements Serializable {
     // 2014-11-29 Created cookAHotMeal()
     // 2014-12-12 Revised to deduct the dry weight for each ingredient
     public void cookAHotMeal(HotMeal hotMeal) {
-
+    	
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();    	
 	    Iterator<Ingredient> i = ingredientList.iterator();
 	        
@@ -573,63 +575,32 @@ implements Serializable {
 		        oneIngredient = i.next();
 		        String ingredientName = oneIngredient.getName();
 		        // 2014-12-11 Updated to using dry weight
-		        double dryWeight = oneIngredient.getDryWeight();  
+		        double dryMass = oneIngredient.getDryMass();  
 		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
-		        inv.retrieveAmountResource(ingredientAR, dryWeight);
+		        inv.retrieveAmountResource(ingredientAR, dryMass);
 		        // 2015-01-09 Added addDemandUsage()
 		    	inv.addDemandTotalRequest(ingredientAR);
-	        	inv.addDemandRealUsage(ingredientAR, dryWeight);
+	        	inv.addDemandRealUsage(ingredientAR, dryMass);
 	         
 	        } // end of while
 	        
-	        // TODO: Change the hardcoded oilAmount and saltAmount to what's on the meal recipe.xml
-
+	        retrieveOilAndSalt();
 	        
-	        // 2014-12-29 Added oil and salt
-		    String oil = getAnOil();
-		    double oilAmount = .05;
-		    
-	    	// 2015-01-09 Added addDemandTotalRequest()
-	    	AmountResource oilAR = AmountResource.findAmountResource(oil);
-	        inv.addDemandTotalRequest(oilAR);
-
-		    if (!oil.equals("None")) {
-		        //AmountResource oilAR = getFreshFoodAR(oil);
-		        inv.retrieveAmountResource(oilAR, oilAmount);
-		        // 2015-01-09 Added addDemandUsage()
-	        	inv.addDemandRealUsage(oilAR, oilAmount);
-		    }
-		    
-		    String salt = "Table Salt";
-		    double saltAmount = .01;
-		    
-		    AmountResource saltAR = getFreshFoodAR(salt);
-		    double saltAvailable = getFreshFood(saltAR);
-		    // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
-			// 2015-01-09 Added addDemandTotalRequest()
-		    inv.addDemandTotalRequest(saltAR);
-		    if (saltAvailable > saltAmount) {
-		        inv.retrieveAmountResource(saltAR, saltAmount);
-	        	// 2015-01-09 Added addDemandRealUsage()
-	        	inv.addDemandRealUsage(saltAR, saltAmount);
-	 
-		    }    
     
 	    	String nameOfMeal = hotMeal.getMealName();
 	    	//TODO: kitchen equipment and quality of food should affect mealQuality
 	       	int mealQuality = getBestCookSkill();
 	        MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, expiration, producerName, this);
+	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
 	        //logger.info("a new meal made : " + meal.getName());    
 	    	cookedMeals.add(meal);
+	    	mealCounterPerSol++;
             int numOfCookedMeal = cookedMeals.size();	
             if ( numOfCookedMealCache != numOfCookedMeal ) {
             	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
             	numOfCookedMealCache = numOfCookedMeal;
             }
-	    	mealCounterPerSol++;
-	    	//logger.info(mealCounterPerSol + " meals made today");    
-
+	    	
 	    	// 2014-12-08 Added to Multimaps
 	    	qualityMap.put(nameOfMeal, mealQuality);
 	    	timeMap.put(nameOfMeal, expiration);
@@ -642,8 +613,52 @@ implements Serializable {
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
     }
     
+    // 2015-01-12 Added retrieveOilAndSalt()
+    public void retrieveOilAndSalt() {
+        // TODO: Change the hardcoded oilAmount and saltAmount to what's on the meal recipe.xml
+
+	    // 2014-12-29 Added oil and salt
+	    String oil = getAnOil();
+	    double oilAmount = .05;
+	    
+		// 2015-01-09 Added addDemandTotalRequest()
+		AmountResource oilAR = AmountResource.findAmountResource(oil);
+	    inv.addDemandTotalRequest(oilAR);
+	
+	    if (!oil.equals("None")) {
+	        //AmountResource oilAR = getFreshFoodAR(oil);
+	        inv.retrieveAmountResource(oilAR, oilAmount);
+	        // 2015-01-09 Added addDemandUsage()
+	    	inv.addDemandRealUsage(oilAR, oilAmount);
+	    }
+	    
+	    String salt = "Table Salt";
+	    double saltAmount = .01;
+	    
+	    AmountResource saltAR = getFreshFoodAR(salt);
+	    double saltAvailable = getFreshFood(saltAR);
+	    // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
+		// 2015-01-09 Added addDemandTotalRequest()
+	    inv.addDemandTotalRequest(saltAR);
+	    if (saltAvailable > saltAmount) {
+	        inv.retrieveAmountResource(saltAR, saltAmount);
+	    	// 2015-01-09 Added addDemandRealUsage()
+	    	inv.addDemandRealUsage(saltAR, saltAmount);
+	    }    
+    }
+    
+
+    
     public void setChef(String name) {
     	this.producerName = name;
+    }
+    
+    /**
+     * Gets the quantity of one serving of meal
+     * @return quantity
+     */
+    public double getMassPerServing() {
+        return dryMassPerServing;
     }
     
     // 2014-12-01 Added getCookedMealList()
@@ -688,7 +703,7 @@ implements Serializable {
     public double getFreshFoodAvailable(String food) {
     	return getFreshFood(getFreshFoodAR(food));
     }
-    
+   
     
     /**
      * Time passing for the Cooking function in a building.
@@ -698,69 +713,107 @@ implements Serializable {
     // 2014-10-08: Currently converting each unit of expired meal into 0.5 kg of packed food 
     // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
-
     	boolean hasAMeal = hasCookedMeal(); 
 	     //logger.info(" hasAMeal : "+ hasAMeal);
 	     if ( hasAMeal ) {
+	    	 double rate = settlement.getMealsReplenishmentRate();
 	         int newNumOfCookedMeal = cookedMeals.size();
 	         //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
 	         Iterator<CookedMeal> i = cookedMeals.iterator();
 	         while (i.hasNext()) {
-	            CookedMeal meal = i.next();
-	            //logger.info("CookedMeal : " + meal.getName());
+	            CookedMeal meal = i.next();	            
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-
-	            // Move expired meals back to food again (refrigerate leftovers).
-	             if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-	                try {
-	                	
-	      	            double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
-	                    if (dryWeightPerMeal > foodCapacity) 
-	                    	dryWeightPerMeal = foodCapacity;
-	                			//logger.info("timePassing() : pack & convert expired meal into dried food");
-	                			// Turned 1 cooked meal unit into 1 food unit
-	                    dryWeightPerMeal = Math.round( dryWeightPerMeal * 1000000.0) / 1000000.0;
-	                    // remove the cookedMeal and store it
-	                    inv.storeAmountResource(dryFoodAR, dryWeightPerMeal , false);
-	                    // TODO: need to adjust the supply for the storing the food back
-	                    //logger.info("TimePassing() : Refrigerate " + dryWeightPerMeal + " kg " + dryFoodAR.getName());
-	                    dailyMealList.add(meal);
-	                    i.remove();
-	                    
-	                    if(logger.isLoggable(Level.FINEST)) {
-	                        logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
-	                                getBuilding().getBuildingManager().getSettlement().getName());
-	                    }
-	                }
-	                catch (Exception e) {}
-	            }
-	        }
-	         numOfCookedMealCache = newNumOfCookedMeal;
-    	}
+	            if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
+	            	//dailyMealList.add(meal);
+	 	      		try {
+	 	      			i.remove();
+	 	      			refrigerateFood();
+		      	   		if(logger.isLoggable(Level.FINEST)) {
+		      	            logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
+		      	                    getBuilding().getBuildingManager().getSettlement().getName());
+		      	   		}
+		      	        // 2015-01-12 Adjust the rate to go down for each meal
+			  	    	if (rate > 0 ) 
+			  	    		rate -= DOWN;
+	 	      		} catch (Exception e) {}
+	          	}
+	 	      	
+	         }
+	         settlement.setMealsReplenishmentRate(rate);
+	     }
+	     //numOfCookedMealCache = newNumOfCookedMeal; 	
 	     
-         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-         
-         // Added 2014-12-08 : Sanity check for the passing of each day
-         int newSol = currentTime.getSolOfMonth();
-         int newMonth = currentTime.getMonth();
-         if ( newSol != solCache) {
-
- 	    	solCache = newSol;
- 	    	
-         	if (!timeMap.isEmpty()) {
- 				timeMap.clear();
- 			}
- 			if (!qualityMap.isEmpty()) {
- 				qualityMap.clear();	
- 			}
- 			logger.info("Month " + newMonth + " Sol " + newSol + " : " 
- 					+ mealCounterPerSol + " meals made yesterday in " 
-	            	+ building.getNickName() + " at " + settlement.getName());
-         	// reset back to zero at the beginning of a new day.
- 	    	mealCounterPerSol = 0;
-         }
-	    	 
+	     // 2015-01-12 Added checkEndOfDay()
+	     checkEndOfDay();
     }
+	  
+    // 2015-01-12 Added checkEndOfDay()
+	public void checkEndOfDay() {
+	    	 
+		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();	         
+	    // Added 2014-12-08 : Sanity check for the passing of each day
+	    int newSol = currentTime.getSolOfMonth();
+	    int newMonth = currentTime.getMonth();  
+	    double rate = settlement.getMealsReplenishmentRate();
+	    if ( newSol != solCache) {
+	    	// 2015-01-12 Adjust the rate to go up automatically by default
+	       	solCache = newSol;
+	    	rate += UP;
+	        settlement.setMealsReplenishmentRate(rate);
+	        // reset back to zero at the beginning of a new day.
+	 		mealCounterPerSol = 0;
+	        if (!timeMap.isEmpty()) timeMap.clear();	
+	 		if (!qualityMap.isEmpty()) qualityMap.clear();
+	 		
+	       	/*
+	       	// TODO: do we need to clear all desserts by the end of the day?
+	    	// It is causing the system to hang
+	 		boolean hasAMeal = hasCookedMeal(); 
+		    if ( hasAMeal ) {
+		    	int newNumOfCookedMeal = cookedMeals.size();
+		        //if ( numOfCookedMealCache != newNumOfCookedMeal)	
+		    	//logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+		    	Iterator<CookedMeal> j = cookedMeals.iterator();
+
+		    	while (j.hasNext()) {
+		        	try {
+		        		j.remove();
+		        		refrigerateFood();
+		        		// 2015-01-12 For each meal that needs to be refrigerated
+		        		// Adjust the rate to go down 
+		        		if (rate > 0 ) 
+		        			rate -= DOWN; 
+		                logger.info("End of Day. Refrigerate " 
+		                 		+ dryMassPerServing + " kg " 
+		                 		+ dryFoodAR.getName()
+		                 		+  " at " + getBuilding().getNickName() 
+		                 		+ " in " + settlement.getName()
+		                 		);
+		        	} catch (Exception e) {}
+		        	//logger.info("Month " + newMonth + " Sol " + newSol + " : " 
+			 		//		+ mealCounterPerSol + " meals made yesterday in " 
+				    //    	+ building.getNickName() + " at " + settlement.getName());		    	
+		    	} // end of while (j.hasNext())	
+		    } // end of if ( hasAMeal )    
+		    */  
+	    } // end of if ( newSol != solCache)
+	    
+	}
+    
+	// 2015-01-12  Added refrigerateFood()
+	public void refrigerateFood() {
+		try {
+	     double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
+         if (dryMassPerServing > foodCapacity) 
+         	dryMassPerServing = foodCapacity;
+     			//logger.info("timePassing() : pack & convert expired meal into dried food");
+     			// Turned 1 cooked meal unit into 1 food unit
+         dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
+         // remove the cookedMeal and store it
+         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);       
+         // TODO: need to adjust the supply for the storing the food back
+		} catch (Exception e) {}
+ 	}
 
     /**
      * Gets the amount of power required when function is at full power.

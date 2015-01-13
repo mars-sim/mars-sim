@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -45,7 +46,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -58,11 +59,13 @@ implements Serializable {
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
+    private static final int NUMBER_OF_MEAL_PER_SOL = 4;
 
     // Data members
     private CookedMeal meal;
     
     private Person person;
+    private String mealLocation;
 
     /** 
      * Constructs a EatMeal object, hence a constructor.
@@ -91,13 +94,14 @@ implements Serializable {
             // If cooked meal in a local kitchen available, take it to eat.
             Cooking kitchen = getKitchenWithFood(person);
             if (kitchen != null) {
+            	mealLocation = kitchen.getBuilding().getNickName(); 
                 meal = kitchen.eatAMeal();
                 if (meal != null) {
                 	//2015-01-06 Added setConsumerName()
                    	meal.setConsumerName(person.getName());
-                    setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
-                }
+                 }
             }   
+            walkSite = true;
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -162,15 +166,27 @@ implements Serializable {
             if (meal != null) {
                 // Person consumes the cooked meal.
                 String nameMeal = meal.getName();
+                setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
                 //System.out.println(person + " has just eaten " + nameMeal);
                 condition.setHunger(0D);
+                condition.addkJoules(meal.getDryMass());
             }
             else {
                 // Person consumes preserved food.
-                try {
-                    eatPreservedFood();
-                    //System.out.println(person + " has just eaten preserved food");
-                    condition.setHunger(0D);
+                try {                	
+                	// In a settlement, the person will choose to eat
+                	// dessert first instead of preserved food
+                	LocationSituation location = person.getLocationSituation();
+                	if (location == LocationSituation.IN_SETTLEMENT) {
+                		//can I instantiate new EatDessert(person); ?
+                       	//logger.info(person + " has just eaten desserts");
+                	}
+                	else {
+	                    eatPreservedFood();
+	                    //System.out.println(person + " has just eaten preserved food");
+	                    condition.setHunger(0D);
+	                    condition.addkJoules(condition.getMassPerServing());
+                	}
                 }
                 catch (Exception e) {
                     // If person can't obtain food from container, end the task.
@@ -188,7 +204,7 @@ implements Serializable {
      */
     private void eatPreservedFood() throws Exception {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        double foodAmount = config.getFoodConsumptionRate() * .25D;
+        double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
@@ -201,6 +217,7 @@ implements Serializable {
                 inv.retrieveAmountResource(food, foodAmount);
             	// 2015-01-09 addDemandUsage()
                	inv.addDemandRealUsage(food, foodAmount);
+               	//logger.info(person + " has just eaten preserved food");
             }
             else {
                 throw new Exception(person + " doesn't have enough preserved food to eat in " + containerUnit + 
