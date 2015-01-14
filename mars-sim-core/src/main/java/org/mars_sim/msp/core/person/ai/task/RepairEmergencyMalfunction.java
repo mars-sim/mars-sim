@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -111,7 +111,7 @@ implements Repair, Serializable {
      */
     private double repairingPhase(double time) {
 
-        // Check if there emergency malfunction work is fixed.
+        // Check if the emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
                 malfunction.getCompletedEmergencyWorkTime();
         if (workTimeLeft == 0) {
@@ -134,14 +134,11 @@ implements Repair, Serializable {
 
         // Add work to emergency malfunction.
         double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
-        if (remainingWorkTime > 0D) {
-            endTask();
-        }
 
         // Add experience
         addExperience(time);
 
-        return (time * (remainingWorkTime / workTime));
+        return remainingWorkTime;
     }
 
     @Override

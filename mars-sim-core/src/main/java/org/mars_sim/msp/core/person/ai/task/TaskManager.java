@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.07 2014-12-27
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -207,16 +207,25 @@ implements Serializable {
 			// Check if person is outside.
 			boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
 			
+			
+			
 			// Cancel current task and start emergency repair task.
 			if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
-				logger.fine(person + " cancelling task " + currentTask + 
-						" due to emergency repairs.");
-				clearTask();
 				
 				if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
-				    addTask(new RepairEmergencyMalfunctionEVA(person));
+		            
+		            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
+		                
+		                logger.fine(person + " cancelling task " + currentTask + 
+		                        " due to emergency EVA repairs.");
+		                clearTask();
+		                addTask(new RepairEmergencyMalfunctionEVA(person));
+		            }
 				}
 				else {
+				    logger.fine(person + " cancelling task " + currentTask + 
+	                        " due to emergency repairs.");
+	                clearTask();
 				    addTask(new RepairEmergencyMalfunction(person));
 				}
 			}

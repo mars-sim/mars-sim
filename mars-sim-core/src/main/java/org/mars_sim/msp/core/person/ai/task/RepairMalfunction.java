@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -275,7 +275,7 @@ implements Repair, Serializable {
             endTask();
         }
 
-        return (workTimeLeft / workTime) / time;
+        return workTimeLeft;
     }
 
     @Override
