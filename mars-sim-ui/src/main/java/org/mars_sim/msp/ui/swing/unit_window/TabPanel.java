@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-14
 
  * @author Scott Davis
  */
@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -18,6 +17,7 @@ import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 
 public abstract class TabPanel extends JScrollPane {
 
@@ -32,8 +32,6 @@ public abstract class TabPanel extends JScrollPane {
 	protected Unit unit;
 	protected MainDesktopPane desktop;
 
-	private Color THEME_COLOR = Color.ORANGE;
-	
     /**
      * Constructor
      *
@@ -74,8 +72,11 @@ public abstract class TabPanel extends JScrollPane {
         centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);
         
+  		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
+  	  		    false, true, true, true));
+ 
     }
-    
+
     /**
      * Gets the tab title.
      *

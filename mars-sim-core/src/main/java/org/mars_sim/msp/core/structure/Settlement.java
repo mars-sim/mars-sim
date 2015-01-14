@@ -472,7 +472,7 @@ implements LifeSupport {
         buildingManager.timePassing(time);
     
         // 2015-01-09  Added makeDailyReport()
-        makeDailyReport();
+        //makeDailyReport();
 
         updateGoodsManager(time);
     }
@@ -483,8 +483,8 @@ implements LifeSupport {
      */
     // 2015-01-09  Added getFoodEnergyIntakeReport()
    	public synchronized void getFoodEnergyIntakeReport() {
-    	System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy Intake Report at " + this.getName() + " >>>"); 
-    	System.out.println("** An settler on Mars is estimated to consume about 10100 kJ per sol **");
+    	//System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy Intake Report at " + this.getName() + " >>>"); 
+    	//System.out.println("** An settler on Mars is estimated to consume about 10100 kJ per sol **");
         //Iterator<Person> i = getInhabitants().iterator();
         Iterator<Person> i = getAllAssociatedPeople().iterator(); 
         while (i.hasNext()) {
@@ -492,7 +492,7 @@ implements LifeSupport {
         	PhysicalCondition condition = p.getPhysicalCondition();
             double energy = Math.round(condition.getkJoules()*100.0)/100.0;
             String name = p.getName();
-            System.out.print(name + " : " + energy + " kJ" + "\t");
+            //System.out.print(name + " : " + energy + " kJ" + "\t");
         }
    	}
 
@@ -513,7 +513,7 @@ implements LifeSupport {
         	solCache = newDay;
         	
         	getFoodEnergyIntakeReport(); 	        	
-        	//getRealDemandReport();
+        	getRealDemandReport();
         	
         }
         

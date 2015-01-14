@@ -1,17 +1,40 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-14
 
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Paint;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
+import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +45,9 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ColorTintFilter;
+import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
+import org.mars_sim.msp.ui.swing.tool.GraphicsUtilities;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -44,8 +70,10 @@ public abstract class UnitWindow extends JInternalFrame {
 	/** The center panel. */
 	private JTabbedPane centerPanel;
 
-	//private Color THEME_COLOR = Color.ORANGE;
-	
+    private static final int BLUR_SIZE = 7;
+    private BufferedImage image;
+    private float alpha = 0.0f;
+
     /**
      * Constructor
      *
@@ -105,7 +133,38 @@ public abstract class UnitWindow extends JInternalFrame {
        
         //TODO: disabled in SVN while in development
         //this.addInternalFrameListener(new UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
-        
+	
+        setStyle();
+    }
+    
+	public void setStyle() {
+        Container contentPane = desktop.getRootPane();
+          
+          image = GraphicsUtilities.createCompatibleTranslucentImage(contentPane.getWidth() +
+                  2 * (int) BLUR_SIZE,
+                  contentPane.getHeight() +
+                  2 * (int) BLUR_SIZE);
+  		Graphics2D g2 = image.createGraphics();
+  		g2.translate(BLUR_SIZE, BLUR_SIZE);
+  		contentPane.paint(g2);
+  		g2.translate(-BLUR_SIZE, -BLUR_SIZE);
+  		g2.dispose();
+  		
+  		// 1.5 second vs 0.3 second
+  		//long start = System.currentTimeMillis();
+  		image = changeImageWidth(image, image.getWidth() / 2);
+  		ConvolveOp gaussianFilter = getGaussianBlurFilter(BLUR_SIZE, true);
+  		image = gaussianFilter.filter(image, null);
+  		gaussianFilter = getGaussianBlurFilter(BLUR_SIZE, false);
+  		image = gaussianFilter.filter(image, null);
+  		ColorTintFilter colorMixFilter = new ColorTintFilter(Color.ORANGE, 0.1f);
+  		image = colorMixFilter.filter(image, null);
+  		image = changeImageWidth(image, image.getWidth() * 2);
+  		//System.out.println("time = " +
+  		//((System.currentTimeMillis() - start) / 1000.0f));
+  		
+  		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
+  		    false, true, true, true));
     }
     
     /**
@@ -147,8 +206,102 @@ public abstract class UnitWindow extends JInternalFrame {
         }
     }
     
+    
     /**
      * Prepares unit window for deletion.
      */
     public void destroy() {}
+     
+
+    public static BufferedImage changeImageWidth(BufferedImage image, int width) {
+	        float ratio = (float) image.getWidth() / (float) image.getHeight();
+	        int height = (int) (width / ratio);
+	        
+	        BufferedImage temp = new BufferedImage(width, height,
+	                image.getType());
+	        Graphics2D g2 = temp.createGraphics();
+	        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+	                            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	        g2.drawImage(image, 0, 0, temp.getWidth(), temp.getHeight(), null);
+	        g2.dispose();
+
+	        return temp;
+	}
+	    
+	public static ConvolveOp getGaussianBlurFilter(int radius, boolean horizontal) {
+	        if (radius < 1) {
+	            throw new IllegalArgumentException("Radius must be >= 1");
+	        }
+	        
+	        int size = radius * 2 + 1;
+	        float[] data = new float[size];
+	        
+	        float sigma = radius / 3.0f;
+	        float twoSigmaSquare = 2.0f * sigma * sigma;
+	        float sigmaRoot = (float) Math.sqrt(twoSigmaSquare * Math.PI);
+	        float total = 0.0f;
+	        
+	        for (int i = -radius; i <= radius; i++) {
+	            float distance = i * i;
+	            int index = i + radius;
+	            data[index] = (float) Math.exp(-distance / twoSigmaSquare) / sigmaRoot;
+	            total += data[index];
+	        }
+	        
+	        for (int i = 0; i < data.length; i++) {
+	            data[i] /= total;
+	        }        
+	        
+	        Kernel kernel = null;
+	        if (horizontal) {
+	            kernel = new Kernel(size, 1, data);
+	        } else {
+	            kernel = new Kernel(1, size, data);
+	        }
+	        return new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+	}
+	
+	
+	 @Override
+	 public boolean isOpaque() {
+	     return false;
+	 }
+	
+	 @Override
+	 protected void paintComponent(Graphics g) {
+	     setupGraphics((Graphics2D) g);
+	
+	     Point location = getLocation();
+	     location.x = (int) (-location.x - BLUR_SIZE);
+	     location.y = (int) (-location.y - BLUR_SIZE);
+	
+	     Insets insets = getInsets();
+	     Shape oldClip = g.getClip();
+	     g.setClip(insets.left, insets.top,
+	               getWidth() - insets.left - insets.right,
+	               getHeight() - insets.top - insets.bottom);
+	     g.drawImage(image, location.x, location.y, null);
+	     g.setClip(oldClip);
+	 }
+	
+	 public float getAlpha() {
+	     return alpha;
+	 }
+	
+	 public void setAlpha(float alpha) {
+	     this.alpha = alpha;
+	     repaint();
+	 }
+	
+	 private static void setupGraphics(Graphics2D g2) {
+	     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                         RenderingHints.VALUE_ANTIALIAS_ON);
+	    
+	     Toolkit tk = Toolkit.getDefaultToolkit();
+	     Map desktopHints = (Map) (tk.getDesktopProperty("awt.font.desktophints"));
+	     if (desktopHints != null) {
+	         g2.addRenderingHints(desktopHints);
+	     }
+	 }
+	    
 }

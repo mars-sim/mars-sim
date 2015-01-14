@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingInfoPanel.java
- * @version 3.07 2015-01-01
+ * @version 3.07 2015-01-14
  * @author Manny Kung
  */
 
@@ -17,8 +17,11 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
+
 
 
 @SuppressWarnings("serial")
@@ -27,7 +30,8 @@ public class BuildingInfoPanel extends JPanel {// JDialog {
 	private String buildingName;
 	private String text;
 
-    public BuildingInfoPanel() {
+    
+    public BuildingInfoPanel(MainDesktopPane desktop) {
 		super();
     	setOpaque(false);
     	setBackground(new Color(51,25,0,150));
@@ -35,32 +39,29 @@ public class BuildingInfoPanel extends JPanel {// JDialog {
     
     @Override
 	protected void paintComponent(Graphics g) {
+    	
         int x = 20;
         int y = 20;
         int w = getWidth() - 40;
         int h = getHeight() - 40;
         int arc = 15;
-
+        
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
-        //g2.setColor(new Color(0, 0, 0, 220));
         g2.setColor(new Color(51,25,0,128));
         g2.fillRoundRect(x, y, w, h, arc, arc);
-
         g2.setStroke(new BasicStroke(3f));
-        g2.setColor(Color.WHITE);
-        g2.drawRoundRect(x, y, w, h, arc, arc); 
-
+        g2.setColor(Color.lightGray);
+        g2.drawRoundRect(x, y, w, h, arc, arc);  
         g2.dispose();
     }
-    
+
     public void init(String buildingName, String text) {
 		
     	this.buildingName = buildingName;
     	this.text = text;
-    	
+    	this.setOpaque(false);
         this.setLayout(new BorderLayout(20, 10));
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
 
@@ -84,17 +85,20 @@ public class BuildingInfoPanel extends JPanel {// JDialog {
         
         // Creating the text Input
         JTextField tf1 = new JTextField("", 15);
+        
         tf1.setHorizontalAlignment(JTextField.CENTER);
         tf1.setOpaque(false);
         tf1.setFocusable(false);
-        tf1.setBackground(new Color(0,0,0,200));
+        tf1.setBackground(new Color(0,0,0,180));
         tf1.setColumns(20);
+        Border border = BorderFactory.createLineBorder(Color.gray, 2);
+        tf1.setBorder(border);
         tf1.setText(buildingName);
         tf1.setForeground(Color.YELLOW); // orange font
         tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
         
         mainPanel.add(tf1);
-
+ 
         JTextArea ta = new JTextArea();//290, 300);
         String header = "DESCRIPTION: "; 
 
@@ -110,19 +114,10 @@ public class BuildingInfoPanel extends JPanel {// JDialog {
         ta.setBackground(new Color(0, 0, 0, 0));
  
         CustomScroll scr = new CustomScroll(ta);
-        //scr.setPreferredSize(new Dimension(250, 350));
-        //scr.setMaximumSize(new Dimension(250, 350));
-        //scr.setBounds(50, 20, 250, 300);
         this.add(scr, BorderLayout.CENTER);
-        //JPanel scrPanel = new JPanel(new FlowLayout());
-        //scrPanel
-        //scrPanel.setOpaque(false);
-        //scrPanel.setBackground(new Color(0,0,0,0));
-        
-        //scrPanel.add(scr);
-        //this.add(scrPanel, BorderLayout.CENTER);
+
         this.setVisible(true);
 
     }
-
+ 
 }
