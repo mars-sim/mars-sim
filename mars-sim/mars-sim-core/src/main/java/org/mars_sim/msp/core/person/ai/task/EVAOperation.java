@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -313,7 +313,7 @@ implements Serializable {
         }
     
         // Check if person's medical condition is sufficient to continue phase.
-        if (person.getPerformanceRating() < .5D) {
+        if (person.getPerformanceRating() == 0D) {
             logger.fine(person.getName() + " should end EVA: medical problems.");   
             result = true;
         }

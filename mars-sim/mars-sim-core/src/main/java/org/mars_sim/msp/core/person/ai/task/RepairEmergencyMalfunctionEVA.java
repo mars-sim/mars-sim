@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunctionEVA.java
- * @version 3.07 2014-12-26
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -21,7 +22,9 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -132,6 +135,47 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     }
     
     /**
+     * Checks if a person can perform an EVA for the emergency repair.
+     * @param person the person.
+     * @return true if person can perform the EVA.
+     */
+    public static boolean canPerformEVA(Person person) {
+        
+        boolean result = true;
+        
+        // Check if an airlock is available
+        Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
+        if (airlock == null) {
+            result = false;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                result = false;
+            }
+        } 
+        
+        // Check if person is outside.
+        if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+            result = false;
+        }
+
+        // Check if EVA suit is available.
+        if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
+            result = false;
+        }
+
+        // Check if person is incapacitated.
+        if (person.getPerformanceRating() == 0D) {
+            result = false;
+        }
+        
+        return result;
+    }
+    
+    /**
      * Gets a local emergency malfunction.
      */
     private void claimMalfunction() {
@@ -196,8 +240,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      */
     private double repairMalfunctionPhase(double time) {
 
-        if (shouldEndEVAOperation() || 
-                addTimeOnSite(time)) {
+        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
@@ -222,9 +265,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Add work to emergency malfunction.
         double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
-        if (remainingWorkTime > 0D) {
-            endTask();
-        }
 
         // Add experience points
         addExperience(time);
@@ -232,7 +272,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-        return (workTimeLeft / workTime) * time;
+        return remainingWorkTime;
     }
     
     @Override

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2014-12-27
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -412,7 +412,7 @@ implements Repair, Serializable {
         // Check if an accident happens during repair.
         checkForAccident(time);
 
-        return (workTimeLeft / workTime) * time;
+        return workTimeLeft;
     }
 
     @Override

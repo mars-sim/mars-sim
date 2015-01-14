@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
@@ -58,7 +57,6 @@ implements Serializable {
 		jobTasks.add(MaintainGroundVehicleEVA.class);
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(RepairEmergencyMalfunction.class);
 		jobTasks.add(ToggleResourceProcess.class);
 		jobTasks.add(ToggleFuelPowerSource.class);
 		jobTasks.add(LoadVehicleEVA.class);
