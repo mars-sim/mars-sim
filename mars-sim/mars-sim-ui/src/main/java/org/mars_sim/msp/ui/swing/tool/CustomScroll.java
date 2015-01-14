@@ -19,8 +19,8 @@ public class CustomScroll extends JComponent {
 
     private static final int SCROLL_BAR_ALPHA_ROLLOVER = 150;
     private static final int SCROLL_BAR_ALPHA = 100;
-    private static final int THUMB_BORDER_SIZE = 2;
-    private static final int THUMB_SIZE = 8;
+    private static final int THUMB_BORDER_SIZE = 5;
+    private static final int THUMB_SIZE = 15;
     private static final Color THUMB_COLOR = Color.BLACK;
 
     private final JScrollPane scr;
@@ -77,11 +77,11 @@ public class CustomScroll extends JComponent {
                 int height = getHeight();
                 scr.setBounds(0, 0, width, height);
 
-                int scrollBarSize = 8;
+                int scrollBarSize = 10;
                 int cornerOffset = verticalScrollBar.isVisible() &&
                         horizontalScrollBar.isVisible() ? scrollBarSize : 0;
                 if (verticalScrollBar.isVisible()) {
-                    verticalScrollBar.setBounds(width - scrollBarSize, 10,
+                    verticalScrollBar.setBounds(width - scrollBarSize, 0,
                             scrollBarSize, height - cornerOffset);
                 }
                 if (horizontalScrollBar.isVisible()) {

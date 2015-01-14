@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopUpBuildingMenu.java
- * @version 3.07 2014-12-31
+ * @version 3.07 2015-01-14
  * @author Manny Kung
  */
 
@@ -10,11 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-
-import static java.awt.GraphicsDevice.WindowTranslucency.*;
-
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
+import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -25,15 +21,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-
-
-
-
-
-
-
-
-
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -53,7 +40,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
     private Settlement settlement;
 	private MainDesktopPane desktop;
 	private String buildingName ;
-	//private Color THEME_COLOR = Color.ORANGE;
 	
     public PopUpBuildingMenu(final SettlementWindow swindow, final Building building){
     	this.building = building;
@@ -65,10 +51,12 @@ public class PopUpBuildingMenu extends JPopupMenu {
         add(itemTwo);
         
         buildingName = building.getNickName();
-
+        	
+        buildItemOne();
+        buildItemTwo();
+        /*
      // Determine what the GraphicsDevice can support.
-        GraphicsEnvironment ge = 
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         boolean isPerPixelTranslucencySupported = 
             gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
@@ -79,44 +67,38 @@ public class PopUpBuildingMenu extends JPopupMenu {
                 "Per-pixel translucency is not supported");
                 System.exit(0);
         }
-        
-        buildItemOne();
-        buildItemTwo();
+        */
+
     }
        
-
+	
     public void buildItemOne() {
     	
         itemOne.addActionListener(new ActionListener() {
        	 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-    
+            	final JDialog d = new JDialog();
+
+                d.setForeground(Color.YELLOW); // orange font
+                d.setFont( new Font("Arial", Font.BOLD, 14 ) );
     		   	// 2014-11-27 Added building.getDescription() for loading text
 			    String description = building.getDescription();
-			    final JDialog d = new JDialog();
 			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
 		        d.setResizable(false);
-		        //d.setTitle(buildingName);
 		        d.setUndecorated(true);
-		        //d.setBackground(new Color(51,25,0,128)); // transparent pale orange
 		        d.setBackground(new Color(0,0,0,0));
 		        
-			    BuildingInfoPanel b = new BuildingInfoPanel();
+			    BuildingInfoPanel b = new BuildingInfoPanel(desktop);
    	
-			    b.init(buildingName, description);
-			    
+			    b.init(buildingName, description);			    
 			    d.add(b);
-
             	
             	// Make the buildingPanel to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
                 d.setLocation(location); 
                 
-                //d.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
-				
-                d.setVisible(true);
-                
+                d.setVisible(true); 
 				d.addWindowFocusListener(new WindowFocusListener() {            
 				    public void windowLostFocus(WindowEvent e) {
 				    	d.dispose();
@@ -129,7 +111,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
 			    ComponentMover mover = new ComponentMover(d,b);
 			    mover.registerComponent(b);	
 	
-				
              }
         });
     }
@@ -138,7 +119,7 @@ public class PopUpBuildingMenu extends JPopupMenu {
     public void buildItemTwo() {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	setOpaque(false);
+            	//setOpaque(false);
 
             	final JDialog d = new JDialog();
             	
@@ -180,7 +161,6 @@ public class PopUpBuildingMenu extends JPopupMenu {
         
     }
     
-
 	public void destroy() {
 			settlement.destroy();
 			building.destroy();
