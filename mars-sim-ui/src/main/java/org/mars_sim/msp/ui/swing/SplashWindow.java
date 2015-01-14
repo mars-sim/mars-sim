@@ -47,7 +47,7 @@ extends JComponent {
 	private int height;
 
 	/** stores the font for displaying {@link #VERSION_STRING}. */
-	private Font versionStringFont = new Font("Serif", Font.BOLD, 15);
+	private Font versionStringFont = new Font("Serif", Font.BOLD, 22);
 	/** measures the pixels needed to display text. */
 	private FontMetrics positionMetrics = getFontMetrics(versionStringFont);
 	/** stores the displayed length of {@link #VERSION_STRING} in pixels. */
@@ -71,7 +71,7 @@ extends JComponent {
 				g2d.drawString(MSP_STRING, 30, 60);
 				g2d.setFont(versionStringFont);
 				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - 
-				        versionStringWidth - 12, 22);
+				        versionStringWidth - 16, 24);
 			}
 		};
 
