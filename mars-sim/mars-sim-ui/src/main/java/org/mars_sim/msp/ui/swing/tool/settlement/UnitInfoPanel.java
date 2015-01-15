@@ -23,14 +23,10 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
-
 @SuppressWarnings("serial")
 public class UnitInfoPanel extends JPanel {// JDialog {
 
-	private String buildingName;
-	private String text;
 
-    
     public UnitInfoPanel(MainDesktopPane desktop) {
 		super();
     	setOpaque(false);
@@ -57,10 +53,8 @@ public class UnitInfoPanel extends JPanel {// JDialog {
         g2.dispose();
     }
 
-    public void init(String buildingName, String text) {
+    public void init(String unitName, String unitType, String unitDescription) {
 		
-    	this.buildingName = buildingName;
-    	this.text = text;
     	this.setOpaque(false);
         this.setLayout(new BorderLayout(20, 10));
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
@@ -93,20 +87,23 @@ public class UnitInfoPanel extends JPanel {// JDialog {
         tf1.setColumns(20);
         Border border = BorderFactory.createLineBorder(Color.gray, 2);
         tf1.setBorder(border);
-        tf1.setText(buildingName);
+        tf1.setText(unitName);
         tf1.setForeground(Color.YELLOW); // orange font
         tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
         
         mainPanel.add(tf1);
  
         JTextArea ta = new JTextArea();//290, 300);
-        String header = "DESCRIPTION: "; 
+        String type = "TYPE: "; 
+        String description = "DESCRIPTION: "; 
 
         ta.setLineWrap(true);
         ta.setFocusable(false);
         ta.setWrapStyleWord(true);
-        ta.setText(header+ "\n");
-        ta.append(text);
+        ta.setText(type + "\n");
+        ta.append(unitType + "\n\n");
+        ta.append(description + "\n");
+        ta.append(unitDescription);
         ta.setEditable(false);
         ta.setForeground(Color.ORANGE); // orange font
         ta.setFont( new Font( "Dialog", Font.PLAIN, 14 ) );

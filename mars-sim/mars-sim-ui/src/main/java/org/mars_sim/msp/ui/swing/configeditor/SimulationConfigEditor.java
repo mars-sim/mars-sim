@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
-
 /**
  * A temporary simulation configuration editor dialog.
  * Will be replaced by SimulationConfigEditor later when it is finished.
@@ -208,7 +207,7 @@ extends JDialog {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);
 	}
-
+	
 	/**
 	 * Adds a new settlement with default values.
 	 */

@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 3.07 2014-11-29
+ * @version 3.07 2015-01-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -69,6 +70,7 @@ implements TableModelListener, ActionListener {
 	private JButton buttonProps;
 
 	private MainDesktopPane desktop;
+	
 	/**
 	 * Constructor.
 	 * @param desktop the desktop pane
@@ -78,6 +80,9 @@ implements TableModelListener, ActionListener {
 		// Use TableWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
+		//this.setOpaque(true);
+		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
+		//this.setBackground(new Color(0, 0, 0, 0));
 		
 		setMaximizable(true);
 
@@ -165,14 +170,16 @@ implements TableModelListener, ActionListener {
 		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
 		// 2014-10-14 mkung: added FoodTableModel
 		addTab(new UnitTab(this,new CropTableModel(unitManager), true));
-
 		// 2014-11-25 mkung: added FoodInventoryTab()
 		addTab(new FoodInventoryTab(this));
 		
-		addTab(new MissionTab(this));
+		addTab(new MissionTab(this));	
 		// 2014-11-29 Added notifyBox
-		eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager(), notifyBox));
+		// 2015-01-15 Added desktop
+		eventsTab = new EventTab(this, notifyBox, desktop);
+		
 		addTab(eventsTab);
+		
 		addTab(new TradeTab(this));
 
 		tabsSection.setSelectedIndex(0);
@@ -191,9 +198,10 @@ implements TableModelListener, ActionListener {
 		// 2014-10-10 mkung: changed the horizontal resolution from 600 to 800 to accommodate the addition
 		// of 3 columns (Grains, Fruits, Vegetables)
 		setSize(new Dimension(1000, 300));
-		
+
 	}
 
+	
 	/**
 	 * This method add the specified Unit table as a new tab in the Monitor. The
 	 * model is displayed as a table by default.
@@ -402,4 +410,5 @@ implements TableModelListener, ActionListener {
 			filterCategories();
 		}
 	}
+    
 }

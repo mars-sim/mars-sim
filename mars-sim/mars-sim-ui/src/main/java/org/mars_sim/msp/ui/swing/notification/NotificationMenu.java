@@ -276,29 +276,7 @@ public class NotificationMenu implements ActionListener, MenuListener {
 		if (selectedItem ==  showAllMenuItem) maxNumMsg = 99;
 		if (selectedItem ==  showLastThreeMenuItem) maxNumMsg = 3;
 		if (selectedItem ==  showLastOneMenuItem) maxNumMsg = 1;
-		/*
-		if (selectedItem ==  emptyMenuItem) {
-			//System.out.println("selectedItem ==  emptyMenuItem");
-			if (emptyMenuItem.isSelected()) {
-				//System.out.println("isSelected() = true");
-				// doClick(int pressTime)
-				//emptyMenuItem.setText("<html><i><font size=-2><font color=red>Purging...</font></font></i></html>");
-				isSetQueueToEmpty = true;
-				// wait for a few second
-				// reset it to default
-				//int seconds = 5;
-				//timer = new Timer();
-				//timer = new Timer(displayTime, mainWindowMenu);
-				//timer.schedule(new CancelTask(), seconds * 1000);			
-				//isSetQueueToEmpty = false;
-				//emptyMenuItem.setText("<html><font size=-2><font color=red>Purge Message Queue Now</font></font></html>");
-				//emptyMenuItem.setSelected(false);
-			} else {
-				System.out.println(".isSelected()= false");
-				isSetQueueToEmpty = false;
-			}
-		} // end of if (selectedItem ==  emptyMenuItem)
-		*/
+
 	} // end of public final void actionPerformed(ActionEvent event) 
 		
 	public class CancelTask extends TimerTask {

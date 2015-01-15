@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2015-01-08
+ * @version 3.07 2015-01-14
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -63,13 +64,13 @@ public class SettlementWindow extends ToolWindow {
     //protected ShowMarsDateTime showMarsDateTime;
     private JStatusBar statusBar;
     private JLabel leftLabel;
-    private JLabel maxMemLabel;
-    private JLabel memUsedLabel;
+    //private JLabel maxMemLabel;
+    //private JLabel memUsedLabel;
     //private JLabel dateLabel;
     private JLabel timeLabel;
-    private int maxMem;
-    private int memAV;
-    private int memUsed;
+    //private int maxMem;
+    //private int memAV;
+    //private int memUsed;
     private String statusText;
 	private String marsTimeString;
 	private javax.swing.Timer marsTimer = null;
@@ -108,8 +109,6 @@ public class SettlementWindow extends ToolWindow {
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
 				mapPanel.selectPersonAt(evt.getX(), evt.getY());
-				// 2015-01-14 Added selectVehicleAt()
-				mapPanel.selectVehicleAt(evt.getX(), evt.getY());
 			}
 
 		});
@@ -118,39 +117,39 @@ public class SettlementWindow extends ToolWindow {
 		class PopClickListener extends MouseAdapter {
 		    public void mousePressed(MouseEvent evt){
 				 if (evt.isPopupTrigger()) {
-					//logger.info("mousePressed() : Yes, popup is triggered");
 					 doPop(evt);
 				 }
 		    }
 
 		    public void mouseReleased(MouseEvent evt){
 				 if (evt.isPopupTrigger()) {
-					//logger.info("mouseReleased() : Yes, popup is triggered");
 					 doPop(evt);
 				 }
 					xLast = evt.getX();
 					yLast = evt.getY();
 		    }
-
+		    //2015-01-14 Added vehicle detection
 		    private void doPop(final MouseEvent evt){
 		    	final Building building = mapPanel.selectBuildingAt(evt.getX(), evt.getY());
 		    	final Vehicle vehicle = mapPanel.selectVehicleAt(evt.getX(), evt.getY());
+		    	final Person person = mapPanel.selectPersonAt(evt.getX(), evt.getY());
 
 		    	// if NO building is selected, do NOT call popup menu
-		    	if (building != null || vehicle != null) {
+		    	if (building != null || vehicle != null || person != null) {
 		    		
 		    	    SwingUtilities.invokeLater(new Runnable(){
 		    	        public void run()  {
-		    	        	if (building != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, building, null);
+	    	        		// Deconflict the case when both are detected
+		    	        	if (person != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, person);
 		    	        	else if (vehicle != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, null, vehicle);
+		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
+		    	        	else if (building != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
+
 		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		    	        } });
-
-		        }
-
-		    	
+		        }	
 		    }
 		}
 		mapPanel.addMouseListener(new PopClickListener());
