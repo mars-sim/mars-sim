@@ -254,7 +254,7 @@ implements Serializable {
 					inventory.retrieveAmountResource(resource, resourceAmount);
 
 					// 2015-01-09 addDemandRealUsage()
-					inventory.addDemandRealUsage(resource,resourceAmount);
+					inventory.addDemandAmount(resource,resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
@@ -272,6 +272,8 @@ implements Serializable {
 				if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
 				try {
 					inventory.storeAmountResource(resource, resourceAmount, false);
+					 // 2015-01-15 Add addSupplyAmount()
+		            inventory.addSupplyAmount(resource, resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " output: " + resourceAmount + "kg.");

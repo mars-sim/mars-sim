@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NumberCellRenderer.java
- * @version 3.07 2014-11-05
+ * @version 3.07 2015-01-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -25,6 +25,7 @@ extends DefaultTableCellRenderer {
 	private DecimalFormat dec1Formatter = new DecimalFormat("#,###,##0.0");
 	private DecimalFormat dec2Formatter = new DecimalFormat("#,###,##0.00");
 	private DecimalFormat dec3Formatter = new DecimalFormat("#,###,##0.000");
+	private DecimalFormat dec4Formatter = new DecimalFormat("#,###,##0.0000");
 	private DecimalFormat formatter;
 
 	/**
@@ -44,6 +45,7 @@ extends DefaultTableCellRenderer {
 		else if (digits == 1) formatter = dec1Formatter;
 		else if (digits == 2) formatter = dec2Formatter;
 		else if (digits == 3) formatter = dec3Formatter;
+		else if (digits == 4) formatter = dec4Formatter;
 		else formatter = dec1Formatter;
 
 		// Set the horizontal alignment to right.

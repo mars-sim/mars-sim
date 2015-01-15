@@ -324,6 +324,8 @@ implements Serializable {
                     //roverInv.addDemandRealUsage(resource,amountNeeded);
                     
                     targetInv.storeAmountResource(resource, amountNeeded, true);
+       			 	// 2015-01-15 Add addSupplyAmount()
+                    //targetInv.addSupplyAmount(harvestCropAR, harvestAmount);
                 }
             }
         }

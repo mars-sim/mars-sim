@@ -219,6 +219,8 @@ implements Serializable {
                         rockSamples, true, false);
                 if (rockSampleMass < rockSampleCapacity) 
                     inv.storeAmountResource(rockSamples, rockSampleMass, true);
+   			 		// 2015-01-15 Add addSupplyAmount()
+                	inv.addSupplyAmount(rockSamples, rockSampleMass);
             }
         }
     }

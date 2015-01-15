@@ -295,7 +295,7 @@ implements Serializable {
   	    
   		// 2015-01-09 addDemandRealUsage()
   	    // inv.addDemandTotalRequest(dessertAR);
-  	   	inv.addDemandRealUsage(dessertAR, mass);
+  	   	inv.addDemandAmount(dessertAR, mass);
 
     }
     
@@ -574,6 +574,8 @@ implements Serializable {
 			massPerServing = Math.round( massPerServing * 100000.0) / 100000.0;
 			// 2015-01-03 Put back to storage or freezer if not eaten
 		    inv.storeAmountResource(dessertAR, massPerServing , false);
+			// 2015-01-15 Add addSupplyAmount()
+            inv.addSupplyAmount(dessertAR, massPerServing);
 		} catch (Exception e) {}
 	}
     

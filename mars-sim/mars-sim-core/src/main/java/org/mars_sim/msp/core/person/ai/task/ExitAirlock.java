@@ -567,8 +567,9 @@ implements Serializable {
         try {
             entityInv.retrieveAmountResource(oxygen, takenOxygen);
         	// 2015-01-09 addDemandRealUsage()
-            entityInv.addDemandRealUsage(oxygen, takenOxygen);
+            entityInv.addDemandAmount(oxygen, takenOxygen);
             suitInv.storeAmountResource(oxygen, takenOxygen, true);
+            // not calling addSupplyAmount()
         }
         catch (Exception e) {}
 
@@ -584,8 +585,9 @@ implements Serializable {
         try {
             entityInv.retrieveAmountResource(water, takenWater);
         	// 2015-01-09 addDemandRealUsage()
-            entityInv.addDemandRealUsage(water, takenWater);
+            entityInv.addDemandAmount(water, takenWater);
             suitInv.storeAmountResource(water, takenWater, true);
+            // not calling addSupplyAmount()
         }
         catch (Exception e) {}
     }

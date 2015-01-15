@@ -246,6 +246,8 @@ implements Serializable {
             if (collectedAmount < settlementCap) {
                 bag.getInventory().retrieveAmountResource(iceResource, collectedAmount);
                 settlement.getInventory().storeAmountResource(iceResource, collectedAmount, false);
+           		// 2015-01-15 Add addSupplyAmount()
+                settlement.getInventory().addSupplyAmount(iceResource, collectedAmount);
             }
 
             // Store bag.
@@ -289,6 +291,8 @@ implements Serializable {
         }
         
         person.getInventory().storeAmountResource(ice, iceCollected, true);
+		// 2015-01-15 Add addSupplyAmount()
+        // Not calling person.getInventory().addSupplyAmount(ice, iceCollected);
         
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);

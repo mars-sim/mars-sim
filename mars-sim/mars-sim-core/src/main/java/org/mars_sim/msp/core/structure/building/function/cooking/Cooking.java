@@ -580,7 +580,7 @@ implements Serializable {
 		        inv.retrieveAmountResource(ingredientAR, dryMass);
 		        // 2015-01-09 Added addDemandUsage()
 		    	inv.addDemandTotalRequest(ingredientAR);
-	        	inv.addDemandRealUsage(ingredientAR, dryMass);
+	        	inv.addDemandAmount(ingredientAR, dryMass);
 	         
 	        } // end of while
 	        
@@ -629,7 +629,7 @@ implements Serializable {
 	        //AmountResource oilAR = getFreshFoodAR(oil);
 	        inv.retrieveAmountResource(oilAR, oilAmount);
 	        // 2015-01-09 Added addDemandUsage()
-	    	inv.addDemandRealUsage(oilAR, oilAmount);
+	    	inv.addDemandAmount(oilAR, oilAmount);
 	    }
 	    
 	    String salt = "Table Salt";
@@ -644,7 +644,7 @@ implements Serializable {
 	    if (saltAvailable > saltAmount) {
 	        inv.retrieveAmountResource(saltAR, saltAmount);
 	    	// 2015-01-09 Added addDemandRealUsage()
-	    	inv.addDemandRealUsage(saltAR, saltAmount);
+	    	inv.addDemandAmount(saltAR, saltAmount);
 	    }    
     }
     
@@ -811,8 +811,9 @@ implements Serializable {
      			// Turned 1 cooked meal unit into 1 food unit
          dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
          // remove the cookedMeal and store it
-         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);       
-         // TODO: need to adjust the supply for the storing the food back
+         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
+		 // 2015-01-15 Add addSupplyAmount()
+         inv.addSupplyAmount(dryFoodAR, dryMassPerServing);
 		} catch (Exception e) {}
  	}
 

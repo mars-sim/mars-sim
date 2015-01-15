@@ -37,7 +37,7 @@ implements UnitManagerListener {
 		super(window, new TradeTableModel(), true, false);
 
 		// Override default cell renderer for format double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
+		table.setDefaultRenderer(Double.class, new NumberCellRenderer(4));
 
 		// Add as unit manager listener.
 		Simulation.instance().getUnitManager().addUnitManagerListener(this);

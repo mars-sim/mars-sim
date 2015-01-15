@@ -115,6 +115,8 @@ implements LifeSupport {
 	private int solCache = 1;
 	private boolean reportSample = true;
 	
+    public static double MILLISOLS_ON_FIRST_SOL;
+    
 	
     /**
      * Constructor for subclass extension.
@@ -146,36 +148,30 @@ implements LifeSupport {
     public Settlement(String name, int id, String template, Coordinates location, int populationNumber) {
         // Use Structure constructor
         super(name, location);
-
         this.template = template;
+        
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        MILLISOLS_ON_FIRST_SOL = MarsClock.getTotalMillisols(clock);
         
         count++;
         //logger.info("constructor 3 : count is " + count);
         
         // Set inventory total mass capacity.
         getInventory().addGeneralCapacity(Double.MAX_VALUE);
-
         // Initialize building manager
         buildingManager = new BuildingManager(this);
-
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this);
-
         // Initialize goods manager.
         goodsManager = new GoodsManager(this);
-
         // Initialize construction manager.
         constructionManager = new ConstructionManager(this);
-
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-        
         //2014-10-17 Added thermal control system
         thermalSystem = new ThermalSystem(this);       
-
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
-
         // Initialize the initial population.
         initialPopulation = populationNumber;
         
@@ -352,16 +348,12 @@ implements LifeSupport {
         double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
             oxygenTaken = oxygenLeft;
-        
-
-        getInventory().retrieveAmountResource(oxygen, oxygenTaken);
-        
+        getInventory().retrieveAmountResource(oxygen, oxygenTaken);   
     	// 2015-01-09 Added addDemandTotalRequest()
     	inv.addDemandTotalRequest(oxygen);
     	// 2015-01-09 addDemandRealUsage()
-    	inv.addDemandRealUsage(oxygen,oxygenTaken);
+    	inv.addDemandAmount(oxygen,oxygenTaken);
     	
-		
         AmountResource carbonDioxide = AmountResource
                 .findAmountResource("carbon dioxide");
         double carbonDioxideProvided = oxygenTaken;
@@ -372,7 +364,8 @@ implements LifeSupport {
 
         getInventory().storeAmountResource(carbonDioxide,
                 carbonDioxideProvided, true);
-
+		// 2015-01-15 Add addSupplyAmount()
+        getInventory().addSupplyAmount(carbonDioxide, carbonDioxideProvided);
         return oxygenTaken;
     }
 
@@ -393,7 +386,7 @@ implements LifeSupport {
     	// 2015-01-09 Added addDemandTotalRequest()
         inv.addDemandTotalRequest(water);
     	// 2015-01-09 addDemandRealUsage()
-       	inv.addDemandRealUsage(water, waterTaken);
+       	inv.addDemandAmount(water, waterTaken);
         
         return waterTaken;
     }
@@ -472,7 +465,7 @@ implements LifeSupport {
         buildingManager.timePassing(time);
     
         // 2015-01-09  Added makeDailyReport()
-        //makeDailyReport();
+        makeDailyReport();
 
         updateGoodsManager(time);
     }
@@ -492,7 +485,7 @@ implements LifeSupport {
         	PhysicalCondition condition = p.getPhysicalCondition();
             double energy = Math.round(condition.getkJoules()*100.0)/100.0;
             String name = p.getName();
-            //System.out.print(name + " : " + energy + " kJ" + "\t");
+            System.out.print(name + " : " + energy + " kJ" + "\t");
         }
    	}
 
@@ -512,31 +505,41 @@ implements LifeSupport {
         	//reportSample = true;
         	solCache = newDay;
         	
-        	getFoodEnergyIntakeReport(); 	        	
-        	getRealDemandReport();
+        	//getFoodEnergyIntakeReport(); 	        	
+        	getSupplyDemandReport();
         	
         }
-        
-       // if ( mSol > 990D && reportSample) {
-        //	reportSample = false;	
-       // }
     }
     
     /**
      * Provides the daily demand statistics on sample amount resources 
      */
-    // 2015-01-09  Added getRealDemandReport()
-   	public void getRealDemandReport() {
+    // 2015-01-15  Added supply data
+   	public void getSupplyDemandReport() {
    			
-   		//logger.info("<<< End of Day Report of Amount Resource Demand Statistics on Sol " 
-   		//+ solCache +  " at " + this.getName() + " >>>"); 
+        // 2015-01-15 Added solElapsed
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
+        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
+ 
+   		logger.info("<<< Sol " + solCache 
+   			 + " at " + this.getName()
+   			 + " End of Day Report of Amount Resource Supply and Demand Statistics >>>"); 
 	    	 
-        	String sample1 = "Waste Water";
-        	String sample2 = "Water";
+        String sample1 = "Waste Water";
+        String sample2 = "Water";
 	
-        	// Sample demand statistics on Potato and Water
-        	double demandRealUsage1 = inv.getDemandAmount(sample1);
-        	double demandRealUsage2 = inv.getDemandAmount(sample2);
+        	
+        // Sample supply and demand data on Potato and Water
+        	
+        	double supplyAmount1 = inv.getSupplyAmount(sample1);
+        	double supplyAmount2 = inv.getSupplyAmount(sample2);
+
+        	int supplyRequest1 = inv.getSupplyRequest(sample1);
+        	int supplyRequest2 = inv.getSupplyRequest(sample2);
+        	
+        	double demandAmount1 = inv.getDemandAmount(sample1);
+        	double demandAmount2 = inv.getDemandAmount(sample2);
 
         	int totalRequest1 = inv.getDemandTotalRequest(sample1);
         	int totalRequest2 = inv.getDemandTotalRequest(sample2);
@@ -544,28 +547,51 @@ implements LifeSupport {
         	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest(sample1);
         	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest(sample2);
 
-        	int numOfGoodsInDemandRealUsageMap = inv.getDemandRealUsageMapSize();
-        	int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
-        	int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
+        	//int numOfGoodsInDemandAmountMap = inv.getDemandAmountMapSize();
+        	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
+        	//int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
 
-        	logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
-        	logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
-        	logger.info(" numOfGoodsInDemandRealUsageMap : " + numOfGoodsInDemandRealUsageMap);
+        	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
+        	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
+        	//logger.info(" numOfGoodsInDemandAmountMap : " + numOfGoodsInDemandAmountMap);
+
+           	logger.info(sample1 + " Supply Amount : " + Math.round(supplyAmount1*100.0)/100.0);
+        	logger.info(sample1 + " Supply Request : " + supplyRequest1);       	
         	
-        	logger.info(sample1 + " DemandRealUsage : " + Math.round(demandRealUsage1*100.00)/100.00);
-        	logger.info(sample1 + " DemandTotalRequest : " + totalRequest1);       	
-        	logger.info(sample1 + " DemandSuccessfulRequest : " + demandSuccessfulRequest1);
-            
+        	logger.info(sample1 + " Demand Amount : " + Math.round(demandAmount1*100.0)/100.0);
+        	logger.info(sample1 + " Demand Total Request : " + totalRequest1);       	
+        	logger.info(sample1 + " Demand Successful Request : " + demandSuccessfulRequest1);
+
+           	logger.info(sample2 + " Supply Amount : " + Math.round(supplyAmount2*100.0)/100.0);
+        	logger.info(sample2 + " Supply Request : " + supplyRequest2);       	
         	
-         	logger.info(sample2 + " DemandRealUsage : " + Math.round(demandRealUsage2*100.00)/100.00);
-        	logger.info(sample2 + " DemandTotalRequest : " + totalRequest2);
-        	logger.info(sample2 + " DemandSuccessfulRequest : " + demandSuccessfulRequest2);
+         	logger.info(sample2 + " Demand Amount : " + Math.round(demandAmount2*100.0)/100.0);
+        	logger.info(sample2 + " Demand Total Request : " + totalRequest2);
+        	logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
       	
-        	// TODO: should keep only the demand data of the last 5 days
-        	// Will clear all Maps
-        	//inv.clearDemandTotalRequestMap();
-        	//inv.clearDemandRealUsageMap();
-        	//inv.clearDemandSuccessfulRequestMap();    
+/*
+            boolean clearNow ;
+        
+            // clearNow = true if solElapsed is an exact multiple of 5
+            // Clear maps once every five days
+            if (solElapsed % 5 == 0)
+                clearNow = true;
+            else
+            	clearNow = false;
+
+            // Should clear only once and at the beginning of the day
+            if (clearNow) {
+            	// carry out the daily average of the previous 5 days
+                inv.compactSupplyAmountMap(5);
+                inv.clearSupplyRequestMap();
+                
+                inv.compactDemandAmountMap(5);
+            	inv.clearDemandTotalRequestMap();
+            	inv.clearDemandSuccessfulRequestMap();
+            	
+            	logger.info("Just compacted supply and demand data");
+            }
+        	*/
     }
     
     
