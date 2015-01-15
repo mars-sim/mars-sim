@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
@@ -48,7 +49,7 @@ public class SettlementWindow extends ToolWindow {
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
 	//private Settlement settlement;
-	private PopUpBuildingMenu menu;
+	private PopUpUnitMenu menu;
 
 	/** The main desktop. */
 	private MainDesktopPane desktop;
@@ -107,6 +108,8 @@ public class SettlementWindow extends ToolWindow {
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
 				mapPanel.selectPersonAt(evt.getX(), evt.getY());
+				// 2015-01-14 Added selectVehicleAt()
+				mapPanel.selectVehicleAt(evt.getX(), evt.getY());
 			}
 
 		});
@@ -131,16 +134,23 @@ public class SettlementWindow extends ToolWindow {
 
 		    private void doPop(final MouseEvent evt){
 		    	final Building building = mapPanel.selectBuildingAt(evt.getX(), evt.getY());
-		        // if NO building is selected, do NOT call popup menu
-		    	if (building != null) {
+		    	final Vehicle vehicle = mapPanel.selectVehicleAt(evt.getX(), evt.getY());
+
+		    	// if NO building is selected, do NOT call popup menu
+		    	if (building != null || vehicle != null) {
 		    		
 		    	    SwingUtilities.invokeLater(new Runnable(){
 		    	        public void run()  {
-				        	menu = new PopUpBuildingMenu(settlementWindow, building);
-				        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		    	        	if (building != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, building, null);
+		    	        	else if (vehicle != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, null, vehicle);
+		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		    	        } });
 
 		        }
+
+		    	
 		    }
 		}
 		mapPanel.addMouseListener(new PopClickListener());

@@ -143,5 +143,11 @@ implements Serializable, Comparable<CropType> {
 	public int compareTo(CropType c) {
 		return name.compareToIgnoreCase(c.name);
 	}
+
+
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

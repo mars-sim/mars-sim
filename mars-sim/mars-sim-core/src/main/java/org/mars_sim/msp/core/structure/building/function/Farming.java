@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-12-09
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -47,6 +47,9 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
+    private Inventory inv;
+    private Settlement settlement;
+    
     private int cropNum;
     private double powerGrowingCrop;
     private double powerSustainingCrop;
@@ -67,6 +70,7 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+        inv = getBuilding().getInventory();
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
         cropNum = config.getCropNum(building.getBuildingType());
@@ -77,7 +81,7 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getFarmingActivitySpots(building.getBuildingType()));
 
-        Settlement settlement = building.getBuildingManager().getSettlement();
+        settlement = building.getBuildingManager().getSettlement();
         
         // 2014-12-09 Added this.crop = crop
         //cropListInQueue.add();
@@ -96,8 +100,48 @@ implements Serializable {
         	     //logger.info("constructor :  max possible Harvest is set to "+ Math.round(maxHarvestinKg) + " kg");
             Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, false);
             crops.add(crop);
+            
+            // Retrieves the fertilizer and add to the soil for the crop
+            provideFertilizer();
+            
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
         }  
+    }
+    
+    /**
+     * Retrieves the fertilizer and add to the soil when planting the crop
+     */
+    //2015-01-14 provideFertilizer()
+    public void provideFertilizer() {
+	    String name = "fertilizer";
+		//TODO: need to move the hardcoded amount to a xml file
+		double requestedAmount = 0.5;
+	    retrieveResource(name, requestedAmount);    
+    }
+    
+    /**
+     * Retrieves the resource
+     * @param name
+     * @parama requestedAmount
+     */
+    //2015-01-14 Added retrieveResource()
+    public void retrieveResource(String name, double requestedAmount) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);
+	    	inv.addDemandTotalRequest(nameAR);    	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all fertilizer");
+	        }
+	    	else if (remainingCapacity == 0)
+	    		logger.warning("no more fertilizer in " + settlement.getName());
+
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addDemandRealUsage(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {}
     }
     
     //2014-12-09 Added setCropInQueue()
@@ -116,7 +160,6 @@ implements Serializable {
      */
     //2014-12-09 Added getCropListInQueue()
     public List<CropType> getCropListInQueue() {
-       	//System.out.println("Farming.java : getCropListInQueue() : cropListInQueue size " + cropListInQueue.size());        	
         return cropListInQueue;
       //CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
@@ -129,8 +172,6 @@ implements Serializable {
     public void addCropListInQueue(CropType cropType) {
     	if (cropType != null) {
     		cropListInQueue.add(cropType);
-       	//System.out.println("Farming.java : addCropListInQueue() : added " + cropType); 
-       	//System.out.println("Farming.java : addCropListInQueue() : cropListInQueue size " + cropListInQueue.size());        	
     	}
     }
     
@@ -143,9 +184,6 @@ implements Serializable {
      	//cropListInQueue.remove(index);
      	// Safer removal than cropListInQueue.remove(index)
     	int size = cropListInQueue.size();
-       	//System.out.println("Farming.java: deleteCropListInQueue() : queue size was " + size ); 
-     	//System.out.println("Farming.java: deleteCropListInQueue() : index is " + index); 
-     	//System.out.println("Farming.java: deleteCropListInQueue() : selected cropType is " + cropType);     	 
        	if ( size > 0) {
      		Iterator<CropType> j = cropListInQueue.iterator();
      		int i = 0;
@@ -297,7 +335,6 @@ implements Serializable {
     public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
 
     	try {
-    		Inventory inv = getBuilding().getInventory();
             AmountResource harvestCropAR = AmountResource.findAmountResource(cropName);      
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropAR, false, false);
 
@@ -368,8 +405,7 @@ implements Serializable {
         	//CropType cropType = Crop.getNewCrop();
         	CropType cropType = null;
         	int size = cropListInQueue.size();
-           	//System.out.println("Farming.java: queue size was " + size ); 
-        	if ( size > 0) {
+          	if ( size > 0) {
          		// Safer to remove using iterator than just cropListInQueue.remove(0);
         		Iterator<CropType> j = cropListInQueue.iterator();
         		while (j.hasNext()) {
@@ -378,12 +414,7 @@ implements Serializable {
         			j.remove();
         			break; // remove the first entry only
         		}
-  
-            	//System.out.println("Farming.java: After adding a crop from the queue");
-            	//System.out.println("Farming.java: cropType is " + cropType ); 
-            	//System.out.println("Farming.java: cropInQueue is " + cropInQueue ); 
-               	//System.out.println("Farming.java: queue size is now" + cropListInQueue.size() ); 
-        	} else
+          	} else
         		// TODO: put in the crop with highest demand into getNewCrop()
         		cropType = Crop.getNewCrop(null); //
         	
@@ -395,6 +426,9 @@ implements Serializable {
         	Crop crop = new Crop(cropType, maxHarvestinKg, this, settlement, true);
             //Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), this, settlement, true);
             crops.add(crop);
+            
+            provideFertilizer();
+            
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
     }
@@ -466,9 +500,16 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
-        Iterator<Crop> i = crops.iterator();
+        inv = null;
+        settlement = null;
+        
+        Iterator<CropType> i = cropListInQueue.iterator();
         while (i.hasNext()) {
             i.next().destroy();
+        }
+        Iterator<Crop> ii = crops.iterator();
+        while (ii.hasNext()) {
+            ii.next().destroy();
         }
     }
 

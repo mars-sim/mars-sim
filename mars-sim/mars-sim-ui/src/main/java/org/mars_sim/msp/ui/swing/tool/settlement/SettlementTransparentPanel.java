@@ -56,30 +56,38 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 
-public class SettlementTransparentPanel  {
-	
-	private SettlementMapPanel mapPanel;
-	private MainDesktopPane desktop;
-	//private Settlement settlement;
-	private JSliderMW zoomSlider;
+public class SettlementTransparentPanel extends JComponent {
+
+	private static final long serialVersionUID = 1L;
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	/** Zoom change. */
 	private static final double ZOOM_CHANGE = 1D;
-	JPanel topPanel, rightPane, borderPane, nameBtnPane, namePane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ; 
-	JButton renameBtn, infoButton;
-	JLabel zoomLabel; 
-	/** Lists all settlements. */
-	JComboBoxMW<?> settlementListBox;
-	/** Combo box model. */
-	SettlementComboBoxModel settlementCBModel;
+
+	private SettlementMapPanel mapPanel;
+	private MainDesktopPane desktop;
+	//private Settlement settlement;
+	
+	private JSliderMW zoomSlider;
+	private JPanel topPanel, rightPane, borderPane, nameBtnPane, namePane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ; 
+	private JButton renameBtn, infoButton;
+	private JLabel zoomLabel; 	
 	private JPopupMenu labelsMenu;
+	/** Lists all settlements. */
+	private JComboBoxMW<?> settlementListBox;
+	/** Combo box model. */
+	private SettlementComboBoxModel settlementCBModel;
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
     	
         this.mapPanel = mapPanel;
         this.desktop = desktop;
+        
+		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
+		    false, true, true, true));
+		        
         createAndShowGUI();
     }
     
@@ -203,26 +211,7 @@ public class SettlementTransparentPanel  {
 		}
     
 	}
-    /*
-     * settlement = (Settlement) settlementListBox.getSelectedItem();
-	public void makeTransparent(Component[] comp)  
-	  {  
-	    for(int x = 0; x < comp.length; x++)  
-	    {  
-	      if(comp[x] instanceof javax.swing.plaf.metal.MetalComboBoxButton)  
-	      {  
-	        ((javax.swing.plaf.metal.MetalComboBoxButton)comp[x]).setOpaque(false);  
-	        ((javax.swing.plaf.metal.MetalComboBoxButton)comp[x]).setBorder(null);  
-	      }  
-	      else if(comp[x] instanceof JTextField)  
-	      {  
-	        ((JTextField)comp[x]).setOpaque(false);  
-	        ((JTextField)comp[x]).setBorder(null);  
-	      }  
-	    }  
-	  }  
-	*/
-	   
+	
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {	
 			
 		private static final long serialVersionUID = 1L;

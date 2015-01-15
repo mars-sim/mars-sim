@@ -615,10 +615,10 @@ implements Serializable {
     
     // 2015-01-12 Added retrieveOilAndSalt()
     public void retrieveOilAndSalt() {
-        // TODO: Change the hardcoded oilAmount and saltAmount to what's on the meal recipe.xml
 
 	    // 2014-12-29 Added oil and salt
 	    String oil = getAnOil();
+    	//TODO: need to move the hardcoded amount to a xml file	    
 	    double oilAmount = .05;
 	    
 		// 2015-01-09 Added addDemandTotalRequest()
@@ -633,6 +633,7 @@ implements Serializable {
 	    }
 	    
 	    String salt = "Table Salt";
+    	//TODO: need to move the hardcoded amount to a xml file
 	    double saltAmount = .01;
 	    
 	    AmountResource saltAR = getFreshFoodAR(salt);

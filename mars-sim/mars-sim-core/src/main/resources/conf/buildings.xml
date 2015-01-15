@@ -181,6 +181,13 @@
 				<!-- resource: the resource that the building can store. -->
 				<!-- See resources.txt -->
 				<!-- capacity: the building's capacity (kg) for the resource. -->
+
+				<resource-storage resource="Nitrogen" capacity="500.0" />				
+				<resource-storage resource="Ammonia" capacity="500.0" />
+				<resource-storage resource="Nitrate" capacity="500.0" />				
+				<resource-storage resource="Nitrite" capacity="500.0" />
+				<resource-storage resource="Solid Waste" capacity="500.0" />
+				
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
@@ -188,9 +195,15 @@
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
 				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
 				<resource-storage resource="Ice" capacity="500.0" />
-				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />				
+				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
+								
 				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
-
+				<resource-storage resource="Nitrosomonas spp" capacity="300.0" />
+				<resource-storage resource="Nitrospira spp" capacity="300.0" />								
+				<resource-storage resource="Rhizobia" capacity="300.0" />	
+				<resource-storage resource="Fertilizer" capacity="500.0" />
+				
+				
 				<resource-storage resource="Food" capacity="500.0" />
 							
 				<resource-storage resource="Cane Fiber" capacity="500.0" />							
@@ -236,12 +249,22 @@
 				<!-- resource: the resource initially in the building. -->
 				<!-- See resources.xml -->
 				<!-- amount: the amount (kg) of the resource. -->
+				<resource-initial resource="Nitrogen" amount="100.0" />				
+				<resource-initial resource="Ammonia" amount="100.0" />
+				<resource-initial resource="Nitrate" amount="100.0" />				
+				<resource-initial resource="Nitrite" amount="100.0" />
+				<resource-initial resource="Solid Waste" amount="0.0" />
+				<resource-initial resource="Fertilizer" amount="500.0" />
+				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 								
 				<resource-initial resource="Sodium Hypochlorite" amount="100.0" />
-				<resource-initial resource="Acetic Acid Bacteria" amount="100.0" />
-																			
+				<resource-initial resource="Acetic Acid Bacteria" amount="50.0" />
+				<resource-initial resource="Nitrosomonas spp" amount="50.0" />
+				<resource-initial resource="Nitrospira spp" amount="50.0" />
+				<resource-initial resource="Rhizobia" amount="50.0" />
+															
 				<resource-initial resource="Food" amount="300.0" />																			
 																								
 				<resource-initial resource="Cane Fiber" amount="100.0" />
@@ -337,6 +360,12 @@
 			</resource-processing>
 			
 			<storage>
+				<resource-storage resource="Fertilizer" capacity="500.0" />
+				<resource-storage resource="Nitrogen" capacity="500.0" />				
+				<resource-storage resource="Ammonia" capacity="500.0" />
+				<resource-storage resource="Nitrate" capacity="500.0" />				
+				<resource-storage resource="Nitrite" capacity="500.0" />
+				<resource-storage resource="Solid Waste" capacity="500.0" />
 				<resource-storage resource="Water" capacity="500.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
@@ -825,6 +854,13 @@
 				</activity>
 			</resource-processing>
 			<storage>
+				<resource-storage resource="Fertilizer" capacity="1000.0" />
+				<resource-storage resource="Nitrogen" capacity="1000.0" />				
+				<resource-storage resource="Ammonia" capacity="1000.0" />
+				<resource-storage resource="Nitrate" capacity="1000.0" />				
+				<resource-storage resource="Nitrite" capacity="1000.0" />
+				<resource-storage resource="Solid Waste" capacity="1000.0" />
+				
 				<resource-storage resource="Water" capacity="1000.0" />
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />

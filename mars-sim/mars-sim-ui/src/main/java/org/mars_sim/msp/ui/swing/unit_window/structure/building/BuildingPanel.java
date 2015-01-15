@@ -8,11 +8,14 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,6 +52,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
+import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelFoodProduction;
@@ -140,9 +144,10 @@ extends JPanel {
         setLayout(new BorderLayout(0, 0));
  
         // 2014-11-27 Added namePanel and buildingNameLabel
-        JPanel namePanel = new JPanel(new FlowLayout());
+        JPanel namePanel = new JPanel(new GridLayout(2,1,0,0));
         //scrollPanel.setPreferredSize(new Dimension(200, 220));
-        buildingNameLabel = new JLabel(building.getNickName());
+        buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
+        //final ShadowLabel buildingNameLabel = new ShadowLabel(building.getNickName());
         
         buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
         if (isTranslucent) {
@@ -183,7 +188,7 @@ extends JPanel {
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
  
         // Prepare function scroll panel.
-        //JScrollPane scrollPanel = new JScrollPane();
+        // JScrollPane scrollPanel = new JScrollPane();
         CustomScroll scrollPanel = new CustomScroll(functionListPanel);
         scrollPanel.setPreferredSize(new Dimension(290, 280));
         add(scrollPanel, BorderLayout.CENTER);
@@ -424,6 +429,7 @@ extends JPanel {
         setPanelTranslucent();
     }
 	
+	
 	public void setPanelTranslucent() {
 		if (isTranslucent) {
 	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
@@ -432,6 +438,10 @@ extends JPanel {
 	   	 		setPanelStyle(p);
 	   	 	}
 		}
+		
+	    setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
+                  false, true, true, true));
+		
 	}
 	
 	public void setPanelStyle(JPanel p) {
@@ -512,4 +522,6 @@ extends JPanel {
         isTranslucent = value;
 		//System.out.println("BuildingPanel.java : setTheme() : isTranslucent is " + isTranslucent);
     }
+    
+
 }

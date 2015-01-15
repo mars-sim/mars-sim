@@ -25,13 +25,13 @@ import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
 @SuppressWarnings("serial")
-public class BuildingInfoPanel extends JPanel {// JDialog {
+public class UnitInfoPanel extends JPanel {// JDialog {
 
 	private String buildingName;
 	private String text;
 
     
-    public BuildingInfoPanel(MainDesktopPane desktop) {
+    public UnitInfoPanel(MainDesktopPane desktop) {
 		super();
     	setOpaque(false);
     	setBackground(new Color(51,25,0,150));
