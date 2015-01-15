@@ -535,8 +535,8 @@ implements LifeSupport {
         	String sample2 = "Water";
 	
         	// Sample demand statistics on Potato and Water
-        	double demandRealUsage1 = inv.getDemandRealUsage(sample1);
-        	double demandRealUsage2 = inv.getDemandRealUsage(sample2);
+        	double demandRealUsage1 = inv.getDemandAmount(sample1);
+        	double demandRealUsage2 = inv.getDemandAmount(sample2);
 
         	int totalRequest1 = inv.getDemandTotalRequest(sample1);
         	int totalRequest2 = inv.getDemandTotalRequest(sample2);

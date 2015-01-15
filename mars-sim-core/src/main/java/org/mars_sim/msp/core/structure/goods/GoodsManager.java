@@ -149,7 +149,8 @@ implements Serializable {
 
     private Inventory inv;
 	//private int solCache = 1;
-	
+    private double milliSolsBeginning;
+    
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -158,6 +159,8 @@ implements Serializable {
     public GoodsManager(Settlement settlement) {
         this.settlement = settlement;
         inv = settlement.getInventory();
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        milliSolsBeginning = MarsClock.getTotalMillisols(clock);
         populateGoodsValues();
     }
 
@@ -349,7 +352,7 @@ implements Serializable {
             demand += getResourceConstructionDemand(resource);
 
             // 2015-01-10 Called getRealTimeDemand()
-            totalDemand = getRealTimeDemand(resource, demand);
+            totalDemand = getAllDemandAmount(resource, demand);
             
             // Add trade value.
             double tradeDemand = determineTradeDemand(resourceGood, useCache);
@@ -378,18 +381,21 @@ implements Serializable {
     }
 
     
-    // 2015-01-10 Created getRealTimeDemand()
-    public double getRealTimeDemand(AmountResource resource, double demand) {
+    // 2015-01-10 Created getAllDemandAmount()
+    public double getAllDemandAmount(AmountResource resource, double demand) {
     
     	double projectedDemand = demand;
-        // s = successful
-        // u = unsuccessful
-        // t = total
-        // note:  uRequest = tRequest - sRequest; 
+        // s = # of successful request
+        // u = # of unsuccessful request
+        // t = # of total request
+        // note:  uRequest = tRequest - sRequest;
+    	    	
+    	// uDemand is the amount of unsuccessful demand
         double uDemand = 0;
         int uRequest = 0;
-        
-        double sDemand = inv.getDemandRealUsage(resource.getName());
+
+    	// sDemand is the amount of successful demand
+        double sDemand = inv.getDemandAmount(resource.getName());
         sDemand = Math.round(sDemand * 100.0) / 100.0;
         int tRequest = inv.getDemandTotalRequest(resource.getName());
         int sRequest = inv.getDemandSuccessfulRequest(resource.getName());
@@ -404,12 +410,17 @@ implements Serializable {
         	uDemand = Math.round(sDemand / sRequest * uRequest * 100.0) / 100.0;
         }
 
+        // 2015-01-15 Added solElapsed
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - milliSolsBeginning;
+        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
+        
         // Get the average demand per orbit 
         // total average demand = (projected demand + real demand usage + unsuccessful demand usage) / 3 
         double totalDemand = ( 
         		projectedDemand +
-        		sDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR +
-        		uDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
+        		sDemand / solElapsed * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR +
+        		uDemand / solElapsed * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         		) / 3.0;
         
         totalDemand = Math.round(totalDemand* 100.0) / 100.0;

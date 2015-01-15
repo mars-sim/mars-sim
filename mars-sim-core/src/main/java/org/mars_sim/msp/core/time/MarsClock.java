@@ -136,7 +136,7 @@ public class MarsClock implements Serializable {
      *  @param time Mars clock instance
      *  @return total millisols
      */
-    private static double getTotalMillisols(MarsClock time) {
+    public static double getTotalMillisols(MarsClock time) {
         double result = 0D;
         
         // Add millisols up to current orbit
