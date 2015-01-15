@@ -74,10 +74,11 @@ implements Serializable {
     private transient double totalInventoryMassCache;
     private transient boolean totalInventoryMassCacheDirty = true;
 
-	// 2015-01-09 Added demandRequest, demandUsage
+	// 2015-01-09 Added 3 Maps
 	private Map<String, Integer> demandTotalRequestMap =  new HashMap<String, Integer>();
 	private Map<String, Integer> demandSuccessfulRequestMap =  new HashMap<String, Integer>();
-	private Map<String, Double> demandRealUsageMap = new HashMap<String, Double>();
+	private Map<String, Double> demandAmountMap = new HashMap<String, Double>();
+	//private int solCounter;
 	
     /** 
      * Constructor
@@ -89,15 +90,15 @@ implements Serializable {
         
     }
 
-   	// 2015-01-09 Added getDemandRealUsage()
-    public double getDemandRealUsage(String resourceName) {
+   	// 2015-01-09 Added getDemandAmount()
+    public double getDemandAmount(String resourceName) {
     	double result;
     	
-       	if (demandRealUsageMap.containsKey(resourceName)) {      		
-       		result = demandRealUsageMap.get(resourceName);
+       	if (demandAmountMap.containsKey(resourceName)) {      		
+       		result = demandAmountMap.get(resourceName);
     	}
     	else {
-    		demandRealUsageMap.put(resourceName, 0.0);
+    		demandAmountMap.put(resourceName, 0.0);
     		result = 0.0;
     	}
     	return result;
@@ -134,7 +135,7 @@ implements Serializable {
     
   	// 2015-01-09 Added getDemandRealUsageMapSize()
     public int getDemandRealUsageMapSize() {
-    	return demandRealUsageMap.size();
+    	return demandAmountMap.size();
     }
     
    	// 2015-01-09 Added getDemandTotalRequestMapSize()
@@ -149,7 +150,7 @@ implements Serializable {
     
   	// 2015-01-09 Added clearDemandUsageMap()
     public synchronized void clearDemandRealUsageMap() {
-    	demandRealUsageMap.clear();
+    	demandAmountMap.clear();
     }
     
    	// 2015-01-09 Added clearDemandTotalRequestMap()
@@ -178,15 +179,15 @@ implements Serializable {
  	// 2015-01-09 addDemandRealUsage()
    	public synchronized void addDemandRealUsage(AmountResource resource, double amount) {
 
-    	if (demandRealUsageMap.containsKey(resource.getName())) {
+    	if (demandAmountMap.containsKey(resource.getName())) {
     		
-    		double oldAmount = demandRealUsageMap.get(resource.getName());
+    		double oldAmount = demandAmountMap.get(resource.getName());
 			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
-    		demandRealUsageMap.put(resource.getName(), amount + oldAmount);
+    		demandAmountMap.put(resource.getName(), amount + oldAmount);
     		
     	}
     	else {
-    		demandRealUsageMap.put(resource.getName(), amount);     
+    		demandAmountMap.put(resource.getName(), amount);     
     	}
     	
     	addDemandSuccessfulRequest(resource, amount);

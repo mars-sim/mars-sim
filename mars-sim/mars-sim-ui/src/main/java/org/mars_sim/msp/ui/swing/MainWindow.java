@@ -95,7 +95,7 @@ public class MainWindow {
     private int memUsed;
     private String statusText;
     String earthTimeString;
-    String t = null;
+    //String t = null;
     
     //private SimulationConfig config = SimulationConfig.instance();
 
@@ -259,7 +259,7 @@ public class MainWindow {
 
 		// 2015-01-07 Added Earth Time on status bar 
 		if (earthTimer == null) 
-			startEarthTimer(t);
+			startEarthTimer();
 	}
 
 	public JPanel getBottomPane() {
@@ -284,16 +284,16 @@ public class MainWindow {
     }
 
 	// 2015-01-13 Added startEarthTimer()
-	public void startEarthTimer(final String tt) {
+	public void startEarthTimer() { // (final String t) {
 		//final String earthTimeString = null;
 		earthTimer = new javax.swing.Timer(TIMEDELAY, 
 			new ActionListener() {		
-			//String t = null;
+			String t = null;
 			    @SuppressWarnings("deprecation")
 				@Override
 			    public void actionPerformed(ActionEvent evt) {
 				    try {
-		        		String t = tt; 
+		        		//String t = null; 
 		        		MasterClock master = Simulation.instance().getMasterClock();
 		        		if (master == null) {
 		        		  throw new IllegalStateException("master clock is null");
@@ -473,7 +473,7 @@ public class MainWindow {
             GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 			// 2015-01-13 Added startEarthTimer()
-			startEarthTimer(t);
+			startEarthTimer();
 		}
 	}
 
