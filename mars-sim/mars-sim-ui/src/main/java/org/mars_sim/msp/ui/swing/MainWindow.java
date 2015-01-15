@@ -97,7 +97,7 @@ public class MainWindow {
     String earthTimeString;
     String t = null;
     
-    private SimulationConfig config = SimulationConfig.instance();
+    //private SimulationConfig config = SimulationConfig.instance();
 
 	/**
 	 * Constructor.
@@ -292,21 +292,21 @@ public class MainWindow {
 			    @SuppressWarnings("deprecation")
 				@Override
 			    public void actionPerformed(ActionEvent evt) {
-	        		String t = tt; 
-	        		MasterClock master = Simulation.instance().getMasterClock();
-	        		if (master == null) {
-	        		  throw new IllegalStateException("master clock is null");
-	        		}
-	        		EarthClock earthclock = master.getEarthClock();
-	        		if (earthclock == null) {
-	        		  throw new IllegalStateException("earthclock is null");
-	        		}
-	        		t = earthclock.getTimeStamp();
-			    	//try {
-					 //   t = earthclock.getTimeStamp();
-			    	//} catch (Exception ee) {
-					//	ee.printStackTrace(System.err);
-					//}
+				    try {
+		        		String t = tt; 
+		        		MasterClock master = Simulation.instance().getMasterClock();
+		        		if (master == null) {
+		        		  throw new IllegalStateException("master clock is null");
+		        		}
+		        		EarthClock earthclock = master.getEarthClock();
+		        		if (earthclock == null) {
+			        		// TODO: why is earthclock null when loading a saved simulation? 
+		        			// how should I fix this ?
+		        		  throw new IllegalStateException("earthclock is null"); 
+		        		}
+		        		t = earthclock.getTimeStamp();
+				    	} catch (Exception ee) {ee.printStackTrace(System.err);
+				    }
 					timeLabel.setText("Earth Time: " + t);
 					maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 	                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
