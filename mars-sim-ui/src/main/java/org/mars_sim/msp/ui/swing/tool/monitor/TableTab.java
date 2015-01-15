@@ -339,7 +339,7 @@ extends MonitorTab {
 		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 		// Font doesn't get rendered yet
 		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
-		table.setSelectionBackground(new Color(255, 255, 120)); // 255 255 224	LightYellow1
+		table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
 		// 255 228 225	MistyRose1
 		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 		table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
