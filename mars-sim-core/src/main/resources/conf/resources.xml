@@ -12,25 +12,32 @@
 	<!-- life-support - Is the resource used for life support? -->
 	<!-- edible - Is the resource edible? -->
 
+	<resource name="Food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
+	<resource name="Ice" phase="solid">Ice-rich permafrost soil</resource>
+	<resource name="Solid Waste" phase="liquid" life-support="true">Solid waste includes human feces, plant remains, non-salvageable garbage, etc.. </resource>
+	<resource name="Waste Water" phase="liquid">Sewage water used as crop fertilizer.</resource>
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
-	<resource name="oxygen" phase="gas" life-support="true" />
-	<resource name="hydrogen" phase="gas" />
-	<resource name="methane" phase="gas" />
-	<resource name="carbon dioxide" phase="gas" />
-	<resource name="carbon monoxide" phase="gas" />
-<!-- <resource name="chlorine" phase="gas"/> -->
-	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>
-	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
-	<resource name="food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
 
-	<!-- Cooking Condiment -->
+
+
+<!-- Gas Resources -->
+	<resource name="Carbon Dioxide" phase="gas" />
+	<resource name="Carbon Monoxide" phase="gas" />
+	<resource name="Ethylene" phase="gas" />
+	<resource name="Hydrogen" phase="gas" />
+	<resource name="Methane" phase="gas" />
+	<resource name="Nitrogen" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="Oxygen" phase="gas" life-support="true" />	
+<!-- <resource name="Chlorine" phase="gas"/> -->
+
+<!-- Cooking Condiment -->
 	<resource name="Baking Powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
 	<resource name="Epsom Salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="Sodium Hypochlorite" phase="solid" >For sanitization of Soybean.</resource>
 	<resource name="Table Salt" phase="solid" edible="true">Sodium Chloride, a Food Grade Salt. </resource>
 	<resource name="Yeast" phase="solid" edible="true">For making bread.</resource>
 	
-	<!-- Soybean-derived food items -->
+<!-- Soybean-derived food items -->
 	<resource name="Okara" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="Soybean Ash" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
@@ -43,8 +50,7 @@
 	<resource name="Tofu" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
 	
 	
-	<!-- Food items derived from crop harvest -->
-	<resource name="Acetic Acid Bacteria" phase="solid" edible="true">Used for making vinegar.</resource>
+<!-- Food items derived from crop harvest -->
 	<resource name="Blueberry Muffin" phase="solid" edible="true"></resource>	
 	<resource name="Brown Rice" phase="solid" edible="true"></resource>
 	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
@@ -75,7 +81,7 @@
 	<resource name="White Bun" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>	
 	<resource name="White Rice" phase="solid" edible="true"></resource>
 
-	<!-- Crop Produce -->
+<!-- Crop Produce -->
 	<resource name="Blueberry" phase="solid" edible="true"></resource>
 	<resource name="Cabbage" phase="solid" edible="true"></resource>
 	<resource name="Carrot" phase="solid" edible="true"></resource>
@@ -102,54 +108,71 @@
 	<resource name="White Onion" phase="solid" edible="true"></resource>	
 	
 
-	<!-- Chemical or Mineral Compounds -->	
-	<resource name="potash lye" phase="solid">Potassium hydroxide</resource>
-	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="regolith" phase="solid">Martian soil</resource>
-	<resource name="iron oxide" phase="solid">also known as rust</resource>
-	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="iron powder" phase="solid" />
+<!-- Chemical or Mineral Compounds -->	
 	<resource name="aluminum oxide" phase="solid" />
-	<resource name="ethylene" phase="gas" />
+	<resource name="Ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="calcium carbonate" phase="solid" />
-	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
 	<resource name="gypsum" phase="solid" />
+	<resource name="iron oxide" phase="solid">also known as rust</resource>
+	<resource name="iron powder" phase="solid" />
 	<resource name="lime" phase="solid" />
-	<resource name="styrene" phase="solid" />
+	<resource name="Nitrate" phase="solid"> NO3- is an essential nutrient for plants</resource>
+	<resource name="Nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
+	<resource name="potash lye" phase="solid">Potassium hydroxide</resource>
 	<resource name="polyester resin" phase="liquid" />
+	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
+	<resource name="regolith" phase="solid">Martian soil</resource>
+	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="styrene" phase="solid" />
+	<resource name="Fertilizer" phase="solid" > Inorganic nutrients for crop growth </resource>
 
 
-	<!-- Mineral concentrations. -->
-	<resource name="hematite" phase="solid" />
-	<resource name="magnetite" phase="solid" />
-	<resource name="magnesite" phase="solid" />
-	<resource name="olivine" phase="solid" />
-	<resource name="goethite" phase="solid" />
-	<resource name="kamacite" phase="solid" />
-	<resource name="taenite" phase="solid" />
+<!-- Mineral concentrations. -->
 	<resource name="chalcopyrite" phase="solid" />
-	<resource name="malachite" phase="solid" />
+	<resource name="goethite" phase="solid" />
+	<resource name="hematite" phase="solid" />
+	<resource name="kamacite" phase="solid" />
+	<resource name="magnesite" phase="solid" />
+	<resource name="magnetite" phase="solid" />
+	<resource name="malachite" phase="solid" />	
+	<resource name="olivine" phase="solid" />
+	<resource name="taenite" phase="solid" />
 	<resource name="sylvite" phase="solid" />
 
-	<!-- Mineral Elements -->
-	<resource name="Nickel" phase="solid" />
-	<resource name="Zinc" phase="solid" />
-	<resource name="Sulfur" phase="solid" />
-	<resource name="Magnesium" phase="solid" />
-	<resource name="Silicon" phase="solid" />
+<!-- Mineral Elements -->
 	<resource name="Copper" phase="solid" />
-	<resource name="Phosphorus" phase="solid">A mineral.</resource>
-	<resource name="Potassium" phase="solid">A mineral.</resource>
 	<resource name="Calcium" phase="solid">A mineral.</resource>
 	<resource name="Carbon" phase="solid">Carbon powder</resource>
+	<resource name="Iron" phase="solid" />
+	<resource name="Magnesium" phase="solid" />
+	<resource name="Nickel" phase="solid" />
+	<resource name="Phosphorus" phase="solid">A mineral.</resource>
+	<resource name="Potassium" phase="solid">A mineral.</resource>
+	<resource name="Silicon" phase="solid" />
+	<resource name="Sulfur" phase="solid" />
+	<resource name="Zinc" phase="solid" />
 	
-	<!-- Building Material -->
-	<resource name="cement" phase="solid" />
-	<resource name="concrete" phase="solid" />
-	<resource name="mortar" phase="solid" />
+<!-- Building Material -->
+	<resource name="Cement" phase="solid" />
+	<resource name="Concrete" phase="solid" />
+	<resource name="Mortar" phase="solid" />
 	
-	<!-- Drugs and Supplements -->	
+<!-- Drugs and Supplements -->	
 	<resource name="Immunue Booster" phase="solid" />
+
+<!-- Bio-organisms -->
+	<resource name="Acetic Acid Bacteria" phase="solid">Used for making vinegar.</resource>	
+	<resource name="Nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
+	<resource name="Nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
+	<resource name="Rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
+	 partner and take nitrogen from the air and convert it into ammonia, a form of nitrogen
+	 that plants can use. In return, legumes feed the bacteria a steady diet of plant sugars. </resource>
+    <!--
+    http://en.wiki2.org/wiki/Sewage_treatment : Nitrification itself is a two-step aerobic process, each step facilitated by a different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though traditionally believed to be facilitated by Nitrobacter spp. (nitro referring the formation of a nitro functional group), is now known to be facilitated in the environment almost exclusively by Nitrospira spp.
+	http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
+	-->
+
 
 
 </resource-list>

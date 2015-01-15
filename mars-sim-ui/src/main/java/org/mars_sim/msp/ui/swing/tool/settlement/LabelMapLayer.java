@@ -14,10 +14,13 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -119,12 +122,7 @@ implements SettlementMapLayer {
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				drawLabel(
-			// TODO: Need to change getName() to getNickName()
-			// but when doing resupply mission, the change will cause "Null string passed to TextLayout constructor"
-			// with getName(), the label will show only buildingType, not building's nickName
-			// five more .getName() in getConstructionLabel()
-						g2d, building.getNickName(), building.getXLocation(), building.getYLocation(), 
+				drawLabel(g2d, building.getNickName(), building.getXLocation(), building.getYLocation(), 
 					BUILDING_LABEL_COLOR, BUILDING_LABEL_OUTLINE_COLOR
 				);
 			}
@@ -146,7 +144,7 @@ implements SettlementMapLayer {
 				ConstructionSite site = i.next();
 				String siteLabel = getConstructionLabel(site);
 				drawLabel(
-					g2d, siteLabel, site.getXLocation(), site.getYLocation(), 
+						g2d, siteLabel, site.getXLocation(), site.getYLocation(), 
 					CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR
 				);
 			}
@@ -394,8 +392,7 @@ implements SettlementMapLayer {
 	 */
 	private BufferedImage createLabelImage(
 		String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
-		Color labelOutlineColor
-	) {
+		Color labelOutlineColor) {
 
 		// Determine bounds.
 		TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);

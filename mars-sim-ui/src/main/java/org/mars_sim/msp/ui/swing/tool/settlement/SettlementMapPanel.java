@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.JPanel;
@@ -24,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -354,6 +356,63 @@ implements ClockListener {
 		return result;
 	}
 
+
+	/**
+	 * Selects a vehicle 
+	 * @param xPixel the x pixel position on the displayed map.
+	 * @param yPixel the y pixel position on the displayed map.
+	 */
+	// 2015-01-14 Added selectVehicleAt()
+	public Vehicle selectVehicleAt(int xPixel, int yPixel) {
+		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
+
+		Vehicle selectedVehicle = null;
+
+		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
+		while (j.hasNext()) {
+			Vehicle vehicle = j.next();
+			double width =vehicle.getWidth(); // width is on y-axis ?
+			double length = vehicle.getLength(); // length is on x-axis ?
+			double newRange;
+			if (width < length)
+				newRange =  width/2.0;
+			else newRange = length/2.0;
+				
+			double x = vehicle.getXLocation();
+			double y = vehicle.getYLocation();
+			
+			double distanceX = x - settlementPosition.getX();
+			double distanceY = y - settlementPosition.getY();
+			double distance = Math.hypot(distanceX, distanceY);
+			if (distance <= newRange) {	
+				//logger.info(i +", width is "+ width );
+				//logger.info(i +", length is "+ length);
+				//logger.info(i +", distanceX is "+ distanceX);
+				//logger.info(i +", distanceY is "+ distanceY);
+				//logger.info(i +", x is "+ x);
+				//logger.info(i +", y is "+ y);				
+				//logger.info(i +", distance is "+ distance);
+				//logger.info(i +", newRange is "+ newRange);				
+				selectedVehicle = vehicle;
+			}
+			//i++;
+		}
+		return selectedVehicle;
+	}
+	
+	// // 2015-01-14 Added returnVehicleList()
+	public static List<Vehicle> returnVehicleList(Settlement settlement) {
+
+		List<Vehicle> result = new ArrayList<Vehicle>();
+		if (settlement != null) {
+		    Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+						result.add(vehicle);
+			}
+		}
+		return result;
+	}
 	/**
 	 * Selects a person on the map.
 	 * @param person the selected person.

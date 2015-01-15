@@ -88,27 +88,35 @@ public abstract class Vehicle extends Unit implements Serializable,
     private List<Point2D> operatorActivitySpots; // List of operator activity spots.
     private List<Point2D> passengerActivitySpots; // List of passenger activity spots
 
+    private String vehicleType;
+    
+    // Get vehicle configuration.
+    private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+
+    
     /**
      * Constructor to be used for testing.
      * @param name the vehicle's name
-     * @param description the configuration description of the vehicle.
+     * @param vehicleType the configuration description of the vehicle.
      * @param settlement the settlement the vehicle is parked at.
      * @param baseSpeed the base speed of the vehicle (kph)
      * @param baseMass the base mass of the vehicle (kg)
      * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
      * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
-    protected Vehicle(String name, String description, Settlement settlement, 
+    protected Vehicle(String name, String vehicleType, Settlement settlement, 
     		double baseSpeed, double baseMass, double fuelEfficiency, 
     		double maintenanceWorkTime) {
     	
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
         
+        this.vehicleType = vehicleType;
+        		
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
-        setDescription(description);
+        setDescription(vehicleType);
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
 	    setBaseSpeed(baseSpeed);
@@ -131,20 +139,21 @@ public abstract class Vehicle extends Unit implements Serializable,
     /** 
      * Constructs a Vehicle object with a given settlement
      * @param name the vehicle's name
-     * @param description the configuration description of the vehicle.
+     * @param vehicleType the configuration description of the vehicle.
      * @param settlement the settlement the vehicle is parked at.
      * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
-    Vehicle(String name, String description, Settlement settlement, double maintenanceWorkTime) {
+    Vehicle(String name, String vehicleType, Settlement settlement, double maintenanceWorkTime) {
 	    
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
+        this.vehicleType = vehicleType;
         
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
-        description = description.toLowerCase();
-        setDescription(description);
+        vehicleType = vehicleType.toLowerCase();
+        setDescription(vehicleType);
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
 	    status = PARKED;
@@ -152,19 +161,16 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString("Vehicle");
-    	
-	    // Get vehicle configuration.
-	    VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-		
+    			
 	    // Set width and length of vehicle.
-	    width = config.getWidth(description);
-	    length = config.getLength(description);
+	    width = config.getWidth(vehicleType);
+	    length = config.getLength(vehicleType);
 	    
 	    // Set base speed.
-	    setBaseSpeed(config.getBaseSpeed(description));
+	    setBaseSpeed(config.getBaseSpeed(vehicleType));
 
 	    // Set the empty mass of the vehicle.
-	    setBaseMass(config.getEmptyMass(description));
+	    setBaseMass(config.getEmptyMass(vehicleType));
 	    
 	    // Set the fuel efficiency of the vehicle.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
@@ -173,10 +179,17 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    determinedSettlementParkedLocationAndFacing();
 	    
 	    // Initialize operator activity spots.
-        operatorActivitySpots = new ArrayList<Point2D>(config.getOperatorActivitySpots(description));
+        operatorActivitySpots = new ArrayList<Point2D>(config.getOperatorActivitySpots(vehicleType));
         
         // Initialize passenger activity spots.
-        passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(description));
+        passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(vehicleType));
+    }
+    
+    public String getDescription(String vehicleType) {
+    	return config.getDescription(vehicleType);
+    }
+    public String getVehicleType() {
+    	return vehicleType;
     }
     
     @Override

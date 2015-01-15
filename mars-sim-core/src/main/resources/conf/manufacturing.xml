@@ -32,6 +32,98 @@
 		</outputs>
 	</process>
 	
+	<process name="extract nitrogen compounds from regolith (large batch)"
+			tech="1" skill="2"
+			work-time="500"
+			process-time="500" 
+			power-required="2.0">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="Nitrate" amount="10.0" />
+			<resource name="Nitrite" amount="2.0" />
+			<resource name="Nitrogen" amount="10.0" />
+			<resource name="Ammonia" amount="10.0" />
+			<resource name="regolith" amount="250.0" />						
+		</outputs>
+	</process>
+	<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix 
+	analogue regolith and analyzed by ion chromatography. 
+	The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
+	and NO2- has 6.9 -->
+	
+	<process name="extract nitrogen compounds from regolith"
+			tech="1" skill="2"
+			work-time="100"
+			process-time="100" 
+			power-required="0.5">
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="Nitrate" amount="1.0" />
+			<resource name="Nitrite" amount="0.2" />
+			<resource name="Nitrogen" amount="1.0" />
+			<resource name="Ammonia" amount="1.0" />
+			<resource name="regolith" amount="25.0" />						
+		</outputs>
+	</process>
+	
+	<process name="extract nitrogen compounds from solid waste"
+			tech="3" skill="3"
+			work-time="50"
+			process-time="1000" 
+			power-required="0.5">
+		<inputs>
+			<resource name="Solid Waste" amount="5.0" />
+			<resource name="Water" amount="5.0" />
+			<resource name="Nitrospira spp" amount="0.01" />	
+			<resource name="Nitrosomonas spp" amount="0.01" />					
+		</inputs>
+		<outputs>
+			<resource name="Nitrate" amount="0.1" />
+			<resource name="Nitrite" amount="0.02" />
+			<resource name="Nitrogen" amount="0.5" />
+			<resource name="Ammonia" amount="0.5" />
+			<resource name="Waste Water" amount="10.0" />
+			
+<!-- TODO: chemist can isolate these bacteria and grow them in the lab 
+			<resource name="Nitrospira spp" amount="0.009" />	
+			<resource name="Nitrosomonas spp" amount="0.009" />	
+-->					
+		</outputs>
+	</process>	
+	
+		<process name="make fertilizers for growing crops"
+			tech="2" skill="2"
+			work-time="50"
+			process-time="500" 
+			power-required="0.5">
+		<inputs>
+		<!-- TODO: 
+		1. Chemists may tweak the input amount and the yield
+		2. Arbitrary figures are used. Need research
+		-->	
+			<resource name="Methane" amount="1" />
+			<resource name="Hydrogen" amount="0.5" />	
+			<resource name="Nitrogen" amount="0.5" />					
+			<resource name="Nitrate" amount="1" />
+			<resource name="Nitrite" amount="0.5" />
+			<resource name="Ammonia" amount="2" />
+			<resource name="Potassium" amount="0.5" />
+			<resource name="Phosphorus" amount="0.5" />
+			<resource name="Zinc" amount="0.02" />
+			<resource name="Calcium" amount="0.02" />
+			<resource name="Sulfur" amount="0.02" />	
+			<resource name="Magnesium" amount="0.02" />	
+			<resource name="Iron" amount="0.02" />					
+		</inputs>
+		<outputs>
+			<resource name="Fertilizer" amount="7.0" />			
+		</outputs>
+	</process>	
+	
 	<process name="extract iron oxide from regolith (large batch)"
 			tech="1" skill="2"
 			work-time="500"
@@ -46,6 +138,25 @@
 		</outputs>
 	</process>
 	
+		<process name="extract iron from iron oxide"
+			tech="2" skill="2"
+			work-time="100"
+			process-time="300" 
+			power-required="3.0">
+		<inputs>
+			<resource name="Iron Oxide" amount="5.0" />
+			<resource name="Carbon" amount="5.0" />
+		</inputs>
+		<outputs>
+			<resource name="Iron" amount="7.0" />
+			<resource name="Carbon Monoxide" amount="3.0" />
+		</outputs>
+	</process>
+	<!-- TODO: Need to find the real molecular mass of the initial and resulting product
+			Fe2O3 + 3C → 2Fe + 3CO 
+-->
+
+	
 	<process name="extract aluminum oxide from regolith"
 			tech="1" skill="0"
 			work-time="100"
@@ -59,7 +170,8 @@
 		</outputs>
 	</process>
 	
-	<process name="extract aluminum oxide from regolith (large batch)" tech="1" skill="2" work-time="500" process-time="0"
+	<process name="extract aluminum oxide from regolith (large batch)" 
+	tech="1" skill="2" work-time="500" process-time="0"
 			power-required="0.0">
 		<inputs>
 			<resource name="regolith" amount="500.0" />

@@ -313,9 +313,9 @@ implements Serializable {
 					inv.retrieveAmountResource(wasteWater, wasteWaterUsed);
 					
 					// 2015-01-09 Added addDemandTotalRequest()
-				    //inv.addDemandTotalRequest(wasteWater);
+				    inv.addDemandTotalRequest(wasteWater);
 					// 2015-01-09 addDemandRealUsage()
-				    //inv.addDemandRealUsage(wasteWater, wasteWaterUsed);
+				    inv.addDemandRealUsage(wasteWater, wasteWaterUsed);
 					
 					harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
 
