@@ -174,9 +174,11 @@ implements ListSelectionListener {
 	 * Cancels the currently selected transport item.
 	 */
 	private void cancelTransportItem() {     
-		// 2014-10-04 by mkung -- added a dialog box asking the user to confirm "discarding" the mission
+		// 2014-10-04 Added a dialog box asking the user to confirm "discarding" the mission
+		// 2015-01-07 Modified to pause the EDT until the dialog box is dismissed
+		
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to discard the highlighted mission?", "Confirm",
+		final int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to discard the highlighted mission?", "Confirm",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if (response == JOptionPane.NO_OPTION) {
 			// "No" button click, do nothing

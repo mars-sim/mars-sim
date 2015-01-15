@@ -315,7 +315,7 @@ implements Serializable {
 					// 2015-01-09 Added addDemandTotalRequest()
 				    inv.addDemandTotalRequest(wasteWater);
 					// 2015-01-09 addDemandRealUsage()
-				    inv.addDemandRealUsage(wasteWater, wasteWaterUsed);
+				    inv.addDemandAmount(wasteWater, wasteWaterUsed);
 					
 					harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
 
@@ -327,6 +327,8 @@ implements Serializable {
 					if (waterAmount > waterCapacity) 
 						waterAmount = waterCapacity;
 					inv.storeAmountResource(water, waterAmount, false);
+					// 2015-01-15 Add addSupplyAmount()
+		            inv.addSupplyAmount(water, waterAmount);
 	
 					// Determine harvest modifier by amount of carbon dioxide available.
 					AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
@@ -341,7 +343,7 @@ implements Serializable {
 					// 2015-01-09 Added addDemandTotalRequest()
 				    inv.addDemandTotalRequest(carbonDioxide);
 					// 2015-01-09 addDemandRealUsage()
-				   	inv.addDemandRealUsage(carbonDioxide, carbonDioxideUsed);
+				   	inv.addDemandAmount(carbonDioxide, carbonDioxideUsed);
 					
 					
 					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
@@ -354,7 +356,8 @@ implements Serializable {
 					double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false, false);
 					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
 					inv.storeAmountResource(oxygen, oxygenAmount, false);
-					   	
+					 // 2015-01-15 Add addSupplyAmount()
+		            inv.addSupplyAmount(oxygen, oxygenAmount);   	
 					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
 

@@ -363,6 +363,8 @@ implements Transportable, Serializable {
 					resource, true, false);
 			if (amount > capacity) amount = capacity;
 			newSettlement.getInventory().storeAmountResource(resource, amount, true);
+    		// 2015-01-15 Add addSupplyAmount()
+			newSettlement.getInventory().addSupplyAmount(resource, amount);
 		}
 	}
 

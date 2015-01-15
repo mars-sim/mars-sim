@@ -226,7 +226,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	// 2015-01-09 Added addDemandTotalRequest()
     	getInventory().addDemandTotalRequest(oxygen);
     	// 2015-01-09 addDemandRealUsage()
-    	getInventory().addDemandRealUsage(oxygen, oxygenTaken);
+    	getInventory().addDemandAmount(oxygen, oxygenTaken);
        	
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
@@ -246,7 +246,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	// 2015-01-09 Added addDemandTotalRequest()
     	getInventory().addDemandTotalRequest(water);
     	// 2015-01-09 addDemandRealUsage()
-    	getInventory().addDemandRealUsage(water, waterTaken);    	
+    	getInventory().addDemandAmount(water, waterTaken);    	
     	
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }

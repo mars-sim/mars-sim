@@ -440,6 +440,8 @@ implements Serializable, Transportable {
             double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
             if (amount > capacity) amount = capacity;
             inv.storeAmountResource(resource, amount, true);
+			 // 2015-01-15 Add addSupplyAmount()
+            inv.addSupplyAmount(resource, amount);
         }
         
         // Deliver parts.

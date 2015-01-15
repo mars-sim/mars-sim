@@ -303,7 +303,7 @@ implements Serializable {
 			inv.retrieveAmountResource(soymilkAR, foodEaten);	
 			
 			// 2015-01-09 addDemandRealUsage()
-		   	inv.addDemandRealUsage(soymilkAR, foodEaten);
+		   	inv.addDemandAmount(soymilkAR, foodEaten);
 		}
     }
    
@@ -354,7 +354,7 @@ implements Serializable {
             inv.retrieveAmountResource(foodAR, foodEaten);
             
     		// 2015-01-09 addDemandRealUsage()
-    		inv.addDemandRealUsage(foodAR, foodEaten);
+    		inv.addDemandAmount(foodAR, foodEaten);
         }
     }
 

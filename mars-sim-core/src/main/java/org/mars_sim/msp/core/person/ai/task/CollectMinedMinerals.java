@@ -228,6 +228,8 @@ implements Serializable {
 
         // Collect minerals.
         person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+		// 2015-01-15 Add addSupplyAmount()
+        // not calling person.getInventory().addSupplyAmount(mineralType, mineralsCollected);
         mission.collectMineral(mineralType, mineralsCollected);
         if (((mineralsExcavated - mineralsCollected) <= 0D) || 
                 (mineralsCollected >= remainingPersonCapacity)) {

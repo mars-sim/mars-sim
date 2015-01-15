@@ -216,7 +216,7 @@ implements Serializable {
                 // Remove preserved food amount from container unit.
                 inv.retrieveAmountResource(food, foodAmount);
             	// 2015-01-09 addDemandUsage()
-               	inv.addDemandRealUsage(food, foodAmount);
+               	inv.addDemandAmount(food, foodAmount);
                	//logger.info(person + " has just eaten preserved food");
             }
             else {

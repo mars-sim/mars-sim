@@ -235,7 +235,7 @@ implements Serializable {
             	// 2015-01-09 Added addDemandTotalRequest()
                 inv.addDemandTotalRequest(resource);
             	// 2015-01-09 addDemandUsage()
-               	inv.addDemandRealUsage(resource,item.getAmount());     
+               	inv.addDemandAmount(resource,item.getAmount());     
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
@@ -365,6 +365,8 @@ implements Serializable {
                             amount = capacity;
                         }
                         inv.storeAmountResource(resource, amount, true);
+           			 	// 2015-01-15 Add addSupplyAmount()
+                        inv.addSupplyAmount(resource, amount);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
@@ -433,6 +435,8 @@ implements Serializable {
                             amount = capacity;
                         }
                         inv.storeAmountResource(resource, amount, true);
+                        // 2015-01-15 Add addSupplyAmount()
+                        inv.addSupplyAmount(resource, amount);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.

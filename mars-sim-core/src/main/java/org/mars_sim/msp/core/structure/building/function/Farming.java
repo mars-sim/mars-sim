@@ -127,10 +127,10 @@ implements Serializable {
     //2015-01-14 Added retrieveResource()
     public void retrieveResource(String name, double requestedAmount) {
     	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);
-	    	inv.addDemandTotalRequest(nameAR);    	
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
-	    	if (remainingCapacity < requestedAmount) {
+	    	inv.addDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
 	     		requestedAmount = remainingCapacity;
 	    		logger.warning("Just used up all fertilizer");
 	        }
@@ -139,7 +139,7 @@ implements Serializable {
 
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addDemandRealUsage(nameAR, requestedAmount);
+	    		inv.addDemandAmount(nameAR, requestedAmount);
 	    	}
 	    }  catch (Exception e) {}
     }
@@ -343,9 +343,11 @@ implements Serializable {
             	harvestAmount = remainingCapacity;
                  	//logger.info("addHarvest() : storage is full!");
                 }
-                // add the harvest to the remaining capacity
+            // add the harvest to the remaining capacity
             // 2014-11-06 changed the last param from false to true
             inv.storeAmountResource(harvestCropAR, harvestAmount, true);
+            // 2015-01-15 Add addSupplyAmount()
+            inv.addSupplyAmount(harvestCropAR, harvestAmount);
   
         }  catch (Exception e) {}
     }

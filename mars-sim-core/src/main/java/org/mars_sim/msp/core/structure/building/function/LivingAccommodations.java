@@ -146,14 +146,13 @@ public class LivingAccommodations extends Function implements Serializable {
         AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterUsed = waterUsageBuilding;
         double waterAvailable = inv.getAmountResourceStored(water, false);
-        if (waterUsed > waterAvailable)
-            waterUsed = waterAvailable;
-        inv.retrieveAmountResource(water, waterUsed);
-        
     	// 2015-01-09 Added addDemandTotalRequest()
         inv.addDemandTotalRequest(water);
+        if (waterUsed > waterAvailable)
+            waterUsed = waterAvailable;
+        inv.retrieveAmountResource(water, waterUsed);        
     	// 2015-01-09 addDemandRealUsage()
-       	inv.addDemandRealUsage(water, waterUsed);
+       	inv.addDemandAmount(water, waterUsed);
         
         AmountResource wasteWater = AmountResource
                 .findAmountResource("waste water");
@@ -163,6 +162,8 @@ public class LivingAccommodations extends Function implements Serializable {
         if (wasteWaterProduced > wasteWaterCapacity)
             wasteWaterProduced = wasteWaterCapacity;
         inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
+        // 2015-01-15 Add addSupplyAmount()
+        inv.addSupplyAmount(wasteWater, wasteWaterProduced);
     }
 
     /**

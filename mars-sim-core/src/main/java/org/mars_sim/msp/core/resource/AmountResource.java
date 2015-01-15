@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 3.07 2014-11-25
+ * @version 3.07 2015-01-15
  * @author Scott Davis
  */
 
@@ -52,12 +52,12 @@ implements Serializable {
 		boolean lifeSupport,
 		boolean edible
 	) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
 		this.edible = edible;
-		this.hashcode = getName().hashCode() * phase.hashCode();
+		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
 	}
 
 	/**
@@ -115,7 +115,7 @@ implements Serializable {
 		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.getName().equalsIgnoreCase(name)) result = resource;
+			if (resource.getName().toLowerCase().equalsIgnoreCase(name)) result = resource;
 		}
 		if (result != null) return result;
 		else throw new IllegalStateException("Resource: " + name + " could not be found.");
@@ -154,7 +154,7 @@ implements Serializable {
 		List<String> resourceNames = new ArrayList<String>();
 		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
 		while (i.hasNext()) {
-			resourceNames.add(i.next().getName());
+			resourceNames.add(i.next().getName().toLowerCase());
 		}
 		Collections.sort(resourceNames);
 		return resourceNames;
@@ -168,7 +168,7 @@ implements Serializable {
 	public boolean equals(Object object) {
 		if (object instanceof AmountResource) {
 			AmountResource otherObject = (AmountResource) object;
-			if ((getName().equals(otherObject.getName())) && (phase.equals(otherObject.phase)))
+			if ((getName().toLowerCase().equals(otherObject.getName().toLowerCase())) && (phase.equals(otherObject.phase)))
 				return true;
 		}
 		return false;

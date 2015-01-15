@@ -222,6 +222,8 @@ implements Serializable {
             if (rcInv.hasAmountResourceCapacity(resource, amount, false)) {
                 luvInv.retrieveAmountResource(resource, amount);
                 rcInv.storeAmountResource(resource, amount, true);
+   			 	// 2015-01-15 Add addSupplyAmount()
+                rcInv.addSupplyAmount(resource, amount);
             }
             else {
                 logger.severe(resource.getName() + " of amount " + amount + " kg. cannot be stored in " + 

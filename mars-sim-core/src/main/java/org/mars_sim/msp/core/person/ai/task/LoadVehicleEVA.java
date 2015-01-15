@@ -444,6 +444,7 @@ implements Serializable {
 
             // Check if enough resource in settlement inventory.
             double settlementStored = sInv.getAmountResourceStored(resource, false);
+            sInv.addDemandTotalRequest(resource);
             if (settlementStored < amountNeeded) {
                 if (required) {
                     canLoad = false;
@@ -487,6 +488,8 @@ implements Serializable {
                 try {
                     sInv.retrieveAmountResource(resource, resourceAmount);
                     vInv.storeAmountResource(resource, resourceAmount, true);
+       			 	// 2015-01-15 Add addSupplyAmount()
+                    vInv.addSupplyAmount(resource, resourceAmount);
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -510,6 +513,8 @@ implements Serializable {
                 try {
                     vInv.retrieveAmountResource(resource, amountToRemove);
                     sInv.storeAmountResource(resource, amountToRemove, true);
+       			 // 2015-01-15 Add addSupplyAmount()
+                    sInv.addSupplyAmount(resource, amountToRemove);
                 }
                 catch (Exception e) {}
             }
@@ -835,6 +840,7 @@ implements Serializable {
                 double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
                 if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
                     double stored = inv.getAmountResourceStored((AmountResource) resource, false);
+                    inv.addDemandTotalRequest((AmountResource) resource);
                     if (logger.isLoggable(Level.INFO)) {
                         logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
                     }
@@ -984,6 +990,8 @@ implements Serializable {
                 if (resource instanceof AmountResource) {
                     double amount = (Double) resources.get(resource);
                     inv.storeAmountResource((AmountResource) resource, amount, true);
+       			 	// 2015-01-15 Add addSupplyAmount()
+                    //inv.addSupplyAmount((AmountResource) resource, amount);
                 }
                 else {
                     int num = (Integer) resources.get(resource);

@@ -431,6 +431,8 @@ implements Serializable {
                 try {
                     sInv.retrieveAmountResource(resource, resourceAmount);
                     vInv.storeAmountResource(resource, resourceAmount, true);
+       			 	// 2015-01-15 Add addSupplyAmount()
+                    vInv.addSupplyAmount(resource, resourceAmount);
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -931,6 +933,8 @@ implements Serializable {
     			if (resource instanceof AmountResource) {
     				double amount = (Double) resources.get(resource);
     				inv.storeAmountResource((AmountResource) resource, amount, true);
+       			 	// 2015-01-15 Add addSupplyAmount()
+                    //inv.addSupplyAmount((AmountResource) resource, amount);
     			}
     			else {
     				int num = (Integer) resources.get(resource);

@@ -16,7 +16,7 @@
 	<resource name="Ice" phase="solid">Ice-rich permafrost soil</resource>
 	<resource name="Solid Waste" phase="liquid" life-support="true">Solid waste includes human feces, plant remains, non-salvageable garbage, etc.. </resource>
 	<resource name="Waste Water" phase="liquid">Sewage water used as crop fertilizer.</resource>
-	<resource name="water" phase="liquid" life-support="true">potable water</resource>
+	<resource name="Water" phase="liquid" life-support="true">potable water</resource>
 
 
 
@@ -109,36 +109,36 @@
 	
 
 <!-- Chemical or Mineral Compounds -->	
-	<resource name="aluminum oxide" phase="solid" />
+	<resource name="Aluminum Oxide" phase="solid" />
 	<resource name="Ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
-	<resource name="calcium carbonate" phase="solid" />
-	<resource name="gypsum" phase="solid" />
-	<resource name="iron oxide" phase="solid">also known as rust</resource>
-	<resource name="iron powder" phase="solid" />
-	<resource name="lime" phase="solid" />
+	<resource name="Calcium Carbonate" phase="solid" />
+	<resource name="Gypsum" phase="solid" />
+	<resource name="Iron Oxide" phase="solid">also known as rust</resource>
+	<resource name="Iron Powder" phase="solid" />
+	<resource name="Lime" phase="solid" />
 	<resource name="Nitrate" phase="solid"> NO3- is an essential nutrient for plants</resource>
 	<resource name="Nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
-	<resource name="potash lye" phase="solid">Potassium hydroxide</resource>
-	<resource name="polyester resin" phase="liquid" />
-	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
-	<resource name="regolith" phase="solid">Martian soil</resource>
-	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="styrene" phase="solid" />
+	<resource name="Potash lye" phase="solid">Potassium hydroxide</resource>
+	<resource name="Polyester Resin" phase="liquid" />
+	<resource name="Polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
+	<resource name="Regolith" phase="solid">Martian soil</resource>
+	<resource name="Rock samples" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="Sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="Styrene" phase="solid" />
 	<resource name="Fertilizer" phase="solid" > Inorganic nutrients for crop growth </resource>
 
 
 <!-- Mineral concentrations. -->
-	<resource name="chalcopyrite" phase="solid" />
-	<resource name="goethite" phase="solid" />
-	<resource name="hematite" phase="solid" />
-	<resource name="kamacite" phase="solid" />
-	<resource name="magnesite" phase="solid" />
-	<resource name="magnetite" phase="solid" />
-	<resource name="malachite" phase="solid" />	
-	<resource name="olivine" phase="solid" />
-	<resource name="taenite" phase="solid" />
-	<resource name="sylvite" phase="solid" />
+	<resource name="Chalcopyrite" phase="solid" />
+	<resource name="Goethite" phase="solid" />
+	<resource name="Hematite" phase="solid" />
+	<resource name="Kamacite" phase="solid" />
+	<resource name="Magnesite" phase="solid" />
+	<resource name="Magnetite" phase="solid" />
+	<resource name="Malachite" phase="solid" />	
+	<resource name="Olivine" phase="solid" />
+	<resource name="Taenite" phase="solid" />
+	<resource name="Sylvite" phase="solid" />
 
 <!-- Mineral Elements -->
 	<resource name="Copper" phase="solid" />

@@ -512,7 +512,7 @@ implements Serializable {
                     inv.retrieveAmountResource(resource, amount);
                     
                 	// 2015-01-09 addDemandRealUsage()
-                   	inv.addDemandRealUsage(resource,amount);
+                   	inv.addDemandAmount(resource,amount);
                 }
             }
 
