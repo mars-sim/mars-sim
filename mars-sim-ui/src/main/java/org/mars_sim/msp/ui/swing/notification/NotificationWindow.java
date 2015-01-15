@@ -51,46 +51,49 @@ public class NotificationWindow extends JDialog implements ClockListener {
 
 	private boolean isSetQueueEmpty = false;
 	private boolean isSetQueueEmptyCache = false;
-	
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
 	private boolean showMalfunction = true;
 	private boolean showMalfunctionCache = true;	
+	private boolean willNotify= false;
+	private boolean areAnySettingsChanged = false;
+	// 2014-12-17 Added isPaused	
+	private boolean isPaused = false;
+	
 	private int maxNumMsg = 99;
 	private int maxNumMsgCache = 99;
 	private int displayTime = 2;
 	private int displayTimeCache = 2;	
 	//private int messageCounter = 0;
-	
-	protected String name;
 	//TODO: need to create an array of two element with name 
 	// as array[0] and header as array[1]
 	//private String header;
+	//private String message = "";		
+	//	private String matchedWord1 = "fixed";
+	//	private String matchedWord2 = "recovering";
+	protected String name;
+	private String oldMsgCache = "";
+	
 	private Telegraph telegraph;
 	private TelegraphConfig telegraphConfig ;
 	private TelegraphQueue telegraphQueue;
-	private boolean willNotify= false;
-	//private String message = "";		
-//	private String matchedWord1 = "fixed";
-//	private String matchedWord2 = "recovering";
-	private String oldMsgCache = "";
-	private boolean areAnySettingsChanged = false;
+	
 	private Timer timer;
 	private MainDesktopPane desktop;
-	
-	// 2014-12-17 Added isPaused	
-	private boolean isPaused = false;
 	private NotificationMenu nMenu;
+	
 	
 	public NotificationWindow(MainDesktopPane desktop) {
 		this.desktop = desktop;
 		telegraphQueue = new TelegraphQueue();
 		Simulation.instance().getMasterClock().addClockListener(this);
+		//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 	}
 
 	public void checkSetting() {
 
-		nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+		if (nMenu == null) 
+			nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 
 		isSetQueueEmpty = nMenu.getIsSetQueueEmpty();	
 		if (isSetQueueEmpty != isSetQueueEmptyCache ) {
@@ -98,16 +101,15 @@ public class NotificationWindow extends JDialog implements ClockListener {
 			emptyQueue();
 			isSetQueueEmptyCache = isSetQueueEmpty;
 		}
-		
-		
-		showMedical = nMenu.getShowMedical();	
+			
+		showMedical = getShowMedical();
 		if (showMedical != showMedicalCache ) {
 			areAnySettingsChanged = true;
 			emptyQueue();
 			showMedicalCache = showMedical;
 		}
 
-		showMalfunction = nMenu.getShowMalfunction();
+		showMalfunction = getShowMalfunction();
 		if (showMalfunction != showMalfunctionCache ) {
 			areAnySettingsChanged = true;
 			emptyQueue();
@@ -591,7 +593,16 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	    return "<i><b>" + msg + "</b></i>";
 	}
 
+	public boolean getShowMedical() {
+		//return showMedical;
+		return nMenu.getShowMedical();
+	}
 
+	public boolean getShowMalfunction() {
+		//return showMalfunction;
+		return nMenu.getShowMalfunction();
+	}
+	
 	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
 		isPaused = false;

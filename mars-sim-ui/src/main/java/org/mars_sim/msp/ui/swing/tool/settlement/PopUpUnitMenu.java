@@ -22,9 +22,18 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.UIManager;
+import javax.swing.plaf.BorderUIResource;
+import javax.swing.plaf.UIResource;
+import javax.swing.UIManager.LookAndFeelInfo;
 
+
+
+
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -39,33 +48,38 @@ public class PopUpUnitMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;
 	
 	private JMenuItem itemOne, itemTwo;
-    private Building building;
-    private Vehicle vehicle;
+    //private Building building;
+    //private Vehicle vehicle;
+    private Unit unit;
     private Settlement settlement;
 	private MainDesktopPane desktop;
-	private String buildingName ;
-	private String vehicleName;
 	
-    public PopUpUnitMenu(final SettlementWindow swindow, final Building building, final Vehicle vehicle){
-    	this.building = building;
-    	this.vehicle = vehicle;
+    public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
+    	//this.building = building;
+    	//this.vehicle = vehicle;
+    	this.unit = unit;
     	this.settlement = swindow.getMapPanel().getSettlement();
         this.desktop = swindow.getDesktop();
         
+        UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
+        UIManager.put("PopupMenu.border", res);
+        //force to the Heavyweight Component or able for AWT Components
+        this.setLightWeightPopupEnabled(false); 
+             
     	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
         itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));       
-        add(itemOne);
-        add(itemTwo);
-        
-        if (building != null) {
-        	buildItemOne(building);
-            buildItemTwo(building);
+ 
+        if (unit instanceof Person) {
+        	add(itemTwo);
+        	buildItemTwo(unit);
         }
-        else if( vehicle != null) {
-        	 buildItemOne(vehicle);
-        	 buildItemTwo(vehicle);
+        else {
+            add(itemOne);
+        	add(itemTwo);
+        	buildItemOne(unit);
+            buildItemTwo(unit);
         }
-        /*
+     /*
      // Determine what the GraphicsDevice can support.
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -93,15 +107,23 @@ public class PopUpUnitMenu extends JPopupMenu {
                 d.setForeground(Color.YELLOW); // orange font
                 d.setFont( new Font("Arial", Font.BOLD, 14 ) );
                 
+                String description;
+                String type;
+                String name;
                 
-	            //if (unit instanceof Vehicle)
-                //String buildingName = building.getNickName();
-			    //String description = building.getDescription();
-			    //String name = vehicle.getName();
-			    //String description = vehicle.getDescription();
-			    
-			    String name = unit.getName();
-			    String description = unit.getDescription();
+                if (unit instanceof Vehicle) {
+                	Vehicle vehicle = (Vehicle) unit;
+                	description = vehicle.getDescription(vehicle.getVehicleType());
+                	type = WordUtils.capitalize(vehicle.getVehicleType());
+                	name = WordUtils.capitalize(vehicle.getName());
+                }
+                else {
+                	Building building = (Building) unit;
+                	description = building.getDescription();
+                	type = building.getBuildingType();
+                	name = building.getNickName();
+                }
+                
 			    
 			    d.setSize(350, 300); // undecorated 301, 348 ; decorated : 303, 373
 		        d.setResizable(false);
@@ -109,7 +131,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		        d.setBackground(new Color(0,0,0,0));
 		        
 			    UnitInfoPanel b = new UnitInfoPanel(desktop);
-			    b.init(name, description);		
+			    b.init(name, type, description);		
 			    
 			    d.add(b);
             	
@@ -139,21 +161,23 @@ public class PopUpUnitMenu extends JPopupMenu {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 	
-	            if (unit instanceof Vehicle)
+	            if (unit instanceof Vehicle) {
+	            	Vehicle vehicle = (Vehicle) unit;
 	            	desktop.openUnitWindow(vehicle, false);
-	            	
+	            }
+	            else if (unit instanceof Person) {
+	            	Person person =(Person) unit;
+	            	desktop.openUnitWindow(person, false);
+	            }
 	            else {
-	            	
+                	Building building = (Building) unit;
 	            	final JDialog d = new JDialog();
-	            	
 	        		//2014-11-27 Added ComponentMover Class
 	                // Make panel drag-able
 	        		ComponentMover cm = new ComponentMover();
 	        		cm.registerComponent(d);
 	 
-					final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
-	
-			        
+					final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);      
 		    		buildingPanel.setOpaque(false);
 	                buildingPanel.setBackground(new Color(0,0,0,150));
 	                buildingPanel.setTheme(true);
@@ -186,9 +210,11 @@ public class PopUpUnitMenu extends JPopupMenu {
     }
     
 	public void destroy() {
-			settlement.destroy();
-			building.destroy();
-			itemOne = null;
-			itemTwo = null;			
+		settlement = null;
+		settlement.destroy();
+		unit = null;
+		unit.destroy();
+		itemOne = null;
+		itemTwo = null;			
 	}
 }

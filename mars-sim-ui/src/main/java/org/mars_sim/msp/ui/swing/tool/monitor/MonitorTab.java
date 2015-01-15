@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+
 /**
  * This class represents an abstraction of a view displayed in the Monitor Window.
  * The view is displayed inside a tab panel within the window and depends on
@@ -44,12 +45,14 @@ extends JPanel {
 		this.model = model;
 		this.icon = icon;
 		this.mandatory = mandatory;
+		this.setOpaque(false);
 
 		// Create a panel
 		setLayout(new BorderLayout());
 		setBorder(MainDesktopPane.newEmptyBorder());
+		
 	}
-
+	
 	/**
 	 * Remove this view.
 	 */
@@ -126,4 +129,5 @@ extends JPanel {
 	public boolean getMandatory() {
 		return mandatory;
 	}
+
 }

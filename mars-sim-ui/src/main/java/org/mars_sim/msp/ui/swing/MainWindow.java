@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-08
+ * @version 3.07 2015-01-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.basic.BasicToolBarUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
@@ -86,6 +88,8 @@ public class MainWindow {
     private JLabel memUsedLabel;
     //private JLabel dateLabel;
     private JLabel timeLabel;
+    private JPanel bottomPane;
+    
     private int maxMem;
     private int memAV;
     private int memUsed;
@@ -139,7 +143,7 @@ public class MainWindow {
 
 		
 		// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
-		JPanel bottomPane = new JPanel(new BorderLayout());
+		bottomPane = new JPanel(new BorderLayout());
 		
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
@@ -155,6 +159,20 @@ public class MainWindow {
 	            return jb;
 	        }
 	    };
+	    
+	    BasicToolBarUI ui = new BasicToolBarUI();
+	    unitToolbar.setUI(ui);
+
+	    // Set the bgcolor to black
+	    //color = java.awt.Color.black;
+	    unitToolbar.setOpaque(false);
+	    unitToolbar.setBackground(new Color(0,0,0,0));
+	    //unitToolbar.getParent.getParent.setBackground(new Color(0,0,0,0));
+	     
+	    // Remove the toolbar border, to blend into figure contents
+	    unitToolbar.setBorderPainted(false);
+	     
+
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
 		
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
@@ -244,6 +262,10 @@ public class MainWindow {
 			startEarthTimer(t);
 	}
 
+	public JPanel getBottomPane() {
+		return bottomPane;
+	}
+	
 	// 2015-01-07 Added startAutosaveTimer()	
 	public void startAutosaveTimer() {
         TimerTask timerTask = new TimerTask() {

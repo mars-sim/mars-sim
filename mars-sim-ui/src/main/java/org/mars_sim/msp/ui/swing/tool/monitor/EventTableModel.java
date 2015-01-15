@@ -1,17 +1,15 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.07 2014-12-17
+ * @version 3.07 2015-01-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -23,6 +21,8 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -48,8 +48,12 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private static final int COLUMNCOUNT = 5;
 
 	// 2014-12-17 Added Timer and isPaused	
-	private Timer timer;
+	//private Timer timer;
 	private boolean isPaused = false;
+	private boolean showMedical = true;
+	private boolean showMedicalCache = true;
+	private boolean showMalfunction = true;
+	private boolean showMalfunctionCache = true;
 	
 	/** Names of the displayed columns. */
 	static private String columnNames[];
@@ -67,6 +71,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	}
 
 	private HistoricalEventManager manager;
+	// 2014-11-15 Added NotificationManager
+	private NotificationWindow notifyBox;
+	private MainDesktopPane desktop;
+	private NotificationMenu nMenu;
+	
+	//private static int count;
+	
 	private List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 
 	// Event categories to be displayed.
@@ -76,36 +87,28 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 	
-	final JFrame frame = new JFrame();
-
-	// 2014-11-15 Added NotificationManager
-	private NotificationWindow notifyBox;
-	//private static int count;
-	
 	/**
 	 * constructor.
 	 * Create a new Event model based on the specified event manager.
 	 * @param manager Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	// 2014-11-29 Added NotificationWindow to the param list
-	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox) {
+	// 2014-11-29 Added NotificationWindow as param
+	// 2015-01-14 Added desktop as param
+	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		this.manager = manager;
 		this.notifyBox = notifyBox;
+		this.desktop = desktop;
+
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
-
+		
 		// Add this model as an event listener.
 		manager.addListener(this);
-		
-		// 2014-11-15 Added notificationManager 
-		// 2014-11-29 Relocated its instantiation to MonitorWindow.java
-		//notifyBox = new NotificationManager();
 
 	}
-
-
+	
 	private void updateCachedEvents() {
 
 		//System.out.println("EventTableModel.java : just called updateCachedEvents()");
@@ -216,6 +219,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 */
 	public boolean getOrdered() {
 		return true;
+		//return false; // 2015-01-14 if false, events will be missing and # events will be out of sync 
 	}
 
 	/**
@@ -292,34 +296,35 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void eventAdded(int index, HistoricalEvent event) {
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
+	
+		// 2015-01-14 Added noFiring condition
+		Boolean noFiring = false;
+
+		if (nMenu == null) 
+			nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 		
-		// 2014-12-17 Added isPaused and if then else clause
-		//boolean isPaused = Simulation.instance().getMasterClock().isPaused();
-		if (isPaused) {
-			//System.out.println("EventTableModel.java : eventAdded(): isPaused is true");
-			timer = new Timer();
-			// Hold off 3 seconds
-			int seconds = 3;
-			timer.schedule(new CancelTimer(), seconds * 1000);	
+		showMedical = nMenu.getShowMedical();
+		if (showMedical != showMedicalCache ) {
+			showMedicalCache = showMedical;		
 		}
-		else {
-		//System.out.println("EventTableModel.java : eventAdded() : index is " + index + ", event is " + event);
-			if ((index == 0) && (event != null) ) {
-			    SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
-			}
+		
+		showMalfunction = nMenu.getShowMalfunction();
+		if (showMalfunction != showMalfunctionCache ) {
+			showMalfunctionCache = showMalfunction;
 		}
+		
+		if (!showMedical && !showMalfunction) {
+			notifyBox.emptyQueue();
+			noFiring = true;	
+		}
+		
+		if (!noFiring)
+			if (!isPaused)
+				if ((index == 0) && (event != null) ) {
+					SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+				}
 	}
 
-	
-	// 2014-12-17 Added CancelTimer
-	public class CancelTimer extends TimerTask {
-		@Override
-		public void run() {
-			//System.out.println("Terminated the Timer Thread!");
-			timer.cancel(); // Terminate the thread
-		}
-	}
-	
 	/**
 	 * A consecutive sequence of events have been removed from the manager.
 	 *
@@ -422,7 +427,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void destroy() {
 		manager.removeListener(this);
 		manager = null;
+		cachedEvents.clear();
 		cachedEvents = null;
+		notifyBox = null;
+		desktop = null;
+		nMenu = null;
 	}
 	
 	/**
@@ -431,13 +440,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private class NotifyBoxLauncher implements Runnable {
 	    
 	    private HistoricalEvent event;
-	    
 	    private NotifyBoxLauncher(HistoricalEvent event) {
 	        this.event = event;
 	    }
 	    
 	    public void run() {
-	        //Thread.sleep(50);
 			notifyBox.validateMsg(event);
 			// Note: adding try-catch can cause UI significant slow down here
 	    }

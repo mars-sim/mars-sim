@@ -10,21 +10,25 @@ package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JToolBar;
+import javax.swing.border.BevelBorder;
+
 /**
  * The UnitToolBar class is a UI toolbar for holding unit buttons. There should
  * only be one instance and it is contained in the MainWindow instance.
  */
+//public class UnitToolBar extends TransparentToolBar implements ActionListener {
 public class UnitToolBar extends JToolBar implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
 	// Data members
 	private List<UnitButton> unitButtons; // List of unit buttons
 	private MainWindow parentMainWindow; // Main window that contains this
@@ -44,7 +48,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
 		this.parentMainWindow = parentMainWindow;
-
+		
 		// Set name
 		setName("Unit Toolbar");
 
@@ -55,7 +59,8 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		setPreferredSize(new Dimension(0, 57));
 
 		// Set border around toolbar
-		setBorder(new BevelBorder(BevelBorder.RAISED));
+		setBorder(new BevelBorder(BevelBorder.RAISED));	
+
 	}
 
 	/**
@@ -111,6 +116,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		parentMainWindow.getDesktop().openUnitWindow(unit, false);
 	}
 
+
 	/**
 	 * Gets all the units in the toolbar.
 	 * 
@@ -122,4 +128,6 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 			result[x] = unitButtons.get(x).getUnit();
 		return result;
 	}
+	
+
 }

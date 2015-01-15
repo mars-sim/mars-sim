@@ -266,8 +266,9 @@ implements ClockListener {
 	 * Selects a person if any person is at the given x and y pixel position.
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
+	 * @return selectedPerson;
 	 */
-	public void selectPersonAt(int xPixel, int yPixel) {
+	public Person selectPersonAt(int xPixel, int yPixel) {
 
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 		double range = 6D / scale;
@@ -288,12 +289,14 @@ implements ClockListener {
 			selectPerson(selectedPerson);
 			repaint();
 		}
+		return selectedPerson;
 	}
 	
 	/**
 	 * Selects a building 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
+	 * @return selectedBuilding
 	 */
 	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
@@ -361,6 +364,7 @@ implements ClockListener {
 	 * Selects a vehicle 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
+	 * @return selectedVehicle
 	 */
 	// 2015-01-14 Added selectVehicleAt()
 	public Vehicle selectVehicleAt(int xPixel, int yPixel) {
