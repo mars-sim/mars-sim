@@ -318,6 +318,7 @@ implements Serializable {
         double projectedDemand = 0D;
         double totalSupply = 0;
         double tradeDemand = 0;
+
         
         // 2015-01-15 Added solElapsed
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
@@ -330,7 +331,8 @@ implements Serializable {
     	supply++;
     	
         AmountResource resource = (AmountResource) resourceGood.getObject();
-                
+    	String r = resource.getName().toLowerCase();
+    	
         if (useCache) {
             if (goodsDemandCache.containsKey(resourceGood)) {
             	totalDemand = goodsDemandCache.get(resourceGood);
@@ -375,6 +377,7 @@ implements Serializable {
             // Add construction demand.
             projectedDemand += getResourceConstructionDemand(resource);
 
+            // Revert back to projectedDemand per sol for calculating totalDemand
             projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             
             // 2015-01-10 Called getRealTimeDemand()
@@ -391,51 +394,56 @@ implements Serializable {
             goodsDemandCache.put(resourceGood, totalDemand);
         }
         
-    	 
-        value = Math.log( totalDemand / totalSupply + 1);
+        //value = Math.log( totalDemand / totalSupply + 1);
+        value =  totalDemand / totalSupply ;
 
         // Use resource processing value if higher. 
         // Manny: why using higher values?
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
-        System.out.println( resource.getName() 
+        if (r.equals("concrete")
+    		|| r.equals("polyethylene")) {
+        System.out.println( r
                 + "  projectedDemand per sol is " + Math.round(projectedDemand* 10000.0) / 10000.0     
                 + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
-                + "  log value point is " + Math.round(value* 10000.0) / 10000.0);
-
+                + "  VP is " + Math.round(value* 10000.0) / 10000.0);
+        }
         return value;
     }
 
     // 2015-01-15 Created getTotalSupplyAmount()
     public double getTotalSupplyAmount(AmountResource resource, double supplyStored, int solElapsed) {
     	double totalSupplyAmount = 0;
+    	String r = resource.getName().toLowerCase();
     	
-        double supplyAmount = inv.getSupplyAmount(resource.getName());
+        double supplyAmount = inv.getSupplyAmount(r);
         supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
-        int supplyRequest = inv.getSupplyRequest(resource.getName());
+        int supplyRequest = inv.getSupplyRequest(r);
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ;
         
-        System.out.println( resource.getName() 
+        if (r.equals("concrete")
+    		|| r.equals("polyethylene")) {
+        System.out.println( r 
         + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
         + "  supplyAmount is " + Math.round(supplyAmount* 10000.0) / 10000.0     
         + "  supplyRequest is " + supplyRequest
         + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
-
+        }
     	return totalSupplyAmount;
     }
 
     
     // 2015-01-10 Created getTotalDemandAmount()
     public double getTotalDemandAmount(AmountResource resource, double demand, int solElapsed) {
-    
     	double projectedDemand = demand;
-   
+    	String r = resource.getName().toLowerCase();
+    	
     	// sDemand is the amount of successful demand
-        double sDemand = inv.getDemandAmount(resource.getName());
+        double sDemand = inv.getDemandAmount(r);
         sDemand = Math.round(sDemand * 10000.0) / 10000.0;
-        int sRequest = inv.getDemandSuccessfulRequest(resource.getName());
+        int sRequest = inv.getDemandSuccessfulRequest(r);
     
         // Get the average demand per orbit 
         // total average demand = projected demand + real demand usage  
@@ -443,11 +451,13 @@ implements Serializable {
      
         totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
 
-        System.out.println( resource.getName() 
+        if (r.equals("concrete")
+    		|| r.equals("polyethylene")) {
+        System.out.println( r
         + " : demandAmount  is " + sDemand 
         + "  demandRequest is " + sRequest
         + "  totalAmountDemand is " + totalAmountDemand);
-
+        }
     	return totalAmountDemand;
     }
     

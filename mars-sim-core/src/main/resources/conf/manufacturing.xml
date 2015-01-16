@@ -32,6 +32,35 @@
 		</outputs>
 	</process>
 	
+		
+	<!-- Purify Rock Salt to Food Grade Table Salt -->
+	<process name="purify rock salt into table salt and other compounds" 
+	tech="1" skill="1" work-time="10.0" process-time="100" 
+			power-required="1.0">
+		<inputs>
+			<resource name="Rock Salt" amount="10.0" />
+		</inputs>
+		<outputs>
+			<!--TODO: need research to determine the average amount-->
+			<resource name="Table Salt" amount="4" />
+			<resource name="Calcium" amount="0.5" />
+			<resource name="Magnesium" amount="0.5" />
+			<resource name="Potassium" amount="0.5" />
+			<resource name="Calcium Carbonate" amount="0.5" />	
+			<resource name="Epsom Salt" amount="4" />
+			<!--Epsom Salt is Magnesium Sulfate-->			
+		</outputs>
+	</process>
+<!-- http://www.madehow.com/Volume-2/Salt.html
+	One method of evaporating brine is solar evaporation. 
+	Most brine is processed by a multiple-effect vacuum evaporator. 
+	This device consists of three or more closed metal cylinders with conical bottoms. Brine is first treated chemically to remove calcium and magnesium compounds. It then fills the bottom
+	Brine may also be processed in a grainer. 
+
+	In earth's ocean, the most common compound found in brine water are magnesium chloride, magnesium sulfate, 
+	calcium sulfate, potassium chloride, magnesium bromide, and calcium carbonate. 
+-->
+
 	<process name="extract nitrogen compounds from regolith (large batch)"
 			tech="1" skill="2"
 			work-time="500"
@@ -53,6 +82,7 @@
 	The MARE contained (mg/L) Nitrogen-containing species NO3- has 773
 	and NO2- has 6.9 -->
 	
+	
 	<process name="extract nitrogen compounds from regolith"
 			tech="1" skill="2"
 			work-time="100"
@@ -70,7 +100,7 @@
 		</outputs>
 	</process>
 	
-	<process name="extract nitrogen compounds from solid waste"
+	<process name="extract nitrogen compounds from solid waste with Nitrospira spp and Nitrosomonas spp"
 			tech="3" skill="3"
 			work-time="50"
 			process-time="1000" 
@@ -2369,9 +2399,14 @@
 		</inputs>
 		<outputs>
 			<resource name="water" amount="50.0" />
-			<resource name="regolith" amount="50.0" />
+			<resource name="regolith" amount="45.0" />
+			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
+			<resource name="Rock Salt" amount="5.0" />
 		</outputs>
 	</process>
+	<!-- see "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013
+	see http://download.springer.com/static/pdf/858/art%253A10.1007%252Fs11214-012-9956-3.pdf?auth66=1421432558_9bf0c795e4178cf6a503949883374ecf&ext=.pdf
+	-->
 	
 	<!-- Melting permafrost ice and filtering the water. -->
 	<process name="melting/filtering ice (large batch)" tech="1" skill="2" work-time="50.0" process-time="250" 
@@ -2381,12 +2416,13 @@
 		</inputs>
 		<outputs>
 			<resource name="water" amount="500.0" />
-			<resource name="regolith" amount="500.0" />
+			<resource name="regolith" amount="450.0" />
+			<resource name="Rock Salt" amount="50.0" />
 		</outputs>
 	</process>
 	
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
-	<!-- and chlorine gas (not used in simulation currently). -->
+	<!-- and chlorine gas  -->
 	<!-- 2 K+(aq) + 2H2O(l) + 2e− → H2(g) + 2 KOH(aq) -->
 	<!-- 2 Cl– — 2e− → Cl2(g) -->
 	<process name="potassium chloride electrolysis" tech="1" skill="2" work-time="10.0" 
@@ -2402,7 +2438,7 @@
 		<outputs>
 			<resource name="potash lye" amount="7.5" />
 			<resource name="hydrogen" amount=".5" />
-<!-- 		<resource name="chlorine" amount="0.1" /> -->
+ 			<resource name="chlorine" amount="0.1" />
 		</outputs>
 	</process>
 	

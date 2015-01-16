@@ -528,8 +528,8 @@ implements LifeSupport {
    			 + " at " + this.getName()
    			 + " End of Day Report of Amount Resource Supply and Demand Statistics >>>"); 
 	    	 
-        String sample1 = "Waste Water";
-        String sample2 = "Water";
+        String sample1 = "polyethylene";
+        String sample2 = "concrete";
 	
         	
         // Sample supply and demand data on Potato and Water
