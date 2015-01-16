@@ -162,7 +162,7 @@
 	<resource name="Immunue Booster" phase="solid" />
 
 <!-- Bio-organisms -->
-	<resource name="Acetic Acid Bacteria" phase="solid">Used for making vinegar.</resource>	
+	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>	
 	<resource name="Nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
 	<resource name="Nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
 	<resource name="Rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
