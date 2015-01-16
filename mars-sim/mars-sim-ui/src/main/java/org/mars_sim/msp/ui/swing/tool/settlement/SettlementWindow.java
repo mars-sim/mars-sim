@@ -24,6 +24,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.BorderUIResource;
+import javax.swing.plaf.UIResource;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -202,12 +205,6 @@ public class SettlementWindow extends ToolWindow {
 		setVisible(true);
 	}
 
-	  
-    //public void exitProcedure() {
-    //    showMarsDateTime.setRunning(false);
-    //    System.exit(0);
-    //}
-    
 	/**
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
@@ -246,10 +243,7 @@ public class SettlementWindow extends ToolWindow {
 			super(s, b);
 		}
 		private static final long serialVersionUID = 1L;
-
-				
-		/*
-		public void paint(Graphics g) { 
+		/*public void paint(Graphics g) { 
 			//protected void paintComponent(Graphics g) {
 				//super.paintComponent(g);
 		
@@ -257,8 +251,7 @@ public class SettlementWindow extends ToolWindow {
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f)); 
                 super.paint(g2d); 
                 g2d.dispose(); 
-        } 
-        */
+        } */
 	}
 	/**
 	 * Create the labels popup menu.
@@ -270,15 +263,10 @@ public class SettlementWindow extends ToolWindow {
 		//result.setOpaque(false);
 		result.setBorder(BorderFactory.createLineBorder(Color.orange));
 		result.setBackground(new Color(222,184,135));
-		//UIDefaults ui = UIManager.getLookAndFeelDefaults();
-		//ui.put("PopupMenu.background", Color.GRAY);
-		//ui.put("Menu.background", Color.ORANGE);
-		//ui.put("Menu.opaque", true);
-		//ui.put("MenuItem.background", Color.ORANGE);
-		//ui.put("MenuItem.opaque", true);
-		//ui.put("PopupMenu.contentMargins", null);
-		//UIManager.put("MenuItem.background", Color.ORANGE);
-		//UIManager.put("MenuItem.opaque", true);
+        UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
+        UIManager.put("PopupMenu.border", res);
+        //force to the Heavyweight Component or able for AWT Components
+        result.setLightWeightPopupEnabled(false); 
 		
 		// Create building label menu item.
 		JCustomCheckBoxMenuItem buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
