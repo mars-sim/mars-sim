@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-14
+ * @version 3.07 2015-01-15
  * @author Scott Davis
  */
 
@@ -389,9 +389,22 @@ public class MainWindow {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}
 			}
-
-			desktop.resetDesktop();
+			
+			try {
+                desktop.resetDesktop();
+                if (earthTimer != null) 
+                    earthTimer.stop();
+                earthTimer = null;
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
+			
 			desktop.disposeAnnouncementWindow();
+			
+			startEarthTimer();
 
 			// Open navigator tool after loading.
 //			desktop.openToolWindow(NavigatorWindow.NAME);
