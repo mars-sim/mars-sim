@@ -91,7 +91,7 @@ public class SettlementWindow extends ToolWindow {
 		setMaximizable(true);
 
 		// 2014-12-27 Added preferred size and initial location
-		setPreferredSize(new Dimension(1024, 768));
+		setPreferredSize(new Dimension(800, 600));
 		setLocation(600,600);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());

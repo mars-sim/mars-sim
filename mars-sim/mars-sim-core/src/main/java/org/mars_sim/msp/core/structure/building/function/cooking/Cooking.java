@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-16
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -61,6 +61,8 @@ implements Serializable {
     public static double UP = 0.01;
     public static double DOWN = 0.004;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
+    
+    public static final double SALT_AMOUNT_PER_MEAL = 0.01;
     
     private boolean cookNoMore = false;
     
@@ -496,8 +498,8 @@ implements Serializable {
      * Gets the amount of the food item in the whole settlement.
      * @return dessertAvailable
      */
-    // 2015-01-02 Modified getAnOil()
-	public String getAnOil() {
+    // 2015-01-02 Modified pickOneOil()
+	public String pickOneOil() {
 		    
 	    	List<String> oilList = new ArrayList<String>();
 
@@ -584,8 +586,8 @@ implements Serializable {
 	         
 	        } // end of while
 	        
-	        retrieveOilAndSalt();
-	        
+	        retrieveOil();
+	        retrieveSalt();
     
 	    	String nameOfMeal = hotMeal.getMealName();
 	    	//TODO: kitchen equipment and quality of food should affect mealQuality
@@ -613,11 +615,11 @@ implements Serializable {
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
     }
     
-    // 2015-01-12 Added retrieveOilAndSalt()
-    public void retrieveOilAndSalt() {
+    // 2015-01-12 Added retrieveOil()
+    public void retrieveOil() {
 
 	    // 2014-12-29 Added oil and salt
-	    String oil = getAnOil();
+	    String oil = pickOneOil();
     	//TODO: need to move the hardcoded amount to a xml file	    
 	    double oilAmount = .05;
 	    
@@ -632,9 +634,13 @@ implements Serializable {
 	    	inv.addDemandAmount(oilAR, oilAmount);
 	    }
 	    
+    }
+
+    public void retrieveSalt() {
+	    
 	    String salt = "Table Salt";
     	//TODO: need to move the hardcoded amount to a xml file
-	    double saltAmount = .01;
+	    double saltAmount = SALT_AMOUNT_PER_MEAL; // = 0.1
 	    
 	    AmountResource saltAR = getFreshFoodAR(salt);
 	    double saltAvailable = getFreshFood(saltAR);
@@ -647,8 +653,6 @@ implements Serializable {
 	    	inv.addDemandAmount(saltAR, saltAmount);
 	    }    
     }
-    
-
     
     public void setChef(String name) {
     	this.producerName = name;
@@ -728,7 +732,7 @@ implements Serializable {
 	            	//dailyMealList.add(meal);
 	 	      		try {
 	 	      			i.remove();
-	 	      			refrigerateFood();
+	 	      			preserveFood();
 		      	   		if(logger.isLoggable(Level.FINEST)) {
 		      	            logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
 		      	                    getBuilding().getBuildingManager().getSettlement().getName());
@@ -801,19 +805,22 @@ implements Serializable {
 	    
 	}
     
-	// 2015-01-12  Added refrigerateFood()
-	public void refrigerateFood() {
+	// 2015-01-16 Added salt as preservatives
+	public void preserveFood() {
 		try {
-	     double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
-         if (dryMassPerServing > foodCapacity) 
-         	dryMassPerServing = foodCapacity;
-     			//logger.info("timePassing() : pack & convert expired meal into dried food");
-     			// Turned 1 cooked meal unit into 1 food unit
-         dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
-         // remove the cookedMeal and store it
-         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
-		 // 2015-01-15 Add addSupplyAmount()
-         inv.addSupplyAmount(dryFoodAR, dryMassPerServing);
+			 //TODO: need salt to preserve food
+			 retrieveSalt(); 
+			 
+		     double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
+	         if (dryMassPerServing > foodCapacity) 
+	         	dryMassPerServing = foodCapacity;
+	     			//logger.info("timePassing() : pack & convert expired meal into dried food");
+	     			// Turned 1 cooked meal unit into 1 food unit
+	         dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
+	         // remove the cookedMeal and store it
+	         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
+			 // 2015-01-15 Add addSupplyAmount()
+	         inv.addSupplyAmount(dryFoodAR, dryMassPerServing);
 		} catch (Exception e) {}
  	}
 

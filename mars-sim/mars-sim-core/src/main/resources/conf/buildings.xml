@@ -196,6 +196,7 @@
 				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
+				<resource-storage resource="Rock Salt" capacity="100.0" />
 								
 				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
 				<resource-storage resource="Nitrosomonas spp" capacity="300.0" />
@@ -254,24 +255,24 @@
 				<resource-initial resource="Nitrate" amount="100.0" />				
 				<resource-initial resource="Nitrite" amount="100.0" />
 				<resource-initial resource="Solid Waste" amount="0.0" />
-				<resource-initial resource="Fertilizer" amount="500.0" />
+				<resource-initial resource="Fertilizer" amount="100.0" />
 				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 								
-				<resource-initial resource="Sodium Hypochlorite" amount="100.0" />
-				<resource-initial resource="Acetic Acid Bacteria" amount="50.0" />
-				<resource-initial resource="Nitrosomonas spp" amount="50.0" />
-				<resource-initial resource="Nitrospira spp" amount="50.0" />
-				<resource-initial resource="Rhizobia" amount="50.0" />
+				<resource-initial resource="Sodium Hypochlorite" amount="20.0" />
+				<resource-initial resource="Acetic Acid Bacteria" amount="20.0" />
+				<resource-initial resource="Nitrosomonas spp" amount="20.0" />
+				<resource-initial resource="Nitrospira spp" amount="20.0" />
+				<resource-initial resource="Rhizobia" amount="20.0" />
 															
 				<resource-initial resource="Food" amount="300.0" />																			
 																								
 				<resource-initial resource="Cane Fiber" amount="100.0" />
-				<resource-initial resource="Yeast" amount="100.0" />
-				<resource-initial resource="Epsom Salt" amount="100.0" />
-				<resource-initial resource="Table Salt" amount="100.0" />
-				<resource-initial resource="Sugar" amount="100.0" />
+				<resource-initial resource="Yeast" amount="50.0" />
+				<resource-initial resource="Epsom Salt" amount="50.0" />
+				<resource-initial resource="Table Salt" amount="50.0" />
+				<resource-initial resource="Sugar" amount="50.0" />
 				<resource-initial resource="Rice Vinegar" amount="50.0" />
 				<resource-initial resource="Soy Sauce" amount="50.0" />										
 				<resource-initial resource="Soymilk" amount="50.0" />																				
