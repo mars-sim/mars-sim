@@ -518,9 +518,9 @@ implements LifeSupport {
    	public void getSupplyDemandReport() {
    			
         // 2015-01-15 Added solElapsed
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
-        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
+        //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        //double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
+        //int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
  
    		logger.info("<<< Sol " + solCache 
    			 + " at " + this.getName()
@@ -541,8 +541,8 @@ implements LifeSupport {
         	double demandAmount1 = inv.getDemandAmount(sample1);
         	double demandAmount2 = inv.getDemandAmount(sample2);
 
-        	int totalRequest1 = inv.getDemandTotalRequest(sample1);
-        	int totalRequest2 = inv.getDemandTotalRequest(sample2);
+        	//int totalRequest1 = inv.getDemandTotalRequest(sample1);
+        	//int totalRequest2 = inv.getDemandTotalRequest(sample2);
 
         	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest(sample1);
         	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest(sample2);
@@ -559,14 +559,14 @@ implements LifeSupport {
         	logger.info(sample1 + " Supply Request : " + supplyRequest1);       	
         	
         	logger.info(sample1 + " Demand Amount : " + Math.round(demandAmount1*100.0)/100.0);
-        	logger.info(sample1 + " Demand Total Request : " + totalRequest1);       	
+        	//logger.info(sample1 + " Demand Total Request : " + totalRequest1);       	
         	logger.info(sample1 + " Demand Successful Request : " + demandSuccessfulRequest1);
 
            	logger.info(sample2 + " Supply Amount : " + Math.round(supplyAmount2*100.0)/100.0);
         	logger.info(sample2 + " Supply Request : " + supplyRequest2);       	
         	
          	logger.info(sample2 + " Demand Amount : " + Math.round(demandAmount2*100.0)/100.0);
-        	logger.info(sample2 + " Demand Total Request : " + totalRequest2);
+        	//logger.info(sample2 + " Demand Total Request : " + totalRequest2);
         	logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
       	
 /*

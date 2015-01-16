@@ -140,6 +140,7 @@ implements Serializable {
     private Settlement settlement;
     private Map<Good, Double> goodsValues;
     private Map<Good, Double> goodsDemandCache;
+    private Map<Good, Double> goodsSupplyCache;
     private Map<Good, Double> goodsTradeCache;
     private Map<AmountResource, Double> resourceProcessingCache;
     private Map<String, Double> vehicleBuyValueCache;
@@ -316,7 +317,8 @@ implements Serializable {
         double demand = 0D;
         double totalDemand = 0D;
         double projectedDemand = 0D;
-        
+        double totalSupply = 0;
+        double tradeDemand = 0;
         
         // 2015-01-15 Added solElapsed
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
@@ -325,16 +327,27 @@ implements Serializable {
         // compact/clear supply and demand maps every 5 days
         //solElapsed = solElapsed % 5;
         
+    	// increment supply by 1 to make it at least 1 to avoid divide by zero
+    	supply++;
+    	
         AmountResource resource = (AmountResource) resourceGood.getObject();
                 
         if (useCache) {
-            if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood);
+            if (goodsDemandCache.containsKey(resourceGood)) {
+            	totalDemand = goodsDemandCache.get(resourceGood);
+            	
+                totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
+            }
+            
+            //if (goodsSupplyCache.containsKey(resourceGood)) {
+            //	totalSupply = goodsSupplyCache.get(resourceGood);
+            //}
             else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
         }
         else {
-        	
             // 2015-01-15 Created getAllSupplyAmount()
-            supply = getTotalSupplyAmount(resource, supply, solElapsed);
+            totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
+            //goodsSupplyCache.put(resourceGood, totalSupply);
             
             // Add life support demand if applicable.
             projectedDemand += getLifeSupportDemand(resource);
@@ -367,14 +380,9 @@ implements Serializable {
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             
             // Add trade value.
-            double tradeDemand = determineTradeDemand(resourceGood, useCache);
+            tradeDemand = determineTradeDemand(resourceGood, useCache);
             tradeDemand = Math.round(tradeDemand* 10000.0) / 10000.0;
  
-            //System.out.println( resource.getName() 
-            //+ " : supply is " + Math.round(supply* 100.0) / 100.0
-            //+ "  projectedDemand is " + Math.round(demand* 100.0) / 100.0     
-            //+ "  tradeDemand is " + Math.round(tradeDemand* 100.0) / 100.0);
-
             if (tradeDemand > totalDemand) {
             	totalDemand = tradeDemand;
             }
@@ -382,21 +390,25 @@ implements Serializable {
             goodsDemandCache.put(resourceGood, totalDemand);
         }
         
-        supply++; // increment supply to make it supply at least 1 to avoid divide by zero
-        
-        value = totalDemand / supply;
+    	 
+        value = totalDemand / totalSupply;
 
         // Use resource processing value if higher. 
         // Manny: why using higher values?
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
+        System.out.println( resource.getName() 
+                + "  projectedDemand is " + Math.round(projectedDemand* 100.0) / 100.0     
+                + "  tradeDemand is " + Math.round(tradeDemand* 100.0) / 100.0
+                +  " value point is " + Math.round(value* 100.0) / 100.0);
+
         return value;
     }
 
     // 2015-01-15 Created getTotalSupplyAmount()
-    public double getTotalSupplyAmount(AmountResource resource, double supply, int solElapsed) {
-    	double totalSupply = 0;
+    public double getTotalSupplyAmount(AmountResource resource, double supplyStored, int solElapsed) {
+    	double totalSupplyAmount = 0;
     	
         double supplyAmount = inv.getSupplyAmount(resource.getName());
         supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
@@ -404,37 +416,37 @@ implements Serializable {
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         // TODO: Should the total supply to be a yearly figure, just as the demand figure
         // Note: reading decimal # is not intuitive and hard to read 
-        totalSupply = (supplyAmount / solElapsed + supply ) * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        totalSupplyAmount = (supplyAmount / solElapsed + supplyStored ) / 2 ;// * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         
         System.out.println( resource.getName() 
-        + " : stored supply is " + Math.round(supply* 10000.0) / 10000.0
+        + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
         + "  supplyAmount is " + Math.round(supplyAmount* 10000.0) / 10000.0     
         + "  supplyRequest is " + supplyRequest
-        + "  totalSupply is " + Math.round(totalSupply * 10000.0) / 10000.0);
+        + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
 
-    	return totalSupply;
+    	return totalSupplyAmount;
     }
 
     
     // 2015-01-10 Created getTotalDemandAmount()
     public double getTotalDemandAmount(AmountResource resource, double demand, int solElapsed) {
     
-    	double projectedAmountDemand = demand;
+    	double projectedDemand = demand;
         // s = # of successful request
         // u = # of unsuccessful request
         // t = # of total request
         // note:  uRequest = tRequest - sRequest;
     	    	
     	// uDemand is the amount of unsuccessful demand
-        double uDemand = 0;
-        int uRequest = 0;
+        //double uDemand = 0;
+        //int uRequest = 0;
 
     	// sDemand is the amount of successful demand
         double sDemand = inv.getDemandAmount(resource.getName());
         sDemand = Math.round(sDemand * 10000.0) / 10000.0;
-        int tRequest = inv.getDemandTotalRequest(resource.getName());
+        //int tRequest = inv.getDemandTotalRequest(resource.getName());
         int sRequest = inv.getDemandSuccessfulRequest(resource.getName());
-        
+        /*
         if (tRequest == 0 || sRequest == 0) 
         	uDemand = 0;
         if (tRequest < sRequest ) 
@@ -444,22 +456,21 @@ implements Serializable {
         	// unsuccessful demand usage approximately equals average successful demand * # of unsuccessful request
         	uDemand = Math.round(sDemand / sRequest * uRequest * 10000.0) / 10000.0;
         }
-       
+       */
         // Get the average demand per orbit 
         // total average demand = (projected demand + real demand usage + unsuccessful demand usage) / 3 
-        double totalAmountDemand = ( 
-        		projectedAmountDemand +
-        		sDemand / solElapsed * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR +
-        		uDemand / solElapsed * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
-        		) / 3.0;
+        double totalAmountDemand = ( projectedDemand + sDemand / solElapsed ) / 2D; 
+        		//+ uDemand / solElapsed 
+        		//* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR 
+        		
         
         totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
 
         System.out.println( resource.getName() 
-        + " : sDemand  is " + sDemand * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
-        + "  tRequest is " + tRequest
-        + "  sRequest is " + sRequest
-        + "  uDemand is " + uDemand* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
+        + " : demandAmount  is " + sDemand //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
+        //+ "  tRequest is " + tRequest
+        + "  demandRequest is " + sRequest
+        //+ "  uDemand is " + uDemand* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         + "  totalAmountDemand is " + totalAmountDemand);
 
     	return totalAmountDemand;

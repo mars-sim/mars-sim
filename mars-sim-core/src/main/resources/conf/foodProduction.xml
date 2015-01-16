@@ -511,7 +511,7 @@
 		<inputs>
 			<!-- <equipment name="oven" number="1" /> -->
 			<resource name="White Rice" amount="5.0" />
-			<resource name="Acetic Acid Bacteria" amount="0.1" />
+			<resource name="Acetic Acid Bacteria" amount="0.3" />
 			<resource name="Sugar" amount=".5" />						
 			<resource name="Water" amount="10" />
 			<resource name="Sodium hypochlorite" amount="0.1" />				

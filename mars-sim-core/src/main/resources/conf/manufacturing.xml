@@ -78,20 +78,37 @@
 		<inputs>
 			<resource name="Solid Waste" amount="5.0" />
 			<resource name="Water" amount="5.0" />
-			<resource name="Nitrospira spp" amount="0.01" />	
-			<resource name="Nitrosomonas spp" amount="0.01" />					
+			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
+			<resource name="Nitrospira spp" amount="0.02" />	
+			<resource name="Nitrosomonas spp" amount="0.02" />					
 		</inputs>
 		<outputs>
 			<resource name="Nitrate" amount="0.1" />
 			<resource name="Nitrite" amount="0.02" />
 			<resource name="Nitrogen" amount="0.5" />
 			<resource name="Ammonia" amount="0.5" />
-			<resource name="Waste Water" amount="10.0" />
-			
-<!-- TODO: chemist can isolate these bacteria and grow them in the lab 
-			<resource name="Nitrospira spp" amount="0.009" />	
-			<resource name="Nitrosomonas spp" amount="0.009" />	
--->					
+			<resource name="Waste Water" amount="10.0" />			
+		</outputs>
+	</process>	
+	
+		<process name="extract nitrogen compounds from solid waste (large batch)"
+			tech="3" skill="3"
+			work-time="200"
+			process-time="6000" 
+			power-required="4.0">
+		<inputs>
+			<resource name="Solid Waste" amount="50" />
+			<resource name="Water" amount="50" />
+			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
+			<resource name="Nitrospira spp" amount="0.2" />	
+			<resource name="Nitrosomonas spp" amount="0.2" />					
+		</inputs>
+		<outputs>
+			<resource name="Nitrate" amount="1" />
+			<resource name="Nitrite" amount="0.2" />
+			<resource name="Nitrogen" amount="5" />
+			<resource name="Ammonia" amount="5" />
+			<resource name="Waste Water" amount="100.0" />					
 		</outputs>
 	</process>	
 	
@@ -118,6 +135,35 @@
 			<resource name="Sulfur" amount="0.02" />	
 			<resource name="Magnesium" amount="0.02" />	
 			<resource name="Iron" amount="0.02" />					
+		</inputs>
+		<outputs>
+			<resource name="Fertilizer" amount="7.0" />			
+		</outputs>
+	</process>	
+	
+			<process name="make fertilizers for growing crops (large batch)"
+			tech="2" skill="2"
+			work-time="80"
+			process-time="1000" 
+			power-required="4">
+		<inputs>
+		<!-- TODO: 
+		1. Chemists may tweak the input amount and the yield
+		2. Arbitrary figures are used. Need research
+		-->	
+			<resource name="Methane" amount="10" />
+			<resource name="Hydrogen" amount="5" />	
+			<resource name="Nitrogen" amount="5" />					
+			<resource name="Nitrate" amount="10" />
+			<resource name="Nitrite" amount="5" />
+			<resource name="Ammonia" amount="20" />
+			<resource name="Potassium" amount="5" />
+			<resource name="Phosphorus" amount="5" />
+			<resource name="Zinc" amount="0.2" />
+			<resource name="Calcium" amount="0.2" />
+			<resource name="Sulfur" amount="0.2" />	
+			<resource name="Magnesium" amount="0.2" />	
+			<resource name="Iron" amount="0.2" />					
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="7.0" />			
