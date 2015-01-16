@@ -129,7 +129,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return "Trade Good";
+		if (columnIndex == 0) return "Trade Goods";
 		else if (columnIndex == 1) return "Category";
 		else {
 			// 2014-11-16 Added "VP at "

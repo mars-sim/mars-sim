@@ -115,7 +115,7 @@ implements Serializable {
     public void provideFertilizer() {
 	    String name = "fertilizer";
 		//TODO: need to move the hardcoded amount to a xml file
-		double requestedAmount = 0.5;
+		double requestedAmount = Crop.FERTILIZER_NEEDED;
 	    retrieveResource(name, requestedAmount);    
     }
     
