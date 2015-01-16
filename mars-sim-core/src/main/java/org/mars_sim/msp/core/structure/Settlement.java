@@ -70,6 +70,8 @@ implements LifeSupport {
     public double mealsReplenishmentRate = 1.3;
     public double dessertsReplenishmentRate = 1.7;
     
+    public static final int SOL_PER_REFRESH = 3; 
+    
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
      */
@@ -518,9 +520,9 @@ implements LifeSupport {
    	public void getSupplyDemandReport() {
    			
         // 2015-01-15 Added solElapsed
-        //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        //double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
-        //int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
+        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
  
    		logger.info("<<< Sol " + solCache 
    			 + " at " + this.getName()
@@ -569,12 +571,12 @@ implements LifeSupport {
         	//logger.info(sample2 + " Demand Total Request : " + totalRequest2);
         	logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
       	
-/*
+
             boolean clearNow ;
         
             // clearNow = true if solElapsed is an exact multiple of 5
             // Clear maps once every five days
-            if (solElapsed % 5 == 0)
+            if (solElapsed % SOL_PER_REFRESH == 0)
                 clearNow = true;
             else
             	clearNow = false;
@@ -582,16 +584,16 @@ implements LifeSupport {
             // Should clear only once and at the beginning of the day
             if (clearNow) {
             	// carry out the daily average of the previous 5 days
-                inv.compactSupplyAmountMap(5);
+                inv.compactSupplyAmountMap(SOL_PER_REFRESH);
                 inv.clearSupplyRequestMap();
                 
-                inv.compactDemandAmountMap(5);
+                inv.compactDemandAmountMap(SOL_PER_REFRESH);
             	inv.clearDemandTotalRequestMap();
             	inv.clearDemandSuccessfulRequestMap();
             	
             	logger.info("Just compacted supply and demand data");
             }
-        	*/
+        	
     }
     
     
