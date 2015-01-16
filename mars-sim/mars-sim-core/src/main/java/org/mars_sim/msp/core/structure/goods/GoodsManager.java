@@ -136,11 +136,13 @@ implements Serializable {
     //  SERVING_FRACTION was used in PreparingDessert.java
     public final double FRACTION = PreparingDessert.DESSERT_SERVING_FRACTION;
     
+    public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH; 
+    
     // Data members
     private Settlement settlement;
     private Map<Good, Double> goodsValues;
     private Map<Good, Double> goodsDemandCache;
-    private Map<Good, Double> goodsSupplyCache;
+    //private Map<Good, Double> goodsSupplyCache;
     private Map<Good, Double> goodsTradeCache;
     private Map<AmountResource, Double> resourceProcessingCache;
     private Map<String, Double> vehicleBuyValueCache;
@@ -161,10 +163,7 @@ implements Serializable {
     public GoodsManager(Settlement settlement) {
         this.settlement = settlement;
         inv = settlement.getInventory();
-        
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        MILLISOLS_ON_FIRST_SOL = MarsClock.getTotalMillisols(clock);
-        
+
         populateGoodsValues();
     }
 
@@ -324,10 +323,10 @@ implements Serializable {
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
         double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
         int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
-        // compact/clear supply and demand maps every 5 days
-        //solElapsed = solElapsed % 5;
+        // Compact and/or clear supply and demand maps every 5 days
+        solElapsed = solElapsed % SOL_PER_REFRESH;
         
-    	// increment supply by 1 to make it at least 1 to avoid divide by zero
+    	// increment supply by one to avoid divide by zero
     	supply++;
     	
         AmountResource resource = (AmountResource) resourceGood.getObject();
