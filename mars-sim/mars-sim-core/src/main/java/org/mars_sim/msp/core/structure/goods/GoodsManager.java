@@ -375,6 +375,8 @@ implements Serializable {
             // Add construction demand.
             projectedDemand += getResourceConstructionDemand(resource);
 
+            projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             
@@ -390,7 +392,7 @@ implements Serializable {
         }
         
     	 
-        value = totalDemand / totalSupply;
+        value = Math.log( totalDemand / totalSupply + 1);
 
         // Use resource processing value if higher. 
         // Manny: why using higher values?
@@ -398,9 +400,9 @@ implements Serializable {
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
         System.out.println( resource.getName() 
-                + "  projectedDemand is " + Math.round(projectedDemand* 100.0) / 100.0     
-                + "  tradeDemand is " + Math.round(tradeDemand* 100.0) / 100.0
-                +  " value point is " + Math.round(value* 100.0) / 100.0);
+                + "  projectedDemand per sol is " + Math.round(projectedDemand* 10000.0) / 10000.0     
+                + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
+                + "  log value point is " + Math.round(value* 10000.0) / 10000.0);
 
         return value;
     }
@@ -413,9 +415,7 @@ implements Serializable {
         supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
         int supplyRequest = inv.getSupplyRequest(resource.getName());
         // The total daily supply is the sum of the stored supply amount and daily supply amount
-        // TODO: Should the total supply to be a yearly figure, just as the demand figure
-        // Note: reading decimal # is not intuitive and hard to read 
-        totalSupplyAmount = (supplyAmount / solElapsed + supplyStored ) / 2 ;// * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ;
         
         System.out.println( resource.getName() 
         + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
@@ -431,45 +431,21 @@ implements Serializable {
     public double getTotalDemandAmount(AmountResource resource, double demand, int solElapsed) {
     
     	double projectedDemand = demand;
-        // s = # of successful request
-        // u = # of unsuccessful request
-        // t = # of total request
-        // note:  uRequest = tRequest - sRequest;
-    	    	
-    	// uDemand is the amount of unsuccessful demand
-        //double uDemand = 0;
-        //int uRequest = 0;
-
+   
     	// sDemand is the amount of successful demand
         double sDemand = inv.getDemandAmount(resource.getName());
         sDemand = Math.round(sDemand * 10000.0) / 10000.0;
-        //int tRequest = inv.getDemandTotalRequest(resource.getName());
         int sRequest = inv.getDemandSuccessfulRequest(resource.getName());
-        /*
-        if (tRequest == 0 || sRequest == 0) 
-        	uDemand = 0;
-        if (tRequest < sRequest ) 
-        	uDemand = 0;
-        else {
-        	uRequest = tRequest - sRequest; 
-        	// unsuccessful demand usage approximately equals average successful demand * # of unsuccessful request
-        	uDemand = Math.round(sDemand / sRequest * uRequest * 10000.0) / 10000.0;
-        }
-       */
+    
         // Get the average demand per orbit 
-        // total average demand = (projected demand + real demand usage + unsuccessful demand usage) / 3 
-        double totalAmountDemand = ( projectedDemand + sDemand / solElapsed ) / 2D; 
-        		//+ uDemand / solElapsed 
-        		//* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR 
-        		
-        
+        // total average demand = projected demand + real demand usage  
+        double totalAmountDemand = projectedDemand + sDemand / solElapsed ; 
+     
         totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
 
         System.out.println( resource.getName() 
-        + " : demandAmount  is " + sDemand //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
-        //+ "  tRequest is " + tRequest
+        + " : demandAmount  is " + sDemand 
         + "  demandRequest is " + sRequest
-        //+ "  uDemand is " + uDemand* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         + "  totalAmountDemand is " + totalAmountDemand);
 
     	return totalAmountDemand;
@@ -563,13 +539,13 @@ implements Serializable {
 
   
     // 2014-11-30 Created getValueList()    		
-    public List<Double> getValueList(List<AmountResource> foodARList) {
+    public List<Double> getValueList(List<AmountResource> cropARList) {
     	
     	double cropValue = 0;
     	List<Double> cropValueList = new ArrayList<Double>();
     	AmountResource ar = null;
     	
-		Iterator<AmountResource> i = foodARList.iterator();
+		Iterator<AmountResource> i = cropARList.iterator();
 		while (i.hasNext()) 
 		{
 			ar = i.next();
@@ -599,8 +575,8 @@ implements Serializable {
     	return cropARList;
     }
     
-    // 2014-11-30 Created getTotalDemand()
-    public double getTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
+    // 2014-11-30 Created getFarmingTotalDemand()
+    public double getFarmingTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
     	double demand = 0;
 
     	Iterator<Double> i = cropValueList.iterator();
@@ -619,17 +595,18 @@ implements Serializable {
      * @return demand (kg) for the resource.
      * @throws Exception if error determining demand.
      */
-    // 2014-10-15 mkung: added 5 new food groups to enable them to be traded
-    // 2014-11-30 Rewrote getFarmingDemand() for a large list of edible food
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
         AmountResource wasteWater = AmountResource.findAmountResource("waste water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+     // 2015-01-15 Added fertilizer
+        AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
 
         // 2015-01-10 Revised getCropARList()
         List<AmountResource> cropARList = getCropARList();
               
-        if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
+        if (resource.equals(wasteWater) || resource.equals(carbonDioxide)
+        		|| resource.equals(fertilizer) ) {
             // 2014-11-30 Created getValueList()
             List<Double> cropValueList = getValueList(cropARList);
              
@@ -643,9 +620,11 @@ implements Serializable {
                     amountNeeded = Crop.WASTE_WATER_NEEDED;
                 else if (resource.equals(carbonDioxide))
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
+                else if (resource.equals(fertilizer))
+                	amountNeeded = Crop.FERTILIZER_NEEDED;
 
-                // 2014-11-30 Created getTotalDemand()
-                demand += getTotalDemand(cropValueList, farm, amountNeeded);
+                // 2014-11-30 Created getFarmingTotalDemand()
+                demand += getFarmingTotalDemand(cropValueList, farm, amountNeeded);
             }
         }
     	// 2015-01-10 Added FARMING_FACTOR

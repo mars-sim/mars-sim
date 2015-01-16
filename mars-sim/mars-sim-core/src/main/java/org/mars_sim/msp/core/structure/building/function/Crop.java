@@ -36,6 +36,8 @@ implements Serializable {
 	public static final double WASTE_WATER_NEEDED = 2D;
 	/** Amount of carbon dioxide needed /harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
+	
+	public static final double FERTILIZER_NEEDED = 0.5D;
 
 	// TODO Crop phases should be an internationalizable enum.
 	public static final String PLANTING = "Planting";
