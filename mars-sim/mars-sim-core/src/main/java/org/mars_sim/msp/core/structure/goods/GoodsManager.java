@@ -324,7 +324,7 @@ implements Serializable {
         double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
         int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
         // Compact and/or clear supply and demand maps every 5 days
-        solElapsed = solElapsed % SOL_PER_REFRESH;
+        solElapsed = solElapsed % SOL_PER_REFRESH + 1;
         
     	// increment supply by one to avoid divide by zero
     	supply++;

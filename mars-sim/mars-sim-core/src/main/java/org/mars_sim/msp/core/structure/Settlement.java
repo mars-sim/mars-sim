@@ -115,7 +115,7 @@ implements LifeSupport {
     
     private Inventory inv;
 	private int solCache = 1;
-	private boolean reportSample = true;
+	//private boolean reportSample = true;
 	
     public static double MILLISOLS_ON_FIRST_SOL;
     
