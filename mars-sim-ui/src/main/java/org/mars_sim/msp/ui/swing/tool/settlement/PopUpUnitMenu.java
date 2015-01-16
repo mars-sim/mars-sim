@@ -25,9 +25,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
-import javax.swing.UIManager.LookAndFeelInfo;
-
-
 
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -47,7 +44,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	
-	private JMenuItem itemOne, itemTwo;
+	private JMenuItem itemOne, itemTwo, itemThree;
     //private Building building;
     //private Vehicle vehicle;
     private Unit unit;
@@ -67,11 +64,21 @@ public class PopUpUnitMenu extends JPopupMenu {
         this.setLightWeightPopupEnabled(false); 
              
     	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
-        itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));       
+        itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));  
+        itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
  
         if (unit instanceof Person) {
         	add(itemTwo);
         	buildItemTwo(unit);
+        }
+        
+        else if (unit instanceof Vehicle) {
+        	add(itemOne);
+        	add(itemTwo);
+        	add(itemThree);
+        	buildItemOne(unit);
+            buildItemTwo(unit);
+            buildItemThree(unit);
         }
         else {
             add(itemOne);
@@ -208,6 +215,17 @@ public class PopUpUnitMenu extends JPopupMenu {
 	    });
  
     }
+    
+	public void buildItemThree(final Unit unit) {
+	        itemThree.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	//if (unit instanceof Vehicle) {
+		            Vehicle vehicle = (Vehicle) unit;
+		            vehicle.determinedSettlementParkedLocationAndFacing();
+		    		repaint();
+	            }
+	        });
+	}
     
 	public void destroy() {
 		settlement = null;
