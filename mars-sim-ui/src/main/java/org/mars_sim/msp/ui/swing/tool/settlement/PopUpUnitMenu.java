@@ -66,7 +66,10 @@ public class PopUpUnitMenu extends JPopupMenu {
     	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
         itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));  
         itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
- 
+        itemOne.setForeground(new Color(139,69,19));
+        itemTwo.setForeground(new Color(139,69,19));
+        itemThree.setForeground(new Color(139,69,19));
+        
         if (unit instanceof Person) {
         	add(itemTwo);
         	buildItemTwo(unit);

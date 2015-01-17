@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -984,7 +983,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			getMainWindow().unpauseSimulation();
 			disposeTransportWizard();
 			isTransportingBuilding = false;
-            mgr.getResupply().deliverOthers();
+            //mgr.getResupply().deliverOthers();
+            disposeAnnouncementWindow();
+            //getMainWindow().pauseSimulation();
+            //getMainWindow().unpauseSimulation();
+            
 		}	
 
 	}

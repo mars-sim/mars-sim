@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -324,19 +323,23 @@ implements Serializable, Transportable {
         setBuildingManager(buildingManager);
         buildingManager.setResupply(this); 
         
-        Building aBuilding = buildingManager.getBuildings().get(0);
-        settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       
-
     	// 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery
         // by Resupply.java if GUI is in use
-        if (!Simulation.getUseGUI())  {
-           	// Deliver buildings to the destination settlement.
-        	deliverBuildings();
-        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
-        	// Deliver the rest of the supplies and add people.    	
-        	deliverOthers();
+        if (Simulation.getUseGUI())  {
+        	// if GUI is in use       
+            List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+            if (orderedBuildings.size() > 0) {            	
+            	Building aBuilding = buildingManager.getBuildings().get(0);
+            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       
+            }
+
+           	// Deliver buildings to the destination settlement.        	
+        } else {// if GUI is in use, use the version of deliverBuildings() here
+        	deliverBuildings(); 
         }
-        	
+        // Deliver the rest of the supplies and add people.
+        deliverOthers();
+         
     }
         	
 	/**
@@ -346,58 +349,69 @@ implements Serializable, Transportable {
     public void deliverBuildings() {
  	
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
-        // 2014-12-23 Added sorting orderedBuildings according to its building id
-        //Collections.sort(orderedBuildings);
-        //int size = orderedBuildings.size();
-        //int i = 0;
-        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
-        //System.out.println("Resupply : Simulation.getUseGUI() is false");
-
-	        while (buildingI.hasNext()) {
-		        BuildingTemplate template = buildingI.next();  
-	            // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
-	            if (checkBuildingTemplatePosition(template)) {      
-	                // Correct length and width in building template.
-	                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();               
-	                // Replace width and length defaults to deal with variable width and length buildings.
-	                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
-
-	                if (template.getWidth() > 0D) {
-	                    width = template.getWidth();
-	                }
-	                if (width <= 0D) {
-	                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-	                }
-	                
-	                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
-	                if (template.getLength() > 0D) {
-	                    length = template.getLength();
-	                }
-	                if (length <= 0D) {
-	                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-	                }
-	                
-	                // 2014-12-26 Added the construction of buildingNickName
-	                String settlementID = "A";
-	                String buildingNickName = template.getBuildingType() + " " + settlementID + buildingID;
-	                
-	                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
-	                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
-	 
-	                buildingManager.addBuilding(correctedTemplate,  true);
+               
+        if (orderedBuildings.size() > 0) {
+        	
+        	Building aBuilding = buildingManager.getBuildings().get(0);
+        	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       
 	
-	            } // end of if (checkBuildingTemplatePosition(template)) {
-	            
-	            else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
-	            		buildingManager.addBuilding(template, false);
-	            } // end of else {  
-	            
-	        //i++;
-		    //if (i == size) 
-	            //settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
-	    } // end of while (buildingI.hasNext())      
+        	// TODO: not first building to be placed should start from the center of map c 
+	        // 2014-12-23 Added sorting orderedBuildings according to its building id
+	        // Collections.sort(orderedBuildings);
+	        //int size = orderedBuildings.size();
+	        //int i = 0;
+	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
+	        //System.out.println("Resupply : Simulation.getUseGUI() is false");
+	
+		        while (buildingI.hasNext()) {
+			        BuildingTemplate template = buildingI.next();  
+		            // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
+		            if (checkBuildingTemplatePosition(template)) {      
+		                // Correct length and width in building template.
+		                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();               
+		                // Replace width and length defaults to deal with variable width and length buildings.
+		                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
+	
+		                if (template.getWidth() > 0D) {
+		                    width = template.getWidth();
+		                }
+		                if (width <= 0D) {
+		                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+		                }
+		                
+		                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
+		                if (template.getLength() > 0D) {
+		                    length = template.getLength();
+		                }
+		                if (length <= 0D) {
+		                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+		                }
+		                
+		                // 2015-01-16 Added getCharForNumber(ID)
+		                int ID = buildingManager.getSettlement().getID();
+		                String sID = getCharForNumber(ID);
+		                
+		                String buildingNickName = template.getBuildingType() + " " + sID + buildingID;
+		                
+		                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
+		                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+		 
+		                buildingManager.addBuilding(correctedTemplate,  true);
+		
+		            } // end of if (checkBuildingTemplatePosition(template)) {
+		            
+		            else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
+		            		buildingManager.addBuilding(template, false);
+		            } // end of else {  
+		            
+		        //i++;
+			    //if (i == size) 
+		            //settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
+		    } // end of while (buildingI.hasNext())      
+        }
+        //Building aBuilding = buildingManager.getBuildings().get(0);
+        //settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);      		 
     }
-    
     
     public void deliverOthers() {
 
