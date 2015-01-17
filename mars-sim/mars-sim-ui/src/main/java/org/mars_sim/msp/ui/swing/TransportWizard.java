@@ -234,7 +234,7 @@ extends JInternalFrame {
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
 		mapPanel.setShowBuildingLabels(true);
 		repaint();
-		desktop.getMainWindow().pauseSimulation();
+		//desktop.getMainWindow().pauseSimulation();
 
 		String name = newBuilding.getNickName();
         String message = "Do you like to place " + name + " at this location on the map?";

@@ -192,7 +192,7 @@ public class ComponentMover extends MouseAdapter
 	public void registerComponent(Component... components)
 	{
 		for (Component component : components)
-			component.addMouseListener( this );
+			component.addMouseListener(this);
 	}
 
 	/**

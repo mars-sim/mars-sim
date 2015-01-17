@@ -189,13 +189,13 @@ implements ActionListener {
 				}
 				
 				if (isSelected) {
-					result.setForeground(new Color(184,134,11,0));
+					result.setForeground(new Color(184,134,11));
 			        result.setBackground(Color.orange); 
 		
 		          // unselected, and not the DnD drop location
 		        } else {
-		        	  result.setForeground(new Color(184,134,11,0));
-		        	  result.setBackground(new Color(255,229,204,0)); //pale yellow (255,229,204)
+		        	  result.setForeground(new Color(184,134,11));
+		        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
 				      //Color(184,134,11)) brown
 		        }
 				

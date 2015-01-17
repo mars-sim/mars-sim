@@ -16,16 +16,20 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -52,45 +56,42 @@ implements ClockListener {
 	public static final double MIN_SCALE = 5D / 11D;
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
-	// Data members.
-	private Settlement settlement;
+	// Data members.		
 	private double xPos;
 	private double yPos;
 	private double rotation;
 	private double scale;
+	
+	/** Last X mouse drag position. */
+	private int xLast;
+	/** Last Y mouse drag position. */
+	private int yLast;
+	
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
+		
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
-
-	//2014-11-22 Added selectedBuilding
-	private Map<Settlement, Building> selectedBuilding;
 	
-	// 2014-11-04 Added building
 	private Building building;
-	
-	// 2014-12-23 Added the data members
-	//private JLabel settlementNamelabel;
-	//private JButton settlementButton;
-	private MainDesktopPane desktop;
 	private SettlementWindow settlementWindow;
-	private SettlementMapPanel mapPanel;
-	private SettlementTransparentPanel transparentPanel;
-	
+	private Settlement settlement;
+	private PopUpUnitMenu menu;
+	//private MainDesktopPane desktop; // may be needed 
+	//private SettlementTransparentPanel transparentPanel; // may be needed
+
 	/** Constructor 1
-	 * A panel for displaying a settlement map.
+	 * 	A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel(final MainDesktopPane desktop, final SettlementWindow settlementWindow) {//Settlement settlement) {
-		// Use JPanel constructor.
+	public SettlementMapPanel(final MainDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
-		this.desktop = desktop;
-		
-		mapPanel = this;
+		//this.desktop = desktop;
+
 		setLayout(new BorderLayout());
-		
+		//setLayout(null); //new FlowLayout());
 		// Initialize data members.
 		xPos = 0D;
 		yPos = 0D;
@@ -103,9 +104,6 @@ implements ClockListener {
 		showVehicleLabels = false;
 		selectedPerson = new HashMap<Settlement, Person>();
 		
-		//2014-11-22 Added selectedBuilding
-		selectedBuilding = new HashMap<Settlement, Building>() ;
-
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>(5);
 		mapLayers.add(new BackgroundTileMapLayer(this));
@@ -114,29 +112,31 @@ implements ClockListener {
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
-
 		// Set foreground and background colors.
-		setOpaque(true);
+		setOpaque(false);
 		setBackground(MAP_BACKGROUND);
 		setForeground(Color.ORANGE);
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 		
+		// 2015-01-16 Added detectMouseMovement() after refactoring
+		detectMouseMovement();
+		
+		// TODO: will initializing this in SettlementWindow be faster?
 	    //SwingUtilities.invokeLater(new Runnable(){
 	    //    public void run()  {
-		transparentPanel = new SettlementTransparentPanel(desktop, mapPanel);
+		//transparentPanel = 
+		new SettlementTransparentPanel(desktop, this);
 	    //    } });
         setVisible(true);
 	}
 	
 	/** Constructor 2
-	 * A panel for initializing the display of a building svg image.
+	 *  A panel for initializing the display of a building svg image.
 	 */
 	// 2014-11-04 Added this constructor for loading an svg image
-	// for the selected building in unit window's building tab
 	// Called by BuildingPanel.java
 	public SettlementMapPanel(Settlement settlement, Building building) {
-		// Use JPanel constructor.
 		super();
 
 		// Initialize data members.
@@ -166,9 +166,84 @@ implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 		
-		repaint();
+		repaint();	
 	}
+
+	public void detectMouseMovement() {		
+		
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent evt) {
+				// Set initial mouse drag position.
+				xLast = evt.getX();
+				yLast = evt.getY();
+			}
 	
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				// Select person if clicked on.
+				selectPersonAt(evt.getX(), evt.getY());
+			}
+	
+		});
+	
+		//2014-11-22 Added PopClickListener() to detect mouse right click
+		class PopClickListener extends MouseAdapter {
+		    public void mousePressed(MouseEvent evt){
+				 if (evt.isPopupTrigger()) {
+					 doPop(evt);
+				 }
+		    }
+	
+		    public void mouseReleased(MouseEvent evt){
+				 if (evt.isPopupTrigger()) {
+					 doPop(evt);
+				 }
+					xLast = evt.getX();
+					yLast = evt.getY();
+		    }
+		    //2015-01-14 Added vehicle detection
+		    private void doPop(final MouseEvent evt){
+		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
+		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
+		    	final Person person = selectPersonAt(evt.getX(), evt.getY());
+	
+		    	// if NO building is selected, do NOT call popup menu
+		    	if (building != null || vehicle != null || person != null) {
+		    		
+		    	    SwingUtilities.invokeLater(new Runnable(){
+		    	        public void run()  {
+	    	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below 
+		    	        	// when one or more are detected
+		    	        	if (person != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, person);
+		    	        	else if (vehicle != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
+		    	        	else if (building != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
+	
+		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		    	        } });
+		        }	
+		    }
+		}
+		addMouseListener(new PopClickListener());
+		
+		
+		addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent evt) {
+				// Move map center based on mouse drag difference.
+				double xDiff = evt.getX() - xLast;
+				double yDiff = evt.getY() - yLast;
+				moveCenter(xDiff, yDiff);
+				xLast = evt.getX();
+				yLast = evt.getY();
+			}
+		});
+
+	}
+		
 	/**
 	 * Gets the settlement currently displayed.
 	 * @return settlement or null if none.
@@ -584,23 +659,9 @@ implements ClockListener {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        //Dimension dim = this.getSize();
-	    //panel.setPreferredSize(dim);
-	    //panel.revalidate();
-/*
-		if (settlement != null) 
-			name = settlement.getName();
-		else if (getSettlement() != null) 
-			name = settlementWindow.getSettlement().getName();
-		if (!name.equals(nameCache)) {
-			nameCache = name;
-			nameLabel.setText(nameCache);
-		}
-		*/
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
-				//System.out.println("SettlementMapPanel.java : paintComponent() : calling displayLayer()");
 			// 2014-11-04 Added building parameter
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 				//System.out.println("xPos is " + xPos);
@@ -621,6 +682,14 @@ implements ClockListener {
 		// Remove clock listener.
 		Simulation.instance().getMasterClock().removeClockListener(this);
 
+		menu = null;
+		settlement = null;
+		selectedPerson = null;
+		//selectedBuilding = null;
+		building = null;
+		//desktop = null;
+		settlementWindow = null;
+		//transparentPanel = null;
 		// Destroy all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {

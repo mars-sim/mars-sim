@@ -114,7 +114,7 @@ implements ClockListener {
 	 * Constructs a TimeWindow object 
 	 * @param desktop the desktop pane
 	 */
-	public TimeWindow(MainDesktopPane desktop) {
+	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
 
@@ -229,6 +229,7 @@ implements ClockListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				master.setPaused(!master.isPaused());
+
 			}
 		});
 
@@ -413,9 +414,11 @@ implements ClockListener {
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
 			pauseButton.setText(Msg.getString("TimeWindow.button.resume")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim"));
 		}
 		else {
 			pauseButton.setText(Msg.getString("TimeWindow.button.pause")); //$NON-NLS-1$
+			desktop.disposeAnnouncementWindow();
 		}
 	}
 
