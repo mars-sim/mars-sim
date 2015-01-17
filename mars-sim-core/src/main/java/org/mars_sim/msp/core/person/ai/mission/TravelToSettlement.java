@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-01-17
  * @author Scott Davis
  */
 
@@ -79,13 +79,15 @@ implements Serializable {
             setStartingSettlement(startingPerson.getSettlement());
 
             // Set mission capacity.
-            if (hasVehicle())
+            if (hasVehicle()) {
                 setMissionCapacity(getRover().getCrewCapacity());
+            }
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
                             .getSettlement());
-            if (availableSuitNum < getMissionCapacity())
+            if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
+            }
 
             // Choose destination settlement.
             setDestinationSettlement(getRandomDestinationSettlement(
@@ -96,23 +98,30 @@ implements Serializable {
                         destinationSettlement, destinationSettlement.getName()));
                 setDescription(Msg.getString("Mission.description.travelToSettlement.detail", 
                         destinationSettlement.getName())); //$NON-NLS-1$)
-            } else
+            } 
+            else {
                 endMission("Destination is null.");
-
+            }
+                
             // Check mission available space
-            int availableSpace = destinationSettlement.getPopulationCapacity()
-                    - destinationSettlement.getAllAssociatedPeople().size();
+            if (!isDone()) {
+                int availableSpace = destinationSettlement.getPopulationCapacity()
+                        - destinationSettlement.getAllAssociatedPeople().size();
 
-            if (availableSpace < getMissionCapacity())
-                setMissionCapacity(availableSpace);
-
+                if (availableSpace < getMissionCapacity()) {
+                    setMissionCapacity(availableSpace);
+                }
+            }
+            
             // Recruit additional people to mission.
-            if (!isDone())
+            if (!isDone()) {
                 recruitPeopleForMission(startingPerson);
+            }
 
             // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable())
+            if (hasVehicle() && !isVehicleLoadable()) {
                 endMission("Vehicle is not loadable. (TravelToSettlement)");
+            }
         }
 
         // Set initial phase
