@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.07 2015-01-02
+ * @version 3.07 2015-01-16
 
  * @author Manny Kung
  */
@@ -146,10 +146,11 @@ extends JInternalFrame {
            BuildingTemplate template = buildingI.next();  
             // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
             if (resupply.checkBuildingTemplatePosition(template)) {
-                
                 // Correct length and width in building template.
-                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
                 
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+        
+                 
                 // Replace width and length defaults to deal with variable width and length buildings.
                 double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
                 if (template.getWidth() > 0D) {
@@ -167,10 +168,12 @@ extends JInternalFrame {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
                 
-                // 2014-12-26 Added the construction of buildingNickName
-                String settlementID = "A";
-                String buildingNickName = template.getBuildingType() + " " + settlementID + buildingID;
+                // 2015-01-16 Added getCharForNumber(ID)
+                int ID = mgr.getSettlement().getID();
+                String sID = getCharForNumber(ID);
                 
+                String buildingNickName = template.getBuildingType() + " " + sID + buildingID;
+                 
                 BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
@@ -191,6 +194,16 @@ extends JInternalFrame {
 		catch (java.beans.PropertyVetoException e) { }
     }
     
+	/**
+	 * Maps a number to an alphabet
+	 * @param a number
+	 * @return a String
+	 */
+	private String getCharForNumber(int i) {
+		// NOTE: i must be > 1, if i = 0, return null
+	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+	}
+	
     
     /**
      * Asks user to confirm the location of the new building.
