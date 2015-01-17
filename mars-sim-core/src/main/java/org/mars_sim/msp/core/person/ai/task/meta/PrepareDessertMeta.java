@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessertMeta.java
- * @version 3.07 2014-11-28
+ * @version 3.07 2015-01-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -48,12 +48,6 @@ public class PrepareDessertMeta implements MetaTask {
     public double getProbability(Person person) {
              
         double result = 0D;
-
-        // TODO: the cook should check if he himself or someone else is hungry, 
-        // he's more eager to cook except when he's tired
-        result = person.getPhysicalCondition().getHunger() - 350D;
-        result -= person.getPhysicalCondition().getFatigue();
-        if (result < 0D) result = 0D;
         
         // TODO: if a person is very hungry, should he come inside and result > 0 ?
         if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
@@ -69,11 +63,6 @@ public class PrepareDessertMeta implements MetaTask {
 			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
 
                 if (kitchenBuilding != null) {
-                    result = 5D;
-
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                     
                     String [] dessert = {   "Soymilk",
                             "Sugarcane Juice",
@@ -82,21 +71,34 @@ public class PrepareDessertMeta implements MetaTask {
                             "Blueberry Muffin", 
                             "Cranberry Juice"  };
                     
-                    boolean hasDessert = false;     
                     // Put together a list of available dessert 
                     for(String n : dessert) {
                         if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
                         	result += 5D;
-                        	hasDessert = hasDessert || true;
                         }
                     }
                     
-                    if (!hasDessert) {
-                        result = 0D;
-                    }
                     // TODO: if the person likes making desserts
                     // result = result + 200D;
-
+                    
+                    // TODO: the cook should check if he himself or someone else is hungry, 
+                    // he's more eager to cook except when he's tired
+                    double hunger = person.getPhysicalCondition().getHunger();
+                    if ((hunger > 300D) && (result > 0D)) {
+                        result += (hunger - 300D);
+                    }
+                    double fatigue = person.getPhysicalCondition().getFatigue();
+                    if ((fatigue > 700D) && (result > 0D)) {
+                        result -= .4D * (fatigue - 700D);
+                    }
+                    
+                    if (result < 0D) {
+                        result = 0D;
+                    }
+                    
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                 }
             }
             catch (Exception e) {

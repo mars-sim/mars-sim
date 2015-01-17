@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2015-01-10
+ * @version 3.07 2015-01-16
  * @author Scott Davis
  * 
  */
@@ -402,13 +402,13 @@ implements Serializable {
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
-        if (r.equals("concrete")
-    		|| r.equals("polyethylene")) {
-        System.out.println( r
-                + "  projectedDemand per sol is " + Math.round(projectedDemand* 10000.0) / 10000.0     
-                + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
-                + "  VP is " + Math.round(value* 10000.0) / 10000.0);
-        }
+//        if (r.equals("concrete")
+//    		|| r.equals("polyethylene")) {
+//        System.out.println( r
+//                + "  projectedDemand per sol is " + Math.round(projectedDemand* 10000.0) / 10000.0     
+//                + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
+//                + "  VP is " + Math.round(value* 10000.0) / 10000.0);
+//        }
         return value;
     }
 
@@ -423,14 +423,14 @@ implements Serializable {
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         
-        if (r.equals("concrete")
-    		|| r.equals("polyethylene")) {
-        System.out.println( r 
-        + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
-        + "  supplyAmount is " + Math.round(supplyAmount* 10000.0) / 10000.0     
-        + "  supplyRequest is " + supplyRequest
-        + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
-        }
+//        if (r.equals("concrete")
+//    		|| r.equals("polyethylene")) {
+//        System.out.println( r 
+//        + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
+//        + "  supplyAmount is " + Math.round(supplyAmount* 10000.0) / 10000.0     
+//        + "  supplyRequest is " + supplyRequest
+//        + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
+//        }
     	return totalSupplyAmount;
     }
 
@@ -451,13 +451,13 @@ implements Serializable {
      
         totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
 
-        if (r.equals("concrete")
-    		|| r.equals("polyethylene")) {
-        System.out.println( r
-        + " : demandAmount  is " + sDemand 
-        + "  demandRequest is " + sRequest
-        + "  totalAmountDemand is " + totalAmountDemand);
-        }
+//        if (r.equals("concrete")
+//    		|| r.equals("polyethylene")) {
+//        System.out.println( r
+//        + " : demandAmount  is " + sDemand 
+//        + "  demandRequest is " + sRequest
+//        + "  totalAmountDemand is " + totalAmountDemand);
+//        }
     	return totalAmountDemand;
     }
     
