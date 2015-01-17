@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -174,19 +174,19 @@ implements Serializable {
             else {
                 // Person consumes preserved food.
                 try {                	
-                	// In a settlement, the person will choose to eat
-                	// dessert first instead of preserved food
-                	LocationSituation location = person.getLocationSituation();
-                	if (location == LocationSituation.IN_SETTLEMENT) {
-                		//can I instantiate new EatDessert(person); ?
-                       	//logger.info(person + " has just eaten desserts");
-                	}
-                	else {
+//                	// In a settlement, the person will choose to eat
+//                	// dessert first instead of preserved food
+//                	LocationSituation location = person.getLocationSituation();
+//                	if (location == LocationSituation.IN_SETTLEMENT) {
+//                		//can I instantiate new EatDessert(person); ?
+//                       	//logger.info(person + " has just eaten desserts");
+//                	}
+//                	else {
 	                    eatPreservedFood();
 	                    //System.out.println(person + " has just eaten preserved food");
 	                    condition.setHunger(0D);
 	                    condition.addkJoules(condition.getMassPerServing());
-                	}
+//                	}
                 }
                 catch (Exception e) {
                     // If person can't obtain food from container, end the task.
