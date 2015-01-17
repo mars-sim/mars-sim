@@ -378,7 +378,7 @@ implements Serializable {
             projectedDemand += getResourceConstructionDemand(resource);
 
             // Revert back to projectedDemand per sol for calculating totalDemand
-            projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            //projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
@@ -421,7 +421,7 @@ implements Serializable {
         supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
         int supplyRequest = inv.getSupplyRequest(r);
         // The total daily supply is the sum of the stored supply amount and daily supply amount
-        totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ;
+        totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
         
         if (r.equals("concrete")
     		|| r.equals("polyethylene")) {
