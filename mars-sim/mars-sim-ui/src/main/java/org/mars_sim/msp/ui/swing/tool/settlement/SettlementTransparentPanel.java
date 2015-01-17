@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.07 2015-01-16
+ * @version 3.07 2015-01-17
  * @author Manny Kung
  */
 
@@ -134,13 +134,13 @@ public class SettlementTransparentPanel extends JComponent {
 	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));   
 	    box.add(Box.createVerticalGlue());
 		box.setOpaque(false);
-		box.setBackground(new Color(0,0,0,15));
+		box.setBackground(new Color(0,0,0,0));
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
 		
         // Make panel drag-able
-    	ComponentMover cmName = new ComponentMover();
-    	cmName.registerComponent(box);
+//    	ComponentMover cmName = new ComponentMover();
+//    	cmName.registerComponent(box);
 
 	    borderPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
 	    borderPane.setBackground(new Color(0,0,0,0));
@@ -148,8 +148,10 @@ public class SettlementTransparentPanel extends JComponent {
 	    controlPane.setBackground(new Color(0,0,0,0));
 	    zoomPane = new JPanel(new GridLayout(3,1,2,2));
 		zoomPane.setBackground(new Color(0,0,0,15));
+		zoomPane.setBackground(new Color(0,0,0,0));
 	    rightPane = new JPanel(new BorderLayout());
-		rightPane.setBackground(new Color(0,0,0,15));
+//		rightPane.setBackground(new Color(0,0,0,15));
+	    rightPane.setBackground(new Color(0,0,0,0));
 	
 	    controlPane.add(buttonPane);
 	    controlPane.add(zoomLabel);
@@ -160,9 +162,9 @@ public class SettlementTransparentPanel extends JComponent {
         zoomPane.add(labelPane); 
        
         // Make panel drag-able
-  		ComponentMover cmZoom = new ComponentMover(zoomPane);
+//  		ComponentMover cmZoom = new ComponentMover(zoomPane);
 		//cmZoom.registerComponent(rightPane);
-		cmZoom.registerComponent(zoomPane);	
+//		cmZoom.registerComponent(zoomPane);	
 		
 	    mapPanel.add(box, BorderLayout.NORTH);  
         //mapPanel.add(rightPane, BorderLayout.EAST); 
