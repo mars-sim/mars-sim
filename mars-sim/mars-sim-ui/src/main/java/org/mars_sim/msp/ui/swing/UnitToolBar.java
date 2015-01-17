@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 3.07 2014-12-06
-
+ * @version 3.07 2015-01-17
  * @author Scott Davis
  */
 
@@ -10,7 +9,6 @@ package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,8 +91,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	/**
 	 * Disposes a unit button in toolbar.
 	 * 
-	 * @param unit
-	 *            the unit whose button is to be removed.
+	 * @param unit the unit whose button is to be removed.
 	 */
 	public void disposeUnitButton(Unit unit) {
 		Iterator<UnitButton> i = unitButtons.iterator();
@@ -128,6 +125,4 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 			result[x] = unitButtons.get(x).getUnit();
 		return result;
 	}
-	
-
 }

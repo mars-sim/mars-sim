@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.07 2014-12-06
-
+ * @version 3.07 2015-01-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -30,7 +29,6 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -164,7 +162,7 @@ public class UIConfig {
                 windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
                 windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
                 windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isClosed()));
+                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
                 if (window1 instanceof ToolWindow) {
                     windowElement.setAttribute(TYPE, TOOL);
@@ -175,21 +173,6 @@ public class UIConfig {
                 } else {
                     windowElement.setAttribute(TYPE, "other");
                     windowElement.setAttribute(NAME, "other");
-                }
-            }
-
-            // Check unit toolbar for unit buttons without open windows.
-            Unit[] toolBarUnits = window.getUnitToolBar().getUnitsInToolBar();
-            for (Unit toolBarUnit : toolBarUnits) {
-                UnitWindow unitWindow = desktop.findUnitWindow(toolBarUnit);
-
-                if ((unitWindow == null) || unitWindow.isIcon()) {
-                    Element windowElement = new Element(WINDOW);
-                    internalWindowsElement.addContent(windowElement);
-
-                    windowElement.setAttribute(TYPE, UNIT);
-                    windowElement.setAttribute(NAME, toolBarUnit.getName());
-                    windowElement.setAttribute(DISPLAY, "false");
                 }
             }
 
