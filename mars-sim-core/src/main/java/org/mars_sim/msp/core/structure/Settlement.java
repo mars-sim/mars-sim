@@ -467,7 +467,7 @@ implements LifeSupport {
         buildingManager.timePassing(time);
     
         // 2015-01-09  Added makeDailyReport()
-        makeDailyReport();
+        //makeDailyReport();
 
         updateGoodsManager(time);
     }
