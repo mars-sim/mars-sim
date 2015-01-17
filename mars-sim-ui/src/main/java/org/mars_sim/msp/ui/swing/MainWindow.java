@@ -31,7 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.basic.BasicToolBarUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
@@ -160,8 +159,8 @@ public class MainWindow {
 	        }
 	    };
 	    
-	    BasicToolBarUI ui = new BasicToolBarUI();
-	    unitToolbar.setUI(ui);
+//	    BasicToolBarUI ui = new BasicToolBarUI();
+//	    unitToolbar.setUI(ui);
 
 	    // Set the bgcolor to black
 	    //color = java.awt.Color.black;
