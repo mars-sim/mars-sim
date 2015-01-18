@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2015-01-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -74,7 +74,8 @@ implements Serializable {
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private List<String> settlementNames;
-	
+	private Map<String, Integer> scenarioMap = new HashMap<String, Integer>();
+
 	/**
 	 * Constructor.
 	 * @param settlementDoc DOM document with settlement configuration.
@@ -107,6 +108,7 @@ implements Serializable {
 		// NOTE: i must be > 1, if i = 0, return null
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
+	
 	/**
 	 * Load the settlement templates from the XML document.
 	 * @param settlementDoc DOM document with settlement configuration.
@@ -120,21 +122,24 @@ implements Serializable {
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
 		// 2014-10-29 Added settlement id to Settlement.xml and loaded settlement id here
-		Set<Integer> existingSIDs = new HashSet<Integer>();
+		//Set<Integer> existingSIDs = new HashSet<Integer>();
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
 		for (Element templateElement : templateNodes) {
 		    int scenarioID = Integer.parseInt(templateElement.getAttributeValue(ID));
 			String name = templateElement.getAttributeValue(NAME);
 			
-		    if (existingSIDs.contains(scenarioID)) {
-		        throw new IllegalStateException("Error in xml file: settlement ID in settlement template " + name + " not unique.");
+		    if (scenarioMap.containsValue(scenarioID) ) {
+		        throw new IllegalStateException("Error in xml file: scenarioID in settlement template " + name + " not unique.");
 		    }
-		    	existingSIDs.add(scenarioID);
+		    
+		    scenarioMap.put(name, scenarioID);
 		   	    
 		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
+
 		    // 2014-10-29 Added scenarioID 
 			SettlementTemplate template = new SettlementTemplate(name, scenarioID, defaultPopulation);
-		    settlementTemplates.add(template);
+
+			settlementTemplates.add(template);
 			
 			// Load buildings
 			Set<Integer> existingIDs = new HashSet<Integer>();
@@ -149,14 +154,11 @@ implements Serializable {
 				String buildingType = buildingElement.getAttributeValue(TYPE);				
 				// 2014-10-28  Created a building nickname for every building 
 				// by appending the settlement id and building id to that building's type.
-				//UnitManager unitManager = Simulation.instance().getUnitManager();				
-				int sid;
-				String settlementID;
-				sid = scenarioID + 1;
-				settlementID = getCharForNumber(sid);
+				String scenario = getCharForNumber(scenarioID + 1);
 				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null			
 				String buildingID = bid + "";					
-				String buildingNickName = buildingType + " " + settlementID + buildingID;
+				String buildingNickName = buildingType + " " + scenario + buildingID;
+				
 				double width = -1D;
 				if (buildingElement.getAttribute(WIDTH) != null) {
 				    width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
@@ -172,8 +174,9 @@ implements Serializable {
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
 				 // 2014-10-28  Added buildingNickName, Changed id to bid
-				BuildingTemplate buildingTemplate = new BuildingTemplate(bid, buildingType, buildingNickName, width, length, 
+				BuildingTemplate buildingTemplate = new BuildingTemplate(bid, scenario, buildingType, buildingNickName, width, length, 
 				        xLoc, yLoc, facing);
+
 				template.addBuildingTemplate(buildingTemplate);
 				
 				// Create building connection templates.
@@ -462,6 +465,18 @@ implements Serializable {
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
+	/**
+	 * Gets the scenarioID used by an New Arriving settlement.
+	 * @param index the index of the New Arriving settlement.
+	 * @return settlement scenarioID.
+	 */
+	// 2015-01-17 Added getNewArrivingSettlementScenarioID()
+	public int getNewArrivingSettlementScenarioID(int index) {
+		if ((index >= 0) && (index < newArrivingSettlements.size()))
+			return scenarioMap.get((newArrivingSettlements.get(index).template));
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+		
     /**
      * Gets the arrival time for a new arriving settlement from 
      * the start of the simulation.
@@ -540,6 +555,18 @@ implements Serializable {
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
+	/**
+	* Gets the scenarioID used by an initial settlement.
+	* @param index the index of the initial settlement.
+	* @return settlement scenarioID.
+	*/
+	// 2015-01-17 Added getInitialSettlementScenarioID()
+	public int getInitialSettlementScenarioID(int index) {
+		if ((index >= 0) && (index < initialSettlements.size()))
+			return scenarioMap.get((initialSettlements.get(index).template));
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+				
 	/**
 	 * Gets the template used by an initial settlement.
 	 * @param index the index of the initial settlement.
@@ -622,6 +649,7 @@ implements Serializable {
 	    settlement.name = name;
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
+	    settlement.scenarioID = scenarioMap.get(template);
 	    
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -632,6 +660,7 @@ implements Serializable {
 	    settlement.latitude = latitude;
 	    settlement.longitude = longitude;
 	    initialSettlements.add(settlement);
+
 	}
 	
 	/**
@@ -665,6 +694,7 @@ implements Serializable {
 		private String latitude;
 		private boolean randomLatitude = false;
 		private int populationNumber;
+		private int scenarioID;
 	}
 	
 	/**
@@ -683,5 +713,6 @@ implements Serializable {
 		private String latitude;
 		private boolean randomLatitude = false;
 		private int populationNumber;
+		private int scenarioID;
 	}
 }

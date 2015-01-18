@@ -66,6 +66,7 @@ implements Serializable {
 	 * Constructor 2.
 	 */
     // 2014-10-28 Added constructor 2, added id, added count++
+  	// Called by SettlementConfig.java
 	public SettlementTemplate(String name, int scenarioID, int defaultPopulation) {
 		this.name = name;
 		this.scenarioID = scenarioID;

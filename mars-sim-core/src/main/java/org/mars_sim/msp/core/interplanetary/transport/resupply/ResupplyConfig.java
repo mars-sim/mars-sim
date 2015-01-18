@@ -117,7 +117,7 @@ public class ResupplyConfig implements Serializable {
 						.getAttributeValue(FACING));
 				
 				// 2014-10-28 Added buildingType (at the buildingNickName position)
-				template.buildings.add(new BuildingTemplate(0, buildingType,
+				template.buildings.add(new BuildingTemplate(0, "A", buildingType,
 						buildingType, width, length, xLoc, yLoc, facing));
 
 			}

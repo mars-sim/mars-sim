@@ -401,7 +401,7 @@ implements Serializable {
         // Manny: why using higher values?
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
-
+/*
 //        if (r.equals("concrete")
 //    		|| r.equals("polyethylene")) {
 //        System.out.println( r
@@ -409,6 +409,7 @@ implements Serializable {
 //                + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
 //                + "  VP is " + Math.round(value* 10000.0) / 10000.0);
 //        }
+*/        
         return value;
     }
 
@@ -422,7 +423,7 @@ implements Serializable {
         int supplyRequest = inv.getSupplyRequest(r);
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
-        
+/*    
 //        if (r.equals("concrete")
 //    		|| r.equals("polyethylene")) {
 //        System.out.println( r 
@@ -431,6 +432,7 @@ implements Serializable {
 //        + "  supplyRequest is " + supplyRequest
 //        + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
 //        }
+*/
     	return totalSupplyAmount;
     }
 
@@ -450,7 +452,7 @@ implements Serializable {
         double totalAmountDemand = projectedDemand + sDemand / solElapsed ; 
      
         totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
-
+/*
 //        if (r.equals("concrete")
 //    		|| r.equals("polyethylene")) {
 //        System.out.println( r
@@ -458,6 +460,7 @@ implements Serializable {
 //        + "  demandRequest is " + sRequest
 //        + "  totalAmountDemand is " + totalAmountDemand);
 //        }
+*/        
     	return totalAmountDemand;
     }
     

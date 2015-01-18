@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-17
  * @author Scott Davis
  */
 
@@ -54,10 +54,8 @@ implements LifeSupport {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
     /* default logger.*/
-	private static Logger logger = Logger.getLogger(Settlement.class.getName());
-     
+	private static Logger logger = Logger.getLogger(Settlement.class.getName());   
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;
     /** Normal temperature (celsius) */
@@ -67,16 +65,36 @@ implements LifeSupport {
     private static final double MIN_TEMP = 0.0D;
     private static final double MAX_TEMP = 48.0D;
 
-    public double mealsReplenishmentRate = 1.3;
-    public double dessertsReplenishmentRate = 1.7;
-    
-    public static final int SOL_PER_REFRESH = 3; 
-    
+    //private static int count;
+    public static final int SOL_PER_REFRESH = 3;  
+    public static double MILLISOLS_ON_FIRST_SOL; 
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
      */
-
-    // Data members
+    /** The settlement template name. */
+    private String template;
+    
+    public double mealsReplenishmentRate = 1.3;
+    public double dessertsReplenishmentRate = 1.7;  
+    
+    /** The initial population of the settlement. */
+    private int initialPopulation;
+    private double zeroPopulationTime;
+    private int scenarioID;
+	private int solCache = 1;
+	
+    //2014-11-23 Added foodProductionOverride
+    private boolean foodProductionOverride;
+	//private boolean reportSample = true;
+    /** Override flag for mission creation at settlement. */
+    private boolean missionCreationOverride;
+    /** Override flag for manufacturing at settlement. */
+    private boolean manufactureOverride;
+    /** Override flag for resource process at settlement. */
+    private boolean resourceProcessOverride;
+    /** Override flag for construction/salvage mission creation at settlement. */
+    private boolean constructionOverride;
+    
     /** The settlement's building manager. */
     protected BuildingManager buildingManager;
     /** The settlement's building connector manager. */
@@ -90,36 +108,13 @@ implements LifeSupport {
     //2014-10-17 Added heating system
     /** The settlement's heating system. */
     protected ThermalSystem thermalSystem;  
-    /** The settlement template name. */
-    private String template;
-    /** Override flag for mission creation at settlement. */
-    private boolean missionCreationOverride;
-    /** Override flag for manufacturing at settlement. */
-    private boolean manufactureOverride;
-    /** Override flag for resource process at settlement. */
-    private boolean resourceProcessOverride;
-    /** Override flag for construction/salvage mission creation at settlement. */
-    private boolean constructionOverride;
+    
+    private Inventory inv;
+
     /** The settlement's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
     /** Amount of time (millisols) that the settlement has had zero population. */
-    private double zeroPopulationTime;
-    /** The initial population of the settlement. */
-    private int initialPopulation;
-    // 2014-10-27 Added settlement id
-    // TODO: implement settlement id
-    private int id;
-    private static int count;
-    //2014-11-23 Added foodProductionOverride
-    private boolean foodProductionOverride;
-    
-    private Inventory inv;
-	private int solCache = 1;
-	//private boolean reportSample = true;
-	
-    public static double MILLISOLS_ON_FIRST_SOL;
-    
-	
+ 
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
@@ -130,16 +125,17 @@ implements LifeSupport {
     protected Settlement(String name, Coordinates location) {
         // Use Structure constructor.
         super(name, location);
-        count++;
+        //count++;
         //logger.info("constructor 1 : count is " + count);
     }
 
     // constructor 2
     // 2014-10-28 Added settlement id
-    protected Settlement(String name, int id, Coordinates location) {
+    protected Settlement(String name, int scenarioID, Coordinates location) {
         // Use Structure constructor.
         super(name, location);
-        count++;
+        this.scenarioID = scenarioID;
+        //count++;
         //logger.info("constructor 2 : count is " + count);
     }
 
@@ -151,11 +147,11 @@ implements LifeSupport {
         // Use Structure constructor
         super(name, location);
         this.template = template;
+        this.scenarioID = id;
         
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
         MILLISOLS_ON_FIRST_SOL = MarsClock.getTotalMillisols(clock);
-        
-        count++;
+        //count++;
         //logger.info("constructor 3 : count is " + count);
         
         // Set inventory total mass capacity.
@@ -222,7 +218,7 @@ implements LifeSupport {
 	 */
     // 2014-10-29 Added settlement id
 	public int getID() {
-		return id;
+		return scenarioID;
 	}
 	
 	/**
@@ -230,9 +226,9 @@ implements LifeSupport {
 	 * @return count.
 	 */
     // 2014-10-29 Added count
-	public int getCount() {
-		return count;
-	}
+	//public int getCount() {
+	//	return count;
+	//}
     /**
      * Gets the population capacity of the settlement
      * @return the population capacity
