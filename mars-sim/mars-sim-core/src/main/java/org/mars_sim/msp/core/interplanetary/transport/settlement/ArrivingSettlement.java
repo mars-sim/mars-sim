@@ -60,7 +60,8 @@ implements Transportable, Serializable {
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
 	private int populationNum;
-
+	private int scenarioID;
+	
 	/**
 	 * Constructor.
 	 * @param name the name of the arriving settlement.
@@ -80,6 +81,23 @@ implements Transportable, Serializable {
 		this.populationNum = populationNum;
 	}
 
+
+	/**
+	 * Gets the scenarioID of the arriving settlement.
+	 * @return settlement scenarioID
+	 */
+	public int getScenarioID() {		
+		return scenarioID;
+	}
+	
+	/**
+	 * Sets the scenarioID of the arriving settlement.
+	 * @param settlement id
+	 */
+	public void setScenarioID(int id) {
+		scenarioID = id;		
+	}
+	
 	/**
 	 * Gets the name of the arriving settlement.
 	 * @return settlement name
@@ -246,7 +264,7 @@ implements Transportable, Serializable {
 	public void performArrival() {
 		// Create new settlement.
 		Settlement newSettlement = createNewSettlement();
-			//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
+		//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
 
 		// Create new immigrants with arriving settlement.
 		createNewImmigrants(newSettlement);
@@ -273,10 +291,9 @@ implements Transportable, Serializable {
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		// 2014-10-29 Computed sid
 		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
-		int count = settlements.size();
-		int sid = count + 1;						
-			//System.out.println("ArrivingSettlement.java : createNewSettlement() : sid is " + sid);
-		Settlement newSettlement = new Settlement(name, sid, template, landingLocation, populationNum);
+		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
+		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
+		Settlement newSettlement = new Settlement(name, scenarioID, template, landingLocation, populationNum);
 		unitManager.addUnit(newSettlement);
 
 		// Add new settlement to credit manager.

@@ -543,11 +543,13 @@ extends TransportItemEditingPanel {
 					int num = item.number.intValue();
 					for (int x = 0; x < num; x++) {
 						String type = item.type.trim();						
-					   // 2014-10-29 Added a dummy type parameter
-		                // TODO: currently building id = 0 
-						// May need to assemble the buildingNickName 
-						//by obtaining the next building id and settlement id
-						BuildingTemplate template = new BuildingTemplate(0, type, type, -1D, -1D, 
+
+						int scenarioID = destination.getID();
+						String scenario = getCharForNumber(scenarioID + 1);
+			            //System.out.println("ResupplyMissionEditingPanel.java Line 548: scenario is " + scenario);
+			            //System.out.println("ResupplyMissionEditingPanel.java Line 549: buildingNickName is " + buildingNickName);        
+
+						BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, 
 								-0D, 0D, 0D);
 						newBuildings.add(template);
 					}
@@ -622,6 +624,17 @@ extends TransportItemEditingPanel {
 	}
 
 	/**
+	 * Maps a number to an alphabet
+	 * @param a number
+	 * @return a String
+	 */
+	private String getCharForNumber(int i) {
+		// NOTE: i must be > 1, if i = 0, return null
+	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+	}
+	
+	
+	/**
 	 * Modify existing resupply mission new buildings based on supply table.
 	 * @param resupplyMission resupply mission.
 	 * @param supplyItems the supply items from the supply table.
@@ -666,7 +679,7 @@ extends TransportItemEditingPanel {
 			                // TODO: currently building id = 0 
 							// May need to assemble the buildingNickName 
 							//by obtaining the next building id and settlement id
-						newBuildings.add(new BuildingTemplate(0, type, type, -1D, -1D, -0D, 0D, 0D));
+						newBuildings.add(new BuildingTemplate(0, null, type, type, -1D, -1D, -0D, 0D, 0D));
 					}
 				}
 				else if (num < existingNum) {

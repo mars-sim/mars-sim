@@ -355,9 +355,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (java.beans.PropertyVetoException e) { }
 		
 		// 2014-12-30 Added marqueeBanner
-		marqueeBanner = new MarqueeBanner(this);
-      	try { marqueeBanner.setClosed(true); }
-      	catch (java.beans.PropertyVetoException e) { }
+		//marqueeBanner = new MarqueeBanner(this);
+      	//try { marqueeBanner.setClosed(true); }
+      	//catch (java.beans.PropertyVetoException e) { }
 		
 	}
 
@@ -760,10 +760,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow.setAnnouncement(announcement);
 		announcementWindow.pack();
 		add(announcementWindow, 0);
-		int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
-		//int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
-		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop 
-		int Yloc = 0;
+		int Xloc = (getWidth() - announcementWindow.getWidth()) * 3 / 4 ;
+		int Yloc = (getHeight() - announcementWindow.getHeight()) * 3 / 4;
 		announcementWindow.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
@@ -969,7 +967,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			mgr = building.getBuildingManager();
 			settlement = mgr.getSettlement();
-			// System.out.println("MainDesktopPane : The settlement is " + settlement);
+			//System.out.println("MainDesktopPane : mgr is " + mgr);
+			//System.out.println("MainDesktopPane : The settlement is " + settlement);
 			// Select the relevant settlement
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool

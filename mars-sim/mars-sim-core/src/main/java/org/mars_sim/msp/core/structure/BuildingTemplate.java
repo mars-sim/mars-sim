@@ -37,18 +37,19 @@ implements Serializable , Comparable<BuildingTemplate>{
 
     // 2014-10-28 Added nickName
 	private String nickName;
-
+	private String scenario;
 		
 	/*
 	 * * BuildingTemplate Constructor. 
 	 */
 	// May also be called by ResupplyConfig.java when buildings arrived
 	// 2014-10-27 Added nickName
-	public BuildingTemplate(int id, String buildingType, String nickName,
+	public BuildingTemplate(int id, String scenario, String buildingType, String nickName,
 		double width, double length, double xLoc, 
 		double yLoc, double facing) {
 		    
 		this.id = id;
+		this.scenario = scenario;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.width = width;
@@ -57,6 +58,10 @@ implements Serializable , Comparable<BuildingTemplate>{
 		this.yLoc = yLoc;
 		this.facing = facing;
 		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
+	}
+	
+	public String getScenario() {
+		return scenario;
 	}
 	
 	/**

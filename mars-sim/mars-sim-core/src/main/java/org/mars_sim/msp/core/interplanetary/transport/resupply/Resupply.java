@@ -352,10 +352,10 @@ implements Serializable, Transportable {
                
         if (orderedBuildings.size() > 0) {
         	
-        	Building aBuilding = buildingManager.getBuildings().get(0);
-        	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       
+        	//Building aBuilding = buildingManager.getBuildings().get(0);
+        	//settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       
 	
-        	// TODO: not first building to be placed should start from the center of map c 
+        	// TODO: the first building to be placed should start from the center of map and radial out 
 	        // 2014-12-23 Added sorting orderedBuildings according to its building id
 	        // Collections.sort(orderedBuildings);
 	        //int size = orderedBuildings.size();
@@ -387,13 +387,15 @@ implements Serializable, Transportable {
 		                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 		                }
 		                
-		                // 2015-01-16 Added getCharForNumber(ID)
-		                int ID = buildingManager.getSettlement().getID();
-		                String sID = getCharForNumber(ID);
-		                
-		                String buildingNickName = template.getBuildingType() + " " + sID + buildingID;
-		                
-		                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
+		                // 2015-01-16 Added scenario
+		                int scenarioID = settlement.getID();
+		                String scenario = getCharForNumber(scenarioID + 1);
+		                //String scenario = template.getScenario();  // Note: scenario is null since template does NOT have a scenario string yet
+		                String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
+		                //System.out.println("Resupply.java Line 394: scenario is " + scenario);
+		                //System.out.println("Resupply.java Line 394: buildingNickName is " + buildingNickName);
+		     
+		                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width, 
 		                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
 		 
 		                buildingManager.addBuilding(correctedTemplate,  true);
@@ -625,10 +627,14 @@ implements Serializable, Transportable {
                 
                 // If no buildings at settlement, position new building at 0,0 with random facing.
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-                // TODO : 2014-10-29 Added buildingNickName
-                String buildingNickName = settlement.getBuildingManager().getBuildingNickName(buildingType);                
+                // 2015-01-16 Added scenario
+                String scenario = getCharForNumber(settlement.getID()+1);
+                String buildingNickName = buildingType + " " + scenario + buildingID;
+                //System.out.println("Resupply.java Line 631: scenario is " + scenario);
+                //System.out.println("Resupply.java Line 632: buildingNickName is " + buildingNickName);
+                     
                 // TODO : ask for user to define the location for the new building as well
-                newPosition = new BuildingTemplate(buildingID, buildingType, buildingNickName, width, length, 0D, 0D, 
+                newPosition = new BuildingTemplate(buildingID, scenario, buildingType, buildingNickName, width, length, 0D, 0D, 
                         RandomUtil.getRandomDouble(360D));
             }
         }
@@ -896,22 +902,21 @@ implements Serializable, Transportable {
             if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
-               // 2014-10-29 Added a dummy newBuildingType parameter
-                // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
-                int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-            	int sid = settlement.getID();
-            		//System.out.println("Resupply.java : positionNextToBuilding() : sid/getID() is "+ sid); 
-                String settlementID = getCharForNumber(sid+1);
-				String buildingID = bid + "";					
-				String buildingNickName = newBuildingType + " " + settlementID + buildingID;
-                newPosition = new BuildingTemplate(bid, newBuildingType, buildingNickName, width, length, rectCenterX, 
+                // 2015-01-16 Added scenario
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();               
+                String scenario = getCharForNumber(settlement.getID()+1);
+                String buildingNickName = newBuildingType + " " + scenario + buildingID;
+                //System.out.println("Resupply.java Line 907: scenario is " + scenario);
+                //System.out.println("Resupply.java Line 908: buildingNickName is " + buildingNickName);
+     
+				newPosition = new BuildingTemplate(buildingID, scenario, newBuildingType, buildingNickName, width, length, rectCenterX, 
                         rectCenterY, rectRotation);
                 break;
             }
         }
         
         return newPosition;
-    }
+    }  
     
 	/**
 	 * Maps a number to an alphabet
@@ -924,8 +929,6 @@ implements Serializable, Transportable {
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
 	
-    
-    
     /**
      * Determine the position and length (for variable length) for a connector building between two existing
      * buildings.
@@ -990,18 +993,16 @@ implements Serializable, Transportable {
             double centerY = (p1.getY() + p2.getY()) / 2D;
             double newLength = p1.distance(p2);
             double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
- 
             // Set the new building here.
-            // 2014-10-29 Added a dummy newBuildingType parameter
-             // TODO: Assembled the buildingNickName by obtaining the next building id and settlement id
-            int bid = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-         	int sid = settlement.getID();
-         	//System.out.println("Resupply.java : positionConnectorBetweenTwoBuildings : sid/getID() is "+ sid); 
-            String settlementID = getCharForNumber(sid+1);
-			String buildingID = bid + "";					
-			String buildingNickName = newBuildingType + " " + settlementID + buildingID;
-            newPosition = new BuildingTemplate(bid, newBuildingType, buildingNickName, width, newLength, centerX, 
+            int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+            // 2015-01-16 Added scenario
+            String scenario = getCharForNumber(settlement.getID()+1);
+            String buildingNickName = newBuildingType + " " + scenario + buildingID; 
+            //System.out.println("Resupply.java Line 1001: scenario is " + scenario);
+            //System.out.println("Resupply.java Line 1002: buildingNickName is " + buildingNickName);
+            newPosition = new BuildingTemplate(buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX, 
                     centerY, facingDegrees);
+
         }
         
         return newPosition;

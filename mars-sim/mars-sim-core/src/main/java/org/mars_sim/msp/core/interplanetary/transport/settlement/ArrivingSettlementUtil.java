@@ -83,7 +83,10 @@ public class ArrivingSettlementUtil {
 			// Create arriving settlement.
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, 
 					arrivalDate, location, population);
-
+			// 2015-01-17 Added scenarioID 
+			int scenarioID = settlementConfig.getNewArrivingSettlementScenarioID(x);
+			arrivingSettlement.setScenarioID(scenarioID);
+			
 			// Determine launch date.
 			MarsClock launchDate = (MarsClock) arrivalDate.clone();
 			launchDate.addTime(-1D * AVG_TRANSIT_TIME * 1000D);

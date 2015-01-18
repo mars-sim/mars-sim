@@ -1,13 +1,17 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.07 2015-01-16
+ * @version 3.07 2015-01-17
 
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -20,7 +24,10 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -43,16 +50,19 @@ extends JInternalFrame {
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	private String buildingNickName;
 	
 	private JPanel mainPane ;
 	private JLabel announcementLabel;
+	
 	private BuildingManager mgr;
-	//private Building building;
 	private MainDesktopPane desktop;
 	private Settlement settlement;
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
 	private Resupply resupply;
+	//private Building building;
+	
 
 
 	/** 
@@ -67,6 +77,8 @@ extends JInternalFrame {
 	}
 
 	public void createGUI(Building newBuilding) {
+		
+		settlement = newBuilding.getBuildingManager().getSettlement();
 		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setIconifiable(true);
@@ -124,6 +136,7 @@ extends JInternalFrame {
 	public void initialize(BuildingManager mgr) {//, Building building) {
 		this.mgr = mgr;
 		//this.building = building;
+		//settlement = newBuilding.getBuildingManager().getSettlement();
 		this.settlement = mgr.getSettlement();
 		this.resupply = mgr.getResupply();
 		this.settlementWindow = desktop.getSettlementWindow();
@@ -141,7 +154,7 @@ extends JInternalFrame {
         Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator(); 
         int size = orderedBuildings.size();
         int i = 0;
-        Building aBuilding = mgr.getBuildings().get(0);
+
         while (buildingI.hasNext()) {
            BuildingTemplate template = buildingI.next();  
             // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
@@ -149,8 +162,7 @@ extends JInternalFrame {
                 // Correct length and width in building template.
                 
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-        
-                 
+    
                 // Replace width and length defaults to deal with variable width and length buildings.
                 double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
                 if (template.getWidth() > 0D) {
@@ -168,13 +180,14 @@ extends JInternalFrame {
                     length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
                 
-                // 2015-01-16 Added getCharForNumber(ID)
-                int ID = mgr.getSettlement().getID();
-                String sID = getCharForNumber(ID);
-                
-                String buildingNickName = template.getBuildingType() + " " + sID + buildingID;
-                 
-                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getBuildingType(), buildingNickName, width, 
+                // 2015-01-16 Added getScenario()
+                int scenarioID = settlement.getID();
+                String scenario = getCharForNumber(scenarioID + 1);
+                //String scenario = template.getScenario(); // Note: scenario is null since template does NOT have a scenario string yet
+                buildingNickName = template.getBuildingType() + " " + scenario + buildingID;            
+                //System.out.println("TransportWizard.java Line 173: scenario is " + scenario);
+                //System.out.println("TransportWizard.java Line 174: buildingNickName is " + buildingNickName);        
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width, 
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
                 confirmBuildingLocation(correctedTemplate, true);
@@ -187,6 +200,7 @@ extends JInternalFrame {
             } // end of else {  
             i++;
 	        if (i == size) {
+	            Building aBuilding = mgr.getBuildings().get(0);
 	        	settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);  
 	        }
 	    } // end of while (buildingI.hasNext())
@@ -211,13 +225,10 @@ extends JInternalFrame {
      * @param buildingManager 
      * @param isMarsDirectResupplyMission
      */
-    // 2014-12-19 Added confirmBuildingLocation()
-    // 2014-12-23 Added isMarsDirectResupplyMission parameter
 	public synchronized void confirmBuildingLocation(BuildingTemplate template, boolean isMarsDirectResupplyMission) {
-	   	//System.out.println("TransportWizard : running confirmBuildingLocation()");
-	    
-		BuildingTemplate positionedTemplate = null;
-		Building newBuilding = null;
+  
+		BuildingTemplate positionedTemplate ; // should NOT be null
+		Building newBuilding ;
 	    //final int TIME_OUT = 20;
 	    //int count = TIME_OUT;
 	    //pauseTimer = new Timer();
@@ -225,12 +236,14 @@ extends JInternalFrame {
 		//int seconds = 10;
 
          // Determine location and facing for the new building.
-		if (isMarsDirectResupplyMission)
-			newBuilding = mgr.addOneBuilding(template, resupply, true);
+		if (isMarsDirectResupplyMission) {
+			positionedTemplate = template;
+			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, true);
+		}
 		else {
 			positionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
 			//buildingManager.setBuildingArrived(true);
-			newBuilding = mgr.addOneBuilding(positionedTemplate, resupply, true);
+			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, true);
 		}
 		createGUI(newBuilding);
 	   	//System.out.println("TransportWizard : new Building is " + newBuilding);
@@ -249,15 +262,15 @@ extends JInternalFrame {
 		repaint();
 		//desktop.getMainWindow().pauseSimulation();
 
-		String name = newBuilding.getNickName();
-        String message = "Do you like to place " + name + " at this location on the map?";
+		//String name = newBuilding.getNickName();
+        String message = "Do you like to place " + buildingNickName + " at this location on the map?";
         String title = "Transport Wizard";
 		int reply = JOptionPane.showConfirmDialog(desktop.getAnnouncementWindow(), message, title, JOptionPane.YES_NO_OPTION);
 		if (reply == JOptionPane.YES_OPTION) {
             logger.info("Building in Placed : " + newBuilding.toString());
 		}
 		else { //userAcceptance = false;
-			mgr.removeBuilding(newBuilding);
+			settlement.getBuildingManager().removeBuilding(newBuilding);
 			confirmBuildingLocation(template, false);
 			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
 		}
@@ -308,6 +321,8 @@ extends JInternalFrame {
 		settlementWindow = null;
 		mapPanel = null;
 		resupply = null;
+		//newBuilding = null;
+
 	}
 			 			
 }
