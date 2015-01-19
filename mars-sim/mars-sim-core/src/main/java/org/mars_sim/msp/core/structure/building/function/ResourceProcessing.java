@@ -50,11 +50,11 @@ implements Serializable {
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getName());
-		resourceProcesses = config.getResourceProcesses(building.getName());
+		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getBuildingType());
+		resourceProcesses = config.getResourceProcesses(building.getBuildingType());
 		
 		// Load activity spots
-        loadActivitySpots(config.getResourceProcessingActivitySpots(building.getName()));
+        loadActivitySpots(config.getResourceProcessingActivitySpots(building.getBuildingType()));
 	}
 
 	/**
