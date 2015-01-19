@@ -183,7 +183,7 @@ public class MainWindow {
 
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
-        //statusText = "Mars-Sim 3.07 is running";
+        //statusText = "Mars-Sim 3.08 is running";
         leftLabel = new JLabel(statusText);
 		statusBar.setLeftComponent(leftLabel);
     
@@ -208,6 +208,16 @@ public class MainWindow {
    
         bottomPane.add(statusBar, BorderLayout.SOUTH);	        
 		
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+		if (earthTimer == null) {
+			//System.out.println(" constructor : earthTimer == null");			
+			delayLaunchTimer = new Timer();
+			int seconds = 3;
+			// Note: this delayLaunchTimer is non-repeating
+			// thus period is N/A
+			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		}
+		 
 		// add mainpane
 		mainPane.add(desktop, BorderLayout.CENTER);
 
@@ -256,9 +266,6 @@ public class MainWindow {
 		// 2015-01-07 Added startAutosaveTimer()
 		startAutosaveTimer();
 
-		// 2015-01-07 Added Earth Time on status bar 
-		if (earthTimer == null) 
-			startEarthTimer();
 	}
 
 	public JPanel getBottomPane() {
@@ -281,10 +288,10 @@ public class MainWindow {
         autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
 
     }
-
+	
 	// 2015-01-13 Added startEarthTimer()
 	public void startEarthTimer() { // (final String t) {
-		//final String earthTimeString = null;
+	//final String earthTimeString = null;
 		earthTimer = new javax.swing.Timer(TIMEDELAY, 
 			new ActionListener() {		
 			String t = null;
@@ -316,6 +323,14 @@ public class MainWindow {
 			});
 	
 		earthTimer.start();
+	}
+	
+	// 2015-01-19 Added StatusBar
+	class StatusBar extends TimerTask { // (final String t) {
+		public void run() {		
+			startEarthTimer();
+			//delayLaunchTimer.cancel();
+		}
 	}
 	
 	/*
@@ -357,6 +372,12 @@ public class MainWindow {
 	 * Load a previously saved simulation.
 	 */
 	public void loadSimulation() {
+		
+        if (earthTimer != null) 
+            earthTimer.stop();
+        earthTimer = null;
+        //logger.info(" loadSimulation() : just set earthTime = null");
+
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
@@ -368,6 +389,16 @@ public class MainWindow {
 		} else {
 			loadSimThread.interrupt();
 		}
+		
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+		if (earthTimer == null) {
+			//logger.info("loadSimulation() : earthTimer == null");
+			delayLaunchTimer = new Timer();
+			int seconds = 1;
+			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		}
+		
+		//logger.info(" finishing loadSimulation()");
 	}
 
 	/**
@@ -391,9 +422,7 @@ public class MainWindow {
 			
 			try {
                 desktop.resetDesktop();
-                if (earthTimer != null) 
-                    earthTimer.stop();
-                earthTimer = null;
+                //logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
             }
             catch (Exception e) {
                 // New simulation process should continue even if there's an exception in the UI.
@@ -403,8 +432,6 @@ public class MainWindow {
 			
 			desktop.disposeAnnouncementWindow();
 			
-			startEarthTimer();
-
 			// Open navigator tool after loading.
 //			desktop.openToolWindow(NavigatorWindow.NAME);
 		}
@@ -425,6 +452,16 @@ public class MainWindow {
 		} else {
 			newSimThread.interrupt();
 		}
+	
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+		if (earthTimer == null) {
+			//System.out.println(" newSimulation() : earthTimer == null");
+			delayLaunchTimer = new Timer();
+			int seconds = 3;
+			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		}
+		//System.out.println(" finishing newSimulation()");
+		
 	}
 
 	/**
@@ -445,14 +482,18 @@ public class MainWindow {
 			Simulation.stopSimulation();
 
 			try {
-				desktop.clearDesktop();
-			}
-			catch (Exception e) {
-				// New simulation process should continue even if there's an exception in the UI.
-				logger.severe(e.getMessage());
-				e.printStackTrace(System.err);
-			}
-
+                desktop.resetDesktop();
+                if (earthTimer != null) 
+                    earthTimer.stop();
+                earthTimer = null;
+                //logger.info(" saveSimulationProcess() : set earthTimer = null & desktop.resetDesktop()");   
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
+			
 			SimulationConfig.loadConfig();
 
 			SimulationConfigEditor editor = new SimulationConfigEditor(
@@ -466,26 +507,13 @@ public class MainWindow {
 			// Start the simulation.
 			Simulation.instance().start();
 
-			try {
-				desktop.resetDesktop();
-				if (earthTimer != null) 
-					earthTimer.stop();
-				earthTimer = null;
-			}
-			catch (Exception e) {
-				// New simulation process should continue even if there's an exception in the UI.
-				logger.severe(e.getMessage());
-				e.printStackTrace(System.err);
-			}
-
 			desktop.disposeAnnouncementWindow();
 			
 			// Open user guide tool.
             desktop.openToolWindow(GuideWindow.NAME);
             GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-			// 2015-01-13 Added startEarthTimer()
-			startEarthTimer();
+
 		}
 	}
 
@@ -597,6 +625,8 @@ public class MainWindow {
 		}
 
 		sim.getMasterClock().exitProgram();
+		
+		earthTimer = null;
 	}
 
 	/**
