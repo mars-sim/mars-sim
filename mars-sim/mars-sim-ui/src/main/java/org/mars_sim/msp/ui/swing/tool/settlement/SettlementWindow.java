@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2015-01-16
+ * @version 3.07 2015-01-19
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -11,9 +11,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+import javax.swing.WindowConstants;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -61,10 +62,11 @@ public class SettlementWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;	
-		//final SettlementWindow settlementWindow = this;
-	 
-		setMaximizable(true);
 
+		setMaximizable(true);
+		
+		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		
 		// 2014-12-27 Added preferred size and initial location
 		setPreferredSize(new Dimension(800, 600));
 		setLocation(600,600);
@@ -109,7 +111,6 @@ public class SettlementWindow extends ToolWindow {
 		pack();
 		setVisible(true);
 	}
-
 
 	/**
 	 * Gets the settlement map panel.
