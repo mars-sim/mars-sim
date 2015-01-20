@@ -35,6 +35,8 @@ implements Serializable {
 	// Calculation : 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; 
 	
+	private double viking_dt;
+	
 	private double final_temperature = EXTREME_COLD;
 	
 	private MarsClock marsClock;
@@ -42,6 +44,10 @@ implements Serializable {
 	
 	/** Constructs a Weather object */
 	public Weather() {
+		
+		viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;			
+		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
+		//System.out.print("  viking_dt: " + viking_dt );
 
 	}
 
@@ -71,7 +77,6 @@ implements Serializable {
 	 */
 	public double getTemperature(Coordinates location) {
 		
-		double final_temperature = 0;
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
@@ -105,11 +110,7 @@ implements Serializable {
 			terrain_dt = Math.round (terrain_dt * 100.0)/ 100.0;
 			//System.out.print("  terrain_dt: " + terrain_dt );
 			
-			
-			double viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;			
-			viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
-			//System.out.print("  viking_dt: " + viking_dt );
-			
+						
 			// - ((math.pi/2) / (phi of location)) * 20
 			// guess, but could work, later we can implement real physics
 
@@ -117,7 +118,6 @@ implements Serializable {
 			double lat_degree = 0; 
 			double phi = location.getPhi();	
 
-			
 			if (phi < piHalf) {
 			    lat_degree = ((piHalf - phi) / piHalf) * 90;
 			} else if (phi > piHalf){

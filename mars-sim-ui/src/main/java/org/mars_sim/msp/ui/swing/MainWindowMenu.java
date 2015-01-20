@@ -359,7 +359,6 @@ implements ActionListener, MenuListener {
 		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false, false);
 		else if (selectedItem == loadItem) mainWindow.loadSimulation();
 
-
 		if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
 			else desktop.closeToolWindow(NavigatorWindow.NAME);
