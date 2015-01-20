@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2015-01-16
+ * @version 3.07 2015-01-19
  * @author Scott Davis
  */
 
@@ -69,7 +69,7 @@ implements ActionListener {
 	private Coordinates locationCache;
 	private JButton centerMapButton;
 
-	DecimalFormat fmt = new DecimalFormat("###"); 
+	DecimalFormat fmt = new DecimalFormat("##0"); 
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -314,6 +314,10 @@ implements ActionListener {
             longitudeLabel.setText(getLongitudeString());
         }
  
+        if (temperatureCache != getTemperature()) {
+        	temperatureCache = getTemperature();
+        	temperatureLabel.setText(getTemperatureString());
+        }
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
         //if (!containerCache.equals(container)) {

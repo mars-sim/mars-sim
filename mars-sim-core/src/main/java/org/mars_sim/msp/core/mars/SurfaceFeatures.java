@@ -26,7 +26,8 @@ import java.util.Map;
  */
 public class SurfaceFeatures implements Serializable {
 
-    // Data members 
+	private static final long serialVersionUID = 1L;
+	// Data members 
     private transient TerrainElevation surfaceTerrain;
     private List<Landmark> landmarks;
     private MineralMap mineralMap;
