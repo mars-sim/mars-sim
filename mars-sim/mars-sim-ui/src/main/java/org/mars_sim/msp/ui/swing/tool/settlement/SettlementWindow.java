@@ -99,7 +99,7 @@ public class SettlementWindow extends ToolWindow {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsTimeString = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
-					timeLabel.setText("Martian Time: " + marsTimeString);
+					timeLabel.setText("Martian Time : " + marsTimeString);
 			    }
 			};
 		}

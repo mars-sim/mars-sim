@@ -48,7 +48,9 @@ implements Serializable {
 		cal.setTimeZone(zone);
 
 		// Initialize formatter
-		formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss 'UT'");
+		//formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss 'UT'");
+		formatter = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss 'UT'");
+
 		formatter.setTimeZone(zone);
 
 		// Set Earth clock to Martian Zero-orbit date-time. 

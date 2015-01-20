@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-15
+ * @version 3.07 2015-01-20
  * @author Scott Davis
  */
 
@@ -83,15 +83,17 @@ public class MainWindow {
     //protected ShowDateTime showDateTime;
     private JStatusBar statusBar;
     private JLabel leftLabel;
-    private JLabel maxMemLabel;
+    private JLabel memMaxLabel;
     private JLabel memUsedLabel;
     //private JLabel dateLabel;
     private JLabel timeLabel;
     private JPanel bottomPane;
     
-    private int maxMem;
-    private int memAV;
-    private int memUsed;
+    private int memMax;
+    private int memTotal;
+    private int memUsed, memUsedCache;
+    private int memFree;
+    
     private String statusText;
     String earthTimeString;
     //String t = null;
@@ -187,17 +189,19 @@ public class MainWindow {
         leftLabel = new JLabel(statusText);
 		statusBar.setLeftComponent(leftLabel);
     
-        maxMemLabel = new JLabel();
-        maxMemLabel.setHorizontalAlignment(JLabel.CENTER);
-        maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-        maxMemLabel.setText("Max Memory Used: " + maxMem +  " MB");
-        statusBar.addRightComponent(maxMemLabel, false);
+        memMaxLabel = new JLabel();
+        memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
+        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+        memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
+        statusBar.addRightComponent(memMaxLabel, false);
 
+        memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+        
         memUsedLabel = new JLabel();
         memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
-        memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-        memUsed = maxMem - memAV;
-        memUsedLabel.setText("Current Memory Usage : " + memUsed +  " MB");
+        memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+        memUsed = memTotal - memFree;
+        memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
         statusBar.addRightComponent(memUsedLabel, false);       
   
         timeLabel = new JLabel();
@@ -212,7 +216,7 @@ public class MainWindow {
 		if (earthTimer == null) {
 			//System.out.println(" constructor : earthTimer == null");			
 			delayLaunchTimer = new Timer();
-			int seconds = 3;
+			int seconds = 1;
 			// Note: this delayLaunchTimer is non-repeating
 			// thus period is N/A
 			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
@@ -260,7 +264,7 @@ public class MainWindow {
 		// to be the only initial tool window open for a new simulation. - Scott
 		// 2014-12-27 Added OpenSettlementWindow with delay timer
 		//delayLaunchTimer = new Timer();
-		//int seconds = 2;
+		//int seconds = 1;
 		//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
 		// 2015-01-07 Added startAutosaveTimer()
@@ -313,12 +317,16 @@ public class MainWindow {
 		        		t = earthclock.getTimeStamp();
 				    	} catch (Exception ee) {ee.printStackTrace(System.err);
 				    }
-					timeLabel.setText("Earth Time: " + t);
-					maxMem = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	                memAV = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	                memUsed = maxMem - memAV;
-	                maxMemLabel.setText("Max Memory Allocated: " + maxMem +  " MB");
-	                memUsedLabel.setText("Current Memory Used : " + memUsed +  " MB");
+					timeLabel.setText("Earth Time : " + t);
+					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
+					//memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+			        //memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
+					memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+	                memUsed = memTotal - memFree;
+	                int mem = ( memUsedCache + memUsed ) /2;
+	                if (mem > memUsedCache * 1.2 || mem < memUsedCache * 0.8)
+	                	memUsedLabel.setText("Current Used Memory : " + mem +  " MB");
+	                memUsedCache = mem;
 			    }
 			});
 	
@@ -457,7 +465,7 @@ public class MainWindow {
 		if (earthTimer == null) {
 			//System.out.println(" newSimulation() : earthTimer == null");
 			delayLaunchTimer = new Timer();
-			int seconds = 3;
+			int seconds = 1;
 			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
 		}
 		//System.out.println(" finishing newSimulation()");
