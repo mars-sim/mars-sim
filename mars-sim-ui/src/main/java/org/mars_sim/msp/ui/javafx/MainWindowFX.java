@@ -5,7 +5,7 @@
  * @author Lars Næsbye Christensen
  */
 
-package org.mars_sim.msp.fx_ui.javafx;
+package org.mars_sim.msp.ui.javafx;
 
 import javafx.stage.Stage;
 import javafx.scene.Group;
