@@ -12,6 +12,7 @@ public enum MissionEventType {
 	PHASE_EVENT					("phase"),
 	PHASE_DESCRIPTION_EVENT		("phase description"),
 	MIN_PEOPLE_EVENT			("minimum people"),
+	MIN_ROBOTS_EVENT			("minimum robots"),
 	ASSOCIATED_SETTLEMENT_EVENT	("associated settlement"),
 	CAPACITY_EVENT				("capacity"),
 	ADD_MEMBER_EVENT			("remove member"),

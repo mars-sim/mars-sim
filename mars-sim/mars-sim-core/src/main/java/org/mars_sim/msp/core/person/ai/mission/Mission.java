@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -46,12 +47,14 @@ implements Serializable {
 	// Data members
 	/** People in mission. */
 	private Collection<Person> people;
+	private Collection<Robot> robots;
 	/** Name of mission. */
 	private String name;
 	/** Description of the mission. */
 	private String description;
 	/** The minimum number of people for mission. */
 	private int minPeople;
+	private int minRobots;
 	/** True if mission is completed. */
 	private boolean done;
 	/** A collection of the mission's phases. */
@@ -79,6 +82,7 @@ implements Serializable {
 		this.name = name;
 		description = name;
 		people = new ConcurrentLinkedQueue<Person>();
+		robots = new ConcurrentLinkedQueue<Robot>();
 		done = false;
 		phase = null;
 		phaseDescription = null;
@@ -99,6 +103,7 @@ implements Serializable {
 		startingPerson.getMind().setMission(this);
 	}
 
+	
 	/**
 	 * Adds a listener.
 	 * @param newListener the listener to add.
@@ -171,7 +176,25 @@ implements Serializable {
 			logger.finer(person.getName() + " added to mission: " + name);
 		}
 	}
+	
+	/** 
+	 * Adds a robot to the mission.
+	 * @param robot to be added
+	 */
+	public final void addRobot(Robot robot) {
+		if (!robots.contains(robot)) {
+			robots.add(robot);
 
+			// Creating mission joining event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_JOINING);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, robot);
+
+			logger.finer(robot.getName() + " added to mission: " + name);
+		}
+	}
+	
 	/** 
 	 * Removes a person from the mission.
 	 * @param person to be removed
@@ -194,6 +217,28 @@ implements Serializable {
 		}
 	}
 
+
+	/** 
+	 * Removes a person from the mission.
+	 * @param person to be removed
+	 */
+	public final void removeRobot(Robot robot) {
+		if (robots.contains(robot)) {
+			robots.remove(robot);
+
+			// Creating missing finishing event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_FINISH);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, robot);
+
+			if ((robots.size() == 0) && !done) {
+				endMission("Not enough members.");
+			}
+
+			logger.finer(robot.getName() + " removed from mission: " + name);
+		}
+	}
 	/** 
 	 * Determines if a mission includes the given person.
 	 * @param person person to be checked
@@ -234,6 +279,47 @@ implements Serializable {
 	 */
 	public final Collection<Person> getPeople() {
 		return new ConcurrentLinkedQueue<Person>(people);
+	}
+	/** 
+	 * Determines if a mission includes the given robot.
+	 * @param robot to be checked
+	 * @return true if robot is member of mission
+	 */
+	public final boolean hasRobot(Robot robot) {
+		return robots.contains(robot);
+	}
+
+	/** 
+	 * Gets the number of robots in the mission.
+	 * @return number of robots
+	 */
+	public final int getRobotsNumber() {
+		return robots.size();
+	}
+
+	/**
+	 * Gets the minimum number of robots required for mission.
+	 * @return minimum number of robots
+	 */
+	public final int getMinRobots() {
+		return minRobots;
+	}
+
+	/**
+	 * Sets the minimum number of robots required for a mission.
+	 * @param minRobots minimum robots of people
+	 */
+	protected final void setMinRobots(int minRobots) {
+		this.minRobots = minRobots;
+		fireMissionUpdate(MissionEventType.MIN_ROBOTS_EVENT, minRobots);
+	}
+
+	/**
+	 * Gets a collection of the robots in the mission.
+	 * @return collection of robots
+	 */
+	public final Collection<Robot> getRobots() {
+		return new ConcurrentLinkedQueue<Robot>(robots);
 	}
 
 	/** 
@@ -359,6 +445,25 @@ implements Serializable {
 		}
 	}
 
+
+	/** 
+	 * Performs the mission. 
+	 * @param robot the robot performing the mission.
+	 * @throws MissionException if problem performing the mission.
+	 */
+	public void performMission(Robot robot) {
+
+		// If current phase is over, decide what to do next.
+		if (phaseEnded) {
+			determineNewPhase();
+		}
+
+		// Perform phase.
+		if (!done) {
+			performPhase(robot);
+		}
+	}
+	
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
 	 * @throws MissionException if problem setting a new phase.
@@ -375,7 +480,18 @@ implements Serializable {
 			endMission("Current mission phase is null.");
 		}
 	}
-
+	
+	/**
+	 * The robot performs the current phase of the mission.
+	 * @param robot the robot performing the phase.
+	 * @throws MissionException if problem performing the phase.
+	 */
+	protected void performPhase(Robot robot) {
+		if (phase == null) {
+			endMission("Current mission phase is null.");
+		}
+	}
+	
 	/**
 	 * Gets the mission capacity for participating people.
 	 * @return mission capacity
@@ -402,9 +518,17 @@ implements Serializable {
 		if (!done) {
 			done = true;
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-			Object p[] = people.toArray();
-			for (Object aP : p) {
-				removePerson((Person) aP);
+			
+			if (people != null) {
+				Object p[] = people.toArray();
+				for (Object aP : p) {
+					removePerson((Person) aP);
+				}
+			} else if (robots != null) {
+				Object p[] = robots.toArray();
+				for (Object aP : p) {
+					removeRobot((Robot) aP);
+				}
 			}
 
 			logger.info(description + " ending at " + phase + " due to " + reason);

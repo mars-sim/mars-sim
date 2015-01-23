@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -110,6 +111,33 @@ implements Serializable {
 		}
 
 		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
+		if (inventoryUnits.size() > 0) {
+			Iterator<Unit> i = inventoryUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
+					entities.add((Malfunctionable)unit);
+				}
+			}
+		}
+
+		return entities;
+	}
+
+	public static Collection<Malfunctionable> getMalfunctionables(Robot robot) {
+
+		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+		LocationSituation location = robot.getLocationSituation();
+
+		if (location == LocationSituation.IN_SETTLEMENT) {
+		    entities = getMalfunctionables(robot.getSettlement());
+		}
+
+		if (location == LocationSituation.IN_VEHICLE) {
+		    entities = getMalfunctionables(robot.getVehicle());
+		}
+
+		Collection<Unit> inventoryUnits = robot.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
 			Iterator<Unit> i = inventoryUnits.iterator();
 			while (i.hasNext()) {

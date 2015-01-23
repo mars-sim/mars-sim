@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -63,4 +64,16 @@ public class WorkoutMeta implements MetaTask {
 
         return result;
     }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

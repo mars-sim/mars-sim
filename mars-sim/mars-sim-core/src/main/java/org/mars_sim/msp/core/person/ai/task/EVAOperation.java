@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -108,7 +109,43 @@ implements Serializable {
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
-    
+    public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) { 
+        super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
+        
+        // Initialize data members
+        this.hasSiteDuration = hasSiteDuration;
+        this.siteDuration = siteDuration;
+        timeOnSite = 0D;
+        
+        // Check if person is in a settlement or a rover.
+        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
+            interiorObject = BuildingManager.getBuilding(robot);
+            if (interiorObject == null) {
+                throw new IllegalStateException(robot.getName() + " not in building.");
+            }
+        }
+        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+            if (robot.getVehicle() instanceof Rover) {
+                interiorObject = (Rover) robot.getVehicle();
+            }
+            else {
+                throw new IllegalStateException(robot.getName() + " not in a rover vehicle: " + 
+                		robot.getVehicle());
+            }
+        }
+        else {
+            throw new IllegalStateException(robot.getName() + 
+                    " not in a valid location situation to start EVA task: " + 
+                    robot.getLocationSituation());
+        }
+        
+        // Add task phases.
+        addPhase(WALK_TO_OUTSIDE_SITE);
+        addPhase(WALK_BACK_INSIDE);
+        
+        // Set initial phase.
+        setPhase(WALK_TO_OUTSIDE_SITE);
+    }    
     /**
      * Check if EVA should end.
      */
@@ -173,25 +210,49 @@ implements Serializable {
      * @return remaining time after performing the phase.
      */
     private double walkToOutsideSitePhase(double time) {
-        
-        // If not at field work site location, create walk outside subtask.
-        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
-        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
-        
-        if (LocationSituation.OUTSIDE != person.getLocationSituation() || !closeToLocation) {
-            if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
-                Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
-                addSubTask(walkingTask);
+    	if (person != null) {
+    	 	
+            // If not at field work site location, create walk outside subtask.
+            Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+            Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
+            boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
+            
+            if (LocationSituation.OUTSIDE != person.getLocationSituation() || !closeToLocation) {
+                if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
+                    Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
+                    addSubTask(walkingTask);
+                }
+                else {
+                    logger.severe(person.getName() + " cannot walk to outside site.");
+                    endTask();
+                }
             }
             else {
-                logger.severe(person.getName() + " cannot walk to outside site.");
-                endTask();
+                setPhase(getOutsideSitePhase());
             }
-        }
-        else {
-            setPhase(getOutsideSitePhase());
-        }
+    	}
+    	else if (robot != null) {
+    	 	
+            // If not at field work site location, create walk outside subtask.
+            Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+            Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
+            boolean closeToLocation = LocalAreaUtil.areLocationsClose(robotLocation, outsideLocation);
+            
+            if (LocationSituation.OUTSIDE != robot.getLocationSituation() || !closeToLocation) {
+                if (Walk.canWalkAllSteps(robot, outsideSiteXLoc, outsideSiteYLoc, null)) {
+                    Task walkingTask = new Walk(robot, outsideSiteXLoc, outsideSiteYLoc, null);
+                    addSubTask(walkingTask);
+                }
+                else {
+                    logger.severe(robot.getName() + " cannot walk to outside site.");
+                    endTask();
+                }
+            }
+            else {
+                setPhase(getOutsideSitePhase());
+            }
+    	}
+   
         
         return time;
     }
@@ -202,33 +263,67 @@ implements Serializable {
      * @return remaining time after performing the phase.
      */
     private double walkBackInsidePhase(double time) {
-        
-        if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
-                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-            // Set return location.        
-            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
-                    rawReturnInsideLoc.getY(), interiorObject);
-        }
-        
-        // If not at return inside location, create walk inside subtask.
-        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-        
-        if (LocationSituation.OUTSIDE == person.getLocationSituation() || !closeToLocation) {
-            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-                addSubTask(walkingTask);
-            }
-            else {
-                logger.severe(person.getName() + " cannot walk back to inside location.");
-                endTask();
-            }
-        }
-        else {
-            endTask();
-        }
-        
+    	
+    	if (person != null) {
+    		
+    	      if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+    	                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	            // Set return location.        
+    	            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+    	            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	                    rawReturnInsideLoc.getY(), interiorObject);
+    	        }
+    	        
+    	        // If not at return inside location, create walk inside subtask.
+    	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+    	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+    	        
+    	        if (LocationSituation.OUTSIDE == person.getLocationSituation() || !closeToLocation) {
+    	            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+    	                addSubTask(walkingTask);
+    	            }
+    	            else {
+    	                logger.severe(person.getName() + " cannot walk back to inside location.");
+    	                endTask();
+    	            }
+    	        }
+    	        else {
+    	            endTask();
+    	        }
+    	        
+    	}
+    	else if (robot != null) {
+    		
+    	      if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+    	                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	            // Set return location.        
+    	            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+    	            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	                    rawReturnInsideLoc.getY(), interiorObject);
+    	        }
+    	        
+    	        // If not at return inside location, create walk inside subtask.
+    	        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+    	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(robotLocation, returnInsideLoc);
+    	        
+    	        if (LocationSituation.OUTSIDE == robot.getLocationSituation() || !closeToLocation) {
+    	            if (Walk.canWalkAllSteps(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	                Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+    	                addSubTask(walkingTask);
+    	            }
+    	            else {
+    	                logger.severe(robot.getName() + " cannot walk back to inside location.");
+    	                endTask();
+    	            }
+    	        }
+    	        else {
+    	            endTask();
+    	        }
+    	        
+    	}
+    	
+  
         return time;
     }
 
@@ -321,6 +416,25 @@ implements Serializable {
         return result;
     }
 
+    public static boolean checkEVAProblem(Robot robot) {
+        
+        boolean result = false;
+        
+        // Check if it is night time. 
+        Mars mars = Simulation.instance().getMars();
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            logger.fine(robot.getName() + " should end EVA: night time.");
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
+                result = true;
+        }
+
+        if (robot.getPerformanceRating() == 0D) {
+            logger.fine(robot.getName() + " should end EVA: low performance rating.");   
+            result = true;
+        }
+        
+        return result;
+    }
     /**
      * Check for accident with EVA suit.
      * @param time the amount of time on EVA (in millisols)
@@ -374,6 +488,25 @@ implements Serializable {
         return result;
     }
     
+    public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, 
+            double yLocation) {
+        Airlock result = null;
+        LocationSituation location = robot.getLocationSituation();
+        
+        if (location == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = robot.getSettlement();
+            result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
+        }
+        else if (location == LocationSituation.IN_VEHICLE) {
+            Vehicle vehicle = robot.getVehicle();
+            if (vehicle instanceof Airlockable) {
+                result = ((Airlockable) vehicle).getAirlock();
+            }
+        }
+        
+        return result;
+    }
+    
     /**
      * Gets an available airlock to a given location that has a walkable path 
      * from the person's current location.
@@ -385,6 +518,11 @@ implements Serializable {
         return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
     }
     
+   public static Airlock getWalkableAvailableAirlock(Robot robot) {
+        
+        return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
+    }    
+   
     @Override
     public void destroy() {
         super.destroy();

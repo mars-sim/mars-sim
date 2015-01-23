@@ -21,7 +21,9 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -37,11 +39,11 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	private SkillTableModel skillTableModel;
-
+	//private Person person;
+	//private Robot robot;
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
@@ -53,7 +55,39 @@ extends TabPanel {
 			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
+		
+		//this.person = person;
+		
+		// Create skill table model
+		skillTableModel = new SkillTableModel(person);
 
+		init();
+	}
+	
+	/**
+	 * Constructor 2.
+	 * @param person the person.
+	 * @param desktop the main desktop.
+	 */
+	public TabPanelSkill(Robot robot, MainDesktopPane desktop) { 
+		// Use the TabPanel constructor
+		super(
+			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
+			null,
+			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
+			robot, desktop
+		);
+		
+		//this.robot = robot;
+		
+		// Create skill table model
+		skillTableModel = new SkillTableModel(robot);
+
+		init();
+	}
+	
+	public void init() {
+			
 		// Create skill label panel.
 		JPanel skillLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(skillLabelPanel);
@@ -66,9 +100,6 @@ extends TabPanel {
 		JScrollPane skillScrollPanel = new JScrollPane();
 		skillScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(skillScrollPanel);
-
-		// Create skill table model
-		skillTableModel = new SkillTableModel(person);
 
 		// Create skill table
 		JTable skillTable = new JTable(skillTableModel);
@@ -100,8 +131,19 @@ extends TabPanel {
 		private Map<String, Integer> skills;
 		private List<String> skillNames;
 
-		private SkillTableModel(Person person) {
-			manager = person.getMind().getSkillManager();
+		private SkillTableModel(Unit unit) {
+			Person person = null;
+	        Robot robot = null;
+	        
+	        if (unit instanceof Person) {
+	         	person = (Person) unit;
+				manager = person.getMind().getSkillManager();	        
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+				manager = robot.getMind().getSkillManager();	       
+	        }
+
 
 			SkillType[] keys = manager.getKeys();
 			skills = new HashMap<String, Integer>();

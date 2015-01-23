@@ -13,6 +13,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SelfTreatHealthProblem;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -194,4 +195,16 @@ public class SelfTreatHealthProblemMeta implements MetaTask {
         
         return result;
     }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

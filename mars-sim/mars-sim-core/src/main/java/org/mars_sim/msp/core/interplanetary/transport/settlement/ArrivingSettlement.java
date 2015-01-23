@@ -60,6 +60,7 @@ implements Transportable, Serializable {
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
 	private int populationNum;
+	private int numOfRobots;
 	private int scenarioID;
 	
 	/**
@@ -72,13 +73,15 @@ implements Transportable, Serializable {
 	 */
 	public ArrivingSettlement(
 		String name, String template, 
-		MarsClock arrivalDate, Coordinates landingLocation, int populationNum
+		MarsClock arrivalDate, Coordinates landingLocation, 
+		int populationNum, int numOfRobots
 	) {
 		this.name = name;
 		this.template = template;
 		this.arrivalDate = arrivalDate;
 		this.landingLocation = landingLocation;
 		this.populationNum = populationNum;
+		this.numOfRobots = numOfRobots;
 	}
 
 
@@ -211,6 +214,22 @@ implements Transportable, Serializable {
 	}
 
 	/**
+	 * Gets the number of robots of the arriving settlement.
+	 * @return numOfRobots.
+	 */
+	public int getNumOfRobots() {
+		return numOfRobots;
+	}
+
+	/**
+	 * Sets the number of robots of the arriving settlement.
+	 * @param numOfRobots.
+	 */
+	public void setNumOfRobots(int numOfRobots) {
+		this.numOfRobots = numOfRobots;
+	}
+	
+	/**
 	 * Commits a set of modifications for the arriving settlement.
 	 */
 	public void commitModification() {
@@ -293,7 +312,7 @@ implements Transportable, Serializable {
 		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
-		Settlement newSettlement = new Settlement(name, scenarioID, template, landingLocation, populationNum);
+		Settlement newSettlement = new Settlement(name, scenarioID, template, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);
 
 		// Add new settlement to credit manager.

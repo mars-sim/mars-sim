@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
@@ -118,5 +119,11 @@ implements Serializable {
 		result = settlementVehicleNum;
 
 		return result;
+	}
+
+	@Override
+	public double getCapability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

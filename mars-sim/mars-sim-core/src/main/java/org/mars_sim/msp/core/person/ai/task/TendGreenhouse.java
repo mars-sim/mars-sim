@@ -15,9 +15,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -92,6 +94,41 @@ implements Serializable {
         setPhase(TENDING);
     }
 
+    /**
+     * Constructor 2.
+     * @param robot the robot performing the task.
+     */
+    public TendGreenhouse(Robot robot) {
+        // Use Task constructor
+        super(NAME, robot, false, false, 0, true, 
+                10D + RandomUtil.getRandomDouble(50D));
+
+        // Initialize data members
+        if (robot.getSettlement() != null) {
+            setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
+            		robot.getSettlement().getName())); //$NON-NLS-1$
+        }
+        else {
+            endTask();
+        }
+
+        // Get available greenhouse if any.
+        Building farmBuilding = getAvailableGreenhouse(robot);
+        if (farmBuilding != null) {
+            greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
+
+            // Walk to greenhouse.
+            walkToActivitySpotInBuilding(farmBuilding, false);
+        }
+        else {
+            endTask();
+        }
+
+        // Initialize phase
+        addPhase(TENDING);
+        setPhase(TENDING);
+    }
+    
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.FARMING;
@@ -197,25 +234,40 @@ implements Serializable {
      * @param person the person
      * @return available greenhouse
      */
-    public static Building getAvailableGreenhouse(Person person) {
-
+    public static Building getAvailableGreenhouse(Unit unit) {
         Building result = null;
+        Person person = null;
+        Robot robot = null;
+        
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+            LocationSituation location = person.getLocationSituation();
+            if (location == LocationSituation.IN_SETTLEMENT) {
+                BuildingManager manager = person.getSettlement().getBuildingManager();
+                List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
+                farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
+                farmBuildings = getFarmsNeedingWork(farmBuildings);
+                farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 
-        LocationSituation location = person.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
-            farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
-            farmBuildings = getFarmsNeedingWork(farmBuildings);
-            farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
-
-            if (farmBuildings.size() > 0) {
-                Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                        person, farmBuildings);
-                result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+                if (farmBuildings.size() > 0) {
+                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                            person, farmBuildings);
+                    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+                }
             }
         }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+            LocationSituation location = robot.getLocationSituation();
+            if (location == LocationSituation.IN_SETTLEMENT) {
+                BuildingManager manager = robot.getSettlement().getBuildingManager();
+                List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
+                farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
+                farmBuildings = getFarmsNeedingWork(farmBuildings);
+                farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 
+            }
+        }
         return result;
     }
 

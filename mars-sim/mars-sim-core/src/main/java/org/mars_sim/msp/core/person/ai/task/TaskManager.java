@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
@@ -298,7 +299,17 @@ implements Serializable {
 		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
-			double probability = metaTask.getProbability(mind.getPerson());
+			double probability = 0;
+			Person person = mind.getPerson();
+			Robot robot = mind.getRobot();
+			if (person != null) {
+				probability = metaTask.getProbability(person);
+			}
+			else if (robot != null) {
+				probability = metaTask.getProbability(robot);
+			}
+			
+			
 			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 				taskProbCache.put(metaTask, probability);
 				totalProbCache += probability;

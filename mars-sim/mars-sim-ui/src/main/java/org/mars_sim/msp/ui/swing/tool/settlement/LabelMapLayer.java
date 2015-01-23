@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -51,7 +52,12 @@ implements SettlementMapLayer {
 	private static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 	private static final Color SELECTED_LABEL_COLOR = new Color(255, 255, 255);
 	private static final Color SELECTED_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	private static final Color ROBOT_LABEL_COLOR = Color.green; // new Color(0, 255, 255);
+	private static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	private static final Color SELECTED_ROBOT_LABEL_COLOR = Color.red; //new Color(255, 255, 255);
+	private static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 
+	
 	// Data members
 	private SettlementMapPanel mapPanel;
 	private Map<String, BufferedImage> labelImageCache;
@@ -104,6 +110,9 @@ implements SettlementMapLayer {
 
 		// Draw all people labels.
 		drawPersonLabels(g2d, settlement, mapPanel.isShowPersonLabels());
+
+		// Draw all people labels.
+		drawRobotLabels(g2d, settlement, mapPanel.isShowRobotLabels());
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -260,6 +269,66 @@ implements SettlementMapLayer {
 		}
 	}
 
+
+	/**
+	 * Draw labels for all robots at the settlement.
+	 * @param g2d the graphics context.
+	 * @param settlement the settlement.
+	 * @param showNonSelectedRobots true if showing non-selected robot labels.
+	 */
+	private void drawRobotLabels(
+		Graphics2D g2d, Settlement settlement, 
+		boolean showNonSelectedRobots
+	) {
+
+		List<Robot> robots = RobotMapLayer.getRobotsToDisplay(settlement);
+		Robot selectedRobot = mapPanel.getSelectedRobot();
+		int offset = 8;
+
+		// Draw all robots except selected robot.
+		if (showNonSelectedRobots) {
+			Iterator<Robot> i = robots.iterator();
+			while (i.hasNext()) {
+				Robot robot = i.next();
+
+				if (!robot.equals(selectedRobot)) {
+					drawLabelRight(
+						g2d, robot.getName(), robot.getXLocation(), robot.getYLocation(), 
+						ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, offset, 0
+					);
+				}
+			}
+		}
+
+		// Draw selected robot.
+		if (robots.contains(selectedRobot)) {
+			// Draw robot name.
+			drawLabelRight(
+				g2d, selectedRobot.getName(), selectedRobot.getXLocation(), 
+				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+				offset, 0
+			);
+
+			// Draw task.
+			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getMind().getTaskManager().getTaskDescription()); //$NON-NLS-1$
+			drawLabelRight(
+				g2d, taskString, selectedRobot.getXLocation(), 
+				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+				offset, 12
+			);
+
+			// Draw mission.
+			Mission mission = selectedRobot.getMind().getMission();
+			if (mission != null) {
+				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
+				drawLabelRight(
+					g2d, missionString, selectedRobot.getXLocation(), 
+					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+					offset, 24
+				);
+			}
+		}
+	}
 	/**
 	 * Draws a label centered at the X, Y location.
 	 * @param g2d the graphics 2D context.

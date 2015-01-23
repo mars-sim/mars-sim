@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -68,4 +69,16 @@ public class LoadVehicleGarageMeta implements MetaTask {
     
         return result;
     }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE robot-configuration SYSTEM "conf/dtd/robots.dtd">
+
+<robot-configuration>
+
+	<!-- The average amount of electrical power needed each Martian Sol -->
+	<power-consumption-rate value="1.0" />
+
+	<!-- Minimum air pressure (Pa) a robt can withstand without harm -->
+	<min-air-pressure value="500" />
+
+	<!-- Minimum temperature (degrees celsius) a robot can withstand without harm -->
+	<min-temperature value="-20.0" />
+
+	<!-- Maximum temperature (degrees celsius) a robot can withstand without harm -->
+	<max-temperature value="78.0" />
+
+	<!-- Number of millisols a robot can survive below minimum temperature -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<freezing-time value="500.0" />
+
+	<!-- List of robot type -->
+	<robot-list>
+		<robot name="GardenBot 1" type="GardenBot" settlement="Schiaparelli Point" job="Botanist">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Areology" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="1"/>
+			</skill-list>
+		</robot>
+		
+		<robot name="RepairBot 1" type="RepairBot" settlement="Schiaparelli Point" job="Technician">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Mechanics" level="2"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Areology" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="1"/>
+			</skill-list>
+		</robot>
+	</robot-list>
+
+</robot-configuration>

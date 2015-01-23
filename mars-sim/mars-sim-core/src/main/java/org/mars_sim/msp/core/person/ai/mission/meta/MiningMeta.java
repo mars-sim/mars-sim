@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -140,4 +141,16 @@ public class MiningMeta implements MetaMission {
 
         return result;
     }
+
+	@Override
+	public Mission constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

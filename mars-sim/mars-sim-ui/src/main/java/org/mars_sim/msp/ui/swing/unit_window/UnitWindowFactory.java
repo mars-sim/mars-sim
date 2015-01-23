@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowFactory.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
 
  * @author Scott Davis
  */
@@ -11,11 +11,13 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.equipment.EquipmentWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PersonWindow;
+import org.mars_sim.msp.ui.swing.unit_window.person.RobotWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.TabPanelUnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.vehicle.VehicleWindow;
 
@@ -39,6 +41,7 @@ public class UnitWindowFactory {
     public static UnitWindow getUnitWindow(Unit unit, MainDesktopPane desktop) {
         
         if (unit instanceof Person) return new PersonWindow(desktop, (Person) unit);
+        else if (unit instanceof Robot) return new RobotWindow(desktop, (Robot) unit);
         else if (unit instanceof Vehicle) return new VehicleWindow(desktop, (Vehicle) unit);
         else if (unit instanceof Settlement) return new TabPanelUnitWindow(desktop, unit);
         else if (unit instanceof Equipment) return new EquipmentWindow(desktop, (Equipment) unit);

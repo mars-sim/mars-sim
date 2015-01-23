@@ -7,6 +7,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
@@ -25,9 +26,9 @@ extends HistoricalEvent {
 	 * @param eventType The type of event.
 	 * @param description Further description of the event (may be empty string).
 	 */
-	public TaskEvent(Person person, Task task, EventType eventType, String description) {
+	public TaskEvent(Unit unit, Task task, EventType eventType, String description) {
 	
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.TASK, eventType, person, task.getDescription() + " " + description);
+		super(HistoricalEventCategory.TASK, eventType, unit, task.getDescription() + " " + description);
 	}
 }

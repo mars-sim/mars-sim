@@ -18,12 +18,14 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -56,7 +58,10 @@ implements Serializable, Comparable<Task> {
 	/** The name of the task. */
 	private String name;
 	/** The person performing the task. */
-	protected Person person;
+	protected Person person = null;
+	
+	protected Robot robot = null;
+	
 	/** True if task is finished. */
 	private boolean done;
 	/** True if task has a time duration. */
@@ -97,11 +102,11 @@ implements Serializable, Comparable<Task> {
 	 * @param duration the time duration (in millisols) of the task (or 0 if none)
 	 */
 	public Task(
-		String name, Person person, boolean effort, boolean createEvents, 
+		String name, Unit unit, boolean effort, boolean createEvents, 
 		double stressModifier, boolean hasDuration, double duration) {
 	    
 		this.name = name;
-		this.person = person;
+
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
 		this.hasDuration = hasDuration;
@@ -115,6 +120,18 @@ implements Serializable, Comparable<Task> {
 		phase = null;
 		effortDriven = effort;
 		phases = new ArrayList<TaskPhase>();
+		
+        Person person = null;
+        Robot robot = null;
+        
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+         	this.person = person;
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+        	this.robot = robot;
+        }
 	}
 
     /**
@@ -172,7 +189,12 @@ implements Serializable, Comparable<Task> {
      */
     protected void setName(String name) {
         this.name = name;
-        person.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
+        if (person != null) {
+            person.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
+        }
+        else if (robot != null) {
+            robot.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
+        }
     }
 
     /** Returns a string that is a description of what the task is currently doing.
@@ -210,7 +232,14 @@ implements Serializable, Comparable<Task> {
      */
     protected void setDescription(String description) {
         this.description = description;
-        person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+        if (person != null) {
+            person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+        }
+        else if (robot != null) {
+            robot.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+        }
+        
+
     }
 
     /** Returns a boolean whether this task should generate events

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
@@ -75,4 +76,47 @@ public class TendGreenhouseMeta implements MetaTask {
 
         return result;
     }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+	      
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            try {
+                // See if there is an available greenhouse.
+                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
+                if (farmingBuilding != null) {
+                    result = 100D;
+
+                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
+                    result += needyCropsNum * 10D;
+
+                    // Crowding modifier.
+                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
+                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
+                }
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+
+        // Job modifier.
+        Job job = robot.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+        }
+
+        return result;
+	}
 }

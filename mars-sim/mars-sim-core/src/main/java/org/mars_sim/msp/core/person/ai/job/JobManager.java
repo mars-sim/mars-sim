@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
 
  * @author Scott Davis
  */
@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
@@ -93,13 +95,22 @@ public final class JobManager implements Serializable {
 	public static double getRemainingSettlementNeed(Settlement settlement, Job job) {
 		double result = job.getSettlementNeed(settlement);
 
-		// Check all people associated with the settlement.
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			if (person.getMind().getJob() == job) result-= job.getCapability(person);
-		}
 
+			// Check all people associated with the settlement.
+			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				if (person.getMind().getJob() == job) result-= job.getCapability(person);
+			}
+	
+
+			// Check all Robots associated with the settlement.
+			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+			while (j.hasNext()) {
+				Robot robot = j.next();
+				if (robot.getMind().getJob() == job) result-= job.getCapability(robot);
+			}
+	
 		return result;
 	}
 
@@ -109,41 +120,76 @@ public final class JobManager implements Serializable {
 	 * @param person the person to check.
 	 * @return the new job.
 	 */
-	public static Job getNewJob(Person person) {
-
-		Job originalJob = person.getMind().getJob();
-
-		// Determine person's associated settlement.
-		Settlement settlement = null;
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
-			settlement = person.getSettlement();
-		else if (person.getMind().hasActiveMission()) 
-			settlement = person.getMind().getMission().getAssociatedSettlement();
-
-		// Find new job for person.
+	public static Job getNewJob(Unit unit) {
 		Job newJob = null;
-		double newJobProspect = Integer.MIN_VALUE;					
-		if (settlement != null) {
-			Iterator<Job> i = getJobs().iterator();
-			while (i.hasNext()) {
-				Job job = i.next();
-				double jobProspect = getJobProspect(person, job, settlement, true);
-				if (jobProspect >= newJobProspect) {
-					newJob = job;
-					newJobProspect = jobProspect;
+        Person person = null;
+        Robot robot = null;
+        
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+    		Job originalJob = person.getMind().getJob();
+    		// Determine person's associated settlement.
+    		Settlement settlement = null;
+    		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
+    			settlement = person.getSettlement();
+    		else if (person.getMind().hasActiveMission()) 
+    			settlement = person.getMind().getMission().getAssociatedSettlement();
+
+    		// Find new job for person.
+    		double newJobProspect = Integer.MIN_VALUE;					
+    		if (settlement != null) {
+    			Iterator<Job> i = getJobs().iterator();
+    			while (i.hasNext()) {
+    				Job job = i.next();
+    				double jobProspect = getJobProspect(person, job, settlement, true);
+    				if (jobProspect >= newJobProspect) {
+    					newJob = job;
+    					newJobProspect = jobProspect;
+    				}
+    			}
+
+    			if(logger.isLoggable(Level.FINEST)) {
+    				if ((newJob != null) && (newJob != originalJob)) 
+    					logger.finest(person.getName() + " changed jobs to " + newJob.getName(person.getGender()));
+    				else logger.finest(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
+
+    			}
+    		}
+    		else newJob = originalJob;
+
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+			Job originalJob = robot.getMind().getJob();
+	
+			// Determine robot's associated settlement.
+			Settlement settlement = null;
+			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
+				settlement = robot.getSettlement();
+			else if (robot.getMind().hasActiveMission()) 
+				settlement = robot.getMind().getMission().getAssociatedSettlement();
+	
+			// Find new job for robot.
+			double newJobProspect = Integer.MIN_VALUE;					
+			if (settlement != null) {
+				Iterator<Job> i = getJobs().iterator();
+				while (i.hasNext()) {
+					Job job = i.next();
+					double jobProspect = getJobProspect(robot, job, settlement, true);
+					if (jobProspect >= newJobProspect) {
+						newJob = job;
+						newJobProspect = jobProspect;
+					}
 				}
+	
+				if(logger.isLoggable(Level.FINEST)) {
+					if ((newJob != null) && (newJob != originalJob)) 
+						logger.finest(robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType()));
+					else logger.finest(robot.getName() + " keeping old job of " + originalJob.getName(robot.getRobotType()));
+				}	
 			}
-
-			if(logger.isLoggable(Level.FINEST)) {
-				if ((newJob != null) && (newJob != originalJob)) 
-					logger.finest(person.getName() + " changed jobs to " + newJob.getName(person.getGender()));
-				else logger.finest(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
-
-			}
-
-		}
-		else newJob = originalJob;
-
+			else newJob = originalJob;
+        }
 		return newJob;
 	}
 
@@ -155,11 +201,25 @@ public final class JobManager implements Serializable {
 	 * @param isHomeSettlement is this the person's home settlement?
 	 * @return job prospect value (0.0 min)
 	 */
-	public static double getJobProspect(Person person, Job job, Settlement settlement, boolean isHomeSettlement) {
+	public static double getJobProspect(Unit unit, Job job, Settlement settlement, boolean isHomeSettlement) {
+        Person person = null;
+        Robot robot = null;
 		double jobCapability = 0D;
-		if (job != null) jobCapability = job.getCapability(person);
-		double remainingNeed = getRemainingSettlementNeed(settlement, job);
-		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
+		double remainingNeed = 0D;
+		
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+        	if (job != null) jobCapability = job.getCapability(person);   		
+    		remainingNeed = getRemainingSettlementNeed(settlement, job);   		
+    		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
+     
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+        	if (job != null) jobCapability = job.getCapability(robot);    		
+    		remainingNeed = getRemainingSettlementNeed(settlement, job);    		
+    		if ((job == robot.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
+        }
 		return (jobCapability + 1D) * remainingNeed;
 	}
 

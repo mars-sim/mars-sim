@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -110,5 +111,11 @@ implements Serializable {
         }
         
 		return result;
+	}
+
+	@Override
+	public double getCapability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

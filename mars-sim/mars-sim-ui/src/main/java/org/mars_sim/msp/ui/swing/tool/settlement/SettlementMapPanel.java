@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 //import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -70,9 +71,11 @@ implements ClockListener {
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
-		
+	private boolean showRobotLabels;
+	
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
+	private Map<Settlement, Robot> selectedRobot;
 	
 	private Building building;
 	private SettlementWindow settlementWindow;
@@ -101,7 +104,9 @@ implements ClockListener {
 		showConstructionLabels = false;
 		showPersonLabels = false;
 		showVehicleLabels = false;
+		showRobotLabels = false;
 		selectedPerson = new HashMap<Settlement, Person>();
+		selectedRobot = new HashMap<Settlement, Robot>();
 		
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>(5);
@@ -109,6 +114,7 @@ implements ClockListener {
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
+		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
 		// Set foreground and background colors.
@@ -145,12 +151,7 @@ implements ClockListener {
 		scale = DEFAULT_SCALE;
 		this.settlement = settlement;
 		this.building = building;
-		showBuildingLabels = false;
-		showConstructionLabels = false;
-		showPersonLabels = false;
-		showVehicleLabels = false;
-		selectedPerson = new HashMap<Settlement, Person>();
-
+	
 		mapLayers = new ArrayList<SettlementMapLayer>(1);
 		StructureMapLayer layer = new StructureMapLayer(this);		 
 		mapLayers.add(layer);
@@ -182,6 +183,7 @@ implements ClockListener {
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
 				selectPersonAt(evt.getX(), evt.getY());
+				selectRobotAt(evt.getX(), evt.getY());
 			}
 	
 		});
@@ -206,7 +208,8 @@ implements ClockListener {
 		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
 		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
 		    	final Person person = selectPersonAt(evt.getX(), evt.getY());
-	
+		    	final Robot robot = selectRobotAt(evt.getX(), evt.getY());
+		    	
 		    	// if NO building is selected, do NOT call popup menu
 		    	if (building != null || vehicle != null || person != null) {
 		    		
@@ -216,6 +219,8 @@ implements ClockListener {
 		    	        	// when one or more are detected
 		    	        	if (person != null)
 		    	        		menu = new PopUpUnitMenu(settlementWindow, person);
+		    	        	else if (robot != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, robot);
 		    	        	else if (vehicle != null)
 		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
 		    	        	else if (building != null)
@@ -367,6 +372,37 @@ implements ClockListener {
 	}
 	
 	/**
+	 * Selects a robot if any person is at the given x and y pixel position.
+	 * @param xPixel the x pixel position on the displayed map.
+	 * @param yPixel the y pixel position on the displayed map.
+	 * @return selectedRobot;
+	 */
+	public Robot selectRobotAt(int xPixel, int yPixel) {
+
+		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
+		double range = 6D / scale;
+		Robot selectedRobot = null;
+
+		Iterator<Robot> i = RobotMapLayer.getRobotsToDisplay(settlement).iterator();
+		while (i.hasNext()) {
+			Robot robot = i.next();
+			double distanceX = robot.getXLocation() - settlementPosition.getX();
+			double distanceY = robot.getYLocation() - settlementPosition.getY();
+			double distance = Math.hypot(distanceX, distanceY);
+			if (distance <= range) {
+				selectedRobot = robot;
+			}
+		}
+
+		if (selectedRobot != null) {
+			selectRobot(selectedRobot);
+			repaint();
+		}
+		return selectedRobot;
+	}
+	
+
+	/**
 	 * Selects a building 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
@@ -491,6 +527,7 @@ implements ClockListener {
 		}
 		return result;
 	}
+	
 	/**
 	 * Selects a person on the map.
 	 * @param person the selected person.
@@ -518,6 +555,32 @@ implements ClockListener {
 		return result;
 	}
 
+	/**
+	 * Selects a robot on the map.
+	 * @param robot the selected robot.
+	 */
+	public void selectRobot(Robot robot) {
+		if ((settlement != null) && (robot != null)) {
+			Robot currentlySelected = selectedRobot.get(settlement);
+			if (robot.equals(currentlySelected)) {
+				selectedRobot.put(settlement, null);
+			} else {
+				selectedRobot.put(settlement, robot);
+			}
+		}
+	}
+
+	/**
+	 * Get the selected Robot for the current settlement.
+	 * @return the selected Robot.
+	 */
+	public Robot getSelectedRobot() {
+		Robot result = null;
+		if (settlement != null) {
+			result = selectedRobot.get(settlement);
+		}
+		return result;
+	}
 
 	/**
 	 * Selects a building on the map.
@@ -628,6 +691,22 @@ implements ClockListener {
 		repaint();
 	}
 
+	/**
+	 * Checks if Robot labels should be displayed.
+	 * @return true if Robot labels should be displayed.
+	 */
+	public boolean isShowRobotLabels() {
+		return showRobotLabels;
+	}
+
+	/**
+	 * Sets if Robot labels should be displayed.
+	 * @param showLabels true if Robot labels should be displayed.
+	 */
+	public void setShowRobotLabels(boolean showLabels) {
+		this.showRobotLabels = showLabels;
+		repaint();
+	}
 	/**
 	 * Checks if vehicle labels should be displayed.
 	 * @return true if vehicle labels should be displayed.

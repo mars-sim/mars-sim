@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelAttribute.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
 
  * @author Scott Davis
  */
@@ -23,9 +23,11 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -40,9 +42,11 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private AttributeTableModel attributeTableModel;
-
+	//private Person person;
+	//private Robot robot;
+	
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * @param person {@link Person} the person.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
@@ -55,7 +59,39 @@ extends TabPanel {
 			person,
 			desktop
 		);
+		//this.person = person;
+		
+		// Create attribute table model
+		attributeTableModel = new AttributeTableModel(person);
 
+		init();
+	}
+	
+	/**
+	 * Constructor 2.
+	 * @param robot{@link Robot} the robot.
+	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 */
+	public TabPanelAttribute(Robot robot, MainDesktopPane desktop) { 
+		// Use the TabPanel constructor
+		super(
+			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
+			null,
+			Msg.getString("TabPanelAttribute.tooltip"), //$NON-NLS-1$
+			robot,
+			desktop
+		);
+		
+		//this.robot = robot;
+		
+		// Create attribute table model
+		attributeTableModel = new AttributeTableModel(robot);
+	
+		init();
+	}
+	
+	public void init() {
+		
 		// Create attribute label panel.
 		JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(attributeLabelPanel);
@@ -68,9 +104,6 @@ extends TabPanel {
 		JScrollPane attributeScrollPanel = new JScrollPane();
 		attributeScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(attributeScrollPanel);
-
-		// Create attribute table model
-		attributeTableModel = new AttributeTableModel(person);
 
 		// Create attribute table
 		JTable attributeTable = new JTable(attributeTableModel);
@@ -104,8 +137,18 @@ extends TabPanel {
 		 * hidden constructor.
 		 * @param person {@link Person}
 		 */
-		private AttributeTableModel(Person person) {
-			manager = person.getNaturalAttributeManager();
+		private AttributeTableModel(Unit unit) {
+	        Person person = null;
+	        Robot robot = null;     
+	        if (unit instanceof Person) {
+	         	person = (Person) unit;  
+	         	manager = person.getNaturalAttributeManager();
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	manager = robot.getNaturalAttributeManager();
+	        }
+			
 			attributes = new ArrayList<Map<String,NaturalAttribute>>();
 			for (NaturalAttribute value : NaturalAttribute.values()) {
 				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();

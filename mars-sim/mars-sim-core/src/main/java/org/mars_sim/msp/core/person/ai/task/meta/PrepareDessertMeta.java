@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -118,4 +119,16 @@ public class PrepareDessertMeta implements MetaTask {
         if (result < 0) result = 0;
         return result;
     }
+
+	@Override
+	public Task constructInstance(Robot robot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getProbability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

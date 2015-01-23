@@ -647,6 +647,19 @@ public class SettlementTransparentPanel extends JComponent {
 			}
 		});
 		result.add(personLabelMenuItem);
+		
+		// Create person label menu item.
+		JCustomCheckBoxMenuItem robotLabelMenuItem = new JCustomCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
+		robotLabelMenuItem.setForeground(new Color(139,69,19));
+		robotLabelMenuItem.setContentAreaFilled(false);
+		robotLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
+			}
+		});
+		result.add(robotLabelMenuItem);
+		
 		result.pack();
 
 		return result;

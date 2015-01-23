@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -71,6 +72,9 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
+    //private Person person = null;
+    //private Robot robot = null;
+    
     /** 
      * Constructor.
      * @param person the person to perform the task
@@ -78,12 +82,28 @@ implements Serializable {
      */
     public ExitAirlock(Person person, Airlock airlock) {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+	
+        this.airlock = airlock;
 
+        init();
+        
+        logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
+    }
+    
+    public ExitAirlock(Robot robot, Airlock airlock) {
+        super(NAME, robot, false, false, STRESS_MODIFIER, false, 0D);
+	
+        this.airlock = airlock;
+
+        init();
+        
+        logger.fine(robot.getName() + " is starting to exit airlock of " + airlock.getEntityName());
+    }
+    
+    public void init() {   	
         // Initialize data members
         setDescription(Msg.getString("Task.description.exitAirlock.detail", 
                 airlock.getEntityName())); //$NON-NLS-1$
-        this.airlock = airlock;
-
         // Initialize task phase
         addPhase(PROCURING_EVA_SUIT);
         addPhase(WAITING_TO_ENTER_AIRLOCK);
@@ -92,10 +112,8 @@ implements Serializable {
         addPhase(EXITING_AIRLOCK);
 
         setPhase(PROCURING_EVA_SUIT);
-
-        logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
     }
-
+    
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time (millisols) the phase is to be performed.
@@ -133,43 +151,53 @@ implements Serializable {
     private double procuringEVASuit(double time) {
 
         double remainingTime = time;
-
-        logger.finer(person + " procuring EVA suit.");
-
+        
         // Check if person already has EVA suit.
         if (!hasSuit && alreadyHasEVASuit()) {
             hasSuit = true;
         }
+ 
+        if (person != null) {
+            logger.finer(person + " procuring EVA suit.");
 
-        // Get an EVA suit from entity inventory.
-        if (!hasSuit) {
-            Inventory inv = airlock.getEntityInventory();
-            EVASuit suit = getGoodEVASuit(inv);
-            if (suit != null) {
-                try {
-                    inv.retrieveUnit(suit);
-                    person.getInventory().storeUnit(suit);
-                    loadEVASuit(suit);
-                    hasSuit = true;
-                }
-                catch (Exception e) {
-                    logger.severe(e.getMessage());
+            // Get an EVA suit from entity inventory.
+            if (!hasSuit) {
+                Inventory inv = airlock.getEntityInventory();
+                EVASuit suit = getGoodEVASuit(inv);
+                if (suit != null) {
+                    try {
+                        inv.retrieveUnit(suit);
+                        person.getInventory().storeUnit(suit);
+                        loadEVASuit(suit);
+                        hasSuit = true;
+                    }
+                    catch (Exception e) {
+                        logger.severe(e.getMessage());
+                    }
                 }
             }
-        }
 
-        // If person still doesn't have an EVA suit, end task.
-        if (!hasSuit) {
-            logger.finer(person.getName() + " does not have an EVA suit, ExitAirlock ended");
-            endTask();
-            return 0D;
-        }
-        else {
-            setPhase(WAITING_TO_ENTER_AIRLOCK);
-        }
+            // If person still doesn't have an EVA suit, end task.
+            if (!hasSuit) {
+                logger.finer(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+                endTask();
+                return 0D;
+            }
+            else {
+                setPhase(WAITING_TO_ENTER_AIRLOCK);
+            }
 
-        // Add experience
-        addExperience(time - remainingTime);
+
+            // Add experience
+            addExperience(time - remainingTime);
+            
+        }
+        else if (robot != null) {
+      
+        	// No need of procuring an EVA suit
+        	setPhase(WAITING_TO_ENTER_AIRLOCK);
+
+        }
 
         return remainingTime;
     }
@@ -183,48 +211,99 @@ implements Serializable {
 
         double remainingTime = time;
 
-        logger.finer(person + " waiting to enter airlock.");
+  
 
-        // If person is already outside, change to exit airlock phase.
-        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-            setPhase(EXITING_AIRLOCK);
-            return remainingTime;
-        }
-
-        // If airlock is pressurized and inner door unlocked, enter airlock.
-        if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
-                airlock.inAirlock(person)) {
-            setPhase(ENTERING_AIRLOCK);
-        }
-        else {
-            // Add person to queue awaiting airlock at inner door if not already.
-            airlock.addAwaitingAirlockInnerDoor(person); 
-
-            // If airlock has not been activated, activate it.
-            if (!airlock.isActivated()) {
-                airlock.activateAirlock(person);
+        if (person != null) {
+            logger.finer(person + " waiting to enter airlock.");
+            
+            // If person is already outside, change to exit airlock phase.
+            if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+                setPhase(EXITING_AIRLOCK);
+                return remainingTime;
             }
 
-            // Check if person is the airlock operator.
-            if (person.equals(airlock.getOperator())) {
-                // If person is airlock operator, add cycle time to airlock.
-                double activationTime = remainingTime;
-                if (airlock.getRemainingCycleTime() < remainingTime) {
-                    remainingTime -= airlock.getRemainingCycleTime();
-                }
-                else {
-                    remainingTime = 0D;
-                }
-                boolean activationSuccessful = airlock.addCycleTime(activationTime);
-                if (!activationSuccessful) {
-                    logger.severe("Problem with airlock activation: " + person.getName());
-                }
+            // If airlock is pressurized and inner door unlocked, enter airlock.
+            if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
+                    airlock.inAirlock(person)) {
+                setPhase(ENTERING_AIRLOCK);
             }
             else {
-                // If person is not airlock operator, just wait.
-                remainingTime = 0D;
+                // Add person to queue awaiting airlock at inner door if not already.
+                airlock.addAwaitingAirlockInnerDoor(person); 
+
+                // If airlock has not been activated, activate it.
+                if (!airlock.isActivated()) {
+                    airlock.activateAirlock(person);
+                }
+
+                // Check if person is the airlock operator.
+                if (person.equals(airlock.getOperator())) {
+                    // If person is airlock operator, add cycle time to airlock.
+                    double activationTime = remainingTime;
+                    if (airlock.getRemainingCycleTime() < remainingTime) {
+                        remainingTime -= airlock.getRemainingCycleTime();
+                    }
+                    else {
+                        remainingTime = 0D;
+                    }
+                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
+                    if (!activationSuccessful) {
+                        logger.severe("Problem with airlock activation: " + person.getName());
+                    }
+                }
+                else {
+                    // If person is not airlock operator, just wait.
+                    remainingTime = 0D;
+                }
             }
         }
+        else if (robot != null) {
+            logger.finer(robot + " waiting to enter airlock.");
+            
+            // If person is already outside, change to exit airlock phase.
+            if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+                setPhase(EXITING_AIRLOCK);
+                return remainingTime;
+            }
+
+            // If inner door is unlocked, enter airlock.
+            // TODO: Doesn't a robot need to wait for airlock to be pressurized ?
+            if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
+                    airlock.inAirlock(person)) {
+                setPhase(ENTERING_AIRLOCK);
+            }
+            else {
+                // Add robot to queue awaiting airlock at inner door if not already.
+                airlock.addAwaitingAirlockInnerDoor(robot); 
+
+                // If airlock has not been activated, activate it.
+                if (!airlock.isActivated()) {
+                    airlock.activateAirlock(robot);
+                }
+
+                // Check if robot is the airlock operator.
+                if (robot.equals(airlock.getOperator())) {
+                    // If robot is airlock operator, add cycle time to airlock.
+                    double activationTime = remainingTime;
+                    if (airlock.getRemainingCycleTime() < remainingTime) {
+                        remainingTime -= airlock.getRemainingCycleTime();
+                    }
+                    else {
+                        remainingTime = 0D;
+                    }
+                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
+                    if (!activationSuccessful) {
+                        logger.severe("Problem with airlock activation: " + robot.getName());
+                    }
+                }
+                else {
+                    // If robot is not airlock operator, just wait.
+                    remainingTime = 0D;
+                }
+            }
+        }
+
+
 
         // Add experience
         addExperience(time - remainingTime);
@@ -337,33 +416,67 @@ implements Serializable {
 
         double remainingTime = time;
 
-        logger.finer(person + " waiting inside airlock.");
+        if (person != null) {
+            logger.finer(person + " waiting inside airlock.");
 
-        if (airlock.inAirlock(person)) {
+            if (airlock.inAirlock(person)) {
 
-            // Check if person is the airlock operator.
-            if (person.equals(airlock.getOperator())) {
-                // If person is airlock operator, add cycle time to airlock.
-                double activationTime = remainingTime;
-                if (airlock.getRemainingCycleTime() < remainingTime) {
-                    remainingTime -= airlock.getRemainingCycleTime();
+                // Check if person is the airlock operator.
+                if (person.equals(airlock.getOperator())) {
+                    // If person is airlock operator, add cycle time to airlock.
+                    double activationTime = remainingTime;
+                    if (airlock.getRemainingCycleTime() < remainingTime) {
+                        remainingTime -= airlock.getRemainingCycleTime();
+                    }
+                    else {
+                        remainingTime = 0D;
+                    }
+                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
+                    if (!activationSuccessful) {
+                        logger.severe("Problem with airlock activation: " + person.getName());
+                    }
                 }
                 else {
+                    // If person is not airlock operator, just wait.
                     remainingTime = 0D;
-                }
-                boolean activationSuccessful = airlock.addCycleTime(activationTime);
-                if (!activationSuccessful) {
-                    logger.severe("Problem with airlock activation: " + person.getName());
                 }
             }
             else {
-                // If person is not airlock operator, just wait.
-                remainingTime = 0D;
+                logger.finer(person + " is already outside during waiting inside airlock phase.");
+                setPhase(EXITING_AIRLOCK);
             }
+
         }
-        else {
-            logger.finer(person + " is already outside during waiting inside airlock phase.");
-            setPhase(EXITING_AIRLOCK);
+        else if (robot != null) {
+            logger.finer(robot + " waiting inside airlock.");
+
+            if (airlock.inAirlock(robot)) {
+
+                // Check if robot is the airlock operator.
+                if (robot.equals(airlock.getOperator())) {
+                    // If robot is airlock operator, add cycle time to airlock.
+                    double activationTime = remainingTime;
+                    if (airlock.getRemainingCycleTime() < remainingTime) {
+                        remainingTime -= airlock.getRemainingCycleTime();
+                    }
+                    else {
+                        remainingTime = 0D;
+                    }
+                    boolean activationSuccessful = airlock.addCycleTime(activationTime);
+                    if (!activationSuccessful) {
+                        logger.severe("Problem with airlock activation: " + robot.getName());
+                    }
+                }
+                else {
+                    // If robot is not airlock operator, just wait.
+                    remainingTime = 0D;
+                }
+            }
+            else {
+                logger.finer(robot + " is already outside during waiting inside airlock phase.");
+                setPhase(EXITING_AIRLOCK);
+            }
+
         }
 
         // Add experience
@@ -381,28 +494,57 @@ implements Serializable {
 
         double remainingTime = time;
 
-        logger.finer(person + " exiting airlock outside.");
+        if (person != null) {
+            logger.finer(person + " exiting airlock outside.");
 
-        if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
-            throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() + 
-                    " but is not outside.");
-        }
+            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+                throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() + 
+                        " but is not outside.");
+            }
 
-        if (exteriorAirlockPos == null) {
-            exteriorAirlockPos = airlock.getAvailableExteriorPosition();
-        }
+            if (exteriorAirlockPos == null) {
+                exteriorAirlockPos = airlock.getAvailableExteriorPosition();
+            }
 
-        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-        if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {
+            Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+            if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {
 
-            logger.finer(person + " has exited airlock outside.");
-            endTask();
+                logger.finer(person + " has exited airlock outside.");
+                endTask();
+            }
+            else {
+                // Walk to exterior airlock position.
+                addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                        exteriorAirlockPos.getX(), exteriorAirlockPos.getY(), true));
+            }
+
         }
-        else {
-            // Walk to exterior airlock position.
-            addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    exteriorAirlockPos.getX(), exteriorAirlockPos.getY(), true));
+        else if (robot != null) {
+            logger.finer(robot + " exiting airlock outside.");
+
+            if (LocationSituation.OUTSIDE != robot.getLocationSituation()) {
+                throw new IllegalStateException(robot + " has exited airlock of " + airlock.getEntityName() + 
+                        " but is not outside.");
+            }
+
+            if (exteriorAirlockPos == null) {
+                exteriorAirlockPos = airlock.getAvailableExteriorPosition();
+            }
+
+            Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+            if (LocalAreaUtil.areLocationsClose(robotLocation, exteriorAirlockPos)) {
+
+                logger.finer(robot + " has exited airlock outside.");
+                endTask();
+            }
+            else {
+                // Walk to exterior airlock position.
+                addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(), 
+                        exteriorAirlockPos.getX(), exteriorAirlockPos.getY(), true));
+            }
+
         }
+        
 
         // Add experience
         addExperience(time - remainingTime);
@@ -420,13 +562,27 @@ implements Serializable {
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
 
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        if (person != null) {
+            // Experience points adjusted by person's "Experience Aptitude" attribute.
+            NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            evaExperience += evaExperience * experienceAptitudeModifier;
+            evaExperience *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+      
+        }
+        else if (robot != null) {
+            // Experience points adjusted by robot's "Experience Aptitude" attribute.
+            NaturalAttributeManager nManager = robot.getNaturalAttributeManager();
+            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            evaExperience += evaExperience * experienceAptitudeModifier;
+            evaExperience *= getTeachingExperienceModifier();
+            robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+      
+        }
+ 
     }
 
     /**
@@ -439,7 +595,7 @@ implements Serializable {
 
         boolean result = true;
 
-        // Check if person is outside.
+		// Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
@@ -463,17 +619,51 @@ implements Serializable {
         return result;
     }
 
+    public static boolean canExitAirlock(Robot robot, Airlock airlock) {
+
+        boolean result = true;
+
+		// Check if person is outside.
+        if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+            result = false;
+            logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+                    " due to already being outside.");
+        }
+
+        // Check if EVA suit is available.
+        //if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        //    result = false;
+        //    logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+        //            " due to not able to find good EVA suit.");
+        //}
+
+        // Check if robot is incapacitated.
+        if (robot.getPerformanceRating() == 0D) {
+            result = false;
+            logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+                    " due to performance rating is 0.");
+        }
+
+        return result;
+    }
+    
     /**
      * Checks if the person already has an EVA suit in their inventory.
      * @return true if person already has an EVA suit.
      */
     private boolean alreadyHasEVASuit() {
         boolean result = false;
-        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-        if (suit != null) {
-            result = true;
-            logger.severe(person.getName() + " already has an EVA suit in inventory!");
+        if (person != null) {
+            EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+            if (suit != null) {
+                result = true;
+                logger.severe(person.getName() + " already has an EVA suit in inventory!");
+            }
         }
+        else if (robot != null) {
+      
+        }
+
         return result;
     }
 
@@ -551,62 +741,87 @@ implements Serializable {
      */
     private void loadEVASuit(EVASuit suit) {
 
-        Inventory suitInv = suit.getInventory();
-        Inventory entityInv = person.getContainerUnit().getInventory();
+    	if (person != null) {
 
-        // Fill oxygen in suit from entity's inventory. 
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
-        
-    	// 2015-01-09 Added addDemandTotalRequest()
-        entityInv.addDemandTotalRequest(oxygen);
-        
-        double takenOxygen = neededOxygen;
-        if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
-        try {
-            entityInv.retrieveAmountResource(oxygen, takenOxygen);
-        	// 2015-01-09 addDemandRealUsage()
-            entityInv.addDemandAmount(oxygen, takenOxygen);
-            suitInv.storeAmountResource(oxygen, takenOxygen, true);
-            // not calling addSupplyAmount()
-        }
-        catch (Exception e) {}
+            Inventory suitInv = suit.getInventory();
+            Inventory entityInv = person.getContainerUnit().getInventory();
 
-        // Fill water in suit from entity's inventory.
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
-        double availableWater = entityInv.getAmountResourceStored(water, false);
-    	// 2015-01-09 Added addDemandTotalRequest()
-        entityInv.addDemandTotalRequest(water);
-        
-        double takenWater = neededWater;
-        if (takenWater > availableWater) takenWater = availableWater;
-        try {
-            entityInv.retrieveAmountResource(water, takenWater);
-        	// 2015-01-09 addDemandRealUsage()
-            entityInv.addDemandAmount(water, takenWater);
-            suitInv.storeAmountResource(water, takenWater, true);
-            // not calling addSupplyAmount()
-        }
-        catch (Exception e) {}
+            // Fill oxygen in suit from entity's inventory. 
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
+            double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
+            
+        	// 2015-01-09 Added addDemandTotalRequest()
+            entityInv.addDemandTotalRequest(oxygen);
+            
+            double takenOxygen = neededOxygen;
+            if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
+            try {
+                entityInv.retrieveAmountResource(oxygen, takenOxygen);
+            	// 2015-01-09 addDemandRealUsage()
+                entityInv.addDemandAmount(oxygen, takenOxygen);
+                suitInv.storeAmountResource(oxygen, takenOxygen, true);
+                // not calling addSupplyAmount()
+            }
+            catch (Exception e) {}
+
+            // Fill water in suit from entity's inventory.
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
+            double availableWater = entityInv.getAmountResourceStored(water, false);
+        	// 2015-01-09 Added addDemandTotalRequest()
+            entityInv.addDemandTotalRequest(water);
+            
+            double takenWater = neededWater;
+            if (takenWater > availableWater) takenWater = availableWater;
+            try {
+                entityInv.retrieveAmountResource(water, takenWater);
+            	// 2015-01-09 addDemandRealUsage()
+                entityInv.addDemandAmount(water, takenWater);
+                suitInv.storeAmountResource(water, takenWater, true);
+                // not calling addSupplyAmount()
+            }
+            catch (Exception e) {}
+    	}
+    	else if (robot != null) {
+
+    	}
+
     }
 
     @Override
     public void endTask() {
         super.endTask();
 
-        // Clear the person as the airlock operator if task ended prematurely.
-        if ((airlock != null) && person.equals(airlock.getOperator())) {
-            logger.severe(person + " ending exiting airlock task prematurely, " +
-                    "clearing as airlock operator for " + airlock.getEntityName());
-            airlock.clearOperator();
+        if (person != null) {
+        	  // Clear the person as the airlock operator if task ended prematurely.
+            if ((airlock != null) && person.equals(airlock.getOperator())) {
+                logger.severe(person + " ending exiting airlock task prematurely, " +
+                        "clearing as airlock operator for " + airlock.getEntityName());
+                airlock.clearOperator();
+            }
         }
+        else if (robot != null) {
+        	  // Clear the robot as the airlock operator if task ended prematurely.
+            if ((airlock != null) && robot.equals(airlock.getOperator())) {
+                logger.severe(robot + " ending exiting airlock task prematurely, " +
+                        "clearing as airlock operator for " + airlock.getEntityName());
+                airlock.clearOperator();
+            }
+        }
+ 
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+	    SkillManager manager = null;
+    	if (person != null) {
+    		manager = person.getMind().getSkillManager();   	     
+    	}
+    	else if (robot != null) {
+    	     manager = person.getMind().getSkillManager();  
+    	}
+  
         return manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
     }
 

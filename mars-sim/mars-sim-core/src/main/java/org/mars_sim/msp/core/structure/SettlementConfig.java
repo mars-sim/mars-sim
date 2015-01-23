@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.07 2015-01-17
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -34,6 +34,7 @@ implements Serializable {
 	private static final String TEMPLATE = "template";
 	private static final String NAME = "name";
 	private static final String DEFAULT_POPULATION = "default-population";
+	private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
 	private static final String BUILDING = "building";
 	private static final String ID = "id";
 	private static final String TYPE = "type";
@@ -45,6 +46,7 @@ implements Serializable {
 	private static final String CONNECTION_LIST = "connection-list";
 	private static final String CONNECTION = "connection";
 	private static final String NUMBER = "number";
+	private static final String ROBOTS_NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
@@ -53,6 +55,7 @@ implements Serializable {
 	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";
 	private static final String POPULATION = "population";
+	private static final String NUM_OF_ROBOTS = "number-of-robots";
 	private static final String SETTLEMENT_NAME_LIST = "settlement-name-list";
 	private static final String SETTLEMENT_NAME = "settlement-name";
 	private static final String VALUE = "value";
@@ -135,10 +138,10 @@ implements Serializable {
 		    scenarioMap.put(name, scenarioID);
 		   	    
 		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
+		    int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		    // 2014-10-29 Added scenarioID 
-			SettlementTemplate template = new SettlementTemplate(name, scenarioID, defaultPopulation);
-
+			SettlementTemplate template = new SettlementTemplate(name, scenarioID, defaultPopulation, defaultNumOfRobots);
 			settlementTemplates.add(template);
 			
 			// Load buildings
@@ -335,6 +338,14 @@ implements Serializable {
 			}
 			initialSettlement.populationNumber = number;
 			
+			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
+			String numOfRobotsStr = populationElement.getAttributeValue(ROBOTS_NUMBER);
+			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			if (number < 0) {
+				throw new IllegalStateException("The number of robots cannot be less than zero: " + number);
+			}
+			initialSettlement.numOfRobots = numOfRobots;
+			
 			initialSettlements.add(initialSettlement);
 		}
 	}
@@ -383,6 +394,14 @@ implements Serializable {
 				throw new IllegalStateException("populationNumber cannot be less than zero: " + number);
 			}
 			arrivingSettlement.populationNumber = number;
+			
+			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
+			String numOfRobotsStr = populationElement.getAttributeValue(ROBOTS_NUMBER);
+			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			if (numOfRobots < 0) {
+				throw new IllegalStateException("numOfRobots cannot be less than zero: " + number);
+			}
+			arrivingSettlement.numOfRobots = number;
 			
 			newArrivingSettlements.add(arrivingSettlement);
 		}
@@ -533,6 +552,19 @@ implements Serializable {
 	}
 	
 	/**
+	 * Gets the number of robots for a new arriving settlement.
+	 * @param index the index of the new arriving settlement.
+	 * @return number of robots of the settlement.
+	 */
+	public int getNewArrivingSettlementNumOfRobots(int index) {
+		if ((index >= 0) && (index < newArrivingSettlements.size())) {
+			NewArrivingSettlement settlement = newArrivingSettlements.get(index);
+			return settlement.numOfRobots;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+	
+	/**
 	 * Gets the number of initial settlements.
 	 * @return number of settlements.
 	 */
@@ -622,6 +654,19 @@ implements Serializable {
 	}
 	
 	/**
+	 * Gets the robot population number for an initial settlement.
+	 * @param index the index of the initial settlement.
+	 * @return robot population number of the settlement.
+	 */
+	public int getInitialSettlementNumOfRobots(int index) {
+		if ((index >= 0) && (index < initialSettlements.size())) {
+			InitialSettlement settlement = initialSettlements.get(index);
+			return settlement.numOfRobots;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+	
+	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
 	 */
@@ -643,12 +688,13 @@ implements Serializable {
 	 * @param latitude the settlement latitude (ex. "10.3 S").
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
-	public void addInitialSettlement(String name, String template, int populationNum, String latitude, 
+	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, String latitude, 
 			String longitude) {
 	    InitialSettlement settlement = new InitialSettlement();
 	    settlement.name = name;
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
+	    settlement.numOfRobots = numOfRobots;
 	    settlement.scenarioID = scenarioMap.get(template);
 	    
 		// take care to internationalize the coordinates
@@ -694,6 +740,7 @@ implements Serializable {
 		private String latitude;
 		private boolean randomLatitude = false;
 		private int populationNumber;
+		private int numOfRobots;
 		private int scenarioID;
 	}
 	
@@ -713,6 +760,7 @@ implements Serializable {
 		private String latitude;
 		private boolean randomLatitude = false;
 		private int populationNumber;
+		private int numOfRobots;
 		private int scenarioID;
 	}
 }

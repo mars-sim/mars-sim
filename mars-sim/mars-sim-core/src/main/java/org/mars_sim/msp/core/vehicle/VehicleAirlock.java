@@ -14,8 +14,10 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 
 /** 
  * This class represents an airlock for a vehicle.
@@ -143,5 +145,24 @@ extends Airlock {
 	@Override
 	public Point2D getAvailableAirlockPosition() {
 		return LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+	}
+
+	@Override
+	protected void exitAirlock(Unit occupant) {
+
+        Person person = null;
+        Robot robot = null;
+        
+        if (occupant instanceof Person) {
+         	person = (Person) occupant;
+         	exitAirlock(person);
+        
+        }
+        else if (occupant instanceof Robot) {
+        	robot = (Robot) occupant;
+        	exitAirlock(robot);
+		
+        }
+		
 	}
 }

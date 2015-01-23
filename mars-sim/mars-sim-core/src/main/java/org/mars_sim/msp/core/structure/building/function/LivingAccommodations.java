@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -43,10 +43,10 @@ public class LivingAccommodations extends Function implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        beds = config.getLivingAccommodationBeds(building.getName());
+        beds = config.getLivingAccommodationBeds(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getLivingAccommodationsActivitySpots(building.getName()));
+        loadActivitySpots(config.getLivingAccommodationsActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -69,7 +69,7 @@ public class LivingAccommodations extends Function implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             if (!newBuilding
-                    && building.getName().equalsIgnoreCase(buildingName)
+                    && building.getBuildingType().equalsIgnoreCase(buildingName)
                     && !removedBuilding) {
                 removedBuilding = true;
             } else {

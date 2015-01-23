@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -113,5 +114,26 @@ implements Serializable {
 		result+= settlement.getParkedVehicleNum() / 3D;
 
 		return result;	
+	}
+
+	/**
+	 * Gets a robot's capability to perform this job.
+	 * @param robot the person to check.
+	 * @return capability (min 0.0).
+	 */
+	public double getCapability(Robot robot) {
+
+		double result = 0D;
+
+		int mechanicSkill = robot.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		result = mechanicSkill;
+
+		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
+		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		result+= result * ((experienceAptitude - 50D) / 100D);
+
+		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+
+		return result;
 	}
 }

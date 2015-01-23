@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.07 2014-11-02
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.structure.building.function;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -57,7 +59,7 @@ implements Serializable {
     // set TICKS_PER_UPDATE to a default of 5 for a MD1 base. 
     // The bigger the number, the more erratic (and the less frequent) the temperature update
     private static final int TICKS_PER_UPDATE = 9; 
-  	private static int count;
+  	//private static int count;
     // thermostat's allowance temperature setting
     // if T_SENSITIVITY is set to 2.0, 
   	// furnace ON when 2 deg below INITIAL_TEMP
@@ -73,10 +75,9 @@ implements Serializable {
   	protected double deltaTemperature;
   	protected ThermalGeneration furnace;
 	private Building building;
-	
-	
-	
+
 	private Collection<Person> occupants;
+	private Collection<Robot> robots;
 
 	/**
 	 * Constructor.
@@ -88,6 +89,7 @@ implements Serializable {
 		super(FUNCTION, building);
 
 		occupants = new ConcurrentLinkedQueue<Person>();
+		robots = new ConcurrentLinkedQueue<Robot>();
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -100,10 +102,9 @@ implements Serializable {
 
 		// Set life support power required.
 		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
-
 	    
 		//2014-10-23 new initial values */
-		count++;
+		//count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
 		deltaTemperature = 0;
@@ -127,13 +128,14 @@ implements Serializable {
 		// Use Function constructor
 		super(FUNCTION, building);
 
-	
 		occupants = new ConcurrentLinkedQueue<Person>();
+		robots = new ConcurrentLinkedQueue<Robot>();
+
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 		
 		//2014-10-23 new initial values */
-		count++;
+		//count++;
 		//logger.info("constructor : count is " + count);
 		this.building = building;
 		deltaTemperature = 0;
@@ -153,8 +155,6 @@ implements Serializable {
 	public void turnOnOffHeat() {
 		double T_INITIAL = building.getInitialTemperature();
 		double T_NOW = building.getTemperature();
-		//logger.info("turnOnOffHeat() : T_NOW is " + T_NOW);
-		//logger.info("turnOnOffHeat() : HeatMode is " + building.getHeatMode());
 		// if building has no power, power down the heating system
 		if (building.getPowerMode() == PowerMode.POWER_DOWN)
 			building.setHeatMode(HeatMode.POWER_DOWN);	
@@ -162,18 +162,12 @@ implements Serializable {
 			// ALLOWED_TEMP is thermostat's allowance temperature setting
 		    // If T_SENSITIVITY deg above INITIAL_TEMP, turn off furnace
 			if (T_NOW > (T_INITIAL + T_SENSITIVITY )) {
-				//logger.info("turnOnOffHeat() : TOO HOT!!! Temperature is "+ fmt.format(building.getTemperature() ));
-				//logger.info("turnOnOffHeat() : TOO HOT. HeatMode is set to " + building.getHeatMode());
 				building.setHeatMode(HeatMode.POWER_DOWN);
 			// If T_SENSITIVITY deg below INITIAL_TEMP, turn on furnace 
 			} else if (T_NOW < (T_INITIAL - T_SENSITIVITY)) { 
-				//logger.info("turnOnOffHeat() : TOO COLD. HeatMode is set to " + building.getHeatMode());
 				building.setHeatMode(HeatMode.FULL_POWER);
-				//logger.info("turnOnOffHeat() : TOO COLD!!! Temperature is "+ fmt.format(building.getTemperature() ));
 			} else ; // do nothing to change the HeatMode
-			//logger.info("turnOnOffHeat() : do nothing to HeatMode at " + building.getHeatMode());
 		}
-		//logger.info("turnOnOffHeat() : updated HeatMode is " + building.getHeatMode());
 	}
 	
 	/**Adjust the current temperature in response to the delta temperature
@@ -182,8 +176,6 @@ implements Serializable {
 	public void updateTemperature() {
 		//currentTemperature += deltaTemperature;
 		building.setTemperature(building.getTemperature() + deltaTemperature);
-		//logger.info("updateTemperature() : updated currentTemp is "+ fmt.format(building.getTemperature()));
-			//logger.info("updateTemperature() : updated deltaTemperature is "+ fmt.format(deltaTemperature));		
 	}
 
 	
@@ -332,11 +324,22 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if the building contains a particular person.
-	 * @return true if person is in building.
+	 * Checks if the building contains a particular unit.
+	 * @return true if unit is in building.
 	 */
-	public boolean containsPerson(Person person) {
-		return occupants.contains(person);
+	public boolean containsOccupant(Unit unit) {
+		boolean result = false;
+        Person person = null;
+        Robot robot = null;     
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+         	result = occupants.contains(person);
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+         	result = occupants.contains(robot);
+        }
+		return result;
 	}
 
 	/**
@@ -346,7 +349,16 @@ implements Serializable {
 	public Collection<Person> getOccupants() {
 		return new ConcurrentLinkedQueue<Person>(occupants);
 	}
+	
+	/**
+	 * Gets a collection of occupants in the building.
+	 * @return collection of occupants
+	 */
+	public Collection<Robot> getRobots() {
+		return new ConcurrentLinkedQueue<Robot>(robots);
+	}
 
+	
 	/**
 	 * Adds a person to the building.
 	 * Note: building occupant capacity can be exceeded but stress levels
@@ -389,6 +401,46 @@ implements Serializable {
 			throw new IllegalStateException("Person does not occupy building.");
 		} 
 	}
+	/**
+	 * Adds a robot to the building.
+	 * Note: robot capacity can be exceeded 
+	 * @param robot new robot to add to building.
+	 * @throws BuildingException if robot is already building occupant.
+	 */
+	public void addRobot(Robot robot) {
+		if (!robots.contains(robot)) {
+			// Remove robot from any other inhabitable building in the settlement.
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				Building building = i.next();
+				if (building.hasFunction(FUNCTION)) {
+					BuildingManager.removePersonFromBuilding(robot, building);
+				}
+			}
+
+			// Add robot to this building.
+			logger.finest("Adding " + robot + " to " + getBuilding() + " life support.");
+			robots.add(robot);
+		}
+		else {
+			throw new IllegalStateException("This robot is already in this building.");
+		} 
+	}
+
+	/**
+	 * Removes a robot from the building.
+	 * @param occupant the robot to remove from building.
+	 * @throws BuildingException if robot is not building occupant.
+	 */
+	public void removeRobot(Robot robot) {
+		if (robots.contains(robot)) {
+			robots.remove(robot);
+		    logger.finest("Removing " + robot + " from " + getBuilding() + " life support.");
+		}
+		else {
+			throw new IllegalStateException("The robot is not in this building.");
+		} 
+	}
 
 	/**
 	 * Time passing for the building.
@@ -401,9 +453,15 @@ implements Serializable {
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
 		Inventory inv = getBuilding().getInventory();
+
 		Iterator<Person> i = occupants.iterator();
 		while (i.hasNext()) {
 			if (!inv.containsUnit(i.next())) i.remove();
+		}
+
+		Iterator<Robot> jj = robots.iterator();
+		while (jj.hasNext()) {
+			if (!inv.containsUnit(jj.next())) jj.remove();
 		}
 
 		// Add stress if building is overcrowded.
@@ -429,6 +487,7 @@ implements Serializable {
 			adjustThermalControl();
 	
 	}
+	
 	/**
 	 * Notify thermal control subsystem for the temperature change and power up and power down 
 	 * via 3 steps (this method houses the main thermal control codes)

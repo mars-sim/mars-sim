@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-21
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -88,8 +88,10 @@ implements Serializable {
     private double kJoules;
     private double dryMassPerServing;
     
+    private Robot robot;
+    
     /**
-     * Constructor.
+     * Constructor 1.
      * @param newPerson The person requiring a physical presence.
      */
     public PhysicalCondition(Person newPerson) {
@@ -109,6 +111,29 @@ implements Serializable {
 
     }
 
+    /**
+     * Constructor 2.
+     * @param robot The robot requiring a physical presence.
+     */
+    public PhysicalCondition(Robot robot) {
+        deathDetails = null;
+        this.robot = robot;
+        //problems = new HashMap<Complaint, HealthProblem>();
+        performance = 1.0D;
+        //fatigue = RandomUtil.getRandomDouble(1000D);
+        //2015-01-06 Changed hunger to less than 400D
+        hunger = RandomUtil.getRandomDouble(400D);
+        //stress = RandomUtil.getRandomDouble(100D);
+        alive = true;
+        //medicationList = new ArrayList<Medication>();
+        
+        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+        //dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / Cooking.NUMBER_OF_MEAL_PER_SOL);
+
+    }
+    
+    
+    
     public double getMassPerServing() {
         return dryMassPerServing;
     }
@@ -227,6 +252,41 @@ implements Serializable {
     }
     
     /**
+     * This timePassing method 2 reflect a passing of time for robots.
+  
+     * @param time amount of time passing (in millisols)
+     * @param support life support system.
+     * @param config robot configuration.
+     * @return True still alive.
+     */
+    boolean timePassing(double time, LifeSupport support,
+            RobotConfig config) {
+
+        // Has the robot non-functional ?
+        if (isDead()) return false;
+
+        try {
+            //if (consumePower(support, getPowerConsumptionRate() * (time / 1000D)))
+            //    logger.log(Level.SEVERE, robot.getName() + " has insufficient water.");
+            if (requireAirPressure(support, config.getMinAirPressure()))
+                logger.log(Level.SEVERE, robot.getName() + " has insufficient air pressure.");
+            if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
+                logger.log(Level.SEVERE, robot.getName() + " cannot survive long at this high/low temperature.");
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,robot.getName() + " - Error in lifesupport needs: " + e.getMessage());
+        }
+
+        setHunger(hunger + time);
+
+        // Calculate performance
+        recalculate();
+
+        return (!isDead());
+    }
+    
+    
+    /**
      * Check for any random ailments that a person comes down with over a period of time.
      * @param time the time period (millisols).
      * @return list of ailments occurring.  May be empty.
@@ -317,6 +377,45 @@ implements Serializable {
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container, LifeSupport.FOOD);
+ 
+    }
+    
+    /**
+     * Robot consumes given amount of power
+     * @param amount amount of power to consume (in kJ).
+     * @param container unit to get power from
+     * @throws Exception if error consuming power.
+     */
+    public void consumePower(double amount, Unit container) {
+        if (container == null) throw new IllegalArgumentException("container is null");
+    	
+        Inventory inv = container.getInventory();
+    	 
+    	if (container == null) throw new IllegalArgumentException("container is null");
+
+    	AmountResource foodAR = AmountResource.findAmountResource("wireless power");
+        double foodEaten = amount;
+        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+        
+        // 2015-01-09 Added addDemandTotalRequest()
+        inv.addDemandTotalRequest(foodAR);
+        	
+        if (foodAvailable < 0.01D) {
+           throw new IllegalStateException("Warning: not enough power available!");   
+        }
+        // if container has less than enough food, finish up all food in the container
+        else { 
+            	
+            if (foodEaten > foodAvailable)
+            	foodEaten = foodAvailable;
+            
+            foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+            // subtract food from container
+            inv.retrieveAmountResource(foodAR, foodEaten);
+            
+    		// 2015-01-09 addDemandRealUsage()
+    		inv.addDemandAmount(foodAR, foodEaten);
+        }
  
     }
     
@@ -540,35 +639,43 @@ implements Serializable {
     public void setHunger(double newHunger) {
         if (hunger != newHunger) {
             hunger = newHunger;
-
-            PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             double starvationTime = 0D;
-            try {
-                starvationTime = personConfig.getStarvationStartTime() * 1000D;
-            }
-            catch (Exception e) {
-                e.printStackTrace(System.err);
-            }
+            if (robot != null) {
+            	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();            	
+            
+            }	
+            else {
+            	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	                try {
+	                    starvationTime = personConfig.getStarvationStartTime() * 1000D;
+	                }
+	                catch (Exception e) {
+	                    e.printStackTrace(System.err);
+	                }
+	                
 
-            Complaint starvation = getMedicalManager().getStarvation();
-            if (hunger > starvationTime) {
-                if (!problems.containsKey(starvation)) {
-                    addMedicalComplaint(starvation);
-                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                }
-            }
-            else if (hunger == 0D) {
-                HealthProblem illness = problems.get(starvation);
-                if (illness != null) {
-                    illness.startRecovery();
-                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                }
-            }
 
-            person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+	                Complaint starvation = getMedicalManager().getStarvation();
+	                if (hunger > starvationTime) {
+	                    if (!problems.containsKey(starvation)) {
+	                        addMedicalComplaint(starvation);
+	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	                    }
+	                }
+	                else if (hunger == 0D) {
+	                    HealthProblem illness = problems.get(starvation);
+	                    if (illness != null) {
+	                        illness.startRecovery();
+	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	                    }
+	                }
+
+	                person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
+            	}
         }
     }
 
+    
     /**
      * Gets the person's stress level
      * @return stress (0.0 to 100.0)
@@ -692,35 +799,50 @@ implements Serializable {
     private void recalculate() {
 
         double tempPerformance = 1.0D;
-        serious = null;
-
-        // Check the existing problems. find most serious & performance
-        // effecting
-        Iterator<HealthProblem> iter = problems.values().iterator();
-        while(iter.hasNext()) {
-            HealthProblem problem = iter.next();
-            double factor = problem.getPerformanceFactor();
-            if (factor < tempPerformance) tempPerformance = factor;
-
-            if ((serious == null) || (serious.getIllness().getSeriousness() <
-                    problem.getIllness().getSeriousness())) {
-                serious = problem;
-            }
+        
+        if (person != null) {
+        	
+        
+	        serious = null;
+	
+	        // Check the existing problems. find most serious & performance
+	        // effecting
+	        Iterator<HealthProblem> iter = problems.values().iterator();
+	        while(iter.hasNext()) {
+	            HealthProblem problem = iter.next();
+	            double factor = problem.getPerformanceFactor();
+	            if (factor < tempPerformance) tempPerformance = factor;
+	
+	            if ((serious == null) || (serious.getIllness().getSeriousness() <
+	                    problem.getIllness().getSeriousness())) {
+	                serious = problem;
+	            }
+	        }
+	
+	        // High hunger reduces performance.
+	        //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
+	        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .005D;
+	        
+	        // TODO: change health status as well in all of the following cases
+	        // High fatigue reduces performance.
+	        //if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
+	        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .003D;
+	
+	        // High stress reduces performance.
+	        //if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
+	        if (stress >= 80D) tempPerformance -= (stress - 80D) * .04D;
+	        
+	        }
+	        
+        else if (robot != null) {
+        
+            // High hunger reduces performance.
+            //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
+            if (hunger > 2000D) tempPerformance -= (hunger - 2000D) * .01D;
+            
         }
-
-        // TODO: change health status as well in all of the following cases
-        // High fatigue reduces performance.
-        //if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
-        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .003D;
-
-        // High hunger reduces performance.
-        //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .001D;
         
-        // High stress reduces performance.
-        //if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
-        if (stress >= 80D) tempPerformance -= (stress - 80D) * .04D;
-        
+
         if (tempPerformance < 0D) tempPerformance = 0D;
 
         setPerformanceFactor(tempPerformance);
@@ -769,6 +891,16 @@ implements Serializable {
         return config.getFoodConsumptionRate();
     }
 
+    /**
+     * Gets the power consumption rate per Sol.
+     * @return power consumed (kJ/Sol)
+     * @throws Exception if error in configuration.
+     */
+    public static double getPowerConsumptionRate() {
+        RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
+        return config.getPowerConsumptionRate();
+    }
+    
     /**
      * Gets a list of medication affecting the person.
      * @return list of medication.

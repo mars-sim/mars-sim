@@ -34,6 +34,7 @@ implements Serializable {
 	// Data members.
 	private String name;
 	private int defaultPopulation;
+	private int defaultNumOfRobots;
 	private List<BuildingTemplate> buildings;
 	private Map<String, Integer> vehicles;
 	private Map<String, Integer> equipment;
@@ -50,9 +51,10 @@ implements Serializable {
 	 */
 	// 2014-10-28 Added count++
 	// TODO: pending for deletion (use constructor 2 instead)
-  	public SettlementTemplate(String name, int defaultPopulation) {
+  	public SettlementTemplate(String name, int defaultPopulation, int defaultNumOfRobots ) {
 		this.name = name;
 		this.defaultPopulation = defaultPopulation;
+		this.defaultNumOfRobots = defaultNumOfRobots;
 		buildings = new ArrayList<BuildingTemplate>();
 		vehicles = new HashMap<String, Integer>();
 		equipment = new HashMap<String, Integer>();
@@ -67,10 +69,12 @@ implements Serializable {
 	 */
     // 2014-10-28 Added constructor 2, added id, added count++
   	// Called by SettlementConfig.java
-	public SettlementTemplate(String name, int scenarioID, int defaultPopulation) {
+	public SettlementTemplate(String name, int scenarioID, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.defaultPopulation = defaultPopulation;
+		this.defaultNumOfRobots = defaultNumOfRobots;
+		
 		buildings = new ArrayList<BuildingTemplate>();
 		vehicles = new HashMap<String, Integer>();
 		equipment = new HashMap<String, Integer>();
@@ -103,6 +107,14 @@ implements Serializable {
 //		}
 	}
 	
+	/**
+	 * Gets the default robot capacity of the template.
+	 * @return robot capacity.
+	 */
+	public int getDefaultNumOfRobots() {
+		return defaultNumOfRobots;
+	}
+
 	/**
 	 * Gets the default population capacity of the template.
 	 * @return population capacity.
