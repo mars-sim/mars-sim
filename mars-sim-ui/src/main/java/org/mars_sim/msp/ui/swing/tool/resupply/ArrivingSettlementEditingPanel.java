@@ -67,8 +67,10 @@ extends TransportItemEditingPanel {
 	private JComboBoxMW<String> latitudeDirectionCB;
 	private JTextField longitudeTF;
 	private JComboBoxMW<String> longitudeDirectionCB;
-	private JTextField populationTF;
 	private JLabel errorLabel;
+	private JTextField populationTF;
+	private JTextField numOfRobotsTF;
+
 
 	/**
 	 * Constructor.
@@ -129,8 +131,8 @@ extends TransportItemEditingPanel {
 		}
 		templateCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				// Update template population num.
 				updateTemplatePopulationNum((String) templateCB.getSelectedItem());
+				updateTemplatenumOfRobots((String) templateCB.getSelectedItem());				
 			}
 		});
 		templatePane.add(templateCB);
@@ -143,10 +145,21 @@ extends TransportItemEditingPanel {
 		JLabel populationLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.population")); //$NON-NLS-1$
 		populationPane.add(populationLabel);
 
+		// Create population panel.
+		JPanel numOfRobotsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		topInnerEditPane.add(numOfRobotsPane);
+
+		// Create population label.
+		JLabel numOfRobotsLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.numOfRobots")); //$NON-NLS-1$
+		numOfRobotsPane.add(numOfRobotsLabel);
+		
 		// Create population text field.
 		int populationNum = 0;
+		int numOfRobots = 0;
+		
 		if (settlement != null) {
 			populationNum = settlement.getPopulationNum();
+			numOfRobots = settlement.getNumOfRobots();
 		}
 		else {
 			// Update the population number based on selected template.
@@ -156,6 +169,7 @@ extends TransportItemEditingPanel {
 						getSettlementConfiguration().getSettlementTemplate(templateName);
 				if (template != null) {
 					populationNum = template.getDefaultPopulation();
+					numOfRobots = template.getDefaultNumOfRobots();
 				}
 			}
 		}
@@ -163,6 +177,11 @@ extends TransportItemEditingPanel {
 		populationTF.setText(Integer.toString(populationNum));
 		populationTF.setHorizontalAlignment(JTextField.RIGHT);
 		populationPane.add(populationTF);
+
+		numOfRobotsTF = new JTextField(6);
+		numOfRobotsTF.setText(Integer.toString(numOfRobots));
+		numOfRobotsTF.setHorizontalAlignment(JTextField.RIGHT);
+		populationPane.add(numOfRobotsTF);
 
 		// Create arrival date pane.
 		JPanel arrivalDatePane = new JPanel(new GridLayout(2, 1, 10, 10));
@@ -401,6 +420,22 @@ extends TransportItemEditingPanel {
 		}
 	}
 
+
+	/**
+	 * Updates the numOfRobots text field value based on the selected template name.
+	 * @param templateName the template name.
+	 */
+	private void updateTemplatenumOfRobots(String templateName) {
+		if (templateName != null) {
+			SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
+					getSettlementTemplate(templateName);
+			if (template != null) {
+				numOfRobotsTF.setText(Integer.toString(template.getDefaultNumOfRobots()));
+			}
+		}
+	}
+
+	
 	/**
 	 * Validate the arriving settlement data.
 	 * @return true if data is valid.
@@ -439,6 +474,27 @@ extends TransportItemEditingPanel {
 			catch (NumberFormatException e) {
 				result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidPopulation"); //$NON-NLS-1$
+			}
+		}
+		
+
+		// Validate numOfRobots.
+		String numOfRobotsString = numOfRobotsTF.getText();
+		if (numOfRobotsString.trim().isEmpty()) {
+			result = false;
+			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.nonumOfRobots"); //$NON-NLS-1$
+		}
+		else {
+			try {
+				int numOfRobots = Integer.parseInt(numOfRobotsString);
+				if (numOfRobots < 0) {
+					result = false;
+					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativenumOfRobots"); //$NON-NLS-1$
+				}
+			}
+			catch (NumberFormatException e) {
+				result = false;
+				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidnumOfRobots"); //$NON-NLS-1$
 			}
 		}
 
@@ -561,10 +617,11 @@ extends TransportItemEditingPanel {
 			String name = nameTF.getText().trim();
 			String template = (String) templateCB.getSelectedItem();
 			int popNum = Integer.parseInt(populationTF.getText());
+			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());	
 			MarsClock arrivalDate = getArrivalDate();
 			Coordinates landingLoc = getLandingLocation();
 			ArrivingSettlement newArrivingSettlement = new ArrivingSettlement(name, template, 
-					arrivalDate, landingLoc, popNum);
+					arrivalDate, landingLoc, popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
 			Simulation.instance().getTransportManager().addNewTransportItem(newArrivingSettlement);
 			return true;
@@ -609,6 +666,11 @@ extends TransportItemEditingPanel {
 		// Set population number.
 		int popNum = Integer.parseInt(populationTF.getText());
 		settlement.setPopulationNum(popNum);
+		
+		// Set number of robots.
+		int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
+		settlement.setNumOfRobots(numOfRobots);
+				
 
 		// Set landing location.
 		Coordinates landingLocation = getLandingLocation();

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -62,8 +63,8 @@ implements Repair, Serializable {
      * Constructs a RepairEmergencyMalfunction object.
      * @param person the person to perform the task
      */
-    public RepairEmergencyMalfunction(Person person) {
-        super(NAME, person, true, true, STRESS_MODIFIER, false, 0D);
+    public RepairEmergencyMalfunction(Unit unit) {
+        super(NAME, unit, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
 
@@ -76,18 +77,28 @@ implements Repair, Serializable {
         }
 
         // Create starting task event if needed.
+        TaskEvent startingEvent = null ;
         if (getCreateEvents() && !isDone()) {
-            TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
+        	if (person != null) 
+                startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");   
+        	else if (robot != null)
+                startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");            
+        	            
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
 
         // Initialize task phase
         addPhase(REPAIRING);
         setPhase(REPAIRING);
-
         if (malfunction != null) {
-            logger.fine(person.getName() + " starting work on emergency malfunction: " + 
-                    malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        	if (person != null) {
+                logger.fine(person.getName() + " starting work on emergency malfunction: " + 
+                        malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        	}
+        	else if (robot != null) {
+                logger.fine(robot.getName() + " starting work on emergency malfunction: " + 
+                        malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        	}
         }
     }
 

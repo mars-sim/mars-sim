@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -48,7 +49,9 @@ implements Serializable {
 	private double destXLoc;
 	private double destYLoc;
 
-	/** constructor. */
+	/*
+	 * Constructor 1. 
+	 */
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation, 
             double destinationYLocation) {
         super("Walking Rover Interior", person, false, false, STRESS_MODIFIER, false, 0D);
@@ -73,6 +76,32 @@ implements Serializable {
                 " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
     
+	/*
+	 * Constructor 2. 
+	 */
+    public WalkRoverInterior(Robot robot, Rover rover, double destinationXLocation, 
+            double destinationYLocation) {
+        super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
+        
+        // Check that the robot is currently inside a rover.
+        LocationSituation location = robot.getLocationSituation();
+        if (location != LocationSituation.IN_VEHICLE) {
+            throw new IllegalStateException(
+                    "WalkRoverInterior task started when robot is not in a rover.");
+        }
+        
+        // Initialize data members.
+        this.rover = rover;
+        this.destXLoc = destinationXLocation;
+        this.destYLoc = destinationYLocation;
+        
+        // Initialize task phase.
+        addPhase(WALKING);
+        setPhase(WALKING);
+        
+        logger.finer(robot.getName() + " starting to walk to new location in " + rover.getName() + 
+                " to (" + destinationXLocation + ", " + destinationYLocation + ")");
+    }
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -97,8 +126,15 @@ implements Serializable {
         double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
         double distanceKm = WALKING_SPEED * timeHours;
         double distanceMeters = distanceKm * 1000D;
-        double remainingWalkingDistance = Point2D.Double.distance(person.getXLocation(), 
-                person.getYLocation(), destXLoc, destYLoc);
+        double remainingWalkingDistance = 0;
+        if (person != null) {
+            remainingWalkingDistance = Point2D.Double.distance(person.getXLocation(), 
+                    person.getYLocation(), destXLoc, destYLoc);
+        }
+        else if (robot != null) {
+            remainingWalkingDistance = Point2D.Double.distance(robot.getXLocation(), 
+                    robot.getYLocation(), destXLoc, destYLoc);
+        }
 
         double timeLeft = 0D;
         if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
@@ -111,20 +147,24 @@ implements Serializable {
             }
 
             if (distanceMeters < remainingWalkingDistance) {
-
                 // Determine direction to destination.
                 double direction = determineDirection(destXLoc, destYLoc);
-
                 // Determine person's new location at distance and direction.
                 walkInDirection(direction, distanceMeters);
             }
             else {
-
-                // Set person's location at destination.
-                person.setXLocation(destXLoc);
-                person.setYLocation(destYLoc);
-                
-                logger.finer(person.getName() + " walked to new location in " + rover.getName());
+            	if (person != null) {
+                    // Set person's location at destination.
+                    person.setXLocation(destXLoc);
+                    person.setYLocation(destYLoc);                    
+                    logger.finer(person.getName() + " walked to new location in " + rover.getName());
+            	}
+            	else if (robot != null) {
+                    // Set robot's location at destination.
+                    robot.setXLocation(destXLoc);
+                    robot.setYLocation(destYLoc);                   
+                    logger.finer(robot.getName() + " walked to new location in " + rover.getName());
+            	}
 
                 endTask();
             }
@@ -133,11 +173,18 @@ implements Serializable {
 
             timeLeft = time;
             
-            // Set person's location at destination.
-            person.setXLocation(destXLoc);
-            person.setYLocation(destYLoc);
-
-            logger.finer(person.getName() + " walked to new location in " + rover.getName());
+            if (person != null) {
+                // Set person's location at destination.
+                person.setXLocation(destXLoc);
+                person.setYLocation(destYLoc);
+                logger.finer(person.getName() + " walked to new location in " + rover.getName());
+            }
+            else if (robot != null) {
+                // Set robot's location at destination.
+                robot.setXLocation(destXLoc);
+                robot.setYLocation(destYLoc);
+                logger.finer(robot.getName() + " walked to new location in " + rover.getName());
+            }
 
             endTask();
         }
@@ -152,10 +199,18 @@ implements Serializable {
      * @return direction (radians).
      */
     double determineDirection(double destinationXLocation, double destinationYLocation) {
-        
-        double result = Math.atan2(person.getXLocation() - destinationXLocation, 
-                destinationYLocation - person.getYLocation());
-        
+    	double result = 0;
+    	
+    	if (person != null) {
+    	      result = Math.atan2(person.getXLocation() - destinationXLocation, 
+    	                destinationYLocation - person.getYLocation());
+    	}
+    	else if (robot != null) {
+    	      result = Math.atan2(robot.getXLocation() - destinationXLocation, 
+    	                destinationYLocation - robot.getYLocation());
+    	}
+
+          
         while (result > (Math.PI * 2D)) {
             result -= (Math.PI * 2D);
         }
@@ -173,12 +228,22 @@ implements Serializable {
      * @param distance the distance (meters) to travel.
      */
     void walkInDirection(double direction, double distance) {
-        
-        double newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
-        double newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
-        
-        person.setXLocation(newXLoc);
-        person.setYLocation(newYLoc);
+    	double newXLoc = 0 ;
+    	double newYLoc = 0;
+    	
+    	if (person != null) {
+    	       newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
+    	       newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
+    	        person.setXLocation(newXLoc);
+    	        person.setYLocation(newYLoc);
+    	}
+    	else if (robot != null) {
+    		newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
+    		newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
+	        robot.setXLocation(newXLoc);
+	        robot.setYLocation(newYLoc);
+    	}
+
     }
 
     @Override

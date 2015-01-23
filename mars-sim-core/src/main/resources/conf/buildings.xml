@@ -174,6 +174,13 @@
 				
 			</resource-processing>
 			
+			<robotic-stations stations="2">
+				<activity>
+					<activity-spot xloc="-1.5" yloc="-1.9" />
+					<activity-spot xloc="-1.3" yloc="-1.7" />
+				</activity>
+			</robotic-stations>
+			
 			<!-- The building is capable of storing resources. -->
 			<storage>
 			
@@ -1011,6 +1018,19 @@
 					<activity-spot xloc=".7" yloc=".4" />
 				</activity>
 			</manufacture>
+			
+			<robotic-stations stations="8">
+				<activity>
+					<activity-spot xloc=".6" yloc="2.9" />
+					<activity-spot xloc="-2.0" yloc="-.7" />
+					<activity-spot xloc="-.6" yloc="-2.9" />
+					<activity-spot xloc="1.7" yloc="0.0" />
+					<activity-spot xloc="-.5" yloc="1.1" />
+					<activity-spot xloc=".7" yloc="-1.3" />
+					<activity-spot xloc=".7" yloc=".4" />
+				</activity>
+			</robotic-stations>
+			
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
 				<resource-storage resource="Carbon" capacity="500.0" />

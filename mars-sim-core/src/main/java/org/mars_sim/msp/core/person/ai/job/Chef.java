@@ -13,6 +13,7 @@ import java.util.List;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -108,5 +109,11 @@ implements Serializable {
 		result+= ((double) population / 10D);
 
 		return result;			
+	}
+
+	@Override
+	public double getCapability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

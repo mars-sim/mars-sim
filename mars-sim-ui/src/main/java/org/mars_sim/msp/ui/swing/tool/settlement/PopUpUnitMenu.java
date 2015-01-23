@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopUpUnitMenu.java
- * @version 3.07 2015-01-14
+ * @version 3.07 2015-01-21
  * @author Manny Kung
  */
 
@@ -27,10 +27,12 @@ import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 
 
+
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -83,10 +85,16 @@ public class PopUpUnitMenu extends JPopupMenu {
             buildItemTwo(unit);
             buildItemThree(unit);
         }
-        else {
+        else if (unit instanceof Building) {
             add(itemOne);
         	add(itemTwo);
         	buildItemOne(unit);
+            buildItemTwo(unit);
+        }
+        else if (unit instanceof Robot) {
+            //add(itemOne);
+        	add(itemTwo);
+        	//buildItemOne(unit);
             buildItemTwo(unit);
         }
      /*
@@ -178,6 +186,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            else if (unit instanceof Person) {
 	            	Person person =(Person) unit;
 	            	desktop.openUnitWindow(person, false);
+	            }
+	            else if (unit instanceof Robot) {
+	            	Robot robot =(Robot) unit;
+	            	desktop.openUnitWindow(robot, false);
 	            }
 	            else {
                 	Building building = (Building) unit;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crewable.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
 
  * @author Scott Davis
  */
@@ -10,10 +10,11 @@ package org.mars_sim.msp.core.vehicle;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 
 /**
  * The Crewable interface represents a vehicle that is capable
- * of having a crew of people.
+ * of having a crew of people and robots.
  */
 public interface Crewable {
 
@@ -35,6 +36,13 @@ public interface Crewable {
 	 */
 	public Collection<Person> getCrew();
 
+	/**
+	 * Gets a collection of the robots.
+	 * @return robots as Collection
+	 */
+	public Collection<Robot> getRobots();
+
+	
 	/**
 	 * Checks if person is a crewmember.
 	 * @param person the person to check

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -112,6 +113,53 @@ implements Serializable {
         addPhase(WALKING);
         setPhase(WALKING);
     }
+ 
+    public WalkSettlementInterior(Robot robot, Building destinationBuilding, 
+            double destinationXLocation, double destinationYLocation) {
+        super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
+        
+        // Check that the robot is currently inside the settlement.
+        LocationSituation location = robot.getLocationSituation();
+        if (location != LocationSituation.IN_SETTLEMENT) {
+            throw new IllegalStateException(
+                    "WalkSettlementInterior task started when robot is not in settlement.");
+        }
+        
+        // Initialize data members.
+        this.settlement = robot.getSettlement();
+        this.destBuilding = destinationBuilding;
+        this.destXLoc = destinationXLocation;
+        this.destYLoc = destinationYLocation;
+        
+        // Check that destination location is within destination building.
+        if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
+            throw new IllegalStateException(
+                    "Given destination walking location not within destination building.");
+        }
+        
+        // Check that the robot is currently inside a building.
+        startBuilding = BuildingManager.getBuilding(robot);
+        if (startBuilding == null) {
+            throw new IllegalStateException(robot.getName() + " is not currently in a building.");
+        }
+        
+        // Determine the walking path to the destination.
+        walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding, 
+                robot.getXLocation(), robot.getYLocation(), destinationBuilding, destinationXLocation, 
+                destinationYLocation);
+        
+        // If no valid walking path is found, end task.
+        if (walkingPath == null) {
+            logger.severe(robot.getName() + " unable to walk from " + startBuilding.getName() + " to " + 
+                    destinationBuilding.getName() + ".  Unable to find valid interior path.");
+            endTask();
+        }
+        
+        // Initialize task phase.
+        addPhase(WALKING);
+        setPhase(WALKING);
+    }
+    
     
     @Override
     protected double performMappedPhase(double time) {
@@ -133,10 +181,20 @@ implements Serializable {
      */
     double walkingPhase(double time) {
         
-        // Check that remaining path locations are valid.
-        if (!checkRemainingPathLocations()) {
-            logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
-        }
+    	if (person != null) {
+    	       // Check that remaining path locations are valid.
+            if (!checkRemainingPathLocations()) {
+                logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
+            }
+    	}
+    	else if (robot != null) {
+    	       // Check that remaining path locations are valid.
+            if (!checkRemainingPathLocations()) {
+                logger.severe(robot.getName() + " unable to continue walking due to missing path objects.");
+            }
+    	}
+
+ 
         
         // Determine walking distance.
         double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
@@ -156,13 +214,34 @@ implements Serializable {
             
             // Walk to next path location.
             InsidePathLocation location = walkingPath.getNextPathLocation();
-            double distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), 
-                    location.getXLocation(), location.getYLocation());
+            double distanceToLocation = 0;
+            if (person != null) {
+                distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), 
+                        location.getXLocation(), location.getYLocation());
+
+            }
+            else if (robot != null) {
+                distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(), 
+                        location.getXLocation(), location.getYLocation());
+
+            }
+ 
             
             if (distanceMeters >= distanceToLocation) {
-                // Set person at next path location, changing buildings if necessary.
-                person.setXLocation(location.getXLocation());
-                person.setYLocation(location.getYLocation());
+                
+            	if (person != null) {
+            		// Set person at next path location, changing buildings if necessary.
+                    person.setXLocation(location.getXLocation());
+                    person.setYLocation(location.getYLocation());
+                 
+            	}
+            	else if (robot != null) {
+            		// Set robot at next path location, changing buildings if necessary.
+                    robot.setXLocation(location.getXLocation());
+                    robot.setYLocation(location.getYLocation());
+                 
+            	} 	   
+                
                 distanceMeters -= distanceToLocation;
                 changeBuildings(location);
                 if (!walkingPath.isEndOfPath()) {
@@ -184,11 +263,22 @@ implements Serializable {
         
         // If path destination is reached, end task.
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
-            logger.finer(person.getName() + " walked from " + startBuilding.getName() + " to " + 
-                    destBuilding.getName());
-            InsidePathLocation location = walkingPath.getNextPathLocation();
-            person.setXLocation(location.getXLocation());
-            person.setYLocation(location.getYLocation());
+        	
+        	if (person != null) {
+                logger.finer(person.getName() + " walked from " + startBuilding.getName() + " to " + 
+                        destBuilding.getName());
+                InsidePathLocation location = walkingPath.getNextPathLocation();
+                person.setXLocation(location.getXLocation());
+                person.setYLocation(location.getYLocation());
+        	}
+        	else if (robot != null) {
+                logger.finer(robot.getName() + " walked from " + startBuilding.getName() + " to " + 
+                        destBuilding.getName());
+                InsidePathLocation location = walkingPath.getNextPathLocation();
+                robot.setXLocation(location.getXLocation());
+                robot.setYLocation(location.getYLocation());
+        	}
+
             endTask();
         }
         
@@ -202,9 +292,17 @@ implements Serializable {
      * @return direction (radians).
      */
     double determineDirection(double destinationXLocation, double destinationYLocation) {
-        
-        double result = Math.atan2(person.getXLocation() - destinationXLocation, 
-                destinationYLocation - person.getYLocation());
+    	double result = 0;
+    	
+    	if (person != null) {
+            result = Math.atan2(person.getXLocation() - destinationXLocation, 
+                    destinationYLocation - person.getYLocation());
+    	}
+    	else if (robot != null) {
+            result = Math.atan2(robot.getXLocation() - destinationXLocation, 
+                    destinationYLocation - robot.getYLocation());
+    	}
+
         
         while (result > (Math.PI * 2D)) {
             result -= (Math.PI * 2D);
@@ -224,11 +322,21 @@ implements Serializable {
      */
     void walkInDirection(double direction, double distance) {
         
-        double newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
-        double newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
-        
-        person.setXLocation(newXLoc);
-        person.setYLocation(newYLoc);
+    	if (person != null) {
+            double newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
+            double newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
+            
+            person.setXLocation(newXLoc);
+            person.setYLocation(newYLoc);
+    	}
+    	else if (robot != null) {
+            double newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
+            double newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
+            
+            robot.setXLocation(newXLoc);
+            robot.setYLocation(newYLoc);
+    	}
+
     }
     
     /**
@@ -285,10 +393,21 @@ implements Serializable {
     private double getRemainingPathDistance() {
         
         double result = 0D;
+        double prevXLoc = 0;
+        double prevYLoc = 0;
         
-        double prevXLoc = person.getXLocation();
-        double prevYLoc = person.getYLocation();
-        
+        if (person != null) {
+            prevXLoc = person.getXLocation();
+            prevYLoc = person.getYLocation();
+
+        }
+        else if (robot != null) {
+            prevXLoc = robot.getXLocation();
+            prevYLoc = robot.getYLocation();
+
+        }
+
+         
         Iterator<InsidePathLocation> i = walkingPath.getRemainingPathLocations().iterator();
         while (i.hasNext()) {
             InsidePathLocation nextLoc = i.next();
@@ -310,16 +429,33 @@ implements Serializable {
         if (location instanceof Hatch) {
             // If hatch leads to new building, place person in the new building.
             Hatch hatch = (Hatch) location;
-            Building currentBuilding = BuildingManager.getBuilding(person);
-            if (!hatch.getBuilding().equals(currentBuilding)) {
-                BuildingManager.addPersonToBuildingSameLocation(person, hatch.getBuilding());
+            
+            if (person != null) {
+            	Building currentBuilding = BuildingManager.getBuilding(person);
+                if (!hatch.getBuilding().equals(currentBuilding)) {
+                    BuildingManager.addPersonToBuildingSameLocation(person, hatch.getBuilding());
+                }
             }
+            else if (robot != null) {
+            	Building currentBuilding = BuildingManager.getBuilding(robot);
+                if (!hatch.getBuilding().equals(currentBuilding)) {
+                    BuildingManager.addPersonToBuildingSameLocation(robot, hatch.getBuilding());
+                }
+            }
+            
         }
         else if (location instanceof BuildingConnector) {
             // If non-split building connector, place person in the new building.
             BuildingConnector connector = (BuildingConnector) location;
             if (!connector.isSplitConnection()) {
-                Building currentBuilding = BuildingManager.getBuilding(person);
+            	Building currentBuilding = null;
+            	if (person != null) {
+                    currentBuilding = BuildingManager.getBuilding(person);                  
+            	}
+            	else if (robot != null) {
+                    currentBuilding = BuildingManager.getBuilding(robot); 
+            	}
+
                 Building newBuilding = null;
                 if (connector.getBuilding1().equals(currentBuilding)) {
                     newBuilding = connector.getBuilding2();
@@ -333,7 +469,11 @@ implements Serializable {
                             currentBuilding);
                     throw new IllegalStateException("Connector not connected to " + currentBuilding);
                 }
-                BuildingManager.addPersonToBuildingSameLocation(person, newBuilding);
+                
+                if (person != null)
+                    BuildingManager.addPersonToBuildingSameLocation(person, newBuilding);
+                else if (robot != null)
+                    BuildingManager.addPersonToBuildingSameLocation(robot, newBuilding);
             }
         }
     }

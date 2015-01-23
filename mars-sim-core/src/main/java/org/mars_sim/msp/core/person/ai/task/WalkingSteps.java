@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -40,7 +41,7 @@ implements Serializable {
 	private boolean canWalkAllSteps;
 
 	/**
-	 * constructor.
+	 * constructor 1.
 	 */
 	public WalkingSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
         
@@ -57,7 +58,26 @@ implements Serializable {
         // Determine walking steps to destination.
         determineWalkingSteps(initialWalkState, destinationWalkState);
     }
-    
+ 
+	/**
+	 * constructor 2.
+	 */
+	public WalkingSteps(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
+        
+        // Initialize data members.
+        canWalkAllSteps = true;
+        walkingSteps = new ArrayList<WalkStep>();
+        
+        // Determine initial walk state.
+        WalkState initialWalkState = determineInitialWalkState(robot);
+        
+        // Determine destination walk state.
+        WalkState destinationWalkState = determineDestinationWalkState(xLoc, yLoc, interiorObject);
+        
+        // Determine walking steps to destination.
+        determineWalkingSteps(initialWalkState, destinationWalkState);
+    }
+	
     /**
      * Gets a list of walking steps to the destination.
      * @return list of walk steps.  Returns empty list if a valid path isn't found.
@@ -153,7 +173,67 @@ implements Serializable {
         
         return result;
     }
-    
+
+   private WalkState determineInitialWalkState(Robot robot) {
+        
+        WalkState result = null;
+        
+        LocationSituation locationSituation = robot.getLocationSituation();
+
+        // Determine initial walk state based on robot's location situation.
+        if (LocationSituation.IN_SETTLEMENT == locationSituation) {
+            
+            Building building = BuildingManager.getBuilding(robot);
+            if (building == null) {
+                return null;
+            }
+            
+            result = new WalkState(WalkState.BUILDING_LOC);
+            result.building = building;
+            
+            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(robot.getXLocation(), 
+                    robot.getYLocation(), building)) {
+                throw new IllegalStateException(robot.getName() + " has invalid walk start location. (" + 
+                    robot.getXLocation() + ", " + robot.getYLocation() + ") is not within building " + building);
+            }
+        }
+        else if (LocationSituation.IN_VEHICLE == locationSituation) {
+            
+            Vehicle vehicle = robot.getVehicle();
+            
+            if (vehicle instanceof Rover) {
+                result = new WalkState(WalkState.ROVER_LOC);
+                result.rover = (Rover) vehicle;
+                
+                if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(robot.getXLocation(), 
+                        robot.getYLocation(), vehicle)) {
+                    throw new IllegalStateException(robot.getName() + " has invalid walk start location. (" + 
+                        robot.getXLocation() + ", " + robot.getYLocation() + ") is not within vehicle " + vehicle);
+                }
+            }
+            else {
+                result = new WalkState(WalkState.OUTSIDE_LOC); 
+            }
+        }
+        else if (LocationSituation.OUTSIDE == locationSituation) {
+            
+            result = new WalkState(WalkState.OUTSIDE_LOC); 
+        }
+        else {
+            
+            throw new IllegalStateException(robot.getName() + 
+                    " is in an invalid location situation for walking task: " + 
+                    locationSituation);
+        }
+        
+        // Set robot X and Y location.
+        if (result != null) {
+            result.xLoc = robot.getXLocation();
+            result.yLoc = robot.getYLocation();
+        }
+        
+        return result;
+    }
     /**
      * Determines the destination walk state.
      * @param xLoc the destination X location.

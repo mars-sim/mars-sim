@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.07 2015-01-17
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -24,6 +24,9 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.RobotConfig;
+import org.mars_sim.msp.core.person.RobotType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -96,6 +99,7 @@ implements Serializable {
         initializePersonNames();
         initializeSettlementNames();
         initializeVehicleNames();
+        
 
         // Create initial units.
         createInitialSettlements();
@@ -104,6 +108,8 @@ implements Serializable {
         createInitialResources();
         createInitialParts();
         createInitialPeople();
+        
+        //createInitialRobots();
     }
 
     /**
@@ -130,7 +136,7 @@ implements Serializable {
             throw new IllegalStateException("person names could not be loaded: " + e.getMessage(), e);
         }
     }
-
+    
     /**
      * Initializes the list of possible vehicle names.
      * @throws Exception if unable to load rover names.
@@ -192,6 +198,21 @@ implements Serializable {
      * Gets a new name for a unit.
      * @param unitType {@link UnitType} the type of unit.
      * @param baseName the base name or null if none.
+     * @param type
+     * @return new name
+     * @throws IllegalArgumentException if unitType is not valid.
+     */
+    public String getNewRobotName(UnitType unitType, String baseName, String type) {
+    	String name = "Arbie";
+    	//if (unitType == UnitType.ROBOT) 
+        
+    	return name;
+    }
+    
+    /**
+     * Gets a new name for a unit.
+     * @param unitType {@link UnitType} the type of unit.
+     * @param baseName the base name or null if none.
      * @param gender the gender of the person or null if not a person.
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
@@ -238,6 +259,21 @@ implements Serializable {
                 usedNames.add(pi.next().getName());
             }
             unitName = "Person";
+        
+        } else if (unitType == UnitType.ROBOT) {
+            
+        	initialNameList = new ArrayList<String>();
+            initialNameList.add("Bot 1");
+            initialNameList.add("Bot 2");
+            initialNameList.add("Bot 3");
+            initialNameList.add("Bot 4");
+            
+            Iterator<Robot> pi = getRobots().iterator();
+            while (pi.hasNext()) {
+                usedNames.add(pi.next().getName());
+            }
+            unitName = "Bot";
+        
         } else if (unitType == UnitType.EQUIPMENT) {
             if (baseName != null) {
                 int number = 1;
@@ -309,12 +345,12 @@ implements Serializable {
                 Coordinates location = new Coordinates(latitude, longitude);
 
                 int populationNumber = config.getInitialSettlementPopulationNumber(x);
-
+                int initialNumOfRobots = config.getInitialSettlementNumOfRobots(x);
                 // 2014-10-29 Added settlement's id called sid
                 // 2015-01-16 Added scenarioID
 				int scenarioID = config.getInitialSettlementScenarioID(x);
 				//System.out.println("in unitManager, scenarioID is " +  scenarioID);
-                addUnit(new Settlement(name, scenarioID, template, location, populationNumber));
+                addUnit(new Settlement(name, scenarioID, template, location, populationNumber, initialNumOfRobots));
 
             }
         } catch (Exception e) {
@@ -483,6 +519,235 @@ implements Serializable {
         }
     }
 
+
+    /**
+     * Creates initial Robots based on available capacity at settlements.
+     * @throws Exception if Robots can not be constructed.
+     */
+    private void createInitialRobots() {
+
+        // Create configured robots.
+        createConfiguredRobots();
+
+        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+        //RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+        // Randomly create all remaining robots to fill the settlements to capacity.
+        try {
+            Iterator<Settlement> i = getSettlements().iterator();
+            while (i.hasNext()) {
+                Settlement settlement = i.next();
+
+                while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
+                	RobotType robotType = RobotType.REPAIRBOT;
+                    //if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+                    //  gender = PersonGender.MALE;
+                    //}
+                    Robot robot = new Robot(getNewName(UnitType.ROBOT, robotType.toString(), null), robotType, "Mars", settlement); //TODO: read from file
+                    addUnit(robot);
+                    //System.out.println("UnitManager : createInitialRobots() : a robot is added !");
+                    
+                    //relationshipManager.addInitialSettler(person, settlement);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Creates all configured Robots.
+     * @throws Exception if error parsing XML.
+     */
+    private void createConfiguredRobots() {
+    	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+ 
+        // Create all configured robot.
+        for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
+            // Get robot's name (required)
+            String name = robotConfig.getConfiguredRobotName(x);
+            if (name == null) {
+         
+            	throw new IllegalStateException("Robot name is null");
+            }
+
+            // Get person's gender or randomly determine it if not configured.
+            RobotType robotType = robotConfig.getConfiguredRobotType(x);
+            if (robotType == null) {
+            	robotType = RobotType.REPAIRBOT;
+                //if (RandomUtil.getRandomDouble(1.0D) <= robotConfig.getGenderRatio()) {
+                //	robotType = RobotType.GARDENBOT;
+                //}
+            }
+
+            // Get person's settlement or randomly determine it if not configured.
+            String settlementName = robotConfig.getConfiguredRobotSettlement(x);
+            Settlement settlement = null;
+            if (settlementName != null) {
+                Collection<Settlement> col = CollectionUtils.getSettlement(units);
+                settlement = CollectionUtils.getSettlement(col, settlementName);
+                if (settlement == null) {
+                    // If settlement cannot be found that matches the settlement name,
+                    // put person in a randomly selected settlement.
+                    logger.log(Level.WARNING, "Robot " + name + " could not be located" +
+                            " at " + settlementName + " because the settlement doesn't exist.");
+                    settlement = CollectionUtils.getRandomSettlement(col);
+                }
+            } else {
+                Collection<Settlement> col = CollectionUtils.getSettlement(units);
+                settlement = CollectionUtils.getRandomSettlement(col);
+            }
+
+            // If settlement is still null (no settlements available),
+            // Don't create robot.
+            if (settlement == null) {
+                return;
+            }
+
+            // If settlement does not have initial population capacity, try another settlement.
+            if (settlement.getInitialNumOfRobots() <= settlement.getCurrentNumOfRobots()) {
+                Iterator<Settlement> i = getSettlements().iterator();
+                Settlement newSettlement = null;
+                while (i.hasNext() && (newSettlement == null)) {
+                    Settlement tempSettlement = i.next();
+                    if (tempSettlement.getInitialNumOfRobots() > tempSettlement.getCurrentNumOfRobots()) {
+                        newSettlement = tempSettlement;
+                    }
+                }
+                if (newSettlement != null) {
+                    settlement = newSettlement;
+                }
+                else {
+                    // If no settlement with room found, don't create person.
+                    return;
+                }
+            }
+
+            // Create person and add to the unit manager.
+            Robot robot = new Robot(name, robotType, "Mars", settlement); //TODO: read from file
+            addUnit(robot);
+            System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
+
+            // Set robot's job (if any).
+            String jobName = robotConfig.getConfiguredRobotJob(x);
+            if (jobName != null) {
+                Job job = JobManager.getJob(jobName);
+                if (job != null) {
+                	robot.getMind().setJob(job, true);
+                }
+            }
+
+            // Set person's configured natural attributes (if any).
+            Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
+            if (naturalAttributeMap != null) {
+                Iterator<String> i = naturalAttributeMap.keySet().iterator();
+                while (i.hasNext()) {
+                    String attributeName = i.next();
+                    int value = (Integer) naturalAttributeMap.get(attributeName);
+                    robot.getNaturalAttributeManager().setAttribute(
+                            NaturalAttribute.valueOfIgnoreCase(attributeName),
+                            value
+                            );
+                }
+            }
+
+            // Set robot's configured skills (if any).
+            Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+            if (skillMap != null) {
+                Iterator<String> i = skillMap.keySet().iterator();
+                while (i.hasNext()) {
+                    String skillName = i.next();
+                    int level = (Integer) skillMap.get(skillName);
+                    robot
+                    .getMind()
+                    .getSkillManager()
+                    .addNewSkill(
+                            new Skill(
+                                    SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
+                                    level
+                                    )
+                            );
+                }
+            }
+        }
+
+        // Create all configured relationships.
+        //createConfiguredRelationships();
+    }
+
+
+    /**
+     * Creates all configured people relationships.
+     * @throws Exception if error parsing XML.
+     */
+    private void createConfiguredRelationships() {
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+        // Create all configured people relationships.
+        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+            try {
+                // Get person's name
+                String name = personConfig.getConfiguredPersonName(x);
+                if (name == null) {
+                    throw new IllegalStateException("Person name is null");
+                }
+
+                // Get the person
+                Person person = null;
+                Iterator<Person> j = getPeople().iterator();
+                while (j.hasNext()) {
+                    Person tempPerson = j.next();
+                    if (tempPerson.getName().equals(name)) {
+                        person = tempPerson;
+                    }
+                }
+                if (person == null) {
+                    throw new IllegalStateException("Person: " + name + " not found.");
+                }
+
+                // Set person's configured relationships (if any).
+                Map<String, Integer> relationshipMap = personConfig.getRelationshipMap(x);
+                if (relationshipMap != null) {
+                    Iterator<String> i = relationshipMap.keySet().iterator();
+                    while (i.hasNext()) {
+                        String relationshipName = i.next();
+
+                        // Get the other person in the relationship.
+                        Person relationshipPerson = null;
+                        Iterator<Person> k = getPeople().iterator();
+                        while (k.hasNext()) {
+                            Person tempPerson = k.next();
+                            if (tempPerson.getName().equals(relationshipName)) {
+                                relationshipPerson = tempPerson;
+                            }
+                        }
+                        if (relationshipPerson == null) {
+                            throw new IllegalStateException("Person: " + relationshipName + " not found.");
+                        }
+
+                        int opinion = (Integer) relationshipMap.get(relationshipName);
+
+                        // Set the relationship opinion.
+                        Relationship relationship = relationshipManager.getRelationship(person, relationshipPerson);
+                        if (relationship != null) {
+                            relationship.setPersonOpinion(person, opinion);
+                        } else {
+                            relationshipManager.addRelationship(person, relationshipPerson, Relationship.EXISTING_RELATIONSHIP);
+                            relationship = relationshipManager.getRelationship(person, relationshipPerson);
+                            relationship.setPersonOpinion(person, opinion);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                logger.log(Level.SEVERE, "Configured relationship could not be created: " + e.getMessage());
+            }
+        }
+    }
+
+
     /**
      * Creates all configured people.
      * @throws Exception if error parsing XML.
@@ -608,77 +873,7 @@ implements Serializable {
         // Create all configured relationships.
         createConfiguredRelationships();
     }
-
-    /**
-     * Creates all configured people relationships.
-     * @throws Exception if error parsing XML.
-     */
-    private void createConfiguredRelationships() {
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
-        // Create all configured people relationships.
-        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
-            try {
-                // Get person's name
-                String name = personConfig.getConfiguredPersonName(x);
-                if (name == null) {
-                    throw new IllegalStateException("Person name is null");
-                }
-
-                // Get the person
-                Person person = null;
-                Iterator<Person> j = getPeople().iterator();
-                while (j.hasNext()) {
-                    Person tempPerson = j.next();
-                    if (tempPerson.getName().equals(name)) {
-                        person = tempPerson;
-                    }
-                }
-                if (person == null) {
-                    throw new IllegalStateException("Person: " + name + " not found.");
-                }
-
-                // Set person's configured relationships (if any).
-                Map<String, Integer> relationshipMap = personConfig.getRelationshipMap(x);
-                if (relationshipMap != null) {
-                    Iterator<String> i = relationshipMap.keySet().iterator();
-                    while (i.hasNext()) {
-                        String relationshipName = i.next();
-
-                        // Get the other person in the relationship.
-                        Person relationshipPerson = null;
-                        Iterator<Person> k = getPeople().iterator();
-                        while (k.hasNext()) {
-                            Person tempPerson = k.next();
-                            if (tempPerson.getName().equals(relationshipName)) {
-                                relationshipPerson = tempPerson;
-                            }
-                        }
-                        if (relationshipPerson == null) {
-                            throw new IllegalStateException("Person: " + relationshipName + " not found.");
-                        }
-
-                        int opinion = (Integer) relationshipMap.get(relationshipName);
-
-                        // Set the relationship opinion.
-                        Relationship relationship = relationshipManager.getRelationship(person, relationshipPerson);
-                        if (relationship != null) {
-                            relationship.setPersonOpinion(person, opinion);
-                        } else {
-                            relationshipManager.addRelationship(person, relationshipPerson, Relationship.EXISTING_RELATIONSHIP);
-                            relationship = relationshipManager.getRelationship(person, relationshipPerson);
-                            relationship.setPersonOpinion(person, opinion);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                logger.log(Level.SEVERE, "Configured relationship could not be created: " + e.getMessage());
-            }
-        }
-    }
-
+    
     /** 
      * Notify all the units that time has passed.
      * Times they are a changing.
@@ -735,6 +930,21 @@ implements Serializable {
         return CollectionUtils.getPerson(units);
     }
 
+
+    /** Get number of Robots
+     *  @return the number of Robots
+     */
+    public int getRobotsNum() {
+        return CollectionUtils.getRobot(units).size();
+    }
+
+    /** Get Robots in virtual Mars
+     *  @return Collection of Robots
+     */
+    public Collection<Robot> getRobots() {
+        return CollectionUtils.getRobot(units);
+    }
+    
     /**
      * Get the number of equipment.
      * @return number

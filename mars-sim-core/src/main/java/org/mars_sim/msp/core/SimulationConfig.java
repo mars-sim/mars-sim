@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.mars.LandmarkConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.RobotConfig;
 import org.mars_sim.msp.core.person.medical.MedicalConfig;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
@@ -69,10 +70,9 @@ public class SimulationConfig implements Serializable {
 	public static final String MANUFACTURE_FILE = "manufacturing";
 	public static final String CONSTRUCTION_FILE = "construction";
 	public static final String VALUE = "value";
-	// 2014-11-23 Added Food Production
 	public static final String FOODPRODUCTION_FILE = "foodProduction";
-	// 2014-12-06 Added meals
 	public static final String MEAL_FILE = "meals";
+	public static final String ROBOT_FILE = "robots";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -115,6 +115,9 @@ public class SimulationConfig implements Serializable {
 	private FoodProductionConfig foodProductionConfig;
 	// 2014-12-06 Added mealConfig
 	private MealConfig mealConfig;
+	// 2015-01-21 Added robotConfig
+	private RobotConfig robotConfig;
+	
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
@@ -239,6 +242,14 @@ public class SimulationConfig implements Serializable {
 		return personConfig;
 	}
 
+	/**
+	 * Gets the robot config subset.
+	 * @return robot config
+	 */	
+	public RobotConfig getRobotConfiguration() {
+		return robotConfig;
+	}
+	
 	/**
 	 * Gets the medical config subset.
 	 * @return medical config
@@ -378,6 +389,8 @@ public class SimulationConfig implements Serializable {
 			foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
 			// 2014-12-06 Added mealConfig
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
+			// 2015-01-21 Added robotConfig
+			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
@@ -405,10 +418,9 @@ public class SimulationConfig implements Serializable {
 		settlementConfig.destroy();
 		manufactureConfig.destroy();
 		constructionConfig.destroy();
-		// 2014-11-23 Added Food Production
 		foodProductionConfig.destroy();
-		// 2014-12-06 Added mealConfig
 		mealConfig.destroy();
+		robotConfig.destroy();
 	}
 
 	/**

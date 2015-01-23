@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -48,6 +49,7 @@ implements Serializable {
 
 	// Cache variables.
 	private transient Person personCache;
+	private transient Robot robotCache;
 	private transient MarsClock timeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient double totalProbCache;
@@ -198,6 +200,14 @@ implements Serializable {
 		}
 		return totalProbCache;
 	}
+	
+	public double getTotalMissionProbability(Robot robot) {
+		// If cache is not current, calculate the probabilities.
+		if (!useCache(robot)) {
+			calculateProbability(robot);
+		}
+		return totalProbCache;
+	}
 
 	/** 
 	 * Gets a new mission for a person based on potential missions available.
@@ -249,6 +259,57 @@ implements Serializable {
 		return result;
 	}
 
+
+	/** 
+	 * Gets a new mission for a person based on potential missions available.
+	 * @param person person to find the mission for 
+	 * @return new mission
+	 */
+	public Mission getNewMission(Robot robot) {
+		Mission result = null;
+		// If cache is not current, calculate the probabilities.
+		if (!useCache(robot)) {
+			calculateProbability(robot);
+		}
+
+		// Get a random number from 0 to the total weight
+		double totalProbability = getTotalMissionProbability(robot);
+
+		if (totalProbability == 0D) {
+			throw new IllegalStateException(robot + 
+					" has zero total mission probability weight.");
+		}
+
+		// Get a random number from 0 to the total probability weight.
+		double r = RandomUtil.getRandomDouble(totalProbability);
+
+		// Determine which mission is selected.
+		MetaMission selectedMetaMission = null;
+		Iterator<MetaMission> i = missionProbCache.keySet().iterator();
+		while (i.hasNext() && (selectedMetaMission == null)) {
+			MetaMission metaMission = i.next();
+			double probWeight = missionProbCache.get(metaMission);
+			if (r <= probWeight) {
+				selectedMetaMission = metaMission;
+			} 
+			else {
+				r -= probWeight;
+			}
+		}
+
+		if (selectedMetaMission == null) {
+			throw new IllegalStateException(robot + " could not determine a new mission.");
+		}
+
+		// Construct the mission
+		result = selectedMetaMission.constructInstance(robot);
+
+		// Clear time cache.
+		timeCache = null;
+
+		return result;
+	}
+	
 	/**
 	 * Gets all the active missions associated with a given settlement.
 	 * @param settlement the settlement to find missions.
@@ -377,6 +438,35 @@ implements Serializable {
 		personCache = person;
 	}
 
+	private void calculateProbability(Robot robot) {
+		if (missionProbCache == null) {
+			missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
+		}
+
+		// Clear total probabilities.
+		totalProbCache = 0D;
+
+		// Determine probabilities.
+		Iterator<MetaMission> i = MetaMissionUtil.getMetaMissions().iterator();
+		while (i.hasNext()) {
+			MetaMission metaMission = i.next();
+			double probability = metaMission.getProbability(robot);
+			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				missionProbCache.put(metaMission, probability);
+				totalProbCache += probability;
+			}
+			else {
+				missionProbCache.put(metaMission, 0D);
+				logger.severe(robot.getName() + " bad mission probability: " +  metaMission.getName() + 
+						" probability: " + probability);
+			}
+		}
+
+		// Set the time cache to the current time.
+		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		robotCache = robot;
+	}
+
 	/**
 	 * Checks if task probability cache should be used.
 	 * @param the person to check for.
@@ -387,6 +477,10 @@ implements Serializable {
 		return currentTime.equals(timeCache) && (person == personCache);
 	}
 
+	private boolean useCache(Robot robot) {
+		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		return currentTime.equals(timeCache) && (robot == robotCache);
+	}
 	/**
 	 * Updates mission based on passing time.
 	 * @param time amount of time passing (millisols)

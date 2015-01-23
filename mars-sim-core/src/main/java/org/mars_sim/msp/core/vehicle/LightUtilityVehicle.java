@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -82,6 +83,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
+    
     /**
      * Gets the number of crewmembers the vehicle can carry.
      * @return capacity
@@ -138,4 +140,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         attachments.clear();
         attachments = null;
     }
+
+	@Override
+	public Collection<Robot> getRobots() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

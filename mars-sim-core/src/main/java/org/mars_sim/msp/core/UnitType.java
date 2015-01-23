@@ -1,15 +1,19 @@
+/**
+ * Mars Simulation Project
+ * UnitType.java
+ * @version 3.07 2015-01-21
+ * @author stpa
+ */
+
 package org.mars_sim.msp.core;
 
-/**
- * @author stpa
- * 2014-03-02
- */
 public enum UnitType {
 
 	SETTLEMENT ("UnitType.settlement"),
 	PERSON ("UnitType.person"),
 	VEHICLE ("UnitType.vehicle"),
-	EQUIPMENT ("UnitType.equipment");
+	EQUIPMENT ("UnitType.equipment"),
+	ROBOT ("UnitType.robot");
 
 	private String msgKey;
 

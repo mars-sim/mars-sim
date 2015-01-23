@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.vehicle;
 import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -485,4 +486,10 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
         sickbay = null;
         towedVehicle = null;
     }
+
+	@Override
+	public Collection<Robot> getRobots() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

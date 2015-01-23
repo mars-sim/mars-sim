@@ -28,6 +28,10 @@ public enum UnitEventType {
 	ADD_ASSOCIATED_PERSON_EVENT		("add associated person"),
 	REMOVE_ASSOCIATED_PERSON_EVENT	("remove associated person"),
 
+	ADD_ASSOCIATED_ROBOT_EVENT		("add associated robot"),
+	REMOVE_ASSOCIATED_ROBOT_EVENT	("remove associated robot"),
+
+	
 	// from PhysicalCondition.java
 	FATIGUE_EVENT					("fatigue event"),
 	HUNGER_EVENT					("hunger event"),

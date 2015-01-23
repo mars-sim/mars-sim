@@ -65,6 +65,35 @@ implements Serializable {
 	}
 
 	/**
+	 * Constructor.
+	 * @param person the person with the attributes.
+	 */
+	NaturalAttributeManager(Robot robot) {
+
+		attributeList = new Hashtable<NaturalAttribute, Integer>();
+
+		// Create natural attributes using random values (averaged for bell curve around 50%).
+		// Note: this may change later.
+		for (NaturalAttribute attributeKey : NaturalAttribute.values()) {
+			int attributeValue = 0;
+			int numberOfIterations = 3;
+			for (int y = 0; y < numberOfIterations; y++) attributeValue += RandomUtil.getRandomInt(100);
+			attributeValue /= numberOfIterations;
+			attributeList.put(attributeKey, attributeValue);
+		}
+
+		// Adjust certain attributes reflective of Martian settlers.
+		addAttributeModifier(NaturalAttribute.STRENGTH, 95);
+		addAttributeModifier(NaturalAttribute.ENDURANCE, 95);
+		addAttributeModifier(NaturalAttribute.AGILITY, 20);
+		addAttributeModifier(NaturalAttribute.STRESS_RESILIENCE, 80);
+		addAttributeModifier(NaturalAttribute.TEACHING, 40);
+		addAttributeModifier(NaturalAttribute.ACADEMIC_APTITUDE, 80);
+		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 60);
+
+	}
+
+	/**
 	 * Adds a random modifier to an attribute.
 	 * @param attributeName the name of the attribute
 	 * @param modifier the random ceiling of the modifier

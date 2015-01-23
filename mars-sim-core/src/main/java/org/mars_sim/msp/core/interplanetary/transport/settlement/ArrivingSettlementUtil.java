@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlementUtil.java
- * @version 3.07 2014-10-29
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -54,7 +54,7 @@ public class ArrivingSettlementUtil {
 			String template = settlementConfig.getNewArrivingSettlementTemplate(x);
 
 			int population = settlementConfig.getNewArrivingSettlementPopulationNumber(x);
-
+			int numOfRobots = settlementConfig.getNewArrivingSettlementNumOfRobots(x);
 			// Determine arrival time.
 			double arrivalTime = settlementConfig.getNewArrivingSettlementArrivalTime(x);
 			MarsClock arrivalDate = (MarsClock) currentTime.clone();
@@ -82,7 +82,7 @@ public class ArrivingSettlementUtil {
 
 			// Create arriving settlement.
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, 
-					arrivalDate, location, population);
+					arrivalDate, location, population, numOfRobots);
 			// 2015-01-17 Added scenarioID 
 			int scenarioID = settlementConfig.getNewArrivingSettlementScenarioID(x);
 			arrivingSettlement.setScenarioID(scenarioID);

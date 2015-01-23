@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 
 /**
@@ -27,7 +28,8 @@ public interface MetaMission {
      * @return mission instance.
      */
     public Mission constructInstance(Person person);
-    
+    public Mission constructInstance(Robot robot);
+  
     /**
      * Gets the weighted probability value that the person might perform this mission.
      * A probability weight of zero means that the mission has no chance of being performed by the person.
@@ -35,4 +37,5 @@ public interface MetaMission {
      * @return weighted probability value (0 -> positive value).
      */
     public double getProbability(Person person);
+    public double getProbability(Robot robot);
 }

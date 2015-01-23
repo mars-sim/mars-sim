@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -98,8 +99,28 @@ implements Serializable {
         this.destinationXLocation = destinationXLocation;
         this.destinationYLocation = destinationYLocation;
         this.ignoreEndEVA = ignoreEndEVA;
-        obstaclesInPath = false;
-        walkingPathIndex = 1;
+
+        // Check that the person is currently outside a settlement or vehicle.
+        LocationSituation location = person.getLocationSituation();
+        if (location != LocationSituation.OUTSIDE) {
+            throw new IllegalStateException(
+                    "WalkOutside task started when " + person + " is not outside.");
+        }
+        
+        init();
+    }
+
+    public WalkOutside(Robot robot, double startXLocation, double startYLocation, 
+            double destinationXLocation, double destinationYLocation, boolean ignoreEndEVA) {
+
+        // Use Task constructor.
+        super("Walking Exterior", robot, false, false, STRESS_MODIFIER, false, 0D);
+        // Initialize data members.
+        this.startXLocation = startXLocation;
+        this.startYLocation = startYLocation;
+        this.destinationXLocation = destinationXLocation;
+        this.destinationYLocation = destinationYLocation;
+        this.ignoreEndEVA = ignoreEndEVA;
 
         // Check that the person is currently outside a settlement or vehicle.
         LocationSituation location = person.getLocationSituation();
@@ -108,6 +129,14 @@ implements Serializable {
                     "WalkOutside task started when " + person + " is not outside.");
         }
 
+        init();
+    }
+    
+    public void init() {
+
+        obstaclesInPath = false;
+        walkingPathIndex = 1;
+
         // Determine walking path.
         walkingPath = determineWalkingPath();
 
@@ -115,7 +144,8 @@ implements Serializable {
         addPhase(WALKING);
         setPhase(WALKING);
     }
-
+    
+    
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {

@@ -64,6 +64,10 @@ public class BuildingConfig implements Serializable {
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String CAPACITY = "capacity";
 	private static final String LIVING_ACCOMMODATIONS = "living-accommodations";
+	
+	private static final String ROBOTIC_STATIONS = "robotic-stations";
+	private static final String STATIONS = "stations";
+	
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
@@ -372,6 +376,26 @@ public class BuildingConfig implements Serializable {
 	 */
 	public int getLivingAccommodationBeds(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
+	}
+	
+	/**
+	 * Checks if the building provides robotic stations.
+	 * @param buildingName the name of the building
+	 * @return true if robotic stations
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	public boolean hasRoboticStations(String buildingName) {
+		return hasElements(buildingName,FUNCTIONS,ROBOTIC_STATIONS);
+	}
+	
+	/**
+	 * Gets the number of stations in the building's robotic stations.
+	 * @param buildingName the name of the building.
+	 * @return number of stations.
+	 * @throws Exception if building name cannot be found or XML parsing error.
+	 */
+	public int getRoboticStations(String buildingName) {
+		return getValueAsInteger(buildingName,FUNCTIONS,ROBOTIC_STATIONS,STATIONS);
 	}
 	
 	/**

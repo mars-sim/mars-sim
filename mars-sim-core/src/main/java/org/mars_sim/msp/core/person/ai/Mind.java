@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -51,8 +52,10 @@ implements Serializable {
     /** The person's skill manager. */
     private SkillManager skillManager;
 
+    private Robot robot;
+    
     /**
-     * Constructor.
+     * Constructor 1.
      * @param person the person owning this mind
      * @throws Exception if mind could not be created.
      */
@@ -75,25 +78,61 @@ implements Serializable {
     }
 
     /**
+     * Constructor 2.
+     * @param robot the robot owning this mind
+     * @throws Exception if mind could not be created.
+     */
+    public Mind(Robot robot) {
+
+        // Initialize data members
+        this.robot = robot;
+        mission = null;
+        job = null;
+        jobLock = false;
+
+        // Set the MBTI personality type.
+        //personality = new PersonalityType(person);
+
+        // Construct a task manager
+        taskManager = new TaskManager(this);
+
+        // Construct a skill manager.
+        skillManager = new SkillManager(person);
+    }
+    
+    /**
      * Time passing.
      * @param time the time passing (millisols)
      * @throws Exception if error.
      */
     public void timePassing(double time) {
 
-        // Check if this person needs to get a new job or change jobs.
-        if (!jobLock) {
-            setJob(JobManager.getNewJob(person), false);
+        if (person != null) { 
+	
+	        // Check if this person needs to get a new job or change jobs.
+	        if (!jobLock) {
+	            setJob(JobManager.getNewJob(person), false);
+	        }
+	
+	        // Take action as necessary.
+	        takeAction(time);
+	
+	        // Update stress based on personality.
+	        personality.updateStress(time);
+	
+	        // Update relationships.
+	        Simulation.instance().getRelationshipManager().timePassing(person, time);
         }
-
-        // Take action as necessary.
-        takeAction(time);
-
-        // Update stress based on personality.
-        personality.updateStress(time);
-
-        // Update relationships.
-        Simulation.instance().getRelationshipManager().timePassing(person, time);
+        else if (robot != null) {
+        	 // Check if this person needs to get a new job or change jobs.
+	        if (!jobLock) {
+	            setJob(JobManager.getNewJob(robot), false);
+	        }
+	
+	        // Take action as necessary.
+	        takeAction(time);
+	
+        }
     }
 
     /**
@@ -111,36 +150,78 @@ implements Serializable {
 
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            overrideMission = person.getSettlement().getMissionCreationOverride();
-        }
-
-        // Perform a task if the person has one, or determine a new task/mission.
-        if (taskManager.hasActiveTask()) {
-            double remainingTime = taskManager.performTask(time, person
-                    .getPerformanceRating());
-            if (remainingTime > 0D) {
-                takeAction(remainingTime);
-            }
-        } 
-        else {
-            if (activeMission) {
-                mission.performMission(person);
+        
+        if (person != null) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                overrideMission = person.getSettlement().getMissionCreationOverride();
             }
 
-            if (!taskManager.hasActiveTask()) {
-                try {
-                    getNewAction(true, (!activeMission && !overrideMission));
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Could not get new action", e);
-                    e.printStackTrace(System.err);
+            // Perform a task if the person has one, or determine a new task/mission.
+            if (taskManager.hasActiveTask()) {
+                double remainingTime = taskManager.performTask(time, person
+                        .getPerformanceRating());
+                if (remainingTime > 0D) {
+                    takeAction(remainingTime);
+                }
+            } 
+            else {
+                if (activeMission) {
+                    mission.performMission(person);
+                }
+
+                if (!taskManager.hasActiveTask()) {
+                    try {
+                        getNewAction(true, (!activeMission && !overrideMission));
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Could not get new action", e);
+                        e.printStackTrace(System.err);
+                    }
+                }
+
+                if (taskManager.hasActiveTask() || hasActiveMission()) {
+                    takeAction(time);
                 }
             }
-
-            if (taskManager.hasActiveTask() || hasActiveMission()) {
-                takeAction(time);
-            }
+        	
+        	
         }
+        else if (robot != null) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                overrideMission = robot.getSettlement().getMissionCreationOverride();
+            }
+
+            // Perform a task if the robot has one, or determine a new task/mission.
+            if (taskManager.hasActiveTask()) {
+                double remainingTime = taskManager.performTask(time, robot
+                        .getPerformanceRating());
+                if (remainingTime > 0D) {
+                    takeAction(remainingTime);
+                }
+            } 
+            else {
+            	
+                if (activeMission) {
+                    mission.performMission(robot);
+                }
+
+                if (!taskManager.hasActiveTask()) {
+                    try {
+                        getNewAction(true, (!activeMission && !overrideMission));
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Could not get new action", e);
+                        e.printStackTrace(System.err);
+                    }
+                }
+
+                if (taskManager.hasActiveTask() || hasActiveMission()) {
+                    takeAction(time);
+                }
+                
+            }
+        	
+        }
+        
+
     }
 
     /**
@@ -151,6 +232,9 @@ implements Serializable {
         return person;
     }
 
+    public Robot getRobot() {
+        return robot;
+    }
     /**
      * Returns the person's task manager
      * @return task manager
@@ -193,7 +277,13 @@ implements Serializable {
         jobLock = locked;
         if (!newJob.equals(job)) {
             job = newJob;
-            person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+            
+            if (person != null) {
+            	 person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+            }
+            else if (robot != null) {
+            	 robot.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+            }  
         }
     }
 
@@ -223,17 +313,34 @@ implements Serializable {
      */
     public void setMission(Mission newMission) {
         if (newMission != mission) {
-            if (mission != null) {
-                mission.removePerson(person);
-            }
+        	
+        	if (person != null) {
+        		if (mission != null) {
+                    mission.removePerson(person);
+                }
 
-            mission = newMission;
+                mission = newMission;
 
-            if (newMission != null) {
-                newMission.addPerson(person);
-            }
+                if (newMission != null) {
+                    newMission.addPerson(person);
+                }
 
-            person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+                person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+        	}
+        	else if (robot != null) {
+        		if (mission != null) {
+                    mission.removeRobot(robot);
+                }
+
+                mission = newMission;
+
+                if (newMission != null) {
+                    newMission.addRobot(robot);
+                }
+
+                robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+        	}
+  
         }
     }
 
@@ -246,10 +353,19 @@ implements Serializable {
 
         MissionManager missionManager = Simulation.instance().getMissionManager();
 
-        // If this Person is too weak then they can not do Missions
-        if (person.getPerformanceRating() < 0.5D) {
-            missions = false;
+        if (person != null) {
+            // If this Person is too weak then they can not do Missions
+            if (person.getPerformanceRating() < 0.5D) {
+                missions = false;
+            }
         }
+        else if (robot != null) {
+            if (robot.getPerformanceRating() < 0.5D) {
+                missions = false;
+            }
+        }
+        
+
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
@@ -264,9 +380,15 @@ implements Serializable {
         }
 
         if (missions) {
-            missionWeights = missionManager.getTotalMissionProbability(person);
-            weightSum += missionWeights;
-        }
+	        if (person != null) {	
+	           missionWeights = missionManager.getTotalMissionProbability(person);
+	           weightSum += missionWeights;
+	        }
+	        else if (robot != null) {	            
+	           missionWeights = missionManager.getTotalMissionProbability(robot);
+	           weightSum += missionWeights;
+	        }
+		}
 
         if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
                 (Double.isInfinite(weightSum))) {
@@ -289,11 +411,22 @@ implements Serializable {
                 rand -= taskWeights;
             }
         }
+        
+        
         if (missions) {
             if (rand < missionWeights) {
+            	Mission newMission = null;
+            	if (person != null) {
+                    logger.fine(person.getName() + " starting a new mission.");
+                    newMission = missionManager.getNewMission(person);
+                    
+            	}
+            	else if (robot != null) {
+                    logger.fine(robot.getName() + " starting a new mission.");
+                    newMission = missionManager.getNewMission(robot);  
+            	}
 
-                logger.fine(person.getName() + " starting a new mission.");
-                Mission newMission = missionManager.getNewMission(person);
+                
                 if (newMission != null) {
                     missionManager.addMission(newMission);
                     setMission(newMission);
@@ -306,10 +439,19 @@ implements Serializable {
             }
         }
 
-        // If reached this point, no task or mission has been found.
-        logger.severe(person.getName()
-                + " couldn't determine new action - taskWeights: "
-                + taskWeights + ", missionWeights: " + missionWeights);
+        if (person != null) {
+            // If reached this point, no task or mission has been found.
+            logger.severe(person.getName()
+                    + " couldn't determine new action - taskWeights: "
+                    + taskWeights + ", missionWeights: " + missionWeights);
+        }
+        else if (robot != null) {
+            // If reached this point, no task or mission has been found.
+            logger.severe(robot.getName()
+                    + " couldn't determine new action - taskWeights: "
+                    + taskWeights + ", missionWeights: " + missionWeights);
+        }
+
     }
 
     /**
@@ -333,6 +475,7 @@ implements Serializable {
      */
     public void destroy() {
         person = null;
+        robot = null;
         taskManager.destroy();
         if (mission != null) mission.destroy();
         mission = null;

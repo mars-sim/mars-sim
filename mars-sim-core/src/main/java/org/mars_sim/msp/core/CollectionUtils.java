@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectionUtils.java
- * @version 3.07 2014-10-24
+ * @version 3.07 2015-01-21
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;
@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -68,6 +69,27 @@ public class CollectionUtils {
 		}
 	}
 
+	public synchronized static Collection<Robot> getRobot(
+		Collection<Unit> units
+	) {
+		ConcurrentLinkedQueue<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+		for (Unit unit : units) {
+			if (unit instanceof Robot)
+				robots.add((Robot) unit);
+		}
+		return robots;
+	}
+
+	public synchronized static void mergeRobots(Collection<Unit> units, 
+		Collection<Robot> robots
+	) {
+		for (Robot robotUnit : robots) {
+			if (!units.contains(robotUnit))
+				units.add(robotUnit);
+		}
+	}
+
+
 	public synchronized static Collection<Person> getPerson(
 		Collection<Unit> units
 	) {
@@ -87,7 +109,7 @@ public class CollectionUtils {
 				units.add(personUnit);
 		}
 	}
-
+	
 	public synchronized static Collection<Settlement> getSettlement(
 		Collection<Unit> units
 	) {

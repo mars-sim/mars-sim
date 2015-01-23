@@ -22,8 +22,10 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -39,6 +41,7 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.RoboticStations;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -79,6 +82,7 @@ implements LifeSupport {
     
     /** The initial population of the settlement. */
     private int initialPopulation;
+    private int initialNumOfRobots;
     private double zeroPopulationTime;
     private int scenarioID;
 	private int solCache = 1;
@@ -143,19 +147,22 @@ implements LifeSupport {
     // 2014-10-29 Added settlement id
     // Called by UnitManager.java when users create the initial settlement
     // Called by ArrivingSettlement.java when users create a brand new settlement
-    public Settlement(String name, int id, String template, Coordinates location, int populationNumber) {
+    public Settlement(String name, int id, String template, Coordinates location, int populationNumber, int initialNumOfRobots) {
         // Use Structure constructor
         super(name, location);
+        
         this.template = template;
         this.scenarioID = id;
-        
+        this.initialNumOfRobots = initialNumOfRobots;
+        this.initialPopulation = populationNumber;
+       
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
         MILLISOLS_ON_FIRST_SOL = MarsClock.getTotalMillisols(clock);
         //count++;
         //logger.info("constructor 3 : count is " + count);
-        
+        inv = getInventory();
         // Set inventory total mass capacity.
-        getInventory().addGeneralCapacity(Double.MAX_VALUE);
+        inv.addGeneralCapacity(Double.MAX_VALUE);
         // Initialize building manager
         buildingManager = new BuildingManager(this);
         // Initialize building connector manager.
@@ -170,10 +177,6 @@ implements LifeSupport {
         thermalSystem = new ThermalSystem(this);       
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
-        // Initialize the initial population.
-        initialPopulation = populationNumber;
-        
-        inv = getInventory();
     }
 
 	/**
@@ -229,6 +232,7 @@ implements LifeSupport {
 	//public int getCount() {
 	//	return count;
 	//}
+	
     /**
      * Gets the population capacity of the settlement
      * @return the population capacity
@@ -283,6 +287,72 @@ implements LifeSupport {
             count++;
         }
         return personArray;
+    }
+
+    /**
+     * Gets the robot capacity of the settlement
+     * @return the robot capacity
+     */
+    public int getRobotCapacity() {
+        int result = 0;
+        int stations = 0;
+        Iterator<Building> i = buildingManager.getBuildings().iterator();
+        while (i.hasNext()) {
+            Building building = i.next(); 
+            result ++;
+        } 
+        Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
+        while (j.hasNext()) {
+            Building building = j.next(); 
+            RoboticStations roboticStations = (RoboticStations) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            stations += roboticStations.getStations();
+            //stations++;
+        } 
+        //stations = stations * 2; 
+        
+        result = result + stations;
+        
+        return result;
+    }
+    
+    /**
+     * Gets the current number of robots in the settlement
+     * @return the number of robots
+     */
+    public int getCurrentNumOfRobots() {
+        return getRobots().size();
+    }
+
+    /**
+     * Gets a collection of the number of robots of the settlement.
+     * @return Collection of robots
+     */
+    public Collection<Robot> getRobots() {
+        return CollectionUtils.getRobot(getInventory().getContainedUnits());
+    }
+
+    /**
+     * Gets the current available robot capacity of the settlement
+     * @return the available robots capacity
+     */
+    public int getAvailableRobotCapacity() {
+        return getRobotCapacity() - getCurrentNumOfRobots();
+    }
+
+    /**
+     * Gets an array of current robots of the settlement
+     * @return array of robots
+     */
+    public Robot[] getRobotArray() {
+        Collection<Robot> robots = getRobots();
+        Robot[] robotArray = new Robot[robots.size()];
+        Iterator<Robot> i = robots.iterator();
+        int count = 0;
+        while (i.hasNext()) {
+        	robotArray[count] = i.next();
+            count++;
+        }
+        return robotArray;
     }
 
     /**
@@ -431,6 +501,7 @@ implements LifeSupport {
     public void timePassing(double time) {
 
         // If settlement is overcrowded, increase inhabitant's stress.
+    	// TODO: should the number of robots be accounted for here?
         int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
         if (overCrowding > 0) {
             double stressModifier = .1D * overCrowding * time;
@@ -441,6 +512,7 @@ implements LifeSupport {
             }
         }
 
+    	// TODO: what to take into consideration the presence of robots ?
         // If no current population at settlement for one sol, power down the building and turn the heat off.
         if (getCurrentPopulationNum() == 0) {
             zeroPopulationTime += time;
@@ -609,6 +681,7 @@ implements LifeSupport {
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
+    // TODO: will this method be called by robots?
     public Collection<Person> getAffectedPeople() {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>(
                 getInhabitants());
@@ -689,7 +762,27 @@ implements LifeSupport {
 
         return result;
     }
+    public Airlock getClosestAvailableAirlock(Robot robot) {
+        Airlock result = null;
 
+        double leastDistance = Double.MAX_VALUE;
+        BuildingManager manager = buildingManager;
+        Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+
+            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+            		robot.getXLocation(), robot.getYLocation());
+            if (distance < leastDistance) {
+                EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+                result = eva.getAirlock();
+                leastDistance = distance;
+            }
+        }
+
+        return result;
+    }
+    
     /**
      * Gets the closest available airlock at the settlement to the given location.
      * The airlock must have a valid walkable interior path from the person's current location.
@@ -698,13 +791,25 @@ implements LifeSupport {
      * @param yLocation the Y location.
      * @return airlock or null if none available.
      */
-    public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
+    public Airlock getClosestWalkableAvailableAirlock(Unit unit, double xLocation, double yLocation) {
         Airlock result = null;
-
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        if (currentBuilding == null) {
-            throw new IllegalStateException(person.getName() + " is not currently in a building.");
+        Person person = null;
+        Robot robot = null;
+        Building currentBuilding = null;
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+            currentBuilding = BuildingManager.getBuilding(person);
+            if (currentBuilding == null)
+                throw new IllegalStateException(person.getName() + " is not currently in a building.");
+ 
         }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+            currentBuilding = BuildingManager.getBuilding(robot);
+            if (currentBuilding == null)
+                throw new IllegalStateException(robot.getName() + " is not currently in a building.");
+        }
+ 
 
         double leastDistance = Double.MAX_VALUE;
         BuildingManager manager = buildingManager;
@@ -808,8 +913,7 @@ implements LifeSupport {
     public Collection<Person> getAllAssociatedPeople() {
         Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 
-        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople()
-                .iterator();
+        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (person.getAssociatedSettlement() == this)
@@ -819,6 +923,23 @@ implements LifeSupport {
         return result;
     }
 
+    /**
+     * Gets all Robots associated with this settlement, even if they are out on missions.
+     * @return collection of associated Robots.
+     */
+    public Collection<Robot> getAllAssociatedRobots() {
+        Collection<Robot> result = new ConcurrentLinkedQueue<Robot>();
+
+        Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
+        while (i.hasNext()) {
+        	Robot robot = i.next();
+            if (robot.getAssociatedSettlement() == this)
+                result.add(robot);
+        }
+
+        return result;
+    }
+    
     /**
      * Gets all vehicles associated with this settlement, even if they are out on missions.
      * @return collection of associated vehicles.
@@ -978,6 +1099,14 @@ implements LifeSupport {
         return initialPopulation;
     }
 
+    /**
+     * Gets the initial number of robots the settlement.
+     * @return initial number of robots.
+     */
+    public int getInitialNumOfRobots() {
+        return initialNumOfRobots;
+    }
+    
     @Override
     public void destroy() {
         super.destroy();

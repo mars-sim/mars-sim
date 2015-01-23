@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
@@ -72,17 +75,38 @@ implements Serializable {
 		return Msg.getString(key.toString()); //$NON-NLS-1$
 	};
 
+	public String getName(RobotType robotType) {
+		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
+		//switch (robotType) {
+		//	case GARDENBOT : key.append("unknown."); break; //$NON-NLS-1$
+		//	case REPAIRBOT : key.append("unknown."); break; //$NON-NLS-1$
+		//default : 
+		key.append("unknown."); 
+		//break; //$NON-NLS-1$
+		//}
+		key.append(jobClass.getSimpleName());
+		return Msg.getString(key.toString()); //$NON-NLS-1$
+	};
+	
 	public Class<? extends Job> getJobClass() {
 		return this.jobClass;
 	}
 
 	/**
-	 * Gets a person's capability to perform this job.
-	 * @param person the person to check.
+	 * Gets a person/robot's capability to perform this job.
+	 * @param person/robot the person/robot to check.
 	 * @return capability (min 0.0).
 	 */
 	public abstract double getCapability(Person person);
 
+	/**
+	 * Gets a robot's capability to perform this job.
+	 * @param robot the robot to check.
+	 * @return capability (min 0.0).
+	 */
+	public abstract double getCapability(Robot robot);
+
+	
 	/**
 	 * Gets the probability modifier for starting a non-job-related task.
 	 * @param taskClass the task class

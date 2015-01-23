@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
 
  * @author Scott Davis
  */
@@ -9,7 +9,9 @@
 package org.mars_sim.msp.core.person.ai;
 
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 
 import java.io.Serializable;
 import java.util.Hashtable;
@@ -26,12 +28,24 @@ implements Serializable {
 	// Data members
 	/** The person owning the SkillManager. */
 	private Person person;
+	private Robot robot;
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
 
 	/** Constructor. */
-	public SkillManager(Person person) {
-		this.person = person;
+	public SkillManager(Unit unit) {
+		Person person = null;
+		Robot robot = null;
+	        
+		if (unit instanceof Person) {
+			person = (Person) unit;   
+			this.person = person;	        
+		}
+		else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+			this.robot = robot;
+		}
+		
 		skills = new Hashtable<SkillType, Skill>();
 
 		// Add starting skills randomly for person.
@@ -103,10 +117,15 @@ implements Serializable {
 	 */
 	public int getEffectiveSkillLevel(SkillType skillType) {
 		int skill = getSkillLevel(skillType);
-
+		double performance = 0;
+		
 		// Modify for fatigue
 		// - 1 skill level for every 1000 points of fatigue.
-		double performance = person.getPerformanceRating();
+		if (person != null) 
+			performance = person.getPerformanceRating();
+		else if (robot != null)
+			performance = robot.getPerformanceRating();
+
 		int result = (int)Math.round(performance * skill);
 		return result;
 	}
@@ -146,6 +165,7 @@ implements Serializable {
 	 */
 	public void destroy() {
 		person = null;
+		robot = null;
 		skills.clear();
 		skills = null;
 	}

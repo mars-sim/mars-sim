@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -103,9 +103,10 @@ extends JDialog {
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(125);
 		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(205);
-		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(85);
-		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(85);
-		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(85);
+		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(75);
+		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(75);
+		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(75);
+		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(75);
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create combo box for editing template column in settlement table.
@@ -277,9 +278,11 @@ extends JDialog {
 			String template = (String) settlementTableModel.getValueAt(x, 1);
 			String population = (String) settlementTableModel.getValueAt(x, 2);
 			int populationNum = Integer.parseInt(population);
-			String latitude = (String) settlementTableModel.getValueAt(x, 3);
-			String longitude = (String) settlementTableModel.getValueAt(x, 4);
-			settlementConfig.addInitialSettlement(name, template, populationNum, latitude, longitude);
+			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 3);
+			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			String latitude = (String) settlementTableModel.getValueAt(x, 4);
+			String longitude = (String) settlementTableModel.getValueAt(x, 5);
+			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
 		}
 	}
 
@@ -321,6 +324,7 @@ extends JDialog {
 		settlement.name = determineNewSettlementName();
 		settlement.template = determineNewSettlementTemplate();
 		settlement.population = determineNewSettlementPopulation(settlement.template);
+		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
 
@@ -426,6 +430,31 @@ extends JDialog {
 		return result;
 	}
 
+
+	/**
+	 * Determines the new settlement number of robots.
+	 * @param templateName the settlement template name.
+	 * @return number of robots.
+	 */
+	private String determineNewSettlementNumOfRobots(String templateName) {
+
+		String result = "0"; //$NON-NLS-1$
+
+		if (templateName != null) {
+			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
+			while (i.hasNext()) {
+				SettlementTemplate template = i.next();
+				if (template.getTemplateName().equals(templateName)) {
+					result = Integer.toString(template.getDefaultNumOfRobots());
+					//System.out.println("SimulationConfigEditor : determineNewSettlementNumOfRobots() : result is " + result);
+				}
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Determines a new settlement's latitude.
 	 * @return latitude string.
@@ -461,6 +490,7 @@ extends JDialog {
 		String name;
 		String template;
 		String population;
+		String numOfRobots;
 		String latitude;
 		String longitude;
 	}
@@ -487,6 +517,7 @@ extends JDialog {
 				Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$				
 				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
 			};
@@ -507,6 +538,7 @@ extends JDialog {
 				info.name = settlementConfig.getInitialSettlementName(x);
 				info.template = settlementConfig.getInitialSettlementTemplate(x);
 				info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
+				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));				
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 				settlements.add(info);
@@ -557,9 +589,12 @@ extends JDialog {
 						result = info.population;
 						break;
 					case 3:
+						result = info.numOfRobots;
+						break;	
+					case 4:
 						result = info.latitude;
 						break;
-					case 4:
+					case 5:
 						result = info.longitude;
 					}
 				} else {
@@ -584,14 +619,19 @@ extends JDialog {
 					case 1:
 						info.template = (String) aValue;
 						info.population = determineNewSettlementPopulation(info.template);
+						info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
 						break;
 					case 2:
 						info.population = (String) aValue;
 						break;
 					case 3:
-						info.latitude = (String) aValue;
+						info.numOfRobots = (String) aValue;	
+						//info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
 						break;
 					case 4:
+						info.latitude = (String) aValue;
+						break;
+					case 5:
 						info.longitude = (String) aValue;
 					}
 				}
@@ -660,6 +700,20 @@ extends JDialog {
 					}
 				}
 
+				// Check if number of robots is valid.
+				if ((settlement.numOfRobots == null) || (settlement.numOfRobots.isEmpty())) {
+					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
+				} else {
+					try {
+						int num = Integer.parseInt(settlement.numOfRobots);
+						if (num < 0) {
+							setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
+						}
+					} catch (NumberFormatException e) {
+						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
+					}
+				}
+				
 				// Check that settlement latitude is valid.
 				if ((settlement.latitude == null) || (settlement.latitude.isEmpty())) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$

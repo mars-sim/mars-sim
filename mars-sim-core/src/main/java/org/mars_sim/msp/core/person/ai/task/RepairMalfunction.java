@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
@@ -86,7 +87,27 @@ implements Repair, Serializable {
 
         logger.fine(person.getName() + " repairing malfunction.");
     }
+    
+    public RepairMalfunction(Robot robot) {
+        super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D + 
+                RandomUtil.getRandomDouble(50D));
 
+        // Get the malfunctioning entity.
+        entity = getMalfunctionEntity(robot);
+        if (entity != null) {
+            // Add person to location of malfunction if possible.
+            addPersonToMalfunctionLocation(entity);
+        }
+        else {
+            endTask();
+        }
+
+        // Initialize phase
+        addPhase(REPAIRING);
+        setPhase(REPAIRING);
+
+        logger.fine(robot.getName() + " repairing malfunction.");
+    }
     /**
      * Gets a malfunctional entity with a normal malfunction for a user.
      * @param person the person.
@@ -100,6 +121,22 @@ implements Repair, Serializable {
             Malfunctionable entity = i.next();
             if (!requiresEVA(person, entity)) {
                 if (hasMalfunction(person, entity)) {
+                    result = entity;
+                }
+            }
+        }
+
+        return result;
+    }
+    
+    private static Malfunctionable getMalfunctionEntity(Robot robot) {
+        Malfunctionable result = null;
+
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+        while (i.hasNext() && (result == null)) {
+            Malfunctionable entity = i.next();
+            if (!requiresEVA(robot, entity)) {
+                if (hasMalfunction(robot, entity)) {
                     result = entity;
                 }
             }
@@ -123,9 +160,9 @@ implements Repair, Serializable {
             Vehicle vehicle = (Vehicle) entity;
             boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
             boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
-            if (outsideVehicle && personNotInVehicle) {
-                result = true;
-            }
+	        if (outsideVehicle && personNotInVehicle) {
+	            result = true;
+	        } 
         }
         else if (entity instanceof Building) {
             // Requires EVA repair on uninhabitable buildings.
@@ -137,7 +174,30 @@ implements Repair, Serializable {
         
         return result;
     }
-
+    
+   public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
+        
+        boolean result = false;
+        
+        if (entity instanceof Vehicle) {
+            // Requires EVA repair on outside vehicles that the person isn't inside.
+            Vehicle vehicle = (Vehicle) entity;
+            boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+            boolean robotNotInVehicle = !vehicle.getInventory().containsUnit(robot);
+	        if (outsideVehicle && robotNotInVehicle) {
+	            result = true;
+	        }
+        }
+        else if (entity instanceof Building) {
+            // Requires EVA repair on uninhabitable buildings.
+            Building building = (Building) entity;
+            if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
     /**
      * Gets a malfunctional entity with a normal malfunction for a user.
      * @return malfunctional entity.
@@ -155,7 +215,19 @@ implements Repair, Serializable {
 
         return result;
     }
+    private static boolean hasMalfunction(Robot robot, Malfunctionable entity) {
+        boolean result = false;
 
+        MalfunctionManager manager = entity.getMalfunctionManager();
+        Iterator<Malfunction> i = manager.getNormalMalfunctions().iterator();
+        while (i.hasNext() && !result) {
+            if (hasRepairPartsForMalfunction(robot, i.next())) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
     /**
      * Checks if there are enough repair parts at person's location to fix the malfunction.
      * @param person the person checking.
@@ -191,7 +263,35 @@ implements Repair, Serializable {
 
         return result;
     }
+    public static boolean hasRepairPartsForMalfunction(Robot robot, 
+            Malfunction malfunction) {
+        if (robot == null) {
+            throw new IllegalArgumentException("robot is null");
+        }
+        if (malfunction == null) {
+            throw new IllegalArgumentException("malfunction is null");
+        }
 
+        boolean result = false;    	
+        Unit containerUnit = robot.getTopContainerUnit();
+
+        if (containerUnit != null) {
+            result = true;
+            Inventory inv = containerUnit.getInventory();
+
+            Map<Part, Integer> repairParts = malfunction.getRepairParts();
+            Iterator<Part> i = repairParts.keySet().iterator();
+            while (i.hasNext() && result) {
+                Part part = i.next();
+                int number = repairParts.get(part);
+                if (inv.getItemResourceNum(part) < number) {
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -211,19 +311,32 @@ implements Repair, Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      */
     private double repairingPhase(double time) {
-
-        // Check if there are no more malfunctions.
-        if (!hasMalfunction(person, entity)) {
-            endTask();
-        }
-
+    	if (person != null) {
+            // Check if there are no more malfunctions.
+            if (!hasMalfunction(person, entity)) {
+                endTask();
+            }
+    	}
+    	else if (robot != null) {
+            // Check if there are no more malfunctions.
+            if (!hasMalfunction(robot, entity)) {
+                endTask();
+            }
+    	}
+    	
+ 
         if (isDone()) {
             return time;
         }
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        int mechanicSkill = 0;
+        if (person != null) 
+            mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);       
+        else if (robot != null)
+        	mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        
         if (mechanicSkill == 0) {
             workTime /= 2;
         }
@@ -236,25 +349,54 @@ implements Repair, Serializable {
         Iterator<Malfunction> i = entity.getMalfunctionManager().getNormalMalfunctions().iterator();
         while (i.hasNext() && (malfunction == null)) {
             Malfunction tempMalfunction = i.next();
-            if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
-                malfunction = tempMalfunction;
+            
+            if (person != null) {
+                if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
+                    malfunction = tempMalfunction;
                 setDescription(Msg.getString("Task.description.repairMalfunction.detail", 
                         malfunction.getName(), entity.getName())); //$NON-NLS-1$
+            	}
+            }
+            else if (robot != null) {
+                if (hasRepairPartsForMalfunction(robot, tempMalfunction)) {
+                    malfunction = tempMalfunction;
+                    setDescription(Msg.getString("Task.description.repairMalfunction.detail", 
+                            malfunction.getName(), entity.getName())); //$NON-NLS-1$    
+                }
             }
         }
 
-        // Add repair parts if necessary.
-        if (hasRepairPartsForMalfunction(person, malfunction)) {
-            Inventory inv = person.getTopContainerUnit().getInventory();
-            Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
-            Iterator<Part> j = parts.keySet().iterator();
-            while (j.hasNext()) {
-                Part part = j.next();
-                int number = parts.get(part);
-                inv.retrieveItemResources(part, number);
-                malfunction.repairWithParts(part, number);
+        if (person != null) {
+            // Add repair parts if necessary.
+            if (hasRepairPartsForMalfunction(person, malfunction)) {
+                Inventory inv = person.getTopContainerUnit().getInventory();
+                Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
+                Iterator<Part> j = parts.keySet().iterator();
+                while (j.hasNext()) {
+                    Part part = j.next();
+                    int number = parts.get(part);
+                    inv.retrieveItemResources(part, number);
+                    malfunction.repairWithParts(part, number);
+                }
+            }
+
+        }
+        else if (robot != null) {
+            // Add repair parts if necessary.
+            if (hasRepairPartsForMalfunction(robot, malfunction)) {
+                Inventory inv = robot.getTopContainerUnit().getInventory();
+                Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
+                Iterator<Part> j = parts.keySet().iterator();
+                while (j.hasNext()) {
+                    Part part = j.next();
+                    int number = parts.get(part);
+                    inv.retrieveItemResources(part, number);
+                    malfunction.repairWithParts(part, number);
+                }
             }
         }
+
+        
         else {
             endTask();
             return time;
@@ -270,10 +412,19 @@ implements Repair, Serializable {
         // Check if an accident happens during repair.
         checkForAccident(time);
 
-        // Check if there are no more malfunctions.
-        if (!hasMalfunction(person, entity)) {
-            endTask();
+        if (person != null) {
+            // Check if there are no more malfunctions.
+            if (!hasMalfunction(person, entity)) {
+                endTask();
+            }
         }
+        else if (robot != null) {
+            // Check if there are no more malfunctions.
+            if (!hasMalfunction(robot, entity)) {
+                endTask();
+            }
+        }
+
 
         return workTimeLeft;
     }
@@ -284,10 +435,22 @@ implements Repair, Serializable {
         // (1 base experience point per 20 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 20D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+        
+        if (person != null) {
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+      
+        }
+        else if (robot != null) {
+            int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+      
+        }
+  
     }
 
     /**
@@ -297,9 +460,18 @@ implements Repair, Serializable {
     private void checkForAccident(double time) {
 
         double chance = .001D;
+        int skill = 0;
+        if (person != null) {
+            // Mechanic skill modification.
+            skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+     
+        }
+        else if (robot != null) {
+            // Mechanic skill modification.
+            skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+     
+        }
 
-        // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (skill <= 3) {
             chance *= (4 - skill);
         }
@@ -353,7 +525,12 @@ implements Repair, Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+		if (person != null) 
+			manager = person.getMind().getSkillManager();
+		else if (robot != null)
+			manager = person.getMind().getSkillManager();
+
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  
 
