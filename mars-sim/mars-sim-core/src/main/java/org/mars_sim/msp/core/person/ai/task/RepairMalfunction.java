@@ -215,6 +215,7 @@ implements Repair, Serializable {
 
         return result;
     }
+    
     private static boolean hasMalfunction(Robot robot, Malfunctionable entity) {
         boolean result = false;
 
@@ -228,6 +229,7 @@ implements Repair, Serializable {
 
         return result;
     }
+    
     /**
      * Checks if there are enough repair parts at person's location to fix the malfunction.
      * @param person the person checking.
@@ -263,6 +265,7 @@ implements Repair, Serializable {
 
         return result;
     }
+    
     public static boolean hasRepairPartsForMalfunction(Robot robot, 
             Malfunction malfunction) {
         if (robot == null) {
@@ -292,6 +295,7 @@ implements Repair, Serializable {
 
         return result;
     }
+    
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -529,7 +533,7 @@ implements Repair, Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();
 		else if (robot != null)
-			manager = person.getMind().getSkillManager();
+			manager = robot.getMind().getSkillManager();
 
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  

@@ -433,13 +433,13 @@ implements Serializable {
             if (person != null) {
             	Building currentBuilding = BuildingManager.getBuilding(person);
                 if (!hatch.getBuilding().equals(currentBuilding)) {
-                    BuildingManager.addPersonToBuildingSameLocation(person, hatch.getBuilding());
+                    BuildingManager.addPersonOrRobotToBuildingSameLocation(person, hatch.getBuilding());
                 }
             }
             else if (robot != null) {
             	Building currentBuilding = BuildingManager.getBuilding(robot);
                 if (!hatch.getBuilding().equals(currentBuilding)) {
-                    BuildingManager.addPersonToBuildingSameLocation(robot, hatch.getBuilding());
+                    BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, hatch.getBuilding());
                 }
             }
             
@@ -471,9 +471,9 @@ implements Serializable {
                 }
                 
                 if (person != null)
-                    BuildingManager.addPersonToBuildingSameLocation(person, newBuilding);
+                    BuildingManager.addPersonOrRobotToBuildingSameLocation(person, newBuilding);
                 else if (robot != null)
-                    BuildingManager.addPersonToBuildingSameLocation(robot, newBuilding);
+                    BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, newBuilding);
             }
         }
     }

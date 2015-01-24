@@ -1023,7 +1023,7 @@ implements Serializable {
             
             rover.getInventory().retrieveUnit(person);
             garageBuilding.getInventory().storeUnit(person);
-            BuildingManager.addPersonToBuildingSameLocation(person, garageBuilding);
+            BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
 
         }
         else if (robot != null) {
@@ -1031,7 +1031,7 @@ implements Serializable {
             
             rover.getInventory().retrieveUnit(robot);
             garageBuilding.getInventory().storeUnit(robot);
-            BuildingManager.addPersonToBuildingSameLocation(robot, garageBuilding);
+            BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
 
         }
   
@@ -1065,7 +1065,7 @@ implements Serializable {
             
             logger.finer(person + " location situation: " + person.getLocationSituation());
             garageBuilding.getInventory().retrieveUnit(person);
-            BuildingManager.removePersonFromBuilding(person, garageBuilding);
+            BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
             rover.getInventory().storeUnit(person);
             
         }
@@ -1074,7 +1074,7 @@ implements Serializable {
             
             logger.finer(robot + " location situation: " + robot.getLocationSituation());
             garageBuilding.getInventory().retrieveUnit(robot);
-            BuildingManager.removePersonFromBuilding(robot, garageBuilding);
+            BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
             rover.getInventory().storeUnit(robot);
  
         }

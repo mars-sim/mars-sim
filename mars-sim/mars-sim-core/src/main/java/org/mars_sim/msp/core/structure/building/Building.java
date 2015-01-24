@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -693,7 +694,42 @@ LocalBoundedObject, InsidePathLocation {
 
 		return people;
 	}
+	public Collection<Robot> getAffectedRobots() {
+		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
+		// If building has life support, add all occupants of the building.
+		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+			Iterator<Robot> i = lifeSupport.getRobotOccupants().iterator();
+			while (i.hasNext()) {
+				Robot occupant = i.next();
+				if (!robots.contains(occupant)) robots.add(occupant);
+			}
+		}
+
+		// Check all robots in settlement.
+		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
+		while (i.hasNext()) {
+			Robot robot = i.next();
+			Task task = robot.getMind().getTaskManager().getTask();
+
+			// Add all robots maintaining this building. 
+			if (task instanceof Maintenance) {
+				if (((Maintenance) task).getEntity() == this) {
+					if (!robots.contains(robot)) robots.add(robot);
+				}
+			}
+
+			// Add all robots repairing this facility.
+			if (task instanceof Repair) {
+				if (((Repair) task).getEntity() == this) {
+					if (!robots.contains(robot)) robots.add(robot);
+				}
+			}
+		}
+
+		return robots;
+	}
 	/**
 	 * Gets the inventory associated with this entity.
 	 * @return inventory

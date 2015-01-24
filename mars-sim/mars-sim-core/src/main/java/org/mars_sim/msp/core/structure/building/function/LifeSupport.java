@@ -77,7 +77,7 @@ implements Serializable {
 	private Building building;
 
 	private Collection<Person> occupants;
-	private Collection<Robot> robots;
+	private Collection<Robot> robotOccupants;
 
 	/**
 	 * Constructor.
@@ -89,7 +89,7 @@ implements Serializable {
 		super(FUNCTION, building);
 
 		occupants = new ConcurrentLinkedQueue<Person>();
-		robots = new ConcurrentLinkedQueue<Robot>();
+		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -129,7 +129,7 @@ implements Serializable {
 		super(FUNCTION, building);
 
 		occupants = new ConcurrentLinkedQueue<Person>();
-		robots = new ConcurrentLinkedQueue<Robot>();
+		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
@@ -354,8 +354,8 @@ implements Serializable {
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
 	 */
-	public Collection<Robot> getRobots() {
-		return new ConcurrentLinkedQueue<Robot>(robots);
+	public Collection<Robot> getRobotOccupants() {
+		return new ConcurrentLinkedQueue<Robot>(robotOccupants);
 	}
 
 	
@@ -374,7 +374,7 @@ implements Serializable {
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FUNCTION)) {
-					BuildingManager.removePersonFromBuilding(person, building);
+					BuildingManager.removePersonOrRobotFromBuilding(person, building);
 				}
 			}
 
@@ -408,19 +408,19 @@ implements Serializable {
 	 * @throws BuildingException if robot is already building occupant.
 	 */
 	public void addRobot(Robot robot) {
-		if (!robots.contains(robot)) {
+		if (!robotOccupants.contains(robot)) {
 			// Remove robot from any other inhabitable building in the settlement.
 			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FUNCTION)) {
-					BuildingManager.removePersonFromBuilding(robot, building);
+					BuildingManager.removePersonOrRobotFromBuilding(robot, building);
 				}
 			}
 
 			// Add robot to this building.
 			logger.finest("Adding " + robot + " to " + getBuilding() + " life support.");
-			robots.add(robot);
+			robotOccupants.add(robot);
 		}
 		else {
 			throw new IllegalStateException("This robot is already in this building.");
@@ -433,8 +433,8 @@ implements Serializable {
 	 * @throws BuildingException if robot is not building occupant.
 	 */
 	public void removeRobot(Robot robot) {
-		if (robots.contains(robot)) {
-			robots.remove(robot);
+		if (robotOccupants.contains(robot)) {
+			robotOccupants.remove(robot);
 		    logger.finest("Removing " + robot + " from " + getBuilding() + " life support.");
 		}
 		else {
@@ -454,15 +454,17 @@ implements Serializable {
 		// If not, remove them as occupants.
 		Inventory inv = getBuilding().getInventory();
 
+		Iterator<Robot> jj = robotOccupants.iterator();
+		while (jj.hasNext()) {
+			if (!inv.containsUnit(jj.next())) jj.remove();
+		}
+
+		
 		Iterator<Person> i = occupants.iterator();
 		while (i.hasNext()) {
 			if (!inv.containsUnit(i.next())) i.remove();
 		}
 
-		Iterator<Robot> jj = robots.iterator();
-		while (jj.hasNext()) {
-			if (!inv.containsUnit(jj.next())) jj.remove();
-		}
 
 		// Add stress if building is overcrowded.
 		int overcrowding = getOccupantNumber() - occupantCapacity;

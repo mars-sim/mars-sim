@@ -70,6 +70,9 @@ implements Serializable {
     private List<String> personMaleNames;
     /** List of possible female person names. */
     private List<String> personFemaleNames;
+    
+    private List<String> robotNameList;
+    
     /** List of unit manager listeners. */
     private transient List<UnitManagerListener> listeners;
     /** Map of equipment types and their numbers. */
@@ -100,6 +103,7 @@ implements Serializable {
         initializeSettlementNames();
         initializeVehicleNames();
         
+        initializeRobotNames();
 
         // Create initial units.
         createInitialSettlements();
@@ -134,6 +138,27 @@ implements Serializable {
             }
         } catch (Exception e) {
             throw new IllegalStateException("person names could not be loaded: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Initializes the list of possible robot names.
+     * @throws Exception if unable to load name list.
+     */
+    private void initializeRobotNames() {
+        try {
+            robotNameList = new ArrayList<String>();           
+            robotNameList.add("Bot 1");
+            robotNameList.add("Bot 2");
+            robotNameList.add("Bot 3");
+            robotNameList.add("Bot 4");
+            robotNameList.add("Bot 5");
+            robotNameList.add("Bot 6");
+            robotNameList.add("Bot 7");
+            robotNameList.add("Bot 8");
+            
+        } catch (Exception e) {
+            throw new IllegalStateException("robot names could not be loaded: " + e.getMessage(), e);
         }
     }
     
@@ -201,13 +226,14 @@ implements Serializable {
      * @param type
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
-     */
+     
     public String getNewRobotName(UnitType unitType, String baseName, String type) {
     	String name = "Arbie";
-    	//if (unitType == UnitType.ROBOT) 
-        
+    	//if (unitType == UnitType.ROBOT)     
     	return name;
+    	
     }
+    */
     
     /**
      * Gets a new name for a unit.
@@ -261,13 +287,9 @@ implements Serializable {
             unitName = "Person";
         
         } else if (unitType == UnitType.ROBOT) {
-            
-        	initialNameList = new ArrayList<String>();
-            initialNameList.add("Bot 1");
-            initialNameList.add("Bot 2");
-            initialNameList.add("Bot 3");
-            initialNameList.add("Bot 4");
-            
+                       
+        	initialNameList = robotNameList;
+        			
             Iterator<Robot> pi = getRobots().iterator();
             while (pi.hasNext()) {
                 usedNames.add(pi.next().getName());
@@ -537,16 +559,21 @@ implements Serializable {
             Iterator<Settlement> i = getSettlements().iterator();
             while (i.hasNext()) {
                 Settlement settlement = i.next();
-
+                
+ 
                 while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
+                    System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
+                    System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
+
                 	RobotType robotType = RobotType.REPAIRBOT;
                     //if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                     //  gender = PersonGender.MALE;
                     //}
+                	
                     Robot robot = new Robot(getNewName(UnitType.ROBOT, robotType.toString(), null), robotType, "Mars", settlement); //TODO: read from file
                     addUnit(robot);
                     //System.out.println("UnitManager : createInitialRobots() : a robot is added !");
-                    
+                     
                     //relationshipManager.addInitialSettler(person, settlement);
                 }
             }
@@ -627,7 +654,7 @@ implements Serializable {
             // Create person and add to the unit manager.
             Robot robot = new Robot(name, robotType, "Mars", settlement); //TODO: read from file
             addUnit(robot);
-            System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
+            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
 
             // Set robot's job (if any).
             String jobName = robotConfig.getConfiguredRobotJob(x);

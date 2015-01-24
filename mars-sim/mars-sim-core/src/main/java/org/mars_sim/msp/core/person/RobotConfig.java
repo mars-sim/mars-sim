@@ -34,7 +34,7 @@ implements Serializable {
 	private static final String ROBOT_TYPE = "type";
 	private static final String POWER_CONSUMPTION_RATE = "power-consumption-rate";
 	private static final String POWER_DEPRIVATION_TIME = "power-deprivation-time";
-
+	private static final String STARVATION_START_TIME = "starvation-start-time";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String MIN_TEMPERATURE = "min-temperature";
@@ -105,6 +105,15 @@ implements Serializable {
 		return getValueAsDouble(POWER_DEPRIVATION_TIME);
 	}
 
+
+	/**
+	 * Gets the starvation start time.
+	 * @return starvation time in sols.
+	 * @throws Exception if starvation start time could not be found.
+	 */
+	public double getStarvationStartTime() {
+		return getValueAsDouble(STARVATION_START_TIME);
+	}
 
 	/**
 	 * Gets the required air pressure.

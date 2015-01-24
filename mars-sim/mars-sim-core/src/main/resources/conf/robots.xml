@@ -7,6 +7,10 @@
 	<!-- The average amount of electrical power needed each Martian Sol -->
 	<power-consumption-rate value="1.0" />
 
+	<!-- Number of sols a robot can go without food before starvation sets in -->
+	<!-- Default: 1.0 -->
+	<starvation-start-time value="1.0" />
+	
 	<!-- Minimum air pressure (Pa) a robt can withstand without harm -->
 	<min-air-pressure value="500" />
 

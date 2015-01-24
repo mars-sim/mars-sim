@@ -38,7 +38,7 @@ public class WalkInteriorTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
         
@@ -66,7 +66,7 @@ public class WalkInteriorTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
         
@@ -140,7 +140,7 @@ public class WalkInteriorTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         // Walking time (millisols) for 1m. distance.
         double walkingTimeMeter = .008110369D;

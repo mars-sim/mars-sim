@@ -1,7 +1,9 @@
-<!ELEMENT robot-configuration (power-consumption-rate, min-air-pressure, 
+<!ELEMENT robot-configuration (power-consumption-rate, starvation-start-time, min-air-pressure, 
 min-temperature, max-temperature, freezing-time, robot-list)>
 <!ELEMENT power-consumption-rate EMPTY>
 <!ATTLIST power-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT starvation-start-time EMPTY>
+<!ATTLIST starvation-start-time value CDATA #REQUIRED>
 <!ELEMENT min-air-pressure EMPTY>
 <!ATTLIST min-air-pressure value CDATA #REQUIRED>
 <!ELEMENT min-temperature EMPTY>

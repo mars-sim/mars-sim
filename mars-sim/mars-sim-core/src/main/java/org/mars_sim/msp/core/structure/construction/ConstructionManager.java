@@ -181,7 +181,7 @@ implements Serializable {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Person occupant = i.next();
-				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
+				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
 			}
 		}

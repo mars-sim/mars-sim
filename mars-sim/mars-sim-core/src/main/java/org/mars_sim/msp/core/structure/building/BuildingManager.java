@@ -413,10 +413,12 @@ public class BuildingManager implements Serializable {
         }
 
         if (building != null) {
-        	if (unit instanceof Person)
-        		addPersonToBuildingRandomLocation((Person) unit, building);
-            else if (unit instanceof Robot)
-          		addPersonToBuildingRandomLocation((Robot) unit, building);           
+    		addPersonOrRobotToBuildingRandomLocation(unit, building);
+
+        	//if (unit instanceof Person)
+        		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
+            //else if (unit instanceof Robot)
+          		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);           
         }
         else {
             throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
@@ -704,9 +706,9 @@ public class BuildingManager implements Serializable {
         }
         else if (unit instanceof Robot) {
         	robot = (Robot) unit; 
-	        Building currentBuilding = BuildingManager.getBuilding(robot );
+	        Building currentBuilding = BuildingManager.getBuilding(robot);
 	        if (currentBuilding != null) {
-	            BuildingConnectorManager connectorManager = robot .getSettlement().getBuildingConnectorManager();
+	            BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
 	
 	            Iterator<Building> i = buildingList.iterator();
 	            while (i.hasNext()) {
@@ -730,7 +732,7 @@ public class BuildingManager implements Serializable {
      * @param person the person to add.
      * @param building the building to add the person to.
      */
-    public static void addPersonToBuildingSameLocation(Unit unit, Building building)  {
+    public static void addPersonOrRobotToBuildingSameLocation(Unit unit, Building building)  {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -742,6 +744,14 @@ public class BuildingManager implements Serializable {
 	                    lifeSupport.addPerson(person); 
 	                }
                 }
+                else if (unit instanceof Robot) {
+                	Robot robot = (Robot) unit;
+                 	
+	                if (!lifeSupport.containsOccupant(robot)) {
+	                    lifeSupport.addRobot(robot); 
+	                }
+                }
+                
             }
             catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
@@ -755,19 +765,19 @@ public class BuildingManager implements Serializable {
      * @param person the person to add.
      * @param building the building to add the person to.
      */
-    public static void addPersonToBuilding(Unit unit, Building building, double xLocation, double yLocation)  {
+    public static void addPersonOrRobotToBuilding(Unit unit, Building building, double xLocation, double yLocation)  {
         if (building != null) {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
                 throw new IllegalArgumentException(building.getName() + " does not contain location x: " + 
                         xLocation + ", y: " + yLocation);
             }
+            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
             try {
             	 if (unit instanceof Person) {
                  	Person person = (Person) unit;
 	            	
-	                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person); 
 	                }
@@ -775,6 +785,17 @@ public class BuildingManager implements Serializable {
 	                person.setXLocation(xLocation);
 	                person.setYLocation(yLocation);
             	 }
+            	 else if (unit instanceof Robot) {
+                 	Robot robot = (Robot) unit;
+                 	
+                 	if (lifeSupport.containsOccupant(robot)) {
+ 	                    lifeSupport.addRobot(robot); 
+ 	                }
+                 	robot.setXLocation(xLocation);
+                 	robot.setYLocation(yLocation);
+         		
+                 }
+            	 
             	 
 	        }	catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
@@ -790,7 +811,7 @@ public class BuildingManager implements Serializable {
      * @param person the person to add.
      * @param building the building to add the person to.
      */
-    public static void addPersonToBuildingRandomLocation(Unit unit, Building building)  {
+    public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building)  {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -806,13 +827,22 @@ public class BuildingManager implements Serializable {
                 	if (!lifeSupport.containsOccupant(person)) {
                 		lifeSupport.addPerson(person); 
                 	}
-                
                 	person.setXLocation(settlementLoc.getX());
                 	person.setYLocation(settlementLoc.getY());
                 }
+                
+                else if (unit instanceof Robot) {
+                	Robot robot = (Robot) unit;
+                	if (lifeSupport.containsOccupant(robot)) {
+	                    lifeSupport.addRobot(robot); 
+	                }
+                	robot.setXLocation(settlementLoc.getX());
+                	robot.setYLocation(settlementLoc.getY());
+        		
+                }
             }
             catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
             }
         }
         else {
@@ -825,7 +855,7 @@ public class BuildingManager implements Serializable {
      * @param person the person to remove.
      * @param building the building to remove the person from.
      */
-    public static void removePersonFromBuilding(Unit unit, Building building) {
+    public static void removePersonOrRobotFromBuilding(Unit unit, Building building) {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -837,6 +867,15 @@ public class BuildingManager implements Serializable {
 	                    lifeSupport.removePerson(person); 
 	                }
                 }
+                else if (unit instanceof Robot) {
+                	Robot robot = (Robot) unit;
+                	if (lifeSupport.containsOccupant(robot)) {
+	                    lifeSupport.removeRobot(robot); 
+	                }
+        		
+                }
+                
+                
             }
             catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.removePersonFromBuilding(): " + e.getMessage());
