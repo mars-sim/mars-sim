@@ -404,7 +404,7 @@ extends VehicleMission {
 						person.getVehicle().getInventory().retrieveUnit(person);
 					}
 					disembarkSettlement.getInventory().storeUnit(person);
-					BuildingManager.addPersonToBuilding(person, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
+					BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
 				}
 			}
 			else {
@@ -425,7 +425,7 @@ extends VehicleMission {
 					rover.getInventory().retrieveUnit(crewmember);
 					disembarkSettlement.getInventory().storeUnit(crewmember);
 					Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(person).getEntity();
-					BuildingManager.addPersonToBuildingRandomLocation(crewmember, destinationBuilding);
+					BuildingManager.addPersonOrRobotToBuildingRandomLocation(crewmember, destinationBuilding);
 				}
 			}
 

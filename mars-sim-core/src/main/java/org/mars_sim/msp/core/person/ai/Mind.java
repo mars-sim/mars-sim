@@ -38,7 +38,9 @@ implements Serializable {
 
     // Data members
     /** The person owning this mind. */
-    private Person person;
+    private Person person = null;
+    private Robot robot = null;
+    
     /** The person's task manager. */
     private TaskManager taskManager;
     /** The person's current mission (if any). */
@@ -52,8 +54,6 @@ implements Serializable {
     /** The person's skill manager. */
     private SkillManager skillManager;
 
-    private Robot robot;
-    
     /**
      * Constructor 1.
      * @param person the person owning this mind
@@ -302,7 +302,11 @@ implements Serializable {
     public void setInactive() {
         taskManager.clearTask();
         if (hasActiveMission()) {
-            mission.removePerson(person);
+        	if (person != null) 
+                mission.removePerson(person);           
+        	else if (robot != null)
+                mission.removeRobot(robot);
+   
             mission = null;
         }
     }

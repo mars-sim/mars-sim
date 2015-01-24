@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -68,9 +69,18 @@ implements Repair, Serializable {
 
         claimMalfunction();
 
+        Person person = null;
+        Robot robot = null;
+        
+        if (unit instanceof Person) {
+         	person = (Person) unit;
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+        }
+        
         if (entity != null) {
-            // Add person to location of malfunction if possible.
-            addPersonToMalfunctionLocation(entity);
+        	addPersonRobotToMalfunctionLocation(entity);
         }
         else {
             endTask();
@@ -90,6 +100,7 @@ implements Repair, Serializable {
         // Initialize task phase
         addPhase(REPAIRING);
         setPhase(REPAIRING);
+        
         if (malfunction != null) {
         	if (person != null) {
                 logger.fine(person.getName() + " starting work on emergency malfunction: " + 
@@ -158,12 +169,22 @@ implements Repair, Serializable {
         // (1 base experience point per 20 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 20D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttribute.EXPERIENCE_APTITUDE);
-        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
-    }
+        if (person != null) {
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+                    NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+        }
+        else if (robot != null) {
+            int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
+                    NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+        }
+       
+     }
 
     /**
      * Checks if the person has a local emergency malfunction.
@@ -184,23 +205,54 @@ implements Repair, Serializable {
 
         return result;
     }
+    
+    public static boolean hasEmergencyMalfunction(Robot robot) {
 
+        boolean result = false;
+
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            if (manager.hasEmergencyMalfunction()) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
     /**
      * Gets a local emergency malfunction.
      */
     private void claimMalfunction() {
         malfunction = null;
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext() && (malfunction == null)) {
-            Malfunctionable e = i.next();
-            MalfunctionManager manager = e.getMalfunctionManager();
-            if (manager.hasEmergencyMalfunction()) {
-                malfunction = manager.getMostSeriousEmergencyMalfunction();
-                entity = e;
-                setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
-                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
+        if (person != null) {
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+            while (i.hasNext() && (malfunction == null)) {
+                Malfunctionable e = i.next();
+                MalfunctionManager manager = e.getMalfunctionManager();
+                if (manager.hasEmergencyMalfunction()) {
+                    malfunction = manager.getMostSeriousEmergencyMalfunction();
+                    entity = e;
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
+                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                }
             }
         }
+        else if (robot != null) {
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+            while (i.hasNext() && (malfunction == null)) {
+                Malfunctionable e = i.next();
+                MalfunctionManager manager = e.getMalfunctionManager();
+                if (manager.hasEmergencyMalfunction()) {
+                    malfunction = manager.getMostSeriousEmergencyMalfunction();
+                    entity = e;
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
+                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                }
+            }
+        }
+
     }
 
     /**
@@ -212,11 +264,11 @@ implements Repair, Serializable {
     }
 
     /**
-     * Adds the person to building if malfunctionable is a building with life support.
+     * Adds the person or robot to building if malfunctionable is a building with life support.
      * Otherwise walk to random location.
-     * @param malfunctionable the malfunctionable the person is repairing.
+     * @param malfunctionable the malfunctionable the person or robot is repairing.
      */
-    private void addPersonToMalfunctionLocation(Malfunctionable malfunctionable) {
+    private void addPersonRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
 
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
@@ -238,10 +290,14 @@ implements Repair, Serializable {
             walkToRandomLocation(true);
         }
     }
-
+   
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+    	if (person != null) 
+            manager = person.getMind().getSkillManager();        
+    	else if (robot != null)
+    	    manager = robot.getMind().getSkillManager();
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  
 

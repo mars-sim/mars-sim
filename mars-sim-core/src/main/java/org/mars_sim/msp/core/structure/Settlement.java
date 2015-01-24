@@ -223,16 +223,7 @@ implements LifeSupport {
 	public int getID() {
 		return scenarioID;
 	}
-	
-	/**
-	 * Gets the how many times the settlement class has been called .
-	 * @return count.
-	 */
-    // 2014-10-29 Added count
-	//public int getCount() {
-	//	return count;
-	//}
-	
+
     /**
      * Gets the population capacity of the settlement
      * @return the population capacity
@@ -379,12 +370,14 @@ implements LifeSupport {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-        if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
-            result = false;
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-        if (getInventory().getAmountResourceStored(water, false) <= 0D)
-            result = false;
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
+                result = false;
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            if (getInventory().getAmountResourceStored(water, false) <= 0D)
+                result = false;
+ 
+    
         // TODO: check against indoor air pressure
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
@@ -395,7 +388,31 @@ implements LifeSupport {
 
         return result;
     }
+/*
+    public boolean lifeSupportCheckRobot() {
+        boolean result = true;
 
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
+                result = false;
+            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            if (getInventory().getAmountResourceStored(water, false) <= 0D)
+                result = false;
+      
+    }
+       
+    
+        // TODO: check against indoor air pressure
+        if (getAirPressure() != NORMAL_AIR_PRESSURE)
+            result = false;
+        // TODO: check if this is working
+        // 2014-11-28 Added MAX_TEMP
+        if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
+            result = false;
+
+        return result;
+    }
+     */
     /**
      * Gets the number of people the life support can provide for.
      * @return the capacity of the life support system
@@ -793,9 +810,11 @@ implements LifeSupport {
      */
     public Airlock getClosestWalkableAvailableAirlock(Unit unit, double xLocation, double yLocation) {
         Airlock result = null;
+        Building currentBuilding = null;
+        
         Person person = null;
         Robot robot = null;
-        Building currentBuilding = null;
+        
         if (unit instanceof Person) {
          	person = (Person) unit;
             currentBuilding = BuildingManager.getBuilding(person);

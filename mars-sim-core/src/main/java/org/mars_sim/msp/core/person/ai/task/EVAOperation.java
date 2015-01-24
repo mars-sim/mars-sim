@@ -335,15 +335,22 @@ implements Serializable {
     protected boolean shouldEndEVAOperation() {
 
         boolean result = false;
-        
-        // Check end EVA flag.
-        if (endEVA) {
-            result = true;
-        }
-        // Check if any EVA problem.
-        else if (checkEVAProblem(person)) {
-            result = true;
-        }
+    	if (person != null) {
+    	       
+            // Check end EVA flag.
+            if (endEVA) {
+                result = true;
+            }
+
+            // Check if any EVA problem.
+            else if (checkEVAProblem(person)) {
+                result = true;
+            }
+    	}
+    	else if (robot != null) {
+
+    	}
+ 
 	
         return result;
     }
@@ -441,24 +448,30 @@ implements Serializable {
      */
     protected void checkForAccident(double time) {
 
-        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-        if (suit != null) {
-	    
-            double chance = BASE_ACCIDENT_CHANCE;
+    	if (person != null) {
+    	       EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+    	        if (suit != null) {
+    		    
+    	            double chance = BASE_ACCIDENT_CHANCE;
 
-            // EVA operations skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-            if (skill <= 3) chance *= (4 - skill);
-            else chance /= (skill - 2);
+    	            // EVA operations skill modification.
+    	            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+    	            if (skill <= 3) chance *= (4 - skill);
+    	            else chance /= (skill - 2);
 
-            // Modify based on the suit's wear condition.
-            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-            
-            if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.fine(person.getName() + " has accident during EVA operation.");
-                suit.getMalfunctionManager().accident();
-            }
-        }
+    	            // Modify based on the suit's wear condition.
+    	            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
+    	            
+    	            if (RandomUtil.lessThanRandPercent(chance * time)) {
+    	                logger.fine(person.getName() + " has accident during EVA operation.");
+    	                suit.getMalfunctionManager().accident();
+    	            }
+    	        }
+    	}
+    	else if (robot != null) {
+
+    	}
+ 
     }
     
     /**

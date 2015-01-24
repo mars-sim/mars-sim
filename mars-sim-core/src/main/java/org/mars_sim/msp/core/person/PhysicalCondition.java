@@ -115,21 +115,13 @@ implements Serializable {
      * Constructor 2.
      * @param robot The robot requiring a physical presence.
      */
-    public PhysicalCondition(Robot robot) {
+    public PhysicalCondition(Robot newRobot) {
         deathDetails = null;
-        this.robot = robot;
-        //problems = new HashMap<Complaint, HealthProblem>();
+        robot = newRobot;
+        problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
-        //fatigue = RandomUtil.getRandomDouble(1000D);
-        //2015-01-06 Changed hunger to less than 400D
         hunger = RandomUtil.getRandomDouble(400D);
-        //stress = RandomUtil.getRandomDouble(100D);
         alive = true;
-        //medicationList = new ArrayList<Medication>();
-        
-        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-        //dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / Cooking.NUMBER_OF_MEAL_PER_SOL);
-
     }
     
     
@@ -262,6 +254,43 @@ implements Serializable {
     boolean timePassing(double time, LifeSupport support,
             RobotConfig config) {
 
+        boolean illnessEvent = false;
+
+        // Check the existing problems
+        if (!problems.isEmpty()) {
+            // Throw illness event if any problems already exist.
+            illnessEvent = true;
+
+            List<Complaint> newProblems = new ArrayList<Complaint>();
+            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
+
+            Iterator<HealthProblem> iter = currentProblems.iterator();
+            while(!isDead() && iter.hasNext()) {
+                HealthProblem problem = iter.next();
+
+                // Advance each problem, they may change into a worse problem.
+                // If the current is completed or a new problem exists then
+                // remove this one.
+                Complaint next = problem.timePassing(time, this);
+
+                if (problem.getCured() || (next != null)) {
+                    problems.remove(problem.getIllness());
+                }
+
+                // If a new problem, check it doesn't exist already
+                if (next != null) {
+                    newProblems.add(next);
+                }
+            }
+
+            // Add the new problems
+            Iterator<Complaint> newIter = newProblems.iterator();
+            while(newIter.hasNext()) {
+                addMedicalComplaint(newIter.next());
+                illnessEvent = true;
+            }
+        }
+
         // Has the robot non-functional ?
         if (isDead()) return false;
 
@@ -388,35 +417,6 @@ implements Serializable {
      */
     public void consumePower(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
-    	
-        Inventory inv = container.getInventory();
-    	 
-    	if (container == null) throw new IllegalArgumentException("container is null");
-
-    	AmountResource foodAR = AmountResource.findAmountResource("wireless power");
-        double foodEaten = amount;
-        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
-        
-        // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(foodAR);
-        	
-        if (foodAvailable < 0.01D) {
-           throw new IllegalStateException("Warning: not enough power available!");   
-        }
-        // if container has less than enough food, finish up all food in the container
-        else { 
-            	
-            if (foodEaten > foodAvailable)
-            	foodEaten = foodAvailable;
-            
-            foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
-            // subtract food from container
-            inv.retrieveAmountResource(foodAR, foodEaten);
-            
-    		// 2015-01-09 addDemandRealUsage()
-    		inv.addDemandAmount(foodAR, foodEaten);
-        }
- 
     }
     
     /**
@@ -642,9 +642,31 @@ implements Serializable {
             double starvationTime = 0D;
             if (robot != null) {
             	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();            	
-            
+            	  try {
+	                    starvationTime = robotConfig.getStarvationStartTime() * 1000D;
+	                }
+	                catch (Exception e) {
+	                    e.printStackTrace(System.err);
+	                }
+
+	                Complaint starvation = getMedicalManager().getStarvation();
+	                if (hunger > starvationTime) {
+	                    if (!problems.containsKey(starvation)) {
+	                        addMedicalComplaint(starvation);
+	                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	                    }
+	                }
+	                else if (hunger == 0D) {
+	                    HealthProblem illness = problems.get(starvation);
+	                    if (illness != null) {
+	                        illness.startRecovery();
+	                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	                    }
+	                }
+
+	                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
             }	
-            else {
+            else if (person != null) {
             	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 	                try {
 	                    starvationTime = personConfig.getStarvationStartTime() * 1000D;
@@ -801,8 +823,7 @@ implements Serializable {
         double tempPerformance = 1.0D;
         
         if (person != null) {
-        	
-        
+        	   
 	        serious = null;
 	
 	        // Check the existing problems. find most serious & performance

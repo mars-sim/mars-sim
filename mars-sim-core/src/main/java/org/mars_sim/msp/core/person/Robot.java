@@ -95,22 +95,22 @@ implements VehicleOperator, Serializable {
          
         this.name = name;
         this.robotType = robotType;
-        
+        this.birthplace = birthplace;
+        this.associatedSettlement = settlement;
         // Initialize data members
         xLoc = 0D;
         yLoc = 0D;
+        isBuried = false;
         
-        this.birthplace = birthplace;
         String timeString = createTimeString();
+        
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
         mind = new Mind(this);
-        isBuried = false;
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
-
         height = 156 + RandomUtil.getRandomInt(22);
         
         // Set inventory total mass capacity based on the robot's strength.
@@ -118,9 +118,9 @@ implements VehicleOperator, Serializable {
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
         // Put robot in proper building.
-        //settlement.getInventory().storeUnit(this);
+        settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-        associatedSettlement = settlement;
+        
     }
 
     /**
@@ -385,6 +385,7 @@ implements VehicleOperator, Serializable {
             }
         }
 
+        // TODO: turn off the checking of oxygen and water for robot
         // Get first life support unit that checks out.
         Iterator<LifeSupport> j = lifeSupportUnits.iterator();
         while (j.hasNext() && (result == null)) {
@@ -438,12 +439,12 @@ implements VehicleOperator, Serializable {
         return birthplace;
     }
 
-    public Collection<Person> getLocalGroup() {return null;}
+    //public Collection<Person> getLocalGroup() {return null;}
     
     /**
      * Gets the robot's local group (in building or rover)
      * @return collection of robots in robot's location.
-     
+     */
     public Collection<Robot> getLocalGroup() {
         Collection<Robot> localGroup = new ConcurrentLinkedQueue<Robot>();
 
@@ -454,7 +455,7 @@ implements VehicleOperator, Serializable {
                     org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport = 
                             (org.mars_sim.msp.core.structure.building.function.LifeSupport) 
                             building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                    localGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobots());
+                    localGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobotOccupants());
                 }
             }
         } else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -467,7 +468,7 @@ implements VehicleOperator, Serializable {
         }
         return localGroup;
     }
-*/
+
     /**
      * Checks if the vehicle operator is fit for operating the vehicle.
      * @return true if vehicle operator is fit.

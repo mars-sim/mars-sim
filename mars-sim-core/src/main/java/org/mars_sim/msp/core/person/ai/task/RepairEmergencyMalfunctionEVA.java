@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -91,6 +92,32 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
     }
     
+    public RepairEmergencyMalfunctionEVA(Robot robot) {
+        super(NAME, robot, false, 0D);
+        
+        // Get the malfunctioning entity.
+        claimMalfunction();
+        if (entity == null) {
+            endTask();
+            return;
+        }
+        
+        // Create starting task event if needed.
+        if (getCreateEvents() && !isDone()) {
+            TaskEvent startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
+            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+        }
+
+        // Determine location for repairing malfunction.
+        Point2D malfunctionLoc = determineMalfunctionLocation();
+        setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+
+        // Initialize phase
+        addPhase(REPAIRING);
+
+        logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
+    }    
+    
     /**
      * Checks if the emergency repair requires an EVA.
      * @param person the person to perform the repair.
@@ -119,6 +146,44 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
                 boolean personNotInVehicle = !vehicle.getInventory().containsUnit(person);
                 if (outsideVehicle && personNotInVehicle) {
+                    result = true;
+                }
+            }
+            else if (entity instanceof Building) {
+                // Perform EVA emergency repair on uninhabitable buildings.
+                Building building = (Building) entity;
+                if (!building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                    result = true;
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    public static boolean requiresEVARepair(Robot robot) {
+        
+        boolean result = false;
+        
+        Malfunction malfunction = null;
+        Malfunctionable entity = null;
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+        while (i.hasNext() && (malfunction == null)) {
+            Malfunctionable e = i.next();
+            MalfunctionManager manager = e.getMalfunctionManager();
+            if (manager.hasEmergencyMalfunction()) {
+                malfunction = manager.getMostSeriousEmergencyMalfunction();
+                entity = e;
+            }
+        }
+
+        if (entity != null) {
+            if (entity instanceof Vehicle) {
+                // Perform EVA emergency repair on outside vehicles that the robot isn't inside.
+                Vehicle vehicle = (Vehicle) entity;
+                boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+                boolean robotNotInVehicle = !vehicle.getInventory().containsUnit(robot);
+                if (outsideVehicle && robotNotInVehicle) {
                     result = true;
                 }
             }
@@ -174,23 +239,76 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         
         return result;
     }
+ 
+    public static boolean canPerformEVA(Robot robot) {
+        
+        boolean result = true;
+        
+        // Check if an airlock is available
+        Airlock airlock = EVAOperation.getWalkableAvailableAirlock(robot);
+        if (airlock == null) {
+            result = false;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+                result = false;
+            }
+        } 
+        
+        // Check if robot is outside.
+        if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+            result = false;
+        }
+
+        // Check if EVA suit is available.
+        if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
+            result = false;
+        }
+
+        // Check if robot is incapacitated.
+        if (robot.getPerformanceRating() == 0D) {
+            result = false;
+        }
+        
+        return result;
+    }
     
     /**
      * Gets a local emergency malfunction.
      */
     private void claimMalfunction() {
         malfunction = null;
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext() && (malfunction == null)) {
-            Malfunctionable e = i.next();
-            MalfunctionManager manager = e.getMalfunctionManager();
-            if (manager.hasEmergencyMalfunction()) {
-                malfunction = manager.getMostSeriousEmergencyMalfunction();
-                entity = e;
-                setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail", 
-                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
+        
+        if (person != null) {
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+            while (i.hasNext() && (malfunction == null)) {
+                Malfunctionable e = i.next();
+                MalfunctionManager manager = e.getMalfunctionManager();
+                if (manager.hasEmergencyMalfunction()) {
+                    malfunction = manager.getMostSeriousEmergencyMalfunction();
+                    entity = e;
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail", 
+                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                }
             }
         }
+        else if (robot != null) {
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+            while (i.hasNext() && (malfunction == null)) {
+                Malfunctionable e = i.next();
+                MalfunctionManager manager = e.getMalfunctionManager();
+                if (manager.hasEmergencyMalfunction()) {
+                    malfunction = manager.getMostSeriousEmergencyMalfunction();
+                    entity = e;
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail", 
+                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+                }
+            }
+        }
+ 
     }
     
     /**
@@ -209,8 +327,15 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                         bounds, 1D);
                 newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                         boundedLocalPoint.getY(), bounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), 
-                        newLocation.getY(), person.getCoordinates());
+                
+                if (person != null) {
+                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), 
+                             newLocation.getY(), person.getCoordinates());
+                }
+                else if (robot != null) {
+                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), 
+                             newLocation.getY(), robot.getCoordinates());
+                }
             }
         }
 
@@ -255,7 +380,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        int mechanicSkill = 0;
+        if (person != null) 
+            mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);        
+        else if (robot != null)
+            mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+              
         if (mechanicSkill == 0) {
             workTime /= 2;
         }
@@ -282,7 +412,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	
+        SkillManager manager = null;
+        if (person != null) 
+            manager = person.getMind().getSkillManager();
+        else if (robot != null)
+        	manager = robot.getMind().getSkillManager();
+         
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
         return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
@@ -303,22 +439,45 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
 
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        if (person != null) {
 
-        // If phase is repair malfunction, add experience to mechanics skill.
-        if (REPAIRING.equals(getPhase())) {
-            // 1 base experience point per 20 millisols of collection time spent.
             // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double mechanicsExperience = time / 20D;
-            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            evaExperience += evaExperience * experienceAptitudeModifier;
+            evaExperience *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+
+            // If phase is repair malfunction, add experience to mechanics skill.
+            if (REPAIRING.equals(getPhase())) {
+                // 1 base experience point per 20 millisols of collection time spent.
+                // Experience points adjusted by person's "Experience Aptitude" attribute.
+                double mechanicsExperience = time / 20D;
+                mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+                person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            }
         }
+        else if (robot != null) {
+
+            // Experience points adjusted by robot's "Experience Aptitude" attribute.
+            NaturalAttributeManager nManager = robot.getNaturalAttributeManager();
+            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+            evaExperience += evaExperience * experienceAptitudeModifier;
+            evaExperience *= getTeachingExperienceModifier();
+            robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+
+            // If phase is repair malfunction, add experience to mechanics skill.
+            if (REPAIRING.equals(getPhase())) {
+                // 1 base experience point per 20 millisols of collection time spent.
+                // Experience points adjusted by robot's "Experience Aptitude" attribute.
+                double mechanicsExperience = time / 20D;
+                mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+                robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            }
+        }
+
     }
 
     @Override

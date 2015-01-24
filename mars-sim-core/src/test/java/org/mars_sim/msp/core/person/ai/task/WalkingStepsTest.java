@@ -90,7 +90,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, -6D, .5D, building2);
         assertNotNull(walkingSteps);
@@ -158,7 +158,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
         assertNotNull(walkingSteps);
@@ -223,7 +223,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
         assertNotNull(walkingSteps);
@@ -294,7 +294,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
         assertNotNull(walkingSteps);
@@ -362,7 +362,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         building0.removeFunction(eva);
         
@@ -564,7 +564,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
         assertNotNull(walkingSteps);
@@ -639,7 +639,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         building0.removeFunction(eva);
         
@@ -777,7 +777,7 @@ public class WalkingStepsTest extends TestCase {
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(4D);
         person.setYLocation(4D);
-        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, rover);
         assertNotNull(walkingSteps);

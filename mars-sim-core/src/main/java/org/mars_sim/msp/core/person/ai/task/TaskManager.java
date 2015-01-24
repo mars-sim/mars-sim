@@ -50,6 +50,9 @@ implements Serializable {
 	private transient double totalProbCache;
 	private transient Map<MetaTask, Double> taskProbCache;
 
+	private Person person = null;
+	private Robot robot = null;
+	
 	/** 
 	 * Constructor.
 	 * @param mind the mind that uses this task manager.
@@ -57,6 +60,10 @@ implements Serializable {
 	public TaskManager(Mind mind) {
 		// Initialize data members
 		this.mind = mind;
+		
+		this.person = mind.getPerson();
+		this.robot = mind.getRobot();
+		
 		currentTask = null;
 
 		// Initialize cache values.
@@ -136,7 +143,11 @@ implements Serializable {
 	public void clearTask() {
 		currentTask.endTask();
 		currentTask = null;
-		mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT);
+		
+		if (person != null) 
+			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
+		else if (robot != null)
+			robot.fireUnitUpdate(UnitEventType.TASK_EVENT);		
 	}
 
 	/**
@@ -149,7 +160,12 @@ implements Serializable {
 		} else {
 			currentTask = newTask;
 		}
-		mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+			
+		if (person != null) 
+			person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		else if (robot != null)
+			robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);		
+		
 	}
 
 	/** 
@@ -183,54 +199,104 @@ implements Serializable {
 	 */
 	private void checkForEmergency() {
 	    
-	    Person person = mind.getPerson();
-	    
-		// Check for emergency malfunction.
-		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
+		if (person != null) {
 			
-		    // Check if person is already repairing an emergency.
-		    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
-					instanceof RepairEmergencyMalfunction));
-			if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
-			    hasEmergencyRepair = true;
-			}
-			
-			// Check if person is performing an airlock task.
-			boolean hasAirlockTask = false;
-			Task task = currentTask;
-			while (task != null) {
-				if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
-					hasAirlockTask = true;
-				}
-				task = task.getSubTask();
-			}
-			
-			// Check if person is outside.
-			boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
-			
-			
-			
-			// Cancel current task and start emergency repair task.
-			if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
+			// Check for emergency malfunction.
+			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
 				
-				if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
-		            
-		            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
-		                
-		                logger.fine(person + " cancelling task " + currentTask + 
-		                        " due to emergency EVA repairs.");
-		                clearTask();
-		                addTask(new RepairEmergencyMalfunctionEVA(person));
-		            }
+			    // Check if person is already repairing an emergency.
+			    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+						instanceof RepairEmergencyMalfunction));
+				if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
+				    hasEmergencyRepair = true;
 				}
-				else {
-				    logger.fine(person + " cancelling task " + currentTask + 
-	                        " due to emergency repairs.");
-	                clearTask();
-				    addTask(new RepairEmergencyMalfunction(person));
+				
+				// Check if person is performing an airlock task.
+				boolean hasAirlockTask = false;
+				Task task = currentTask;
+				while (task != null) {
+					if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
+						hasAirlockTask = true;
+					}
+					task = task.getSubTask();
+				}
+				
+				// Check if person is outside.
+				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+				
+				
+				
+				// Cancel current task and start emergency repair task.
+				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
+					
+					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
+			            
+			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
+			                
+			                logger.fine(person + " cancelling task " + currentTask + 
+			                        " due to emergency EVA repairs.");
+			                clearTask();
+			                addTask(new RepairEmergencyMalfunctionEVA(person));
+			            }
+					}
+					else {
+					    logger.fine(person + " cancelling task " + currentTask + 
+		                        " due to emergency repairs.");
+		                clearTask();
+					    addTask(new RepairEmergencyMalfunction(person));
+					}
 				}
 			}
 		}
+		else if (robot != null) {
+			
+			// Check for emergency malfunction.
+			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
+				
+			    // Check if robot is already repairing an emergency.
+			    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+						instanceof RepairEmergencyMalfunction));
+				if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
+				    hasEmergencyRepair = true;
+				}
+				
+				// Check if robot is performing an airlock task.
+				boolean hasAirlockTask = false;
+				Task task = currentTask;
+				while (task != null) {
+					if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
+						hasAirlockTask = true;
+					}
+					task = task.getSubTask();
+				}
+				
+				// Check if robot is outside.
+				boolean isOutside = robot.getLocationSituation() == LocationSituation.OUTSIDE;
+	
+				
+				// Cancel current task and start emergency repair task.
+				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
+					
+					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(robot)) {
+			            
+			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(robot)) {
+			                
+			                logger.fine(robot + " cancelling task " + currentTask + 
+			                        " due to emergency EVA repairs.");
+			                clearTask();
+			                addTask(new RepairEmergencyMalfunctionEVA(robot));
+			            }
+					}
+					else {
+					    logger.fine(robot + " cancelling task " + currentTask + 
+		                        " due to emergency repairs.");
+		                clearTask();
+					    addTask(new RepairEmergencyMalfunction(robot));
+					}
+				}
+			}
+		}
+
 	}
 
 	/** 
@@ -264,8 +330,13 @@ implements Serializable {
 			}
 		}
 		if (selectedMetaTask == null) {
-			throw new IllegalStateException(mind.getPerson() + 
-					" could not determine a new task.");
+			if (person != null) 
+				throw new IllegalStateException(mind.getPerson() + 
+						" could not determine a new task.");
+			else if (robot != null)
+					throw new IllegalStateException(mind.getRobot() + 
+							" could not determine a new task.");
+			
 		}
 		// Construct the task
 		result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -297,11 +368,13 @@ implements Serializable {
 		totalProbCache = 0D;
 		// Determine probabilities.
 		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+		
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
 			double probability = 0;
 			Person person = mind.getPerson();
 			Robot robot = mind.getRobot();
+			
 			if (person != null) {
 				probability = metaTask.getProbability(person);
 			}
@@ -316,8 +389,16 @@ implements Serializable {
 			}
 			else {
 				taskProbCache.put(metaTask, 0D);
-				logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
-						" probability: " + probability);
+				
+				if (person != null) {
+					logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
+							" probability: " + probability);
+				}
+				else if (robot != null) {
+					logger.severe(mind.getRobot().getName() + " bad task probability: " +  metaTask.getName() + 
+							" probability: " + probability);
+				}
+				
 			}
 		}
 		// Set the time cache to the current time.
@@ -341,6 +422,8 @@ implements Serializable {
 			currentTask.destroy();
 		}
 		mind = null;
+		person = null;
+		robot = null;
 		timeCache = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();

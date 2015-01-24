@@ -96,7 +96,10 @@ implements VehicleOperator, Serializable {
         yLoc = 0D;
         this.gender = gender;
         this.birthplace = birthplace;
+        this.associatedSettlement = settlement;
+        
         String timeString = createTimeString();
+        
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
         mind = new Mind(this);
@@ -106,7 +109,6 @@ implements VehicleOperator, Serializable {
 
         // Set base mass of person from 58 to 76, peaking at 67.
         setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
-
         // Set height of person as gender-correlated curve.
         height = (this.gender == PersonGender.MALE ?
                 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
@@ -120,7 +122,7 @@ implements VehicleOperator, Serializable {
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-        associatedSettlement = settlement;
+
     }
 
     /**
