@@ -453,7 +453,7 @@ implements Serializable {
                         }
                         inv.storeAmountResource(resource, amount, true);
                         // 2015-01-15 Add addSupplyAmount()
-                        inv.addSupplyAmount(resource, amount);
+                        inv.addAmountSupplyAmount(resource, amount);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.

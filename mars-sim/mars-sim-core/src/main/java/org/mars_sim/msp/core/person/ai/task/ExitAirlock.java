@@ -752,14 +752,14 @@ implements Serializable {
             double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
             
         	// 2015-01-09 Added addDemandTotalRequest()
-            entityInv.addDemandTotalRequest(oxygen);
+            entityInv.addAmountDemandTotalRequest(oxygen);
             
             double takenOxygen = neededOxygen;
             if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
             try {
                 entityInv.retrieveAmountResource(oxygen, takenOxygen);
             	// 2015-01-09 addDemandRealUsage()
-                entityInv.addDemandAmount(oxygen, takenOxygen);
+                entityInv.addAmountDemand(oxygen, takenOxygen);
                 suitInv.storeAmountResource(oxygen, takenOxygen, true);
                 // not calling addSupplyAmount()
             }
@@ -770,14 +770,14 @@ implements Serializable {
             double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
             double availableWater = entityInv.getAmountResourceStored(water, false);
         	// 2015-01-09 Added addDemandTotalRequest()
-            entityInv.addDemandTotalRequest(water);
+            entityInv.addAmountDemandTotalRequest(water);
             
             double takenWater = neededWater;
             if (takenWater > availableWater) takenWater = availableWater;
             try {
                 entityInv.retrieveAmountResource(water, takenWater);
             	// 2015-01-09 addDemandRealUsage()
-                entityInv.addDemandAmount(water, takenWater);
+                entityInv.addAmountDemand(water, takenWater);
                 suitInv.storeAmountResource(water, takenWater, true);
                 // not calling addSupplyAmount()
             }

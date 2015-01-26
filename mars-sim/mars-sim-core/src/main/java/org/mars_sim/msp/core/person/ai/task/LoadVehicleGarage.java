@@ -432,7 +432,7 @@ implements Serializable {
                     sInv.retrieveAmountResource(resource, resourceAmount);
                     vInv.storeAmountResource(resource, resourceAmount, true);
        			 	// 2015-01-15 Add addSupplyAmount()
-                    vInv.addSupplyAmount(resource, resourceAmount);
+                    vInv.addAmountSupplyAmount(resource, resourceAmount);
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);

@@ -375,7 +375,7 @@ implements Serializable {
 		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
     	
 		// 2015-01-09 Added addDemandTotalRequest()
-    	inv.addDemandTotalRequest(soymilkAR);
+    	inv.addAmountDemandTotalRequest(soymilkAR);
     	
 		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
 		
@@ -392,7 +392,7 @@ implements Serializable {
 			inv.retrieveAmountResource(soymilkAR, foodEaten);	
 			
 			// 2015-01-09 addDemandRealUsage()
-		   	inv.addDemandAmount(soymilkAR, foodEaten);
+		   	inv.addAmountDemand(soymilkAR, foodEaten);
 		}
     }
    
@@ -437,7 +437,7 @@ implements Serializable {
         double foodAvailable = inv.getAmountResourceStored(foodAR, false);
         
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(foodAR);
+        inv.addAmountDemandTotalRequest(foodAR);
         	
         if (foodAvailable < 0.01D) {
            throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");   
@@ -453,7 +453,7 @@ implements Serializable {
             inv.retrieveAmountResource(foodAR, foodEaten);
             
     		// 2015-01-09 addDemandRealUsage()
-    		inv.addDemandAmount(foodAR, foodEaten);
+    		inv.addAmountDemand(foodAR, foodEaten);
         }
     }
 

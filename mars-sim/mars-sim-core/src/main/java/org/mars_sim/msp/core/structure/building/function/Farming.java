@@ -129,7 +129,7 @@ implements Serializable {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addDemandTotalRequest(nameAR);  
+	    	inv.addAmountDemandTotalRequest(nameAR);  
 	        if (remainingCapacity < requestedAmount) {
 	     		requestedAmount = remainingCapacity;
 	    		logger.warning("Just used up all " + name);
@@ -138,7 +138,7 @@ implements Serializable {
 	    		logger.warning("no more " + name + " in " + settlement.getName());
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addDemandAmount(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
 	    	}
 	    }  catch (Exception e) {}
     }
@@ -346,7 +346,7 @@ implements Serializable {
             // 2014-11-06 changed the last param from false to true
             inv.storeAmountResource(harvestCropAR, harvestAmount, true);
             // 2015-01-15 Add addSupplyAmount()
-            inv.addSupplyAmount(harvestCropAR, harvestAmount);
+            inv.addAmountSupplyAmount(harvestCropAR, harvestAmount);
   
         }  catch (Exception e) {}
     }

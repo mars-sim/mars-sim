@@ -517,7 +517,7 @@ implements Serializable {
 						double amountStored = inv.getAmountResourceStored(resource, false);
 				    	
 						// 2015-01-09 Added addDemandTotalRequest()
-				    	inv.addDemandTotalRequest(resource);
+				    	inv.addAmountDemandTotalRequest(resource);
 						
 						if (amountStored < amountDepleted) {
 						    amountDepleted = amountStored;
@@ -526,7 +526,7 @@ implements Serializable {
 						    inv.retrieveAmountResource(resource, amountDepleted);
 						    
 							// 2015-01-09 addDemandRealUsage()
-						   	inv.addDemandAmount(resource, amountDepleted);
+						   	inv.addAmountDemand(resource, amountDepleted);
 						    
 						}
 					}

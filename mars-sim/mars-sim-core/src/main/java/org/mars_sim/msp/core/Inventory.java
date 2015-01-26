@@ -74,13 +74,20 @@ implements Serializable {
     private transient double totalInventoryMassCache;
     private transient boolean totalInventoryMassCacheDirty = true;
 
-	// 2015-01-09 Added 3 demand maps
-	private Map<String, Integer> demandTotalRequestMap =  new HashMap<String, Integer>();
-	private Map<String, Integer> demandSuccessfulRequestMap =  new HashMap<String, Integer>();
-	private Map<String, Double> demandAmountMap = new HashMap<String, Double>();
-	// 2015-01-15 Added 2 supply maps
-	private Map<String, Double> supplyAmountMap =  new HashMap<String, Double>();
-	private Map<String, Integer> supplyRequestMap =  new HashMap<String, Integer>();
+	// 2015-01-09 Added 3 amount resource demand maps
+	private Map<String, Integer> amountDemandTotalRequestMap =  new HashMap<String, Integer>();
+	private Map<String, Integer> amountDemandMetRequestMap =  new HashMap<String, Integer>();
+	private Map<String, Double> amountDemandMap = new HashMap<String, Double>();
+	// 2015-01-15 Added 2 amount resource supply maps
+	private Map<String, Double> amountSupplyMap =  new HashMap<String, Double>();
+	private Map<String, Integer> amountSupplyRequestMap =  new HashMap<String, Integer>();
+
+	// 2015-01-26 Added 2 item resource demand maps
+	private Map<String, Integer> itemDemandMetRequestMap =  new HashMap<String, Integer>();
+	private Map<String, Integer> itemDemandMap = new HashMap<String, Integer>();
+	// 2015-01-26 Added 2 item resource supply maps
+	private Map<String, Integer> itemSupplyMap =  new HashMap<String, Integer>();
+	private Map<String, Integer> itemSupplyRequestMap =  new HashMap<String, Integer>();
 
 	
     /** 
@@ -93,148 +100,148 @@ implements Serializable {
         
     }
     
-  	// 2015-01-15 Added getSupplyRequest()
-    public int getSupplyRequest(String resourceName) {
+  	// 2015-01-15 Added getAmountSupplyRequest()
+    public int getAmountSupplyRequest(String resourceName) {
        	int result;
     	String r = resourceName.toLowerCase();
     	
-       	if (supplyRequestMap.containsKey(r)) {
-       		result = supplyRequestMap.get(r);
+       	if (amountSupplyRequestMap.containsKey(r)) {
+       		result = amountSupplyRequestMap.get(r);
     	}
     	else {
-    		supplyRequestMap.put(r, 0);
+    		amountSupplyRequestMap.put(r, 0);
     		result = 0;
     	}
     	return result;
     }
     
-    public double getSupplyAmount(String resourceName) {
+    public double getAmountSupplyAmount(String resourceName) {
     	double result;
     	String r = resourceName.toLowerCase();
     	
-       	if (supplyAmountMap.containsKey(r)) {      		
-       		result = supplyAmountMap.get(r);
+       	if (amountSupplyMap.containsKey(r)) {      		
+       		result = amountSupplyMap.get(r);
     	}
     	else {
-    		supplyAmountMap.put(r, 0.0);
+    		amountSupplyMap.put(r, 0.0);
     		result = 0.0;
     	}
     	return result;
     }
     
 
- 	// 2015-01-15 addSupplyAmount()
-   	public synchronized void addSupplyAmount(AmountResource resource, double amount) {
+ 	// 2015-01-15 addAmountSupplyAmount()
+   	public synchronized void addAmountSupplyAmount(AmountResource resource, double amount) {
    		String r = resource.getName();
    		
-    	if (supplyAmountMap.containsKey(r)) {
+    	if (amountSupplyMap.containsKey(r)) {
     		
-    		double oldAmount = supplyAmountMap.get(r);
+    		double oldAmount = amountSupplyMap.get(r);
 			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
-    		supplyAmountMap.put(r, amount + oldAmount);
+    		amountSupplyMap.put(r, amount + oldAmount);
     		
     	}
     	else {
-    		supplyAmountMap.put(r, amount);     
+    		amountSupplyMap.put(r, amount);     
     	}
     	
-    	addSupplyRequest(resource, amount);
+    	addAmountSupplyRequest(resource, amount);
    	}
    	
-	// 2015-01-15 addSupplyRequest()
-   	public synchronized void addSupplyRequest(AmountResource resource, double amount) {
+	// 2015-01-15 addAmountSupplyRequest()
+   	public synchronized void addAmountSupplyRequest(AmountResource resource, double amount) {
    		String r = resource.getName();
    		
-    	if (supplyRequestMap.containsKey(r)) {
-    		int oldNum = supplyRequestMap.get(r);
+    	if (amountSupplyRequestMap.containsKey(r)) {
+    		int oldNum = amountSupplyRequestMap.get(r);
 			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
-    		supplyRequestMap.put(r, oldNum + 1);
+    		amountSupplyRequestMap.put(r, oldNum + 1);
     	}
 	
     	else {
-    		supplyRequestMap.put(r, 1);
+    		amountSupplyRequestMap.put(r, 1);
     	}
 	}
     
-   	// 2015-01-09 Added getDemandAmount()
-    public double getDemandAmount(String resourceName) {
+   	// 2015-01-09 Added getAmountDemandAmount()
+    public double getAmountDemandAmount(String resourceName) {
     	double result;
     	String r = resourceName.toLowerCase(); 
     	
-       	if (demandAmountMap.containsKey(r)) {      		
-       		result = demandAmountMap.get(r);
+       	if (amountDemandMap.containsKey(r)) {      		
+       		result = amountDemandMap.get(r);
     	}
     	else {
-    		demandAmountMap.put(r, 0.0);
+    		amountDemandMap.put(r, 0.0);
     		result = 0.0;
     	}
     	return result;
     }
     
-   	// 2015-01-09 Added getDemandTotalRequest()
-    public int getDemandTotalRequest(String resourceName) {
+   	// 2015-01-09 Added getAmountDemandTotalRequest()
+    public int getAmountDemandTotalRequest(String resourceName) {
        	int result;
     	String r = resourceName.toLowerCase(); 
     	
-       	if (demandTotalRequestMap.containsKey(r)) {
-       		result = demandTotalRequestMap.get(r);
+       	if (amountDemandTotalRequestMap.containsKey(r)) {
+       		result = amountDemandTotalRequestMap.get(r);
     	}
     	else {
-    		demandTotalRequestMap.put(r, 0);
+    		amountDemandTotalRequestMap.put(r, 0);
     		result = 0;
     	}
     	return result;
     }
    
-   	// 2015-01-09 Added getDemandSuccessfulRequest()
-    public int getDemandSuccessfulRequest(String resourceName) {
+   	// 2015-01-09 Added getAmountDemandMetRequest()
+    public int getAmountDemandMetRequest(String resourceName) {
        	int result;
     	String r = resourceName.toLowerCase(); 
        	
-       	if (demandSuccessfulRequestMap.containsKey(r)) {
-       		result = demandSuccessfulRequestMap.get(r);
+       	if (amountDemandMetRequestMap.containsKey(r)) {
+       		result = amountDemandMetRequestMap.get(r);
     	}
     	else {
-    		demandSuccessfulRequestMap.put(r, 0);
+    		amountDemandMetRequestMap.put(r, 0);
     		result = 0;
     	}
     	
     	return result;
     }
     
-  	// 2015-01-09 Added getDemandAmountMapSize()
-    public int getDemandAmountMapSize() {
-    	return demandAmountMap.size();
+  	// 2015-01-09 Added getAmountDemandAmountMapSize()
+    public int getAmountDemandAmountMapSize() {
+    	return amountDemandMap.size();
     }
     
-   	// 2015-01-09 Added getDemandTotalRequestMapSize()
+   	// 2015-01-09 Added getAmountDemandTotalRequestMapSize()
     public int getDemandTotalRequestMapSize() {
-    	return demandTotalRequestMap.size();
+    	return amountDemandTotalRequestMap.size();
     }
     
-   	// 2015-01-09 Added getDemandSuccessfulRequestMapSize()
-    public int getDemandSuccessfulRequestMapSize() {
-    	return demandSuccessfulRequestMap.size();
+   	// 2015-01-09 Added getAmountDemandSuccessfulRequestMapSize()
+    public int getAmountDemandMetRequestMapSize() {
+    	return amountDemandMetRequestMap.size();
     }
     
  	// 2015-01-15 Added compactSupplyAmountMap()
-    public synchronized void compactSupplyAmountMap(int sol) {
-    	compactMap(supplyAmountMap, sol);
+    public synchronized void compactAmountSupplyAmountMap(int sol) {
+    	compactMap(amountSupplyMap, sol);
     }
     
-   	// 2015-01-15 Added clearSupplyRequestMap()
-    public synchronized void clearSupplyRequestMap() {
-    	supplyRequestMap.clear();
+   	// 2015-01-15 Added clearAmountSupplyRequestMap()
+    public synchronized void clearAmountSupplyRequestMap() {
+    	amountSupplyRequestMap.clear();
     }
     
-  	// 2015-01-15 Added clearDemandAmountMap()
-    public synchronized void clearDemandAmountMap() {
-    	demandAmountMap.clear();
+  	// 2015-01-15 Added clearAmountDemandAmountMap()
+    public synchronized void clearAmountDemandAmountMap() {
+    	amountDemandMap.clear();
     }
     
-	// 2015-01-15 Added compactDemandAmountMap()
-    public synchronized void compactDemandAmountMap(int sol) { 
-    	compactMap(demandAmountMap, sol);
+	// 2015-01-15 Added compactAmountDemandAmountMap()
+    public synchronized void compactAmountDemandAmountMap(int sol) { 
+    	compactMap(amountDemandMap, sol);
     }
     
  // 2015-01-15 Added compactMap()
@@ -250,60 +257,93 @@ implements Serializable {
     	}
     }
     
-   	// 2015-01-09 Added clearDemandTotalRequestMap()
-    public synchronized void clearDemandTotalRequestMap() {
-    	demandTotalRequestMap.clear();
+   	// 2015-01-09 Added clearAmountDemandTotalRequestMap()
+    public synchronized void clearAmountDemandTotalRequestMap() {
+    	amountDemandTotalRequestMap.clear();
     }
     
-   	// 2015-01-09 Added clearDemandRequestMap()
-    public synchronized void clearDemandSuccessfulRequestMap() {
-    	demandSuccessfulRequestMap.clear();
+   	// 2015-01-09 Added clearAmountDemandRequestMap()
+    public synchronized void clearAmountDemandMetRequestMap() {
+    	amountDemandMetRequestMap.clear();
     }
     
- 	// 2015-01-09 addDemandTotalRequest()
-	public synchronized void addDemandTotalRequest(AmountResource resource) {
+ 	// 2015-01-09 addAmountDemandTotalRequest()
+	public synchronized void addAmountDemandTotalRequest(AmountResource resource) {
    		String r = resource.getName();
    		
-		if (demandTotalRequestMap.containsKey(r)) {
+		if (amountDemandTotalRequestMap.containsKey(r)) {
 			
-			int oldNum = demandTotalRequestMap.get(r);
+			int oldNum = amountDemandTotalRequestMap.get(r);
 			//System.out.println( resource.getName() + " demandTotal : " + oldNum+1);
-			demandTotalRequestMap.put(r, oldNum + 1);
+			amountDemandTotalRequestMap.put(r, oldNum + 1);
 		}
 		else
-	    	demandTotalRequestMap.put(r, 1);
+	    	amountDemandTotalRequestMap.put(r, 1);
 	}
 
- 	// 2015-01-09 addDemandAmount()
-   	public synchronized void addDemandAmount(AmountResource resource, double amount) {
+ 	// 2015-01-09 addAmountDemand()
+   	public synchronized void addAmountDemand(AmountResource resource, double amount) {
    		String r = resource.getName();
    		
-    	if (demandAmountMap.containsKey(r)) {
+    	if (amountDemandMap.containsKey(r)) {
     		
-    		double oldAmount = demandAmountMap.get(r);
+    		double oldAmount = amountDemandMap.get(r);
 			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
-    		demandAmountMap.put(r, amount + oldAmount);
+    		amountDemandMap.put(r, amount + oldAmount);
     		
     	}
     	else {
-    		demandAmountMap.put(r, amount);     
+    		amountDemandMap.put(r, amount);     
     	}
     	
-    	addDemandSuccessfulRequest(resource, amount);
+    	addAmountDemandMetRequest(resource, amount);
    	}
    	
-	// 2015-01-09 addDemandSuccessfulRequest()
-   	public synchronized void addDemandSuccessfulRequest(AmountResource resource, double amount) {
+ 	// 2015-01-26 addItemDemand()
+   	public synchronized void addItemDemand(ItemResource resource, int number) {
    		String r = resource.getName();
    		
-    	if (demandSuccessfulRequestMap.containsKey(r)) {
-    		int oldNum = demandSuccessfulRequestMap.get(r);
+    	if (itemDemandMap.containsKey(r)) {
+    		
+    		int oldNumber = itemDemandMap.get(r);
+			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
+    		itemDemandMap.put(r, number + oldNumber);
+    		
+    	}
+    	else {
+    		itemDemandMap.put(r, number);     
+    	}
+    	
+    	addItemDemandMetRequest(resource, number);
+   	}
+   	
+	// 2015-01-09 addAmountDemandMetRequest()
+   	public synchronized void addAmountDemandMetRequest(AmountResource resource, double amount) {
+   		String r = resource.getName();
+   		
+    	if (amountDemandMetRequestMap.containsKey(r)) {
+    		int oldNum = amountDemandMetRequestMap.get(r);
 			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
-    		demandSuccessfulRequestMap.put(r, oldNum + 1);
+    		amountDemandMetRequestMap.put(r, oldNum + 1);
     	}
 	
     	else {
-    		demandSuccessfulRequestMap.put(r, 1);
+    		amountDemandMetRequestMap.put(r, 1);
+    	}
+	}
+   	
+	// 2015-01-09 addItemDemandMetRequest()
+   	public synchronized void addItemDemandMetRequest(ItemResource resource, double number) {
+   		String r = resource.getName();
+   		
+    	if (itemDemandMetRequestMap.containsKey(r)) {
+    		int oldNum = itemDemandMetRequestMap.get(r);
+			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
+    		itemDemandMetRequestMap.put(r, oldNum + 1);
+    	}
+	
+    	else {
+    		itemDemandMetRequestMap.put(r, 1);
     	}
 	}
    	

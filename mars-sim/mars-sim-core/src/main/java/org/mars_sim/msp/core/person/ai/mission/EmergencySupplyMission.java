@@ -583,7 +583,7 @@ implements Serializable {
             double amountAvailable = startingSettlement.getInventory().getAmountResourceStored(
                     resource, false);
         	// 2015-01-09 Added addDemandTotalRequest()
-            startingSettlement.getInventory().addDemandTotalRequest(resource);
+            startingSettlement.getInventory().addAmountDemandTotalRequest(resource);
             if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
                 result = false;
             }
@@ -708,7 +708,7 @@ implements Serializable {
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
  
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(oxygen);
+        inv.addAmountDemandTotalRequest(oxygen);
         
         oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygen);
         if (oxygenAmountAvailable < oxygenAmountNeeded) {
@@ -725,7 +725,7 @@ implements Serializable {
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(water, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(water);  
+        inv.addAmountDemandTotalRequest(water);  
         
         waterAmountAvailable += getResourcesOnMissions(settlement, water);
         if (waterAmountAvailable < waterAmountNeeded) {
@@ -742,7 +742,7 @@ implements Serializable {
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(food, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(food);
+        inv.addAmountDemandTotalRequest(food);
         
         foodAmountAvailable += getResourcesOnMissions(settlement, food);
         if (foodAmountAvailable < foodAmountNeeded) {
@@ -759,7 +759,7 @@ implements Serializable {
         double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methane, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(methane);
+        inv.addAmountDemandTotalRequest(methane);
         
         methaneAmountAvailable += getResourcesOnMissions(settlement, methane);
         if (methaneAmountAvailable < methaneAmountNeeded) {
@@ -795,7 +795,7 @@ implements Serializable {
                     if (rover != null) {
                         result += rover.getInventory().getAmountResourceStored(resource, false);
                     	// 2015-01-09 Added addDemandTotalRequest()
-                        rover.getInventory().addDemandTotalRequest(resource);
+                        rover.getInventory().addAmountDemandTotalRequest(resource);
                     }
                 }
             }
