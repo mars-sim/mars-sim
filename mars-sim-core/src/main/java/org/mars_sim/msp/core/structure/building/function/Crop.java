@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2014-12-09
+ * @version 3.07 2015-01-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -37,7 +37,8 @@ implements Serializable {
 	/** Amount of carbon dioxide needed /harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
 	
-	public static final double FERTILIZER_NEEDED = 0.5D;
+	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
+	public static double FERTILIZER_NEEDED = 0.5D ;
 
 	// TODO Crop phases should be an internationalizable enum.
 	public static final String PLANTING = "Planting";
@@ -72,6 +73,8 @@ implements Serializable {
 	/** Current sol of month. */
 	private int currentSol;
 
+	private Inventory inv;
+	
 	/**
 	 * Constructor.
 	 * @param cropType the type of crop.
@@ -88,6 +91,7 @@ implements Serializable {
 		this.farm = farm;
 		this.settlement = settlement;
 
+		inv = settlement.getInventory();
 		//cropTypeList = new ArrayList<CropType>();
 		//cropType.getCropList(); 
 
@@ -302,32 +306,32 @@ implements Serializable {
 					harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
 
 					// TODO mkung: Modify harvest modifier by amount of artificial light available to the greenhouse
-					
-					Inventory inv = settlement.getInventory();
+				
 
 					// Determine harvest modifier by amount of waste water available.
+					double waterUsed = 0;
 					double wasteWaterRequired = maxPeriodHarvest * WASTE_WATER_NEEDED;
 					AmountResource wasteWater = AmountResource.findAmountResource("waste water");
 					double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater, false);
 					double wasteWaterUsed = wasteWaterRequired;
-					if (wasteWaterUsed > wasteWaterAvailable) 
+					if (wasteWaterUsed > wasteWaterAvailable) {
+						// 2015-01-25 Added diff, waterUsed and consumeWater() when waste water is not available
+						double diff = wasteWaterUsed - wasteWaterAvailable;
+						waterUsed = consumeWater(diff);
 						wasteWaterUsed = wasteWaterAvailable;
-					inv.retrieveAmountResource(wasteWater, wasteWaterUsed);
-					
-					// 2015-01-09 Added addDemandTotalRequest()
-				    inv.addDemandTotalRequest(wasteWater);
-					// 2015-01-09 addDemandRealUsage()
-				    inv.addDemandAmount(wasteWater, wasteWaterUsed);
-					
-					harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
+					}
+					retrieveAnResource(wasteWater, wasteWaterUsed);
+					// 2015-01-25 Added waterUsed 
+					harvestModifier = harvestModifier * ((( (wasteWaterUsed + waterUsed) / wasteWaterRequired) * .5D) + .5D);
 
 					
 					// Determine harvest modifier by amount of water available.				
 					double waterAmount = wasteWaterUsed * .8D;
 					AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
 					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
-					if (waterAmount > waterCapacity) 
-						waterAmount = waterCapacity;
+					if (waterAmount > waterCapacity) {
+						waterAmount = waterCapacity;					
+					}
 					inv.storeAmountResource(water, waterAmount, false);
 					// 2015-01-15 Add addSupplyAmount()
 		            inv.addSupplyAmount(water, waterAmount);
@@ -339,18 +343,11 @@ implements Serializable {
 					double carbonDioxideUsed = carbonDioxideRequired;
 					if (carbonDioxideUsed > carbonDioxideAvailable) {
 						carbonDioxideUsed = carbonDioxideAvailable;
-					}
-					inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
-					
-					// 2015-01-09 Added addDemandTotalRequest()
-				    inv.addDemandTotalRequest(carbonDioxide);
-					// 2015-01-09 addDemandRealUsage()
-				   	inv.addDemandAmount(carbonDioxide, carbonDioxideUsed);
-					
+					}					
+					retrieveAnResource(carbonDioxide, carbonDioxideUsed);			
 					
 					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
 							.5D) + .5D);
-
 					
 					// Determine harvest modifier by amount of oxygen available.							
 					AmountResource oxygen = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.OXYGEN);
@@ -375,6 +372,45 @@ implements Serializable {
 		}
 	}
 
+	/**
+	 * Retrieves an amount from water.
+	 * @param waterRequired
+	 */
+	// 2015-01-25 consumeWater()
+	public double consumeWater(double waterRequired) {
+		AmountResource water = AmountResource.findAmountResource("water");
+		double waterAvailable = inv.getAmountResourceStored(water, false);
+		AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
+		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);		
+		double waterUsed = waterRequired;
+		double fertilizerUsed = FERTILIZER_NEEDED / 500D;
+		if (waterUsed > waterAvailable) {
+			waterUsed = waterAvailable;
+			if (fertilizerUsed > fertilizerAvailable)	{			
+				fertilizerUsed = fertilizerAvailable;
+			}
+			//TODO: if not enough fertilizer is available
+			// should it send out an alert and/or have impact in crop growing?
+		
+		}
+		retrieveAnResource(water, waterUsed);
+		retrieveAnResource(fertilizer, fertilizerUsed);
+		
+	    return waterUsed;
+	}
+	
+	/**
+	 * Retrieves an amount from an Amount Resource.
+	 * @param AmountResource resource
+	 * @param double amount
+	 */
+	// 2015-01-25 Added retrieveAnResource()
+	public void retrieveAnResource(AmountResource resource, double amount) {
+		inv.retrieveAmountResource(resource, amount);
+	    inv.addDemandTotalRequest(resource);
+	    inv.addDemandAmount(resource, amount);
+	}
+	
 	/**
 	 * Gets a random crop type.
 	 * @return crop type
@@ -420,6 +456,7 @@ implements Serializable {
 	public void destroy() {
 		cropType = null;
 		farm = null;
+		inv = null;
 		settlement = null;
 		phase = null;
 	}
