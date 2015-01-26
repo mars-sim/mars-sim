@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-20
+ * @version 3.07 2015-01-25
  * @author Scott Davis
  */
 
@@ -379,18 +379,18 @@ public class MainWindow {
 	/**
 	 * Load a previously saved simulation.
 	 */
-	public void loadSimulation() {
-		
+	// 2015-01-25 Added autosave
+	public void loadSimulation(boolean autosave) {	
+		final boolean ans = autosave;
         if (earthTimer != null) 
             earthTimer.stop();
         earthTimer = null;
         //logger.info(" loadSimulation() : just set earthTime = null");
-
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {
-					loadSimulationProcess();
+					loadSimulationProcess(ans);
 				}
 			};
 			loadSimThread.start();
@@ -412,9 +412,20 @@ public class MainWindow {
 	/**
 	 * Performs the process of loading a simulation.
 	 */
-	private void loadSimulationProcess() {
-		JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSim")); //$NON-NLS-1$
+	private void loadSimulationProcess(boolean autosave) {
+		String dir = null;
+		String title = null;
+		// 2015-01-25 Added autosave
+		if (autosave) {			
+			dir = Simulation.AUTOSAVE_DIR;
+			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
+		}
+		else {
+			dir = Simulation.DEFAULT_DIR;
+			title = Msg.getString("MainWindow.dialogLoadSavedSim");
+		}
+		JFileChooser chooser= new JFileChooser(dir);
+		chooser.setDialogTitle(title); //$NON-NLS-1$
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 			desktop.clearDesktop();

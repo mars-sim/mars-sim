@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-25
 
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -61,7 +62,7 @@ implements ActionListener {
 		// Fix tool bar
 		setFloatable(false);
 
-		//setPreferredSize(new Dimension(0, 57));
+		setPreferredSize(new Dimension(0, 32));
 
 		// Prepare tool buttons
 		prepareToolButtons();
@@ -85,10 +86,18 @@ implements ActionListener {
 		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
 		openButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.loadSimulation();
+				parentMainWindow.loadSimulation(false);
 			};
 		});
 		add(openButton);
+		
+		ToolButton openAutosaveButton = new ToolButton(Msg.getString("mainMenu.openAutosave"), Msg.getString("img.openAutosave")); //$NON-NLS-1$ //$NON-NLS-2$
+		openAutosaveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.loadSimulation(true);
+			};
+		});
+		add(openAutosaveButton);
 
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(new ActionListener() {
