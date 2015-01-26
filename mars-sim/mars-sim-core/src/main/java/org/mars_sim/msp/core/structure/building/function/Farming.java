@@ -132,11 +132,10 @@ implements Serializable {
 	    	inv.addDemandTotalRequest(nameAR);  
 	        if (remainingCapacity < requestedAmount) {
 	     		requestedAmount = remainingCapacity;
-	    		logger.warning("Just used up all fertilizer");
+	    		logger.warning("Just used up all " + name);
 	        }
 	    	else if (remainingCapacity == 0)
-	    		logger.warning("no more fertilizer in " + settlement.getName());
-
+	    		logger.warning("no more " + name + " in " + settlement.getName());
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
 	    		inv.addDemandAmount(nameAR, requestedAmount);
