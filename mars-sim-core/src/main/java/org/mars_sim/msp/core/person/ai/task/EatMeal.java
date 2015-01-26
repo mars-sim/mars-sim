@@ -211,12 +211,12 @@ implements Serializable {
             AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
             double foodAvailable = inv.getAmountResourceStored(food, false);
             // 2015-01-09 Added addDemandRequest()
-        	inv.addDemandTotalRequest(food);
+        	inv.addAmountDemandTotalRequest(food);
             if (foodAvailable >= foodAmount) {
                 // Remove preserved food amount from container unit.
                 inv.retrieveAmountResource(food, foodAmount);
             	// 2015-01-09 addDemandUsage()
-               	inv.addDemandAmount(food, foodAmount);
+               	inv.addAmountDemand(food, foodAmount);
                	//logger.info(person + " has just eaten preserved food");
             }
             else {

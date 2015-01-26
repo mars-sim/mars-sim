@@ -582,7 +582,7 @@ implements Serializable {
                     suitInv.retrieveAmountResource(oxygen, oxygenAmount);
                     entityInv.storeAmountResource(oxygen, oxygenAmount, true);
     				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addSupplyAmount(oxygen, oxygenAmount);
+                    entityInv.addAmountSupplyAmount(oxygen, oxygenAmount);
                     
                 }
                 catch (Exception e) {}
@@ -596,7 +596,7 @@ implements Serializable {
                     suitInv.retrieveAmountResource(water, waterAmount);
                     entityInv.storeAmountResource(water, waterAmount, true);
     				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addSupplyAmount(water, waterAmount);
+                    entityInv.addAmountSupplyAmount(water, waterAmount);
                 }
                 catch (Exception e) {}
 

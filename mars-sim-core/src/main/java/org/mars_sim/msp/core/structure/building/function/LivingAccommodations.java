@@ -147,12 +147,12 @@ public class LivingAccommodations extends Function implements Serializable {
         double waterUsed = waterUsageBuilding;
         double waterAvailable = inv.getAmountResourceStored(water, false);
     	// 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(water);
+        inv.addAmountDemandTotalRequest(water);
         if (waterUsed > waterAvailable)
             waterUsed = waterAvailable;
         inv.retrieveAmountResource(water, waterUsed);        
     	// 2015-01-09 addDemandRealUsage()
-       	inv.addDemandAmount(water, waterUsed);
+       	inv.addAmountDemand(water, waterUsed);
         
         AmountResource wasteWater = AmountResource
                 .findAmountResource("waste water");
@@ -163,7 +163,7 @@ public class LivingAccommodations extends Function implements Serializable {
             wasteWaterProduced = wasteWaterCapacity;
         inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
         // 2015-01-15 Add addSupplyAmount()
-        inv.addSupplyAmount(wasteWater, wasteWaterProduced);
+        inv.addAmountSupplyAmount(wasteWater, wasteWaterProduced);
     }
 
     /**

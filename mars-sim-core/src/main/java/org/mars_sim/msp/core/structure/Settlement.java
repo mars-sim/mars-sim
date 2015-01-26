@@ -435,9 +435,9 @@ implements LifeSupport {
             oxygenTaken = oxygenLeft;
         getInventory().retrieveAmountResource(oxygen, oxygenTaken);   
     	// 2015-01-09 Added addDemandTotalRequest()
-    	inv.addDemandTotalRequest(oxygen);
+    	inv.addAmountDemandTotalRequest(oxygen);
     	// 2015-01-09 addDemandRealUsage()
-    	inv.addDemandAmount(oxygen,oxygenTaken);
+    	inv.addAmountDemand(oxygen,oxygenTaken);
     	
         AmountResource carbonDioxide = AmountResource
                 .findAmountResource("carbon dioxide");
@@ -450,7 +450,7 @@ implements LifeSupport {
         getInventory().storeAmountResource(carbonDioxide,
                 carbonDioxideProvided, true);
 		// 2015-01-15 Add addSupplyAmount()
-        getInventory().addSupplyAmount(carbonDioxide, carbonDioxideProvided);
+        getInventory().addAmountSupplyAmount(carbonDioxide, carbonDioxideProvided);
         return oxygenTaken;
     }
 
@@ -469,9 +469,9 @@ implements LifeSupport {
         getInventory().retrieveAmountResource(water, waterTaken);
 
     	// 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(water);
+        inv.addAmountDemandTotalRequest(water);
     	// 2015-01-09 addDemandRealUsage()
-       	inv.addDemandAmount(water, waterTaken);
+       	inv.addAmountDemand(water, waterTaken);
         
         return waterTaken;
     }
@@ -619,20 +619,20 @@ implements LifeSupport {
         	
         // Sample supply and demand data on Potato and Water
         	
-        	double supplyAmount1 = inv.getSupplyAmount(sample1);
-        	double supplyAmount2 = inv.getSupplyAmount(sample2);
+        	double supplyAmount1 = inv.getAmountSupplyAmount(sample1);
+        	double supplyAmount2 = inv.getAmountSupplyAmount(sample2);
 
-        	int supplyRequest1 = inv.getSupplyRequest(sample1);
-        	int supplyRequest2 = inv.getSupplyRequest(sample2);
+        	int supplyRequest1 = inv.getAmountSupplyRequest(sample1);
+        	int supplyRequest2 = inv.getAmountSupplyRequest(sample2);
         	
-        	double demandAmount1 = inv.getDemandAmount(sample1);
-        	double demandAmount2 = inv.getDemandAmount(sample2);
+        	double demandAmount1 = inv.getAmountDemandAmount(sample1);
+        	double demandAmount2 = inv.getAmountDemandAmount(sample2);
 
         	//int totalRequest1 = inv.getDemandTotalRequest(sample1);
         	//int totalRequest2 = inv.getDemandTotalRequest(sample2);
 
-        	int demandSuccessfulRequest1 = inv.getDemandSuccessfulRequest(sample1);
-        	int demandSuccessfulRequest2 = inv.getDemandSuccessfulRequest(sample2);
+        	int demandSuccessfulRequest1 = inv.getAmountDemandMetRequest(sample1);
+        	int demandSuccessfulRequest2 = inv.getAmountDemandMetRequest(sample2);
 
         	//int numOfGoodsInDemandAmountMap = inv.getDemandAmountMapSize();
         	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
@@ -669,12 +669,12 @@ implements LifeSupport {
             // Should clear only once and at the beginning of the day
             if (clearNow) {
             	// carry out the daily average of the previous 5 days
-                inv.compactSupplyAmountMap(SOL_PER_REFRESH);
-                inv.clearSupplyRequestMap();
+                inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
+                inv.clearAmountSupplyRequestMap();
                 
-                inv.compactDemandAmountMap(SOL_PER_REFRESH);
-            	inv.clearDemandTotalRequestMap();
-            	inv.clearDemandSuccessfulRequestMap();
+                inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
+            	inv.clearAmountDemandTotalRequestMap();
+            	inv.clearAmountDemandMetRequestMap();
             	
             	logger.info("Just compacted supply and demand data");
             }

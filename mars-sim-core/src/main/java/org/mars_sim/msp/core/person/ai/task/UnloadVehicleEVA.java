@@ -332,7 +332,7 @@ implements Serializable {
                 vehicleInv.retrieveAmountResource(resource, amount);
                 settlementInv.storeAmountResource(resource, amount, true);
         		// 2015-01-15 Add addSupplyAmount()
-    			settlementInv.addSupplyAmount(resource, amount);
+    			settlementInv.addAmountSupplyAmount(resource, amount);
             }
             catch (Exception e) {}
             amountUnloading -= amount;
@@ -399,7 +399,7 @@ implements Serializable {
                 eInv.retrieveAmountResource(resource, amount);
                 sInv.storeAmountResource(resource, amount, true);
         		// 2015-01-15 Add addSupplyAmount()
-    			sInv.addSupplyAmount(resource, amount);
+    			sInv.addAmountSupplyAmount(resource, amount);
             }
             catch (Exception e) {}
         }

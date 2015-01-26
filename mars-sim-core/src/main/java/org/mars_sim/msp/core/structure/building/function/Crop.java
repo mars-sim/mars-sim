@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
@@ -334,7 +335,7 @@ implements Serializable {
 					}
 					inv.storeAmountResource(water, waterAmount, false);
 					// 2015-01-15 Add addSupplyAmount()
-		            inv.addSupplyAmount(water, waterAmount);
+		            inv.addAmountSupplyAmount(water, waterAmount);
 	
 					// Determine harvest modifier by amount of carbon dioxide available.
 					AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
@@ -356,7 +357,7 @@ implements Serializable {
 					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
 					inv.storeAmountResource(oxygen, oxygenAmount, false);
 					 // 2015-01-15 Add addSupplyAmount()
-		            inv.addSupplyAmount(oxygen, oxygenAmount);   	
+		            inv.addAmountSupplyAmount(oxygen, oxygenAmount);   	
 					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
 
@@ -406,9 +407,14 @@ implements Serializable {
 	 */
 	// 2015-01-25 Added retrieveAnResource()
 	public void retrieveAnResource(AmountResource resource, double amount) {
-		inv.retrieveAmountResource(resource, amount);
-	    inv.addDemandTotalRequest(resource);
-	    inv.addDemandAmount(resource, amount);
+		try {
+			inv.retrieveAmountResource(resource, amount);
+		    inv.addAmountDemandTotalRequest(resource);
+		    inv.addAmountDemand(resource, amount);
+				
+	    } catch (Exception e) {
+	        logger.log(Level.SEVERE,e.getMessage());
+		}
 	}
 	
 	/**

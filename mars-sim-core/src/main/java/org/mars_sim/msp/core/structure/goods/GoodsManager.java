@@ -418,9 +418,9 @@ implements Serializable {
     	double totalSupplyAmount = 0;
     	String r = resource.getName().toLowerCase();
     	
-        double supplyAmount = inv.getSupplyAmount(r);
+        double supplyAmount = inv.getAmountSupplyAmount(r);
         supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
-        int supplyRequest = inv.getSupplyRequest(r);
+        int supplyRequest = inv.getAmountSupplyRequest(r);
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
 /*    
@@ -443,9 +443,9 @@ implements Serializable {
     	String r = resource.getName().toLowerCase();
     	
     	// sDemand is the amount of successful demand
-        double sDemand = inv.getDemandAmount(r);
+        double sDemand = inv.getAmountDemandAmount(r);
         sDemand = Math.round(sDemand * 10000.0) / 10000.0;
-        int sRequest = inv.getDemandSuccessfulRequest(r);
+        int sRequest = inv.getAmountDemandMetRequest(r);
     
         // Get the average demand per orbit 
         // total average demand = projected demand + real demand usage  
@@ -1313,12 +1313,15 @@ implements Serializable {
      * @return value (Value Points / item)
      * @throws Exception if error determining value.
      */
-    //2014-12-04 Added getPartFoodProductionDemand()
     private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
     {
         double value = 0D;
         ItemResource resource = (ItemResource) resourceGood.getObject();
         double demand = 0D;
+        double projectedDemand = 0D;
+        double totalDemand = 0D;
+        double totalSupply = 0D;
+        
 
         if (useCache) {
             if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood);

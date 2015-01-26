@@ -247,14 +247,14 @@ implements Serializable {
 				double remainingAmount = inventory.getAmountResourceStored(resource, false);
 				
 				// 2015-01-09 Added addDemandTotalRequest()
-				inventory.addDemandTotalRequest(resource);
+				inventory.addAmountDemandTotalRequest(resource);
 				
 				if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
 
 					// 2015-01-09 addDemandRealUsage()
-					inventory.addDemandAmount(resource,resourceAmount);
+					inventory.addAmountDemand(resource,resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
@@ -273,7 +273,7 @@ implements Serializable {
 				try {
 					inventory.storeAmountResource(resource, resourceAmount, false);
 					 // 2015-01-15 Add addSupplyAmount()
-		            inventory.addSupplyAmount(resource, resourceAmount);
+		            inventory.addAmountSupplyAmount(resource, resourceAmount);
 				}
 				catch (Exception e) {}
 				// logger.info(resourceName + " output: " + resourceAmount + "kg.");

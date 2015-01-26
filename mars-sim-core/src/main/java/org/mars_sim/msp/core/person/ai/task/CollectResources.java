@@ -293,7 +293,7 @@ implements Serializable {
             if (sampleLimit >= 0D) {
                 person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
         		// 2015-01-15 Add addSupplyAmount()
-                person.getInventory().addSupplyAmount(resourceType, sampleLimit);
+                person.getInventory().addAmountSupplyAmount(resourceType, sampleLimit);
             }
             setPhase(WALK_BACK_INSIDE);
             return time - (sampleLimit / collectionRate);

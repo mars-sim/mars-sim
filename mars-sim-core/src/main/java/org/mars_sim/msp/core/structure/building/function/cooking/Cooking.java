@@ -549,7 +549,7 @@ implements Serializable {
 	        double ingredientAvailable = getFreshFood(ingredientAR);
             
 	    	// 2015-01-09 Added addDemandTotalRequest()
-	        inv.addDemandTotalRequest(ingredientAR);
+	        inv.addAmountDemandTotalRequest(ingredientAR);
 	        
 	        // set the safe threshold as dryMass * 3 
 	        if (ingredientAvailable > dryMass * 3 )  {
@@ -581,8 +581,8 @@ implements Serializable {
 		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
 		        inv.retrieveAmountResource(ingredientAR, dryMass);
 		        // 2015-01-09 Added addDemandUsage()
-		    	inv.addDemandTotalRequest(ingredientAR);
-	        	inv.addDemandAmount(ingredientAR, dryMass);
+		    	inv.addAmountDemandTotalRequest(ingredientAR);
+	        	inv.addAmountDemand(ingredientAR, dryMass);
 	         
 	        } // end of while
 	        
@@ -625,13 +625,13 @@ implements Serializable {
 	    
 		// 2015-01-09 Added addDemandTotalRequest()
 		AmountResource oilAR = AmountResource.findAmountResource(oil);
-	    inv.addDemandTotalRequest(oilAR);
+	    inv.addAmountDemandTotalRequest(oilAR);
 	
 	    if (!oil.equals("None")) {
 	        //AmountResource oilAR = getFreshFoodAR(oil);
 	        inv.retrieveAmountResource(oilAR, oilAmount);
 	        // 2015-01-09 Added addDemandUsage()
-	    	inv.addDemandAmount(oilAR, oilAmount);
+	    	inv.addAmountDemand(oilAR, oilAmount);
 	    }
 	    
     }
@@ -646,11 +646,11 @@ implements Serializable {
 	    double saltAvailable = getFreshFood(saltAR);
 	    // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
 		// 2015-01-09 Added addDemandTotalRequest()
-	    inv.addDemandTotalRequest(saltAR);
+	    inv.addAmountDemandTotalRequest(saltAR);
 	    if (saltAvailable > saltAmount) {
 	        inv.retrieveAmountResource(saltAR, saltAmount);
 	    	// 2015-01-09 Added addDemandRealUsage()
-	    	inv.addDemandAmount(saltAR, saltAmount);
+	    	inv.addAmountDemand(saltAR, saltAmount);
 	    }    
     }
     
@@ -820,7 +820,7 @@ implements Serializable {
 	         // remove the cookedMeal and store it
 	         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
 			 // 2015-01-15 Add addSupplyAmount()
-	         inv.addSupplyAmount(dryFoodAR, dryMassPerServing);
+	         inv.addAmountSupplyAmount(dryFoodAR, dryMassPerServing);
 		} catch (Exception e) {}
  	}
 

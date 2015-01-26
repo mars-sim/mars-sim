@@ -505,14 +505,14 @@ implements Serializable {
                 double amount = constructionStage.getInfo().getResources().get(resource);
             	
                 // 2015-01-09 Added addDemandTotalRequest()
-            	inv.addDemandTotalRequest(resource);
+            	inv.addAmountDemandTotalRequest(resource);
                 
             	if (inv.getAmountResourceStored(resource, false) >= amount) {
 
                     inv.retrieveAmountResource(resource, amount);
                     
                 	// 2015-01-09 addDemandRealUsage()
-                   	inv.addDemandAmount(resource,amount);
+                   	inv.addAmountDemand(resource,amount);
                 }
             }
 
@@ -736,7 +736,7 @@ implements Serializable {
             if (inv.getAmountResourceStored(resource, false) < amount) {
                 result = false;
             	// 2015-01-09 Added addDemandTotalRequest()
-                inv.addDemandTotalRequest(resource);
+                inv.addAmountDemandTotalRequest(resource);
             }
         }
         

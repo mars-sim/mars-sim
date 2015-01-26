@@ -153,9 +153,9 @@ implements LifeSupport, Serializable, Malfunctionable {
 		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
 
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addDemandTotalRequest(oxygen);
+		getInventory().addAmountDemandTotalRequest(oxygen);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addDemandAmount(oxygen, oxygenTaken);
+		getInventory().addAmountDemand(oxygen, oxygenTaken);
 		
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
@@ -178,9 +178,9 @@ implements LifeSupport, Serializable, Malfunctionable {
 		getInventory().retrieveAmountResource(water, waterTaken);
 		
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addDemandTotalRequest(water);
+		getInventory().addAmountDemandTotalRequest(water);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addDemandAmount(water, waterTaken);
+		getInventory().addAmountDemand(water, waterTaken);
 		
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
