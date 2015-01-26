@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.07 2015-01-08
+ * @version 3.07 2015-01-25
  * @author Scott Davis
  */
 
@@ -54,6 +54,8 @@ implements ActionListener, MenuListener {
 	private JMenuItem newItem;
 	/** Load menu item. */
 	private JMenuItem loadItem;
+	/** Load Autosave menu item. */	
+	private JMenuItem loadAutosaveItem;
 	/** Save menu item. */
 	private JMenuItem saveItem;
 	/** Save As menu item. */
@@ -126,6 +128,8 @@ implements ActionListener, MenuListener {
 		newItem.setToolTipText(Msg.getString("mainMenu.tooltip.new")); //$NON-NLS-1$
 		fileMenu.add(newItem);
 
+		fileMenu.add(new JSeparator());
+
 		// Create load menu item
 		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
 		loadItem = new JMenuItem(Msg.getString("mainMenu.open"),loadicon); //$NON-NLS-1$
@@ -133,9 +137,19 @@ implements ActionListener, MenuListener {
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
 		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
 		fileMenu.add(loadItem);
+		
+		// Create load autosave menu item
+		// 2015-01-25 Added autosave
+		
+		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
+		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"),loadAutosaveicon); //$NON-NLS-1$
+		loadAutosaveItem.addActionListener(this);
+		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false));
+		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
+		fileMenu.add(loadAutosaveItem);
 
 		fileMenu.add(new JSeparator());
-
+		
 		// Create save menu item
 		ImageIcon saveicon = new ImageIcon(getClass().getResource(Msg.getString("img.save"))); //$NON-NLS-1$
 		saveItem = new JMenuItem(Msg.getString("mainMenu.save"), saveicon); //$NON-NLS-1$
@@ -357,7 +371,8 @@ implements ActionListener, MenuListener {
 		else if (selectedItem == newItem) mainWindow.newSimulation();
 		else if (selectedItem == saveItem) mainWindow.saveSimulation(true, false);
 		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false, false);
-		else if (selectedItem == loadItem) mainWindow.loadSimulation();
+		else if (selectedItem == loadItem) mainWindow.loadSimulation(false);
+		else if (selectedItem == loadAutosaveItem) mainWindow.loadSimulation(true);
 
 		if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
