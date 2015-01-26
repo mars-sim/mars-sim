@@ -1,26 +1,25 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.07 2015-01-10
+ * @version 3.07 2015-01-26
  * @author Lars Næsbye Christensen
  */
 
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 
 /**
  * The MainWindowFX class is the primary JavaFX frame for the project.
@@ -28,9 +27,24 @@ import javax.swing.SwingUtilities;
  */
 public class MainWindowFX {
 
-	public static final String WINDOW_TITLE = "4.0";
+	//public static final String WINDOW_TITLE = "4.0";
 
+	public final static String WINDOW_TITLE = Msg.getString(
+		"MainWindow.title", //$NON-NLS-1$
+		Simulation.VERSION + " build " + Simulation.BUILD
+	);
 
+	// Data members
+	private static JFrame frame;
+	
+	/**
+	 * Constructor.
+	 */
+	public MainWindowFX(boolean cleanUI) {
+		// initAndShowGUI() will be on EDT since MainWindowFX is put on EDT in MarsProject.java
+		initAndShowGUI();
+	}
+	
 	/**
 	 * Constructor.
 	 
@@ -50,10 +64,10 @@ public class MainWindowFX {
 
     private static void initAndShowGUI() {
         // This method is invoked on the EDT thread
-        JFrame frame = new JFrame("Mars Simulation Project " + WINDOW_TITLE);
+        frame = new JFrame("Mars Simulation Project " + WINDOW_TITLE);
         final JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
-        frame.setSize(300, 200);
+        frame.setSize(600, 600);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -85,7 +99,7 @@ public class MainWindowFX {
 
         return (scene);
     }
-    
+    /*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -94,4 +108,5 @@ public class MainWindowFX {
             }
         });
     }
+    */
 }
