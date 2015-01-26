@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-01-26
 
  * @author Scott Davis
  */
@@ -10,6 +10,7 @@ package org.mars_sim.msp;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.javafx.MainWindowFX;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
@@ -84,6 +85,9 @@ public class MarsProject {
             
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
 			w.getFrame().setIconImage(img);
+			
+            // 2015-01-26 Added mwFX
+            MainWindowFX mwFX = new MainWindowFX(newSim);
 			
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 	          
@@ -243,7 +247,7 @@ public class MarsProject {
      *
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
         /* [landrus, 27.11.09]: Read the logging configuration from the classloader, so that this gets
            * webstart compatible. Also create the logs dir in user.home */
         new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
@@ -264,6 +268,12 @@ public class MarsProject {
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
         // starting the simulation
-        new MarsProject(args);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            	new MarsProject(args);
+            }
+        });
+        
     }
 }
