@@ -9,16 +9,8 @@ package org.mars_sim.msp.ui.javafx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.Group;
-import javafx.scene.paint.Color;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
 import javax.swing.JFrame;
 
 import org.mars_sim.msp.core.Msg;
@@ -46,8 +38,6 @@ public class MainWindowFX {
 	public MainWindowFX(boolean cleanUI) {
 		// initAndShowGUI() will be on EDT since MainWindowFX is put on EDT in MarsProject.java
 
-		// TODO: we need to load some custom CSS here to replace Modena UI.
-		
 		
 		initAndShowGUI();
 	}
@@ -80,15 +70,9 @@ public class MainWindowFX {
 
     private static Scene createScene() {
         Group  root  =  new  Group();
-        Scene  scene  =  new  Scene(root, Color.ALICEBLUE);
-        Text  text  =  new  Text();
-        
-        text.setX(60);
-        text.setY(150);
-        text.setFont(new Font(28));
-        text.setText("Rebuilding our UI in JavaFX!");
+        Scene  scene  =  new  Scene(root);
+		scene.getStylesheets().addAll("/css/mspskin.css");		
 
-        root.getChildren().add(text);
         MainWindowFXMenu menuBar = new MainWindowFXMenu(null);
         
 
