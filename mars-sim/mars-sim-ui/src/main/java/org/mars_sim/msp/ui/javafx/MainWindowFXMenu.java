@@ -18,7 +18,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.javafx.MainWindowFX;
 
 
@@ -49,7 +48,7 @@ public class MainWindowFXMenu extends MenuBar  {
         MenuItem saveAsItem = new MenuItem("Save As...");
         saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN , KeyCombination.SHIFT_DOWN));
         MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
+        exitItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
         SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
