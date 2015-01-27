@@ -130,7 +130,6 @@
 	<modules>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
-		<!-- <module>mars-sim-fxui</module> -->
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module> 
 	</modules>
