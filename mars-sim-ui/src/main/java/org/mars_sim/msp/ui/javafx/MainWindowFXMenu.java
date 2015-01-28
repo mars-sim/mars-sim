@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-01-27
+ * @version 3.08 2015-01-28
  * @author Lars Næsbye Christensen
  */
 

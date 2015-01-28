@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-01-26
+ * @version 3.08 2015-01-28
  * @author Lars Næsbye Christensen
  */
 
@@ -11,12 +11,18 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import javax.swing.JFrame;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainWindowFXMenu;
+import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.MenuScene;
+import org.mars_sim.msp.ui.javafx.SettlementScene;
 
 /**
  * The MainWindowFX class is the primary JavaFX frame for the project.
@@ -63,9 +69,12 @@ public class MainWindowFX {
 
     private static void initFX(JFXPanel fxPanel) {
         // This method is invoked on the JavaFX thread
-        Scene menuScene = createMenuScene();
-        Scene mainScene = createMainScene();
-        Scene settlementScene = createSettlementScene();
+    	
+        Scene menuScene = new MenuScene().createMenuScene();
+        Scene mainScene = new MainScene().createMainScene();
+        Scene settlementScene = new SettlementScene().createSettlementScene();
+        
+        // We start with the menu
         fxPanel.setScene(mainScene);
         fxPanel.repaint();
     }
@@ -73,8 +82,13 @@ public class MainWindowFX {
     private static Scene createMenuScene() {
         Group  root  =  new  Group();
         Scene  menuScene  =  new  Scene(root);
-        menuScene.getStylesheets().addAll("/css/menuskin.css");		
+        menuScene.getStylesheets().addAll("/fxui/css/menuskin.css");
+        // testing out scene switching
+        ImageView bg1 = new ImageView();
+        bg1.setImage(new Image("/images/mars.png"));        
+        root.getChildren().add(bg1);
 
+        root.getChildren().add(new Button("Press me to go to Main Scene"));
         return (menuScene);
     }
     
@@ -82,10 +96,15 @@ public class MainWindowFX {
     private static Scene createMainScene() {
         Group  root  =  new  Group();
         Scene  scene  =  new  Scene(root);
-		scene.getStylesheets().addAll("/css/mainskin.css");		
+		scene.getStylesheets().addAll("/fxui/css/mainskin.css");		
 
         MainWindowFXMenu menuBar = new MainWindowFXMenu(null);
+        ImageView bg1 = new ImageView();
+        bg1.setImage(new Image("/images/background.png"));        
+        root.getChildren().add(bg1);
+
         root.getChildren().add(menuBar); 
+//        root.getChildren().add(new Button("Press me to go to Settlement Scene"));
 
         return (scene);
     }
@@ -93,7 +112,8 @@ public class MainWindowFX {
     private static Scene createSettlementScene() {
         Group  root  =  new  Group();
         Scene  settlementScene  =  new  Scene(root);
-        settlementScene.getStylesheets().addAll("/css/settlementskin.css");		
+        settlementScene.getStylesheets().addAll("/fxui/css/settlementskin.css");		
+        root.getChildren().add(new Button("Press me to go to Menu Scene"));
 
         return (settlementScene);
     }
