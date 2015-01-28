@@ -11,11 +11,11 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+
 import javax.swing.JFrame;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-
 import org.mars_sim.msp.ui.javafx.MainWindowFXMenu;
 
 /**
@@ -63,22 +63,39 @@ public class MainWindowFX {
 
     private static void initFX(JFXPanel fxPanel) {
         // This method is invoked on the JavaFX thread
-        Scene scene = createScene();
-        fxPanel.setScene(scene);
+        Scene menuScene = createMenuScene();
+        Scene mainScene = createMainScene();
+        Scene settlementScene = createSettlementScene();
+        fxPanel.setScene(mainScene);
         fxPanel.repaint();
     }
 
-    private static Scene createScene() {
+    private static Scene createMenuScene() {
+        Group  root  =  new  Group();
+        Scene  menuScene  =  new  Scene(root);
+        menuScene.getStylesheets().addAll("/css/menuskin.css");		
+
+        return (menuScene);
+    }
+    
+    
+    private static Scene createMainScene() {
         Group  root  =  new  Group();
         Scene  scene  =  new  Scene(root);
-		scene.getStylesheets().addAll("/css/mspskin.css");		
+		scene.getStylesheets().addAll("/css/mainskin.css");		
 
         MainWindowFXMenu menuBar = new MainWindowFXMenu(null);
-        
-
- 
-        root.getChildren().addAll(menuBar); 
+        root.getChildren().add(menuBar); 
 
         return (scene);
     }
+    
+    private static Scene createSettlementScene() {
+        Group  root  =  new  Group();
+        Scene  settlementScene  =  new  Scene(root);
+        settlementScene.getStylesheets().addAll("/css/settlementskin.css");		
+
+        return (settlementScene);
+    }
+    
 }
