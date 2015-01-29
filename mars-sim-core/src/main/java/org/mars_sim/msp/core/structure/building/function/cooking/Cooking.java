@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2015-01-16
+ * @version 3.07 2015-01-28
  * @author Scott Davis 				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -641,13 +641,14 @@ implements Serializable {
 	        logger.log(Level.SEVERE,e.getMessage());
 		}
     
+		double wasteWaterAmount = amount * .95;
 	    // create waste water
 	    AmountResource wasteWaterAR = AmountResource.findAmountResource("waste water");
 		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWaterAR, false, false);
-		if (amount > wasteWaterCapacity) 
-			amount = wasteWaterCapacity;
-		inv.storeAmountResource(wasteWaterAR, amount, false);
-        inv.addAmountSupplyAmount(wasteWaterAR, amount);   	
+		if (wasteWaterAmount > wasteWaterCapacity) 
+			wasteWaterAmount = wasteWaterCapacity;
+		inv.storeAmountResource(wasteWaterAR, wasteWaterAmount, false);
+        inv.addAmountSupplyAmount(wasteWaterAR, wasteWaterAmount);   	
 	    
     }
     
