@@ -43,11 +43,34 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-font-size: 10pt;
 
 } 
+
 .tool-bar:horizontal {
+-fx-font-weight: bold;
+-fx-font-family: "Jura";
+-fx-font-size: 11pt;
+-fx-background-color: transparent, transparent, transparent, transparent;
+-fx-border-width: 1;
+-fx-border-style: dotted;
+
+}
+
+.tool-bar:hover {
 -fx-background-color:
 linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));
+
 }
- 
+ .button {
+    -fx-background-color: transparent, transparent, transparent, transparent;
+}
+
+.button:hover{
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
+}
+
+.button:armed {
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
+}
+/* 
 .button {
 -fx-background-color: transparent;
 }
@@ -56,6 +79,7 @@ linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(
 -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
 -fx-color: -fx-hover-base;
 }
+*/
  
 .table-view {
 -fx-table-cell-border-color:derive(-fx-base,+10%);

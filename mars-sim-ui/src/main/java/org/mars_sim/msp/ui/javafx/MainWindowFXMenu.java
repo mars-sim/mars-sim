@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-01-28
+ * @version 3.08 2015-01-29
  * @author Lars Næsbye Christensen
  */
 
@@ -23,9 +23,7 @@ import org.mars_sim.msp.ui.javafx.MainWindowFX;
 
 public class MainWindowFXMenu extends MenuBar  {
 
-	//should have all the menu stuff moved over from MainWindowFX.
 	
-
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main window pane
