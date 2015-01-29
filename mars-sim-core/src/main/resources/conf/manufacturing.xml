@@ -171,11 +171,11 @@
 		</outputs>
 	</process>	
 	
-			<process name="make fertilizers for growing crops (large batch)"
+	<process name="make fertilizers for growing crops (large batch)"
 			tech="2" skill="2"
 			work-time="80"
 			process-time="1000" 
-			power-required="4">
+			power-required="2">
 		<inputs>
 		<!-- TODO: 
 		1. Chemists may tweak the input amount and the yield
@@ -196,7 +196,7 @@
 			<resource name="Iron" amount="0.2" />					
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="7.0" />			
+			<resource name="Fertilizer" amount="70.0" />			
 		</outputs>
 	</process>	
 	
