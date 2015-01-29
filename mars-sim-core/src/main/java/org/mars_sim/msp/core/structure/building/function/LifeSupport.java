@@ -453,19 +453,25 @@ implements Serializable {
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
 		Inventory inv = getBuilding().getInventory();
-
-		Iterator<Robot> jj = robotOccupants.iterator();
-		while (jj.hasNext()) {
-			if (!inv.containsUnit(jj.next())) jj.remove();
-		}
-
 		
-		Iterator<Person> i = occupants.iterator();
-		while (i.hasNext()) {
-			if (!inv.containsUnit(i.next())) i.remove();
-		}
+		if (occupants != null)
+			if (occupants.size() > 0) {
+				Iterator<Person> i = occupants.iterator();
+				while (i.hasNext()) {
+					if (!inv.containsUnit(i.next())) 
+						i.remove();
+				}
+			}
 
-
+		if (robotOccupants != null)
+			if (robotOccupants.size() > 0) {
+				Iterator<Robot> ii = robotOccupants.iterator();
+				while (ii.hasNext()) {
+					if (!inv.containsUnit(ii.next())) 
+						ii.remove();
+				}
+			}
+		
 		// Add stress if building is overcrowded.
 		int overcrowding = getOccupantNumber() - occupantCapacity;
 		if (overcrowding > 0) {
