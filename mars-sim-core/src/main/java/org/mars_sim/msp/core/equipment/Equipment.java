@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /** 
  * The Equipment class is an abstract class that represents  
- * a useful piece of equipment, such as a EVA suite or a
+ * a useful piece of equipment, such as a EVA suit or a
  * medpack.
  */
 public abstract class Equipment

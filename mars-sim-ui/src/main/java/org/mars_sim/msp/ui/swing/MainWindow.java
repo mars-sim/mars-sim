@@ -501,17 +501,17 @@ public class MainWindow {
 			Simulation.stopSimulation();
 
 			try {
-                desktop.resetDesktop();
-                if (earthTimer != null) 
+			    desktop.clearDesktop();
+			    if (earthTimer != null) {
                     earthTimer.stop();
+			    }
                 earthTimer = null;
-                //logger.info(" saveSimulationProcess() : set earthTimer = null & desktop.resetDesktop()");   
-            }
-            catch (Exception e) {
-                // New simulation process should continue even if there's an exception in the UI.
-                logger.severe(e.getMessage());
-                e.printStackTrace(System.err);
-            }
+			}
+			catch (Exception e) {
+			    // New simulation process should continue even if there's an exception in the UI.
+			    logger.severe(e.getMessage());
+			    e.printStackTrace(System.err);
+			}
 			
 			SimulationConfig.loadConfig();
 
@@ -525,6 +525,17 @@ public class MainWindow {
 
 			// Start the simulation.
 			Simulation.instance().start();
+			
+			try {
+                desktop.resetDesktop();
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
+			
+			startEarthTimer();
 
 			desktop.disposeAnnouncementWindow();
 			
@@ -532,7 +543,6 @@ public class MainWindow {
             desktop.openToolWindow(GuideWindow.NAME);
             GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-
 		}
 	}
 

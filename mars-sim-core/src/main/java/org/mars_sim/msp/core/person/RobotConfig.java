@@ -350,9 +350,15 @@ implements Serializable {
             nameList.clear();
             nameList = null;
         }
-        alphaCrewRobotName.clear();
-        alphaCrewRobotName = null;
-        alphaCrewRobotJob.clear();
-        alphaCrewRobotJob = null;
+        
+        if (alphaCrewRobotName != null) {
+            alphaCrewRobotName.clear();
+            alphaCrewRobotName = null;
+        }
+        
+        if (alphaCrewRobotJob != null) {
+            alphaCrewRobotJob.clear();
+            alphaCrewRobotJob = null;
+        }
     }
 }
