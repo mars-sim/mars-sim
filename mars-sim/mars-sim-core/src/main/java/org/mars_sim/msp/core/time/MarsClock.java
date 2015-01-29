@@ -11,6 +11,8 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.mars_sim.msp.core.Simulation;
+
 /** The MarsClock class keeps track of Martian time.
  *  This uses Shaun Moss's Mars Calendar, which is
  *  described at http://www.virtualmars.net/Time.asp.
@@ -31,9 +33,16 @@ public class MarsClock implements Serializable {
     public static final int NORTHERN_HEMISPHERE = 1;
     public static final int SOUTHERN_HEMISPHERE = 2;
     
+	private static final int SUMMER_SOLSTICE = 142;
+	private static final int AUTUMN_EQUUINOX= 309;
+	private static final int WINTER_SOLSTICE = 476;
+	private static final int SPRING_EQUUINOX = 643;
+	
     // Martian/Gregorian calendar conversion
     private static final double SECONDS_IN_MILLISOL = 88.775244;
 
+    public static final int MILLISOLS_ON_FIRST_SOL = 9353;
+    
     // Martian calendar static strings
     private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri",
         "Edal", "Flo", "Geor", "Heliba", "Idanon", "Jowani", "Kireal", "Larno",
@@ -75,6 +84,7 @@ public class MarsClock implements Serializable {
         String millisolStr = dateString.substring(dateString.indexOf(":") + 1);
         millisol = Double.parseDouble(millisolStr);
         if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
+        
     }
     
     /** Constructs a MarsClock object with a given time
@@ -155,9 +165,31 @@ public class MarsClock implements Serializable {
         // Add millisols in current sol
         result += time.millisol;
         
+		//System.out.println("MarsClock : result : " + result);
+		
         return result;
     }
 
+
+    /** Returns the sol in a Martian year
+     *  @return the sol of year as an integer
+     */
+    // 2015-01-28 Added getSolOfYear()
+    public static int getSolOfYear(MarsClock time) {
+    	
+    	int result = 0;
+
+        // Add sols up to current month
+        for (int x=1; x < time.month; x++)
+            result += MarsClock.getSolsInMonth(x, time.orbit) ;
+            
+        // Add sols up to current sol
+        result += time.sol  ;
+	
+        return result;
+    }
+
+    
     /** Returns the number of sols in a month for
      *  a given month and orbit.
      *  @param month the month number
@@ -357,26 +389,32 @@ public class MarsClock implements Serializable {
      */
     public String getSeason(int hemisphere) {
 
-        String season = null;
-
-        if (month < 8) {
+    	String season = "0";
+    	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	
+    	int solElapsed = MarsClock.getSolOfYear(marsClock);
+ 		
+		if (solElapsed > SOLS_IN_ORBIT_LEAPYEAR)
+			solElapsed = solElapsed - SOLS_IN_ORBIT_NON_LEAPYEAR; 
+		
+		if (solElapsed < SUMMER_SOLSTICE){
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Spring";
-            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Autumn";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Autumn";
         }
-        else if (month < 14) {
+		else if (solElapsed < AUTUMN_EQUUINOX) {
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Summer";
-            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Winter";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Winter";
         }
-        else if (month < 19) {
+		else if (solElapsed < WINTER_SOLSTICE){
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Autumn";
-            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
         }
-        else {
+		else if (solElapsed < SPRING_EQUUINOX) {
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Winter";
-            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
         }
-        
-        return season;
+		
+		return season;
     }
     
     /** 

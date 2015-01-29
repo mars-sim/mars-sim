@@ -151,9 +151,6 @@ implements Serializable {
     private boolean initialized = false;
 
     private Inventory inv;
-	//private int solCache = 1;
-    public static double MILLISOLS_ON_FIRST_SOL;
-    
     
     /**
      * Constructor.
@@ -321,9 +318,9 @@ implements Serializable {
 
         
         // 2015-01-15 Added solElapsed
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
-        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
+        MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        int solElapsed = MarsClock.getSolOfYear(marsClock);
+        // System.out.println("GoodManager : solElapsed : "+ solElapsed);
         // Compact and/or clear supply and demand maps every 5 days
         solElapsed = solElapsed % SOL_PER_REFRESH + 1;
         

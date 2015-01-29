@@ -35,9 +35,13 @@ implements Serializable {
 	// Calculation : 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; 
 	
+	private double MILLISOLS_ON_FIRST_SOL = MarsClock.MILLISOLS_ON_FIRST_SOL;
+	
 	private double viking_dt;
 	
 	private double final_temperature = EXTREME_COLD;
+	
+	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D; 
 	
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
@@ -49,6 +53,19 @@ implements Serializable {
 		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
 		//System.out.print("  viking_dt: " + viking_dt );
 
+		// Opportunity Rover landed at coordinates 1.95 degrees south, 354.47 degrees east. 
+		// From the chart, it has an average of 8 C temperature variation on the maximum and minimum temperature curves 
+		
+		// Spirit Rover landed at 14.57 degrees south latitude and 175.47 degrees east longitude. 
+		// From the chart, it has an average of 25 C temperature variation on the maximum and minimum temperature curves 
+		
+		double del_latitude = 14.57-1.95;
+		int del_temperature = 25 - 8;
+		
+		// assuming a linear relationship
+		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
+		
+		
 	}
 
 	/**
@@ -86,11 +103,18 @@ implements Serializable {
 			
 		} else {
 			
-			double theta = location.getTheta(); // theta is the longitude in radian
 
-			theta = theta /Math.PI * 500D; // in millisols;
-			//System.out.println(" theta: " + theta);
+			// 2015-01-28 We arrived at this temperature model based on Viking 1 & Opportunity Rover
+			// by assuming the temperature is the linear combination of the following factors:
+			// 1. Time of day and longitude,
+			// 2. Terrain elevation, 
+			// 3. Latitude,
+			// 4. Seasonal variation (dependent upon latitude)
 			
+			// 1. Time of day and longitude
+			double theta = location.getTheta(); // theta is the longitude in radian
+			theta = theta /Math.PI * 500D; // in millisols;
+			//System.out.println(" theta: " + theta);			
 	        double time  = marsClock.getMillisol();
 	        double x_offset = time - 360 - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS + theta;     
 	        double equatorial_temperature = 27.5 * Math.sin  ( 2*Math.PI/1000D * x_offset ) -58.5 ;  			
@@ -104,35 +128,40 @@ implements Serializable {
 		    temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 80D;
 		*/
 			
-			// not correct but guess: - (elevation * 5)
+			// 2. Terrain Elevation 
+			// Not correct but guess: - (elevation * 5)
 			TerrainElevation terrainElevation = surfaceFeatures.getSurfaceTerrain();
 			double terrain_dt =  Math.abs(terrainElevation.getElevation(location) * 5D);
 			terrain_dt = Math.round (terrain_dt * 100.0)/ 100.0;
-			//System.out.print("  terrain_dt: " + terrain_dt );
-			
+			//System.out.print("  terrain_dt: " + terrain_dt );			
 						
-			// - ((math.pi/2) / (phi of location)) * 20
-			// guess, but could work, later we can implement real physics
-
+			// 3. Latitude 
 			double piHalf = Math.PI / 2.0;
 			double lat_degree = 0; 
+			//int hemisphere = 0;
 			double phi = location.getPhi();	
-
 			if (phi < piHalf) {
 			    lat_degree = ((piHalf - phi) / piHalf) * 90;
+			    //hemisphere = 1;
 			} else if (phi > piHalf){
 				lat_degree = ((phi - piHalf) / piHalf) * 90; 
-			}
-			
+				//hemisphere = 2;
+			}			
 			//System.out.print("  degree: " + Math.round (degree * 10.0)/10.0 ); 
-			double lat_dt = 15D * Math.sin( 2D * lat_degree * Math.PI/180D + Math.PI/2D) + 13D;
-			lat_dt = 28D - lat_dt;
+			double lat_dt = -15D - 15D * Math.sin( 2D * lat_degree * Math.PI/180D + Math.PI/2D) ;
 			lat_dt = Math.round (lat_dt * 100.0)/ 100.0;
-			
-			// 
-			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt;
+			//System.out.println("  lat_dt: " + lat_dt );
+
+			// 4. Seasonal variation 
+			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess			
+	        int solElapsed = MarsClock.getSolOfYear(marsClock);
+			double seasonal_dt = lat_adjustment * Math.sin( 2 * Math.PI/1000D * ( solElapsed - 142));
+			seasonal_dt = Math.round (seasonal_dt * 100.0)/ 100.0;
+			//System.out.println("  seasonal_dt: " + seasonal_dt ); 
+			 
+			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt;
 			final_temperature = Math.round (final_temperature * 100.0)/100.0;
-			//System.out.println("  settlement_dt: " + settlement_dt + "  final T: " + final_temperature );
+			//System.out.println("  final T: " + final_temperature );
 		}
 
 		return final_temperature;
