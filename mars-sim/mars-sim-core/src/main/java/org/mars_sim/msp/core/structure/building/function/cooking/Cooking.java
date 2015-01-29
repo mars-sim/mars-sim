@@ -64,6 +64,9 @@ implements Serializable {
     
     public static final double SALT_AMOUNT_PER_MEAL = 0.01;
     
+    // amount of water in kg per cooked meal during meal preparation and clean-up
+    public static final double WATER_USAGE_PER_MEAL = 1.0;
+    
     private boolean cookNoMore = false;
     
     // Data members
@@ -588,6 +591,7 @@ implements Serializable {
 	        
 	        retrieveOil();
 	        retrieveSalt();
+	        useWater();
     
 	    	String nameOfMeal = hotMeal.getMealName();
 	    	//TODO: kitchen equipment and quality of food should affect mealQuality
@@ -614,6 +618,41 @@ implements Serializable {
      
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
     }
+    
+    
+    
+    // 2015-01-28 Added useWater()
+    public void useWater() {
+
+    	//TODO: need to move the hardcoded amount to a xml file	    
+	    double amount = WATER_USAGE_PER_MEAL;
+	    
+		AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
+	    inv.addAmountDemandTotalRequest(waterAR);
+	    double capacity = inv.getAmountResourceRemainingCapacity(waterAR, false, false);
+		if (amount > capacity) {
+			amount = capacity;					
+		}
+	    
+		try {
+		    inv.retrieveAmountResource(waterAR, amount);
+		    inv.addAmountDemand(waterAR, amount);		    
+	    } catch (Exception e) {
+	        logger.log(Level.SEVERE,e.getMessage());
+		}
+    
+	    // create waste water
+	    AmountResource wasteWaterAR = AmountResource.findAmountResource("waste water");
+		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWaterAR, false, false);
+		if (amount > wasteWaterCapacity) 
+			amount = wasteWaterCapacity;
+		inv.storeAmountResource(wasteWaterAR, amount, false);
+        inv.addAmountSupplyAmount(wasteWaterAR, amount);   	
+	    
+    }
+    
+    
+    
     
     // 2015-01-12 Added retrieveOil()
     public void retrieveOil() {

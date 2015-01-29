@@ -88,7 +88,7 @@
 			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
 			<!-- concurrent-processes: the number of concurrent manufacturing processes the building 
 			     can support -->
-			<manufacture tech-level="1" concurrent-processes="1">
+			<manufacture tech-level="2" concurrent-processes="1">
 				<activity>
 					<activity-spot xloc="-1.43" yloc="-1.87" />
 				</activity>
@@ -1236,7 +1236,7 @@
 		<power-required base-power="3.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
-			<manufacture tech-level="2" concurrent-processes="2">
+			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc=".95" yloc="1.05" />
 					<activity-spot xloc="-.8" yloc="-.1" />
@@ -1460,7 +1460,7 @@
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
-			<manufacture tech-level="2" concurrent-processes="3">
+			<manufacture tech-level="3" concurrent-processes="3">
 				<activity>
 					<activity-spot xloc="2.16" yloc="1.45" />
 					<activity-spot xloc="-.26" yloc=".29" />
