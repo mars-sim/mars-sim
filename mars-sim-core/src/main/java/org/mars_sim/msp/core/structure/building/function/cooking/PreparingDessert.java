@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreparingDessert.java
- * @version 3.07 2015-01-09
+ * @version 3.07 2015-01-29
  * @author Manny Kung				
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -60,6 +60,9 @@ implements Serializable {
     public static final int NUM_OF_DESSERT_PER_SOL = 4;
     
     public static final double DESSERT_SERVING_FRACTION = 1D / 4D;
+    
+    // amount of water in kg per dessert during preparation and clean-up
+    public static final double WATER_USAGE_PER_DESSERT = 1.0;
     
     private List<PreparedDessert> servingsOfDessertList;
     
@@ -459,6 +462,9 @@ implements Serializable {
         
         // Create a serving of dessert and add it into the list
 	    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
+	    
+	    useWater();
+	    
 	    dessertCounterPerSol++;
 	    //logger.info("addWork() : new dessert just added : " + selectedDessert);
 	    //System.out.println("# of available desserts : " + getServingsDesserts());    
@@ -468,6 +474,37 @@ implements Serializable {
 	    // preparingWorkTime = 0; 
 	    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;	
     }
+    
+    // 2015-01-28 Added useWater()
+    public void useWater() {
+
+    	//TODO: need to move the hardcoded amount to a xml file	    
+	    double amount = WATER_USAGE_PER_DESSERT;
+	    
+		AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
+	    inv.addAmountDemandTotalRequest(waterAR);
+	    double capacity = inv.getAmountResourceRemainingCapacity(waterAR, false, false);
+		if (amount > capacity) {
+			amount = capacity;					
+		}
+	    
+		try {
+		    inv.retrieveAmountResource(waterAR, amount);
+		    inv.addAmountDemand(waterAR, amount);		    
+	    } catch (Exception e) {
+	        logger.log(Level.SEVERE,e.getMessage());
+		}
+    
+	    // create waste water
+	    AmountResource wasteWaterAR = AmountResource.findAmountResource("waste water");
+		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWaterAR, false, false);
+		if (amount > wasteWaterCapacity) 
+			amount = wasteWaterCapacity;
+		inv.storeAmountResource(wasteWaterAR, amount, false);
+        inv.addAmountSupplyAmount(wasteWaterAR, amount);   	
+	    
+    }
+    
     
     /**
      * Time passing for the building.
