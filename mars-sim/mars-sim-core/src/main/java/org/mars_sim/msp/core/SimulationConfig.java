@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -420,7 +420,7 @@ public class SimulationConfig implements Serializable {
 		constructionConfig.destroy();
 		foodProductionConfig.destroy();
 		mealConfig.destroy();
-		robotConfig.destroy();
+		//robotConfig.destroy();
 	}
 
 	/**

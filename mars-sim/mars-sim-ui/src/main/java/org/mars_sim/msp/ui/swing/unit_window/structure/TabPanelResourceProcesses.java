@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.07 2015-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -109,7 +109,8 @@ extends TabPanel {
 				setResourceProcessOverride(overrideCheckbox.isSelected());
 			}
 		});
-		overrideCheckbox.setSelected(settlement.getManufactureOverride());
+		//overrideCheckbox.setSelected(settlement.getManufactureOverride());
+		overrideCheckbox.setSelected(settlement.getResourceProcessOverride());
 		overrideCheckboxPane.add(overrideCheckbox);
 	}
 
