@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
@@ -168,6 +169,18 @@ implements Serializable {
 		
 	}
 
+    public void reduceEnergy(double time) {
+    	
+		// 2015-01-30 Added reducekJoules()
+		// TODO: need to match the kind of activity to the energy output
+		PhysicalCondition health = person.getPhysicalCondition();
+		int ACTIVITY_FACTOR = 6;
+		double newTime = ACTIVITY_FACTOR * time ;
+		health.reduceEnergy(newTime);
+        //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
+		
+    }
+    
 	/** 
 	 * Perform the current task for a given amount of time.
 	 * @param time amount of time to perform the action
@@ -189,9 +202,39 @@ implements Serializable {
 			checkForEmergency();
 			remainingTime = currentTask.performTask(time);
 		}
+		
+        reduceEnergy(time - remainingTime);
+		
+        
 		return remainingTime;
+		
 	}
 
+	private boolean doingEmergencyRepair() {
+
+	    // Check if person is already repairing an emergency.
+	    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+				instanceof RepairEmergencyMalfunction));
+		if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
+		    hasEmergencyRepair = true;
+		}
+		return hasEmergencyRepair;
+	}
+	
+	private boolean doingAirlockTask() {
+		// Check if robot is performing an airlock task.
+		boolean hasAirlockTask = false;
+		Task task = currentTask;
+		while (task != null) {
+			if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
+				hasAirlockTask = true;
+			}
+			task = task.getSubTask();
+		}
+		
+		return hasAirlockTask;
+	}
+	
 	/**
 	 * Checks if any emergencies are happening in the person's local.
 	 * Adds an emergency task if necessary.
@@ -205,26 +248,13 @@ implements Serializable {
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
 				
 			    // Check if person is already repairing an emergency.
-			    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
-						instanceof RepairEmergencyMalfunction));
-				if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
-				    hasEmergencyRepair = true;
-				}
+			    boolean hasEmergencyRepair = doingEmergencyRepair();
 				
 				// Check if person is performing an airlock task.
-				boolean hasAirlockTask = false;
-				Task task = currentTask;
-				while (task != null) {
-					if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
-						hasAirlockTask = true;
-					}
-					task = task.getSubTask();
-				}
+				boolean hasAirlockTask = doingAirlockTask();
 				
 				// Check if person is outside.
-				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
-				
-				
+				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;								
 				
 				// Cancel current task and start emergency repair task.
 				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
@@ -254,25 +284,13 @@ implements Serializable {
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
 				
 			    // Check if robot is already repairing an emergency.
-			    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
-						instanceof RepairEmergencyMalfunction));
-				if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
-				    hasEmergencyRepair = true;
-				}
+			    boolean hasEmergencyRepair = doingEmergencyRepair();
 				
 				// Check if robot is performing an airlock task.
-				boolean hasAirlockTask = false;
-				Task task = currentTask;
-				while (task != null) {
-					if ((task instanceof EnterAirlock) || (task instanceof ExitAirlock)) {
-						hasAirlockTask = true;
-					}
-					task = task.getSubTask();
-				}
+				boolean hasAirlockTask = doingAirlockTask();
 				
 				// Check if robot is outside.
 				boolean isOutside = robot.getLocationSituation() == LocationSituation.OUTSIDE;
-	
 				
 				// Cancel current task and start emergency repair task.
 				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
@@ -311,10 +329,20 @@ implements Serializable {
 		}
 		// Get a random number from 0 to the total weight
 		double totalProbability = getTotalTaskProbability(true);
+				
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(mind.getPerson() + 
-					" has zero total task probability weight.");
+			
+			if (person != null) {
+				throw new IllegalStateException(mind.getPerson() + 
+						" has zero total task probability weight.");
+			}
+			else if (robot != null) {
+				throw new IllegalStateException(mind.getRobot() + 
+						" has zero total task probability weight.");			
+			}	
 		}
+		
+		
 		double r = RandomUtil.getRandomDouble(totalProbability);
 		// Determine which task is selected.
 		MetaTask selectedMetaTask = null;
@@ -338,8 +366,16 @@ implements Serializable {
 							" could not determine a new task.");
 			
 		}
-		// Construct the task
-		result = selectedMetaTask.constructInstance(mind.getPerson());
+		if (person != null) {
+			// Construct the task
+			result = selectedMetaTask.constructInstance(mind.getPerson());
+		}
+		else if (robot != null) {
+			// Construct the task
+			result = selectedMetaTask.constructInstance(mind.getRobot());
+		}
+
+		
 		// Clear time cache.
 		timeCache = null;
 		return result;

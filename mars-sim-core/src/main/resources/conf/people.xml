@@ -21,12 +21,10 @@
 		60 to 70 g dry weight of proteins, and adequate quantities of various minerals and vitamins
 	(2). http://settlement.arc.nasa.gov/Contest/Results/96/winner/seis.html#HUMAN 
 			Food solids: 0.62Kg ,  Water in food: 1.15Kg 
-	(3). http://en.wiki2.org/wiki/Food_energy
-		Food energy per mass:
-	    Fats and ethanol have  37 and 29 kJ/g (8.8 and 6.9 kcal/g)
-	    Proteins and most carbohydrates have about 17 kJ/g (4.1 kcal/g)		
-		
-		Notes: 
+	(3). Food energy per mass: http://en.wiki2.org/wiki/Food_energy
+		a. Fats and ethanol have  37 and 29 kJ/g (8.8 and 6.9 kcal/g)
+	    b. Proteins and most carbohydrates have about 17 kJ/g (4.1 kcal/g)		
+		c. Notes: 
 		1. Each meal is 0.62kg / 4 
 		2. Assume a daily intake of: 
 			0.1 kg of fats, 
@@ -39,9 +37,7 @@
 			Each meal has 0.1550 kg and has 2525 kJ
 			each 1 kg has 16290.323
 			1 kg ==> 16290.323 kJ
-			FOOD_COMPOSITION_ENERGY_RATIO = 16290.323
-			
-			
+			FOOD_COMPOSITION_ENERGY_RATIO = 16290.323	
 	-->
 
 

@@ -168,8 +168,9 @@ implements Serializable {
                 String nameMeal = meal.getName();
                 setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
                 //System.out.println(person + " has just eaten " + nameMeal);
+               // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
                 condition.setHunger(0D);
-                condition.addkJoules(meal.getDryMass());
+                condition.addEnergy(meal.getDryMass());
             }
             else {
                 // Person consumes preserved food.
@@ -184,8 +185,9 @@ implements Serializable {
 //                	else {
 	                    eatPreservedFood();
 	                    //System.out.println(person + " has just eaten preserved food");
+	                    //System.out.println("EatMeal : condition.getMassPerServing() "+ Math.round(condition.getMassPerServing()*10.0)/10.0);  
 	                    condition.setHunger(0D);
-	                    condition.addkJoules(condition.getMassPerServing());
+	                    condition.addEnergy(condition.getMassPerServing());
 //                	}
                 }
                 catch (Exception e) {

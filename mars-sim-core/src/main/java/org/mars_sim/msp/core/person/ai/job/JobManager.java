@@ -110,7 +110,9 @@ public final class JobManager implements Serializable {
 				Robot robot = j.next();
 				if (robot.getMind().getJob() == job) result-= job.getCapability(robot);
 			}
-	
+		
+			result = result/2D;
+			
 		return result;
 	}
 
@@ -146,7 +148,7 @@ public final class JobManager implements Serializable {
     					newJob = job;
     					newJobProspect = jobProspect;
     				}
-    			}
+    			} 
 
     			if(logger.isLoggable(Level.FINEST)) {
     				if ((newJob != null) && (newJob != originalJob)) 
@@ -207,19 +209,20 @@ public final class JobManager implements Serializable {
 		double jobCapability = 0D;
 		double remainingNeed = 0D;
 		
-        if (unit instanceof Person) {
-         	person = (Person) unit;
-        	if (job != null) jobCapability = job.getCapability(person);   		
-    		remainingNeed = getRemainingSettlementNeed(settlement, job);   		
-    		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
-     
-        }
-        else if (unit instanceof Robot) {
+        if (unit instanceof Robot) {
         	robot = (Robot) unit;
         	if (job != null) jobCapability = job.getCapability(robot);    		
     		remainingNeed = getRemainingSettlementNeed(settlement, job);    		
     		if ((job == robot.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
         }
+        
+        else if (unit instanceof Person) {
+         	person = (Person) unit;
+        	if (job != null) jobCapability = job.getCapability(person);   		
+    		remainingNeed = getRemainingSettlementNeed(settlement, job);   		
+    		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;     
+        }
+        
 		return (jobCapability + 1D) * remainingNeed;
 	}
 
@@ -236,6 +239,17 @@ public final class JobManager implements Serializable {
 		while (i.hasNext()) {
 			Job job = i.next();
 			double prospect = getJobProspect(person, job, settlement, isHomeSettlement);
+			if (prospect > bestProspect) bestProspect = prospect;
+		}
+		return bestProspect;
+	}
+	
+	public static double getBestJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
+		double bestProspect = Double.MIN_VALUE;
+		Iterator<Job> i = getJobs().iterator();
+		while (i.hasNext()) {
+			Job job = i.next();
+			double prospect = getJobProspect(robot, job, settlement, isHomeSettlement);
 			if (prospect > bestProspect) bestProspect = prospect;
 		}
 		return bestProspect;

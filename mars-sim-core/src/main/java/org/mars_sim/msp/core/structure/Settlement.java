@@ -570,7 +570,7 @@ implements LifeSupport {
         while (i.hasNext()) {
             Person p = i.next();
         	PhysicalCondition condition = p.getPhysicalCondition();
-            double energy = Math.round(condition.getkJoules()*100.0)/100.0;
+            double energy = Math.round(condition.getEnergy()*100.0)/100.0;
             String name = p.getName();
             System.out.print(name + " : " + energy + " kJ" + "\t");
         }
