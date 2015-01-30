@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+
 //import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -200,9 +201,9 @@ implements Serializable {
                 else if (hunger > 900)
                 	hunger = 900;
               	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
-                
+                //System.out.println("EatDessert : dessert.getDryMass() "+ Math.round(dessert.getDryMass()*10.0)/10.0);
                 condition.setHunger(hunger);
-                condition.addkJoules(dessert.getDryMass());
+                condition.addEnergy(dessert.getDryMass());
             }
             catch (Exception e) {
                 // If person can't obtain dessert from container, end the task.

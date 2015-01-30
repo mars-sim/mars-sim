@@ -90,6 +90,10 @@ implements Serializable {
     
     private Robot robot;
     
+    private double personStarvationTime;
+    private double robotBatteryDrainTime;
+    
+    
     /**
      * Constructor 1.
      * @param newPerson The person requiring a physical presence.
@@ -100,14 +104,29 @@ implements Serializable {
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         fatigue = RandomUtil.getRandomDouble(1000D);
-        //2015-01-06 Changed hunger to less than 400D
-        hunger = RandomUtil.getRandomDouble(400D);
+        
         stress = RandomUtil.getRandomDouble(100D);
+        
+        //2015-01-06 Changed hunger to less than 400D
+        //hunger = RandomUtil.getRandomDouble(400D);
+        //kJoules = RandomUtil.getRandomDouble(10000D);
+        hunger = 0D;
+        kJoules = 10000D;
+        
         alive = true;
         medicationList = new ArrayList<Medication>();
         
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / Cooking.NUMBER_OF_MEAL_PER_SOL);
+
+        try {
+        	personStarvationTime = personConfig.getStarvationStartTime() * 1000D;
+            //System.out.println("personStarvationTime : "+ Math.round(personStarvationTime*10.0)/10.0);
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+        
 
     }
 
@@ -122,6 +141,16 @@ implements Serializable {
         performance = 1.0D;
         hunger = RandomUtil.getRandomDouble(400D);
         alive = true;
+        
+        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+        
+        try {
+        	robotBatteryDrainTime = robotConfig.getStarvationStartTime() * 1000D;
+            //System.out.println("robotBatteryDrainTime : "+ Math.round(robotBatteryDrainTime*10.0)/10.0);
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
     
     
@@ -217,7 +246,12 @@ implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
-
+        // normal bodily function consume a minute amount of energy 
+        // even if a person does not perform any tasks
+        reduceEnergy(time);
+        checkStarvation(hunger);
+        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
+        
         // Add time to all medications affecting the person.
         Iterator<Medication> i = medicationList.iterator();
         while (i.hasNext()) {
@@ -307,7 +341,11 @@ implements Serializable {
         }
 
         setHunger(hunger + time);
-
+        // Consume a minute amount of energy even if a robot does not perform any tasks
+        reduceEnergy(time);
+        checkStarvation(hunger);       
+        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
+        
         // Calculate performance
         recalculate();
 
@@ -573,18 +611,51 @@ implements Serializable {
 
     /** Gets the person's daily food intake 
      *  @return person's energy level in kilojoules
-     *  one large calorie is about 4.2 kilojoules
+     *  Note: one large calorie is about 4.2 kilojoules
      */
-    public double getkJoules() {
+    public double getEnergy() {
         return kJoules;
     }
 
+    /** Reduces the person's energy level 
+     *  @param kilojoules
+     */
+    public void reduceEnergy(double time) {
+    	// TODO: re-tune the experimental FACTOR to work in most situation
+    	double FACTOR = 10000D; 
+    	double xdelta =  time / FACTOR;  
+        //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
+        //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
+        kJoules = kJoules / Math.exp(xdelta); 
+        
+        if (kJoules < 100)
+        	kJoules = 100; // 100 kJ is the lowest possible energy level 
+        
+        //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);  
+    }
+ 
+    /** Sets the person's energy level 
+     *  @param kilojoules
+     */
+    public void setEnergy(double kJ) {
+        kJoules = kJ;
+        //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");  
+    }
+    
     /** Adds to the person's energy intake by eating
      *  @param person's energy level in kilojoules
      */
-    public void addkJoules(double foodAmount) {
+    public void addEnergy(double foodAmount) {
+    	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
+        int MAX_KJ = 16290; // arbitrary 16290 kJ = 1kg of food
+        double FACTOR = 0.8D;
 		// Each meal an average of 2525 kJ
-        kJoules = kJoules + foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
+        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
+        kJoules = kJoules + foodAmount * xdelta * Math.log(MAX_KJ/kJoules) / FACTOR; 
+        		                     
+        if (kJoules > MAX_KJ)
+        	kJoules = MAX_KJ;
+        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");  
     }
     
     /**
@@ -632,6 +703,59 @@ implements Serializable {
         return hunger;
     }
     
+    
+    public void checkStarvation(double hunger) {
+    	
+        // TODO: need a different method and different terminology to account for the drain on the robot's battery
+        if (robot != null) {
+        	
+                Complaint starvation = getMedicalManager().getStarvation();
+                if (hunger > robotBatteryDrainTime
+                		|| kJoules < 500D ) {
+                    if (!problems.containsKey(starvation)) {
+                        addMedicalComplaint(starvation);
+                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
+                        //System.out.println("PhysicalCondition : checkStarvation() : kJ is  " + Math.round(kJoules*10.0)/10.0 + " ");  
+                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    }
+                }
+                else if (hunger < 300D
+                		|| kJoules > 500D ) {
+                    HealthProblem illness = problems.get(starvation);
+                    if (illness != null) {
+                        illness.startRecovery();
+                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    }
+                }
+
+                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
+        }	
+        
+        else if (person != null) {       	
+	
+                Complaint starvation = getMedicalManager().getStarvation();
+                if (hunger > personStarvationTime
+                		|| kJoules < 500D ) {
+                    if (!problems.containsKey(starvation)) {
+                        addMedicalComplaint(starvation);
+                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    }
+                }
+                else if (hunger < 300D
+                		|| kJoules > 500D ) {
+                    HealthProblem illness = problems.get(starvation);
+                    if (illness != null) {
+                        illness.startRecovery();
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    }
+                }
+
+                person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
+        	}
+    }
+    	    
+    
     /**
      * Define the hunger setting for this person
      * @param newHunger New hunger.
@@ -639,62 +763,7 @@ implements Serializable {
     public void setHunger(double newHunger) {
         if (hunger != newHunger) {
             hunger = newHunger;
-            double starvationTime = 0D;
-            if (robot != null) {
-            	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();            	
-            	  try {
-	                    starvationTime = robotConfig.getStarvationStartTime() * 1000D;
-	                }
-	                catch (Exception e) {
-	                    e.printStackTrace(System.err);
-	                }
-
-	                Complaint starvation = getMedicalManager().getStarvation();
-	                if (hunger > starvationTime) {
-	                    if (!problems.containsKey(starvation)) {
-	                        addMedicalComplaint(starvation);
-	                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                    }
-	                }
-	                else if (hunger == 0D) {
-	                    HealthProblem illness = problems.get(starvation);
-	                    if (illness != null) {
-	                        illness.startRecovery();
-	                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                    }
-	                }
-
-	                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
-            }	
-            else if (person != null) {
-            	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-	                try {
-	                    starvationTime = personConfig.getStarvationStartTime() * 1000D;
-	                }
-	                catch (Exception e) {
-	                    e.printStackTrace(System.err);
-	                }
-	                
-
-
-	                Complaint starvation = getMedicalManager().getStarvation();
-	                if (hunger > starvationTime) {
-	                    if (!problems.containsKey(starvation)) {
-	                        addMedicalComplaint(starvation);
-	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                    }
-	                }
-	                else if (hunger == 0D) {
-	                    HealthProblem illness = problems.get(starvation);
-	                    if (illness != null) {
-	                        illness.startRecovery();
-	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                    }
-	                }
-
-	                person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
-            	}
-        }
+        }      
     }
 
     

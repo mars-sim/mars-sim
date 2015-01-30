@@ -59,7 +59,7 @@ implements Serializable, Comparable<Task> {
 	private String name;
 	/** The person performing the task. */
 	protected Person person = null;
-	
+	/** The robot performing the task. */
 	protected Robot robot = null;
 	
 	/** True if task is finished. */
@@ -145,11 +145,27 @@ implements Serializable, Comparable<Task> {
         }
         
         done = true;
-        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 
+		if (person != null) {
+	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+		}
+		else if (robot != null) {
+	        robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+		}
+
+        
         // Create ending task historical event if needed.
         if (createEvents) {
-            TaskEvent endingEvent = new TaskEvent(person, this, EventType.TASK_FINISH, "");
+        	
+        	TaskEvent endingEvent = null;
+        	
+			if (person != null) {
+	            endingEvent = new TaskEvent(person, this, EventType.TASK_FINISH, "");
+			}
+			else if (robot != null) {
+	            endingEvent = new TaskEvent(robot, this, EventType.TASK_FINISH, "");
+			}
+            
             Simulation.instance().getEventManager().registerNewEvent(endingEvent);
         }
     }
@@ -279,7 +295,13 @@ implements Serializable, Comparable<Task> {
         }
         else if (phases.contains(newPhase)) {
             phase = newPhase;
-            person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			if (person != null) {
+	            person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			}
+			else if (robot != null) {
+	            robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			}
+  
         }
         else {
             throw new IllegalStateException("newPhase: " + newPhase + 
@@ -315,7 +337,13 @@ implements Serializable, Comparable<Task> {
             if (subTask.done) {
                 subTask.destroy();
                 subTask = newSubTask;
-                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+				if (person != null) {
+	                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+				}
+				else if (robot != null) {
+					robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+				}
+ 
             }
             else {
                 subTask.addSubTask(newSubTask);
@@ -323,7 +351,12 @@ implements Serializable, Comparable<Task> {
         }
         else {
             subTask = newSubTask;
-            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+			if (person != null) {
+	            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+			}
+			else if (robot != null) {
+	            robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+			}
         }
     }
 
@@ -370,6 +403,7 @@ implements Serializable, Comparable<Task> {
             // If task is effort-driven and person is incapacitated, end task.
             if (effortDriven && (person.getPerformanceRating() == 0D)) {
                 endTask();
+                
             } else {
 
                 // Perform phases of task until time is up or task is done.
@@ -450,9 +484,17 @@ implements Serializable, Comparable<Task> {
         double effectiveStressModifier = stressModifier;
 
         if (stressModifier > 0D) {
+        	Job job = null;
+			if (person != null) {
+	            // Reduce stress modifier if task is in person's current job description.
+	            job = person.getMind().getJob();
+			}
+			else if (robot != null) {
+	            // Reduce stress modifier if task is in robot's current job description.
+	            job = robot.getMind().getJob();
+			}
 
-            // Reduce stress modifier if task is in person's current job description.
-            Job job = person.getMind().getJob();
+            
             if ((job != null) && job.isJobRelatedTask(this.getClass())) {
                 // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
                 effectiveStressModifier*= JOB_STRESS_MODIFIER;
@@ -490,27 +532,34 @@ implements Serializable, Comparable<Task> {
     protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
         double modifier = 1D;
 
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+	        Building currentBuilding = BuildingManager.getBuilding(person);
+	        
+	        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
-            // Increase probability if current building is overcrowded.
-            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
-            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
-            if (currentOverCrowding > 0) {
-                modifier *= ((double) currentOverCrowding + 2);
-            }
+	            // Increase probability if current building is overcrowded.
+	            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+	            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+	            if (currentOverCrowding > 0) {
+	                modifier *= ((double) currentOverCrowding + 2);
+	            }
 
-            // Decrease probability if new building is overcrowded.
-            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
-            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
-            if (newOverCrowding > 0) {
-                modifier /= ((double) newOverCrowding + 2);
-            }
-        }
+	            // Decrease probability if new building is overcrowded.
+	            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+	            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+	            if (newOverCrowding > 0) {
+	                modifier /= ((double) newOverCrowding + 2);
+	            }
+	        }
 
         return modifier;
     }
 
+    protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
+        double modifier = 1D;
+
+        return modifier;
+    }
+    
     /**
      * Gets the effective skill level a person has at this task.
      * @return effective skill level
@@ -838,26 +887,53 @@ implements Serializable, Comparable<Task> {
      */
     protected void walkToRandomLocation(boolean allowFail) {
         
-        // If person is in a settlement, walk to random building.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            Building currentBuilding = BuildingManager.getBuilding(person);
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
-            if (buildingList.size() > 0) {
-                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-                Building building = buildingList.get(buildingIndex);
-                
-                walkToRandomLocInBuilding(building, allowFail);
-            }
-        }
-        // If person is in a vehicle, walk to random location within vehicle.
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            
-            // Walk to a random location within rover if possible.
-            if (person.getVehicle() instanceof Rover) {
-                walkToRandomLocInRover((Rover) person.getVehicle(), allowFail);
-            }
-        }
+		if (person != null) {
+		       // If person is in a settlement, walk to random building.
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            Building currentBuilding = BuildingManager.getBuilding(person);
+	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            if (buildingList.size() > 0) {
+	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+	                Building building = buildingList.get(buildingIndex);
+	                
+	                walkToRandomLocInBuilding(building, allowFail);
+	            }
+	        }
+	        // If person is in a vehicle, walk to random location within vehicle.
+	        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	            
+	            // Walk to a random location within rover if possible.
+	            if (person.getVehicle() instanceof Rover) {
+	                walkToRandomLocInRover((Rover) person.getVehicle(), allowFail);
+	            }
+	        }
+		}
+		else if (robot != null) {
+		       // If robot is in a settlement, walk to random building.
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            Building currentBuilding = BuildingManager.getBuilding(robot);
+	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            if (buildingList.size() > 0) {
+	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+	                Building building = buildingList.get(buildingIndex);
+	                
+	                walkToRandomLocInBuilding(building, allowFail);
+	            }
+	        }
+	        // If robot is in a vehicle, walk to random location within vehicle.
+	        else if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	            
+	            // Walk to a random location within rover if possible.
+	            if (robot.getVehicle() instanceof Rover) {
+	                walkToRandomLocInRover((Rover) robot.getVehicle(), allowFail);
+	            }
+	        }
+		}
+ 
+        
+        
     }
     
     /**
@@ -868,20 +944,39 @@ implements Serializable, Comparable<Task> {
      */
     private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
         
-        if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 
-                interiorObject)) {
-            
-            // Add subtask for walking to destination.
-            addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 
-                    interiorObject));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to " + interiorObject);
-            
-            if (!allowFail) {
-                endTask();
-            }
-        }
+		if (person != null) {
+		       if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 
+		                interiorObject)) {
+		            
+		            // Add subtask for walking to destination.
+		            addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 
+		                    interiorObject));
+		        }
+		        else {	
+		            logger.fine(person.getName() + " unable to walk to " + interiorObject);
+		            
+		            if (!allowFail) {
+		                endTask();
+		            }
+		        }
+		}
+		else if (robot != null) {
+		       if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(), 
+		                interiorObject)) {
+		            
+		            // Add subtask for walking to destination.
+		            addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 
+		                    interiorObject));
+		        }
+		        else {	
+		            logger.fine(robot.getName() + " unable to walk to " + interiorObject);
+		            
+		            if (!allowFail) {
+		                endTask();
+		            }
+		        }
+		}
+ 
     }
 
     /**

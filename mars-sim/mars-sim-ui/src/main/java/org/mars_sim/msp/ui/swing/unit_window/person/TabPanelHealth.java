@@ -44,6 +44,7 @@ extends TabPanel {
 	        Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 	private JLabel fatigueLabel;
 	private JLabel hungerLabel;
+	private JLabel energyLabel;
 	private JLabel stressLabel;
 	private JLabel performanceLabel;
 	private MedicationTableModel medicationTableModel;
@@ -52,6 +53,7 @@ extends TabPanel {
 	// Data cache
 	private double fatigueCache;
 	private double hungerCache;
+	private double energyCache;
 	private double stressCache;
 	private double performanceCache;
 
@@ -81,7 +83,7 @@ extends TabPanel {
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel
-		JPanel conditionPanel = new JPanel(new GridLayout(4, 2, 0, 0));
+		JPanel conditionPanel = new JPanel(new GridLayout(5, 2, 0, 0));
 		conditionPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
@@ -105,6 +107,18 @@ extends TabPanel {
 		        formatter.format(hungerCache)), JLabel.RIGHT); 
 		conditionPanel.add(hungerLabel);
 
+		// 
+		// Prepare energy name label
+		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), JLabel.LEFT); //$NON-NLS-1$
+		conditionPanel.add(energyNameLabel);
+
+		// Prepare energy label
+		energyCache = condition.getEnergy();
+		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
+		        formatter.format(energyCache)), JLabel.RIGHT); 
+		conditionPanel.add(energyLabel);
+
+		
 		// Prepare streses name label
 		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
@@ -183,29 +197,41 @@ extends TabPanel {
 		PhysicalCondition condition = person.getPhysicalCondition();
 
 		// Update fatigue if necessary.
-		if (fatigueCache != condition.getFatigue()) {
-			fatigueCache = condition.getFatigue();
+		double newF = condition.getFatigue();
+		if (fatigueCache *.9 > newF || fatigueCache *1.1 < newF) {
+			fatigueCache = newF;
 			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
 			        formatter.format(fatigueCache))); 
 		}
 
 		// Update hunger if necessary.
-		if (hungerCache != condition.getHunger()) {
-			hungerCache = condition.getHunger();
+		double newH = condition.getHunger();
+		if (hungerCache *.9 > newH || hungerCache *1.1 < newH) {
+			hungerCache = newH;
 			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
 			        formatter.format(hungerCache))); 
 		}
 
+		// Update energy if necessary.
+		double newEnergy = condition.getEnergy();
+		if (energyCache *.95 > newEnergy || energyCache *1.15 < newEnergy   ) {
+			energyCache = newEnergy;
+			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
+			        formatter.format(energyCache))); 
+		}
+		
 		// Update stress if necessary.
-		if (stressCache != condition.getStress()) {
-			stressCache = condition.getStress();
+		double newS = condition.getStress();
+		if (stressCache *.9 > newS || stressCache*1.1 < newS) {
+			stressCache = newS;
 			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 			        formatter.format(stressCache))); 
 		}
 
 		// Update performance cache if necessary.
-		if (performanceCache != (person.getPerformanceRating() * 100D)) {
-			performanceCache = person.getPerformanceRating() * 100D;
+		double newP = person.getPerformanceRating();
+		if (performanceCache *90D > newP || performanceCache *110D < newP) {
+			performanceCache = newP * 100D;
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 			        formatter.format(performanceCache))); 
 		}

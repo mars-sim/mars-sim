@@ -214,7 +214,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the average opition that a person has of a group of people.
+	 * Gets the average opinion that a person has of a group of people.
 	 * Note: If person1 doesn't have a relationship with any of the people, return default value of 50.
 	 * @param person1 the person holding the opinion.
 	 * @param people the collection of people who the opinion is of.
