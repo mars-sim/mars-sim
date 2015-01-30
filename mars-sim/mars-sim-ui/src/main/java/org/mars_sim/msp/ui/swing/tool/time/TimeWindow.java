@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-01-29
 
  * @author Scott Davis
  */
@@ -220,9 +220,6 @@ implements ClockListener {
 		JPanel pulsespersecondPane = new JPanel(new BorderLayout());
 		pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		uptimePane.add(pulsespersecondPane, BorderLayout.SOUTH);
-
-		JPanel pausePane = new JPanel( new BorderLayout());
-		southPane.add(pausePane, BorderLayout.NORTH);
 
 		pauseButton = new JButton(Msg.getString("TimeWindow.button.pause")); //$NON-NLS-1$
 		pauseButton.addActionListener(new ActionListener() {
