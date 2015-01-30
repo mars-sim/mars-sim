@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.07 2014-12-26
+ * @version 3.08 2015-01-30
 
  * @author Scott Davis
  */
@@ -101,6 +101,9 @@ implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	private boolean defaultLoad = false;
 	private boolean initialSimulationCreated = false;
+	
+	/** Flag to indicate that a new simulation is being created or loaded. */
+	private static boolean isUpdating = false;
 
 	// 2014-12-26 Added useGUI
     /** true if displaying graphic user interface. */
@@ -119,6 +122,15 @@ implements ClockListener, Serializable {
 		return instance;
 	}
 
+	/**
+	 * Checks if the simulation is in a state of creating a new simulation or 
+	 * loading a saved simulation.
+	 * @return true is simulation is in updating state.
+	 */
+	public static boolean isUpdating() {
+	    return isUpdating;
+	}
+	
 	public static void stopSimulation() {
 		Simulation simulation = instance();
 		simulation.defaultLoad = false;
@@ -136,6 +148,8 @@ implements ClockListener, Serializable {
 	 */
 	public static void createNewSimulation() {
 
+	    isUpdating = true;
+	    
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
 
 		Simulation simulation = instance();
@@ -152,6 +166,8 @@ implements ClockListener, Serializable {
 		simulation.initializeTransientData();
 
 		simulation.initialSimulationCreated = true;
+		
+		isUpdating = false;
 	}
 
 	/**
@@ -160,16 +176,25 @@ implements ClockListener, Serializable {
 	private void destroyOldSimulation() {
 
 		malfunctionFactory.destroy();
+		malfunctionFactory = null;
 		mars.destroy();
+		mars = null;
 		missionManager.destroy();
+		missionManager = null;
 		relationshipManager.destroy();
+		relationshipManager = null;
 		medicalManager.destroy();
+		medicalManager = null;
 		masterClock.destroy();
+		masterClock = null;
 		unitManager.destroy();
+		unitManager = null;
 		creditManager.destroy();
+		creditManager = null;
 		scientificStudyManager.destroy();
-		relationshipManager.destroy();
+		scientificStudyManager = null;
 		eventManager.destroy();
+		eventManager = null;
 	}
 
 	/**
@@ -204,6 +229,9 @@ implements ClockListener, Serializable {
 	 * @throws Exception if simulation could not be loaded.
 	 */
 	public void loadSimulation(final File file) {
+	    
+	    isUpdating = true;
+	    
 		File f = file;
 
 		logger.config(Msg.getString("Simulation.log.loadSimFrom") + file); //$NON-NLS-1$
@@ -231,8 +259,11 @@ implements ClockListener, Serializable {
 			}
 		}
 		else{
-			throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + f.getPath() + " is not accessible"); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
+			        f.getPath() + " is not accessible"); 
 		}
+		
+		isUpdating = false;
 	}
 
 	/**

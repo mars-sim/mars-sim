@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.07 2015-01-26
+ * @version 3.08 2015-01-30
  * @author Scott Davis
  */
 
@@ -294,8 +294,8 @@ public class MainWindow {
     }
 	
 	// 2015-01-13 Added startEarthTimer()
-	public void startEarthTimer() { // (final String t) {
-	//final String earthTimeString = null;
+	public void startEarthTimer() {
+	
 		earthTimer = new javax.swing.Timer(TIMEDELAY, 
 			new ActionListener() {		
 			String t = null;
@@ -303,19 +303,22 @@ public class MainWindow {
 				@Override
 			    public void actionPerformed(ActionEvent evt) {
 				    try {
-		        		//String t = null; 
-		        		MasterClock master = Simulation.instance().getMasterClock();
-		        		if (master == null) {
-		        		  throw new IllegalStateException("master clock is null");
-		        		}
-		        		EarthClock earthclock = master.getEarthClock();
-		        		if (earthclock == null) {
-			        		// TODO: why is earthclock null when loading a saved simulation? 
-		        			// how should I fix this ?
-		        		  throw new IllegalStateException("earthclock is null"); 
-		        		}
-		        		t = earthclock.getTimeStamp();
-				    	} catch (Exception ee) {ee.printStackTrace(System.err);
+				        // Check if new simulation is being created or loaded from file.
+				        if (!Simulation.isUpdating()) {
+				             
+				            MasterClock master = Simulation.instance().getMasterClock();
+				            if (master == null) {
+				                throw new IllegalStateException("master clock is null");
+				            }
+				            EarthClock earthclock = master.getEarthClock();
+				            if (earthclock == null) {
+				                throw new IllegalStateException("earthclock is null"); 
+				            }
+				            t = earthclock.getTimeStamp();
+				        }
+				    }
+				    catch (Exception ee) {
+				        ee.printStackTrace(System.err);
 				    }
 					timeLabel.setText("Earth Time : " + t);
 					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
