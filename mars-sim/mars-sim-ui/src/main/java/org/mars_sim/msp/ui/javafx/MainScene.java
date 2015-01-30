@@ -23,7 +23,7 @@ public class MainScene {
         //MainWindowFXMenu menuBar = new MainWindowFXMenu(null);
 		MainToolBar toolBar = new MainToolBar();
         ImageView bg1 = new ImageView();
-        bg1.setImage(new Image("/images/background.png"));  // in lieu of the interactive Mars map      
+        bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map      
         root.getChildren().add(bg1);
         root.getChildren().add(toolBar);
 

@@ -45,20 +45,16 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 } 
 
 .tool-bar:horizontal {
--fx-font-weight: bold;
--fx-font-family: "Jura";
--fx-font-size: 11pt;
+-fx-font-weight: normal;
+-fx-font-family: "Noto";
+-fx-font-size: 9pt;
 -fx-background-color: transparent, transparent, transparent, transparent;
 -fx-border-width: 1;
 -fx-border-style: dotted;
 
 }
 
-.tool-bar:hover {
--fx-background-color:
-linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));
 
-}
  .button {
     -fx-background-color: transparent, transparent, transparent, transparent;
 }
