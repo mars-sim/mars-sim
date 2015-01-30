@@ -51,10 +51,10 @@ public class MainWindowFX {
 
     private static void initAndShowGUI() {
         // This method is invoked on the EDT thread
-        frame = new JFrame(WINDOW_TITLE);
+        frame = new JFrame(WINDOW_TITLE+ " JavaFX");
         final JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
-        frame.setSize(640, 480);
+        frame.setSize(1200, 300);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
