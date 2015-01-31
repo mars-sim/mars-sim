@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2015-01-17
+ * @version 3.07 2015-01-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-01-30
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -626,7 +626,7 @@ implements Serializable {
     	double xdelta =  time / FACTOR;  
         //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
         //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
-        kJoules = kJoules / Math.exp(xdelta); 
+        kJoules = kJoules / exponential(xdelta); 
         
         if (kJoules < 100)
         	kJoules = 100; // 100 kJ is the lowest possible energy level 
@@ -634,6 +634,13 @@ implements Serializable {
         //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);  
     }
  
+    public double exponential(double x) {
+    	  x = 1d + x / 256d;
+    	  x *= x; x *= x; x *= x; x *= x;
+    	  x *= x; x *= x; x *= x; x *= x;
+    	  return x;
+    	}
+    
     /** Sets the person's energy level 
      *  @param kilojoules
      */
