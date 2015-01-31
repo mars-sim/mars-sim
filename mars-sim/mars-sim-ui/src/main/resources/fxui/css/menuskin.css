@@ -35,7 +35,7 @@ linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(
 -fx-background-color: transparent;
 -fx-text-alignment: center;
 -fx-font-family: "Jura";
--fx-font-size: 12pt;
+-fx-font-size: 16pt;
 
 }
  

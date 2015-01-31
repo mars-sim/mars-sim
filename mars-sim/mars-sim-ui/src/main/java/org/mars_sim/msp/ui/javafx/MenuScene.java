@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,7 +26,16 @@ public class MenuScene {
     bg1.setImage(new Image("/images/mars.png"));        
     root.getChildren().add(bg1);
 
-    root.getChildren().add(new Button("Press me to go to Main Scene"));
+    Button continueButton = new Button("Press me to go to Main Scene");
+    continueButton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent arg0) {
+        	// Send scene switch to MainWindowFX
+        }
+    });
+    root.getChildren().add(continueButton);
+    
+
     return (menuScene);
 }
 
