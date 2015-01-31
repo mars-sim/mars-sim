@@ -988,7 +988,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
             //getMainWindow().unpauseSimulation();
             
 		}	
-
+		// repaint(); // raise cpu util% way too much for putting it here
 	}
 
 	
@@ -1010,6 +1010,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				j.next().addUnitListener(this);
 			}
 		}
+		
+		repaint(); // raise some cpu util% but not too bad
 	}
-
+	 
 }
