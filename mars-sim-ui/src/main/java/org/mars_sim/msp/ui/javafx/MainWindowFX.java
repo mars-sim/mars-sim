@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.javafx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -51,10 +53,10 @@ public class MainWindowFX {
 
     private static void initAndShowGUI() {
         // This method is invoked on the EDT thread
-        frame = new JFrame(WINDOW_TITLE+ " JavaFX");
+        frame = new JFrame(WINDOW_TITLE+ "(JavaFX)");
         final JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
-        frame.setSize(1200, 300);
+        frame.setSize(1000, 300);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -77,45 +79,7 @@ public class MainWindowFX {
         // We start with the menu
         fxPanel.setScene(mainScene);
         fxPanel.repaint();
-    }
-
-    private static Scene createMenuScene() {
-        Group  root  =  new  Group();
-        Scene  menuScene  =  new  Scene(root);
-        menuScene.getStylesheets().addAll("/fxui/css/menuskin.css");
-        // testing out scene switching
-        ImageView bg1 = new ImageView();
-        bg1.setImage(new Image("/images/mars.png"));        
-        root.getChildren().add(bg1);
-
-        root.getChildren().add(new Button("Press me to go to Main Scene"));
-        return (menuScene);
-    }
-    
-    
-    private static Scene createMainScene() {
-        Group  root  =  new  Group();
-        Scene  scene  =  new  Scene(root);
-		scene.getStylesheets().addAll("/fxui/css/mainskin.css");		
-
-        MainWindowFXMenu menuBar = new MainWindowFXMenu(null);
-        ImageView bg1 = new ImageView();
-        bg1.setImage(new Image("/images/background.png"));        
-        root.getChildren().add(bg1);
-
-        root.getChildren().add(menuBar); 
-//        root.getChildren().add(new Button("Press me to go to Settlement Scene"));
-
-        return (scene);
-    }
-    
-    private static Scene createSettlementScene() {
-        Group  root  =  new  Group();
-        Scene  settlementScene  =  new  Scene(root);
-        settlementScene.getStylesheets().addAll("/fxui/css/settlementskin.css");		
-        root.getChildren().add(new Button("Press me to go to Menu Scene"));
-
-        return (settlementScene);
-    }
+    }    
+   
     
 }

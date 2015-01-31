@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.javafx;
 
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
-import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 
 public class MainUnitBar extends ToolBar{

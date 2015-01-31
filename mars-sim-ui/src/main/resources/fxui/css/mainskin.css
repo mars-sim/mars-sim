@@ -51,13 +51,14 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-background-color: transparent, transparent, transparent, transparent;
 -fx-border-width: 1;
 -fx-border-style: dotted;
-
-}
+    -fx-padding: 4px 4px 4px 4px;
+    }
 
 
  .button {
     -fx-background-color: transparent, transparent, transparent, transparent;
-}
+     -fx-padding: 0 0 0 0;
+    }
 
 .button:hover{
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
