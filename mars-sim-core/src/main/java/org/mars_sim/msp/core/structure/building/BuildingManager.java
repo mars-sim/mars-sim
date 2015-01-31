@@ -93,6 +93,10 @@ public class BuildingManager implements Serializable {
     
     // 2014-12-23 Added resupply
     private Resupply resupply;
+    
+    //Person person = null;
+    //Robot robot = null;
+    
 
     /**
      * Constructor to construct buildings from settlement config template.
@@ -452,9 +456,33 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets the building a given person is in.
+     * Gets the vehicle maintenance building a given vehicle is in.
      * @return building or null if none.
      */
+    public static Building getBuilding(Vehicle vehicle) {
+        if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
+        Building result = null;
+        Settlement settlement = vehicle.getSettlement();
+        if (settlement != null) {
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+            while (i.hasNext()) {
+                Building garageBuilding = i.next();
+                try {
+                    VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
+                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                    if (garage.containsVehicle(vehicle)) {
+                        result = garageBuilding;
+                    }
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
     public static Building getBuilding(Unit unit) {
         Building result = null;
         Person person = null;
@@ -494,7 +522,7 @@ public class BuildingManager implements Serializable {
 	                Building building = i.next();
 	                try {
 	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-	                    if (lifeSupport.containsOccupant(robot)) {
+	                    if (lifeSupport.containsRobotOccupant(robot)) {
 	                        if (result == null) { 
 	                            result = building;
 	                        }
@@ -512,35 +540,7 @@ public class BuildingManager implements Serializable {
         }
         return result;
     }
-
-    /**
-     * Gets the vehicle maintenance building a given vehicle is in.
-     * @return building or null if none.
-     */
-    public static Building getBuilding(Vehicle vehicle) {
-        if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
-        Building result = null;
-        Settlement settlement = vehicle.getSettlement();
-        if (settlement != null) {
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
-            while (i.hasNext()) {
-                Building garageBuilding = i.next();
-                try {
-                    VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
-                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
-                    if (garage.containsVehicle(vehicle)) {
-                        result = garageBuilding;
-                    }
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
-                }
-            }
-        }
-        return result;
-    }
-
+    
     /**
      * Check what building a given local settlement position is within.
      * @param xLoc the local X position.
@@ -747,7 +747,7 @@ public class BuildingManager implements Serializable {
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
                  	
-	                if (!lifeSupport.containsOccupant(robot)) {
+	                if (!lifeSupport.containsRobotOccupant(robot)) {
 	                    lifeSupport.addRobot(robot); 
 	                }
                 }
@@ -788,7 +788,7 @@ public class BuildingManager implements Serializable {
             	 else if (unit instanceof Robot) {
                  	Robot robot = (Robot) unit;
                  	
-                 	if (lifeSupport.containsOccupant(robot)) {
+                 	if (lifeSupport.containsRobotOccupant(robot)) {
  	                    lifeSupport.addRobot(robot); 
  	                }
                  	robot.setXLocation(xLocation);
@@ -833,7 +833,7 @@ public class BuildingManager implements Serializable {
                 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	if (lifeSupport.containsOccupant(robot)) {
+                	if (lifeSupport.containsRobotOccupant(robot)) {
 	                    lifeSupport.addRobot(robot); 
 	                }
                 	robot.setXLocation(settlementLoc.getX());
@@ -869,7 +869,7 @@ public class BuildingManager implements Serializable {
                 }
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	if (lifeSupport.containsOccupant(robot)) {
+                	if (lifeSupport.containsRobotOccupant(robot)) {
 	                    lifeSupport.removeRobot(robot); 
 	                }
         		

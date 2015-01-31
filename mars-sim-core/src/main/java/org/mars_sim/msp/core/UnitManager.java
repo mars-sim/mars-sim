@@ -570,11 +570,10 @@ implements Serializable {
                     //  gender = PersonGender.MALE;
                     //}
                 	
-                    Robot robot = new Robot(getNewName(UnitType.ROBOT, robotType.toString(), null), robotType, "Mars", settlement); //TODO: read from file
+                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null), robotType, "Mars", settlement); //TODO: read from file
                     addUnit(robot);
-                    //System.out.println("UnitManager : createInitialRobots() : a robot is added !");
-                     
-                    //relationshipManager.addInitialSettler(person, settlement);
+                    System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
+
                 }
             }
         } catch (Exception e) {
@@ -599,7 +598,7 @@ implements Serializable {
             	throw new IllegalStateException("Robot name is null");
             }
 
-            // Get person's gender or randomly determine it if not configured.
+            // Get robot's gender or randomly determine it if not configured.
             RobotType robotType = robotConfig.getConfiguredRobotType(x);
             if (robotType == null) {
             	robotType = RobotType.REPAIRBOT;
@@ -608,15 +607,16 @@ implements Serializable {
                 //}
             }
 
-            // Get person's settlement or randomly determine it if not configured.
+            // Get robot's settlement or randomly determine it if not configured.
             String settlementName = robotConfig.getConfiguredRobotSettlement(x);
+            System.out.println("settlementName is " + settlementName);
             Settlement settlement = null;
             if (settlementName != null) {
                 Collection<Settlement> col = CollectionUtils.getSettlement(units);
                 settlement = CollectionUtils.getSettlement(col, settlementName);
                 if (settlement == null) {
                     // If settlement cannot be found that matches the settlement name,
-                    // put person in a randomly selected settlement.
+                    // put robot in a randomly selected settlement.
                     logger.log(Level.WARNING, "Robot " + name + " could not be located" +
                             " at " + settlementName + " because the settlement doesn't exist.");
                     settlement = CollectionUtils.getRandomSettlement(col);
@@ -646,15 +646,15 @@ implements Serializable {
                     settlement = newSettlement;
                 }
                 else {
-                    // If no settlement with room found, don't create person.
+                    // If no settlement with room found, don't create robot.
                     return;
                 }
             }
 
-            // Create person and add to the unit manager.
+            // Create robot and add to the unit manager.
             Robot robot = new Robot(name, robotType, "Mars", settlement); //TODO: read from file
             addUnit(robot);
-            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
+            System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
 
             // Set robot's job (if any).
             String jobName = robotConfig.getConfiguredRobotJob(x);
@@ -665,7 +665,7 @@ implements Serializable {
                 }
             }
 
-            // Set person's configured natural attributes (if any).
+            // Set robot's configured natural attributes (if any).
             Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
             if (naturalAttributeMap != null) {
                 Iterator<String> i = naturalAttributeMap.keySet().iterator();
@@ -699,8 +699,6 @@ implements Serializable {
             }
         }
 
-        // Create all configured relationships.
-        //createConfiguredRelationships();
     }
 
 

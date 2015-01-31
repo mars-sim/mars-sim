@@ -343,7 +343,7 @@ implements Serializable {
         setHunger(hunger + time);
         // Consume a minute amount of energy even if a robot does not perform any tasks
         reduceEnergy(time);
-        checkStarvation(hunger);       
+        //checkStarvation(hunger);       
         //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
         
         // Calculate performance

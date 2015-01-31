@@ -278,8 +278,10 @@ extends JDialog {
 			String template = (String) settlementTableModel.getValueAt(x, 1);
 			String population = (String) settlementTableModel.getValueAt(x, 2);
 			int populationNum = Integer.parseInt(population);
+			//System.out.println("populationNum is " + populationNum);
 			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 3);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);

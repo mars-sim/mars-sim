@@ -526,13 +526,11 @@ implements Serializable {
      * @param person the person.
      * @return airlock or null if none available
      */
-    public static Airlock getWalkableAvailableAirlock(Person person) {
-        
+    public static Airlock getWalkableAvailableAirlock(Person person) { 
         return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
     }
     
-   public static Airlock getWalkableAvailableAirlock(Robot robot) {
-        
+   public static Airlock getWalkableAvailableAirlock(Robot robot) {      
         return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
     }    
    
