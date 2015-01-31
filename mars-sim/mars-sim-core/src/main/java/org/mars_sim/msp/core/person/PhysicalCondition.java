@@ -93,6 +93,9 @@ implements Serializable {
     private double personStarvationTime;
     private double robotBatteryDrainTime;
     
+    private boolean isStarving;
+    private boolean isBatteryDepleting;
+    
     
     /**
      * Constructor 1.
@@ -721,6 +724,7 @@ implements Serializable {
                 		|| kJoules < 500D ) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
+                        isStarving = true;
                         //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
                         //System.out.println("PhysicalCondition : checkStarvation() : kJ is  " + Math.round(kJoules*10.0)/10.0 + " ");  
                         robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -731,6 +735,7 @@ implements Serializable {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {
                         illness.startRecovery();
+                        isStarving = false;
                         robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
@@ -745,6 +750,7 @@ implements Serializable {
                 		|| kJoules < 500D ) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
+                        isBatteryDepleting = true;
                         //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
@@ -754,6 +760,7 @@ implements Serializable {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {
                         illness.startRecovery();
+                        isBatteryDepleting = false;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
@@ -856,6 +863,24 @@ implements Serializable {
      */
     public boolean isDead() {
         return !alive;
+    }
+
+    /**
+     * Checks if the person is starving.
+     *
+     * @return true if starving
+     */
+    public boolean isStarving() {
+        return isStarving;
+    }
+
+    /**
+     * Checks if the robot's battery is nearly depleted.
+     *
+     * @return true if nearly depleted
+     */
+    public boolean isBatteryDepleting() {
+        return isBatteryDepleting;
     }
 
     /**
@@ -1044,6 +1069,7 @@ implements Serializable {
         problems = null;
         serious = null;
         person = null;
+        robot = null;
         medicationList.clear();
         medicationList = null;
     }

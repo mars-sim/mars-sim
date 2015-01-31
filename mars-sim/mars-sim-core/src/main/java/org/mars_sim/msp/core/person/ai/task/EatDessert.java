@@ -172,6 +172,10 @@ implements Serializable {
         if (dessert != null) {
             double stress = condition.getStress();
             condition.setStress(stress - (STRESS_MODIFIER * (dessert.getQuality() + 1D)));
+            
+            double fatigue = condition.getFatigue();
+            if (fatigue > 100)
+            	condition.setFatigue(fatigue - 100);
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {

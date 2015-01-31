@@ -347,8 +347,7 @@ implements Serializable {
 					}					
 					retrieveAnResource(carbonDioxide, carbonDioxideUsed);			
 					
-					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
-							.5D) + .5D);
+					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
 					
 					// Determine harvest modifier by amount of oxygen available.							
 					AmountResource oxygen = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.OXYGEN);
@@ -385,18 +384,17 @@ implements Serializable {
 		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);		
 		double waterUsed = waterRequired;
 		double fertilizerUsed = FERTILIZER_NEEDED / 500D;
-		if (waterUsed > waterAvailable) {
+		if (waterUsed < waterAvailable)
+			retrieveAnResource(water, waterUsed);
+		else 
 			waterUsed = waterAvailable;
-			if (fertilizerUsed > fertilizerAvailable)	{			
-				fertilizerUsed = fertilizerAvailable;
-			}
+			
+		if (fertilizerUsed < fertilizerAvailable)
+			retrieveAnResource(fertilizer, fertilizerUsed);
+		else
+			fertilizerUsed = fertilizerAvailable;			
 			//TODO: if not enough fertilizer is available
-			// should it send out an alert and/or have impact in crop growing?
-		
-		}
-		retrieveAnResource(water, waterUsed);
-		retrieveAnResource(fertilizer, fertilizerUsed);
-		
+			// should it send out an alert and/or have impact in crop growing?	
 	    return waterUsed;
 	}
 	
