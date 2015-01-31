@@ -98,7 +98,7 @@ implements Serializable {
         taskManager = new TaskManager(this);
 
         // Construct a skill manager.
-        skillManager = new SkillManager(person);
+        skillManager = new SkillManager(robot);
     }
     
     /**

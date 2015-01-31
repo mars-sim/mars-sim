@@ -808,28 +808,33 @@ implements LifeSupport {
      * @param yLocation the Y location.
      * @return airlock or null if none available.
      */
-    public Airlock getClosestWalkableAvailableAirlock(Unit unit, double xLocation, double yLocation) {
+    public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
         Airlock result = null;
-        Building currentBuilding = null;
+        Building currentBuilding = BuildingManager.getBuilding(person);
         
-        Person person = null;
-        Robot robot = null;
-        
-        if (unit instanceof Person) {
-         	person = (Person) unit;
-            currentBuilding = BuildingManager.getBuilding(person);
-            if (currentBuilding == null)
-                throw new IllegalStateException(person.getName() + " is not currently in a building.");
- 
-        }
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-            currentBuilding = BuildingManager.getBuilding(robot);
-            if (currentBuilding == null)
-                throw new IllegalStateException(robot.getName() + " is not currently in a building.");
-        }
- 
+        if (currentBuilding == null)
+        	throw new IllegalStateException(person.getName() + " is not currently in a building.");
 
+        getAirlock(currentBuilding, xLocation, yLocation);
+            
+        return result;
+    }
+
+    public Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
+        Airlock result = null;
+        Building currentBuilding = BuildingManager.getBuilding(robot);
+        
+        if (currentBuilding == null)
+        	throw new IllegalStateException(robot.getName() + " is not currently in a building.");
+
+        getAirlock(currentBuilding, xLocation, yLocation);
+        
+        return result;
+    }
+    
+    public Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
+        Airlock result = null;
+        
         double leastDistance = Double.MAX_VALUE;
         BuildingManager manager = buildingManager;
         Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
@@ -847,10 +852,9 @@ implements LifeSupport {
                 }
             }
         }
-
         return result;
     }
-
+    
     /**
      * Gets the closest available airlock at the settlement to the given location.
      * The airlock must have a valid walkable interior path from the given building's current location.

@@ -339,7 +339,7 @@ implements Serializable {
 			initialSettlement.populationNumber = number;
 			
 			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
-			String numOfRobotsStr = populationElement.getAttributeValue(ROBOTS_NUMBER);
+			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
 			if (number < 0) {
 				throw new IllegalStateException("The number of robots cannot be less than zero: " + number);
@@ -695,6 +695,7 @@ implements Serializable {
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
 	    settlement.numOfRobots = numOfRobots;
+		System.out.println("SettlementConfig : numOfRobots is " + numOfRobots);
 	    settlement.scenarioID = scenarioMap.get(template);
 	    
 		// take care to internationalize the coordinates

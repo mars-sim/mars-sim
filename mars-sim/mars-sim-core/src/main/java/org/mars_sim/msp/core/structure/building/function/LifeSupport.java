@@ -327,21 +327,15 @@ implements Serializable {
 	 * Checks if the building contains a particular unit.
 	 * @return true if unit is in building.
 	 */
-	public boolean containsOccupant(Unit unit) {
-		boolean result = false;
-        Person person = null;
-        Robot robot = null;     
-        if (unit instanceof Person) {
-         	person = (Person) unit;
-         	result = occupants.contains(person);
-        }
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-         	result = occupants.contains(robot);
-        }
-		return result;
+	public boolean containsOccupant(Person person) {
+        return occupants.contains(person);
 	}
+	
+	public boolean containsRobotOccupant(Robot robot) {
+		return robotOccupants.contains(robot);
 
+	}
+	
 	/**
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
@@ -351,8 +345,8 @@ implements Serializable {
 	}
 	
 	/**
-	 * Gets a collection of occupants in the building.
-	 * @return collection of occupants
+	 * Gets a collection of robotOccupants in the building.
+	 * @return collection of robotOccupants
 	 */
 	public Collection<Robot> getRobotOccupants() {
 		return new ConcurrentLinkedQueue<Robot>(robotOccupants);
@@ -480,10 +474,13 @@ implements Serializable {
 				logger.finest("Overcrowding at " + getBuilding());
 			}
 			double stressModifier = .1D * overcrowding * time;
-			Iterator<Person> j = getOccupants().iterator();
-			while (j.hasNext()) {
-				PhysicalCondition condition = j.next().getPhysicalCondition();
-				condition.setStress(condition.getStress() + stressModifier);
+			
+			if (occupants != null) {
+				Iterator<Person> j = getOccupants().iterator();
+				while (j.hasNext()) {
+					PhysicalCondition condition = j.next().getPhysicalCondition();
+					condition.setStress(condition.getStress() + stressModifier);
+				}
 			}
 		}	
 
@@ -553,6 +550,8 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 
+		robotOccupants.clear();
+		robotOccupants = null;
 		occupants.clear();
 		occupants = null;
 	}
