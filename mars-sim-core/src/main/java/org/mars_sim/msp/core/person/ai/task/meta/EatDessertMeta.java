@@ -40,22 +40,28 @@ public class EatDessertMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         double hunger = person.getPhysicalCondition().getHunger();
+        double energy = person.getPhysicalCondition().getEnergy();
+        
         double result = 0D;
         
-        if (hunger < 300 )
-        	result = 0D;
+        if (hunger > 800 || energy < 2000 )
+	        //result =  0.4 * (hunger - 400D);
+	        result = 0.01 * (12000 - energy);
+        else if (hunger > 600 || energy < 4000 )
+        	result = 80D;
+        else if (hunger > 400 || energy < 6000 )
+        	result = 40D;
+        else if (hunger > 300 || energy < 7000 )
+        	result = 20D;        
+        else result = 0;
         
-        else {
-	    	
-	        result =  0.4 * (hunger - 300D);
-	
+        if (result > 0) {
 	        // TODO: if a person is very hungry, should he come inside and result > 0 ?
 	        if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
 	
 	        Building building = EatDessert.getAvailableDiningBuilding(person);
 	        if (building != null) {
-	        	result += 50D;
-	        	
+	        	result += 10D;	        	
 	            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
 	            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 	        }
@@ -65,7 +71,8 @@ public class EatDessertMeta implements MetaTask {
 	        	result += 20D;
 	        else {
 	            // Check if there is food available to eat.
-	            if (!EatDessert.isDessertAvailable(person)) result = 0D;
+	            if (!EatDessert.isDessertAvailable(person)) 
+	            	result = 0D;
 	        }
 
         }

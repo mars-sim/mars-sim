@@ -320,6 +320,7 @@ extends UnitTableModel {
 			Person person = (Person)getUnit(rowIndex);
 
 			Boolean isDead = person.getPhysicalCondition().isDead();
+			Boolean isStarving = person.getPhysicalCondition().isStarving();
 			
 			switch (columnIndex) {
 			case NAME : {
@@ -342,7 +343,8 @@ extends UnitTableModel {
 				double hunger = person.getPhysicalCondition().getHunger();
 				//result = new Float(hunger).intValue();
 				if (isDead)	result = "";
-					else result = getHungerStatus(hunger);
+				else if (isStarving) result = "Starving";
+				else result = getHungerStatus(hunger);
 			} break;
 
 			case FATIGUE : {
@@ -466,11 +468,11 @@ extends UnitTableModel {
 	 */
 	public String getPerformanceStatus(double value) {
 		String status= "N/A";
-		if (value > 98 ) status = Msg.getString("PersonTableModel.column.performance.level1");
-		else if (value < 99) status = Msg.getString("PersonTableModel.column.performance.level2");
-		else if (value < 75) status = Msg.getString("PersonTableModel.column.performance.level3");
-		else if (value < 50) status = Msg.getString("PersonTableModel.column.performance.level4");
-		else if (value < 25) status = Msg.getString("PersonTableModel.column.performance.level5");
+		if (value > 95 ) status = Msg.getString("PersonTableModel.column.performance.level1");
+		else if (value > 75) status = Msg.getString("PersonTableModel.column.performance.level2");
+		else if (value > 50) status = Msg.getString("PersonTableModel.column.performance.level3");
+		else if (value > 25) status = Msg.getString("PersonTableModel.column.performance.level4");
+		else if (value <= 25) status = Msg.getString("PersonTableModel.column.performance.level5");
 		//logger.info(" Perf : " + Math.round(value) + " ; status : " + status);
 		return status;
 	}

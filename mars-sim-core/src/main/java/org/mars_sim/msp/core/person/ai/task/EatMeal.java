@@ -155,11 +155,17 @@ implements Serializable {
     private double eatingPhase(double time) {
 
         PhysicalCondition condition = person.getPhysicalCondition();
+        
 
-        // If person consumes a cooked meal, stress is reduced.
+        // If person consumes a cooked meal, stress and fatigue is reduced.
         if (meal != null) {
+        	
             double stress = condition.getStress();
             condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
+            
+            double fatigue = condition.getFatigue();
+            if (fatigue > 300)
+            	condition.setFatigue(fatigue - 300);
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {
