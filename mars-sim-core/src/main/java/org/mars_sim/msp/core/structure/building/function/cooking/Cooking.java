@@ -773,8 +773,15 @@ implements Serializable {
 	 	      		try {
 	 	      			i.remove();
 	 	      			preserveFood();
+		            	logger.info("Meal Expired. Convert " 
+		            			+ dryMassPerServing  + " "
+		                		+ meal.getName()
+		                		+ " kg into preserved food "
+		                		+  " at " + getBuilding().getNickName() 
+		                		+ " in " + settlement.getName()
+		                		);
 		      	   		if(logger.isLoggable(Level.FINEST)) {
-		      	            logger.finest("No one is eating " + meal.getName() + ". Thermostabilize it into dry food at " + 
+		      	            logger.finest("No one is eating " + meal.getName() + ". Convert meal into preserved food at " + 
 		      	                    getBuilding().getBuildingManager().getSettlement().getName());
 		      	   		}
 		      	        // 2015-01-12 Adjust the rate to go down for each meal

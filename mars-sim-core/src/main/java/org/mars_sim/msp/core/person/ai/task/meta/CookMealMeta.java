@@ -50,10 +50,15 @@ public class CookMealMeta implements MetaTask {
             try {
                 // See if there is an available kitchen.
                 Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
-
+               
 				if (kitchenBuilding != null) {
-                   
-                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+					
+	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	                
+                	if (kitchen.hasCookedMeal() == false)
+                		result += 100D;
+
+                    
                     double size = kitchen.getMealRecipesWithAvailableIngredients().size();
                     // if more meals (thus more ingredients) are available at kitchen.
                     // to Chef's delight, he/she is more motivated to cook 

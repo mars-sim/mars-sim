@@ -48,7 +48,7 @@ public class PrepareDessertMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
              
-        double result = 0D;
+        double result = 20D;
         
         // TODO: if a person is very hungry, should he come inside and result > 0 ?
         if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
@@ -60,11 +60,14 @@ public class PrepareDessertMeta implements MetaTask {
             try {
                 // See if there is an available kitchen.
                 Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
-                PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
-			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
 
                 if (kitchenBuilding != null) {
-                    
+                    PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
+    			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
+                   
+                	if (kitchen.hasFreshDessert() == false)
+                		result += 100D;
+                	
                     String [] dessert = {   "Soymilk",
                             "Sugarcane Juice",
                             "Strawberry",

@@ -41,17 +41,19 @@ public class EatMealMeta implements MetaTask {
         
         if (hunger > 800 || energy < 2000 )
 	        //result =  0.4 * (hunger - 400D);
-	        result = 0.02 * (12000 - energy);
+	        result = 0.01 * (12000 - energy);
         else if (hunger > 600 || energy < 3000 )
-        	result = 80D;
+        	result = 50D;
         else if (hunger > 400 || energy < 4000 )
-        	result = 40D;
+        	result = 30D;
         else if (energy < 5000 )
-        	result = 20D;
+        	result = 10D;
         else result = 0;
 	        
         
         if (result > 0) {
+        	
+        	// TODO: if a person is in a vehicle
         	
 	        // TODO: if a person is very hungry, should he come inside and result > 0 ?
 	        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {

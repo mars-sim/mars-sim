@@ -531,12 +531,12 @@ implements Serializable {
 	            	try {
 		            	i.remove();
 		            	refrigerateFood(dessert);
-		            	//logger.info("Dessert Expired. Refrigerate " 
-		            	//		+ getDryMass(dessert.getName()) + " kg " 
-		                //		+ dessert.getName()
-		                //		+  " at " + getBuilding().getNickName() 
-		                //		+ " in " + settlement.getName()
-		                //		);
+		            	logger.info("Dessert Expired. Refrigerate " 
+		            			+ getDryMass(dessert.getName()) + " kg " 
+		                		+ dessert.getName()
+		                		+  " at " + getBuilding().getNickName() 
+		                		+ " in " + settlement.getName()
+		                		);
 		 	    		// 2015-01-12 For each dessert that needs to be refrigerated
 		  	    		// Adjust the rate to go down 
 			  	    	if (rate > 0 ) 
