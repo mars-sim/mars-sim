@@ -695,7 +695,7 @@ implements Serializable {
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
 	    settlement.numOfRobots = numOfRobots;
-		System.out.println("SettlementConfig : numOfRobots is " + numOfRobots);
+		//System.out.println("SettlementConfig : numOfRobots is " + numOfRobots);
 	    settlement.scenarioID = scenarioMap.get(template);
 	    
 		// take care to internationalize the coordinates
