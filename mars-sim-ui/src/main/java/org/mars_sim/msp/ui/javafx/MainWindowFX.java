@@ -39,7 +39,11 @@ public class MainWindowFX {
 
 	// Data members
 	private static JFrame frame;
-	
+	static Scene menuScene;
+	static Scene mainScene;
+	static Scene settlementScene;
+    public static JFXPanel fxPanel = new JFXPanel();
+
 	/**
 	 * Constructor.
 	 */
@@ -53,8 +57,8 @@ public class MainWindowFX {
 
     private static void initAndShowGUI() {
         // This method is invoked on the EDT thread
-        frame = new JFrame(WINDOW_TITLE+ "(JavaFX)");
-        final JFXPanel fxPanel = new JFXPanel();
+        frame = new JFrame(WINDOW_TITLE+ " (JavaFX)");
+        //final JFXPanel fxPanel = new JFXPanel();
         frame.add(fxPanel);
         frame.setSize(1000, 300);
         frame.setVisible(true);
@@ -72,14 +76,29 @@ public class MainWindowFX {
     private static void initFX(JFXPanel fxPanel) {
         // This method is invoked on the JavaFX thread
     	
-        Scene menuScene = new MenuScene().createMenuScene();
-        Scene mainScene = new MainScene().createMainScene();
-        Scene settlementScene = new SettlementScene().createSettlementScene();
+         menuScene = new MenuScene().createMenuScene();
+         mainScene = new MainScene().createMainScene();
+         settlementScene = new SettlementScene().createSettlementScene();
         
         // We start with the menu
-        fxPanel.setScene(mainScene);
+         fxPanel.setScene(mainScene);
+         fxPanel.repaint();
+         }    
+ 
+    public static JFXPanel getPanel()  { 
+    	return fxPanel;
+    }
+    public static void changeScene(int toscene) {
+    switch(toscene) {
+    
+    	case 1: {fxPanel.setScene(menuScene);
+}
+    	case 2: {fxPanel.setScene(mainScene);
+}
+    	case 3: {fxPanel.setScene(settlementScene);
+}
         fxPanel.repaint();
-    }    
-   
+    }
+    }   
     
 }

@@ -15,6 +15,9 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import org.mars_sim.msp.ui.javafx.MainWindowFX;;
+
+
 public class MenuScene {
 	
     public Scene createMenuScene()  {
@@ -25,12 +28,11 @@ public class MenuScene {
     ImageView bg1 = new ImageView();
     bg1.setImage(new Image("/images/mars.png"));        
     root.getChildren().add(bg1);
-
-    Button continueButton = new Button("Press me to go to Main Scene");
+    Button continueButton = new Button("Go to Settlement Scene");
     continueButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent arg0) {
-        	// Send scene switch to MainWindowFX
+        	MainWindowFX.changeScene(3);
         }
     });
     root.getChildren().add(continueButton);
