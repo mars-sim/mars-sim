@@ -69,14 +69,14 @@ implements Repair, Serializable {
     public RepairEmergencyMalfunction(Unit unit) {
         super(NAME, unit, true, true, STRESS_MODIFIER, false, 0D);
 
-        claimMalfunction();
-
         if (unit instanceof Person) {
          	this.person = (Person) unit;
         }
         else if (unit instanceof Robot) {
         	this.robot = (Robot) unit;
         }
+        
+        claimMalfunction();
         
         if (entity != null) {
         	addPersonOrRobotToMalfunctionLocation(entity);
