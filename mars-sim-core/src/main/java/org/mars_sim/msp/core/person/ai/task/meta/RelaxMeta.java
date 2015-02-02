@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelaxMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -65,13 +65,31 @@ public class RelaxMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new Relax(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+        double result = 0D;
+
+        /*
+        // Stress modifier
+        result += robot.getPhysicalCondition().getStress();
+
+        // Crowding modifier
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            try {
+                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
+                if (recBuilding != null) {
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
+                }
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        }
+*/
+        return result;
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * TabPanelRobotic.java
+ * TabPanelBots.java
  * @version 3.07 2015-01-21
  * @author Scott Davis
  */
@@ -40,7 +40,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /** 
  * This is a tab panel for robots.
  */
-public class TabPanelRobotic
+public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {
 
@@ -61,18 +61,18 @@ implements MouseListener, ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelRobotic(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelBots(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelRobotic.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelRobotic.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
 
 		Settlement settlement = (Settlement) unit;
 
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelRobotic.title"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelBots.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		topContentPanel.add(titleLabel);      
@@ -86,13 +86,13 @@ implements MouseListener, ActionListener {
 	
 		// Create robot num label
 		robotNumCache = settlement.getCurrentNumOfRobots();
-		robotNumLabel = new JLabel(Msg.getString("TabPanelRobotic.robot", 
+		robotNumLabel = new JLabel(Msg.getString("TabPanelBots.robot", 
 		        robotNumCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotNumLabel);
 
 		// Create robot capacity label
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = new JLabel(Msg.getString("TabPanelRobotic.robotCapacity", 
+		robotCapLabel = new JLabel(Msg.getString("TabPanelBots.robotCapacity", 
 		        robotCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotCapLabel);
 
@@ -118,7 +118,7 @@ implements MouseListener, ActionListener {
 		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
-		monitorButton.setToolTipText(Msg.getString("TabPanelRobotic.tooltip.monitor")); //$NON-NLS-1$
+		monitorButton.setToolTipText(Msg.getString("TabPanelBots.tooltip.monitor")); //$NON-NLS-1$
 		robotDisplayPanel.add(monitorButton);
 	}
 
@@ -131,14 +131,14 @@ implements MouseListener, ActionListener {
 		// Update robot num
 		if (robotNumCache != settlement.getCurrentNumOfRobots()) {
 			robotNumCache = settlement.getCurrentNumOfRobots();
-			robotNumLabel.setText(Msg.getString("TabPanelRobotic.robot", 
+			robotNumLabel.setText(Msg.getString("TabPanelBots.robot", 
 			        robotNumCache)); //$NON-NLS-1$
 		}
 
 		// Update robot capacity
 		if (robotCapacityCache != settlement.getRobotCapacity()) {
 			robotCapacityCache = settlement.getRobotCapacity();
-			robotCapLabel.setText(Msg.getString("TabPanelRobotic.robotCapacity", 
+			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity", 
 			        robotCapacityCache)); //$NON-NLS-1$
 		}
 

@@ -289,7 +289,7 @@ implements Serializable {
      */
     boolean timePassing(double time, LifeSupport support,
             RobotConfig config) {
-
+/*
         boolean illnessEvent = false;
 
         // Check the existing problems
@@ -350,7 +350,7 @@ implements Serializable {
         
         // Calculate performance
         recalculate();
-
+*/
         return (!isDead());
     }
     
@@ -682,7 +682,11 @@ implements Serializable {
     private void setPerformanceFactor(double newPerformance) {
         if (newPerformance != performance) {
             performance = newPerformance;
-            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			if (person != null) 
+	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			else if (robot != null)
+				robot.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+            
         }
     }
 
@@ -701,7 +705,11 @@ implements Serializable {
     public void setFatigue(double newFatigue) {
         if (fatigue != newFatigue) {
             fatigue = newFatigue;
-            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+			if (person != null) 
+	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+			else if (robot != null)
+				robot.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+            
         }
     }
 

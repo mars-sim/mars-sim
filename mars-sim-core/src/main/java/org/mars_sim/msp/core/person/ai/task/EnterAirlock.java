@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,18 +76,7 @@ implements Serializable {
     public EnterAirlock(Person person, Airlock airlock) {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
         this.airlock = airlock;
-        init();
         logger.fine(person.getName() + " is starting to enter " + airlock.getEntityName());
-    }
-    
-    public EnterAirlock(Robot robot, Airlock airlock) {
-        super(NAME, robot, false, false, STRESS_MODIFIER, false, 0D);
-        this.airlock = airlock;
-        init();
-        logger.fine(robot.getName() + " is starting to enter " + airlock.getEntityName());
-    }
-    
-    public void init() {   	  	
         // Initialize data members
         setDescription(Msg.getString("Task.description.enterAirlock.detail", 
                 airlock.getEntityName())); //$NON-NLS-1$
@@ -98,6 +87,23 @@ implements Serializable {
         addPhase(EXITING_AIRLOCK);
         addPhase(STORING_EVA_SUIT);
 
+        setPhase(WAITING_TO_ENTER_AIRLOCK);
+    }
+    
+    public EnterAirlock(Robot robot, Airlock airlock) {
+        super(NAME, robot, false, false, STRESS_MODIFIER, false, 0D);
+        this.airlock = airlock;
+        logger.fine(robot.getName() + " is starting to enter " + airlock.getEntityName());
+        // Initialize data members
+        setDescription(Msg.getString("Task.description.enterAirlock.detail", 
+                airlock.getEntityName())); //$NON-NLS-1$
+        // Initialize task phase
+        addPhase(WAITING_TO_ENTER_AIRLOCK);
+        addPhase(ENTERING_AIRLOCK);
+        addPhase(WAITING_INSIDE_AIRLOCK);
+        addPhase(EXITING_AIRLOCK);
+        addPhase(STORING_EVA_SUIT);
+        
         setPhase(WAITING_TO_ENTER_AIRLOCK);
     }
     
@@ -249,14 +255,7 @@ implements Serializable {
             insideAirlockPos = airlock.getAvailableAirlockPosition();
         }
  
-        if (person != null) {
-
-        }
-        else if (robot != null) {
-
-        }
-
-        
+  
         if (person != null) {
             logger.finer(person + " entering airlock from outside.");
             
@@ -325,7 +324,7 @@ implements Serializable {
         else if (robot != null) {
             logger.finer(robot + " entering airlock from outside.");
             
-            Point2D personLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+            Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
 
             if (airlock.inAirlock(robot)) {
                 logger.finer(robot + " is entering airlock, but is already in airlock.");
@@ -335,7 +334,7 @@ implements Serializable {
                 logger.finer(robot + " is entering airlock, but is already inside.");
                 endTask();
             }
-            else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
+            else if (LocalAreaUtil.areLocationsClose(robotLocation, insideAirlockPos)) {
 
                 // Enter airlock.
                 if (airlock.enterAirlock(robot, false)) {
@@ -525,7 +524,7 @@ implements Serializable {
                 logger.finer(robot + " has exited airlock inside.");
 
                 // EVA SUIT NOT NEEDED 
-                //setPhase(STORING_EVA_SUIT);
+                setPhase(STORING_EVA_SUIT);
             }
             else {
 

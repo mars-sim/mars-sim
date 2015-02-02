@@ -143,8 +143,17 @@ implements Repair, Serializable {
             return time;
         }
 
-        // Determine effective work time based on "Mechanic" skill.
-        double workTime = time;
+        double workTime = 0;
+	
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+ 
+		// Determine effective work time based on "Mechanic" skill.
         int mechanicSkill = getEffectiveSkillLevel();
         if (mechanicSkill == 0) {
             workTime /= 2;

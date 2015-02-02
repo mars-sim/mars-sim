@@ -57,6 +57,7 @@ public abstract class Airlock implements Serializable {
     private double remainingCycleTime;
     /** People currently in airlock. */
     private Collection<Unit> occupants;
+
     /** The person currently operating the airlock. */
     private Unit operator; 
     /** People waiting for the airlock by the inner door. */
@@ -167,36 +168,74 @@ public abstract class Airlock implements Serializable {
      * @param operator the person operating the airlock.
      * @return true if airlock successfully activated.
      */
-    public boolean activateAirlock(Person operator) {
+    public boolean activateAirlock(Unit operator) {
 
         boolean result = false;
 
         if (!activated) {
             if (!innerDoorLocked) {
                 while ((occupants.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
-                    Person person = (Person) awaitingInnerDoor.get(0);
-                    awaitingInnerDoor.remove(person);
-                    if (awaitingInnerDoor.contains(person)) {
-                        throw new IllegalStateException(person + " still awaiting inner door!");
-                    }
-                    if (!occupants.contains(person)) {
-                        logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
-                        occupants.add(person);
-                    }
+                	
+
+					if (awaitingInnerDoor.get(0) instanceof Person) {  
+						Person person = (Person) awaitingInnerDoor.get(0);
+
+		                    awaitingInnerDoor.remove(person);
+		                    if (awaitingInnerDoor.contains(person)) {
+		                        throw new IllegalStateException(person + " still awaiting inner door!");
+		                    }
+		                    if (!occupants.contains(person)) {
+		                        logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
+		                        occupants.add(person);
+		                    }
+						
+					}
+					else if (awaitingInnerDoor.get(0) instanceof Robot) {
+						Robot robot = (Robot) awaitingInnerDoor.get(0);
+						
+		                    awaitingInnerDoor.remove(robot);
+		                    if (awaitingInnerDoor.contains(robot)) {
+		                        throw new IllegalStateException(robot + " still awaiting inner door!");
+		                    }
+		                    if (!occupants.contains(robot)) {
+		                        logger.finer(robot.getName() + " enters inner door of " + getEntityName() + " airlock.");
+		                        occupants.add(robot);
+		                    }
+					}
+					        
                 }
                 innerDoorLocked = true;
             }
             else if (!outerDoorLocked) {
                 while ((occupants.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
-                    Person person = (Person) awaitingOuterDoor.get(0);
-                    awaitingOuterDoor.remove(person);
-                    if (awaitingOuterDoor.contains(person)) {
-                        throw new IllegalStateException(person + " still awaiting outer door!");
-                    }
-                    if (!occupants.contains(person)) {
-                        logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
-                        occupants.add(person);
-                    }
+                	
+    				if (awaitingOuterDoor.get(0) instanceof Person) {  
+
+	                    Person person = (Person) awaitingOuterDoor.get(0);
+	                    awaitingOuterDoor.remove(person);
+	                    if (awaitingOuterDoor.contains(person)) {
+	                        throw new IllegalStateException(person + " still awaiting outer door!");
+	                    }
+	                    if (!occupants.contains(person)) {
+	                        logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
+	                        occupants.add(person);
+	                    }
+	                    
+    				}
+					else if (awaitingOuterDoor.get(0) instanceof Robot) {
+						Robot robot = (Robot) awaitingOuterDoor.get(0);
+						
+	                    awaitingOuterDoor.remove(robot);
+	                    if (awaitingOuterDoor.contains(robot)) {
+	                        throw new IllegalStateException(robot + " still awaiting outer door!");
+	                    }
+	                    if (!occupants.contains(robot)) {
+	                        logger.finer(robot.getName() + " enters outer door of " + getEntityName() + " airlock.");
+	                        occupants.add(robot);
+	                    }
+	                    
+    				}
+    
                 }
                 outerDoorLocked = true;
             }
@@ -225,6 +264,7 @@ public abstract class Airlock implements Serializable {
 
         return result;
     }
+    /*
     public boolean activateAirlock(Robot operator) {
 
         boolean result = false;
@@ -283,6 +323,8 @@ public abstract class Airlock implements Serializable {
 
         return result;
     }
+    */
+    
     /**
      * Add airlock cycle time.
      * @param time cycle time (millisols)

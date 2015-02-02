@@ -421,7 +421,7 @@ public class BuildingManager implements Serializable {
                 Building tempBuilding = i.next();
                 if (count == rand) {
                     building = tempBuilding;
-                    System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+                    //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
                 }
                 count++;
             }

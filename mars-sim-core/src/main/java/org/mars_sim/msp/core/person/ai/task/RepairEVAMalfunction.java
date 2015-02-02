@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2015-02-01
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -544,8 +544,17 @@ implements Repair, Serializable {
             return time;
         }
 
+        double workTime = 0;
+    	
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+        
         // Determine effective work time based on "Mechanic" skill.
-        double workTime = time;
         int mechanicSkill = 0;
         
 		if (person != null)
@@ -622,7 +631,12 @@ implements Repair, Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+		if (person != null) 
+        	manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+        	manager = robot.getMind().getSkillManager();
+        
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
         return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 

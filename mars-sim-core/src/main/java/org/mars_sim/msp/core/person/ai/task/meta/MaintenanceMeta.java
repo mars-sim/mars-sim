@@ -17,7 +17,9 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -128,9 +130,9 @@ public class MaintenanceMeta implements MetaTask {
         result *= robot.getPerformanceRating();
 
         // Job modifier.
-        Job job = robot.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
+        RobotJob robotJob = robot.getMind().getRobotJob();
+        if (robotJob != null) {
+            result *= robotJob.getStartTaskProbabilityModifier(Maintenance.class);
         }
 
         return result;

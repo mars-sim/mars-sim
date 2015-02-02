@@ -364,7 +364,7 @@ extends UnitTableModel {
 				if (robot.getPhysicalCondition().isDead()) 
 					result = robot.getPhysicalCondition().getDeathDetails().getJob();
 				else {
-					if (robot.getMind().getJob() != null) result = robot.getMind().getJob().getName(robot.getRobotType());
+					if (robot.getMind().getRobotJob() != null) result = robot.getMind().getRobotJob().getName(robot.getRobotType());
 					else result = null;
 				} 
 			} break;
@@ -397,7 +397,7 @@ extends UnitTableModel {
 		if (hunger < 200) status = Msg.getString("RobotTableModel.column.battery.level1");
 		else if (hunger < 500) status = Msg.getString("RobotTableModel.column.battery.level2");
 		else if (hunger < 1000) status = Msg.getString("RobotTableModel.column.battery.level3");
-		else if (hunger < 2000) status = Msg.getString("RobotTableModel.columnbattery.level4");
+		else if (hunger < 2000) status = Msg.getString("RobotTableModel.column.battery.level4");
 		else status = Msg.getString("RobotTableModel.column.battery.level5");
 		//logger.info(" hunger pt : " + Math.round(hunger) + ", status : " + status);
 		return status;

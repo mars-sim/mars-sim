@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -48,8 +49,11 @@ implements Serializable {
     private Mission mission;
     /** The person's job. */
     private Job job;
+    private RobotJob robotJob;
+    
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
+    
     /** The person's personality. */
     private PersonalityType personality;
     /** The person's skill manager. */
@@ -88,7 +92,7 @@ implements Serializable {
         // Initialize data members
         this.robot = robot;
         mission = null;
-        job = null;
+        robotJob = null;
         jobLock = false;
 
         // Set the MBTI personality type.
@@ -127,7 +131,7 @@ implements Serializable {
         else if (robot != null) {
         	 // Check if this person needs to get a new job or change jobs.
 	        if (!jobLock) {
-	            setJob(JobManager.getNewJob(robot), false);
+	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 	        }
 	
 	        // Take action as necessary.
@@ -262,6 +266,14 @@ implements Serializable {
     }
 
     /**
+     * Gets the person's job
+     * @return job or null if none.
+     */
+    public RobotJob getRobotJob() {
+        return robotJob;
+    }
+    
+    /**
      * Checks if the person's job is locked and can't be changed.
      * @return true if job lock.
      */
@@ -279,16 +291,28 @@ implements Serializable {
         jobLock = locked;
         if (!newJob.equals(job)) {
             job = newJob;
-            
-            if (person != null) {
-            	 person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-            }
-            else if (robot != null) {
-            	 robot.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-            }  
+
+        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+
         }
     }
 
+    /**
+     * Sets the robot's job.
+     * @param newJob the new job
+     * @param locked is the job locked so another can't be chosen?
+     */
+    public void setRobotJob(RobotJob newJob, boolean locked) {
+
+        jobLock = locked;
+        if (!newJob.equals(robotJob)) {
+        	robotJob = newJob;
+
+         robot.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+          
+        }
+    }
+    
     /**
      * Returns true if person has an active mission.
      * @return true for active mission

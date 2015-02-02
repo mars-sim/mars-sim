@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelActivity.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 
@@ -27,9 +27,11 @@ import javax.swing.JTextArea;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
@@ -40,6 +42,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
+import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
@@ -86,11 +89,25 @@ implements ActionListener {
 			Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-
-		Person person = (Person) unit;
-		Mind mind = person.getMind();
-		boolean dead = person.getPhysicalCondition().isDead();
-		DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
+		
+	    Person person = null;
+	    Robot robot = null;
+		Mind mind = null;
+		boolean dead = false;
+		DeathInfo deathInfo = null;  
+	    
+	    if (unit instanceof Person) {
+	    	person = (Person) unit;    	
+			mind = person.getMind();
+			dead = person.getPhysicalCondition().isDead();
+			deathInfo = person.getPhysicalCondition().getDeathDetails();
+		}
+		else if (unit instanceof Robot) {
+	        robot = (Robot) unit;
+			mind = robot.getMind();
+			dead = robot.getPhysicalCondition().isDead();
+			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+		}
 
 		// Prepare activity label panel
 		JPanel activityLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -109,17 +126,35 @@ implements ActionListener {
 		jobLabel = new JLabel(Msg.getString("TabPanelActivity.job"), JLabel.CENTER); //$NON-NLS-1$
 		jobPanel.add(jobLabel);        
 
-		// Prepare job combo box
-		jobCache = mind.getJob().getName(person.getGender());
-		List<String> jobNames = new ArrayList<String>();
-		for (Job job : JobManager.getJobs()) {
-			jobNames.add(job.getName(person.getGender()));
+		
+	    if (unit instanceof Person) {
+	    	person = (Person) unit;    	
+			// Prepare job combo box
+			jobCache = mind.getJob().getName(person.getGender());
+			List<String> jobNames = new ArrayList<String>();
+			for (Job job : JobManager.getJobs()) {
+				jobNames.add(job.getName(person.getGender()));
+			}
+			Collections.sort(jobNames);
+			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
 		}
-		Collections.sort(jobNames);
-		jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+		else if (unit instanceof Robot) {
+	        robot = (Robot) unit;
+			mind = robot.getMind();
+			// Prepare job combo box
+			jobCache = mind.getRobotJob().getName(robot.getRobotType());
+			List<String> jobNames = new ArrayList<String>();
+			for (RobotJob robotJob : JobManager.getRobotJobs()) {
+				jobNames.add(robotJob.getName(robot.getRobotType()));
+			}
+			Collections.sort(jobNames);
+			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+		}
+
 		jobComboBox.setSelectedItem(jobCache);
 		jobComboBox.addActionListener(this);
 		jobPanel.add(jobComboBox);
+		
 
 		// Prepare activity panel
 		JPanel activityPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -244,21 +279,58 @@ implements ActionListener {
 	@Override
 	public void update() {
 
-		Person person = (Person) unit;
-		Mind mind = person.getMind();
-		boolean dead = person.getPhysicalCondition().isDead();
-		DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
+	    Person person = null;
+	    Robot robot = null;
+		Mind mind = null;
+		boolean dead = false;
+		DeathInfo deathInfo = null;  
+	    
+	    if (unit instanceof Person) {
+	    	person = (Person) unit;    	
+			mind = person.getMind();
+			dead = person.getPhysicalCondition().isDead();
+			deathInfo = person.getPhysicalCondition().getDeathDetails();
+		}
+		else if (unit instanceof Robot) {
+	        robot = (Robot) unit;
+			mind = robot.getMind();
+			dead = robot.getPhysicalCondition().isDead();
+			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+		}
+		
+	    
+	    if (unit instanceof Person) {
+	    	person = (Person) unit;    	
+	    	
+			// Update job if necessary.
+			if (dead) {
+				jobCache = deathInfo.getJob();
+				jobComboBox.setEnabled(false);
+			} 
+			else jobCache = mind.getJob().getName(person.getGender());
+			if (!jobCache.equals(jobComboBox.getSelectedItem())) {
+			    jobComboBox.setSelectedItem(jobCache);
+			}
+		}
+		else if (unit instanceof Robot) {
+	        robot = (Robot) unit;
+	
+			// Update job if necessary.
+			if (dead) {
+				jobCache = deathInfo.getJob();
+				jobComboBox.setEnabled(false);
+			} 
+			else jobCache = mind.getRobotJob().getName(robot.getRobotType());
+			if (!jobCache.equals(jobComboBox.getSelectedItem())) {
+			    jobComboBox.setSelectedItem(jobCache);
+			}
 
-		// Update job if necessary.
-		if (dead) {
-			jobCache = deathInfo.getJob();
-			jobComboBox.setEnabled(false);
-		} 
-		else jobCache = mind.getJob().getName(person.getGender());
-		if (!jobCache.equals(jobComboBox.getSelectedItem())) {
-		    jobComboBox.setSelectedItem(jobCache);
 		}
 
+
+
+		
+		
 		TaskManager taskManager = null;
 		Mission mission = null;
 		if (!dead) {
@@ -314,33 +386,86 @@ implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-
 		if ((source == missionButton) || (source == monitorButton)) {
-			Person person = (Person) unit;
-			if (!person.getPhysicalCondition().isDead()) {
-				Mind mind = person.getMind();
-				if (mind.hasActiveMission()) {
-					if (source == missionButton) {
-						((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
-						getDesktop().openToolWindow(MissionWindow.NAME);
+			
+		    Person person = null;
+		    Robot robot = null;
+			Mind mind = null;
+			boolean dead = false;
+			DeathInfo deathInfo = null;  
+		    
+		    if (unit instanceof Person) {
+		    	person = (Person) unit;    	
+				mind = person.getMind();
+				dead = person.getPhysicalCondition().isDead();
+				deathInfo = person.getPhysicalCondition().getDeathDetails();
+
+				if (!person.getPhysicalCondition().isDead()) {
+					mind = person.getMind();
+					if (mind.hasActiveMission()) {
+						if (source == missionButton) {
+							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
+							getDesktop().openToolWindow(MissionWindow.NAME);
+						}
+						else if (source == monitorButton) desktop.addModel(new PersonTableModel(mind.getMission()));
 					}
-					else if (source == monitorButton) desktop.addModel(new PersonTableModel(mind.getMission()));
 				}
 			}
+			else if (unit instanceof Robot) {
+		        robot = (Robot) unit;
+				mind = robot.getMind();
+				dead = robot.getPhysicalCondition().isDead();
+				deathInfo = robot.getPhysicalCondition().getDeathDetails();
+				
+				if (!robot.getPhysicalCondition().isDead()) {
+					mind = robot.getMind();
+					if (mind.hasActiveMission()) {
+						if (source == missionButton) {
+							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
+							getDesktop().openToolWindow(MissionWindow.NAME);
+						}
+						else if (source == monitorButton) desktop.addModel(new RobotTableModel(mind.getMission()));
+					}
+				}				
+			}	
 		}
 		else if (source == jobComboBox) {
-		    Person person = (Person) unit;
+			Person person = null;
+			Robot robot = null; 
+		    
 			String jobName = (String) jobComboBox.getSelectedItem();
-			Job selectedJob = null;
-			Iterator<Job> i = JobManager.getJobs().iterator();
-			while (i.hasNext() && (selectedJob == null)) {
-			    Job job = i.next();
-			    if (jobName.equals(job.getName(person.getGender()))) {
-			        selectedJob = job;
-			    }
+			
+			if (unit instanceof Person) {
+				person = (Person) unit; 
+				
+				Job selectedJob = null;
+				Iterator<Job> i = JobManager.getJobs().iterator();
+				while (i.hasNext() && (selectedJob == null)) {
+				    Job job = i.next();
+					if (jobName.equals(job.getName(person.getGender()))) {
+				        selectedJob = job;
+				    }
+				}
+				
+				person.getMind().setJob(selectedJob, true);		
 			}
 			
-			person.getMind().setJob(selectedJob, true);
+
+			else if (unit instanceof Robot) {
+				robot = (Robot) unit;
+				
+				
+				RobotJob selectedJob = null;
+				Iterator<RobotJob> i = JobManager.getRobotJobs().iterator();
+				while (i.hasNext() && (selectedJob == null)) {
+					RobotJob job = i.next();
+					if (jobName.equals(job.getName(robot.getRobotType()))) {
+				        selectedJob = job;
+				    }
+				}
+				
+				robot.getMind().setRobotJob(selectedJob, true);
+			}
 		}
 	}
 }       

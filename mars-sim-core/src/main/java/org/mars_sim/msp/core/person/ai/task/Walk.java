@@ -700,7 +700,7 @@ implements Serializable {
 		else if (robot != null) {
 		       logger.finer(robot + " walking settlement interior phase.");
 
-		        // Check if person has reached destination location.
+		        // Check if robot has reached destination location.
 		        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		        Building building = BuildingManager.getBuilding(robot);
 		        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
@@ -772,7 +772,7 @@ implements Serializable {
             logger.finer(robot + " walking rover interior phase.");
 
 
-            // Check if person has reached destination location.
+            // Check if robot has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Rover rover = (Rover) robot.getVehicle();
 
@@ -848,9 +848,9 @@ implements Serializable {
 
             // Check if robot has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-            Point2D personLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+            Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
             Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
-            if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
+            if (LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
                     setPhase(getWalkingStepPhase());

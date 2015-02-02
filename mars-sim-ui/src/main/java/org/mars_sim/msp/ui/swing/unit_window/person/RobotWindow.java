@@ -39,8 +39,8 @@ extends UnitWindow {
 		addTabPanel(new TabPanelAttribute(robot, desktop));
 		addTabPanel(new TabPanelSkill(robot, desktop));
 		addTabPanel(new TabPanelActivity(robot, desktop));
-		addTabPanel(new TabPanelHealth(robot, desktop));
-		addTabPanel(new TabPanelGeneral(robot, desktop));
+		//addTabPanel(new TabPanelHealth(robot, desktop));
+		//addTabPanel(new TabPanelGeneral(robot, desktop));
 
 
 		// Add death tab panel if robot is dead.

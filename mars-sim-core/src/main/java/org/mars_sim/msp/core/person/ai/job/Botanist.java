@@ -108,29 +108,6 @@ implements Serializable {
 	
 
 	/**
-	 * Gets a robot's capability to perform this job.
-	 * @param robot the robot to check.
-	 * @return capability (min 0.0).
-	 */
-	public double getCapability(Robot robot) {
-
-		double result = 0D;
-
-		int botanySkill = robot.getMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
-		result = botanySkill;
-
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result+= result * ((averageAptitude - 50D) / 100D);
-
-		if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-
-		return result;
-	}
-	
-	/**
 	 * Gets the base settlement need for this job.
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
@@ -164,6 +141,12 @@ implements Serializable {
 		//result *= foodValue;
 
 		return result;	
+	}
+
+	@Override
+	public double getCapability(Robot robot) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

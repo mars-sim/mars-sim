@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
@@ -119,13 +120,72 @@ public class MaintenanceEVAMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new MaintenanceEVA(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+	      
+        double result = 0D;
+
+        try {
+            // Total probabilities for all malfunctionable entities in robot's local.
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+            while (i.hasNext()) {
+                Malfunctionable entity = i.next();
+                boolean isStructure = (entity instanceof Structure);
+                boolean uninhabitableBuilding = false;
+                if (entity instanceof Building) {
+                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
+                }
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                boolean hasMalfunction = manager.hasMalfunction();
+                boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
+                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+                boolean minTime = (effectiveTime >= 1000D);
+                if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) {
+                    double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
+                    if (entityProb > 100D) {
+                        entityProb = 100D;
+                    }
+                    result += entityProb;
+                }
+            }   
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"getProbability()",e);
+        }
+        
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+                result = 0D;
+            }
+        } 
+        
+        // Crowded settlement modifier
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = robot.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+        }
+    
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+        
+        // Job modifier.
+        RobotJob robotJob = robot.getMind().getRobotJob();
+        if (robotJob != null) {
+            result *= robotJob.getStartTaskProbabilityModifier(MaintenanceEVA.class);
+        }
+    
+        return result;
 	}
 }

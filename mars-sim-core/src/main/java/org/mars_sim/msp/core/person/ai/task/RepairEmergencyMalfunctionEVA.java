@@ -71,6 +71,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         
         init();
         
+        // Create starting task event if needed.
+        if (getCreateEvents() && !isDone()) {        	
+            TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
+            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+        }
+        
+        init2();
+        
         logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
     }
     
@@ -78,6 +86,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         super(NAME, robot, false, 0D);
 
         init();
+        
+        // Create starting task event if needed.
+        if (getCreateEvents() && !isDone()) {        	
+            TaskEvent startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
+            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+        }
+        
+        init2();
         
         logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
     }    
@@ -91,12 +107,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             return;
         }
         
-        // Create starting task event if needed.
-        if (getCreateEvents() && !isDone()) {
-            TaskEvent startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
-            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-        }
+    }
 
+    public void init2() {
+        	
         // Determine location for repairing malfunction.
         Point2D malfunctionLoc = determineMalfunctionLocation();
         setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
@@ -252,9 +266,9 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         }
 
         // Check if EVA suit is available.
-        if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
-            result = false;
-        }
+        //if ((airlock != null) && !ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
+        //    result = false;
+        //}
 
         // Check if robot is incapacitated.
         if (robot.getPerformanceRating() == 0D) {
@@ -366,8 +380,18 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             return time;
         }
 
+        
+        double workTime = 0;
+    	
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+        
         // Determine effective work time based on "Mechanic" skill.
-        double workTime = time;
         int mechanicSkill = 0;
         if (person != null) 
             mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);        

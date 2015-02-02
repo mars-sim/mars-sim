@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -55,13 +55,27 @@ public class WalkMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new Walk(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+
+        double result = 0D;
+
+        // If robot is outside, give high probability to walk to emergency airlock location.
+        if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+            result = 1000D;
+        }
+        else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
+            // If robot is inside a settlement building, may walk to a random location within settlement.
+            result = 10D;
+        }
+        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+            // If robot is inside a rover, may walk to random location within rover.
+            result = 10D;
+        }
+        
+        return result;
 	}
 }
