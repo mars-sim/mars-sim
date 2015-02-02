@@ -33,6 +33,7 @@ public final class JobManager implements Serializable {
 	// Data members
 	/** List of the jobs in the simulation. */
 	private static List<Job> jobs; 
+	private static List<RobotJob> robotJobs;
 
 	/**
 	 * Private constructor for static utility class.
@@ -62,12 +63,30 @@ public final class JobManager implements Serializable {
 	}
 
 	/**
+	 * Initialize robotJobs list.
+	 */
+	private static void loadRobotJobs() {
+		robotJobs = new ArrayList<RobotJob>();
+		robotJobs.add(new Gardenbot());
+		robotJobs.add(new Repairbot());
+	}
+	
+	/**
 	 * Gets a list of available jobs in the simulation.
 	 * @return list of jobs
 	 */
 	public static List<Job> getJobs() {
 		if (jobs == null) loadJobs();
 		return new ArrayList<Job>(jobs);
+	}
+	
+	/**
+	 * Gets a list of available jobs in the simulation.
+	 * @return list of jobs
+	 */
+	public static List<RobotJob> getRobotJobs() {
+		if (robotJobs == null) loadRobotJobs();
+		return new ArrayList<RobotJob>(robotJobs);
 	}
 
 	/**
@@ -85,6 +104,16 @@ public final class JobManager implements Serializable {
 		return null;
 	}
 
+	public static RobotJob getRobotJob(String jobClassName) {
+		if (robotJobs == null) loadRobotJobs();
+		for (RobotJob robotJob : robotJobs) {
+			if (robotJob.getClass().getSimpleName().compareTo(jobClassName) == 0) {
+				return robotJob;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Gets the need for a job at a settlement minus the capability of the inhabitants
 	 * performing that job there.
@@ -115,7 +144,24 @@ public final class JobManager implements Serializable {
 			
 		return result;
 	}
+	
+	// For robots
+	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
+		double result = robotJob.getSettlementNeed(settlement);
 
+
+			// Check all Robots associated with the settlement.
+			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+			while (j.hasNext()) {
+				Robot robot = j.next();
+				if (robot.getMind().getRobotJob() == robotJob) result-= robotJob.getCapability(robot);
+			}
+		
+			result = result/2D;
+			
+		return result;
+	}
+	
 	/**
 	 * Gets a new job for the person.
 	 * Might be the person's current job.
@@ -124,11 +170,8 @@ public final class JobManager implements Serializable {
 	 */
 	public static Job getNewJob(Unit unit) {
 		Job newJob = null;
-        Person person = null;
-        Robot robot = null;
+        Person person = (Person) unit;
         
-        if (unit instanceof Person) {
-         	person = (Person) unit;
     		Job originalJob = person.getMind().getJob();
     		// Determine person's associated settlement.
     		Settlement settlement = null;
@@ -159,10 +202,21 @@ public final class JobManager implements Serializable {
     		}
     		else newJob = originalJob;
 
-        }
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-			Job originalJob = robot.getMind().getJob();
+		return newJob;
+	}
+
+
+	/**
+	 * Gets a new job for the Robot.
+	 * Might be the Robot's current job.
+	 * @param Robot the Robot to check.
+	 * @return the new job.
+	 */
+	public static RobotJob getNewRobotJob(Unit unit) {
+		RobotJob newJob = null;
+        Robot robot = (Robot) unit;
+        
+        	RobotJob originalJob = robot.getMind().getRobotJob();
 	
 			// Determine robot's associated settlement.
 			Settlement settlement = null;
@@ -174,12 +228,12 @@ public final class JobManager implements Serializable {
 			// Find new job for robot.
 			double newJobProspect = Integer.MIN_VALUE;					
 			if (settlement != null) {
-				Iterator<Job> i = getJobs().iterator();
+				Iterator<RobotJob> i = getRobotJobs().iterator();
 				while (i.hasNext()) {
-					Job job = i.next();
-					double jobProspect = getJobProspect(robot, job, settlement, true);
+					RobotJob robotJob = i.next();
+					double jobProspect = getRobotJobProspect(robot, robotJob, settlement, true);
 					if (jobProspect >= newJobProspect) {
-						newJob = job;
+						newJob = robotJob;
 						newJobProspect = jobProspect;
 					}
 				}
@@ -191,10 +245,11 @@ public final class JobManager implements Serializable {
 				}	
 			}
 			else newJob = originalJob;
-        }
+        
 		return newJob;
 	}
 
+	
 	/**
 	 * Get the job prospect value for a person and a particular job at a settlement.
 	 * @param person the person to check for
@@ -205,23 +260,28 @@ public final class JobManager implements Serializable {
 	 */
 	public static double getJobProspect(Unit unit, Job job, Settlement settlement, boolean isHomeSettlement) {
         Person person = null;
-        Robot robot = null;
+
 		double jobCapability = 0D;
 		double remainingNeed = 0D;
-		
-        if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-        	if (job != null) jobCapability = job.getCapability(robot);    		
-    		remainingNeed = getRemainingSettlementNeed(settlement, job);    		
-    		if ((job == robot.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
-        }
-        
-        else if (unit instanceof Person) {
+	
          	person = (Person) unit;
         	if (job != null) jobCapability = job.getCapability(person);   		
     		remainingNeed = getRemainingSettlementNeed(settlement, job);   		
     		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;     
-        }
+  
+		return (jobCapability + 1D) * remainingNeed;
+	}
+	
+	public static double getRobotJobProspect(Unit unit, RobotJob robotJob, Settlement settlement, boolean isHomeSettlement) {
+        Robot robot = null;
+		double jobCapability = 0D;
+		double remainingNeed = 0D;
+		
+        	robot = (Robot) unit;
+        	if (robotJob != null) jobCapability = robotJob.getCapability(robot);    		
+    		remainingNeed = getRemainingSettlementNeed(settlement, robotJob);    		
+    		if ((robotJob == robot.getMind().getRobotJob()) && isHomeSettlement) remainingNeed+= jobCapability;
+
         
 		return (jobCapability + 1D) * remainingNeed;
 	}
@@ -246,10 +306,10 @@ public final class JobManager implements Serializable {
 	
 	public static double getBestJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
 		double bestProspect = Double.MIN_VALUE;
-		Iterator<Job> i = getJobs().iterator();
+		Iterator<RobotJob> i = getRobotJobs().iterator();
 		while (i.hasNext()) {
-			Job job = i.next();
-			double prospect = getJobProspect(robot, job, settlement, isHomeSettlement);
+			RobotJob robotJob = i.next();
+			double prospect = getRobotJobProspect(robot, robotJob, settlement, isHomeSettlement);
 			if (prospect > bestProspect) bestProspect = prospect;
 		}
 		return bestProspect;

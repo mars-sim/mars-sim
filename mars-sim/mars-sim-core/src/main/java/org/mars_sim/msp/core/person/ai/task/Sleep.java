@@ -18,11 +18,13 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.RoboticStations;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
@@ -55,6 +57,7 @@ public class Sleep extends Task implements Serializable {
     // Data members
     /** The living accommodations if any. */
     private LivingAccommodations accommodations;
+    private RoboticStations stations;
     /** The previous time (millisols). */
     private double previousTime;
 
@@ -104,11 +107,57 @@ public class Sleep extends Task implements Serializable {
         setPhase(SLEEPING);
     }
 
+    public Sleep(Robot robot) {
+        super(NAME, robot, false, false, STRESS_MODIFIER, true, 
+                (250D + RandomUtil.getRandomDouble(80D)));
+
+        boolean walkSite = false;
+
+        // If robot is in a settlement, try to find a living accommodations building.
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+            Building quarters = getAvailableRoboticStationBuilding(robot);
+            if (quarters != null) {
+                // Walk to quarters.
+                walkToActivitySpotInBuilding(quarters, true);
+                stations = (RoboticStations) quarters.getFunction(
+                        BuildingFunction.ROBOTIC_STATION);
+                stations.addSleeper();
+                walkSite = true;
+            }
+        }
+
+        if (!walkSite) {
+
+            if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If robot is in rover, walk to passenger activity spot.
+                if (robot.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
+                }
+            }
+            else {
+                // Walk to random location.
+                walkToRandomLocation(true);
+            }
+        }
+
+
+        previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+
+        // Initialize phase
+        addPhase(SLEEPING);
+        setPhase(SLEEPING);
+    }
+    
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.LIVING_ACCOMODATIONS;
     }
 
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.ROBOTIC_STATION;
+    }
+    
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -128,24 +177,39 @@ public class Sleep extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double sleepingPhase(double time) {
+    	
+		if (person != null) {
+	        // Reduce person's fatigue
+	        double newFatigue = person.getPhysicalCondition().getFatigue() - (5D * time);
+	        if (newFatigue < 0D) {
+	            newFatigue = 0D;
+	        }
+	        person.getPhysicalCondition().setFatigue(newFatigue);
 
-        // Reduce person's fatigue
-        double newFatigue = person.getPhysicalCondition().getFatigue() - (5D * time);
-        if (newFatigue < 0D) {
-            newFatigue = 0D;
-        }
-        person.getPhysicalCondition().setFatigue(newFatigue);
+	        // Check if alarm went off.
+	        double newTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+	        double alarmTime = getAlarmTime();
+	        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+	            endTask();
+	            logger.finest(person.getName() + " woke up from alarm.");
+	        }
+	        else {
+	            previousTime = newTime;
+	        }
 
-        // Check if alarm went off.
-        double newTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        double alarmTime = getAlarmTime();
-        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-            endTask();
-            logger.finest(person.getName() + " woke up from alarm.");
-        }
-        else {
-            previousTime = newTime;
-        }
+		}
+		else if (robot != null) {
+			// Check if alarm went off.
+	        double newTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+	        double alarmTime = getAlarmTime();
+	        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+	            endTask();
+	            logger.finest(robot.getName() + " woke up from alarm.");
+	        }
+	        else {
+	            previousTime = newTime;
+	        }
+		}
 
         return 0D;
     }
@@ -159,10 +223,19 @@ public class Sleep extends Task implements Serializable {
     public void endTask() {
         super.endTask();
 
-        // Remove person from living accommodations bed so others can use it.
-        if (accommodations != null && accommodations.getSleepers() > 0) {
-            accommodations.removeSleeper();
-        }
+		if (person != null) {
+	        // Remove person from living accommodations bed so others can use it.
+	        if (accommodations != null && accommodations.getSleepers() > 0) {
+	            accommodations.removeSleeper();
+	        }
+		}
+		else if (robot != null) {
+	        // Remove robot from stations so other robots can use it.
+	        if (stations != null && stations.getSleepers() > 0) {
+	        	stations.removeSleeper();
+	        }
+		}
+
 
     }
 
@@ -192,6 +265,27 @@ public class Sleep extends Task implements Serializable {
 
         return result;
     }
+    
+    public static Building getAvailableRoboticStationBuilding(Robot robot) {
+
+        Building result = null;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = robot.getSettlement().getBuildingManager();
+            List<Building> quartersBuildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
+            quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
+            quartersBuildings = getRoboticStationsWithEmptySlots(quartersBuildings);
+            quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+
+            //if (quartersBuildings.size() > 0) {
+             //   Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+            //            robot, quartersBuildings);
+           //     result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+            //}
+        }
+
+        return result;
+    }
 
     /**
      * Gets living accommodations with empty beds from a list of buildings with the living accommodations function.
@@ -212,13 +306,34 @@ public class Sleep extends Task implements Serializable {
 
         return result;
     }
+    
+    private static List<Building> getRoboticStationsWithEmptySlots(List<Building> buildingList) {
+        List<Building> result = new ArrayList<Building>();
+
+        Iterator<Building> i = buildingList.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            RoboticStations stations = (RoboticStations) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            if (stations.getSleepers() < stations.getStations()) {
+                result.add(building);
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Gets the wakeup alarm time for the person's longitude.
      * @return alarm time in millisols.
      */
     private double getAlarmTime() {
-        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+    	double timeDiff = 0;
+    	
+		if (person != null) 
+			timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+		else if (robot != null)
+        	timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
+        
         double modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
         if (modifiedAlarmTime < 0D) {
             modifiedAlarmTime += 1000D;
@@ -240,7 +355,7 @@ public class Sleep extends Task implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-
+        stations = null;
         accommodations = null;
     }
 }

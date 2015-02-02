@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -36,6 +37,30 @@ public class TaskProbabilityUtil {
         double modifier = 1D;
 
         Building currentBuilding = BuildingManager.getBuilding(person);
+        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+
+            // Increase probability if current building is overcrowded.
+            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+            if (currentOverCrowding > 0) {
+                modifier *= ((double) currentOverCrowding + 2);
+            }
+
+            // Decrease probability if new building is overcrowded.
+            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
+            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+            if (newOverCrowding > 0) {
+                modifier /= ((double) newOverCrowding + 2);
+            }
+        }
+
+        return modifier;
+    }
+    
+    protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
+        double modifier = 1D;
+
+        Building currentBuilding = BuildingManager.getBuilding(robot);
         if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
             // Increase probability if current building is overcrowded.
@@ -94,4 +119,37 @@ public class TaskProbabilityUtil {
 
         return result;
     }
+    /*
+    protected static double getRelationshipModifier(Robot robot, Building building) {
+        double result = 1D;
+
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+        if ((robot == null) || (building == null)) {
+            throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
+        }
+        else {
+            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+                double totalOpinion = 0D;
+                Iterator<Robot> i = lifeSupport.getRobotOccupants().iterator();
+                while (i.hasNext()) {
+                	Robot occupant = i.next();
+                    if (robot != occupant) {
+                        totalOpinion+= ((relationshipManager.getOpinionOfPerson(robot, occupant) - 50D) / 50D);
+                    }
+                }
+
+                if (totalOpinion >= 0D) {
+                    result*= (1D + totalOpinion);
+                }
+                else {
+                    result/= (1D - totalOpinion); 
+                }
+            }
+        }
+
+        return result;
+    }
+    */
 }

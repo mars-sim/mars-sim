@@ -435,7 +435,7 @@ implements Serializable, Comparable<Task> {
 			else if (robot != null) {
 				
 	        	// If task is effort-driven and person is incapacitated, end task.
-			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
+			    if (effortDriven && (robot.getPerformanceRating() == 0D)) {
 			    	endTask();
 	                
 	            } else {
@@ -466,6 +466,7 @@ implements Serializable, Comparable<Task> {
         }
         
 		if (person != null) 
+			// For robot only
 			// Modify stress performing task.
 			modifyStress(time - timeLeft);
         
@@ -726,15 +727,22 @@ implements Serializable, Comparable<Task> {
     protected BuildingFunction getRelatedBuildingFunction() {
         return null;
     }
-    
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return null;
+    }
     /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.
      * @param allowFail true if walking is allowed to fail.
      */
     protected void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
+    	BuildingFunction functionType = null;
+    	
+		if (person != null) 
+	        functionType = getRelatedBuildingFunction();	
+		else if (robot != null)
+			functionType = getRelatedBuildingRoboticFunction();
         
-        BuildingFunction functionType = getRelatedBuildingFunction();
         
         if ((functionType != null) && (building.hasFunction(functionType))) {
             walkToActivitySpotInBuilding(building, functionType, allowFail);

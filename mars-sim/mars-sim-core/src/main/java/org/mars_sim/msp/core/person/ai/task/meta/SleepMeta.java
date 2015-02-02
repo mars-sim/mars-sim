@@ -72,13 +72,41 @@ public class SleepMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new Sleep(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+	      
+        double result = 20D;
+        /*
+        // Fatigue modifier.
+        double fatigue = robot.getPhysicalCondition().getFatigue();
+        if (fatigue > 500D) {
+            result = (fatigue - 500D) / 4D;
+        }
+        */
+        // Dark outside modifier.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            result *= 2D;
+        }
+        
+        // Crowding modifier.
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+            Building building = Sleep.getAvailableRoboticStationBuilding(robot);
+            if (building != null) {
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
+                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, building);
+            }
+        }
+        
+        // No sleeping outside.
+        if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
+            result = 0D;
+        }
+
+        return result;
 	}
 }

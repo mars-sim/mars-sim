@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -113,7 +114,7 @@ implements Serializable {
         createInitialParts();
         createInitialPeople();
         
-        //createInitialRobots();
+        createInitialRobots();
     }
 
     /**
@@ -562,8 +563,8 @@ implements Serializable {
                 
  
                 while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
-                    System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
-                    System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
+                    //System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
+                    //System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
 
                 	RobotType robotType = RobotType.REPAIRBOT;
                     //if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -572,7 +573,7 @@ implements Serializable {
                 	
                     Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null), robotType, "Mars", settlement); //TODO: read from file
                     addUnit(robot);
-                    System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
+                    //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
 
                 }
             }
@@ -609,7 +610,7 @@ implements Serializable {
 
             // Get robot's settlement or randomly determine it if not configured.
             String settlementName = robotConfig.getConfiguredRobotSettlement(x);
-            System.out.println("settlementName is " + settlementName);
+            //System.out.println("settlementName is " + settlementName);
             Settlement settlement = null;
             if (settlementName != null) {
                 Collection<Settlement> col = CollectionUtils.getSettlement(units);
@@ -654,14 +655,14 @@ implements Serializable {
             // Create robot and add to the unit manager.
             Robot robot = new Robot(name, robotType, "Mars", settlement); //TODO: read from file
             addUnit(robot);
-            System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
+            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
 
             // Set robot's job (if any).
             String jobName = robotConfig.getConfiguredRobotJob(x);
             if (jobName != null) {
-                Job job = JobManager.getJob(jobName);
-                if (job != null) {
-                	robot.getMind().setJob(job, true);
+                RobotJob robotJob = JobManager.getRobotJob(jobName);
+                if (robotJob != null) {
+                	robot.getMind().setRobotJob(robotJob, true);
                 }
             }
 

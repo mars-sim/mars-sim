@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -482,7 +482,7 @@ implements Serializable {
 		if (person != null) 
 	        manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-			manager = person.getMind().getSkillManager();
+			manager = robot.getMind().getSkillManager();
         
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }   

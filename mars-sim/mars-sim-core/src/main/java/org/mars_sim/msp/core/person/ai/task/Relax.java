@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -79,6 +80,46 @@ implements Serializable {
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+                }
+            }
+		    else {
+                // Walk to random location.
+                walkToRandomLocation(true);
+            }
+		}
+
+		// Initialize phase
+		addPhase(RELAXING);
+		setPhase(RELAXING);
+	}
+	
+	public Relax(Robot robot) {
+		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + 
+				RandomUtil.getRandomDouble(40D));
+
+		// If robot is in a settlement, try to find a place to relax.
+		boolean walkSite = false;
+		/*
+		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {      	
+			try {
+				Building recBuilding = getAvailableRecreationBuilding(robot);
+				if (recBuilding != null) {
+					// Walk to recreation building.
+				    walkToActivitySpotInBuilding(recBuilding, true);
+				    walkSite = true;
+				}
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
+				endTask();
+			}
+		}
+		*/
+		if (!walkSite) {
+		    if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If robot is in rover, walk to passenger activity spot.
+                if (robot.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
                 }
             }
 		    else {

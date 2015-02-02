@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
- * Job.java
- * @version 3.07 2014-12-06
-
- * @author Scott Davis
+ * RobotJob.java
+ * @version 3.07 2015-02-02
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
 
@@ -12,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonGender;
+
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -21,21 +19,21 @@ import org.mars_sim.msp.core.structure.Settlement;
 /** 
  * The Job class represents a person's job.
  */
-public abstract class Job
+public abstract class RobotJob
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .01D;
+	private static final double NON_JOB_TASK_PENALTY = .1D;
 	/** Probability penalty for starting a non-job-related mission. */
-	private static final double NON_JOB_MISSION_START_PENALTY = .01D;
+	private static final double NON_JOB_MISSION_START_PENALTY = .1D;
 	/** Probability penalty for joining a non-job-related mission. */
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
+	private static final double NON_JOB_MISSION_JOIN_PENALTY = .1D;
 
 	// Domain members
-	protected Class<? extends Job> jobClass;
+	protected Class<? extends RobotJob> jobClass;
 	/** List of tasks related to the job. */
 	protected List<Class<?>> jobTasks;
 	/** List of missions to be started by a person with this job. */
@@ -47,7 +45,7 @@ implements Serializable {
 	 * Constructor.
 	 * @param name the name of the job.
 	 */
-	public Job(Class<? extends Job> jobClass) {
+	public RobotJob(Class<? extends RobotJob> jobClass) {
 		this.jobClass = jobClass;
 		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
@@ -56,34 +54,23 @@ implements Serializable {
 
 	/**
 	 * Gets the job's internationalized name for display in user interface.
-	 * This uses directly the name of the class that extends {@link Job},
-	 * so take care not to rename those, or if you do then remember to
-	 * change the keys in <code>messages.properties</code> accordingly. 
-	 * @param gender {@link PersonGender}
+	 * @param robotType {@link RobotType}
 	 * @return name
 	 */
-	public String getName(PersonGender gender) {
-		StringBuffer key = new StringBuffer()
-		.append("job."); //$NON-NLS-1$
-		switch (gender) {
-			case MALE : key.append("male."); break; //$NON-NLS-1$
-			case FEMALE : key.append("female."); break; //$NON-NLS-1$
-			default : key.append("unknown."); break; //$NON-NLS-1$
+	public String getName(RobotType robotType) {
+		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
+		switch (robotType) {
+			case GARDENBOT : key.append("gardenbot"); break; //$NON-NLS-1$
+			case REPAIRBOT : key.append("repairbot"); break; //$NON-NLS-1$
+			default : key.append("bot"); break; //$NON-NLS-1$
 		}
-		key.append(jobClass.getSimpleName());
+		//key.append(jobClass.getSimpleName());
 		return Msg.getString(key.toString()); //$NON-NLS-1$
 	};
 	
-	public Class<? extends Job> getJobClass() {
+	public Class<? extends RobotJob> getJobClass() {
 		return this.jobClass;
 	}
-
-	/**
-	 * Gets a person/robot's capability to perform this job.
-	 * @param person/robot the person/robot to check.
-	 * @return capability (min 0.0).
-	 */
-	public abstract double getCapability(Person person);
 
 	/**
 	 * Gets a robot's capability to perform this job.

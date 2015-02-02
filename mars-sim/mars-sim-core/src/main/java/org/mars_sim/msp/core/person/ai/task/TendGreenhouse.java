@@ -160,8 +160,17 @@ implements Serializable {
             return time;
         }
 
-        // Determine amount of effective work time based on "Botany" skill.
-        double workTime = time;
+        double workTime = 0;
+        
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+
+        // Determine amount of effective work time based on "Botany" skill
         int greenhouseSkill = getEffectiveSkillLevel();
         if (greenhouseSkill == 0) {
             workTime /= 2;
@@ -274,13 +283,15 @@ implements Serializable {
                 List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
                 farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
                 farmBuildings = getFarmsNeedingWork(farmBuildings);
-                farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
+                //farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 
-
+                // TODO: add person's good/bad feeling toward robots
                 if (farmBuildings.size() > 0) {
-                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                            person, farmBuildings);
-                    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+                   // Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                    //        person, farmBuildings);
+                    //result = RandomUtil.getWeightedRandomObject(farmBuildings);
+                	int selectedFarm = RandomUtil.getRandomInt(farmBuildings.size()-1);
+                	result = farmBuildings.get(selectedFarm);
                 }
             }
         }
@@ -334,6 +345,7 @@ implements Serializable {
     }
 
     @Override
+    //TODO: get agility score of a person/robot
     public int getEffectiveSkillLevel() {
     	SkillManager manager = null;
     

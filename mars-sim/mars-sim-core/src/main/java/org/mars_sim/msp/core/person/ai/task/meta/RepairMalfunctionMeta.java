@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.Task;
 
@@ -111,7 +112,7 @@ public class RepairMalfunctionMeta implements MetaTask {
         result *= robot.getPerformanceRating();
 
         // Job modifier.
-        Job job = robot.getMind().getJob();
+        RobotJob job = robot.getMind().getRobotJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
         }
