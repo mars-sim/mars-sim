@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-11-27
+ * @version 3.07 2015-02-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -54,8 +54,9 @@ public class BuildingConfig implements Serializable {
 	// Element and attribute names
 	private static final String BUILDING = "building";
 	//2014-10-27 Added nickName 	
-	private static final String NICKNAME = "nickName";	
+	//private static final String NICKNAME = "nickName";	
 	private static final String NAME = "name";
+	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String BASE_LEVEL = "base-level";
@@ -159,7 +160,7 @@ public class BuildingConfig implements Serializable {
     private static final String AREOTHERMAL_POWER_SOURCE = "Areothermal Power Source";
 	
 	private Document buildingDoc;
-	private Set<String> buildingNames;
+	private Set<String> buildingTypes;
 	
 	/**
 	 * Constructor
@@ -170,45 +171,45 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets a set of all building names.
-	 * @return set of building names.
+	 * Gets a set of all building types.
+	 * @return set of building types.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<String> getBuildingNames() {
+	public Set<String> getBuildingTypes() {
 	    
-	    if (buildingNames == null) {
-	        buildingNames = new HashSet<String>();
+	    if (buildingTypes == null) {
+	        buildingTypes = new HashSet<String>();
 	        Element root = buildingDoc.getRootElement();
 	        List<Element> buildingNodes = root.getChildren(BUILDING);
 	        for (Element buildingElement : buildingNodes) {
-	            buildingNames.add(buildingElement.getAttributeValue(NAME));
+	            buildingTypes.add(buildingElement.getAttributeValue(BUILDING_TYPE));
 	        }
 	    }
 	    
-	    return buildingNames;
+	    return buildingTypes;
 	}
 	
 	/**
-	 * Gets a building DOM element for a particular building name.
-	 * @param buildingName the building name
+	 * Gets a building DOM element for a particular building type.
+	 * @param buildingType the building type
 	 * @return building element
-	 * @throws Exception if building name could not be found.
+	 * @throws Exception if building type could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	private Element getBuildingElement(String buildingName) {
+	private Element getBuildingElement(String buildingType) {
 		Element result = null;
 		
 		Element root = buildingDoc.getRootElement();
 		List<Element> buildingNodes = root.getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
-			String name = buildingElement.getAttributeValue(NAME);
-			if (buildingName.equalsIgnoreCase(name)) { 
+			String buidingType = buildingElement.getAttributeValue(BUILDING_TYPE);
+			if (buildingType.equalsIgnoreCase(buidingType)) { 
 				result = buildingElement;
 				break;
 			}
 		}
 		
-		if (result == null) throw new IllegalStateException("Building type: " + buildingName +
+		if (result == null) throw new IllegalStateException("Building type: " + buildingType +
 			" could not be found in buildings.xml.");
 		
 		return result;
@@ -216,12 +217,12 @@ public class BuildingConfig implements Serializable {
     
     /**
      * Gets the building width.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return building width (meters).
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public double getWidth(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+    public double getWidth(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
         	//logger.info("calling getWidth() : width is "+ width); 
         return width;
@@ -229,12 +230,12 @@ public class BuildingConfig implements Serializable {
     
     /**
      * Gets the building length.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return building length (meters).
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public double getLength(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+    public double getLength(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
         	//logger.info("calling getLength() : length is "+ length); 
         return length;
@@ -242,25 +243,25 @@ public class BuildingConfig implements Serializable {
     
     /**
      * Gets the base level of the building.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return -1 for in-ground, 0 for above-ground.
      */
-    public int getBaseLevel(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+    public int getBaseLevel(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
 	
 	/**
 	 * Gets the description of the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return description of the building.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     // 2014-11-27 Added getDescription()
-	public String getDescription(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+	public String getDescription(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         Element descriptionElement = buildingElement.getChild(DESCRIPTION);
-        //Element textElement = descriptionElement.getChild(buildingName);
+        //Element textElement = descriptionElement.getChild(buildingType);
         String str = descriptionElement.getValue().trim();
         //str = str.replaceAll("\\t\\t", "").replaceAll("\\t", "").replaceAll("\\n", "").replaceAll("  ", " ");
         str = str.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
@@ -269,24 +270,24 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Gets the base heat requirement for the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return base heat requirement (J)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getBaseHeatRequirement(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+	public double getBaseHeatRequirement(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
         return Double.parseDouble(heatElement.getAttributeValue(BASE_HEAT));
 	}
 	
 	/**
 	 * Gets the base heat-down heat requirement for the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return base heat-down heat (J)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getBasePowerDownHeatRequirement(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+	public double getBasePowerDownHeatRequirement(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
         return Double.parseDouble(heatElement.getAttributeValue(BASE_POWER_DOWN_HEAT));
 	}
@@ -294,150 +295,150 @@ public class BuildingConfig implements Serializable {
     
 	/**
 	 * Gets the base power requirement for the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return base power requirement (kW)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getBasePowerRequirement(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+	public double getBasePowerRequirement(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         Element powerElement = buildingElement.getChild(POWER_REQUIRED);
         return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 	}
 	
 	/**
 	 * Gets the base power-down power requirement for the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return base power-down power (kW)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getBasePowerDownPowerRequirement(String buildingName) {
-        Element buildingElement = getBuildingElement(buildingName);
+	public double getBasePowerDownPowerRequirement(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
         Element powerElement = buildingElement.getChild(POWER_REQUIRED);
         return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 	}
 	
 	/**
 	 * Checks if the building has life support.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if life support
-	 * @throws Exception if building name cannot be found.
+	 * @throws Exception if building type cannot be found.
 	 */
-	public boolean hasLifeSupport(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,LIFE_SUPPORT);
+	public boolean hasLifeSupport(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,LIFE_SUPPORT);
 	}
 	
 	/**
 	 * Gets the number of inhabitants the building's life support can handle.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return number of people
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getLifeSupportCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,LIFE_SUPPORT,CAPACITY);
+	public int getLifeSupportCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,LIFE_SUPPORT,CAPACITY);
 	}
 	
 	/**
 	 * Gets the power required for life support.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return power required (kW)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getLifeSupportPowerRequirement(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
+	public double getLifeSupportPowerRequirement(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
 	}
 	
 
 	/**
 	 * Gets the heat required for life support.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return heat required (J)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	*/
-	public double getLifeSupportHeatRequirement(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,HEAT_REQUIRED);
+	public double getLifeSupportHeatRequirement(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,LIFE_SUPPORT,HEAT_REQUIRED);
 	}
 	 
 	
 	/**
 	 * Checks if the building provides living accommodations.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if living accommodations
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasLivingAccommodations(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS);
+	public boolean hasLivingAccommodations(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,LIVING_ACCOMMODATIONS);
 	}
 	
 	/**
 	 * Gets the number of beds in the building's living accommodations.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return number of beds.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getLivingAccommodationBeds(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
+	public int getLivingAccommodationBeds(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
 	}
 	
 	/**
 	 * Checks if the building provides robotic stations.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if robotic stations
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasRoboticStations(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,ROBOTIC_STATIONS);
+	public boolean hasRoboticStations(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,ROBOTIC_STATIONS);
 	}
 	
 	/**
 	 * Gets the number of stations in the building's robotic stations.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return number of stations.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getRoboticStations(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,ROBOTIC_STATIONS,STATIONS);
+	public int getRoboticStations(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,ROBOTIC_STATIONS,STATIONS);
 	}
 	
 	/**
 	 * Checks if the building has a research lab.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if research lab.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasResearchLab(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,RESEARCH);
+	public boolean hasResearchLab(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,RESEARCH);
 	}
 	
 	/**
 	 * Gets the research tech level of the building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return tech level
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getResearchTechLevel(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,TECH_LEVEL);
+	public int getResearchTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,RESEARCH,TECH_LEVEL);
 	}
 	
 	/**
 	 * Gets the number of researchers who can use the building's lab at once.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return number of researchers
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */	
-	public int getResearchCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,CAPACITY);		
+	public int getResearchCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,RESEARCH,CAPACITY);		
 	}
 	
 	/**
 	 * Gets a list of research specialties for the building's lab.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return list of research specialties as {@link ScienceType}.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ScienceType> getResearchSpecialties(String buildingName) {
+	public List<ScienceType> getResearchSpecialties(String buildingType) {
 	    List<ScienceType> result = new ArrayList<ScienceType>();
-	    Element buildingElement = getBuildingElement(buildingName);
+	    Element buildingElement = getBuildingElement(buildingType);
 	    Element functionsElement = buildingElement.getChild(FUNCTIONS);
 	    Element researchElement = functionsElement.getChild(RESEARCH);
 	    List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
@@ -452,157 +453,157 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Checks if the building has communication capabilities.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if communication
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasCommunication(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,COMMUNICATION);
+	public boolean hasCommunication(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,COMMUNICATION);
 	}
 	
 	/**
 	 * Checks if the building has EVA capabilities.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if EVA
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasEVA(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,EVA);
+	public boolean hasEVA(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,EVA);
 	}
 	
 	/**
 	 * Gets the number of people who can use the building's airlock at once.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return airlock capacity
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getAirlockCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
+	public int getAirlockCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
 	}
 	
 	/**
 	 * Gets the relative X location of the airlock.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return relative X location.
 	 */
-	public double getAirlockXLoc(String buildingName) {
-	    return getValueAsDouble(buildingName, FUNCTIONS, EVA, X_LOCATION);
+	public double getAirlockXLoc(String buildingType) {
+	    return getValueAsDouble(buildingType, FUNCTIONS, EVA, X_LOCATION);
 	}
 	
 	/**
      * Gets the relative Y location of the airlock.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return relative Y location.
      */
-    public double getAirlockYLoc(String buildingName) {
-        return getValueAsDouble(buildingName, FUNCTIONS, EVA, Y_LOCATION);
+    public double getAirlockYLoc(String buildingType) {
+        return getValueAsDouble(buildingType, FUNCTIONS, EVA, Y_LOCATION);
     }
     
     /**
      * Gets the relative X location of the interior side of the airlock.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return relative X location.
      */
-    public double getAirlockInteriorXLoc(String buildingName) {
-        return getValueAsDouble(buildingName, FUNCTIONS, EVA, INTERIOR_X_LOCATION);
+    public double getAirlockInteriorXLoc(String buildingType) {
+        return getValueAsDouble(buildingType, FUNCTIONS, EVA, INTERIOR_X_LOCATION);
     }
     
     /**
      * Gets the relative Y location of the interior side of the airlock.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return relative Y location.
      */
-    public double getAirlockInteriorYLoc(String buildingName) {
-        return getValueAsDouble(buildingName, FUNCTIONS, EVA, INTERIOR_Y_LOCATION);
+    public double getAirlockInteriorYLoc(String buildingType) {
+        return getValueAsDouble(buildingType, FUNCTIONS, EVA, INTERIOR_Y_LOCATION);
     }
     
     /**
      * Gets the relative X location of the exterior side of the airlock.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return relative X location.
      */
-    public double getAirlockExteriorXLoc(String buildingName) {
-        return getValueAsDouble(buildingName, FUNCTIONS, EVA, EXTERIOR_X_LOCATION);
+    public double getAirlockExteriorXLoc(String buildingType) {
+        return getValueAsDouble(buildingType, FUNCTIONS, EVA, EXTERIOR_X_LOCATION);
     }
     
     /**
      * Gets the relative Y location of the exterior side of the airlock.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return relative Y location.
      */
-    public double getAirlockExteriorYLoc(String buildingName) {
-        return getValueAsDouble(buildingName, FUNCTIONS, EVA, EXTERIOR_Y_LOCATION);
+    public double getAirlockExteriorYLoc(String buildingType) {
+        return getValueAsDouble(buildingType, FUNCTIONS, EVA, EXTERIOR_Y_LOCATION);
     }
 	
 	/**
 	 * Checks if the building has a recreation facility.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if recreation
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasRecreation(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,RECREATION);
+	public boolean hasRecreation(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,RECREATION);
 	}
 	
 	/**
 	 * Gets the population number supported by the building's recreation function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return population support.
 	 */
-	public int getRecreationPopulationSupport(String buildingName) {
-	    return getValueAsInteger(buildingName, FUNCTIONS, RECREATION, POPULATION_SUPPORT);
+	public int getRecreationPopulationSupport(String buildingType) {
+	    return getValueAsInteger(buildingType, FUNCTIONS, RECREATION, POPULATION_SUPPORT);
 	}
 	
 	/**
 	 * Checks if the building has a dining facility.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if dining
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasDining(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,DINING);
+	public boolean hasDining(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,DINING);
 	}
 	
 	/**
 	 * Gets the capacity for dining at the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return capacity.
 	 */
-	public int getDiningCapacity(String buildingName) {
-	    return getValueAsInteger(buildingName, FUNCTIONS, DINING, CAPACITY);
+	public int getDiningCapacity(String buildingType) {
+	    return getValueAsInteger(buildingType, FUNCTIONS, DINING, CAPACITY);
 	}
 	
 	/**
 	 * Checks if the building has resource processing capability.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if resource processing
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasResourceProcessing(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,RESOURCE_PROCESSING);
+	public boolean hasResourceProcessing(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,RESOURCE_PROCESSING);
 	}
 	
 	/**
 	 * Gets the level of resource processing when the building is in power down mode.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return power down level
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getResourceProcessingPowerDown(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,RESOURCE_PROCESSING,POWER_DOWN_LEVEL);
+	public double getResourceProcessingPowerDown(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,RESOURCE_PROCESSING,POWER_DOWN_LEVEL);
 	}
 	
 	
 	/**
 	 * Gets the building's resource processes. 
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return a list of resource processes.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<ResourceProcess> getResourceProcesses(String buildingName) {
+	public List<ResourceProcess> getResourceProcesses(String buildingType) {
 		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
-		Element buildingElement = getBuildingElement(buildingName);
+		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
 		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
@@ -647,24 +648,24 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Checks if building has storage capability.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if storage.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasStorage(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,STORAGE);
+	public boolean hasStorage(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,STORAGE);
 	}
 	
 	/**
 	 * Gets a list of the building's resource capacities. 
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return list of storage capacities
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<AmountResource, Double> getStorageCapacities(String buildingName) {
+	public Map<AmountResource, Double> getStorageCapacities(String buildingType) {
 		Map<AmountResource, Double> capacities = new HashMap<AmountResource, Double>();
-		Element buildingElement = getBuildingElement(buildingName);
+		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
@@ -680,14 +681,14 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Gets a map of the initial resources stored in this building.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return map of initial resources
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<AmountResource, Double> getInitialStorage(String buildingName) {
+	public Map<AmountResource, Double> getInitialStorage(String buildingType) {
 		Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
-		Element buildingElement = getBuildingElement(buildingName);
+		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
@@ -702,24 +703,24 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Checks if building has power generation capability.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if power generation
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasThermalGeneration(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,THERMAL_GENERATION);
+	public boolean hasThermalGeneration(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,THERMAL_GENERATION);
 	}
 	
 	/**
 	 * Gets a list of the building's heat sources.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return list of heat sources
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<HeatSource> getHeatSources(String buildingName) {
+	public List<HeatSource> getHeatSources(String buildingType) {
 		List<HeatSource> heatSourceList = new ArrayList<HeatSource>();
-		Element buildingElement = getBuildingElement(buildingName);
+		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
 			//logger.info("getHeatSources() : just finished reading heat-generation");
@@ -753,47 +754,47 @@ public class BuildingConfig implements Serializable {
     
     /**
      * Checks if building has heat storage capability.
-     * @param buildingName the name of the building
+     * @param buildingType the type of the building
      * @return true if heat storage
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public boolean hasThermalStorage(String buildingName) {
-    	return hasElements(buildingName,FUNCTIONS,THERMAL_STORAGE);
+    public boolean hasThermalStorage(String buildingType) {
+    	return hasElements(buildingType,FUNCTIONS,THERMAL_STORAGE);
     }
     
     /**
      * Gets the heat storage capacity of the building.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return heat storage capacity (kW hr).
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public double getThermalStorageCapacity(String buildingName) {
-    	return getValueAsDouble(buildingName,FUNCTIONS,POWER_STORAGE,CAPACITY);
+    public double getThermalStorageCapacity(String buildingType) {
+    	return getValueAsDouble(buildingType,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
 	
 
     
 	/**
 	 * Checks if building has heat generation capability.
-	 * @param buildingName the name of the building
+	 * @param buildingType the type of the building
 	 * @return true if heat generation
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasPowerGeneration(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,POWER_GENERATION);
+	public boolean hasPowerGeneration(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,POWER_GENERATION);
 	}
 	
 
 	/**
 	 * Gets a list of the building's power sources.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return list of power sources
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<PowerSource> getPowerSources(String buildingName) {
+	public List<PowerSource> getPowerSources(String buildingType) {
 		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
-		Element buildingElement = getBuildingElement(buildingName);
+		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
 		List<Element> powerSourceNodes = powerGenerationElement.getChildren(POWER_SOURCE);
@@ -823,151 +824,151 @@ public class BuildingConfig implements Serializable {
     
     /**
      * Checks if building has heat storage capability.
-     * @param buildingName the name of the building
+     * @param buildingType the type of the building
      * @return true if power storage
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public boolean hasPowerStorage(String buildingName) {
-    	return hasElements(buildingName,FUNCTIONS,POWER_STORAGE);
+    public boolean hasPowerStorage(String buildingType) {
+    	return hasElements(buildingType,FUNCTIONS,POWER_STORAGE);
     }
     
     /**
      * Gets the power storage capacity of the building.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return power storage capacity (kW hr).
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public double getPowerStorageCapacity(String buildingName) {
-    	return getValueAsDouble(buildingName,FUNCTIONS,POWER_STORAGE,CAPACITY);
+    public double getPowerStorageCapacity(String buildingType) {
+    	return getValueAsDouble(buildingType,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
 	
 	/**
 	 * Checks if building has medical care capability.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if medical care
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasMedicalCare(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,MEDICAL_CARE);
+	public boolean hasMedicalCare(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,MEDICAL_CARE);
 	}
 	
 	/**
 	 * Gets the tech level of the building's medical care.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getMedicalCareTechLevel(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,TECH_LEVEL);
+	public int getMedicalCareTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,MEDICAL_CARE,TECH_LEVEL);
 	}
 	
 	/**
 	 * Gets the number of beds in the building's medical care.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getMedicalCareBeds(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,BEDS);
+	public int getMedicalCareBeds(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,MEDICAL_CARE,BEDS);
 	}
 	
 	/**
 	 * Checks if building has the farming function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if farming
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasFarming(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,FARMING);
+	public boolean hasFarming(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,FARMING);
 	}
 	
 	/**
 	 * Gets the number of crops in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return number of crops
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getCropNum(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,FARMING,CROPS);
+	public int getCropNum(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,FARMING,CROPS);
 	}
 	
 	/**
 	 * Gets the power required to grow a crop.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return power (kW)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getPowerForGrowingCrop(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_GROWING_CROP);
+	public double getPowerForGrowingCrop(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,POWER_GROWING_CROP);
 	}
 	
 	/**
 	 * Gets the power required to sustain a crop.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return power (kW)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getPowerForSustainingCrop(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_SUSTAINING_CROP);
+	public double getPowerForSustainingCrop(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,POWER_SUSTAINING_CROP);
 	}
 	
 	/**
 	 * Gets the crop growing area in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return crop growing area (square meters)
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public double getCropGrowingArea(String buildingName) {
-		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,GROWING_AREA);
+	public double getCropGrowingArea(String buildingType) {
+		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,GROWING_AREA);
 	}
 	
 	/**
 	 * Checks if the building has the exercise function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if exercise
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasExercise(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,EXERCISE);
+	public boolean hasExercise(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,EXERCISE);
 	}
 	
 	/**
 	 * Gets the capacity of the exercise facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return capacity for exercise
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getExerciseCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,EXERCISE,CAPACITY);
+	public int getExerciseCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,EXERCISE,CAPACITY);
 	}
 	
 	/**
 	 * Checks if the building has the ground vehicle maintenance function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if ground vehicle maintenance
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasGroundVehicleMaintenance(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE);
+	public boolean hasGroundVehicleMaintenance(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE);
 	}
 	
 	/**
 	 * Gets the vehicle capacity of the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return vehicle capacity
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getVehicleCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
+	public int getVehicleCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
 	}
 	
 	/**
 	 * Gets the number of parking locations in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return number of parking locations.
 	 */
-	public int getParkingLocationNumber(String buildingName) {
-	    Element buildingElement = getBuildingElement(buildingName);
+	public int getParkingLocationNumber(String buildingType) {
+	    Element buildingElement = getBuildingElement(buildingType);
 	    Element functionsElement = buildingElement.getChild(FUNCTIONS);
         Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
         return groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION).size();
@@ -975,12 +976,12 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Gets the relative location in the building of a parking location.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @param parkingIndex the parking location index.
 	 * @return Point object containing the relative X & Y position from the building center.
 	 */
-	public Point2D.Double getParkingLocation(String buildingName, int parkingIndex) {
-	    Element buildingElement = getBuildingElement(buildingName);
+	public Point2D.Double getParkingLocation(String buildingType, int parkingIndex) {
+	    Element buildingElement = getBuildingElement(buildingType);
         Element functionsElement = buildingElement.getChild(FUNCTIONS);
         Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
         List<?> parkingLocations = groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION);
@@ -1004,344 +1005,344 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Checks if the building has the cooking function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if cooking
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasCooking(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,COOKING);
+	public boolean hasCooking(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,COOKING);
 	}
 	
 
 	/**
 	 * Checks if the building has the Food Production function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if it has Food Production.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	//2014-11-23 Added hasFoodProduction()
-	public boolean hasFoodProduction(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,FOOD_PRODUCTION);
+	public boolean hasFoodProduction(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,FOOD_PRODUCTION);
 	}
 	
 	/**
 	 * Gets the tech level of the Food Production facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	//2014-11-23 Added getFoodProductionTechLevel()
-	public int getFoodProductionTechLevel(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,FOOD_PRODUCTION,TECH_LEVEL);
+	public int getFoodProductionTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,FOOD_PRODUCTION,TECH_LEVEL);
 	}
 	
 	/**
 	 * Gets the concurrent process limit of the Food Production facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return concurrent process limit.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	//2014-11-23 Added getFoodProductionConcurrentProcesses()
-	public int getFoodProductionConcurrentProcesses(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,FOOD_PRODUCTION,CONCURRENT_PROCESSES);
+	public int getFoodProductionConcurrentProcesses(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,FOOD_PRODUCTION,CONCURRENT_PROCESSES);
 	}
 	
 	/**
 	 * Gets the capacity of the cooking facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return capacity for cooking
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getCookCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,COOKING,CAPACITY);
+	public int getCookCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,COOKING,CAPACITY);
 	}
 	
 	/**
 	 * Checks if the building has the manufacture function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if manufacture.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasManufacture(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,MANUFACTURE);
+	public boolean hasManufacture(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,MANUFACTURE);
 	}
 	
 	/**
 	 * Gets the tech level of the manufacture facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getManufactureTechLevel(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
+	public int getManufactureTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
 	}
 	
 	/**
 	 * Checks if the building has an astronomical observation function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if building has astronomical observation function.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasAstronomicalObservation(String buildingName) {
-		return hasElements(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION);
+	public boolean hasAstronomicalObservation(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION);
 	}
 	
 	/**
 	 * Gets the tech level of the astronomy  facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getAstronomicalObservationTechLevel(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
+	public int getAstronomicalObservationTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
 	}
 	
 	/**
 	 * Gets capacity of the astronomy  facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return tech level.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getAstronomicalObservationCapacity(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,CAPACITY);
+	public int getAstronomicalObservationCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,CAPACITY);
 	}
 	
     /**
      * Gets the power required by the astronomical observation function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return power required (kW).
-     * @throws Exception if building name cannot be found or XML parsing error.
+     * @throws Exception if building type cannot be found or XML parsing error.
      */
-    public double getAstronomicalObservationPowerRequirement(String buildingName) {
-    	return getValueAsDouble(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,POWER_REQUIRED);
+    public double getAstronomicalObservationPowerRequirement(String buildingType) {
+    	return getValueAsDouble(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,POWER_REQUIRED);
     }
 	
 	/**
 	 * Gets the concurrent process limit of the manufacture facility in the building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return concurrent process limit.
-	 * @throws Exception if building name cannot be found or XML parsing error.
+	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getManufactureConcurrentProcesses(String buildingName) {
-		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
+	public int getManufactureConcurrentProcesses(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
 	}
 	
 	/**
 	 * Checks if the building has the management function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if building has management function.
 	 */
-	public boolean hasManagement(String buildingName) {
-	    return hasElements(buildingName, FUNCTIONS, MANAGEMENT);
+	public boolean hasManagement(String buildingType) {
+	    return hasElements(buildingType, FUNCTIONS, MANAGEMENT);
 	}
 	
 	/**
 	 * Gets the management population support for a building. 
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return population support
 	 */
-	public int getManagementPopulationSupport(String buildingName) {
-	    return getValueAsInteger(buildingName, FUNCTIONS, MANAGEMENT, POPULATION_SUPPORT);
+	public int getManagementPopulationSupport(String buildingType) {
+	    return getValueAsInteger(buildingType, FUNCTIONS, MANAGEMENT, POPULATION_SUPPORT);
 	}
 	
 	/**
 	 * Checks if the building has the administration function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if building has administration function.
 	 */
-	public boolean hasAdministration(String buildingName) {
-	    return hasElements(buildingName, FUNCTIONS, ADMINISTRATION);
+	public boolean hasAdministration(String buildingType) {
+	    return hasElements(buildingType, FUNCTIONS, ADMINISTRATION);
 	}
 	
 	/**
      * Gets the administration population support for a building. 
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return population support
      */
-    public int getAdministrationPopulationSupport(String buildingName) {
-        return getValueAsInteger(buildingName, FUNCTIONS, ADMINISTRATION, POPULATION_SUPPORT);
+    public int getAdministrationPopulationSupport(String buildingType) {
+        return getValueAsInteger(buildingType, FUNCTIONS, ADMINISTRATION, POPULATION_SUPPORT);
     }
 	
 	/**
 	 * Checks if the building has an Earth return function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if building has earth return function.
 	 */
-	public boolean hasEarthReturn(String buildingName) {
-	    return hasElements(buildingName, FUNCTIONS, EARTH_RETURN);
+	public boolean hasEarthReturn(String buildingType) {
+	    return hasElements(buildingType, FUNCTIONS, EARTH_RETURN);
 	}
 	
 	/**
 	 * Gets the Earth return crew capacity of a building.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return the crew capacity.
 	 */
-	public int getEarthReturnCrewCapacity(String buildingName) {
-	    return getValueAsInteger(buildingName, FUNCTIONS, EARTH_RETURN, CREW_CAPACITY);
+	public int getEarthReturnCrewCapacity(String buildingType) {
+	    return getValueAsInteger(buildingType, FUNCTIONS, EARTH_RETURN, CREW_CAPACITY);
 	}
 	
 	/**
 	 * Checks if the building has a building connection function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return true if building has a building connection function.
 	 */
-	public boolean hasBuildingConnection(String buildingName) {
-	    return hasElements(buildingName, FUNCTIONS, BUILDING_CONNECTION);
+	public boolean hasBuildingConnection(String buildingType) {
+	    return hasElements(buildingType, FUNCTIONS, BUILDING_CONNECTION);
 	}
 	
     /**
      * Gets a list of activity spots for the administration building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getAdministrationActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, ADMINISTRATION);
+    public List<Point2D> getAdministrationActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, ADMINISTRATION);
     }
 	
 	/**
      * Gets a list of activity spots for the astronomical observation building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getAstronomicalObservationActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, ASTRONOMICAL_OBSERVATION);
+    public List<Point2D> getAstronomicalObservationActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, ASTRONOMICAL_OBSERVATION);
     }
 	
 	/**
 	 * Gets a list of activity spots for the communication building function.
-	 * @param buildingName the name of the building.
+	 * @param buildingType the type of the building.
 	 * @return list of activity spots as Point2D objects.
 	 */
-	public List<Point2D> getCommunicationActivitySpots(String buildingName) {
-	    return getActivitySpots(buildingName, COMMUNICATION);
+	public List<Point2D> getCommunicationActivitySpots(String buildingType) {
+	    return getActivitySpots(buildingType, COMMUNICATION);
 	}
 	
 	/**
      * Gets a list of activity spots for the cooking building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getCookingActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, COOKING);
+    public List<Point2D> getCookingActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, COOKING);
     }
     
     /**
      * Gets a list of activity spots for the dining building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getDiningActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, DINING);
+    public List<Point2D> getDiningActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, DINING);
     }
     
     /**
      * Gets a list of activity spots for the exercise building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getExerciseActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, EXERCISE);
+    public List<Point2D> getExerciseActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, EXERCISE);
     }
     
     /**
      * Gets a list of activity spots for the farming building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getFarmingActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, FARMING);
+    public List<Point2D> getFarmingActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, FARMING);
     }
     
 	/**
      * Gets a list of activity spots for the Food Production building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
     // 2014-11-24 Added getFoodProductionActivitySpots
-    public List<Point2D> getFoodProductionActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, FOOD_PRODUCTION);
+    public List<Point2D> getFoodProductionActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, FOOD_PRODUCTION);
     }
     
     /**
      * Gets a list of activity spots for the ground vehicle maintenance building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getGroundVehicleMaintenanceActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, GROUND_VEHICLE_MAINTENANCE);
+    public List<Point2D> getGroundVehicleMaintenanceActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, GROUND_VEHICLE_MAINTENANCE);
     }
     
     /**
      * Gets a list of activity spots for the living accommodations building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getLivingAccommodationsActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, LIVING_ACCOMMODATIONS);
+    public List<Point2D> getLivingAccommodationsActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, LIVING_ACCOMMODATIONS);
     }
     
     /**
      * Gets a list of activity spots for the management building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getManagementActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, MANAGEMENT);
+    public List<Point2D> getManagementActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, MANAGEMENT);
     }
     
     /**
      * Gets a list of activity spots for the manufacture building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getManufactureActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, MANUFACTURE);
+    public List<Point2D> getManufactureActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, MANUFACTURE);
     }
     
     /**
      * Gets a list of activity spots for the medical care building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getMedicalCareActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, MEDICAL_CARE);
+    public List<Point2D> getMedicalCareActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, MEDICAL_CARE);
     }
     
     /**
      * Gets a list of activity spots for the recreation building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getRecreationActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, RECREATION);
+    public List<Point2D> getRecreationActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, RECREATION);
     }
     
     /**
      * Gets a list of activity spots for the research building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getResearchActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, RESEARCH);
+    public List<Point2D> getResearchActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, RESEARCH);
     }
     
     /**
      * Gets a list of activity spots for the resource processing building function.
-     * @param buildingName the name of the building.
+     * @param buildingType the type of the building.
      * @return list of activity spots as Point2D objects.
      */
-    public List<Point2D> getResourceProcessingActivitySpots(String buildingName) {
-        return getActivitySpots(buildingName, RESOURCE_PROCESSING);
+    public List<Point2D> getResourceProcessingActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, RESOURCE_PROCESSING);
     }
 	
 	/**
 	 * Checks if the building function has activity spots.
-	 * @param buildingName the name of the building.
-	 * @param functionName the name of the building function.
+	 * @param buildingType the type of the building.
+	 * @param functionName the type of the building function.
 	 * @return true if building function has activity spots.
 	 */
-	private boolean hasActivitySpots(String buildingName, String functionName) {
-	    Element buildingElement = getBuildingElement(buildingName);
+	private boolean hasActivitySpots(String buildingType, String functionName) {
+	    Element buildingElement = getBuildingElement(buildingType);
         Element functionsElement = buildingElement.getChild(FUNCTIONS);
         Element functionElement = functionsElement.getChild(functionName);
         List<?> activityElements = functionElement.getChildren(ACTIVITY);
@@ -1350,16 +1351,16 @@ public class BuildingConfig implements Serializable {
 	
 	/**
 	 * Gets a list of activity spots for a building's function.
-	 * @param buildingName the name of the building.
-	 * @param functionName the name of the building function.
+	 * @param buildingType the type of the building.
+	 * @param functionName the type of the building function.
 	 * @return list of activity spots as Point2D objects.
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Point2D> getActivitySpots(String buildingName, String functionName) {
+	private List<Point2D> getActivitySpots(String buildingType, String functionName) {
 	    List<Point2D> result = new ArrayList<Point2D>();
 	    
-	    if (hasActivitySpots(buildingName, functionName)) {
-	        Element buildingElement = getBuildingElement(buildingName);
+	    if (hasActivitySpots(buildingType, functionName)) {
+	        Element buildingElement = getBuildingElement(buildingType);
 	        Element functionsElement = buildingElement.getChild(FUNCTIONS);
 	        Element functionElement = functionsElement.getChild(functionName);
 	        Element activityElement = functionElement.getChild(ACTIVITY);
@@ -1375,25 +1376,25 @@ public class BuildingConfig implements Serializable {
 	    return result;
 	}
 	
-	private int getValueAsInteger(String buildingName, String child, 
+	private int getValueAsInteger(String buildingType, String child, 
 			                      String subchild, String param){
-		Element element1 = getBuildingElement(buildingName);
+		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
 		return Integer.parseInt(element3.getAttributeValue(param));
 	}
 	
-	private double getValueAsDouble(String buildingName, String child, 
+	private double getValueAsDouble(String buildingType, String child, 
             String subchild, String param) {
-		Element element1 = getBuildingElement(buildingName);
+		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 	
     @SuppressWarnings("unchecked")
-	private boolean hasElements(String buildingName, String child, String children) {
-		Element element1 = getBuildingElement(buildingName);
+	private boolean hasElements(String buildingType, String child, String children) {
+		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);
 		List<Element> elements = element2.getChildren(children);
 		return (elements.size() > 0);

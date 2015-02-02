@@ -273,7 +273,7 @@ extends AbstractTableModel {
 	 }
 
 	 public static List<String> getSortedBuildingTypes() {
-		 Set<String> buildingTypes = SimulationConfig.instance().getBuildingConfiguration().getBuildingNames();
+		 Set<String> buildingTypes = SimulationConfig.instance().getBuildingConfiguration().getBuildingTypes();
 		 List<String> sortedBuildingTypes = new ArrayList<String>(buildingTypes);
 		 Collections.sort(sortedBuildingTypes);
 		 return sortedBuildingTypes;

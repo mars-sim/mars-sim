@@ -39,16 +39,17 @@ public class EatMealMeta implements MetaTask {
         
         double result = 0D;
         
-        if (hunger > 800 || energy < 2000 )
+        if (hunger > 1000 || energy < 2000 )
 	        //result =  0.4 * (hunger - 400D);
-	        result = 0.01 * (12000 - energy);
-        else if (hunger > 600 || energy < 3000 )
-        	result = 50D;
-        else if (hunger > 400 || energy < 4000 )
-        	result = 30D;
+	        result = 0.007 * (12000 - energy);
+        else if (hunger > 800 || energy < 3000 )
+        	result = 40D;
+        else if (hunger > 600 || energy < 4000 )
+        	result = 20D;
         else if (energy < 5000 )
         	result = 10D;
-        else result = 0;
+        else 
+        	result = 0;
 	        
         
         if (result > 0) {

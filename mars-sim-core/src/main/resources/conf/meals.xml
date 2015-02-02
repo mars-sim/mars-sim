@@ -58,7 +58,7 @@
 			<ingredient id="4" name="Garlic" proportion="0.05"/>	
 		</meal>		
 				
-		<meal id="7" name="Peas and Veggie Sandwich" oil="0.05" salt="0.02" category="breakfast">		
+		<meal id="7" name="Peas and Veggie Sandwich" oil="0.05" salt="0.02" category="meal">		
 			<ingredient id="0" name="Veggie Patty" proportion="0.4"/>				
 			<ingredient id="1" name="White Bread" proportion="0.20"/>
 			<ingredient id="2" name="Peas" proportion="0.25"/>				
@@ -67,39 +67,41 @@
 			<ingredient id="5" name="Peanut Butter" proportion="0.05"/>						
 		</meal>		
 				
-		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.02" category="breakfast">		
+		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.02" category="meal">		
 			<ingredient id="0" name="Celery" proportion="0.4"/>				
 			<ingredient id="1" name="Roasted Peanut" proportion="0.30"/>
 			<ingredient id="2" name="Carrot" proportion="0.25"/>				
 			<ingredient id="3" name="Peanut Butter" proportion="0.05"/>						
 		</meal>		
 				      	
-		<meal id="9" name="Tofu Menudo" oil="0.05" salt="0.02" category="breakfast">		
+		<meal id="9" name="Tofu Menudo" oil="0.05" salt="0.02" category="meal">		
 			<ingredient id="0" name="Tofu" proportion="0.4"/>				
 			<ingredient id="1" name="Potato" proportion="0.30"/>
 			<ingredient id="2" name="Peas" proportion="0.25"/>				
 			<ingredient id="3" name="Tomato" proportion="0.05"/>						
 		</meal>		
 				      	
-		<meal id="10" name="Garlic Bread and Spaghetti" oil="0.05" salt="0.02" category="breakfast">		
+		<meal id="10" name="Garlic Bread and Spaghetti" oil="0.05" salt="0.02" category="meal">		
 			<ingredient id="0" name="Wheat Noodle" proportion="0.4"/>				
 			<ingredient id="1" name="White Bread" proportion="0.3"/>
 			<ingredient id="2" name="Garlic Oil" proportion="0.2"/>				
 			<ingredient id="3" name="Tomato" proportion="0.1"/>						
 		</meal>		
 
-		<meal id="11" name="Hearty Quinoa Sprouts with Peas" oil="0.05" salt="0.02" category="breakfast">		
-			<ingredient id="0" name="Quinoa Sprout" proportion="0.4"/>				
-			<ingredient id="1" name="Ginger" proportion="0.20"/>
-			<ingredient id="2" name="Peas" proportion="0.25"/>				
+		<meal id="11" name="Hearty Quinoa Sprouts with Peas" oil="0.05" salt="0.02" category="meal">		
+			<ingredient id="0" name="Quinoa Sprout" proportion="0.5"/>				
+			<ingredient id="1" name="Ginger" proportion="0.15"/>
+			<ingredient id="2" name="Peas" proportion="0.3"/>				
 			<ingredient id="3" name="Soy Sauce" proportion="0.05"/>						
 		</meal>	
 		
-		<meal id="12" name="Vegetarian Pho with Bean Sprout" oil="0.05" salt="0.02" category="breakfast">		
+		<meal id="12" name="Vegetarian Pho with Bean Sprout" oil="0.05" salt="0.02" category="meal">		
 			<ingredient id="0" name="Rice Noodle" proportion="0.5"/>				
 			<ingredient id="1" name="Ginger" proportion="0.1"/>
 			<ingredient id="2" name="Peas" proportion="0.15"/>				
 			<ingredient id="3" name="Rice Vinegar" proportion="0.05"/>	
 			<ingredient id="4" name="Soy Sprout" proportion="0.2"/>					
 		</meal>	
+		
+
 </meal-list>

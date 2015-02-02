@@ -46,12 +46,12 @@ implements Lab, Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        techLevel = config.getResearchTechLevel(building.getName());
-        researcherCapacity = config.getResearchCapacity(building.getName());
-        researchSpecialties = config.getResearchSpecialties(building.getName());
+        techLevel = config.getResearchTechLevel(building.getBuildingType());
+        researcherCapacity = config.getResearchCapacity(building.getBuildingType());
+        researchSpecialties = config.getResearchSpecialties(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getResearchActivitySpots(building.getName()));
+        loadActivitySpots(config.getResearchActivitySpots(building.getBuildingType()));
     }
 
     /**

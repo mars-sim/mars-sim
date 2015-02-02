@@ -1,6 +1,6 @@
 <!ELEMENT building-list (building*)>
 <!ELEMENT building (description?, power-required, functions)>
-<!ATTLIST building name CDATA #REQUIRED>
+<!ATTLIST building type CDATA #REQUIRED>
 <!ATTLIST building width CDATA #REQUIRED>
 <!ATTLIST building length CDATA #REQUIRED>
 <!ATTLIST building base-level CDATA #REQUIRED>
