@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Msg;
 
 public enum RobotType {
 
+	CHEFBOT (Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
 	GARDENBOT (Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
 	REPAIRBOT (Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
 	UNKNOWN (Msg.getString("unknown")); //$NON-NLS-1$
@@ -30,6 +31,11 @@ public enum RobotType {
 		return this.name;
 	}
 
+	public String getLowerCaseName() {
+		return this.name.toLowerCase();
+	}
+
+	
 	public static RobotType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
 	}

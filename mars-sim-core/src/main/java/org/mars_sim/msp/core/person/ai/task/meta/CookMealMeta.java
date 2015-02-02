@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -107,13 +108,68 @@ public class CookMealMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new CookMeal(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+	      
+        double result = 100D;
+        
+      	if (CookMeal.isMealTime(robot)) {
+      		result += 100D;
+            try {
+                // See if there is an available kitchen.
+                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
+               
+				if (kitchenBuilding != null) {
+					
+	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	                
+                	if (kitchen.hasCookedMeal() == false)
+                		result += 200D;
+
+                    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+                    // if more meals (thus more ingredients) are available at kitchen.
+                    // to Chef's delight, he/she is more motivated to cook 
+                    result = size * 50D;
+  
+
+                    // TODO: the cook should check if he himself or someone else is hungry, 
+                    // he's more eager to cook except when he's tired
+                    //double hunger = robot.getPhysicalCondition().getHunger();
+                    //if ((hunger > 300D) && (result > 0D)) {
+                    //    result += (hunger - 300D);
+                    //}
+                    //double fatigue = robot.getPhysicalCondition().getFatigue();
+                    //if ((fatigue > 700D) && (result > 0D)) {
+                    //    result -= .4D * (fatigue - 700D);
+                    //}
+                    
+                    if (result < 0D) {
+                        result = 0D;
+                    }
+                    
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+                    
+                }
+            }
+            catch (Exception e) {
+                //logger.log(Level.INFO,"getProbability() : No room/no kitchen available for cooking meal or outside settlement" ,e);
+            }
+
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
+
+            // Job modifier.
+            RobotJob robotJob = robot.getMind().getRobotJob();
+            if (robotJob != null)
+                result *= robotJob.getStartTaskProbabilityModifier(CookMeal.class);
+        
+            //System.out.println(" cookMealMeta : getProbability " + result);
+      	}
+
+        return result;
 	}
 }

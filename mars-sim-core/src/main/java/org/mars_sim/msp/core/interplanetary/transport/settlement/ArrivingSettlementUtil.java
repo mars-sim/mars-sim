@@ -48,7 +48,7 @@ public class ArrivingSettlementUtil {
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
 				UnitManager unitManager = Simulation.instance().getUnitManager();
-				name = unitManager.getNewName(UnitType.SETTLEMENT, null, null);
+				name = unitManager.getNewName(UnitType.SETTLEMENT, null, null, null);
 			}
 
 			String template = settlementConfig.getNewArrivingSettlementTemplate(x);

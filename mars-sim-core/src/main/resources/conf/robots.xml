@@ -26,7 +26,7 @@
 
 	<!-- List of robot type -->
 	<robot-list>
-		<robot name="GardenBot 1" type="GardenBot" settlement="Schiaparelli Point" job="Gardenbot">
+		<robot name="gardenbot 002" type="gardenbot" settlement="Schiaparelli Point" job="Gardenbot">
 			<natural-attribute-list>
 				<natural-attribute name="Strength" value="95"/>
 				<natural-attribute name="Endurance" value="95"/>
@@ -49,7 +49,7 @@
 			</skill-list>
 		</robot>
 		
-		<robot name="RepairBot 1" type="RepairBot" settlement="Schiaparelli Point" job="Repairbot">
+		<robot name="repairbot 003" type="repairbot" settlement="Schiaparelli Point" job="Repairbot">
 			<natural-attribute-list>
 				<natural-attribute name="Strength" value="95"/>
 				<natural-attribute name="Endurance" value="95"/>
@@ -71,6 +71,30 @@
 				<skill name="Cooking" level="1"/>
 			</skill-list>
 		</robot>
+		
+		<robot name="chefbot 001" type="chefbot" settlement="Schiaparelli Point" job="Chefbot">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="EVA Operations" level="2"/>
+				<skill name="Areology" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="2"/>
+			</skill-list>
+		</robot>
+		
 	</robot-list>
 
 </robot-configuration>

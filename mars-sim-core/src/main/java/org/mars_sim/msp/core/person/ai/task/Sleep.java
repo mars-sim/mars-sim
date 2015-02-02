@@ -125,6 +125,10 @@ public class Sleep extends Task implements Serializable {
                 stations.addSleeper();
                 walkSite = true;
             }
+
+            String b = BuildingManager.getBuilding(robot).getBuildingType();
+            if (b.equals("Hallway"))
+            	walkToRandomLocation(true);
         }
 
         if (!walkSite) {

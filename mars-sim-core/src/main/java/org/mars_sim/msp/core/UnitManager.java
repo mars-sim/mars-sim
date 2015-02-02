@@ -149,14 +149,10 @@ implements Serializable {
     private void initializeRobotNames() {
         try {
             robotNameList = new ArrayList<String>();           
-            robotNameList.add("Bot 1");
-            robotNameList.add("Bot 2");
-            robotNameList.add("Bot 3");
-            robotNameList.add("Bot 4");
-            robotNameList.add("Bot 5");
-            robotNameList.add("Bot 6");
-            robotNameList.add("Bot 7");
-            robotNameList.add("Bot 8");
+            robotNameList.add("chefbot 001");
+            robotNameList.add("gardenbot 002");
+            robotNameList.add("repairbot 003");
+
             
         } catch (Exception e) {
             throw new IllegalStateException("robot names could not be loaded: " + e.getMessage(), e);
@@ -244,7 +240,7 @@ implements Serializable {
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
      */
-    public String getNewName(UnitType unitType, String baseName, PersonGender gender) {
+    public String getNewName(UnitType unitType, String baseName, PersonGender gender, RobotType robotType) {
 
         List<String> initialNameList = null;
         List<String> usedNames = new ArrayList<String>();
@@ -295,7 +291,9 @@ implements Serializable {
             while (pi.hasNext()) {
                 usedNames.add(pi.next().getName());
             }
-            unitName = "Bot";
+            
+            unitName = robotType.getLowerCaseName();
+            
         
         } else if (unitType == UnitType.EQUIPMENT) {
             if (baseName != null) {
@@ -324,7 +322,15 @@ implements Serializable {
             result = remainingNames.get(
                     RandomUtil.getRandomInt(remainingNames.size() - 1));
         } else {
-            result = unitName + " " + (usedNames.size() + 1);
+        	int num = usedNames.size() + 1;
+        	String numStr = "";
+        	if (num < 10 )
+        		numStr = "00" + num;
+        	else if (num < 100 )
+        		numStr = "0" + num;
+        	else if (num < 1000 )
+        		numStr = "" + num;
+            result = unitName + " " + numStr;
         }
 
         return result;
@@ -341,7 +347,7 @@ implements Serializable {
                 // Get settlement name
                 String name = config.getInitialSettlementName(x);
                 if (name.equals(SettlementConfig.RANDOM)) {
-                    name = getNewName(UnitType.SETTLEMENT, null, null);
+                    name = getNewName(UnitType.SETTLEMENT, null, null, null);
                 }
 
                 // Get settlement template
@@ -403,10 +409,10 @@ implements Serializable {
                     vehicleType = vehicleType.toLowerCase();
                     for (int x = 0; x < number; x++) {
                         if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-                            String name = getNewName(UnitType.VEHICLE, "LUV", null);
+                            String name = getNewName(UnitType.VEHICLE, "LUV", null, null);
                             addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
                         } else {
-                            String name = getNewName(UnitType.VEHICLE, null, null);
+                            String name = getNewName(UnitType.VEHICLE, null, null, null);
                             addUnit(new Rover(name, vehicleType, settlement));
                         }
                     }
@@ -437,7 +443,7 @@ implements Serializable {
                     int number = (Integer) equipmentMap.get(type);
                     for (int x = 0; x < number; x++) {
                         Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);
-                        equipment.setName(getNewName(UnitType.EQUIPMENT, type, null));
+                        equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
                         settlement.getInventory().storeUnit(equipment);
                         addUnit(equipment);
                     }
@@ -531,7 +537,7 @@ implements Serializable {
                     if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                         gender = PersonGender.MALE;
                     }
-                    Person person = new Person(getNewName(UnitType.PERSON, null, gender), gender, "Earth",settlement); //TODO: read from file
+                    Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, "Earth",settlement); //TODO: read from file
                     addUnit(person);
                     relationshipManager.addInitialSettler(person, settlement);
                 }
@@ -553,25 +559,28 @@ implements Serializable {
         createConfiguredRobots();
 
         RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-        //RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 
         // Randomly create all remaining robots to fill the settlements to capacity.
         try {
             Iterator<Settlement> i = getSettlements().iterator();
             while (i.hasNext()) {
                 Settlement settlement = i.next();
-                
- 
+
                 while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
                     //System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
                     //System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
 
-                	RobotType robotType = RobotType.REPAIRBOT;
-                    //if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-                    //  gender = PersonGender.MALE;
-                    //}
+                	RobotType robotType = null;
                 	
-                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null), robotType, "Mars", settlement); //TODO: read from file
+                    	int num = RandomUtil.getRandomInt(3);
+                    	if (num == 0 || num == 1)
+                    		robotType = RobotType.REPAIRBOT;
+                    	else if (num == 2 )
+                    		robotType = RobotType.GARDENBOT;
+                    	else if (num == 3 )
+                			robotType = RobotType.CHEFBOT;
+                	
+                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement); //TODO: read from file
                     addUnit(robot);
                     //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
 
@@ -592,22 +601,25 @@ implements Serializable {
  
         // Create all configured robot.
         for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
-            // Get robot's name (required)
-            String name = robotConfig.getConfiguredRobotName(x);
-            if (name == null) {
-         
-            	throw new IllegalStateException("Robot name is null");
-            }
 
             // Get robot's gender or randomly determine it if not configured.
             RobotType robotType = robotConfig.getConfiguredRobotType(x);
             if (robotType == null) {
-            	robotType = RobotType.REPAIRBOT;
-                //if (RandomUtil.getRandomDouble(1.0D) <= robotConfig.getGenderRatio()) {
-                //	robotType = RobotType.GARDENBOT;
-                //}
+            	int num = RandomUtil.getRandomInt(3);
+            	if (num == 0 || num == 1)
+            		robotType = RobotType.REPAIRBOT;
+            	else if (num == 2 )
+            		robotType = RobotType.GARDENBOT;
+            	else if (num == 3 )
+        			robotType = RobotType.CHEFBOT;            	
             }
 
+            // Get robot's name (required)
+            String name = robotConfig.getConfiguredRobotName(x);
+            if (name == null) {         
+            	throw new IllegalStateException("Robot name is null");
+            }
+            
             // Get robot's settlement or randomly determine it if not configured.
             String settlementName = robotConfig.getConfiguredRobotSettlement(x);
             //System.out.println("settlementName is " + settlementName);

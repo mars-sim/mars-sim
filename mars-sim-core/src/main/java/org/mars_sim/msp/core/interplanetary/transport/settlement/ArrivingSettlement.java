@@ -335,7 +335,7 @@ implements Transportable, Serializable {
 			PersonGender gender = PersonGender.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
 			String birthplace = "Earth"; //TODO: randomize from list of countries/federations
-			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender);
+			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			Person immigrant = new Person(immigrantName, gender, birthplace, newSettlement);
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
@@ -360,7 +360,7 @@ implements Transportable, Serializable {
 			for (int x=0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
 						newSettlement.getCoordinates(), false);
-				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);
 				newSettlement.getInventory().storeUnit(equipment);
 			}
@@ -420,10 +420,10 @@ implements Transportable, Serializable {
 			for (int x = 0; x < number; x++) {
 				Vehicle vehicle = null;
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null);
+					String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null, null);
 					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
 				} else {
-					String name = unitManager.getNewName(UnitType.VEHICLE, null, null);
+					String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);
 					vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
 				}
 				unitManager.addUnit(vehicle);
