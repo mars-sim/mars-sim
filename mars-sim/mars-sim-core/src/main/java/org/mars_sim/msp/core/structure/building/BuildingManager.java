@@ -395,10 +395,20 @@ public class BuildingManager implements Serializable {
      * @throws BuildingException if person cannot be added to any building.
      */
     public static void addToRandomBuilding(Unit unit, Settlement settlement) {
-
+    	/*
+        Person person = null;
+        Robot robot = null;
+        if (unit instanceof Person) {
+         	person = (Person) unit;    	
+        }
+		else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+			} 
+        */
+        
         List<Building> habs = settlement.getBuildingManager().getBuildings(
                 new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
-        
+ 
         List<Building> goodHabs = getLeastCrowdedBuildings(habs);
 
         Building building = null;
@@ -411,6 +421,7 @@ public class BuildingManager implements Serializable {
                 Building tempBuilding = i.next();
                 if (count == rand) {
                     building = tempBuilding;
+                    System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
                 }
                 count++;
             }
@@ -418,6 +429,8 @@ public class BuildingManager implements Serializable {
 
         if (building != null) {
     		addPersonOrRobotToBuildingRandomLocation(unit, building);
+	
+        
 
         	//if (unit instanceof Person)
         		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
@@ -825,6 +838,7 @@ public class BuildingManager implements Serializable {
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
                 	if (!lifeSupport.containsOccupant(person)) {
+                		//System.out.println("!lifeSupport.containsRobotOccupant(person) is true");
                 		lifeSupport.addPerson(person); 
                 	}
                 	person.setXLocation(settlementLoc.getX());
@@ -833,7 +847,8 @@ public class BuildingManager implements Serializable {
                 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	if (lifeSupport.containsRobotOccupant(robot)) {
+                	if (!lifeSupport.containsRobotOccupant(robot)) {
+                		//System.out.println("!lifeSupport.containsRobotOccupant(robot) is true");
 	                    lifeSupport.addRobot(robot); 
 	                }
                 	robot.setXLocation(settlementLoc.getX());

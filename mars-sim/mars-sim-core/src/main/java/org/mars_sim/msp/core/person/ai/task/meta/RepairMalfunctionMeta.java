@@ -78,13 +78,44 @@ public class RepairMalfunctionMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new RepairMalfunction(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+	    
+        double result = 0D;
+
+        // Add probability for all malfunctionable entities in robot's local.
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            if (!RepairMalfunction.requiresEVA(robot, entity)) {
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+                while (j.hasNext()) {
+                    Malfunction malfunction = j.next();
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
+                            result += 100D;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+
+        // Job modifier.
+        Job job = robot.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
+        }
+
+        return result;
 	}
 }

@@ -74,15 +74,18 @@ implements Serializable {
 		return Msg.getString(key.toString()); //$NON-NLS-1$
 	};
 
+	/**
+	 * Gets the job's internationalized name for display in user interface.
+	 * @param robotType {@link RobotType}
+	 * @return name
+	 */
 	public String getName(RobotType robotType) {
 		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
-		//switch (robotType) {
-		//	case GARDENBOT : key.append("unknown."); break; //$NON-NLS-1$
-		//	case REPAIRBOT : key.append("unknown."); break; //$NON-NLS-1$
-		//default : 
-		key.append("unknown."); 
-		//break; //$NON-NLS-1$
-		//}
+		switch (robotType) {
+			case GARDENBOT : key.append("gardenbot."); break; //$NON-NLS-1$
+			case REPAIRBOT : key.append("repairbot."); break; //$NON-NLS-1$
+			default : key.append("bot."); break; //$NON-NLS-1$
+		}
 		key.append(jobClass.getSimpleName());
 		return Msg.getString(key.toString()); //$NON-NLS-1$
 	};

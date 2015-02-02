@@ -90,13 +90,49 @@ public class MaintenanceMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new Maintenance(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+        double result = 0D;
+
+        try {
+            // Total probabilities for all malfunctionable entities in robot's local.
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+            while (i.hasNext()) {
+                Malfunctionable entity = i.next();
+                boolean isVehicle = (entity instanceof Vehicle);
+                boolean uninhabitableBuilding = false;
+                if (entity instanceof Building) 
+                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                boolean hasMalfunction = manager.hasMalfunction();
+                boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
+                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+                boolean minTime = (effectiveTime >= 1000D);
+                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+                    double entityProb = effectiveTime / 1000D;
+                    if (entityProb > 100D) {
+                        entityProb = 100D;
+                    }
+                    result += entityProb;
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"getProbability()",e);
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+
+        // Job modifier.
+        Job job = robot.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
+        }
+
+        return result;
 	}
 }

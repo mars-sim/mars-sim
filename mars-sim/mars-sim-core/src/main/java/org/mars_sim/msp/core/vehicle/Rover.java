@@ -176,6 +176,9 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
         return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
+    public Collection<Robot> getRobotCrew() {
+        return CollectionUtils.getRobot(getInventory().getContainedUnits());
+    }
     /**
      * Checks if person is a crewmember.
      * @param person the person to check
@@ -183,6 +186,9 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
      */
     public boolean isCrewmember(Person person) {
         return getInventory().containsUnit(person);
+    }
+    public boolean isCrewmember(Robot robot) {
+        return getInventory().containsUnit(robot);
     }
     
     /** Returns true if life support is working properly and is not out

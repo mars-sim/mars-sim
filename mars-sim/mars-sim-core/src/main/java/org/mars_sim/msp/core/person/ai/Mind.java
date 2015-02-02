@@ -396,12 +396,22 @@ implements Serializable {
 	        }
 		}
 
-        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
-                (Double.isInfinite(weightSum))) {
-            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
-                    + weightSum);
+        if (person != null) {	
+	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
+	                (Double.isInfinite(weightSum))) {
+	            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+	                    + weightSum);
+	        }
         }
-
+        else if (robot != null) {	            
+        	if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
+	                (Double.isInfinite(weightSum))) {
+        		throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+	                    + weightSum);
+	        }	 
+	    }
+        
+        
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
 

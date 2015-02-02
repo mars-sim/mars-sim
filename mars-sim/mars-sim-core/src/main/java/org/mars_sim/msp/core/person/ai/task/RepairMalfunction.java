@@ -75,7 +75,7 @@ implements Repair, Serializable {
         entity = getMalfunctionEntity(person);
         if (entity != null) {
             // Add person to location of malfunction if possible.
-            addPersonToMalfunctionLocation(entity);
+            addPersonOrRobotToMalfunctionLocation(entity);
         }
         else {
             endTask();
@@ -95,8 +95,8 @@ implements Repair, Serializable {
         // Get the malfunctioning entity.
         entity = getMalfunctionEntity(robot);
         if (entity != null) {
-            // Add person to location of malfunction if possible.
-            addPersonToMalfunctionLocation(entity);
+            // Add robot to location of malfunction if possible.
+            addPersonOrRobotToMalfunctionLocation(entity);
         }
         else {
             endTask();
@@ -315,6 +315,8 @@ implements Repair, Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      */
     private double repairingPhase(double time) {
+    	
+    	// TODO: double check to see if checking person and robot as follows are valid or not
     	if (person != null) {
             // Check if there are no more malfunctions.
             if (!hasMalfunction(person, entity)) {
@@ -504,7 +506,7 @@ implements Repair, Serializable {
      * Otherwise walk to random location.
      * @param malfunctionable the malfunctionable the person is repairing.
      */
-    private void addPersonToMalfunctionLocation(Malfunctionable malfunctionable) {
+    private void addPersonOrRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
 
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
