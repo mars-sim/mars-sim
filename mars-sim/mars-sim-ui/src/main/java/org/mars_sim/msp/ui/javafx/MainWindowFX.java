@@ -9,19 +9,11 @@ package org.mars_sim.msp.ui.javafx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import javax.swing.JFrame;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.javafx.MainWindowFXMenu;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MenuScene;
 import org.mars_sim.msp.ui.javafx.SettlementScene;
