@@ -470,7 +470,7 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
                     }
@@ -480,11 +480,11 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null);
+                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null, null);
                                 manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
                             }
                             else {
-                                String name = manager.getNewName(UnitType.VEHICLE, null, null);
+                                String name = manager.getNewName(UnitType.VEHICLE, null, null, null);
                                 manager.addUnit(new Rover(name, vehicleType, settlement));
                             }
                         }
@@ -538,7 +538,7 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
                     }
@@ -548,11 +548,11 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null);
+                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null, null);
                                 manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
                             }
                             else {
-                                String name = manager.getNewName(UnitType.VEHICLE, null, null);
+                                String name = manager.getNewName(UnitType.VEHICLE, null, null, null);
                                 manager.addUnit(new Rover(name, vehicleType, settlement));
                             }
                         }

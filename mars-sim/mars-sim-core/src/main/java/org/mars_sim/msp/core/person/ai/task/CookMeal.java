@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -125,6 +126,54 @@ implements Serializable {
 	    
     }
     
+	public CookMeal(Robot robot) {
+        // Use Task constructor
+        super(NAME, robot, true, false, STRESS_MODIFIER, false, 0D);
+
+        //logger.info("just called CookMeal's constructor");
+        
+        // Initialize data members
+        setDescription(Msg.getString("Task.description.cookMeal.detail", 
+                getMealName())); //$NON-NLS-1$
+        
+        // Get available kitchen if any.
+        Building kitchenBuilding = getAvailableKitchen(robot);
+
+	    if (kitchenBuilding != null) {
+	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	        // Walk to kitchen building.
+	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
+		   
+		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();	       
+	        if (size == 0) {
+	        	counter++;
+	        	if (counter < 2)
+	        		logger.severe("Warning: cannot cook meals in " 
+	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName() 
+	            		+ " because none of the ingredients of a meal are available ");
+	            
+	            endTask();
+	            kitchen.cleanup();
+	        
+		    } else {
+		    	
+		    	counter = 0;
+				// 2015-01-06
+				kitchen.setChef(robot.getName());
+				
+		    	// Add task phase
+			    addPhase(COOKING);
+				setPhase(COOKING);	
+				  
+				String jobName = robot.getMind().getRobotJob().getName(robot.getRobotType());
+				logger.finest(jobName + " " + robot.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
+				    	                " in " + robot.getSettlement());      
+
+		    }
+	    }
+	    else endTask();
+	    
+    }
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.COOKING;
@@ -161,13 +210,26 @@ implements Serializable {
             return time;
         }
 
-        // If meal time is over, clean up kitchen and end task.
-        if (!isMealTime(person)) {
-        	endTask();
-            kitchen.cleanup();
-            //logger.info(person.getName() + " just finished cooking.");
-            return time;
-        }
+		if (person != null) {
+	        // If meal time is over, clean up kitchen and end task.
+	        if (!isMealTime(person)) {
+	        	endTask();
+	            kitchen.cleanup();
+	            //logger.info(person.getName() + " just finished cooking.");
+	            return time;
+	        }
+		}
+		else if (robot != null) {
+	        // If meal time is over, clean up kitchen and end task.
+	        if (!isMealTime(robot)) {
+	        	endTask();
+	            kitchen.cleanup();
+	            //logger.info(robot.getName() + " just finished cooking.");
+	            return time;
+	        }
+		}
+
+        
         
         // 2015-01-04a Added getCookNoMore() condition 
         if (kitchen.getCookNoMore()) {
@@ -176,9 +238,18 @@ implements Serializable {
         	kitchen.cleanup();
         	return time;
         }
+                
+        double workTime = 0;      
         
-	        // Determine amount of effective work time based on "Cooking" skill.
-        double workTime = time;
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+	        
+		// Determine amount of effective work time based on "Cooking" skill.
 	    int cookingSkill = getEffectiveSkillLevel();
 	    if (cookingSkill == 0) workTime /= 2;
 	    	else workTime += workTime * (.2D * (double) cookingSkill);
@@ -204,11 +275,22 @@ implements Serializable {
         // (1 base experience point per 25 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        int experienceAptitude = 0;
+        
+		if (person != null) 
+			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+	                NaturalAttribute.EXPERIENCE_APTITUDE);			
+		else if (robot != null)
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
                 NaturalAttribute.EXPERIENCE_APTITUDE);
+		
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+        
+		if (person != null) 
+			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+		else if (robot != null)
+			robot.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
     }
 
     /**
@@ -226,9 +308,14 @@ implements Serializable {
     private void checkForAccident(double time) {
 
         double chance = .001D;
-
-        // Cooking skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+        int skill = 0;
+        
+		if (person != null) 
+	        // Cooking skill modification.
+	        skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);			
+		else if (robot != null)
+	        skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+        
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -236,7 +323,11 @@ implements Serializable {
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // logger.info(person.getName() + " has accident while cooking.");
+			if (person != null) 
+	            logger.info(person.getName() + " has accident while cooking.");       				
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while cooking.");
+            
             kitchen.getBuilding().getMalfunctionManager().accident();
         }
     }	
@@ -247,10 +338,20 @@ implements Serializable {
      * @return true if meal time
      */
     public static boolean isMealTime(Person person) {
+        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));			
+	    return mealTime(timeDiff);
+	    
+    }
+    
+    public static boolean isMealTime(Robot robot) {
+        double timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));    
+		return mealTime(timeDiff);
+    }
+    
+    public static boolean mealTime(double timeDiff) {
+    	
         boolean result = false;
-
-        double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+        double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();     
         double modifiedTime = timeOfDay + timeDiff;
         if (modifiedTime >= 1000D) {
             modifiedTime -= 1000D;
@@ -278,9 +379,15 @@ implements Serializable {
      */
     private String getMealName() {
         String result = "";
-
+        double timeDiff = 0;
+        
+		if (person != null) 
+	        timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));	       			
+		else if (robot != null)
+			timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
+        
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+        
         double modifiedTime = timeOfDay + timeDiff;
         if (modifiedTime >= 1000D) {
             modifiedTime -= 1000D;
@@ -320,8 +427,10 @@ implements Serializable {
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
 
             if (kitchenBuildings.size() > 0) {
+            	
                 Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, kitchenBuildings);
+                
                 result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
             }
         }		
@@ -329,6 +438,28 @@ implements Serializable {
         return result;
     }
 
+    public static Building getAvailableKitchen(Robot robot) {
+        Building result = null;
+
+        LocationSituation location = robot.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = robot.getSettlement().getBuildingManager();
+            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
+            kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
+            kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
+            kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
+
+            if (kitchenBuildings.size() > 0) {
+                //Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                       // robot, kitchenBuildings);
+                //result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
+              	int selected = RandomUtil.getRandomInt(kitchenBuildings.size()-1);
+            	result = kitchenBuildings.get(selected);	
+            }
+        }		
+
+        return result;
+    }
     /**
      * Gets a list of kitchen buildings that have room for more cooks.
      * @param kitchenBuildings list of kitchen buildings
@@ -352,7 +483,12 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+		if (person != null) 
+			manager = person.getMind().getSkillManager();
+		else if (robot != null)
+			manager = robot.getMind().getSkillManager();
+		
         return manager.getEffectiveSkillLevel(SkillType.COOKING);
     }
 

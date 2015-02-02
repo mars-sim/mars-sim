@@ -86,17 +86,17 @@ public class TendGreenhouseMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 500D;
+        double result = 100D;
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
                 if (farmingBuilding != null) {
-                    result = 100D;
+                    result += 100D;
 
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
-                    result += needyCropsNum * 10D;
+                    result += needyCropsNum * 100D;
 
                     // Crowding modifier.
                     //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);

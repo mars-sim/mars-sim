@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionGood.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-02-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -93,6 +94,35 @@ implements Serializable {
 		setPhase(PRODUCE_FOOD);
 	}
 	
+	public ProduceFood(Robot robot) {
+		super(NAME, robot, true, false, STRESS_MODIFIER, true, 
+				10D + RandomUtil.getRandomDouble(50D));
+
+		// Initialize data members
+		if (robot.getSettlement() != null) {
+		    setDescription(Msg.getString("Task.description.produceFood.detail", 
+                    robot.getSettlement().getName())); //$NON-NLS-1$
+		}
+		else {
+			endTask();
+		}
+
+		// Get available foodProduction foodFactory if any.
+		Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
+		if (foodProductionBuilding != null) {
+			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
+
+			// Walk to foodProduction building.
+			walkToActivitySpotInBuilding(foodProductionBuilding, false);
+		} 
+		else {
+			endTask();
+		}
+
+		// Initialize phase
+		addPhase(PRODUCE_FOOD);
+		setPhase(PRODUCE_FOOD);
+	}
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.FOOD_PRODUCTION;
@@ -138,6 +168,40 @@ implements Serializable {
 		}
 	}
 
+	public static void cancelDifficultFoodProductionProcesses(Robot robot) {
+
+		Settlement settlement = robot.getSettlement();
+		if (settlement != null) {
+			int highestSkillLevel = 0;
+			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
+			while (i.hasNext()) {
+				Robot tempRobot = i.next();
+				SkillManager skillManager = tempRobot.getMind().getSkillManager();
+				int skill = skillManager.getSkillLevel(SkillType.COOKING);
+				if (skill > highestSkillLevel) {
+					highestSkillLevel = skill;
+				}
+			}
+
+			BuildingManager manager = robot.getSettlement().getBuildingManager();
+			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+			while (j.hasNext()) {
+				Building building = (Building) j.next();
+				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
+				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
+						foodProductionFunction.getProcesses());
+				Iterator<FoodProductionProcess> k = processes.iterator();
+				while (k.hasNext()) {
+					FoodProductionProcess process = k.next();
+					int processSkillLevel = process.getInfo().getSkillLevelRequired();
+					if (processSkillLevel > highestSkillLevel) {
+						// Cancel foodProduction process.
+						foodProductionFunction.endFoodProductionProcess(process, true);
+					}
+				}
+			}
+		}
+	}
 	/**
 	 * Gets an available foodProduction building that the person can use. Returns
 	 * null if no foodProduction building is currently available.
@@ -170,6 +234,33 @@ implements Serializable {
 		return result;
 	}
 
+	public static Building getAvailableFoodProductionBuilding(Robot robot) {
+
+		Building result = null;
+
+		SkillManager skillManager = robot.getMind().getSkillManager();
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+
+		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			BuildingManager manager = robot.getSettlement().getBuildingManager();
+			List<Building> foodProductionBuildings = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
+			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
+			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
+			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
+			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);
+			foodProductionBuildings = BuildingManager.getLeastCrowdedBuildings(foodProductionBuildings);
+
+			if (foodProductionBuildings.size() > 0) {
+				//Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+						//robot, foodProductionBuildings);
+				//result = RandomUtil.getWeightedRandomObject(foodProductionBuildingProbs);
+              	int selected = RandomUtil.getRandomInt(foodProductionBuildings.size()-1);
+            	result = foodProductionBuildings.get(selected);			
+			}
+		}
+
+		return result;
+	}
 	/**
 	 * Gets a list of foodProduction buildings needing work from a list of
 	 * buildings with the foodProduction function.
@@ -289,10 +380,22 @@ implements Serializable {
 	public static double getHighestFoodProductionProcessValue(Person person, 
 			Building foodProductionBuilding) {
 
-		double highestProcessValue = 0D;
-
 		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
+		return getHighestProcessValue(skillLevel, foodProductionBuilding);
+	}
+
+	public static double getHighestFoodProductionProcessValue(Robot robot, 
+			Building foodProductionBuilding) {
+
+		int skillLevel = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+
+		return getHighestProcessValue(skillLevel, foodProductionBuilding);
+	}
+	
+	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
+		
+		double highestProcessValue = 0D;
 		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
 		int techLevel = foodProductionFunction.getTechLevel();
 
@@ -311,8 +414,10 @@ implements Serializable {
 		}
 
 		return highestProcessValue;
+		
 	}
 
+	
 	@Override
 	protected void addExperience(double time) {
 		// Add experience to "Materials Science" skill
@@ -320,13 +425,24 @@ implements Serializable {
 		// Experience points adjusted by person's "Experience Aptitude"
 		// attribute.
 		double newPoints = time / 100D;
-		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(
-                SkillType.COOKING, newPoints * 5 / 7D);
-        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
-                newPoints *2 / 7D);
+		if (person != null) {
+			int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+			newPoints *= getTeachingExperienceModifier();
+	        person.getMind().getSkillManager().addExperience(
+	                SkillType.COOKING, newPoints * 5 / 7D);
+	        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
+	                newPoints *2 / 7D);
+		}
+		else if (robot != null) {
+			int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+			newPoints *= getTeachingExperienceModifier();
+	        robot.getMind().getSkillManager().addExperience(
+	                SkillType.COOKING, newPoints * 5 / 7D);
+	        robot.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
+	                newPoints *2 / 7D);
+		}
 	}
 
 	@Override
@@ -340,7 +456,12 @@ implements Serializable {
 	@Override
 	public int getEffectiveSkillLevel() {
         double result = 0;
-		SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+		if (person != null) 
+			manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getMind().getSkillManager();
+		
 		result += manager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
 		result += manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         return (int) Math.round(result / 7D);
@@ -372,9 +493,16 @@ implements Serializable {
 			return time;
 		}
 
-		// Determine amount of effective work time based on "Materials Science"
-		// skill.
-		double workTime = time;
+        double workTime = 0;
+        
+		if (person != null) {			
+	        workTime = time;
+		}
+		else if (robot != null) {
+		     // A robot moves slower than a person and incurs penalty on workTime
+	        workTime = time/2;
+		}
+		
 		int skill = getEffectiveSkillLevel();
 		if (skill == 0) {
 			workTime /= 2;
@@ -400,9 +528,18 @@ implements Serializable {
 					foodFactory.endFoodProductionProcess(process, false);
 				}
 			} else {
-				if (!person.getSettlement().getFoodProductionOverride()) {
-					process = createNewFoodProductionProcess();
+				
+				if (person != null) {
+					if (!person.getSettlement().getFoodProductionOverride()) {
+						process = createNewFoodProductionProcess();
+					}
 				}
+				else if (robot != null) {
+					if (!robot.getSettlement().getFoodProductionOverride()) {
+						process = createNewFoodProductionProcess();
+					}
+				}
+
 				if (process == null) {
 					endTask();
 				}
@@ -480,8 +617,15 @@ implements Serializable {
 			while (i.hasNext()) {
 				FoodProductionProcessInfo processInfo = i.next();
 				if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
-					double processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo, 
-							person.getSettlement());
+					double processValue = 0;
+					
+					if (person != null) 
+						processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo, 
+								person.getSettlement());
+					else if (robot != null)
+						processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo, 
+							robot.getSettlement());
+					
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);
 					}
@@ -525,7 +669,11 @@ implements Serializable {
 		chance *= foodFactory.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			logger.info(person.getName() + " has accident while performing food production.");
+			if (person != null) 
+				logger.info(person.getName() + " has accident while performing food production.");				
+			else if (robot != null)
+				logger.info(robot.getName() + " has accident while performing food production.");
+			
 			foodFactory.getBuilding().getMalfunctionManager().accident();
 		}
 	}

@@ -26,11 +26,11 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .1D;
+	private static final double NON_JOB_TASK_PENALTY = .5D;
 	/** Probability penalty for starting a non-job-related mission. */
-	private static final double NON_JOB_MISSION_START_PENALTY = .1D;
+	private static final double NON_JOB_MISSION_START_PENALTY = .5D;
 	/** Probability penalty for joining a non-job-related mission. */
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = .1D;
+	private static final double NON_JOB_MISSION_JOIN_PENALTY = .5D;
 
 	// Domain members
 	protected Class<? extends RobotJob> jobClass;
@@ -60,6 +60,7 @@ implements Serializable {
 	public String getName(RobotType robotType) {
 		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
 		switch (robotType) {
+			case CHEFBOT : key.append("chefbot"); break; //$NON-NLS-1$
 			case GARDENBOT : key.append("gardenbot"); break; //$NON-NLS-1$
 			case REPAIRBOT : key.append("repairbot"); break; //$NON-NLS-1$
 			default : key.append("bot"); break; //$NON-NLS-1$

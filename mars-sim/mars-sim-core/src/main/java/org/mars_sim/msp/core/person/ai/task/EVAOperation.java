@@ -490,6 +490,7 @@ implements Serializable {
         if (location == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+            //logger.info(person.getName() + " is walking to an airlock. getClosestWalkableAvailableAirlock()");
         }
         else if (location == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();

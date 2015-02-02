@@ -383,7 +383,7 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
                     }
@@ -453,7 +453,7 @@ implements Serializable {
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
                     }
