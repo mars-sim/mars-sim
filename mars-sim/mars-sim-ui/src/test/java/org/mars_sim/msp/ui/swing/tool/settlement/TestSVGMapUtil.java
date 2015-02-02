@@ -29,7 +29,7 @@ public class TestSVGMapUtil extends TestCase {
         
         // Check that all configured building names are mapped to a SVG image.
         Iterator<String> i = SimulationConfig.instance().getBuildingConfiguration().
-                getBuildingNames().iterator();
+                getBuildingTypes().iterator();
         while (i.hasNext()) {
             String buildingName = i.next();
             GraphicsNode svg = SVGMapUtil.getBuildingSVG(buildingName);

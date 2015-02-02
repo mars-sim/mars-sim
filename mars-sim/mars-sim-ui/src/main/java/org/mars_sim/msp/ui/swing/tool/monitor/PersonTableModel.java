@@ -341,10 +341,11 @@ extends UnitTableModel {
 
 			case HUNGER : {
 				double hunger = person.getPhysicalCondition().getHunger();
+		        double energy = person.getPhysicalCondition().getEnergy();
 				//result = new Float(hunger).intValue();
 				if (isDead)	result = "";
 				else if (isStarving) result = "Starving";
-				else result = getHungerStatus(hunger);
+				else result = getHungerStatus(hunger, energy);
 			} break;
 
 			case FATIGUE : {
@@ -417,12 +418,12 @@ extends UnitTableModel {
 	 * @param hunger
 	 * @return status
 	 */
-	public String getHungerStatus(double hunger) {
+	public String getHungerStatus(double hunger, double energy) {
 		String status= "N/A";
-		if (hunger < 200) status = Msg.getString("PersonTableModel.column.hunger.level1");
-		else if (hunger < 500) status = Msg.getString("PersonTableModel.column.hunger.level2");
-		else if (hunger < 1000) status = Msg.getString("PersonTableModel.column.hunger.level3");
-		else if (hunger < 2000) status = Msg.getString("PersonTableModel.column.hunger.level4");
+		if (hunger < 100 || energy > 5000) status = Msg.getString("PersonTableModel.column.hunger.level1");
+		else if (hunger < 500 || energy > 3000) status = Msg.getString("PersonTableModel.column.hunger.level2");
+		else if (hunger < 1000 || energy > 1000) status = Msg.getString("PersonTableModel.column.hunger.level3");
+		else if (hunger < 2000 || energy > 500) status = Msg.getString("PersonTableModel.column.hunger.level4");
 		else status = Msg.getString("PersonTableModel.column.hunger.level5");
 		//logger.info(" hunger pt : " + Math.round(hunger) + ", status : " + status);
 		return status;

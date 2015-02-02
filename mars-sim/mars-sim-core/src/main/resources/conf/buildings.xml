@@ -4,11 +4,11 @@
 
 <!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list>
-	<!-- name: the name of the building. -->
+	<!-- type: the type of the building. -->
 	<!-- width: the width of the building in meters. -->
 	<!-- length: the length of the building in meters. -->
 	<!-- base-level: 0 for above-ground building, -1 for in-ground building. -->
-	<building name="Lander Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Lander Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Lander Hab is a general purpose habitat for four persons.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
 	 		to jump start a settlement.  
@@ -325,7 +325,7 @@
 		
 	</building>
 	
-	<building name="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0">
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0">
 		<description> The Inflatable Greenhouse is a flexible structure made of interwoven
 		layers of Kevlar and mylar around a flexible air bladder. It sufficiently retains
 		an atmosphere for growing five crops and provides vital food source for settlers. It also
@@ -406,7 +406,7 @@
 		</functions>
 	</building>
 	
-	<building name="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0">
+	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0">
 		<description>The MD1 Nuclear Reactor is the first generation, small and self-contained
 		 	80kW nuclear reactor that is built for Martian environment and requires minimal maintenance.
 		</description>
@@ -419,7 +419,7 @@
 		</functions>
 	</building>
 	
-	<building name="Starting ERV Base" width="10.0" length="10.0" base-level="0">
+	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0">
 		<description> The starting ERV base was sent ahead of the arrival
 			of the human crew and stores full tanks of hydrogen for settlement's use.
 		</description>		
@@ -458,7 +458,7 @@
 		</functions>
 	</building>
 	
-	<building name="ERV Base" width="10.0" length="10.0" base-level="0">
+	<building type="ERV Base" width="10.0" length="10.0" base-level="0">
 		<description> The Earth Return Vehicle (ERV) is a spacecraft structure 
 			with built-in Sabatier chemical reactor. The ERV base has already 
 			converted its initial load of hydrogen into carbon dioxide, water and oxygen.
@@ -500,7 +500,7 @@
 		</functions>
 	</building>
 	
-	<building name="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0">
+	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0">
 		<description> 
 			The MD4 Nuclear Reactor is a medium-sized, self-contained 200kW Martian-reated 
 			nuclear reactor that requires minimal maintenance. 
@@ -513,7 +513,7 @@
 		</functions>
 	</building>	
 	
-	<building name="Atmospheric Processor" width="8.0" length="11.0" base-level="0">
+	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0">
 		<description> The Atmospheric Processor is an uninhabitable specialized building providing
 			automatic water and air processing and recycling for the settlement
 		</description>
@@ -557,7 +557,7 @@
 		</functions>
 	</building>		
 	
-	<building name="Residential Quarters" width="7.0" length="9.0" base-level="0">
+	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0">
 		<description> The Residential Quarters is the first specialized living accommodation building 
 			that is configurable with enough space to house as many as 12 beds.
 		</description>
@@ -583,7 +583,7 @@
 		</functions> 
 	</building>
 	
-	<building name="Lounge" width="7.0" length="9.0" base-level="0">
+	<building type="Lounge" width="7.0" length="9.0" base-level="0">
 		<description> The Lounge is a rest and relaxation living space furnished 
 			with dining tables and chairs for serving almost three dozens of people at a time. 
 			It has a well furnished kitchen supporting a lot of food processing activities and 
@@ -740,7 +740,7 @@
 		</functions>
 	</building>
 	
-	<building name="Infirmary" width="7.0" length="9.0" base-level="0">
+	<building type="Infirmary" width="7.0" length="9.0" base-level="0">
 		<description> 
 			The Infirmary is the first medical facility equipped to provide more adequate
 			medical care for settlers. It houses one workbench with equipment for medical research.
@@ -770,7 +770,7 @@
 		</functions>
 	</building>
 	
-	<building name="Command and Control" width="7.0" length="9.0" base-level="0">
+	<building type="Command and Control" width="7.0" length="9.0" base-level="0">
 		<description> 
 			The Command and Control is a communication facility with networking 
 			capability for high speed communications, central EVA operations
@@ -823,7 +823,7 @@
 	</building>
 
 
-	<building name="Large Greenhouse" width="12.0" length="18.0" base-level="0">
+	<building type="Large Greenhouse" width="12.0" length="18.0" base-level="0">
 		<description> 
 			The Large Greenhouse is furnished with a botany research lab with instruments. It has a spacious interior
 			for high volume crop cultivation and has a high resource storage capability
@@ -901,7 +901,7 @@
 	</building>
 
 <!--
-	<building name="Large Algae Greenhouse" width="12.0" length="18.0">
+	<building type="Large Algae Greenhouse" width="12.0" length="18.0">
 		<description> A Large Algae Greenhouse is a spacious greenhouse 
 			equipped with algae ponds and a biology lab. The availability of algae 
 			ensure the continuous supply of nutritious food source that is
@@ -935,7 +935,7 @@
 	</building>
 	-->
 
-	<building name="Laboratory" width="7.0" length="9.0" base-level="0">
+	<building type="Laboratory" width="7.0" length="9.0" base-level="0">
 		<description> The Laboratory is a modest facility furnished with workbench,
 		instruments, computers and tablets and peer collaboration communication 
 		suites of equipment that enables making scientific inquiries on the froniter of Mars.
@@ -972,7 +972,7 @@
 		</functions>
 	</building>
 	
-	<building name="Garage" width="12.0" length="16.0" base-level="0">
+	<building type="Garage" width="12.0" length="16.0" base-level="0">
 		<description> The Garage is an enclosed maintenance facility for 
 			building, repairing and modifying Martian rovers and vehicles 
 		</description>
@@ -999,7 +999,7 @@
 		</functions>
 	</building>
 	
-	<building name="Workshop" width="7.0" length="9.0" base-level="0">
+	<building type="Workshop" width="7.0" length="9.0" base-level="0">
 		<description> The Workshop is a manufacturing building furnished with 
 			computerized machinaries for processing resources,
 			snythesizing parts and assembling items for settlement's use.  
@@ -1051,7 +1051,7 @@
 		</functions>
 	</building>
 	
-	<building name="Methane Power Generator" width="5.0" length="5.0" base-level="0">
+	<building type="Methane Power Generator" width="5.0" length="5.0" base-level="0">
 		<description>  The Methane Power generator utilized methane gas for the
 			generation of electricity. It makes use of the freely available carbon dioxide 
 			in the Martian atmosphere and creates non-polluting by-products.
@@ -1066,7 +1066,7 @@
 	</building>
 
 
-	<building name="Wind Turbine" width="5.0" length="5.0" base-level="0">
+	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0">
 		<description>  The Wind Turbine power generator provides a completely non-polluting 
 		form of renewable energy. Asides from the typical maintenance tasks,
 		it is an integral part of a modular distributed renewable energy generation system complimenting 
@@ -1080,7 +1080,7 @@
 		</functions>
 	</building>
 	
-	<building name="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0">
+	<building type="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0">
 		<description>  The Solar Photovoltaic Array is an array of steerable photovoltaic panels 
 		that generates electricity from Martian sunlight. It is an essential part of 
 		a modular distributed renewable energy generation system for the power grid.
@@ -1094,7 +1094,7 @@
 	</building>
 	
 	<!-- Array of solar thermal mirrors with steam power generator. -->
-	<building name="Solar Thermal Array" width="5.0" length="10.0" base-level="0">
+	<building type="Solar Thermal Array" width="5.0" length="10.0" base-level="0">
 		<description>  The Solar Thermal Array is an array of steerable parabolic
 			reflectors that concentrates sunlight for heating up molten materials
 			that move mechanical turbines generating power.
@@ -1108,7 +1108,7 @@
 	</building>
 	
 	<!-- A small areothermal electrical generator. -->
-	<building name="Small Areothermal Well" width="5.0" length="10.0" base-level="0">
+	<building type="Small Areothermal Well" width="5.0" length="10.0" base-level="0">
 		<description>  The Small Areothermal Well is an geothermal energy production system
 			that captures the trapped underground heat for the power grid.
 		</description>
@@ -1120,7 +1120,7 @@
 		</functions>
 	</building>
 	
-	<building name="Large Areothermal Well" width="10.0" length="15.0" base-level="0">
+	<building type="Large Areothermal Well" width="10.0" length="15.0" base-level="0">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for 
 			capturing heat and creating electricity.
@@ -1133,7 +1133,7 @@
 		</functions>
 	</building>
 	
-	<building name="Concrete Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Concrete Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description>  The Concrete Storage Bin is a small brick bin for 
 			storing dry concrete material for light contruction project.
 		</description>
@@ -1145,7 +1145,7 @@
 		</functions>
 	</building>
 	
-	<building name="Cement Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Cement Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description>  The Cement Storage Bin is a small brick bin for 
 			storing dry cement for light contruction project.
 		</description>
@@ -1157,7 +1157,7 @@
 		</functions>
 	</building>
 	
-	<building name="Mortar Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Mortar Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description>  The Mortar Storage Bin is a small brick bin for 
 			storing dry mortar for light contruction project.
 		</description>
@@ -1169,7 +1169,7 @@
 		</functions>
 	</building>
 	
-	<building name="Lime Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Lime Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description>  The Lime Storage Bin is a small brick bin for 
 			storing lime for light contruction project.
 		</description>
@@ -1181,7 +1181,7 @@
 		</functions>
 	</building>
 	
-	<building name="Carbon Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Carbon Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description> The Carbon Storage Bin is a small brick bin for 
 			storing carbon for light contruction project.
 		</description>
@@ -1193,7 +1193,7 @@
 		</functions>
 	</building>
 	
-	<building name="Regolith Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Regolith Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description> The Regolith Storage Bin is a small brick bin for 
 			storing Martian regolith for light contruction project.
 		</description>
@@ -1205,7 +1205,7 @@
 		</functions>
 	</building>
 	
-	<building name="Sand Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Sand Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description> The Sand Storage Bin is a small brick bin for 
 			storing Martian sand for light contruction project.
 		</description>
@@ -1217,7 +1217,7 @@
 		</functions>
 	</building>
 	
-	<building name="Ice Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Ice Storage Bin" width="2.0" length="3.0" base-level="0">
 		<description> The Ice Storage Bin is a small brick bin for handling and 
 			storing extracted ice for future use.
 		</description>
@@ -1229,7 +1229,7 @@
 		</functions>
 	</building>
 	
-	<building name="Manufacturing Shed" width="5.0" length="5.0" base-level="-1">
+	<building type="Manufacturing Shed" width="5.0" length="5.0" base-level="-1">
 		<description> The Manufacturing Shed is a small brick manufacturing 
 			building for forming, cutting, coating and glazing bricks for construction projects.
 		</description>
@@ -1259,7 +1259,7 @@
 		</functions>
 	</building>
 	
-	<building name="Bunkhouse" width="5.0" length="5.0" base-level="-1">
+	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1">
 		<description> The Bunkhouse is a spartan living quarters with 
 			two beds. It is a retractable housing custom-tailored for 
 			temporary mining outpost operation.
@@ -1277,7 +1277,7 @@
 	</building>
 	
 
-	<building name="Small Sabatier Processor" width="5.0" length="5.0" base-level="0">
+	<building type="Small Sabatier Processor" width="5.0" length="5.0" base-level="0">
 		<description> The Small Sabatier Processor is a small building housing a sabatier
 			system that features the reaction hydrogen with carbon dioxide at elevated temperatures 
 			and pressures in the presence of a nickel catalyst to produce methane and water
@@ -1296,7 +1296,7 @@
 	</building>
 	
 	<!-- Array of rover batteries -->
-	<building name="Small Battery Array" width="5.0" length="10.0" base-level="0">
+	<building type="Small Battery Array" width="5.0" length="10.0" base-level="0">
 		<description> The Small Battery Array showcased an advanced battery system that 
 			stored excess power during non-peak hours and released power during peak power 
 			usage. Array of rover batteries
@@ -1308,7 +1308,7 @@
 		</functions>
 	</building>
 	
-	<building name="Astronomy Observatory" width="7.0" length="7.0" base-level="0">
+	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0">
 		<description> The Astronomy Observatory is a small self-contained observatory building
 			furnished with an optical telescope, research workbench and astronomy laboratory
 			as well as a built-in EVA airlock for ingress and egress.
@@ -1338,7 +1338,7 @@
 	</building>
 	
 	<!-- A lander hab refitted for storage. -->
-	<building name="Storage Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Storage Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Storage Hab is a Lander Hab refitted storage 
 			building with ample storage space. It has built-in PV panels
 			as backup power source.
@@ -1366,7 +1366,7 @@
 		</functions>
 	</building>
 	
-	<building name="Research Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Research Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Research Hab is a Lander Hab refitted laboratory 
 			building for scientific research. It can be custom-tailored with computer 
 			systems for	up to four research subjects and has built-in solar panels.
@@ -1396,7 +1396,7 @@
 		</functions>
 	</building>
 	
-	<building name="Residential Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Residential Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Residential Hab is a Lander Hab refitted residential 
 			quarters for living accommodation of up to 8 persons. It uses solar
 			panels as backup power source.
@@ -1422,7 +1422,7 @@
 	</building>
 	
 	<!-- A lander hab refitted as a medical facility. -->
-	<building name="Medical Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Medical Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Medical Hab is a Lander Hab refitted medical facility
 		 for providing medical basic care. It also has medical research workbench and 
 		 uses solar	panels as backup power source.
@@ -1450,7 +1450,7 @@
 		</functions>
 	</building>
 	
-	<building name="Machinery Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Machinery Hab" width="9.0" length="9.0" base-level="0">
 		<description> The Machinery Hab is a Lander Hab refitted manufacturing workshop
 		 	for making items and synthesizing resource. It provides storage space for 
 		 	housing commonly used resources.
@@ -1487,7 +1487,7 @@
 		</functions>
 	</building>
 	
-	<building name="Outpost Hub" width="10.0" length="10.0" base-level="-1">
+	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1">
 		<description> The Outpost Hub is a vaulted brick building that acts 
 			as the main hub of a trading or mining outpost. Like its cousin
 			Lander Hab, it hosts a suite of functions to its inhabitants.
@@ -1548,7 +1548,7 @@
 		</functions>
 	</building>
 	
-	<building name="Storage Shed" width="5.0" length="5.0" base-level="-1">
+	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1">
 		<description> The Storage Shed is a small brick building for 
 			storing resources for the settlement.
 		</description>	
@@ -1570,7 +1570,7 @@
 	</building>
 	
 
-	<building name="Loading Dock Garage" width="15.0" length="18.0" base-level="-1">
+	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1">
 		<description> The Loading Dock Garage is an enclosed maintenance facility 
 			featuring a brick loading dock for easy access. It has equipment for
 			building, repairing and modifying rovers and vehicles. 
@@ -1596,7 +1596,7 @@
 		</functions>
 	</building>
 	
-	<building name="Mining Lab" width="5.0" length="5.0" base-level="-1">
+	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1">
 		<description> The Mining Lab is a small brick laboratory furnished for 
 			mining-related scientific instruments and research workbench.
 		</description>
@@ -1618,7 +1618,7 @@
 		</functions>
 	</building>
 	
-	<building name="Inground Greenhouse" width="5.0" length="10.0" base-level="-1">
+	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1">
 		<description> The Inground Greenhouse is a semi underground structure with a 
 			vaulted flber glass roof which is less suceptible to meteor damage. 
 			It grows crops as food for the settlement. 
@@ -1666,7 +1666,7 @@
 	
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building name="Hallway" width="2.0" length="-1.0" base-level="0">
+	<building type="Hallway" width="2.0" length="-1.0" base-level="0">
 		<description> The Hallway is a pressurized access tube connecting 
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
@@ -1679,7 +1679,7 @@
 	</building>
 	
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
-	<building name="Tunnel" width="3.0" length="-1.0" base-level="-1">
+	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1">
 		<description> The Tunnel is an underground pressurized access tube connecting 
 			two inhabitable buildings. It allows only one person to access it
 			at a time.

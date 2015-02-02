@@ -190,6 +190,7 @@ implements Serializable {
             		
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (dessert == null));
+            			
             			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()
             		}
             		else 
@@ -198,12 +199,18 @@ implements Serializable {
                         endTask();
             		}
             	}
-            		// 2014-11-28 Computed new hunger level
+            	// 2014-11-28 Computed new hunger level
                 double hunger = condition.getHunger();
-                if (hunger < 900) 
+                // 2015-02-01 Added energy level 
+                double energy = condition.getEnergy();
+                if (hunger < 900 || energy > 1000) { 
                 	hunger = hunger * (1 - HUNGER_REDUCTION_PERCENT/100);
-                else if (hunger > 900)
+                	//energy = energy * (1 + HUNGER_REDUCTION_PERCENT/100);
+                }
+                else if (hunger > 900 || energy < 1000) {
                 	hunger = 900;
+                	//energy = 1000;
+                }
               	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
                 //System.out.println("EatDessert : dessert.getDryMass() "+ Math.round(dessert.getDryMass()*10.0)/10.0);
                 condition.setHunger(hunger);

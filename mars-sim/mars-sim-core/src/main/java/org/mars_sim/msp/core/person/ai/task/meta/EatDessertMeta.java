@@ -44,15 +44,15 @@ public class EatDessertMeta implements MetaTask {
         
         double result = 0D;
         
-        if (hunger > 800 || energy < 2000 )
+        if (hunger > 1000 || energy < 2000 )
 	        //result =  0.4 * (hunger - 400D);
-	        result = 0.01 * (12000 - energy);
-        else if (hunger > 600 || energy < 4000 )
-        	result = 50D;
-        else if (hunger > 400 || energy < 6000 )
-        	result = 30D;
-        else if (hunger > 300 || energy < 7000 )
-        	result = 10D;        
+	        result = 0.007 * (12000 - energy);
+        else if (hunger > 800 || energy < 4000 )
+        	result = 40D;
+        else if (hunger > 600 || energy < 6000 )
+        	result = 10D;
+        //else if (hunger > 400 || energy < 7000 )
+        	//result = 5D;        
         else result = 0;
         
         if (result > 0) {

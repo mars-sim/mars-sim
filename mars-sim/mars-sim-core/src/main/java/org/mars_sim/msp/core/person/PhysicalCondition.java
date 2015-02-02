@@ -109,12 +109,11 @@ implements Serializable {
         fatigue = RandomUtil.getRandomDouble(1000D);
         
         stress = RandomUtil.getRandomDouble(100D);
-        
-        //2015-01-06 Changed hunger to less than 400D
-        //hunger = RandomUtil.getRandomDouble(400D);
-        //kJoules = RandomUtil.getRandomDouble(10000D);
-        hunger = 0D;
-        kJoules = 10000D;
+
+        hunger = RandomUtil.getRandomDouble(400D);
+        kJoules = RandomUtil.getRandomDouble(8000D);
+        //hunger = 0D;
+        //kJoules = 10000D;
         
         alive = true;
         medicationList = new ArrayList<Medication>();
@@ -658,7 +657,7 @@ implements Serializable {
     public void addEnergy(double foodAmount) {
     	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
         int MAX_KJ = 16290; // arbitrary 16290 kJ = 1kg of food
-        double FACTOR = 0.8D;
+        double FACTOR = 0.6D;
 		// Each meal an average of 2525 kJ
         double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
         kJoules = kJoules + foodAmount * xdelta * Math.log(MAX_KJ/kJoules) / FACTOR; 
@@ -730,7 +729,7 @@ implements Serializable {
                         robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
-                else if (hunger < 300D
+                else if (hunger < 1000D
                 		|| kJoules > 500D ) {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {
@@ -755,7 +754,7 @@ implements Serializable {
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
-                else if (hunger < 300D
+                else if (hunger < 1000D
                 		|| kJoules > 500D ) {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {

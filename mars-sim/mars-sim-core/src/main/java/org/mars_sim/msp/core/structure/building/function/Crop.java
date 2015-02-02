@@ -51,14 +51,16 @@ implements Serializable {
 	// Data members
 	/** The type of crop. */
 	private CropType cropType;
-	/** Maximum possible food harvest for crop. (kg) */
-	private double maxHarvest;
+
+	private Inventory inv;
 	/** Farm crop being grown in. */
 	private Farming farm;
 	/** The settlement the crop is located at. */
 	private Settlement settlement;
 	/** Current phase of crop. */
 	private String phase;
+	/** Maximum possible food harvest for crop. (kg) */
+	private double maxHarvest;
 	/** Required work time for planting (millisols). */
 	private double plantingWorkRequired;
 	/** Required work time to tend crop daily (millisols). */
@@ -74,8 +76,6 @@ implements Serializable {
 	/** Current sol of month. */
 	private int currentSol;
 
-	private Inventory inv;
-	
 	/**
 	 * Constructor.
 	 * @param cropType the type of crop.
