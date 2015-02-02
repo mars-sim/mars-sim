@@ -36,7 +36,6 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
 }
 
-
 .menu-item {
 -fx-font-weight: normal;
 -fx-font-family: "Noto";
@@ -51,7 +50,7 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-background-color: transparent, transparent, transparent, transparent;
 -fx-border-width: 1;
 -fx-border-style: dotted;
-    -fx-padding: 4px 4px 4px 4px;
+-fx-padding: 4px 4px 4px 4px;
     }
 
 
@@ -67,16 +66,6 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 .button:armed {
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
 }
-/* 
-.button {
--fx-background-color: transparent;
-}
- 
-.button:hover {
--fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
--fx-color: -fx-hover-base;
-}
-*/
  
 .table-view {
 -fx-table-cell-border-color:derive(-fx-base,+10%);
