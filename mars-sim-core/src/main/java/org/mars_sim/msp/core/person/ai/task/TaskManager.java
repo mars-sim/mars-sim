@@ -170,10 +170,14 @@ implements Serializable {
 	}
 
     public void reduceEnergy(double time) {
-    	
+    	PhysicalCondition health = null;
 		// 2015-01-30 Added reducekJoules()
 		// TODO: need to match the kind of activity to the energy output
-		PhysicalCondition health = person.getPhysicalCondition();
+		if (person != null) 
+			health = person.getPhysicalCondition();			
+		else if (robot != null)
+			health = robot.getPhysicalCondition();
+		
 		int ACTIVITY_FACTOR = 6;
 		double newTime = ACTIVITY_FACTOR * time ;
 		health.reduceEnergy(newTime);

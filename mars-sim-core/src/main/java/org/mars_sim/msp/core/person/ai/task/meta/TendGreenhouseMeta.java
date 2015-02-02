@@ -79,8 +79,7 @@ public class TendGreenhouseMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new TendGreenhouse(robot);
 	}
 
 	@Override

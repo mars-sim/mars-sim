@@ -188,12 +188,22 @@ implements Serializable {
         // (1 base experience point per 100 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        int experienceAptitude = 0;
+		if (person != null) 
+	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		else if (robot != null) 
+	        experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+		if (person != null) 
+	        person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+		else if (robot != null) 
+	        robot.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+
     }
 
+    
     /**
      * Check for accident in greenhouse.
      * @param time the amount of time working (in millisols)
@@ -266,6 +276,12 @@ implements Serializable {
                 farmBuildings = getFarmsNeedingWork(farmBuildings);
                 farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 
+
+                if (farmBuildings.size() > 0) {
+                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                            person, farmBuildings);
+                    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+                }
             }
         }
         return result;
@@ -319,7 +335,13 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+    
+		if (person != null) 
+			manager = person.getMind().getSkillManager();
+		else if (robot != null) 
+			manager = robot.getMind().getSkillManager();
+        
         return manager.getEffectiveSkillLevel(SkillType.BOTANY);
     }  
 

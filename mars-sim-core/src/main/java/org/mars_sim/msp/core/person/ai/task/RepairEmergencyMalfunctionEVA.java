@@ -69,32 +69,21 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public RepairEmergencyMalfunctionEVA(Person person) {
         super(NAME, person, false, 0D);
         
-        // Get the malfunctioning entity.
-        claimMalfunction();
-        if (entity == null) {
-            endTask();
-            return;
-        }
+        init();
         
-        // Create starting task event if needed.
-        if (getCreateEvents() && !isDone()) {
-            TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
-            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-        }
-
-        // Determine location for repairing malfunction.
-        Point2D malfunctionLoc = determineMalfunctionLocation();
-        setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
-
-        // Initialize phase
-        addPhase(REPAIRING);
-
         logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
     }
     
     public RepairEmergencyMalfunctionEVA(Robot robot) {
         super(NAME, robot, false, 0D);
+
+        init();
         
+        logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
+    }    
+    
+    public void init() {
+    	
         // Get the malfunctioning entity.
         claimMalfunction();
         if (entity == null) {
@@ -115,8 +104,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         // Initialize phase
         addPhase(REPAIRING);
 
-        logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
-    }    
+    }
     
     /**
      * Checks if the emergency repair requires an EVA.

@@ -59,6 +59,8 @@ implements Repair, Serializable {
     private Malfunctionable entity;
     /** Problem being fixed. */
     private Malfunction malfunction;
+    private Person person = null;
+    private Robot robot = null;
 
     /**
      * Constructs a RepairEmergencyMalfunction object.
@@ -69,18 +71,15 @@ implements Repair, Serializable {
 
         claimMalfunction();
 
-        Person person = null;
-        Robot robot = null;
-        
         if (unit instanceof Person) {
-         	person = (Person) unit;
+         	this.person = (Person) unit;
         }
         else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
+        	this.robot = (Robot) unit;
         }
         
         if (entity != null) {
-        	addPersonRobotToMalfunctionLocation(entity);
+        	addPersonOrRobotToMalfunctionLocation(entity);
         }
         else {
             endTask();
@@ -268,7 +267,7 @@ implements Repair, Serializable {
      * Otherwise walk to random location.
      * @param malfunctionable the malfunctionable the person or robot is repairing.
      */
-    private void addPersonRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
+    private void addPersonOrRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
 
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
@@ -312,6 +311,8 @@ implements Repair, Serializable {
     public void destroy() {
         super.destroy();
 
+        person = null;
+        robot = null;
         entity = null;
         malfunction = null;
     }

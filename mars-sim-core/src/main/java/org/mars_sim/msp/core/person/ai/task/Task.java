@@ -400,39 +400,75 @@ implements Serializable, Comparable<Task> {
         // If no subtask, perform this task.
         if ((subTask == null) || subTask.done) {
 
-            // If task is effort-driven and person is incapacitated, end task.
-            if (effortDriven && (person.getPerformanceRating() == 0D)) {
-                endTask();
-                
-            } else {
-
-                // Perform phases of task until time is up or task is done.
-                while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
-                    if (hasDuration) {
-
-                        // Keep track of the duration of the task.
-                        if ((timeCompleted + timeLeft) >= duration) {
-                            double performTime = duration - timeCompleted;
-                            double extraTime = timeCompleted + timeLeft - duration;
-                            timeLeft = performMappedPhase(performTime) + extraTime;
-                            timeCompleted = duration;
-                            endTask();
-                        }
-                        else {
-                            double remainingTime = timeLeft;
-                            timeLeft = performMappedPhase(timeLeft);
-                            timeCompleted += remainingTime;
-                        }
-                    } else {
-                        timeLeft = performMappedPhase(timeLeft);
-                    }
-                }        
-            }
+			if (person != null) {
+				
+	        	// If task is effort-driven and person is incapacitated, end task.
+			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
+			    	endTask();
+	                
+	            } else {
+	
+	                // Perform phases of task until time is up or task is done.
+	                while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
+	                    if (hasDuration) {
+	
+	                        // Keep track of the duration of the task.
+	                        if ((timeCompleted + timeLeft) >= duration) {
+	                            double performTime = duration - timeCompleted;
+	                            double extraTime = timeCompleted + timeLeft - duration;
+	                            timeLeft = performMappedPhase(performTime) + extraTime;
+	                            timeCompleted = duration;
+	                            endTask();
+	                        }
+	                        else {
+	                            double remainingTime = timeLeft;
+	                            timeLeft = performMappedPhase(timeLeft);
+	                            timeCompleted += remainingTime;
+	                        }
+	                    } else {
+	                        timeLeft = performMappedPhase(timeLeft);
+	                    }
+	                }        
+	            }
+	        }
+        
+			else if (robot != null) {
+				
+	        	// If task is effort-driven and person is incapacitated, end task.
+			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
+			    	endTask();
+	                
+	            } else {
+	
+	                // Perform phases of task until time is up or task is done.
+	                while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
+	                    if (hasDuration) {
+	
+	                        // Keep track of the duration of the task.
+	                        if ((timeCompleted + timeLeft) >= duration) {
+	                            double performTime = duration - timeCompleted;
+	                            double extraTime = timeCompleted + timeLeft - duration;
+	                            timeLeft = performMappedPhase(performTime) + extraTime;
+	                            timeCompleted = duration;
+	                            endTask();
+	                        }
+	                        else {
+	                            double remainingTime = timeLeft;
+	                            timeLeft = performMappedPhase(timeLeft);
+	                            timeCompleted += remainingTime;
+	                        }
+	                    } else {
+	                        timeLeft = performMappedPhase(timeLeft);
+	                    }
+	                }        
+	            }			
+			}
         }
-
-        // Modify stress performing task.
-        modifyStress(time - timeLeft);
-
+        
+		if (person != null) 
+			// Modify stress performing task.
+			modifyStress(time - timeLeft);
+        
         return timeLeft;
     }
 
@@ -479,38 +515,35 @@ implements Serializable, Comparable<Task> {
      * @param time the time performing the task.
      */
     private void modifyStress(double time) {
-        PhysicalCondition condition = person.getPhysicalCondition();
+    	
+    	 PhysicalCondition condition = person.getPhysicalCondition();
+    	
+		if (person != null) {
+	        double effectiveStressModifier = stressModifier;
+	
+	        if (stressModifier > 0D) {
+	        	
+	        	Job job = person.getMind().getJob();
+		            
+		            
+		            if ((job != null) && job.isJobRelatedTask(this.getClass())) {
+		                // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
+		                effectiveStressModifier*= JOB_STRESS_MODIFIER;
+		            }
+	
+		            // Reduce stress modifier for person's skill related to the task.
+		            int skill = this.getEffectiveSkillLevel();
+		            effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
+	
+		            // If effective stress modifier < 0, set it to 0.
+		            if (effectiveStressModifier < 0D) {
+		                effectiveStressModifier = 0D;
+		            }
+	
+	        }
 
-        double effectiveStressModifier = stressModifier;
-
-        if (stressModifier > 0D) {
-        	Job job = null;
-			if (person != null) {
-	            // Reduce stress modifier if task is in person's current job description.
-	            job = person.getMind().getJob();
-			}
-			else if (robot != null) {
-	            // Reduce stress modifier if task is in robot's current job description.
-	            job = robot.getMind().getJob();
-			}
-
-            
-            if ((job != null) && job.isJobRelatedTask(this.getClass())) {
-                // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
-                effectiveStressModifier*= JOB_STRESS_MODIFIER;
-            }
-
-            // Reduce stress modifier for person's skill related to the task.
-            int skill = this.getEffectiveSkillLevel();
-            effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
-
-            // If effective stress modifier < 0, set it to 0.
-            if (effectiveStressModifier < 0D) {
-                effectiveStressModifier = 0D;
-            }
-        }
-
-        condition.setStress(condition.getStress() + (effectiveStressModifier * time));
+	        condition.setStress(condition.getStress() + (effectiveStressModifier * time));
+	    }
     }
 
     /**
@@ -829,19 +862,38 @@ implements Serializable, Comparable<Task> {
         
         boolean result = true;
         
-        // Check all crew members other than person doing task.
-        Iterator<Person> i = rover.getCrew().iterator();
-        while (i.hasNext()) {
-            Person crewmember = i.next();
-            if (!crewmember.equals(person)) {
-                
-                // Check if crew member's location is very close to activity spot.
-                Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
-                if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
-                    result = false;
-                }
-            }
-        }
+		if (person != null) {
+			  // Check all crew members other than person doing task.
+	        Iterator<Person> i = rover.getCrew().iterator();
+	        while (i.hasNext()) {
+	            Person crewmember = i.next();
+	            if (!crewmember.equals(person)) {
+	                
+	                // Check if crew member's location is very close to activity spot.
+	                Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
+	                if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
+	                    result = false;
+	                }
+	            }
+	        }
+		}
+		else if (robot != null) {
+			  // Check all crew members other than person doing task.
+	        Iterator<Robot> i = rover.getRobotCrew().iterator();
+	        while (i.hasNext()) {
+	        	Robot crewmember = i.next();
+	            if (!crewmember.equals(robot)) {
+	                
+	                // Check if crew member's location is very close to activity spot.
+	                Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
+	                if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
+	                    result = false;
+	                }
+	            }
+	        }
+		}
+		
+      
         
         return result;
     }
@@ -985,6 +1037,7 @@ implements Serializable, Comparable<Task> {
     public void destroy() {
         name = null;
         person = null;
+        robot = null;
         description = null;
         if (subTask != null) {
             subTask.destroy();

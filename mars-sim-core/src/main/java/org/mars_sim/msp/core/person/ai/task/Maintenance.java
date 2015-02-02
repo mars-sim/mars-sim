@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
@@ -106,6 +107,45 @@ implements Serializable {
         setPhase(MAINTAIN);
     }
 
+	public Maintenance(Robot robot) {
+        super(NAME, robot, true, false, STRESS_MODIFIER, 
+                true, 10D + RandomUtil.getRandomDouble(40D));
+
+        try {
+            entity = getMaintenanceMalfunctionable();
+            if (entity != null) {
+                if (isInhabitableBuilding(entity)) {
+                    // Walk to random location in building.
+                    walkToRandomLocInBuilding((Building) entity, false);
+                }
+                else {
+                    
+                    if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                        // If robot is in rover, walk to passenger activity spot.
+                        if (robot.getVehicle() instanceof Rover) {
+                            walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
+                        }
+                    }
+                    else {
+                        // Walk to random location.
+                        walkToRandomLocation(true);
+                    }
+                }
+            }
+            else {
+                endTask();
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"Maintenance.constructor()",e);
+            endTask();
+        }
+
+        // Initialize phase.
+        addPhase(MAINTAIN);
+        setPhase(MAINTAIN);
+    }
+	
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -127,10 +167,19 @@ implements Serializable {
     private double maintainPhase(double time) {
         MalfunctionManager manager = entity.getMalfunctionManager();
 
-        // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-            endTask();
-        }
+		if (person != null) {
+	        // If person is incapacitated, end task.
+	        if (person.getPerformanceRating() == 0D) {
+	            endTask();
+	        }
+		}
+		else if (robot != null) {
+	        // If robot is incapacitated, end task.
+	        if (robot.getPerformanceRating() == 0D) {
+	            endTask();
+	        }
+		}
+
 
         // Check if maintenance has already been completed.
         if (manager.getEffectiveTimeSinceLastMaintenance() < 1000D) {
@@ -158,7 +207,15 @@ implements Serializable {
 
         // Add repair parts if necessary.
         boolean repairParts = false;
-        Unit container = person.getTopContainerUnit();
+        Unit container = null;
+        
+		if (person != null) 
+	        container = person.getTopContainerUnit();
+        
+		else if (robot != null) 
+	        container = robot.getTopContainerUnit();
+        
+
         if (container != null) {
             Inventory inv = container.getInventory();
             if (Maintenance.hasMaintenanceParts(inv, entity)) {
@@ -201,11 +258,21 @@ implements Serializable {
         // (1 base experience point per 100 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttribute.EXPERIENCE_APTITUDE);
+        int experienceAptitude = 0;
+		if (person != null) 
+	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+	                NaturalAttribute.EXPERIENCE_APTITUDE);			
+		else if (robot != null)
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
+					NaturalAttribute.EXPERIENCE_APTITUDE);
+        
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+		if (person != null) 
+	        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);			
+		else if (robot != null)
+			robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+        
     }
 
     /**
@@ -217,7 +284,12 @@ implements Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        int skill = 0;
+		if (person != null) 
+		       skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		else if (robot != null)
+			skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        
         if (skill <= 3) {
             chance *= (4 - skill);
         }
@@ -228,12 +300,20 @@ implements Serializable {
         // Modify based on the entity's wear condition.
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident while performing maintenance on " 
-                    + entity.getName() 
-                    + ".");
+			if (person != null) 
+	            logger.info(person.getName() + " has accident while performing maintenance on " 
+	                    + entity.getName() 
+	                    + ".");	
+			else if (robot != null)
+	            logger.info(robot.getName() + " has accident while performing maintenance on " 
+	                    + entity.getName() 
+	                    + ".");
+            
             entity.getMalfunctionManager().accident();
         }
+        
     }
 
     /** 
@@ -254,15 +334,27 @@ implements Serializable {
 
         // Determine all malfunctionables local to the person.
         Map<Malfunctionable, Double> malfunctionables = new HashMap<Malfunctionable, Double>();
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            double probability = getProbabilityWeight(entity);
-            if (probability > 0D) {
-                malfunctionables.put(entity, probability);
-            }
-        }
-
+		if (person != null) {
+	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+	        while (i.hasNext()) {
+	            Malfunctionable entity = i.next();
+	            double probability = getProbabilityWeight(entity);
+	            if (probability > 0D) {
+	                malfunctionables.put(entity, probability);
+	            }
+	        }
+		}
+		else if (robot != null) {
+			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+	        while (i.hasNext()) {
+	            Malfunctionable entity = i.next();
+	            double probability = getProbabilityWeight(entity);
+	            if (probability > 0D) {
+	                malfunctionables.put(entity, probability);
+	            }
+	        }
+		}
+        
         if (!malfunctionables.isEmpty()) {
             result = RandomUtil.getWeightedRandomObject(malfunctionables);
         }
@@ -307,17 +399,38 @@ implements Serializable {
         boolean hasMalfunction = manager.hasMalfunction();
         double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
         boolean minTime = (effectiveTime >= 1000D); 
-        boolean enoughParts = hasMaintenanceParts(person, malfunctionable);
-        if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
-            result = effectiveTime;
-            if (malfunctionable instanceof Building) {
-                Building building = (Building) malfunctionable;
-                if (isInhabitableBuilding(malfunctionable)) {
-                    result *= Task.getCrowdingProbabilityModifier(person, building);
-                    result *= Task.getRelationshipModifier(person, building);
-                }
-            }
-        }
+        
+		if (person != null) {
+		       boolean enoughParts = hasMaintenanceParts(person, malfunctionable);
+		        
+		        if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
+		            result = effectiveTime;
+		            if (malfunctionable instanceof Building) {
+		                Building building = (Building) malfunctionable;
+		                if (isInhabitableBuilding(malfunctionable)) {
+		                    result *= Task.getCrowdingProbabilityModifier(person, building);
+		                    result *= Task.getRelationshipModifier(person, building);
+		                }
+		            }
+		        }
+		}
+		else if (robot != null) {
+		       boolean enoughParts = hasMaintenanceParts(robot, malfunctionable);
+		        
+		        if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
+		            result = effectiveTime;
+		            if (malfunctionable instanceof Building) {
+		                Building building = (Building) malfunctionable;
+		                if (isInhabitableBuilding(malfunctionable)) {
+		                    //result *= Task.getCrowdingProbabilityModifier(robot, building);
+		                    //result *= Task.getRelationshipModifier(robot, building);
+		                }
+		            }
+		        }
+		}
+		
+ 
+        
         return result;
     }
 
@@ -335,6 +448,13 @@ implements Serializable {
         return hasMaintenanceParts(inv, malfunctionable);
     }
 
+    public static boolean hasMaintenanceParts(Robot robot, Malfunctionable malfunctionable) {
+        Inventory inv = null;
+        if (robot.getTopContainerUnit() != null) inv = robot.getTopContainerUnit().getInventory();
+        else inv = robot.getInventory();
+        return hasMaintenanceParts(inv, malfunctionable);
+    }
+    
     /**
      * Checks if there are enough local parts to perform maintenance.
      * @param inventory inventory holding the needed parts.
@@ -358,7 +478,12 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+		if (person != null) 
+	        manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = person.getMind().getSkillManager();
+        
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }   
 
