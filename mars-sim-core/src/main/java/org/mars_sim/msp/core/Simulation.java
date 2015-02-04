@@ -240,6 +240,22 @@ implements ClockListener, Serializable {
 		
 		transportManager = new TransportManager();
 		transportManager.start();
+		
+		try {
+			malfunctionFactory.join();
+			mars.join();			
+			missionManager.join();			
+			relationshipManager.join();			
+			medicalManager.join();			
+			creditManager.join();			
+			scientificStudyManager.join();			
+			transportManager.join();
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 
