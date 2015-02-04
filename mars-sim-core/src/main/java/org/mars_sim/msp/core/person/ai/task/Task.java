@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-02-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -377,6 +377,9 @@ implements Serializable, Comparable<Task> {
     public static double getProbability(Person person) { 
         return 0D; 
     }
+    public static double getProbability(Robot robot) { 
+        return 0D; 
+    }
 
     /** 
      * Perform the task for the given number of seconds.
@@ -404,8 +407,8 @@ implements Serializable, Comparable<Task> {
 				
 	        	// If task is effort-driven and person is incapacitated, end task.
 			    if (effortDriven && (person.getPerformanceRating() == 0D)) {
-			    	endTask();
-	                
+			    	endTask();    
+			    	
 	            } else {
 	
 	                // Perform phases of task until time is up or task is done.
@@ -640,7 +643,14 @@ implements Serializable, Comparable<Task> {
 
         if (hasTeacher()) {
             int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttribute.TEACHING);
-            int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+            int learningModifier = 0;
+            if (person != null) {
+                learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+			}
+			else if (robot != null) {
+	            learningModifier = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+			}
+            
             result+= (double) (teachingModifier + learningModifier) / 100D;
         }
 
@@ -763,9 +773,16 @@ implements Serializable, Comparable<Task> {
             boolean allowFail) {
         
         Function buildingFunction = building.getFunction(functionType);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = buildingFunction.getAvailableActivitySpot(person);
+        Point2D settlementLoc = null;
+		if (person != null) {
+	        // Find available activity spot in building.
+	        settlementLoc = buildingFunction.getAvailableActivitySpot(person);
+		}
+		else if (robot != null) {
+	        // Find available activity spot in building.
+	        settlementLoc = buildingFunction.getAvailableActivitySpot(robot);
+		}
+
         if (settlementLoc != null) {
             
             // Create subtask for walking to destination.
@@ -886,7 +903,7 @@ implements Serializable, Comparable<Task> {
 	        }
 		}
 		else if (robot != null) {
-			  // Check all crew members other than person doing task.
+			  // Check all crew members other than robot doing task.
 	        Iterator<Robot> i = rover.getRobotCrew().iterator();
 	        while (i.hasNext()) {
 	        	Robot crewmember = i.next();

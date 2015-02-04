@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
