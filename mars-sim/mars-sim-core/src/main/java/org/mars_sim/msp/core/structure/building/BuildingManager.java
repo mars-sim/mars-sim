@@ -429,8 +429,6 @@ public class BuildingManager implements Serializable {
 
         if (building != null) {
     		addPersonOrRobotToBuildingRandomLocation(unit, building);
-	
-        
 
         	//if (unit instanceof Person)
         		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
@@ -767,7 +765,7 @@ public class BuildingManager implements Serializable {
                 
             }
             catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
             }
         }
         else throw new IllegalStateException("Building is null");
@@ -782,7 +780,7 @@ public class BuildingManager implements Serializable {
         if (building != null) {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
-                throw new IllegalArgumentException(building.getName() + " does not contain location x: " + 
+                throw new IllegalArgumentException(building.getNickName() + " does not contain location x: " + 
                         xLocation + ", y: " + yLocation);
             }
             LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -811,7 +809,7 @@ public class BuildingManager implements Serializable {
             	 
             	 
 	        }	catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
             }
         }
         else {
@@ -893,7 +891,7 @@ public class BuildingManager implements Serializable {
                 
             }
             catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.removePersonFromBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.removePersonOrRobotFromBuilding(): " + e.getMessage());
             }
         }
         else {

@@ -104,8 +104,8 @@ implements Serializable {
         
         // If no valid walking path is found, end task.
         if (walkingPath == null) {
-            logger.severe(person.getName() + " unable to walk from " + startBuilding.getName() + " to " + 
-                    destinationBuilding.getName() + ".  Unable to find valid interior path.");
+            logger.severe(person.getName() + " unable to walk from " + startBuilding.getNickName() + " to " + 
+                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.");
             endTask();
         }
         
@@ -150,8 +150,8 @@ implements Serializable {
         
         // If no valid walking path is found, end task.
         if (walkingPath == null) {
-            logger.severe(robot.getName() + " unable to walk from " + startBuilding.getName() + " to " + 
-                    destinationBuilding.getName() + ".  Unable to find valid interior path.");
+            logger.severe(robot.getName() + " unable to walk from " + startBuilding.getNickName() + " to " + 
+                    destinationBuilding.getNickName() + ".  Unable to find valid interior path.");
             endTask();
         }
         
@@ -265,15 +265,15 @@ implements Serializable {
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
         	
         	if (person != null) {
-                logger.finer(person.getName() + " walked from " + startBuilding.getName() + " to " + 
-                        destBuilding.getName());
+                logger.finer(person.getName() + " walked from " + startBuilding.getNickName() + " to " + 
+                        destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();
                 person.setXLocation(location.getXLocation());
                 person.setYLocation(location.getYLocation());
         	}
         	else if (robot != null) {
-                logger.finer(robot.getName() + " walked from " + startBuilding.getName() + " to " + 
-                        destBuilding.getName());
+                logger.finer(robot.getName() + " walked from " + startBuilding.getNickName() + " to " + 
+                        destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();
                 robot.setXLocation(location.getXLocation());
                 robot.setYLocation(location.getYLocation());
