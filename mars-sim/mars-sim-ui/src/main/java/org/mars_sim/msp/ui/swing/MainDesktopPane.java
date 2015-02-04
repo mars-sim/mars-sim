@@ -67,9 +67,11 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * It contains all tool and unit windows, and is itself contained,
  * along with the tool bars, by the main window.
  */
-public class MainDesktopPane
+public class MainDesktopPane  
 extends JDesktopPane
-implements ComponentListener, UnitListener, UnitManagerListener {
+implements 
+//Runnable,
+ComponentListener, UnitListener, UnitManagerListener {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -79,21 +81,21 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// Data members
 	/** List of open or buttoned unit windows. */
-	private final Collection<UnitWindow> unitWindows;
+	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
-	private final Collection<ToolWindow> toolWindows;
+	private Collection<ToolWindow> toolWindows;
 	/** The main window frame. */
-	private final MainWindow mainWindow;
+	private MainWindow mainWindow;
 	/** ImageIcon that contains the tiled background. */
-	private final ImageIcon backgroundImageIcon;
+	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
-	private final JLabel backgroundLabel;
+	private JLabel backgroundLabel;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
 	/* The desktop update thread. */
-	private final UpdateThread updateThread;
+	private UpdateThread updateThread;
 	/** The sound player. */
-	private final AudioPlayer soundPlayer;
+	private AudioPlayer soundPlayer;
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
 	
@@ -118,6 +120,18 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
 
 		this.mainWindow = mainWindow;
+
+		init();
+	}
+	
+	// 2015-02-04 Added run()
+//	public void run() {
+//		init();
+//	}
+	
+	// 2015-02-04 Added init()
+	public void init() {
+		
 		unitWindows = new ArrayList<UnitWindow>();
 		toolWindows = new ArrayList<ToolWindow>();
 
@@ -155,8 +169,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		prepareWindows();
 		
 		//openMarqueeBanner("");
+		
 	}
-	
 
 	/**
 	 * Opens a popup announcement window on the desktop.
@@ -314,10 +328,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Prepare settlement tool window
 		SettlementWindow settlementWindow = new SettlementWindow(this);
+		Thread sw = new Thread(settlementWindow);
+		sw.start();
 		try { settlementWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(settlementWindow);
-
 		setSettlementWindow(settlementWindow);
 
 		// Prepare science tool window
@@ -1013,5 +1028,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		
 		repaint(); // raise some cpu util% but not too bad
 	}
+
+
 	 
 }

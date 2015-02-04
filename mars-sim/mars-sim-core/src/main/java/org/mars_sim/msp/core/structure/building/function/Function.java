@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Function.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2015-02-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -16,6 +16,7 @@ import java.util.List;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -177,6 +178,52 @@ implements Serializable {
         return result;
     }
 
+    public Point2D getAvailableActivitySpot(Robot robot) {
+
+        Point2D result = null;
+
+        if (activitySpots != null) {
+
+            List<Point2D> availableActivitySpots = new ArrayList<Point2D>();
+            Iterator<Point2D> i = activitySpots.iterator();
+            while (i.hasNext()) {
+                Point2D activitySpot = i.next();
+                // Convert activity spot from building local to settlement local.
+                Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(
+                        activitySpot.getX(), activitySpot.getY(), getBuilding());
+
+                // Check if spot is unoccupied.
+                boolean available = true;
+                Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+                Iterator<Robot> j = settlement.getRobots().iterator();
+                while (j.hasNext() && available) {
+                	Robot tempRobot = j.next();
+                    if (!tempRobot.equals(robot)) {
+                        
+                        // Check if robot's location is very close to activity spot.
+                        Point2D robotLoc = new Point2D.Double(tempRobot.getXLocation(), tempRobot.getYLocation());
+                        if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, robotLoc)) {
+                            available = false;
+                        }
+                    }
+                }
+                
+                // If available, add activity spot to available list.
+                if (available) {
+                    availableActivitySpots.add(settlementActivitySpot);
+                }
+            }
+            
+            if (!availableActivitySpots.isEmpty()) {
+                
+                // Choose a random available activity spot.
+                int index = RandomUtil.getRandomInt(availableActivitySpots.size() - 1);
+                result = availableActivitySpots.get(index);
+            }
+        }
+
+        return result;
+    }
     /**
      * Prepare object for garbage collection.
      */

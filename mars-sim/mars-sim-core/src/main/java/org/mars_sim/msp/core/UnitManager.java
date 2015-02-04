@@ -51,7 +51,8 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * There should be only one instance of this class and it should be
  * constructed and owned by the virtual Mars object.
  */
-public class UnitManager
+public class UnitManager 
+//extends Thread
 implements Serializable {
 
     /** default serial id. */
@@ -85,7 +86,6 @@ implements Serializable {
      * Constructor.
      */
     public UnitManager() {
-
         // Initialize unit collection
         units = new ConcurrentLinkedQueue<Unit>();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
@@ -93,6 +93,10 @@ implements Serializable {
         vehicleNumberMap = new HashMap<String, Integer>();
     }
 
+    
+	// 2015-02-04 Added run()
+	//public void run() {}
+    
     /**
      * Constructs initial units.
      * @throws Exception in unable to load names.

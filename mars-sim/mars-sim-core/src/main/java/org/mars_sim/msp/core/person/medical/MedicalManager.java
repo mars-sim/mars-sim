@@ -17,7 +17,7 @@ import java.util.*;
  * This class provides a Factory for the {@link Complaint} class. Some of the Medical Complaints are pre-defined. Instances are
  * accessed via a factory method since the properties of the individual complaints are loaded from the XML.
  */
-public class MedicalManager
+public class MedicalManager extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -62,10 +62,13 @@ implements Serializable {
 	 * Construct a new {@link MedicalManager}. This also constructs all the pre-defined Complaints and the user-defined ones in
 	 * the XML configuration file.
 	 */
-	public MedicalManager() {
+	public MedicalManager() {}
+
+	// 2015-02-04 Added run()
+	public void run() {
 		initMedical();
 	}
-
+	
 	/**
 	 * Initialise the Medical Complaints from the configuration.
 	 * @throws exception if not able to initialize complaints.

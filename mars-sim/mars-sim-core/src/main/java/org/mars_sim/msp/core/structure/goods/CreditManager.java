@@ -29,7 +29,7 @@ import com.phoenixst.plexus.GraphUtils;
  * The CreditManager class keeps track of all credits/debts between settlements.
  * The simulation instance has only one credit manager. 
  */
-public class CreditManager
+public class CreditManager extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -40,6 +40,8 @@ implements Serializable {
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
 
+	private Collection<Settlement> settlements;
+	
 	/**
 	 * Constructor.
 	 */
@@ -48,17 +50,23 @@ implements Serializable {
 		this(Simulation.instance().getUnitManager().getSettlements());
 	}
 
-	/**
-	 * Constructor.
-	 * @param settlements collection of settlements to use.
-	 */
-	public CreditManager(Collection<Settlement> settlements) {
+	// 2015-02-04 Added run()
+	public void run() {
 		// Create new graph for credit.
 		creditGraph = new DefaultGraph();
 
 		// Add all settlements as nodes.
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) creditGraph.addNode(i.next());
+	}
+	
+	
+	/**
+	 * Constructor.
+	 * @param settlements collection of settlements to use.
+	 */
+	public CreditManager(Collection<Settlement> settlements) {
+		this.settlements = settlements;
 	}
 
 	/**

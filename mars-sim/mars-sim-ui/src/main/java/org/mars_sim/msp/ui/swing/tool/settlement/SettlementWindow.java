@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2015-01-19
+ * @version 3.07 2015-02-04
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -25,7 +25,9 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
-public class SettlementWindow extends ToolWindow {
+public class SettlementWindow 
+extends ToolWindow 
+implements Runnable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -58,10 +60,20 @@ public class SettlementWindow extends ToolWindow {
 	 * Constructor.
 	 * @param desktop the main desktop panel.
 	 */
-	public SettlementWindow(final MainDesktopPane desktop) {
+	public SettlementWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;	
+
+	}
+
+	// 2015-02-04 Added run()
+	public void run() {
+		init();
+	}
+	
+	// 2015-02-04 Added init()
+	public void init() {
 
 		setMaximizable(true);
 		
@@ -110,8 +122,9 @@ public class SettlementWindow extends ToolWindow {
     	
 		pack();
 		setVisible(true);
+		
 	}
-
+	
 	/**
 	 * Gets the settlement map panel.
 	 * @return the settlement map panel.

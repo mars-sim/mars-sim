@@ -18,10 +18,12 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import com.phoenixst.plexus.DefaultGraph;
+
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */
-public class ScientificStudyManager
+public class ScientificStudyManager extends Thread
 implements Serializable {
 
     /** default serial id. */
@@ -36,9 +38,12 @@ implements Serializable {
     /**
      * Constructor.
      */
-    public ScientificStudyManager() {
+    public ScientificStudyManager() { }
+    
+	// 2015-02-04 Added run()
+	public void run() {
         studies = new ArrayList<ScientificStudy>();
-    }
+	}
     
     /**
      * Creates a new scientific study.

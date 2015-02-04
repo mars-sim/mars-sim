@@ -37,7 +37,7 @@ import com.phoenixst.plexus.Traverser;
  * <br/>
  * The simulation instance has only one relationship manager. 
  */
-public class RelationshipManager
+public class RelationshipManager extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -72,11 +72,14 @@ implements Serializable {
 	/**
 	 * Constructor
 	 */
-	public RelationshipManager() {
-		// Create new graph for relationships.
-		relationshipGraph = new DefaultGraph(); 
-	}
+	public RelationshipManager() {}
 
+	// 2015-02-04 Added run()
+	public void run() {
+		// Create new graph for relationships.
+		relationshipGraph = new DefaultGraph();
+	}
+	
 	/**
 	 * Adds an initial settler who will have an existing relationship with all the 
 	 * other inhabitants if his/her settlement.

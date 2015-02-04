@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * <br>
  * The simulation has only one mission manager. 
  */
-public class MissionManager
+public class MissionManager extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -58,15 +58,20 @@ implements Serializable {
 	 * Constructor.
 	 */
 	public MissionManager() {
-		// Initialize data members
-		missions = new ArrayList<Mission>(0);
-		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		// Initialize cache values.
 		personCache = null;
 		timeCache = null;
-		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
 		totalProbCache = 0D;
 	}
+	
+	// 2015-02-04 Added run()
+	public void run() {
+		// Initialize data members
+		missions = new ArrayList<Mission>(0);
+		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
+		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
+	}
+	
 
 	/**
 	 * Add a listener.
