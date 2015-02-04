@@ -172,6 +172,14 @@ public class BuildingAirlock extends Airlock {
 	@Override
 	protected void exitAirlock(Unit occupant) {
 
+	    // Temporary debugging logger output.  May remove later.
+	    if (PRESSURIZED.equals(getState())) {
+	        logger.info(occupant + " exiting airlock into " + building);
+	    }
+	    else if (DEPRESSURIZED.equals(getState())) {
+	        logger.info(occupant + " exiting airlock from " + building);
+	    }
+	    
         Person person = null;
         Robot robot = null;
         
