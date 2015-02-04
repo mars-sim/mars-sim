@@ -299,14 +299,17 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		// fireTableRowsInserted(index, index);
 	
 		if (nMenu == null) {
-			
-			MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
-			NotificationMenu nMenu = mwm.getNotificationMenu();
-			
-			if (nMenu != null)
-				nMenu = mwm.getNotificationMenu();
-			
 			//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+			
+			try {
+				MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
+				NotificationMenu nMenu = mwm.getNotificationMenu();	
+				nMenu = mwm.getNotificationMenu();
+			} catch (NullPointerException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+			
 		}
 		
 		if (nMenu != null) {
