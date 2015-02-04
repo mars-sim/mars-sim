@@ -300,9 +300,10 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	
 		if (nMenu == null) {
 			
-			MainWindowMenu mwm =  desktop.getMainWindow().getMainWindowMenu();
-		
-			if (mwm.getNotificationMenu() != null)
+			MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
+			NotificationMenu nMenu = mwm.getNotificationMenu();
+			
+			if (nMenu != null)
 				nMenu = mwm.getNotificationMenu();
 			
 			//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
