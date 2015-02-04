@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.08 2015-01-30
+ * @version 3.08 2015-02-04
  * @author Scott Davis
  */
 
@@ -48,7 +48,7 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
  * The MainWindow class is the primary UI frame for the project. It contains the
  * tool bars and main desktop pane.
  */
-public class MainWindow {
+public class MainWindow extends Thread {
 
 	public static final String WINDOW_TITLE = Msg.getString(
 		"MainWindow.title", //$NON-NLS-1$
@@ -60,14 +60,14 @@ public class MainWindow {
 	// Data members
 	private JFrame frame;
 	/** The unit tool bar. */
-	private final UnitToolBar unitToolbar;
+	private UnitToolBar unitToolbar;
 	/** The tool bar. */
-	private final ToolToolBar toolToolbar;
+	private ToolToolBar toolToolbar;
 	/** The main desktop. */
-	private final MainDesktopPane desktop;
+	private MainDesktopPane desktop;
 
 	// 2014-12-05 Added mainWindowMenu;
-	private final MainWindowMenu mainWindowMenu;
+	private MainWindowMenu mainWindowMenu;
 	
 	private Thread newSimThread;
 	private Thread loadSimThread;
@@ -98,6 +98,8 @@ public class MainWindow {
     String earthTimeString;
     //String t = null;
     
+    private boolean cleanUI = true;
+    
     //private SimulationConfig config = SimulationConfig.instance();
 
 	/**
@@ -105,8 +107,24 @@ public class MainWindow {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
+		this.cleanUI = cleanUI;
+		frame = new JFrame(WINDOW_TITLE);		
+	}
+	
+	// 2015-02-04 Added run()
+	public void run() {
+		// Prepare desktop
+		desktop = new MainDesktopPane(this);
+		//Thread d = new Thread(desktop);
+		//d.start();
+		
+		init();
+
+	}
+
+	// 2015-02-04 Added init()
+	public void init() {
 		// use JFrame constructor
-		frame = new JFrame(WINDOW_TITLE);
 
 		// Load UI configuration.
 		if (!cleanUI) {
@@ -115,9 +133,6 @@ public class MainWindow {
 
 		// Set look and feel of UI.
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
-
-		// Prepare desktop
-		desktop = new MainDesktopPane(this);
 
 		setLookAndFeel(false);
 
@@ -271,7 +286,7 @@ public class MainWindow {
 		startAutosaveTimer();
 
 	}
-
+	
 	public JPanel getBottomPane() {
 		return bottomPane;
 	}

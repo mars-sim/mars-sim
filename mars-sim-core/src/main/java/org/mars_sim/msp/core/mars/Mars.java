@@ -12,7 +12,8 @@ import java.io.Serializable;
 /** 
  * Mars represents the planet Mars in the simulation.
  */
-public class Mars implements Serializable {
+public class Mars  extends Thread
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -34,14 +35,14 @@ public class Mars implements Serializable {
 	 * Constructor.
 	 * @throws Exception if Mars could not be constructed.
 	 */
-	public Mars() {
+	public Mars() {}
 
+	// 2015-02-04 Added run()
+	public void run() {
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures(); 
-
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo();
-
 		// Initialize weather
 		weather = new Weather();
 	}

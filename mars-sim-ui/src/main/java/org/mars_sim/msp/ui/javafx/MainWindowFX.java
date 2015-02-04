@@ -10,7 +10,9 @@ package org.mars_sim.msp.ui.javafx;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -22,7 +24,7 @@ import org.mars_sim.msp.ui.javafx.SettlementScene;
  * The MainWindowFX class is the primary JavaFX frame for the project.
  * It replaces the MainWindow class from version 4.0 on.
  */
-public class MainWindowFX {
+public class MainWindowFX extends Thread {
 
 	public final static String WINDOW_TITLE = Msg.getString(
 		"MainWindow.title", //$NON-NLS-1$
@@ -36,16 +38,24 @@ public class MainWindowFX {
 	static Scene settlementScene;
     public static JFXPanel fxPanel = new JFXPanel();
 
+    private boolean cleanUI = true;
 	/**
 	 * Constructor.
 	 */
 	public MainWindowFX(boolean cleanUI) {
-		// initAndShowGUI() will be on EDT since MainWindowFX is put on EDT in MarsProject.java
-
-		
-		initAndShowGUI();
+		 this.cleanUI =  cleanUI;
 	}
 	
+	public void run() {
+        // starting the simulation
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+        		initAndShowGUI();
+            }
+        });
+
+	}
 
     private static void initAndShowGUI() {
         // This method is invoked on the EDT thread

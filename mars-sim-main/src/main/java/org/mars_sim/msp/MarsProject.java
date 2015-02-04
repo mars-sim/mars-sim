@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.07 2015-01-26
+ * @version 3.07 2015-02-04
 
  * @author Scott Davis
  */
@@ -73,22 +73,23 @@ public class MarsProject {
             URL resource = ImageLoader.class.getResource(fileName);
 			Toolkit kit = Toolkit.getDefaultToolkit();
 			img = kit.createImage(resource);
-			splashWindow.getJFrame().setIconImage(img);
-			
+			splashWindow.getJFrame().setIconImage(img);			
             splashWindow.display();
             splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+            
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
-            MainWindow w = new MainWindow(newSim);
-            w.getFrame().setVisible(true);
-            
+            MainWindow mw = new MainWindow(newSim);
+            mw.start();
+            mw.getFrame().setVisible(true);  
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
-			w.getFrame().setIconImage(img);
+			mw.getFrame().setIconImage(img);
 			
             // 2015-01-26 Added mwFX
             MainWindowFX mwFX = new MainWindowFX(newSim);
-			
+            mwFX.start();
+            
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 	          
             // Start simulation
@@ -268,12 +269,7 @@ public class MarsProject {
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
         // starting the simulation
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-            	new MarsProject(args);
-            }
-        });
-        
+        new MarsProject(args);
+
     }
 }

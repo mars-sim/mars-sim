@@ -209,19 +209,39 @@ implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 * @throws Exception if intransient data could not be loaded.
 	 */
+	// 2015-02-04 Added threading
 	private void initializeIntransientData() {
+		
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+		malfunctionFactory.start();
+		
 		mars = new Mars();
+		mars.start();
+		
 		missionManager = new MissionManager();
+		missionManager.start();
+		
 		relationshipManager = new RelationshipManager();
+		relationshipManager.start();
+		
 		medicalManager = new MedicalManager();
+		medicalManager.start();
+		
 		masterClock = new MasterClock();
-		unitManager = new UnitManager();
-		unitManager.constructInitialUnits();
+		
+		unitManager = new UnitManager();	
+		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+		
 		creditManager = new CreditManager();
+		creditManager.start();
+		
 		scientificStudyManager = new ScientificStudyManager();
+		scientificStudyManager.start();
+		
 		transportManager = new TransportManager();
+		transportManager.start();
 	}
+	
 
 	/**
 	 * Loads a simulation instance from a save file.

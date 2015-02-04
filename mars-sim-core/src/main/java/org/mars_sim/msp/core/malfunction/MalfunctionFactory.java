@@ -33,25 +33,31 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * This class is a factory for Malfunction objects.
  */
-public final class MalfunctionFactory
+public final class MalfunctionFactory extends Thread
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	// Data members
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
 
+	private MalfunctionConfig config;
+	
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * @param config malfunction configuration DOM document.
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
-		malfunctions = config.getMalfunctionList(); 
+		 this.config = config;
 	}
 
+	// 2015-02-04 Added run()
+	public void run() {
+		malfunctions = config.getMalfunctionList();
+	}
+	
 	/**
 	 * Gets a randomly-picked malfunction for a given unit scope.
 	 * @param scope a collection of scope strings defining the unit.
