@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindowMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 /**
@@ -99,7 +100,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		this.manager = manager;
 		this.notifyBox = notifyBox;
 		this.desktop = desktop;
-
+		
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
@@ -297,32 +298,43 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
 	
-		// 2015-01-14 Added noFiring condition
-		Boolean noFiring = false;
-
-		if (nMenu == null) 
-			nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+		if (nMenu == null) {
+			
+			MainWindowMenu mwm =  desktop.getMainWindow().getMainWindowMenu();
 		
-		showMedical = nMenu.getShowMedical();
-		if (showMedical != showMedicalCache ) {
-			showMedicalCache = showMedical;		
+			if (mwm.getNotificationMenu() != null)
+				nMenu = mwm.getNotificationMenu();
+			
+			//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 		}
 		
-		showMalfunction = nMenu.getShowMalfunction();
-		if (showMalfunction != showMalfunctionCache ) {
-			showMalfunctionCache = showMalfunction;
+		if (nMenu != null) {
+			
+			// 2015-01-14 Added noFiring condition
+			Boolean noFiring = false;
+			
+			showMedical = nMenu.getShowMedical();
+			if (showMedical != showMedicalCache ) {
+				showMedicalCache = showMedical;		
+			}
+			
+			showMalfunction = nMenu.getShowMalfunction();
+			if (showMalfunction != showMalfunctionCache ) {
+				showMalfunctionCache = showMalfunction;
+			}
+			
+			if (!showMedical && !showMalfunction) {
+				notifyBox.emptyQueue();
+				noFiring = true;	
+			}
+			
+			if (!noFiring)
+				if (!isPaused)
+					if ((index == 0) && (event != null) ) {
+						SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+					}
+			
 		}
-		
-		if (!showMedical && !showMalfunction) {
-			notifyBox.emptyQueue();
-			noFiring = true;	
-		}
-		
-		if (!noFiring)
-			if (!isPaused)
-				if ((index == 0) && (event != null) ) {
-					SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
-				}
 	}
 
 	/**
