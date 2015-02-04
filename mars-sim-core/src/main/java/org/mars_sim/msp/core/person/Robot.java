@@ -234,6 +234,9 @@ implements VehicleOperator, Serializable {
      *            the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
+        // Temporary debugging logger output.  May remove later.
+        logger.info(this + " setting container to " + containerUnit);
+        
         super.setContainerUnit(containerUnit);
     }
 
