@@ -230,7 +230,6 @@ implements ClockListener, Serializable {
 		masterClock = new MasterClock();
 		
 		unitManager = new UnitManager();	
-		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
 		
 		creditManager = new CreditManager();
 		creditManager.start();
@@ -256,6 +255,8 @@ implements ClockListener, Serializable {
 			e.printStackTrace();
 		}
 		
+		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+
 	}
 	
 
