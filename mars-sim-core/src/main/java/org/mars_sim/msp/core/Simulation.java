@@ -216,7 +216,6 @@ implements ClockListener, Serializable {
 		malfunctionFactory.start();
 		
 		mars = new Mars();
-		mars.start();
 		
 		missionManager = new MissionManager();
 		missionManager.start();
@@ -230,7 +229,8 @@ implements ClockListener, Serializable {
 		masterClock = new MasterClock();
 		
 		unitManager = new UnitManager();	
-		
+		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+	
 		creditManager = new CreditManager();
 		creditManager.start();
 		
@@ -240,9 +240,9 @@ implements ClockListener, Serializable {
 		transportManager = new TransportManager();
 		transportManager.start();
 		
+		/*
 		try {
-			malfunctionFactory.join();
-			mars.join();			
+			malfunctionFactory.join();		
 			missionManager.join();			
 			relationshipManager.join();			
 			medicalManager.join();			
@@ -254,8 +254,7 @@ implements ClockListener, Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+		*/
 
 	}
 	

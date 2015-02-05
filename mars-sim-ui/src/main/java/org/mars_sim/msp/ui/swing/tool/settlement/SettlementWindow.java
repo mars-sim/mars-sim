@@ -14,7 +14,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -26,8 +28,7 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
 public class SettlementWindow 
-extends ToolWindow 
-implements Runnable {
+extends ToolWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -64,14 +65,17 @@ implements Runnable {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;	
+		
+		SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+        		init();
+            }
+        });
 
+		showMarsTime();
 	}
 
-	// 2015-02-04 Added run()
-	public void run() {
-		init();
-	}
-	
 	// 2015-02-04 Added init()
 	public void init() {
 
@@ -102,7 +106,14 @@ implements Runnable {
         statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
    
         mainPanel.add(statusBar, BorderLayout.SOUTH);	   
+
+		pack();
+		setVisible(true);
 		
+	}
+	
+	// 2015-02-05 Added showMarsTime()
+	public void showMarsTime() {
 		// 2015-01-07 Added Martian Time on status bar 
 		int timeDelay = 900;
 		ActionListener timeListener = null;
@@ -119,10 +130,6 @@ implements Runnable {
     		marsTimer = new javax.swing.Timer(timeDelay, timeListener);
     		marsTimer.start();
     	}
-    	
-		pack();
-		setVisible(true);
-		
 	}
 	
 	/**

@@ -69,9 +69,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class MainDesktopPane  
 extends JDesktopPane
-implements 
-//Runnable,
-ComponentListener, UnitListener, UnitManagerListener {
+implements ComponentListener, UnitListener, UnitManagerListener {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -124,10 +122,6 @@ ComponentListener, UnitListener, UnitManagerListener {
 		init();
 	}
 	
-	// 2015-02-04 Added run()
-//	public void run() {
-//		init();
-//	}
 	
 	// 2015-02-04 Added init()
 	public void init() {
@@ -328,11 +322,13 @@ ComponentListener, UnitListener, UnitManagerListener {
 
 		// Prepare settlement tool window
 		SettlementWindow settlementWindow = new SettlementWindow(this);
-		Thread sw = new Thread(settlementWindow);
-		sw.start();
+		//Thread sw = new Thread(settlementWindow);
+		//sw.start();
 		try { settlementWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(settlementWindow);
+		openToolWindow(SettlementWindow.NAME);
+		closeToolWindow(SettlementWindow.NAME);
 		setSettlementWindow(settlementWindow);
 
 		// Prepare science tool window
@@ -775,8 +771,8 @@ ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow.setAnnouncement(announcement);
 		announcementWindow.pack();
 		add(announcementWindow, 0);
-		int Xloc = (getWidth() - announcementWindow.getWidth()) * 3 / 4 ;
-		int Yloc = (getHeight() - announcementWindow.getHeight()) * 3 / 4;
+		int Xloc = (getWidth() - announcementWindow.getWidth()) * 3 / 5 ;
+		int Yloc = (getHeight() - announcementWindow.getHeight()) * 2 / 5;
 		announcementWindow.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.

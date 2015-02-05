@@ -43,7 +43,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
-//import javax.swing.ListCellRenderer;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -67,7 +66,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
-//import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 public class SettlementTransparentPanel extends JComponent {
@@ -96,16 +94,14 @@ public class SettlementTransparentPanel extends JComponent {
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
     	
         this.mapPanel = mapPanel;
-        this.desktop = desktop;
-             
+        this.desktop = desktop;           
+  
         createAndShowGUI();
     }
     
     
-    public void createAndShowGUI()	   {   
+    public void createAndShowGUI() {   
     		        
-    	//mapPanel.setLayout(new BorderLayout());
-
         buildSettlementNameComboBox();
         buildInfoP(); 
         buildrenameBtn();
@@ -396,35 +392,6 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 		infoP.add(infoButton);
     }
-
-		
-		/*
-		nameLabel = new JLabel(nameCache);//Msg.getString("SettlementWindow.button.info")); //$NON-NLS-1$
-		if (settlement != null) 
-			name = settlement.getName();
-		else if (mapPanel.getSettlement() != null) 
-			name = mapPanel.getSettlement().getName();
-		// or settlementWindow.getSettlement().getName();
-		if (!name.equals(nameCache)) {
-			nameCache = name;
-			nameLabel.setText(nameCache);
-		}
-		//nameLabel.setPreferredSize(new Dimension(60, 20));
-		nameLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		nameLabel.setForeground(Color.GREEN);
-		//nameLabel.setContentAreaFilled(false);
-		nameLabel.setOpaque(false);
-		//nameLabel.setBorder(new LineBorder(Color.green, 1, true));
-		//nameLabel.setBorderPainted(true);
-		nameLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
-
-		JPanel nameP = new JPanel(new FlowLayout());
-		nameP.setBackground(new Color(0,0,0,0));
-		nameP.add(nameLabel);
-		nameP.setAlignmentX(FlowLayout.CENTER); 
-		namePane.add(nameP);
-		*/
-
 		
     public void buildrenameBtn() {
 	    	
