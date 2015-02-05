@@ -14,11 +14,22 @@
 
 	<resource name="Food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
 	<resource name="Ice" phase="solid">Ice-rich permafrost soil</resource>
-	<resource name="Solid Waste" phase="liquid" life-support="true">Solid waste includes human feces, plant remains, non-salvageable garbage, etc.. </resource>
-	<resource name="Waste Water" phase="liquid">Sewage water used as crop fertilizer.</resource>
 	<resource name="Water" phase="liquid" life-support="true">potable water</resource>
 
+	<resource name="Soil" phase="solid" life-support="true">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 
+<!-- Wastes -->
+	<resource name="Compost" phase="solid" life-support="true">Organic waste consists of decaying food waste and crop remains. </resource>
+	<resource name="Manure" phase="solid" life-support="true">Human feces</resource>
+	<resource name="E-Waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="Food Waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
+	<resource name="Solid Waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="Toxic Waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+
+	<resource name="Waste Water" phase="liquid">Sewage water can be used as crop fertilizer.</resource>
+
+<!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
+-->
 
 <!-- Gas Resources -->
 	<resource name="Carbon Dioxide" phase="gas" />

@@ -131,7 +131,7 @@ public class Sleep extends Task implements Serializable {
            
         	Building building = getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-                System.out.println("building.toString() is " + building.toString() );
+                //System.out.println("building.toString() is " + building.toString() );
                 walkToActivitySpotInBuilding(building, true);
                 station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
                 station.addSleeper();
