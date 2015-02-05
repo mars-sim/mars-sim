@@ -49,12 +49,12 @@ implements MedicalAid, Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        int techLevel = config.getMedicalCareTechLevel(building.getName());
-        int beds = config.getMedicalCareBeds(building.getName());
+        int techLevel = config.getMedicalCareTechLevel(building.getBuildingType());
+        int beds = config.getMedicalCareBeds(building.getBuildingType());
         medicalStation = new MedicalStation(techLevel, beds);
 
         // Load activity spots
-        loadActivitySpots(config.getMedicalCareActivitySpots(building.getName()));
+        loadActivitySpots(config.getMedicalCareActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -76,7 +76,7 @@ implements MedicalAid, Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

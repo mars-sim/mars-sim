@@ -40,10 +40,10 @@ implements Serializable {
 
         // Populate data members.
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        populationSupport = config.getRecreationPopulationSupport(building.getName());
+        populationSupport = config.getRecreationPopulationSupport(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getRecreationActivitySpots(building.getName()));
+        loadActivitySpots(config.getRecreationActivitySpots(building.getBuildingType()));
     }
 
     /**

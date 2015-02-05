@@ -41,13 +41,13 @@ implements Serializable {
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Add a building airlock.
-		int airlockCapacity = config.getAirlockCapacity(building.getName());
-		double airlockXLoc = config.getAirlockXLoc(building.getName());
-		double airlockYLoc = config.getAirlockYLoc(building.getName());
-		double interiorXLoc = config.getAirlockInteriorXLoc(building.getName());
-		double interiorYLoc = config.getAirlockInteriorYLoc(building.getName());
-		double exteriorXLoc = config.getAirlockExteriorXLoc(building.getName());
-		double exteriorYLoc = config.getAirlockExteriorYLoc(building.getName());
+		int airlockCapacity = config.getAirlockCapacity(building.getBuildingType());
+		double airlockXLoc = config.getAirlockXLoc(building.getBuildingType());
+		double airlockYLoc = config.getAirlockYLoc(building.getBuildingType());
+		double interiorXLoc = config.getAirlockInteriorXLoc(building.getBuildingType());
+		double interiorYLoc = config.getAirlockInteriorYLoc(building.getBuildingType());
+		double exteriorXLoc = config.getAirlockExteriorXLoc(building.getBuildingType());
+		double exteriorYLoc = config.getAirlockExteriorYLoc(building.getBuildingType());
 
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc, 
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
@@ -85,7 +85,7 @@ implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {

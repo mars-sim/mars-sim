@@ -127,6 +127,11 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.FOOD_PRODUCTION;
     }
+    
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.FOOD_PRODUCTION;
+    }
+    
 
 	/** 
 	 * Cancel any foodProduction processes that's beyond the skill of any people 

@@ -178,6 +178,11 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.COOKING;
     }
+    
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.COOKING;
+    }
+    
 
     /**
      * Performs the method mapped to the task's current phase.

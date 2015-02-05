@@ -84,11 +84,11 @@ implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        techLevel = config.getManufactureTechLevel(building.getName());
-        concurrentProcesses = config.getManufactureConcurrentProcesses(building.getName());
+        techLevel = config.getManufactureTechLevel(building.getBuildingType());
+        concurrentProcesses = config.getManufactureConcurrentProcesses(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getManufactureActivitySpots(building.getName()));
+        loadActivitySpots(config.getManufactureActivitySpots(building.getBuildingType()));
 
         processes = new ArrayList<ManufactureProcess>();
         salvages = new ArrayList<SalvageProcess>();
@@ -122,7 +122,7 @@ implements Serializable {
         Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (j.hasNext()) {
             Building building = j.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

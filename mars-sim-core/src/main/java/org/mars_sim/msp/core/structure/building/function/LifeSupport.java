@@ -97,7 +97,7 @@ implements Serializable {
 
 		//2014-10-17 Added the heating requirement
 		// Set life support heating required.
-		//heatRequired = config.getLifeSupportHeatRequirement(building.getName());
+		//heatRequired = config.getLifeSupportHeatRequirement(building.getBuildingType());
 
 		// Set life support power required.
 		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());

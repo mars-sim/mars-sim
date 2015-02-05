@@ -995,8 +995,11 @@ implements Serializable, Comparable<Task> {
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 	                Building building = buildingList.get(buildingIndex);
-	                
-	                walkToRandomLocInBuilding(building, allowFail);
+	                String b = building.getBuildingType();
+	                if (b.equals("Hallway"))
+	                	walkToRandomLocation(true);
+	                else
+	                	walkToRandomLocInBuilding(building, allowFail);
 	            }
 	        }
 	        // If robot is in a vehicle, walk to random location within vehicle.
@@ -1007,11 +1010,33 @@ implements Serializable, Comparable<Task> {
 	                walkToRandomLocInRover((Rover) robot.getVehicle(), allowFail);
 	            }
 	        }
-		}
- 
-        
-        
+		} 
     }
+    
+    protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
+    	if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    		Building currentBuilding = BuildingManager.getBuilding(robot);
+    		String type = robot.getRobotType().getName();
+    		//List<Building> buildingList;
+    		BuildingFunction fct = null;
+    		if (type.equals("CHEFBOT"))
+    			fct = BuildingFunction.COOKING;
+    		else if (type.equals("REPAIRBOT"))
+    			fct = BuildingFunction.MANUFACTURE;
+    		else if (type.equals("GARDENBOT"))
+    			fct = BuildingFunction.FARMING;
+    		
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
+            
+            if (buildingList.size() > 0) {
+                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+                Building building = buildingList.get(buildingIndex);
+                walkToActivitySpotInBuilding(building, fct, true);
+            }
+            
+    	}
+    }
+    
     
     /**
      * Create a walk to an interior position in a building or vehicle.

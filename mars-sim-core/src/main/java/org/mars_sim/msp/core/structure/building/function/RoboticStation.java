@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * RoboticStations.java
+ * RoboticStation.java
  * @version 3.07 2015-01-21
  * @author Manny Kung
  */
@@ -15,18 +15,20 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 /**
- * The LivingAccommodations class is a building function for a Robotic Station.
+ * The RoboticStation class is a building function for a Robotic Station.
  */
-public class RoboticStations extends Function implements Serializable {
+public class RoboticStation extends Function implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    public final static double POWER_USAGE_PER_ROBOT_PER_SOL = 1D;
+    public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
 
+    private static final double SECONDS_IN_MILLISOL = 88.775244;
+    
     private static final BuildingFunction FUNCTION = BuildingFunction.ROBOTIC_STATION;
 
-    private int stations;
+    private int slots;
     private int sleepers;
 
     /**
@@ -34,16 +36,16 @@ public class RoboticStations extends Function implements Serializable {
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
      */
-    public RoboticStations(Building building) {
+    public RoboticStation(Building building) {
         // Call Function constructor.
         super(FUNCTION, building);
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        stations = config.getRoboticStations(building.getBuildingType());
+        slots = config.getRoboticStation(building.getBuildingType());
 
         // Load activity spots
-        //loadActivitySpots(config.getLivingAccommodationsActivitySpots(building.getBuildingType()));
+        loadActivitySpots(config.getRoboticStationActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -57,8 +59,8 @@ public class RoboticStations extends Function implements Serializable {
     public static double getFunctionValue(String buildingName,
             boolean newBuilding, Settlement settlement) {
 
-        // Demand is two stations for every inhabitant (with population expansion in mind).
-        double demand = settlement.getAllAssociatedRobots().size() * 2D;
+        // Demand is one stations for every robot
+        double demand = settlement.getAllAssociatedRobots().size() * 1D;
 
         double supply = 0D;
         boolean removedBuilding = false;
@@ -70,9 +72,9 @@ public class RoboticStations extends Function implements Serializable {
                     && !removedBuilding) {
                 removedBuilding = true;
             } else {
-                RoboticStations livingFunction = (RoboticStations) building.getFunction(FUNCTION);
+                RoboticStation station = (RoboticStation) building.getFunction(FUNCTION);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += livingFunction.stations * wearModifier;
+                supply += station.slots * wearModifier;
             }
         }
 
@@ -80,22 +82,22 @@ public class RoboticStations extends Function implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance()
                 .getBuildingConfiguration();
-        double stationCapacity = config.getRoboticStations(buildingName);
+        double stationCapacity = config.getRoboticStation(buildingName);
 
         return stationCapacity * stationCapacityValue;
     }
 
     /**
-     * Gets the number of stations in the living accommodations.
-     * @return number of stations.
+     * Gets the number of slots in the living accommodations.
+     * @return number of slots.
      */
-    public int getStations() {
-        return stations;
+    public int getSlots() {
+        return slots;
     }
 
     /**
-     * Gets the number of people sleeping in the stations.
-     * @return number of people
+     * Gets the number of robots sleeping in the stations.
+     * @return number of robots
      */
     public int getSleepers() {
         return sleepers;
@@ -107,9 +109,9 @@ public class RoboticStations extends Function implements Serializable {
      */
     public void addSleeper() {
         sleepers++;
-        if (sleepers > stations) {
-            sleepers = stations;
-            throw new IllegalStateException("All stations are full.");
+        if (sleepers > slots) {
+            sleepers = slots;
+            throw new IllegalStateException("All slots are full.");
         }
     }
 
@@ -121,7 +123,7 @@ public class RoboticStations extends Function implements Serializable {
         sleepers--;
         if (sleepers < 0) {
             sleepers = 0;
-            throw new IllegalStateException("Stations are empty.");
+            throw new IllegalStateException("Slots are empty.");
         }
     }
 
@@ -130,14 +132,14 @@ public class RoboticStations extends Function implements Serializable {
      * @param time amount of time passing (millisols)
      * @throws Exception if error in power usage.
      */
-    public void powerUsage(double time) {
+    public void powerUsage(double millisols) {
 
         Settlement settlement = getBuilding().getBuildingManager()
                 .getSettlement();
-        double powerUsagePerRobot = (RoboticStations.POWER_USAGE_PER_ROBOT_PER_SOL / 1000D) * time;
-        double powerUsageSettlement = powerUsagePerRobot * settlement.getCurrentNumOfRobots();
-        double buildingProportionCap = (double) stations / (double) settlement.getRobotCapacity();
-        double powerUsageBuilding = powerUsageSettlement * buildingProportionCap;
+        double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
+        double energyUsageSettlement = energyPerRobot * settlement.getCurrentNumOfRobots();
+        double buildingProportionCap = (double) slots / (double) settlement.getRobotCapacity();
+        double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
 
         /*
         Inventory inv = getBuilding().getInventory();
@@ -171,7 +173,6 @@ public class RoboticStations extends Function implements Serializable {
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
-        powerUsage(time);
     }
 
     /**
@@ -179,7 +180,8 @@ public class RoboticStations extends Function implements Serializable {
      * @return power (kW)
      */
     public double getFullPowerRequired() {
-        return 0D;
+    	//powerUsage(time);
+    	return 0D;
     }
 
     /**
@@ -192,7 +194,7 @@ public class RoboticStations extends Function implements Serializable {
 
     @Override
     public double getMaintenanceTime() {
-        return stations * 7D;
+        return slots * 7D;
     }
 
 	@Override

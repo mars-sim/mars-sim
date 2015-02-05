@@ -66,8 +66,8 @@ public class BuildingConfig implements Serializable {
 	private static final String CAPACITY = "capacity";
 	private static final String LIVING_ACCOMMODATIONS = "living-accommodations";
 	
-	private static final String ROBOTIC_STATIONS = "robotic-stations";
-	private static final String STATIONS = "stations";
+	private static final String ROBOTIC_STATION = "robotic-station";
+	private static final String SLOTS = "slots";
 	
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
@@ -380,23 +380,23 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Checks if the building provides robotic stations.
+	 * Checks if the building provides robotic slots.
 	 * @param buildingType the type of the building
-	 * @return true if robotic stations
+	 * @return true if robotic slots
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasRoboticStations(String buildingType) {
-		return hasElements(buildingType,FUNCTIONS,ROBOTIC_STATIONS);
+	public boolean hasRoboticStation(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,ROBOTIC_STATION);
 	}
 	
 	/**
-	 * Gets the number of stations in the building's robotic stations.
+	 * Gets the number of slots in the building's robotic slots.
 	 * @param buildingType the type of the building.
-	 * @return number of stations.
+	 * @return number of slots.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getRoboticStations(String buildingType) {
-		return getValueAsInteger(buildingType,FUNCTIONS,ROBOTIC_STATIONS,STATIONS);
+	public int getRoboticStation(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,ROBOTIC_STATION,SLOTS);
 	}
 	
 	/**
@@ -1335,6 +1335,9 @@ public class BuildingConfig implements Serializable {
         return getActivitySpots(buildingType, RESOURCE_PROCESSING);
     }
 	
+    public List<Point2D> getRoboticStationActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, ROBOTIC_STATION);
+    }
 	/**
 	 * Checks if the building function has activity spots.
 	 * @param buildingType the type of the building.

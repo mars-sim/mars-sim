@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.RoboticStations;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
@@ -48,6 +48,15 @@ public class Sleep extends Task implements Serializable {
     private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString(
             "Task.phase.sleeping")); //$NON-NLS-1$
 
+    /** Task name */
+    private static final String ROBOTIC = Msg.getString(
+            "Task.description.selfMaintenance"); //$NON-NLS-1$
+
+    /** Task phases. */
+    private static final TaskPhase SELF_MAINTENANCE = new TaskPhase(Msg.getString(
+            "Task.phase.selfMaintenance")); //$NON-NLS-1$
+    
+    
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.3D;
@@ -57,7 +66,8 @@ public class Sleep extends Task implements Serializable {
     // Data members
     /** The living accommodations if any. */
     private LivingAccommodations accommodations;
-    private RoboticStations stations;
+    
+    private RoboticStation station;
     /** The previous time (millisols). */
     private double previousTime;
 
@@ -108,7 +118,7 @@ public class Sleep extends Task implements Serializable {
     }
 
     public Sleep(Robot robot) {
-        super(NAME, robot, false, false, STRESS_MODIFIER, true, 
+        super(ROBOTIC, robot, false, false, STRESS_MODIFIER, true, 
                 (250D + RandomUtil.getRandomDouble(80D)));
 
         boolean walkSite = false;
@@ -116,19 +126,29 @@ public class Sleep extends Task implements Serializable {
         // If robot is in a settlement, try to find a living accommodations building.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            Building quarters = getAvailableRoboticStationBuilding(robot);
-            if (quarters != null) {
-                // Walk to quarters.
-                walkToActivitySpotInBuilding(quarters, true);
-                stations = (RoboticStations) quarters.getFunction(
-                        BuildingFunction.ROBOTIC_STATION);
-                stations.addSleeper();
+	
+        	// TODO: if power is below a certain threshold, go to robotic station for recharge, else stay at the same place
+           
+        	Building building = getAvailableRoboticStationBuilding(robot);
+            if (building != null) {
+                System.out.println("building.toString() is " + building.toString() );
+                walkToActivitySpotInBuilding(building, true);
+                station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                station.addSleeper();
                 walkSite = true;
             }
-
-            String b = BuildingManager.getBuilding(robot).getBuildingType();
-            if (b.equals("Hallway"))
-            	walkToRandomLocation(true);
+            
+            else 
+            	walkToAssignedDutyLocation(robot, true);
+            
+        	//walkToActivitySpotInBuilding(building, BuildingFunction.ROBOTIC_STATION, true);
+            
+            //String b = BuildingManager.getBuilding(robot).getBuildingType();
+            //if (b.equals("Hallway")) {
+            	//walkToRandomLocation(true);	
+            //	System.out.println("hallway");
+            //}
+            
         }
 
         if (!walkSite) {
@@ -149,8 +169,8 @@ public class Sleep extends Task implements Serializable {
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
 
         // Initialize phase
-        addPhase(SLEEPING);
-        setPhase(SLEEPING);
+        addPhase(SELF_MAINTENANCE);
+        setPhase(SELF_MAINTENANCE);
     }
     
     @Override
@@ -164,15 +184,24 @@ public class Sleep extends Task implements Serializable {
     
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+        if (person != null) {    	
+	    	if (getPhase() == null) 
+	            throw new IllegalArgumentException("Task phase is null");     
+	    	else if (SLEEPING.equals(getPhase())) 
+	        	return sleepingPhase(time);               
+	        else 
+	            return time;
         }
-        else if (SLEEPING.equals(getPhase())) {
-            return sleepingPhase(time);
+        
+        else if (robot != null) {
+	    	if (getPhase() == null) 
+	            throw new IllegalArgumentException("Task phase is null");     
+	    	else if (SELF_MAINTENANCE.equals(getPhase())) 
+	            return sleepingPhase(time);
+	        else 
+	            return time;
         }
-        else {
-            return time;
-        }
+		return time;
     }
 
     /**
@@ -235,8 +264,9 @@ public class Sleep extends Task implements Serializable {
 		}
 		else if (robot != null) {
 	        // Remove robot from stations so other robots can use it.
-	        if (stations != null && stations.getSleepers() > 0) {
-	        	stations.removeSleeper();
+	        if (station != null && station.getSleepers() > 0) {
+	        	station.removeSleeper();
+	        	walkToAssignedDutyLocation(robot, true);
 	        }
 		}
 
@@ -276,11 +306,20 @@ public class Sleep extends Task implements Serializable {
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
-            List<Building> quartersBuildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
-            quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
-            quartersBuildings = getRoboticStationsWithEmptySlots(quartersBuildings);
-            quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
-
+            List<Building> buildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
+            buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
+            buildings = getRoboticStationsWithEmptySlots(buildings);
+            buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
+            int size = buildings.size();
+            //System.out.println("size is "+size);
+            int selected = 0; 
+            if (size == 0) 
+            	result = null;
+            if (size >= 1) {
+            	selected = RandomUtil.getRandomInt(size-1);         
+            	result = buildings.get(selected);
+            }
+            //System.out.println("selected is "+selected);  
             //if (quartersBuildings.size() > 0) {
              //   Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
             //            robot, quartersBuildings);
@@ -317,8 +356,8 @@ public class Sleep extends Task implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            RoboticStations stations = (RoboticStations) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-            if (stations.getSleepers() < stations.getStations()) {
+            RoboticStation station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            if (station.getSleepers() < station.getSlots()) {
                 result.add(building);
             }
         }
@@ -359,7 +398,7 @@ public class Sleep extends Task implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-        stations = null;
+        station = null;
         accommodations = null;
     }
 }

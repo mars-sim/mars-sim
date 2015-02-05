@@ -41,7 +41,7 @@ implements Serializable {
 
 		// Populate data members.
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		crewCapacity = config.getEarthReturnCrewCapacity(building.getName());
+		crewCapacity = config.getEarthReturnCrewCapacity(building.getBuildingType());
 
 		// Initialize hasLaunched to false.
 		hasLaunched = false;

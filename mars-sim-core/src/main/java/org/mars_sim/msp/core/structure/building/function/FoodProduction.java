@@ -70,11 +70,11 @@ implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        techLevel = config.getFoodProductionTechLevel(building.getName());
-        concurrentProcesses = config.getFoodProductionConcurrentProcesses(building.getName());
+        techLevel = config.getFoodProductionTechLevel(building.getBuildingType());
+        concurrentProcesses = config.getFoodProductionConcurrentProcesses(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getCookingActivitySpots(building.getName()));
+        loadActivitySpots(config.getFoodProductionActivitySpots(building.getBuildingType()));
 
         processes = new ArrayList<FoodProductionProcess>();
     }

@@ -12,7 +12,7 @@
 communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, 
 ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
 management?, medical-care?, power-generation?, power-storage?, recreation?, research?, 
-resource-processing?, robotic-stations?, storage?, thermal-generation?, thermal-storage? )>
+resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage? )>
 <!ELEMENT administration (activity?)>
 <!ATTLIST administration population-support CDATA #REQUIRED>
 <!ELEMENT astronomical-observation (activity?)>
@@ -90,8 +90,8 @@ resource-processing?, robotic-stations?, storage?, thermal-generation?, thermal-
 <!ATTLIST research-specialty name CDATA #REQUIRED>
 <!ELEMENT resource-processing (process+, activity?)>
 <!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
-<!ELEMENT robotic-stations (activity?)>
-<!ATTLIST robotic-stations stations CDATA #REQUIRED>
+<!ELEMENT robotic-station (activity?)>
+<!ATTLIST robotic-station slots CDATA #REQUIRED>
 <!ELEMENT process (input+, output+)>
 <!ATTLIST process name CDATA #REQUIRED>
 <!ATTLIST process power-required CDATA #REQUIRED>

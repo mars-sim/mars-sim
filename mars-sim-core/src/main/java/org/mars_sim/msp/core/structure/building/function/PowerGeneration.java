@@ -49,7 +49,7 @@ implements Serializable {
 		// Determine power sources.
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
-		powerSources = config.getPowerSources(building.getName());
+		powerSources = config.getPowerSources(building.getBuildingType());
 	}
 
 	/**
@@ -72,7 +72,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding
-					&& building.getName().equalsIgnoreCase(buildingName)
+					&& building.getBuildingType().equalsIgnoreCase(buildingName)
 					&& !removedBuilding) {
 				removedBuilding = true;
 			} else {

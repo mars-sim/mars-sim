@@ -2678,7 +2678,7 @@
 			<part name="steel pipe" number="1" />		
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />
+			<part name="microwave" number="1" />
 		</outputs>
 	</process>
 	
@@ -2726,7 +2726,7 @@
 			<part name="small water pump" number="4" />	
 		</inputs>
 		<outputs>
-			<part name="stove" number="1" />
+			<part name="refrigerator" number="1" />
 		</outputs>
 	</process>
 

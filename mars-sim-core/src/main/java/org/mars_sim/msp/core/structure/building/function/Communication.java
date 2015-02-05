@@ -36,7 +36,7 @@ implements Serializable {
 
         // Load activity spots
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        loadActivitySpots(config.getCommunicationActivitySpots(building.getName()));
+        loadActivitySpots(config.getCommunicationActivitySpots(building.getBuildingType()));
     }
 
     /**

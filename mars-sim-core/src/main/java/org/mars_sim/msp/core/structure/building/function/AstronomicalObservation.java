@@ -51,12 +51,12 @@ extends Function {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        powerRequired = config.getAstronomicalObservationPowerRequirement(building.getName());
-        techLevel = config.getAstronomicalObservationTechLevel(building.getName());
-        observatoryCapacity = config.getAstronomicalObservationCapacity(building.getName());
+        powerRequired = config.getAstronomicalObservationPowerRequirement(building.getBuildingType());
+        techLevel = config.getAstronomicalObservationTechLevel(building.getBuildingType());
+        observatoryCapacity = config.getAstronomicalObservationCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getAstronomicalObservationActivitySpots(building.getName()));
+        loadActivitySpots(config.getAstronomicalObservationActivitySpots(building.getBuildingType()));
     }
 
     /**

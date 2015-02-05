@@ -57,7 +57,7 @@ implements Serializable {
 		}
 
 		// Get initial resources in building.
-		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getName());
+		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
 			AmountResource resource = i2.next();
