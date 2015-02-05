@@ -93,10 +93,6 @@ implements Serializable {
         vehicleNumberMap = new HashMap<String, Integer>();
     }
 
-    
-	// 2015-02-04 Added run()
-	//public void run() {}
-    
     /**
      * Constructs initial units.
      * @throws Exception in unable to load names.

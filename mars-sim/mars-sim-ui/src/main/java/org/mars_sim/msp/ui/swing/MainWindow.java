@@ -48,7 +48,7 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
  * The MainWindow class is the primary UI frame for the project. It contains the
  * tool bars and main desktop pane.
  */
-public class MainWindow extends Thread {
+public class MainWindow {
 
 	public static final String WINDOW_TITLE = Msg.getString(
 		"MainWindow.title", //$NON-NLS-1$
@@ -96,36 +96,32 @@ public class MainWindow extends Thread {
     
     private String statusText;
     String earthTimeString;
-    //String t = null;
-    
+ 
     private boolean cleanUI = true;
-    
-    //private SimulationConfig config = SimulationConfig.instance();
-
-	/**
+   	/**
 	 * Constructor.
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
 		this.cleanUI = cleanUI;
-		frame = new JFrame(WINDOW_TITLE);		
-	}
-	
-	// 2015-02-04 Added run()
-	public void run() {
-		// Prepare desktop
-		desktop = new MainDesktopPane(this);
-		//Thread d = new Thread(desktop);
-		//d.start();
-		
-		init();
 
+		desktop = new MainDesktopPane(this);
+	
+        init();
+
+		// Open all initial windows.
+		desktop.openInitialWindows();
+		
+		showStatusBar();
+		
+		// 2015-01-07 Added startAutosaveTimer()
+		startAutosaveTimer();
 	}
 
 	// 2015-02-04 Added init()
 	public void init() {
 		// use JFrame constructor
-
+		frame = new JFrame(WINDOW_TITLE);
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -156,16 +152,13 @@ public class MainWindow extends Thread {
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 		mainPane.add(toolToolbar, BorderLayout.NORTH);
-
 		
 		// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
 		bottomPane = new JPanel(new BorderLayout());
 		
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
-	        /**
-			 * 
-			 */
+	  
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -178,13 +171,8 @@ public class MainWindow extends Thread {
 	    
 //	    BasicToolBarUI ui = new BasicToolBarUI();
 //	    unitToolbar.setUI(ui);
-
-	    // Set the bgcolor to black
-	    //color = java.awt.Color.black;
 	    unitToolbar.setOpaque(false);
 	    unitToolbar.setBackground(new Color(0,0,0,0));
-	    //unitToolbar.getParent.getParent.setBackground(new Color(0,0,0,0));
-	     
 	    // Remove the toolbar border, to blend into figure contents
 	    unitToolbar.setBorderPainted(false);
 	     
@@ -227,15 +215,6 @@ public class MainWindow extends Thread {
    
         bottomPane.add(statusBar, BorderLayout.SOUTH);	        
 		
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
-		if (earthTimer == null) {
-			//System.out.println(" constructor : earthTimer == null");			
-			delayLaunchTimer = new Timer();
-			int seconds = 1;
-			// Note: this delayLaunchTimer is non-repeating
-			// thus period is N/A
-			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
-		}
 		 
 		// add mainpane
 		mainPane.add(desktop, BorderLayout.CENTER);
@@ -272,8 +251,6 @@ public class MainWindow extends Thread {
 		// Show frame
 		frame.setVisible(true);
 
-		// Open all initial windows.
-		desktop.openInitialWindows();
 		
 		// I'm commenting this out for now.  I would like the user guide tutorial
 		// to be the only initial tool window open for a new simulation. - Scott
@@ -282,9 +259,20 @@ public class MainWindow extends Thread {
 		//int seconds = 1;
 		//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
-		// 2015-01-07 Added startAutosaveTimer()
-		startAutosaveTimer();
+	}
+	
+	// 2015-02-05 Added showEarthTime()
+	public void showStatusBar() {
 
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+		if (earthTimer == null) {
+			//System.out.println(" constructor : earthTimer == null");			
+			delayLaunchTimer = new Timer();
+			int millisec = 500;
+			// Note: this delayLaunchTimer is non-repeating
+			// thus period is N/A
+			delayLaunchTimer.schedule(new StatusBar(), millisec );	
+		}
 	}
 	
 	public JPanel getBottomPane() {
@@ -307,6 +295,7 @@ public class MainWindow extends Thread {
         autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
 
     }
+	
 	
 	// 2015-01-13 Added startEarthTimer()
 	public void startEarthTimer() {

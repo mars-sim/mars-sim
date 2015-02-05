@@ -25,7 +25,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A manager for interplanetary transportation.
  */
-public class TransportManager extends Thread
+public class TransportManager 
+extends Thread
 implements Serializable {
 
 	/** default serial id. */

@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-//import org.mars_sim.msp.core.Msg;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-//import java.util.logging.Logger;
 
 /**
  * A panel for displaying the settlement map.
@@ -81,8 +80,6 @@ implements ClockListener {
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
-	//private MainDesktopPane desktop; // may be needed 
-	//private SettlementTransparentPanel transparentPanel; // may be needed
 
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
@@ -90,10 +87,9 @@ implements ClockListener {
 	public SettlementMapPanel(final MainDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
-		//this.desktop = desktop;
 
 		setLayout(new BorderLayout());
-		//setLayout(null); //new FlowLayout());
+
 		// Initialize data members.
 		xPos = 0D;
 		yPos = 0D;
@@ -127,12 +123,8 @@ implements ClockListener {
 		// 2015-01-16 Added detectMouseMovement() after refactoring
 		detectMouseMovement();
 		
-		// TODO: will initializing this in SettlementWindow be faster?
-	    //SwingUtilities.invokeLater(new Runnable(){
-	    //    public void run()  {
-		//transparentPanel = 
-		new SettlementTransparentPanel(desktop, this);
-	    //    } });
+        new SettlementTransparentPanel(desktop, this);
+       
         setVisible(true);
 	}
 	
