@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -955,7 +956,6 @@ public class BuildingManager implements Serializable {
                 result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasThermalStorage(buildingType))
                 result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
- 
             if (config.hasLifeSupport(buildingType))
                 result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasLivingAccommodations(buildingType))
@@ -986,12 +986,12 @@ public class BuildingManager implements Serializable {
                 result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasAdministration(buildingType))
                 result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
-
+    		if (config.hasRoboticStation(buildingType)) 
+                result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
+            
             // Multiply value.
             result *= 1000D;
-
-            // TODO: mkung to subtract heating costs per Sol???
-            
+    
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingType);
             double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;

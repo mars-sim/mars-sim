@@ -42,10 +42,10 @@ implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        this.exerciserCapacity = config.getExerciseCapacity(building.getName());
+        this.exerciserCapacity = config.getExerciseCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getExerciseActivitySpots(building.getName()));
+        loadActivitySpots(config.getExerciseActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -67,7 +67,7 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

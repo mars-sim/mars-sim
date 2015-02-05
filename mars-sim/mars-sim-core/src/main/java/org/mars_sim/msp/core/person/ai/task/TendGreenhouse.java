@@ -133,6 +133,10 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.FARMING;
     }
+    
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.FARMING;
+    }
 
     @Override
     protected double performMappedPhase(double time) {
@@ -230,7 +234,7 @@ implements Serializable {
             chance /= (skill - 2);
         }
 
-        // Modify based on the LUV's wear condition.
+        // Modify based on the wear condition.
         chance *= greenhouse.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
@@ -280,19 +284,22 @@ implements Serializable {
             LocationSituation location = robot.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
                 BuildingManager manager = robot.getSettlement().getBuildingManager();
-                List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
-                farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
-                farmBuildings = getFarmsNeedingWork(farmBuildings);
-                //farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
+                List<Building> buildings = manager.getBuildings(BuildingFunction.FARMING);
+                buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
+                buildings = getFarmsNeedingWork(buildings);
+                buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
 
                 // TODO: add person's good/bad feeling toward robots
-                if (farmBuildings.size() > 0) {
-                   // Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                    //        person, farmBuildings);
-                    //result = RandomUtil.getWeightedRandomObject(farmBuildings);
-                	int selectedFarm = RandomUtil.getRandomInt(farmBuildings.size()-1);
-                	result = farmBuildings.get(selectedFarm);
+                int size = buildings.size();
+                //System.out.println("size is "+size);
+                int selected = 0; 
+                if (size == 0) 
+                	result = null;
+                if (size >= 1) {
+                	selected = RandomUtil.getRandomInt(size-1);         
+                	result = buildings.get(selected);
                 }
+                //System.out.println("selected is "+selected); 
             }
         }
         return result;

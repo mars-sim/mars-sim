@@ -138,6 +138,10 @@ implements Serializable {
         return BuildingFunction.RECREATION;
     }
 
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.ROBOTIC_STATION;
+    }
+    
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {

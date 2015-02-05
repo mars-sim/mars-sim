@@ -80,7 +80,7 @@ implements Lab, Serializable {
             Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
             while (k.hasNext()) {
                 Building building = k.next();
-                if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+                if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                     removedBuilding = true;
                 }
                 else {

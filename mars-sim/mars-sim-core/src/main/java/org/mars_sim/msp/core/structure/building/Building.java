@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
@@ -396,6 +397,9 @@ LocalBoundedObject, InsidePathLocation {
 		// Set administration function.
 		if (config.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
 		
+		// Set robotic function.
+		if (config.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
+
 		return buildingFunctions;
 	}
 

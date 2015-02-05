@@ -133,7 +133,10 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.PREPARING_DESSERT;
     }
-
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.PREPARING_DESSERT;
+    }
+    
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.

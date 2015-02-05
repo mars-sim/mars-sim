@@ -33,6 +33,7 @@
 			<cooking capacity="2">
 				<activity>
 					<activity-spot xloc="2.19" yloc="-1.76" />
+					<activity-spot xloc="2.3" yloc="-1.4" />
 				</activity>
 			</cooking>
 		
@@ -64,7 +65,9 @@
 	
 			<food-production tech-level="2" concurrent-processes="3">
 				<activity>
-					<activity-spot xloc="2.19" yloc="-1.76" />
+					<activity-spot xloc="2.0" yloc="-1.9" />
+					<activity-spot xloc="2.2" yloc="-1.7" />
+					<activity-spot xloc="2.4" yloc="-1.5" />
 				</activity>
 			</food-production>
 			
@@ -174,12 +177,12 @@
 				
 			</resource-processing>
 			
-			<robotic-stations stations="2">
+			<robotic-station slots="2">
 				<activity>
-					<activity-spot xloc="-1.5" yloc="-1.9" />
-					<activity-spot xloc="-1.3" yloc="-1.7" />
+					<activity-spot xloc="0.5" yloc="0.1" />
+					<activity-spot xloc="-0.2" yloc="0.65" />
 				</activity>
-			</robotic-stations>
+			</robotic-station>
 			
 			<!-- The building is capable of storing resources. -->
 			<storage>
@@ -1019,17 +1022,20 @@
 				</activity>
 			</manufacture>
 			
-			<robotic-stations stations="8">
+			<robotic-station slots="8">
 				<activity>
-					<activity-spot xloc=".6" yloc="2.9" />
-					<activity-spot xloc="-2.0" yloc="-.7" />
-					<activity-spot xloc="-.6" yloc="-2.9" />
-					<activity-spot xloc="1.7" yloc="0.0" />
-					<activity-spot xloc="-.5" yloc="1.1" />
-					<activity-spot xloc=".7" yloc="-1.3" />
-					<activity-spot xloc=".7" yloc=".4" />
+					<activity-spot xloc="2" yloc="-3.0" />					
+					<activity-spot xloc="-2" yloc="3.0" />
+					<activity-spot xloc="-1.8" yloc="-3.2" />
+					<activity-spot xloc="2" yloc="-3.0" />
+
+					<activity-spot xloc="-2" yloc="-3.0" />					
+					<activity-spot xloc="-2.2" yloc="-2.8" />
+					<activity-spot xloc="2.2" yloc="-2.8" />
+					<activity-spot xloc="-2.2" yloc="2.8" />
+
 				</activity>
-			</robotic-stations>
+			</robotic-station>
 			
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />

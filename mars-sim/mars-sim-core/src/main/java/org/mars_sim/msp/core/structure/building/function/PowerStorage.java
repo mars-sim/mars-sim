@@ -45,7 +45,7 @@ implements Serializable {
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		powerStorageCapacity = config.getPowerStorageCapacity(building.getName());
+		powerStorageCapacity = config.getPowerStorageCapacity(building.getBuildingType());
 	}
 
 	/**

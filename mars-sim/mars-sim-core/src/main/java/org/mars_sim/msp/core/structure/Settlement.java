@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
-import org.mars_sim.msp.core.structure.building.function.RoboticStations;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -294,8 +294,8 @@ implements LifeSupport {
         Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
         while (j.hasNext()) {
             Building building = j.next(); 
-            RoboticStations roboticStations = (RoboticStations) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-            stations += roboticStations.getStations();
+            RoboticStation roboticStations = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            stations += roboticStations.getSlots();
             //stations++;
         } 
         //stations = stations * 2; 

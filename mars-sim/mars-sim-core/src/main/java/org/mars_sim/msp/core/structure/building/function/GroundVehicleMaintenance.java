@@ -38,16 +38,16 @@ implements Serializable {
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		vehicleCapacity = config.getVehicleCapacity(building.getName());
+		vehicleCapacity = config.getVehicleCapacity(building.getBuildingType());
 
-		int parkingLocationNum = config.getParkingLocationNumber(building.getName());
+		int parkingLocationNum = config.getParkingLocationNumber(building.getBuildingType());
 		for (int x = 0; x < parkingLocationNum; x++) {
-			Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getName(), x);
+			Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getBuildingType(), x);
 			addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
 		}
 		
 		// Load activity spots
-        loadActivitySpots(config.getGroundVehicleMaintenanceActivitySpots(building.getName()));
+        loadActivitySpots(config.getGroundVehicleMaintenanceActivitySpots(building.getBuildingType()));
 	}
 
 	/**
@@ -87,7 +87,7 @@ implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+			if (!newBuilding && building.getBuildingType().equals(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
