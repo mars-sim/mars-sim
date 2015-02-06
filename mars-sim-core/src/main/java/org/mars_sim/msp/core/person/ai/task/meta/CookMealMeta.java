@@ -114,7 +114,7 @@ public class CookMealMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 100D;
+        double result = 200D;
         
       	if (CookMeal.isMealTime(robot)) {
       		result += 100D;
