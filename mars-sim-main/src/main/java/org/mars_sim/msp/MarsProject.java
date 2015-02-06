@@ -44,13 +44,14 @@ public class MarsProject {
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
-
+    private boolean isLoadingFX;
+    
 	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
     private Image img;
     private final static String IMAGE_DIR = "/images/";
     
     /**
-     * Constructor.
+     * Constructor 1.
      * @param args command line arguments.
      */
     public MarsProject(String args[]) {
@@ -59,6 +60,16 @@ public class MarsProject {
         
         init(args);
 
+    }
+    
+    /**
+     * Constructor 2.
+     * @param args command line arguments.
+     * @param isLoadingFX true if MarsProjectFX class is in use.
+     */
+    public MarsProject(boolean isLoadingFX) {
+    	this.isLoadingFX = isLoadingFX;
+    	
     }
 
     public void init(String args[]) {
@@ -71,17 +82,7 @@ public class MarsProject {
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
             
-       		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
-            String fullImageName = "LanderHab.png";
-            String fileName = fullImageName.startsWith("/") ?
-                	fullImageName :
-                	IMAGE_DIR + fullImageName;
-            URL resource = ImageLoader.class.getResource(fileName);
-			Toolkit kit = Toolkit.getDefaultToolkit();
-			img = kit.createImage(resource);
-			splashWindow.getJFrame().setIconImage(img);			
-            splashWindow.display();
-            splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+            showSplashScreen(splashWindow);
             
             boolean newSim = initializeSimulation(args);
 
@@ -89,11 +90,7 @@ public class MarsProject {
             MainWindow mw = new MainWindow(newSim);
             mw.getFrame().setVisible(true);  
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
-			mw.getFrame().setIconImage(img);
-			
-            // 2015-01-26 Added mwFX
-            MainWindowFX mwFX = new MainWindowFX(newSim);
-            mwFX.start();
+			mw.getFrame().setIconImage(img);			
             
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 	          
@@ -118,12 +115,28 @@ public class MarsProject {
         
     }
     
+    public void showSplashScreen(SplashWindow splashWindow) {
+
+   		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
+        String fullImageName = "LanderHab.png";
+        String fileName = fullImageName.startsWith("/") ?
+            	fullImageName :
+            	IMAGE_DIR + fullImageName;
+        URL resource = ImageLoader.class.getResource(fileName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		img = kit.createImage(resource);
+		splashWindow.getJFrame().setIconImage(img);			
+        splashWindow.display();
+        splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
+    }
+    
+    
     /**
      * Initialize the simulation.
      * @param args the command arguments.
      * @return true if new simulation (not loaded)
      */
-    private boolean initializeSimulation(String[] args) {
+    boolean initializeSimulation(String[] args) {
         boolean result = false;
         
         // Create a simulation
