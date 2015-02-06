@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-02-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -269,7 +269,7 @@ implements Serializable {
             // If inner door is unlocked, enter airlock.
             // TODO: Doesn't a robot need to wait for airlock to be pressurized ?
             if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
-                    airlock.inAirlock(person)) {
+                    airlock.inAirlock(robot)) {
                 setPhase(ENTERING_AIRLOCK);
             }
             else {
