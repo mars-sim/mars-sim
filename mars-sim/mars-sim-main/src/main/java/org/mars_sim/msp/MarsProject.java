@@ -56,7 +56,13 @@ public class MarsProject {
     public MarsProject(String args[]) {
 
         logger.info("Starting Mars Simulation");
+        
+        init(args);
 
+    }
+
+    public void init(String args[]) {
+    	
         List<String> argList = Arrays.asList(args);
         useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
@@ -109,8 +115,9 @@ public class MarsProject {
         if (generateHelp) {
         	HelpGenerator.generateHtmlHelpFiles();
         }
+        
     }
-
+    
     /**
      * Initialize the simulation.
      * @param args the command arguments.
