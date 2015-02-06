@@ -116,7 +116,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	       
-        double result = 100D;
+        double result = 300D;
 
         // Add probability for all malfunctionable entities in person's local.
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();

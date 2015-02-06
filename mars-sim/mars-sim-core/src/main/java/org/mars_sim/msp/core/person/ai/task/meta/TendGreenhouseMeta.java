@@ -86,7 +86,7 @@ public class TendGreenhouseMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 100D;
+        double result = 300D;
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {

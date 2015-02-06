@@ -105,7 +105,7 @@ public class ProduceFoodMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        double result = 200D;
+        double result = 300D;
         
         // TODO: the cook should check if he himself or someone else is hungry, 
         // he's more eager to cook except when he's tired
