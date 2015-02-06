@@ -7,18 +7,21 @@
 package org.mars_sim.msp;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+
 import javafx.stage.Stage;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.javafx.MainWindowFX;
+import org.mars_sim.msp.ui.swing.SplashWindow;
 
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
@@ -30,6 +33,12 @@ public class MarsProjectFX extends Application  {
 
     static String[] args;
     
+    /** true if displaying graphic user interface. */
+    private boolean useGUI = true;
+
+    /** true if help documents should be generated from config xml files. */
+    private boolean generateHelp = false;
+
     /**
      * Constructor
      * @param args command line arguments.
@@ -39,6 +48,7 @@ public class MarsProjectFX extends Application  {
 
         logger.info("Starting Mars Simulation");
 
+        /*
         Button btn = new Button();
         btn.setText("Say 'Hello Mars-simmers!'");
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -57,17 +67,53 @@ public class MarsProjectFX extends Application  {
         primaryStage.setTitle("Mars Simulation Project FX");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-        
+        */
         setLogging();  
         setDirectory(); 
-        new MarsProject(args);
-    }
+        
+        MarsProject mp = new MarsProject(true);
+         	
+        List<String> argList = Arrays.asList(args);
+        useGUI = !argList.contains("-headless");
+        generateHelp = argList.contains("-generateHelp");
+        
+        if (useGUI) {
+    
+            // Create a splash window
+            SplashWindow splashWindow = new SplashWindow();           
+            mp.showSplashScreen(splashWindow);
+            
+            boolean newSim = mp.initializeSimulation(args);
+
+	        // 2015-01-26 Added mwFX
+	        MainWindowFX mwFX = new MainWindowFX(primaryStage, newSim);
+	        
+	        // Start simulation
+	        mp.startSimulation();
+	    
+	        // Dispose the splash window.
+	        splashWindow.remove();
+	    }
+	    else {
+	        // Initialize the simulation.
+	        mp.initializeSimulation(args);        
+	        // Start the simulation.
+	        mp.startSimulation();
+	    }
+	    
+	    // this will generate html files for in-game help based on config xml files
+	    if (generateHelp) {
+	    	HelpGenerator.generateHtmlHelpFiles();
+	    }
+	    
+	}
+    
 
     
     public void setDirectory() {
         new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
     }
+    
     
     public void setLogging() {
 

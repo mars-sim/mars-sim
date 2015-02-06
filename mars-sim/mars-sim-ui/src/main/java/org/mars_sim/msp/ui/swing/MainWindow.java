@@ -98,8 +98,9 @@ public class MainWindow {
     String earthTimeString;
  
     private boolean cleanUI = true;
+    
    	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
@@ -118,6 +119,27 @@ public class MainWindow {
 		startAutosaveTimer();
 	}
 
+  	/**
+	 * Constructor 2.
+	 * @param cleanUI true if window should display a clean UI.
+	 * @param isLoadingFX true if MarsProjectFX is in use.
+	 */
+	public MainWindow(boolean cleanUI, boolean isLoadingFX) {
+		this.cleanUI = cleanUI;
+
+		desktop = new MainDesktopPane(this);
+	
+        init();
+
+		// Open all initial windows.
+		desktop.openInitialWindows();
+		
+		showStatusBar();
+		
+		// 2015-01-07 Added startAutosaveTimer()
+		startAutosaveTimer();
+	}
+	
 	// 2015-02-04 Added init()
 	public void init() {
 		// use JFrame constructor
@@ -139,6 +161,142 @@ public class MainWindow {
 				exitSimulation();
 			}
 		});
+
+		// Prepare menu
+		// 2014-12-05 Added mainWindowMenu
+		mainWindowMenu = new MainWindowMenu(this, desktop);
+		frame.setJMenuBar(mainWindowMenu);
+
+		// Prepare content frame
+		JPanel mainPane = new JPanel(new BorderLayout());
+		frame.setContentPane(mainPane);
+
+		// Prepare tool toolbar
+		toolToolbar = new ToolToolBar(this);
+		mainPane.add(toolToolbar, BorderLayout.NORTH);
+		
+		// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
+		bottomPane = new JPanel(new BorderLayout());
+		
+		// Prepare unit toolbar
+		unitToolbar = new UnitToolBar(this) {
+	  
+			private static final long serialVersionUID = 1L;
+
+			@Override
+	        protected JButton createActionComponent(Action a) {
+	            JButton jb = super.createActionComponent(a);
+	            jb.setOpaque(false);
+	            return jb;
+	        }
+	    };
+	    
+//	    BasicToolBarUI ui = new BasicToolBarUI();
+//	    unitToolbar.setUI(ui);
+	    unitToolbar.setOpaque(false);
+	    unitToolbar.setBackground(new Color(0,0,0,0));
+	    // Remove the toolbar border, to blend into figure contents
+	    unitToolbar.setBorderPainted(false);
+	     
+
+		mainPane.add(bottomPane, BorderLayout.SOUTH);
+		
+		bottomPane.add(unitToolbar, BorderLayout.CENTER);
+	
+
+		// set the visibility of tool and unit bars from preferences
+		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
+		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
+
+		// 2015-01-07 Added statusBar
+        statusBar = new JStatusBar();
+        //statusText = "Mars-Sim 3.08 is running";
+        leftLabel = new JLabel(statusText);
+		statusBar.setLeftComponent(leftLabel);
+    
+        memMaxLabel = new JLabel();
+        memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
+        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+        memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
+        statusBar.addRightComponent(memMaxLabel, false);
+
+        memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+        
+        memUsedLabel = new JLabel();
+        memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
+        memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+        memUsed = memTotal - memFree;
+        memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
+        statusBar.addRightComponent(memUsedLabel, false);       
+  
+        timeLabel = new JLabel();
+        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        statusBar.addRightComponent(timeLabel, false);
+
+        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+   
+        bottomPane.add(statusBar, BorderLayout.SOUTH);	        
+		
+		 
+		// add mainpane
+		mainPane.add(desktop, BorderLayout.CENTER);
+
+		// Set frame size
+		final Dimension frame_size;
+		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+		if (useDefault) {
+			// Make frame size 80% of screen size.
+			if (screen_size.width > 800) {
+				frame_size = new Dimension(
+					(int) Math.round(screen_size.getWidth() * .9D),
+					(int) Math.round(screen_size.getHeight() * .9D)
+				);
+			} else {
+				frame_size = new Dimension(screen_size);
+			}
+		} else {
+			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
+		}
+		frame.setSize(frame_size);
+
+		// Set frame location.
+		if (useDefault) {
+			// Center frame on screen
+			frame.setLocation(
+				((screen_size.width - frame_size.width) / 2),
+				((screen_size.height - frame_size.height) / 2)
+			);
+		} else {
+			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+		}
+
+		// Show frame
+		frame.setVisible(true);
+
+		
+		// I'm commenting this out for now.  I would like the user guide tutorial
+		// to be the only initial tool window open for a new simulation. - Scott
+		// 2014-12-27 Added OpenSettlementWindow with delay timer
+		//delayLaunchTimer = new Timer();
+		//int seconds = 1;
+		//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
+
+	}
+	
+	
+	public void init2() {
+		
+		
+		// Load UI configuration.
+		if (!cleanUI) {
+			UIConfig.INSTANCE.parseFile();
+		}
+
+		// Set look and feel of UI.
+		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
+
+		setLookAndFeel(false);
+
 
 		// Prepare menu
 		// 2014-12-05 Added mainWindowMenu
