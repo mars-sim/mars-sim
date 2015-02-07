@@ -7,17 +7,16 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MenuScene;
 import org.mars_sim.msp.ui.javafx.SettlementScene;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
@@ -32,54 +31,106 @@ public class MainWindowFX extends Thread {
 	);
 
 	// Data members
-	private static Stage primaryStage;
+	private Stage primaryStage;
+	
+	private static Stage stage;
 	
 	static Scene menuScene;
 	static Scene mainScene;
 	static Scene settlementScene;
 	
+    public static String screen1ID = "mainMenu";
+    public static String screen1File = "MainMenu.fxml";
+    public static String screen2ID = "configuration";
+    public static String screen2File = "Configuration.fxml";
+    public static String screen3ID = "credits";
+    public static String screen3File = "Credits.fxml";
+    
+    
     private boolean cleanUI = true;
     
+	/** The main desktop. */
+	//private MainDesktopPane desktop;
+
+	
 	/**
 	 * Constructor.
 	 */
 	public MainWindowFX(Stage primaryStage, boolean cleanUI) {
 		 this.cleanUI =  cleanUI;
-		 MainWindowFX.primaryStage = primaryStage;
+		 this.primaryStage = primaryStage;
 		 initAndShowGUI();
 	}
 
-    private static void initAndShowGUI() {
+    private void initAndShowGUI() {        
         
+        ScreensSwitcher switcher = new ScreensSwitcher(this);
+        switcher.loadScreen(MainWindowFX.screen1ID, MainWindowFX.screen1File);
+        switcher.loadScreen(MainWindowFX.screen2ID, MainWindowFX.screen2File);
+        switcher.loadScreen(MainWindowFX.screen3ID, MainWindowFX.screen3File);
+        
+        switcher.setScreen(MainWindowFX.screen1ID);
+        
+        Group root = new Group();
+        root.getChildren().addAll(switcher);
+        Scene scene = new Scene(root);
+        
+	    primaryStage.setTitle(WINDOW_TITLE);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+               
+        // NOTE: mainScene, menuScene and settlementScene are now listed in MainMenu.fxml
         menuScene = new MenuScene().createMenuScene();
         mainScene = new MainScene().createMainScene();
         settlementScene = new SettlementScene().createSettlementScene();
-
-	    //StackPane root = new StackPane();
-	    //root.getChildren().add(btn);
-	    //Scene scene = new Scene(root, 1000, 300);
-	
-	    primaryStage.setTitle(WINDOW_TITLE);
-	    primaryStage.setScene(mainScene);
-	    primaryStage.show();
+	    //stage.setScene(menuScene);
+	    //stage.show();
+        
     
 	    // TODO: recreate everything that's still in MainWindow right here in MainWindowFX
-	    MainWindow mw = new MainWindow(true);
+	    MainWindow mw = new MainWindow(true);	    
+	    MainDesktopPane desktop = new MainDesktopPane(mw);		
+		// Open all initial windows.
+		desktop.openInitialWindows();
     }    
  
+    public void runOne() {
+        
+    	stage = new Stage();
+ 	    stage.setTitle(WINDOW_TITLE);
+ 	    stage.setScene(mainScene);
+        stage.show();
+    }
+    
+    public void runTwo() {
+        
+    	stage = new Stage();
+ 	    stage.setTitle(WINDOW_TITLE);
+ 	    stage.setScene(menuScene);
+        stage.show();
+    }
+    
+    public void runThree() {
+        
+    	stage = new Stage();
+ 	    stage.setTitle(WINDOW_TITLE);
+ 	    stage.setScene(settlementScene);
+        stage.show();
+    }
     
     public static void changeScene(int toscene) {
     	
     	switch(toscene) {
     
-		    	case 1: {primaryStage.setScene(menuScene);
+		    	case 1: {stage.setScene(menuScene);
 		}
-		    	case 2: {primaryStage.setScene(mainScene);
+		    	case 2: {stage.setScene(mainScene);
 		}
-		    	case 3: {primaryStage.setScene(settlementScene);
+		    	case 3: {stage.setScene(settlementScene);
 		}
 
     }
     }   
+    
     
 }
