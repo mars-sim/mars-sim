@@ -98,6 +98,7 @@ public class MainWindow {
     String earthTimeString;
  
     private boolean cleanUI = true;
+    private boolean isLoadingFX;
     
    	/**
 	 * Constructor 1.
@@ -106,15 +107,11 @@ public class MainWindow {
 	public MainWindow(boolean cleanUI) {
 		this.cleanUI = cleanUI;
 
-		desktop = new MainDesktopPane(this);
-	
+		desktop = new MainDesktopPane(this);	
         init();
-
 		// Open all initial windows.
-		desktop.openInitialWindows();
-		
-		showStatusBar();
-		
+		desktop.openInitialWindows();		
+		showStatusBar();		
 		// 2015-01-07 Added startAutosaveTimer()
 		startAutosaveTimer();
 	}
@@ -126,16 +123,10 @@ public class MainWindow {
 	 */
 	public MainWindow(boolean cleanUI, boolean isLoadingFX) {
 		this.cleanUI = cleanUI;
-
-		desktop = new MainDesktopPane(this);
-	
+		this.isLoadingFX = isLoadingFX;
+		
         init();
-
-		// Open all initial windows.
-		desktop.openInitialWindows();
-		
-		showStatusBar();
-		
+		showStatusBar();		
 		// 2015-01-07 Added startAutosaveTimer()
 		startAutosaveTimer();
 	}
@@ -285,8 +276,7 @@ public class MainWindow {
 	
 	
 	public void init2() {
-		
-		
+				
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -296,7 +286,6 @@ public class MainWindow {
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		setLookAndFeel(false);
-
 
 		// Prepare menu
 		// 2014-12-05 Added mainWindowMenu

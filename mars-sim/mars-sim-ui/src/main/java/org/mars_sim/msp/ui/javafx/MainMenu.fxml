@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.mars_sim.msp.ui.javafx.Screen1Controller">
+  <children>
+      <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
+         <center>
+          <VBox alignment="CENTER" prefHeight="222.0" prefWidth="301.0" spacing="20.0" BorderPane.alignment="CENTER">
+            <padding>
+              <Insets />
+            </padding>
+               <children>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Sim" />
+          	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToTwo" text="Options" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Bonus" />
+
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" text="Configurations" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" text="Credits" />
+               </children>
+          </VBox>
+         </center>
+         <bottom>
+            <HBox prefHeight="40.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+         </bottom>
+         <top>
+        <Label text="Main Menu" BorderPane.alignment="CENTER">
+          <font>
+            <Font size="18.0" />
+          </font>
+        </Label>
+         </top>
+      </BorderPane>
+  </children>
+</AnchorPane>

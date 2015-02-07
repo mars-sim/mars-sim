@@ -52,7 +52,6 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * constructed and owned by the virtual Mars object.
  */
 public class UnitManager 
-//extends Thread
 implements Serializable {
 
     /** default serial id. */

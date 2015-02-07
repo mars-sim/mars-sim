@@ -10,7 +10,6 @@ import javafx.application.Application;
 
 import javafx.stage.Stage;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,24 +45,19 @@ public class MarsProjectFX extends Application  {
 
     public void start(Stage primaryStage) {
 
-        logger.info("Starting Mars Simulation");
-
+        logger.info("Starting Mars Simulation Project FX");
         /*
         Button btn = new Button();
         btn.setText("Say 'Hello Mars-simmers!'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-     
+        btn.setOnAction(new EventHandler<ActionEvent>() {     
         @Override
         public void handle(ActionEvent event) {
              System.out.println("Hello Mars-simmers!");
                 }
-        });
-            
+        });            
         StackPane root = new StackPane();
         root.getChildren().add(btn);
-
         Scene scene = new Scene(root, 300, 250);
-
         primaryStage.setTitle("Mars Simulation Project FX");
         primaryStage.setScene(scene);
         primaryStage.show();

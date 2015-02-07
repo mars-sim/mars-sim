@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.javafx.MainWindowFX;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -84,6 +85,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private Collection<ToolWindow> toolWindows;
 	/** The main window frame. */
 	private MainWindow mainWindow;
+	private MainWindowFX mainWindowFX;
+	
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
@@ -122,6 +125,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		init();
 	}
 	
+	
+	public MainDesktopPane(MainWindowFX mainWindowFX) {
+
+		// Initialize data members
+		soundPlayer = new AudioPlayer();
+		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
+
+		this.mainWindowFX = mainWindowFX;
+
+		init();
+	}
 	
 	// 2015-02-04 Added init()
 	public void init() {
@@ -862,7 +876,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
-	void openInitialWindows() {
+	public void openInitialWindows() {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 
