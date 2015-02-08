@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
@@ -116,7 +117,7 @@ implements Serializable {
 	    String name = "fertilizer";
 		//TODO: need to move the hardcoded amount to a xml file
 		double requestedAmount = Crop.FERTILIZER_NEEDED;
-	    retrieveResource(name, requestedAmount);    
+	    retrieveAnResource(name, requestedAmount);    
     }
     
     /**
@@ -124,8 +125,8 @@ implements Serializable {
      * @param name
      * @parama requestedAmount
      */
-    //2015-01-14 Added retrieveResource()
-    public void retrieveResource(String name, double requestedAmount) {
+    //2015-01-14 Added retrieveAnResource()
+    public void retrieveAnResource(String name, double requestedAmount) {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
@@ -140,7 +141,9 @@ implements Serializable {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
 	    		inv.addAmountDemand(nameAR, requestedAmount);
 	    	}
-	    }  catch (Exception e) {}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
     }
     
     //2014-12-09 Added setCropInQueue()
@@ -348,7 +351,9 @@ implements Serializable {
             // 2015-01-15 Add addSupplyAmount()
             inv.addAmountSupplyAmount(harvestCropAR, harvestAmount);
   
-        }  catch (Exception e) {}
+        }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+        }
     }
 
     /**
@@ -367,7 +372,9 @@ implements Serializable {
                     if (task instanceof TendGreenhouse) result++;
                 }
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+        		logger.log(Level.SEVERE,e.getMessage());
+            }
         }
 
         return result;

@@ -592,7 +592,7 @@ implements Serializable {
 	        } // end of while
 	        
 	        retrieveOil();
-	        retrieveSalt();
+	        retrieveAnResource(AMOUNT_OF_SALT_PER_MEAL, "Table Salt"); 
 	        useWater();
     
 	    	String nameOfMeal = hotMeal.getMealName();
@@ -621,79 +621,51 @@ implements Serializable {
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
     }
     
-    
-    
+ 
     // 2015-01-28 Added useWater()
     public void useWater() {
-
     	//TODO: need to move the hardcoded amount to a xml file	    
-	    double amount = WATER_USAGE_PER_MEAL;
-	    
-		AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-	    inv.addAmountDemandTotalRequest(waterAR);
-	    double capacity = inv.getAmountResourceRemainingCapacity(waterAR, false, false);
-		if (amount > capacity) {
-			amount = capacity;					
-		}
-	    
-		try {
-		    inv.retrieveAmountResource(waterAR, amount);
-		    inv.addAmountDemand(waterAR, amount);		    
-	    } catch (Exception e) {
-	        logger.log(Level.SEVERE,e.getMessage());
-		}
-    
-		double wasteWaterAmount = amount * .95;
-	    // create waste water
-	    AmountResource wasteWaterAR = AmountResource.findAmountResource("waste water");
-		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWaterAR, false, false);
-		if (wasteWaterAmount > wasteWaterCapacity) 
-			wasteWaterAmount = wasteWaterCapacity;
-		inv.storeAmountResource(wasteWaterAR, wasteWaterAmount, false);
-        inv.addAmountSupplyAmount(wasteWaterAR, wasteWaterAmount);   	
-	    
+	    retrieveAnResource(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER);
+		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;		
+		storeAnResource(wasteWaterAmount, "waste water");  
     }
     
     
     // 2015-01-12 Added retrieveOil()
     public void retrieveOil() {
-
-	    // 2014-12-29 Added oil and salt
+	    // 2014-12-29 Added pickOneOil()
 	    String oil = pickOneOil();
-    	//TODO: need to move the hardcoded amount to a xml file	    
-	    double oilAmount = AMOUNT_OF_OIL_PER_MEAL; // = 0.05
-	    
-		// 2015-01-09 Added addDemandTotalRequest()
-		AmountResource oilAR = AmountResource.findAmountResource(oil);
-	    inv.addAmountDemandTotalRequest(oilAR);
-	
-	    if (!oil.equals("None")) {
-	        //AmountResource oilAR = getFreshFoodAR(oil);
-	        inv.retrieveAmountResource(oilAR, oilAmount);
-	        // 2015-01-09 Added addDemandUsage()
-	    	inv.addAmountDemand(oilAR, oilAmount);
-	    }
-	    
-    }
 
-    public void retrieveSalt() {
-	    
-	    String salt = "Table Salt";
-    	//TODO: need to move the hardcoded amount to a xml file
-	    double saltAmount = AMOUNT_OF_SALT_PER_MEAL; // = 0.01
-	    
-	    AmountResource saltAR = getFreshFoodAR(salt);
-	    double saltAvailable = getFreshFood(saltAR);
-	    // TODO: Change the hardcoded oilAmount to what's on the meal recipe.xml
-		// 2015-01-09 Added addDemandTotalRequest()
-	    inv.addAmountDemandTotalRequest(saltAR);
-	    if (saltAvailable > saltAmount) {
-	        inv.retrieveAmountResource(saltAR, saltAmount);
-	    	// 2015-01-09 Added addDemandRealUsage()
-	    	inv.addAmountDemand(saltAR, saltAmount);
-	    }    
-	    else
-    		logger.info("Running out of table salt in " + settlement.getName());
+	    if (!oil.equals("None")) {
+	    	retrieveAnResource(AMOUNT_OF_OIL_PER_MEAL, oil); 
+	    }	    
+    }
+    
+    /**
+     * Retrieves the resource
+     * @param name
+     * @parama requestedAmount
+     */
+    //2015-02-07 Added retrieveAnResource()
+    public void retrieveAnResource( double requestedAmount, String name) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all " + name);
+	        }
+	    	else if (remainingCapacity == 0) {
+	    		logger.warning("no more " + name + " in " + settlement.getName());
+	    	}
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
     }
     
     public void setChef(String name) {
@@ -774,11 +746,11 @@ implements Serializable {
 	            	//dailyMealList.add(meal);
 	 	      		try {
 	 	      			i.remove();
-	 	      			// 2015-02-06 Added addResource()
+	 	      			// 2015-02-06 Added storeAnResource()
 	 	      			int num = RandomUtil.getRandomInt(9);
 	 	      			if (num == 0) {
 	 	      				// There is a 10% probability that the expired meal is of no good and must be discarded
-	 	      				addResource(dryMassPerServing, "Food Waste");
+	 	      				storeAnResource(dryMassPerServing, "Food Waste");
 			            	logger.info(dryMassPerServing  + " kg " + meal.getName()	 	      				
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
 			                		+ " in " + settlement.getName() );
@@ -811,8 +783,8 @@ implements Serializable {
 	     checkEndOfDay();
     }
 	  
-	// 2015-02-06 Added addResource()
-	public void addResource(double amount, String name) {
+	// 2015-02-06 Added storeAnResource()
+	public void storeAnResource(double amount, String name) {
 	
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);      
@@ -826,7 +798,9 @@ implements Serializable {
 			inv.storeAmountResource(ar, amount, true);
 			inv.addAmountSupplyAmount(ar, amount);
 			
-		} catch (Exception e) {}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
 	}
 
     // 2015-01-12 Added checkEndOfDay()
@@ -884,19 +858,19 @@ implements Serializable {
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		try {
-			 //TODO: need salt to preserve food
-			 retrieveSalt(); 
-			 
-		     double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
-	         if (dryMassPerServing > foodCapacity) 
+			
+			retrieveAnResource(AMOUNT_OF_SALT_PER_MEAL, "Table Salt"); 
+ 
+		    double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
+	        if (dryMassPerServing > foodCapacity) 
 	         	dryMassPerServing = foodCapacity;
 	     			//logger.info("timePassing() : pack & convert expired meal into dried food");
 	     			// Turned 1 cooked meal unit into 1 food unit
-	         dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
+	        dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
 	         // remove the cookedMeal and store it
-	         inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
+	        inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
 			 // 2015-01-15 Add addSupplyAmount()
-	         inv.addAmountSupplyAmount(dryFoodAR, dryMassPerServing);
+	        inv.addAmountSupplyAmount(dryFoodAR, dryMassPerServing);
 		} catch (Exception e) {}
  	}
 

@@ -343,13 +343,12 @@
 	
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0">
 		<description> The Inflatable Greenhouse is a flexible structure made of interwoven
-		layers of Kevlar and mylar around a flexible air bladder. It sufficiently retains
-		an atmosphere for growing five crops and provides vital food source for settlers. It also
+		layers of Kevlar and mylar around a flexible air bladder. It retains
+		an atmosphere and supports growing a limited number of crops as food source for the settlers. It also
 	 	houses one workbench with instruments for botany research.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
-		<functions>		
-			
+		<functions>	
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
 			<!-- power-growing-crop: the power (kW) required for each crop to grow an flourish. -->

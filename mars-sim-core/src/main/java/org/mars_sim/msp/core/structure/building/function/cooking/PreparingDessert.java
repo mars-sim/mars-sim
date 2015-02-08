@@ -531,11 +531,11 @@ implements Serializable {
 	            if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {	            	   	      
 	            	try {
 		            	i.remove();
-		            	// 2015-02-06 Added addResource()
+		            	// 2015-02-06 Added storeAnResource()
 	 	      			int num = RandomUtil.getRandomInt(9);
 	 	      			if (num == 0) {
 	 	      				// There is a 10% probability that the expired dessert is of no good and must be discarded
-	 	      				addResource(getDryMass(dessert.getName()), "Food Waste");
+	 	      				storeAnResource(getDryMass(dessert.getName()), "Food Waste");
 	 	      				logger.info(getDryMass(dessert.getName()) + " kg " 
 			                		+ dessert.getName()
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
@@ -571,8 +571,8 @@ implements Serializable {
     }
 
 	  
-	// 2015-02-06 Added addResource()
-	public void addResource(double amount, String name) {
+	// 2015-02-06 Added storeAnResource()
+	public void storeAnResource(double amount, String name) {
 	
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);      
@@ -586,7 +586,9 @@ implements Serializable {
 			inv.storeAmountResource(ar, amount, true);
 			inv.addAmountSupplyAmount(ar, amount);
 			
-		} catch (Exception e) {}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
 	}
 	
     // 2015-01-12 Added checkEndOfDay()
