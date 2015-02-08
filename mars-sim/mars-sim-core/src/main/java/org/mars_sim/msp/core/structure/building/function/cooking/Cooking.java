@@ -62,7 +62,8 @@ implements Serializable {
     public static double DOWN = 0.004;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
-    public static final double SALT_AMOUNT_PER_MEAL = 0.01;
+    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.01;
+    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.05;
     
     // amount of water in kg per cooked meal during meal preparation and clean-up
     public static final double WATER_USAGE_PER_MEAL = 1.0;
@@ -506,13 +507,13 @@ implements Serializable {
 		    
 	    	List<String> oilList = new ArrayList<String>();
 
-	 	    if (checkAmountAV("Soybean Oil") > 0.05)
+	 	    if (checkAmountAV("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Soybean Oil");
-	 	    if (checkAmountAV("Garlic Oil") > 0.05)
+	 	    if (checkAmountAV("Garlic Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Garlic Oil");
-	 	    if (checkAmountAV("Sesame Oil") > 0.05)
+	 	    if (checkAmountAV("Sesame Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Sesame Oil");
-	 	    if (checkAmountAV("Peanut Oil") > 0.05)
+	 	    if (checkAmountAV("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Peanut Oil");
 	
 			int upperbound = oilList.size();
@@ -527,9 +528,10 @@ implements Serializable {
 	    	else if (upperbound == 1) {
 		    	selectedOil = oilList.get(0);
 	    	}
-	    	else if (upperbound == 0)
+	    	else if (upperbound == 0) {
 	    		selectedOil = "none";
-
+	    		logger.info("Running out of oil in " + settlement.getName());
+	    	}
 	    	return selectedOil;
 		}
     
@@ -653,15 +655,13 @@ implements Serializable {
     }
     
     
-    
-    
     // 2015-01-12 Added retrieveOil()
     public void retrieveOil() {
 
 	    // 2014-12-29 Added oil and salt
 	    String oil = pickOneOil();
     	//TODO: need to move the hardcoded amount to a xml file	    
-	    double oilAmount = .05;
+	    double oilAmount = AMOUNT_OF_OIL_PER_MEAL; // = 0.05
 	    
 		// 2015-01-09 Added addDemandTotalRequest()
 		AmountResource oilAR = AmountResource.findAmountResource(oil);
@@ -680,7 +680,7 @@ implements Serializable {
 	    
 	    String salt = "Table Salt";
     	//TODO: need to move the hardcoded amount to a xml file
-	    double saltAmount = SALT_AMOUNT_PER_MEAL; // = 0.1
+	    double saltAmount = AMOUNT_OF_SALT_PER_MEAL; // = 0.01
 	    
 	    AmountResource saltAR = getFreshFoodAR(salt);
 	    double saltAvailable = getFreshFood(saltAR);
@@ -692,6 +692,8 @@ implements Serializable {
 	    	// 2015-01-09 Added addDemandRealUsage()
 	    	inv.addAmountDemand(saltAR, saltAmount);
 	    }    
+	    else
+    		logger.info("Running out of table salt in " + settlement.getName());
     }
     
     public void setChef(String name) {
@@ -755,14 +757,14 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    // 2014-10-08: Currently converting each unit of expired meal into 0.5 kg of packed food 
+    // 2014-10-08: Currently converting each unit of expired meal into x kg of packed food 
     // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
     	boolean hasAMeal = hasCookedMeal(); 
 	     //logger.info(" hasAMeal : "+ hasAMeal);
 	     if ( hasAMeal ) {
 	    	 double rate = settlement.getMealsReplenishmentRate();
-	         int newNumOfCookedMeal = cookedMeals.size();
+	         //int newNumOfCookedMeal = cookedMeals.size();
 	         //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
 	         Iterator<CookedMeal> i = cookedMeals.iterator();
 	         while (i.hasNext()) {
@@ -772,18 +774,28 @@ implements Serializable {
 	            	//dailyMealList.add(meal);
 	 	      		try {
 	 	      			i.remove();
-	 	      			preserveFood();
-		            	logger.info("Meal Expired. Convert " 
-		            			+ dryMassPerServing  + " "
-		                		+ meal.getName()
-		                		+ " kg into preserved food "
-		                		+  " at " + getBuilding().getNickName() 
-		                		+ " in " + settlement.getName()
-		                		);
-		      	   		if(logger.isLoggable(Level.FINEST)) {
-		      	            logger.finest("No one is eating " + meal.getName() + ". Convert meal into preserved food at " + 
-		      	                    getBuilding().getBuildingManager().getSettlement().getName());
-		      	   		}
+	 	      			// 2015-02-06 Added addResource()
+	 	      			int num = RandomUtil.getRandomInt(9);
+	 	      			if (num == 0) {
+	 	      				// There is a 10% probability that the expired meal is of no good and must be discarded
+	 	      				addResource(dryMassPerServing, "Food Waste");
+			            	logger.info(dryMassPerServing  + " kg " + meal.getName()	 	      				
+			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
+			                		+ " in " + settlement.getName() );
+	 	      			}
+	 	      			else {
+	 	      				preserveFood();		 	      			
+			            	logger.info("Meal Expired. Convert " 
+			            			+ dryMassPerServing  + " kg "
+			                		+ meal.getName()
+			                		+ " into preserved food "
+			                		+  " at " + getBuilding().getNickName() 
+			                		+ " in " + settlement.getName() );			            	
+			      	   		if(logger.isLoggable(Level.FINEST)) {
+			      	            logger.finest("No one is eating " + meal.getName() + ". Convert meal into preserved food at " + 
+			      	                    getBuilding().getBuildingManager().getSettlement().getName());
+			      	   		}
+	 	      			}
 		      	        // 2015-01-12 Adjust the rate to go down for each meal
 			  	    	if (rate > 0 ) 
 			  	    		rate -= DOWN;
@@ -799,6 +811,24 @@ implements Serializable {
 	     checkEndOfDay();
     }
 	  
+	// 2015-02-06 Added addResource()
+	public void addResource(double amount, String name) {
+	
+		try {
+			AmountResource ar = AmountResource.findAmountResource(name);      
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+			    //logger.info("addHarvest() : storage is full!");
+			}
+			inv.storeAmountResource(ar, amount, true);
+			inv.addAmountSupplyAmount(ar, amount);
+			
+		} catch (Exception e) {}
+	}
+
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
 	    	 
@@ -823,8 +853,7 @@ implements Serializable {
 	 		boolean hasAMeal = hasCookedMeal(); 
 		    if ( hasAMeal ) {
 		    	int newNumOfCookedMeal = cookedMeals.size();
-		        //if ( numOfCookedMealCache != newNumOfCookedMeal)	
-		    	//logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+		        //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
 		    	Iterator<CookedMeal> j = cookedMeals.iterator();
 
 		    	while (j.hasNext()) {

@@ -41,7 +41,14 @@ public enum BuildingFunction {
 	//SERVINGCOFFEE				(Msg.getString("BuildingFunction.servingCoffee")), 
 	//2014-11-23 Added FOOD_PRODUCTION
 	FOOD_PRODUCTION  			(Msg.getString("BuildingFunction.foodProduction")), //$NON-NLS-1$	
+	// 2015-02-07 Added waste disposal  
+	WASTE_DISPOSAL				(Msg.getString("BuildingFunction.wasteDisposal")), //$NON-NLS-1$
+	// 2015-01-21 Added robotic station  
 	ROBOTIC_STATION				(Msg.getString("BuildingFunction.roboticStation")), //$NON-NLS-1$
+	//WASTE_RECYCLING				(Msg.getString("BuildingFunction.wasteRecycling")), //$NON-NLS-1$
+	//WASTE_COMPACTING			(Msg.getString("BuildingFunction.wasteCompacting")), //$NON-NLS-1$
+
+	
 	;
 
 	private String name;

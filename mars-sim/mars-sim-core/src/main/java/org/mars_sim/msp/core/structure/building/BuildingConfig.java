@@ -69,6 +69,9 @@ public class BuildingConfig implements Serializable {
 	private static final String ROBOTIC_STATION = "robotic-station";
 	private static final String SLOTS = "slots";
 	
+	private static final String WASTE_DISPOSAL = "waste-disposal";
+	private static final String WASTE_SPECIALTY = "waste-specialty";
+	
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
@@ -445,6 +448,59 @@ public class BuildingConfig implements Serializable {
 
 	    for (Element researchSpecialityElement : researchSpecialities ) {
 	        String value = researchSpecialityElement.getAttributeValue(NAME);
+	        // take care that entries in buildings.xml conform to enum values of {@link ScienceType}
+	        result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ","_")));
+	    }
+	    return result;
+	}
+	
+	
+	/**
+	 * Checks if the building has waste disposal
+	 * @param buildingType the type of the building
+	 * @return true if waste disposal
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */
+	public boolean hasWasteDisposal(String buildingType) {
+		return hasElements(buildingType,FUNCTIONS,WASTE_DISPOSAL);
+	}
+	
+	/**
+	 * Gets the waste disposal tech level of the building.
+	 * @param buildingType the type of the building
+	 * @return tech level
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */
+	public int getWasteDisposalTechLevel(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,WASTE_DISPOSAL,TECH_LEVEL);
+	}
+	
+	/**
+	 * Gets the number of people who can use the building's waste disposal at once.
+	 * @param buildingType the type of the building
+	 * @return number of people
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */	
+	public int getWasteDisposalCapacity(String buildingType) {
+		return getValueAsInteger(buildingType,FUNCTIONS,WASTE_DISPOSAL,CAPACITY);		
+	}
+	
+	/**
+	 * Gets a list of waste specialties for the building's lab.
+	 * @param buildingType the type of the building
+	 * @return list of waste specialties as {@link ScienceType}.
+	 * @throws Exception if building type cannot be found or XML parsing error.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ScienceType> getWasteSpecialties(String buildingType) {
+	    List<ScienceType> result = new ArrayList<ScienceType>();
+	    Element buildingElement = getBuildingElement(buildingType);
+	    Element functionsElement = buildingElement.getChild(FUNCTIONS);
+	    Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
+	    List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
+
+	    for (Element wasteSpecialityElement : wasteSpecialities ) {
+	        String value = wasteSpecialityElement.getAttributeValue(NAME);
 	        // take care that entries in buildings.xml conform to enum values of {@link ScienceType}
 	        result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ","_")));
 	    }
@@ -1324,6 +1380,15 @@ public class BuildingConfig implements Serializable {
      */
     public List<Point2D> getResearchActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, RESEARCH);
+    }
+    
+    /**
+     * Gets a list of activity spots for the waste disposal building function.
+     * @param buildingType the type of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getWasteDisposalActivitySpots(String buildingType) {
+        return getActivitySpots(buildingType, WASTE_DISPOSAL);
     }
     
     /**

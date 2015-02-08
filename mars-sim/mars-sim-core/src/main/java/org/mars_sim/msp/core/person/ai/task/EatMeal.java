@@ -221,6 +221,18 @@ implements Serializable {
             // 2015-01-09 Added addDemandRequest()
         	inv.addAmountDemandTotalRequest(food);
             if (foodAvailable >= foodAmount) {
+            	
+			 	// 2015-02-06 Added addResource()
+	      		int num = RandomUtil.getRandomInt(19);
+	      		if (num == 0){
+		      		// There is a 5% probability that the preserved food is of no good and must be discarded
+		      		// Remove the bad food amount from container unit.
+		            inv.retrieveAmountResource(food, foodAmount);
+		            // 2015-01-09 addDemandUsage()
+		            inv.addAmountDemand(food, foodAmount);
+		      		addResource(foodAmount, "Food Waste", inv);
+	      		}
+				
                 // Remove preserved food amount from container unit.
                 inv.retrieveAmountResource(food, foodAmount);
             	// 2015-01-09 addDemandUsage()
@@ -237,6 +249,23 @@ implements Serializable {
         }
     }
 
+	// 2015-02-06 Added addResource()
+	public void addResource(double amount, String name, Inventory inv) {
+	
+		try {
+		AmountResource ar = AmountResource.findAmountResource(name);      
+		double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+		
+		if (remainingCapacity < amount) {
+		    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+			amount = remainingCapacity;
+		    //logger.info("addHarvest() : storage is full!");
+		}
+		inv.storeAmountResource(ar, amount, true);
+		inv.addAmountSupplyAmount(ar, amount);
+		
+		}  catch (Exception e) {}
+	}    
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.

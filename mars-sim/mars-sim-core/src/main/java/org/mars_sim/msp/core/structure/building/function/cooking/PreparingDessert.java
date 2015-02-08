@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -530,21 +531,35 @@ implements Serializable {
 	            if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {	            	   	      
 	            	try {
 		            	i.remove();
-		            	refrigerateFood(dessert);
-		            	logger.info("Dessert Expired. Refrigerate " 
-		            			+ getDryMass(dessert.getName()) + " kg " 
-		                		+ dessert.getName()
-		                		+  " at " + getBuilding().getNickName() 
-		                		+ " in " + settlement.getName()
-		                		);
+		            	// 2015-02-06 Added addResource()
+	 	      			int num = RandomUtil.getRandomInt(9);
+	 	      			if (num == 0) {
+	 	      				// There is a 10% probability that the expired dessert is of no good and must be discarded
+	 	      				addResource(getDryMass(dessert.getName()), "Food Waste");
+	 	      				logger.info(getDryMass(dessert.getName()) + " kg " 
+			                		+ dessert.getName()
+			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
+			                		+ " in " + settlement.getName()
+			                		);
+	 	      			}
+	 	      			else  {
+			            	refrigerateFood(dessert);	 	      			
+			            	logger.info("Dessert Expired. Refrigerate " 
+			            			+ getDryMass(dessert.getName()) + " kg " 
+			                		+ dessert.getName()
+			                		+  " at " + getBuilding().getNickName() 
+			                		+ " in " + settlement.getName()
+			                		);
+			            	if(logger.isLoggable(Level.FINEST)) {
+			                     logger.finest("The dessert has lost its freshness at " + 
+			                     getBuilding().getBuildingManager().getSettlement().getName());
+			                }
+	 	      			}
 		 	    		// 2015-01-12 For each dessert that needs to be refrigerated
 		  	    		// Adjust the rate to go down 
 			  	    	if (rate > 0 ) 
 			  	    		rate -= DOWN; 
-		                if(logger.isLoggable(Level.FINEST)) {
-		                     logger.finest("The dessert has lost its freshness at " + 
-		                     getBuilding().getBuildingManager().getSettlement().getName());
-		                }  
+		                  
 	            	} catch (Exception e) {}
 	            } //end of if (MarsClock.getTimeDiff(
 	        } // end of  while (i.hasNext())
@@ -555,6 +570,25 @@ implements Serializable {
     	checkEndOfDay();
     }
 
+	  
+	// 2015-02-06 Added addResource()
+	public void addResource(double amount, String name) {
+	
+		try {
+			AmountResource ar = AmountResource.findAmountResource(name);      
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+			    //logger.info("addHarvest() : storage is full!");
+			}
+			inv.storeAmountResource(ar, amount, true);
+			inv.addAmountSupplyAmount(ar, amount);
+			
+		} catch (Exception e) {}
+	}
+	
     // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
   			
