@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.08 2015-02-06
+ * @version 3.08 2015-02-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -33,15 +33,16 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
-	/** Amount of waste water needed / harvest mass. */
+	/** Amount of waste water needed per harvest mass. */
 	public static final double WASTE_WATER_NEEDED = 5D;
-	/** Amount of carbon dioxide needed /harvest mass. */
+	/** Amount of carbon dioxide needed per harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
-	
-	public static final double WATER_RECLAMATION_RATE = .8D;
 	
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
 	public static double FERTILIZER_NEEDED = 0.5D ;
+	
+	public static final double WATER_RECLAMATION_RATE = .8D;
+	public static final double OXYGEN_GENERATION_RATE = .9D;
 
 	// TODO Crop phases should be an internationalizable enum.
 	public static final String PLANTING = "Planting";
@@ -261,7 +262,8 @@ implements Serializable {
 				phase = FINISHED;
 				// 2015-02-06 Added Crop Waste
 				double modifiedCropWaste = modifiedHarvest * cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
-				addResource(modifiedCropWaste, "Crop Waste");
+				storeAnResource(modifiedCropWaste, "Crop Waste");
+				logger.info("addWork() : " + modifiedCropWaste + " kg Crop Waste generated from "+ cropType.getName());
 			}
 			else { 	// continue the harvesting process
 				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
@@ -277,8 +279,8 @@ implements Serializable {
 		return remainingWorkTime;
 	}
 	
-	// 2015-02-06 Added addResource()
-	   public void addResource(double amount, String name) {
+	// 2015-02-06 Added storeAnResource()
+	   public void storeAnResource(double amount, String name) {
 
 	    	try {
 	            AmountResource ar = AmountResource.findAmountResource(name);      
@@ -291,8 +293,9 @@ implements Serializable {
 	            }
 	            inv.storeAmountResource(ar, amount, true);
 	            inv.addAmountSupplyAmount(ar, amount);
-	            logger.info("addResource() : " + amount + " kg crop waste just generated.");
-	        }  catch (Exception e) {}
+	        }  catch (Exception e) {
+	    		logger.log(Level.SEVERE,e.getMessage());
+	        }
 	    }
 
 	   
@@ -346,18 +349,10 @@ implements Serializable {
 					retrieveAnResource(wasteWater, wasteWaterUsed);
 					// 2015-01-25 Added waterUsed 
 					harvestModifier = harvestModifier * ((( (wasteWaterUsed + waterUsed) / wasteWaterRequired) * .5D) + .5D);
-
 					
-					// Determine harvest modifier by amount of water available.				
-					double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;
-					AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
-					if (waterAmount > waterCapacity) {
-						waterAmount = waterCapacity;					
-					}
-					inv.storeAmountResource(water, waterAmount, false);
-					// 2015-01-15 Add addSupplyAmount()
-		            inv.addAmountSupplyAmount(water, waterAmount);
+					// Amount of water generated through recycling				
+					double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;					
+					storeAnResource(waterAmount, org.mars_sim.msp.core.LifeSupport.WATER);					
 	
 					// Determine harvest modifier by amount of carbon dioxide available.
 					AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
@@ -367,20 +362,12 @@ implements Serializable {
 					if (carbonDioxideUsed > carbonDioxideAvailable) {
 						carbonDioxideUsed = carbonDioxideAvailable;
 					}					
-					retrieveAnResource(carbonDioxide, carbonDioxideUsed);			
-					
+					retrieveAnResource(carbonDioxide, carbonDioxideUsed);								
 					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
 					
 					// Determine harvest modifier by amount of oxygen available.							
-					AmountResource oxygen = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.OXYGEN);
-					double oxygenAmount = carbonDioxideUsed * .9D;
-					double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false, false);
-					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
-					inv.storeAmountResource(oxygen, oxygenAmount, false);
-					 // 2015-01-15 Add addSupplyAmount()
-		            inv.addAmountSupplyAmount(oxygen, oxygenAmount);   	
-					// Modify harvest amount.
-					actualHarvest += maxPeriodHarvest * harvestModifier;
+					double oxygenAmount = carbonDioxideUsed * OXYGEN_GENERATION_RATE;					
+					storeAnResource(oxygenAmount, org.mars_sim.msp.core.LifeSupport.OXYGEN);					
 					
 					// Check if crop is dying if it's at least 25% along on its growing time and its condition
 					// is less than 10% normal.
@@ -390,8 +377,8 @@ implements Serializable {
 						logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
 						// 2015-02-06 Added Crop Waste
 						double modifiedCropWaste = actualHarvest * cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
-						System.out.println("modifiedCropWaste of the dead plant is "+ modifiedCropWaste);
-						addResource(modifiedCropWaste, "Crop Waste");
+						storeAnResource(modifiedCropWaste, "Crop Waste");
+						logger.info("timePassing() : " + modifiedCropWaste + " kg Crop Waste generated from the dead "+ cropType.getName());
 					}
 				}
 			}
