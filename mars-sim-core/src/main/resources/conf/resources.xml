@@ -20,9 +20,12 @@
 
 <!-- Wastes -->
 	<resource name="Compost" phase="solid" life-support="true">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="Manure" phase="solid" life-support="true">Human feces</resource>
+	<resource name="Crop Waste" phase="solid" life-support="true">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+
 	<resource name="E-Waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="Food Waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
+	<resource name="Manure" phase="solid" life-support="true">Human feces</resource>
+
 	<resource name="Solid Waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
 	<resource name="Toxic Waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 

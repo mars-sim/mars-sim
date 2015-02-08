@@ -12,7 +12,7 @@
 communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, 
 ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
 management?, medical-care?, power-generation?, power-storage?, recreation?, research?, 
-resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage? )>
+resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
 <!ELEMENT administration (activity?)>
 <!ATTLIST administration population-support CDATA #REQUIRED>
 <!ELEMENT astronomical-observation (activity?)>
@@ -111,6 +111,11 @@ resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-s
 <!ELEMENT resource-initial EMPTY>
 <!ATTLIST resource-initial resource CDATA #REQUIRED>
 <!ATTLIST resource-initial amount CDATA #REQUIRED>
+<!ELEMENT waste-disposal (waste-specialty+, activity?)>
+<!ATTLIST waste-disposal tech-level CDATA #REQUIRED>
+<!ATTLIST waste-disposal capacity CDATA #REQUIRED>
+<!ELEMENT waste-specialty EMPTY>
+<!ATTLIST waste-specialty name CDATA #REQUIRED>
 <!ELEMENT activity (activity-spot+)>
 <!ELEMENT activity-spot EMPTY>
 <!ATTLIST activity-spot xloc CDATA #REQUIRED>

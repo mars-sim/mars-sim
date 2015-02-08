@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2015-01-25
+ * @version 3.08 2015-02-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -37,6 +37,8 @@ implements Serializable {
 	public static final double WASTE_WATER_NEEDED = 5D;
 	/** Amount of carbon dioxide needed /harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
+	
+	public static final double WATER_RECLAMATION_RATE = .8D;
 	
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
 	public static double FERTILIZER_NEEDED = 0.5D ;
@@ -252,28 +254,48 @@ implements Serializable {
 					//logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
 				double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
 				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
-				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired,
-						cropType.getName(), cropType.getCropCategory());
+				double modifiedHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired;
+				farm.addHarvest(modifiedHarvest, cropType.getName(), cropType.getCropCategory());
 					//logger.info("addWork() : last actualHarvest amount is " + Math.round(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired));
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
-
+				// 2015-02-06 Added Crop Waste
+				double modifiedCropWaste = modifiedHarvest * cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
+				addResource(modifiedCropWaste, "Crop Waste");
 			}
 			else { 	// continue the harvesting process
 				// 2014-10-07 mkung: modified addHarvest parameter list to include crop name
 					//logger.info("addWork() : still harvesting.... calculating actualHarvest");
 					//logger.info("addWork() : actualHarvest is " + Math.round(actualHarvest * workTime / harvestingWorkRequired));
 					//logger.info("addWork() : calling Farming.java's addHarvest() now");
-					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, 
-							cropType.getName(), cropType.getCropCategory());
+				farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, cropType.getName(), cropType.getCropCategory());
 				remainingWorkTime = 0D;
-				//logger.info("addWork() : just set remainingWorkTime to " + remainingWorkTime);
+					//logger.info("addWork() : just set remainingWorkTime to " + remainingWorkTime);
 			}
 		}
 
 		return remainingWorkTime;
 	}
+	
+	// 2015-02-06 Added addResource()
+	   public void addResource(double amount, String name) {
 
+	    	try {
+	            AmountResource ar = AmountResource.findAmountResource(name);      
+	            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+
+	            if (remainingCapacity < amount) {
+	                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+	            	amount = remainingCapacity;
+	                //logger.info("addHarvest() : storage is full!");
+	            }
+	            inv.storeAmountResource(ar, amount, true);
+	            inv.addAmountSupplyAmount(ar, amount);
+	            logger.info("addResource() : " + amount + " kg crop waste just generated.");
+	        }  catch (Exception e) {}
+	    }
+
+	   
 	/**
 	 * Time passing for crop.
 	 * @param time - amount of time passing (millisols)
@@ -327,7 +349,7 @@ implements Serializable {
 
 					
 					// Determine harvest modifier by amount of water available.				
-					double waterAmount = wasteWaterUsed * .8D;
+					double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;
 					AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
 					double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
 					if (waterAmount > waterCapacity) {
@@ -359,13 +381,17 @@ implements Serializable {
 		            inv.addAmountSupplyAmount(oxygen, oxygenAmount);   	
 					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
-
-					// Check if crop is dying if it's at least 25% along on it's growing time and its condition
+					
+					// Check if crop is dying if it's at least 25% along on its growing time and its condition
 					// is less than 10% normal.
 					if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) &&
 							(getCondition() < .1D)) {
 						phase = FINISHED;
 						logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
+						// 2015-02-06 Added Crop Waste
+						double modifiedCropWaste = actualHarvest * cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
+						System.out.println("modifiedCropWaste of the dead plant is "+ modifiedCropWaste);
+						addResource(modifiedCropWaste, "Crop Waste");
 					}
 				}
 			}

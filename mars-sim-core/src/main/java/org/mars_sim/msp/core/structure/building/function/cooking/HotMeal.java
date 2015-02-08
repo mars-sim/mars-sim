@@ -27,19 +27,19 @@ public class HotMeal implements Serializable {
 	private double salt;
 	private String mealCategory;
 	
-	private int ingredientID;
-	private String ingredientName;
-	private double proportion;
+	//private int ingredientID;
+	//private String ingredientName;
+	//private double proportion;
 	
-	private Cooking kitchen;
+	//private Cooking kitchen;
 	//2014-12-12 Added isItAvailable, ingredientDryWeight
 	private boolean isItAvailable;
-	private double ingredientDryMass;
+	//private double ingredientDryMass;
 	
-	public HotMeal(Cooking kitchen) {
-		this.kitchen = kitchen;
+	//public HotMeal(Cooking kitchen) {
+		//this.kitchen = kitchen;
 		//setUpMeal(); 
-	}
+	//}
 	
 	public HotMeal(int mealID, String nameOfMeal, double oil, double salt, 
 			String mealCategory) { //, boolean isItAvailable) {
@@ -69,6 +69,7 @@ public class HotMeal implements Serializable {
 	public void addMealName(String nameOfMeal) {
 		this.mealName = nameOfMeal;
 	}
+	
 	public void addMeal(int mealID, String nameOfMeal, double oil, double salt, 
 			String mealCategory, boolean isItAvailable) {
 		
@@ -79,15 +80,18 @@ public class HotMeal implements Serializable {
 		this.mealCategory = mealCategory;
 		this.isItAvailable = isItAvailable;
 	}
+	
 	//2014-12-11 Added isItAvailable
     public boolean getIsItAvailable() {
     	return isItAvailable;
     }
+    
 	public void setIngredientDryMass(int id, double ingredientDryMass) {
 		Ingredient ingredient = ingredientList.get(id);
 		ingredient.setDryMass(ingredientDryMass);
 		ingredientList.set(id, ingredient);
 	}
+	
     public void setIsItAvailable(boolean value) {
     	isItAvailable = value;
     }
@@ -99,6 +103,7 @@ public class HotMeal implements Serializable {
 	public String toString() {
 		return mealName;	
 	}
+	
 	public int getMealID() {
 		return mealID;
 	}
@@ -114,9 +119,8 @@ public class HotMeal implements Serializable {
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;
-        kitchen = null;
+        //kitchen = null;
         
     }
 
- 	
 }
