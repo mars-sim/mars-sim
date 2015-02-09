@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,9 +94,15 @@ implements Serializable {
     private Inventory inv;
     private HotMeal aMeal;
     private Settlement settlement;
-    private AmountResource dryFoodAR;
-    private Building building;
+    private AmountResource dryFoodAR = null;
+    private Building building = null;
 
+    private Map<String, Double> ingredientMap = new HashMap<String, Double>();
+    private Map<String, Integer> mealMap = new HashMap<String, Integer>();
+    
+    //private List<HotMeal> hotMealCache;
+    private int hotMealCacheSize;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -187,6 +195,10 @@ implements Serializable {
 	        }
 
     	} // end of while (i.hasNext()) 	
+    }
+    
+    public int getHotMealCacheSize() {
+    	return hotMealCacheSize;
     }
     
 	/**
@@ -347,6 +359,7 @@ implements Serializable {
     public int getNumberOfCookedMealsToday() {
         return mealCounterPerSol;
     }
+    
     /**
      * Eats a cooked meal from this facility.
      * @return the meal
@@ -397,50 +410,15 @@ implements Serializable {
         cookNoMore = false;
     }
 
-    /**
-     * Chooses a hot meal recipe that can be cooked here.
-     * @return hot meal or null if none available.
-     */
- 	public HotMeal pickAMeal() {
- 
- 	    HotMeal result = null;
- 	    
- 	    // Determine list of meal recipes with available ingredients.
- 	    List<HotMeal> availableMeals = getMealRecipesWithAvailableIngredients();
- 	    
- 	    // Randomly choose a meal recipe from those available.
- 	    if (availableMeals.size() > 0) {
- 	        int mealIndex = RandomUtil.getRandomInt(availableMeals.size() - 1);
- 	        result = availableMeals.get(mealIndex);
- 	    }
- 	    
- 	    return result;
-	}
- 	
- 	/**
- 	 * Gets a list of hot meal recipes that have available ingredients.
- 	 * @return list of hot meal recipes.
- 	 */
- 	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
- 	    
- 	    List<HotMeal> result = new ArrayList<HotMeal>(mealConfigMealList.size());
- 	    
- 	    Iterator<HotMeal> i = mealConfigMealList.iterator();
- 	    while (i.hasNext()) {
- 	        HotMeal meal = i.next();
- 	        if (checkAmountAvailable(meal)) {
- 	            result.add(meal);
- 	        }
- 	    }
- 	    
- 	    return result;
- 	}
- 	
+    
     // 2015-01-04a Added getCookNoMore()
  	public boolean getCookNoMore() {
  		return cookNoMore;
  	}
  	
+ 	public int getPopulation() {
+        return getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
+ 	}
  	
     /**
      * Adds cooking work to this facility. 
@@ -483,21 +461,104 @@ implements Serializable {
     	
     }
  
-		
+
     /**
-     * Gets the amount of the food item in the whole settlement.
-     * @return foodAvailable
+     * Chooses a hot meal recipe that can be cooked here.
+     * @return hot meal or null if none available.
      */
-    // 2015-01-02 Added checkAmountAV
-    public double checkAmountAV(String name) {
-	    AmountResource foodAR = AmountResource.findAmountResource(name);  
-		double foodAvailable = inv.getAmountResourceStored(foodAR, false);
-		// 2015-01-09 Added addDemandTotalRequest()
-    	//inv.addDemandTotalRequest(foodAR);
-		//foodAvailable = Math.round(foodAvailable * 1000.0) / 1000.0;
-		return foodAvailable;
+ 	public HotMeal pickAMeal() {
+ 
+ 	    HotMeal result = null;    
+ 	    // Determine list of meal recipes with available ingredients.
+ 	    List<HotMeal> availableMeals = getMealRecipesWithAvailableIngredients();	    
+ 	    // Randomly choose a meal recipe from those available.
+ 	    if (availableMeals.size() > 0) {
+ 	        int mealIndex = RandomUtil.getRandomInt(availableMeals.size() - 1);
+ 	        result = availableMeals.get(mealIndex);
+ 	    }
+ 	    
+ 	    return result;
 	}
+ 	
+ 	/**
+ 	 * Gets a list of hot meal recipes that have available ingredients.
+ 	 * @return list of hot meal recipes.
+ 	 */
+ 	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
+ 		List<HotMeal> result = new ArrayList<HotMeal>(mealConfigMealList.size());	    
+
+ 	    Iterator<HotMeal> i = mealConfigMealList.iterator();
+ 	    while (i.hasNext()) {
+ 	        HotMeal meal = i.next();
+ 	        if (isMealAvailable(meal)) {
+ 	            result.add(meal);
+ 	        }
+ 	    }
+ 	    
+ 		hotMealCacheSize = result.size();
+ 		//System.out.println("hotMealCacheSize is "+hotMealCacheSize);
+ 	    return result;
+ 	}
+ 	
+
+    // 2014-11-29 Created isMealAvailable()
+ 	// 2015-02-08 Refactored isMealAvailable()
+    public boolean isMealAvailable(HotMeal aMeal) {
+    	boolean result = true;
+
+       	List<Ingredient> ingredientList = aMeal.getIngredientList();
+        Iterator<Ingredient> i = ingredientList.iterator();
+
+        while (i.hasNext()) {
+        	
+	        Ingredient oneIngredient;
+	        oneIngredient = i.next();
+	        String ingredientName = oneIngredient.getName();
+	        double dryMass = oneIngredient.getDryMass();
+
+	        result = retrieveAnIngredientFromMap(dryMass, ingredientName, false);
+        	if (!result) break;        	
+        	/*
+	        if (ingredientMap.containsKey(ingredientName)) {
+		    
+		        double value = ingredientMap.get(ingredientName);
+		        if (value >= dryMass)
+		        	result = true;
+		        else {
+		        	result = retrieveAnResourceFromMap(dryMass, ingredientName, false);
+		        	if (!result) break;
+			    }
+		        
+	        } else {
+	        	result = retrieveAnResourceFromMap(dryMass, ingredientName, false);
+	        	if (!result) break;
+	        }
+	        */
+        }
+ 		//System.out.println("isMealAvailable is " + result);
+		return result;
+    }
    
+    /*
+    public boolean checkOneIngredient(String ingredientName, double dryMass) {
+    	boolean result = true;
+   
+        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
+        double ingredientAvailable = getFreshFood(ingredientAR);
+        
+        // set the safe threshold as dryMass 
+        if (ingredientAvailable >= dryMass )  {
+        	//oneIngredient.setIsItAvailable(true);
+        	//result = result && true; // not needed since there is no change to the value of result	        
+        }
+        else {
+        	//oneIngredient.setIsItAvailable(false);
+            result = false;
+        }   
+        return result;
+    }
+    */
+    
     /**
      * Gets the amount of the food item in the whole settlement.
      * @return dessertAvailable
@@ -507,13 +568,13 @@ implements Serializable {
 		    
 	    	List<String> oilList = new ArrayList<String>();
 
-	 	    if (checkAmountAV("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
+	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Soybean Oil");
-	 	    if (checkAmountAV("Garlic Oil") > AMOUNT_OF_OIL_PER_MEAL)
+	 	    if (getAmountAvailable("Garlic Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Garlic Oil");
-	 	    if (checkAmountAV("Sesame Oil") > AMOUNT_OF_OIL_PER_MEAL)
+	 	    if (getAmountAvailable("Sesame Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Sesame Oil");
-	 	    if (checkAmountAV("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
+	 	    if (getAmountAvailable("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Peanut Oil");
 	
 			int upperbound = oilList.size();
@@ -536,38 +597,18 @@ implements Serializable {
 		}
     
 	
-    // 2014-11-29 Created checkAmountAvailable()
-    public boolean checkAmountAvailable(HotMeal aMeal) {
-    	boolean result = true;
-
-       	List<Ingredient> ingredientList = aMeal.getIngredientList();
-        Iterator<Ingredient> i = ingredientList.iterator();
-
-        while (i.hasNext()) {
-        	
-	        Ingredient oneIngredient;
-	        oneIngredient = i.next();
-	        String ingredientName = oneIngredient.getName();
-	        double dryMass = oneIngredient.getDryMass();
-	            	
-	        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
-	        double ingredientAvailable = getFreshFood(ingredientAR);
-            
-	    	// 2015-01-09 Added addDemandTotalRequest()
-	        inv.addAmountDemandTotalRequest(ingredientAR);
-	        
-	        // set the safe threshold as dryMass * 3 
-	        if (ingredientAvailable > dryMass * 3 )  {
-	        	oneIngredient.setIsItAvailable(true);
-	        	result = result && true;	        
-	        }
-	        else { 
-	        	oneIngredient.setIsItAvailable(false);
-                result = false;
-                }       
-        }
-		return result;
-    }
+    /**
+     * Gets the amount of the food item in the whole settlement.
+     * @return foodAvailable
+     */
+    // 2015-01-02 Added getAmountAvailable
+    public double getAmountAvailable(String name) {
+	    AmountResource foodAR = AmountResource.findAmountResource(name);  
+		double foodAvailable = inv.getAmountResourceStored(foodAR, false);	
+		return foodAvailable;
+	}
+	
+  
     
     // 2014-11-29 Created cookAHotMeal()
     // 2014-12-12 Revised to deduct the dry weight for each ingredient
@@ -582,17 +623,19 @@ implements Serializable {
 		        oneIngredient = i.next();
 		        String ingredientName = oneIngredient.getName();
 		        // 2014-12-11 Updated to using dry weight
-		        double dryMass = oneIngredient.getDryMass();  
-		        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
-		        inv.retrieveAmountResource(ingredientAR, dryMass);
-		        // 2015-01-09 Added addDemandUsage()
-		    	inv.addAmountDemandTotalRequest(ingredientAR);
-	        	inv.addAmountDemand(ingredientAR, dryMass);
-	         
+		        double dryMass = oneIngredient.getDryMass();  			        
+		        boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientName, true);
+		        if (hasIt)
+		        	;
 	        } // end of while
 	        
 	        retrieveOil();
-	        retrieveAnResource(AMOUNT_OF_SALT_PER_MEAL, "Table Salt"); 
+	        
+	        //boolean hasIt = 
+	        retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true); 	      
+	        //if (hasIt)
+	        	//resourceMap.put(ingredientName, cacheAmount-dryMass);
+	        
 	        useWater();
     
 	    	String nameOfMeal = hotMeal.getMealName();
@@ -621,11 +664,63 @@ implements Serializable {
 	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 	        
     }
     
- 
+    
+  	// 2015-02-08 Added retrieveAnIngredientFromMap()
+      public boolean retrieveAnIngredientFromMap(double amount, String name, boolean isRetrieving) {		    	
+      	boolean result = true;
+  		// 1. check local map cache
+  		//Object value = resourceMap.get(name);
+      	if (ingredientMap.containsKey(name)) {
+  		//if (value != null) {
+  			//double cacheAmount = (double) value;
+  			double cacheAmount = ingredientMap.get(name);
+  		    // 2. if found, retrieve the resource locally
+  			// 2a. check if cacheAmount > dryMass
+  			if (cacheAmount >= amount) {
+  				// compute new value for key 
+  				// subtract the amount from the cache
+  				// set result to true
+  				 ingredientMap.put(name, cacheAmount-amount); 
+  				//result = true && result; // not needed since there is no change to the value of result
+  			}
+  			else {
+  				result = replenishIngredientMap(cacheAmount, amount, name, isRetrieving);
+  			}
+  		}
+  		else { 
+  			result = replenishIngredientMap(0, amount, name, isRetrieving);
+  		}
+  		
+  		return result;	
+      }
+      
+  	// 2015-02-08 Added replenishIngredientMap()
+      public boolean replenishIngredientMap(double cacheAmount, double amount, String name, boolean isRetrieving) {
+      	boolean result = true;
+      	//if (cacheAmount < amount)
+  	    // 2b. if not, retrieve whatever amount from inv 
+  		// Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
+  		boolean hasFive = retrieveAnResource(amount * 5, name, isRetrieving);
+      	// 2b1. if inv has it, save it to local map cache
+      	if (hasFive) {
+      		// take 5 out, put 4 into resourceMap, use 1 right now
+      		ingredientMap.put(name, cacheAmount + amount * 4); 
+      		//result = true && result; // not needed since there is no change to the value of result
+      	} 
+      	else { // 2b2.
+      		boolean hasOne = retrieveAnResource(amount, name, isRetrieving);
+      		if (hasOne) 		    			
+  	    		; // no change to resourceMap since resourceMap.put(name, cacheAmount); 		    				    	
+      		else 
+      			result = false;
+      	}
+      	return result;
+      }
+      
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file	    
-	    retrieveAnResource(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER);
+	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER, true);
 		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;		
 		storeAnResource(wasteWaterAmount, "waste water");  
     }
@@ -637,35 +732,43 @@ implements Serializable {
 	    String oil = pickOneOil();
 
 	    if (!oil.equals("None")) {
-	    	retrieveAnResource(AMOUNT_OF_OIL_PER_MEAL, oil); 
+	    	retrieveAnIngredientFromMap(AMOUNT_OF_OIL_PER_MEAL, oil, true); 
 	    }	    
     }
     
     /**
      * Retrieves the resource
      * @param name
-     * @parama requestedAmount
+     * @param requestedAmount
      */
     //2015-02-07 Added retrieveAnResource()
-    public void retrieveAnResource( double requestedAmount, String name) {
+    public boolean retrieveAnResource(double requestedAmount, String name, boolean isRetrieving ) {
+    	boolean result = false;
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
 	        if (remainingCapacity < requestedAmount) {
-	     		requestedAmount = remainingCapacity;
-	    		logger.warning("Just used up all " + name);
+	     		//requestedAmount = remainingCapacity;
+	    		//logger.warning("Not enough " + name + " for making a meal.");
+	    		result = false;
 	        }
-	    	else if (remainingCapacity == 0) {
-	    		logger.warning("no more " + name + " in " + settlement.getName());
+	    	else if (Math.round(remainingCapacity*10000.0)/10000.0 < 0.0001) {
+	    		//logger.warning("no more " + name + " in " + settlement.getName());
+	    		result = false;
 	    	}
-	    	else {
-	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	else { 
+	    		if (isRetrieving) {
+		    		inv.retrieveAmountResource(nameAR, requestedAmount);
+		    		inv.addAmountDemand(nameAR, requestedAmount);
+	    		}
+	    		result = true;
 	    	}
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
+    	
+    	return result;
     }
     
     public void setChef(String name) {
@@ -705,10 +808,6 @@ implements Serializable {
      //2014-11-21 Added getFreshFood() 
     public double getFreshFood(AmountResource ar) {
         double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
-    	// 2015-01-09 Added addDemandTotalRequest()
-    	//inv.addDemandTotalRequest(ar);
-        // 2014-11-29 Deleted the rounding or java.lang.IllegalStateException
-        //return Math.round(freshFoodAvailable* 10000.0) / 10000.0;
         return freshFoodAvailable;
     }
     
@@ -784,8 +883,8 @@ implements Serializable {
     }
 	  
 	// 2015-02-06 Added storeAnResource()
-	public void storeAnResource(double amount, String name) {
-	
+	public boolean storeAnResource(double amount, String name) {
+		boolean result = false;
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);      
 			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
@@ -793,14 +892,19 @@ implements Serializable {
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
+				result = false;
 			    //logger.info("addHarvest() : storage is full!");
 			}
-			inv.storeAmountResource(ar, amount, true);
-			inv.addAmountSupplyAmount(ar, amount);
-			
+			else {
+				inv.storeAmountResource(ar, amount, true);
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
 		} catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 		}
+		
+		return result;
 	}
 
     // 2015-01-12 Added checkEndOfDay()
@@ -857,21 +961,8 @@ implements Serializable {
     
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
-		try {
-			
-			retrieveAnResource(AMOUNT_OF_SALT_PER_MEAL, "Table Salt"); 
- 
-		    double foodCapacity = inv.getAmountResourceRemainingCapacity(dryFoodAR, false, false);
-	        if (dryMassPerServing > foodCapacity) 
-	         	dryMassPerServing = foodCapacity;
-	     			//logger.info("timePassing() : pack & convert expired meal into dried food");
-	     			// Turned 1 cooked meal unit into 1 food unit
-	        dryMassPerServing = Math.round( dryMassPerServing * 100000.0) / 100000.0;
-	         // remove the cookedMeal and store it
-	        inv.storeAmountResource(dryFoodAR, dryMassPerServing , false);
-			 // 2015-01-15 Add addSupplyAmount()
-	        inv.addAmountSupplyAmount(dryFoodAR, dryMassPerServing);
-		} catch (Exception e) {}
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true); 
+		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD);
  	}
 
     /**

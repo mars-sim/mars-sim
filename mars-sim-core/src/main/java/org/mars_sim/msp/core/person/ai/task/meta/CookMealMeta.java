@@ -45,7 +45,7 @@ public class CookMealMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
+  
       	if (CookMeal.isMealTime(person)) {
 
             try {
@@ -56,37 +56,48 @@ public class CookMealMeta implements MetaTask {
 					
 	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	                
-                	if (kitchen.hasCookedMeal() == false)
-                		result += 100D;
+                    int population = kitchen.getPopulation();
+                    if (population == 0)
+                    	result = 0;
+                    
+                    else {
+                    	
+	                	if (kitchen.hasCookedMeal() == false)
+	                		result += 100D;
+	                    
+	                	// TODO: cache the meal ingredients show that it doesn't have to do it again in CookMeal.java and Cooking.java
+	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+	                    int size = kitchen.getHotMealCacheSize();
 
-                    
-                    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-                    // if more meals (thus more ingredients) are available at kitchen.
-                    // to Chef's delight, he/she is more motivated to cook 
-                    result = size * 50D;
-  
-                    // TODO: if the person likes cooking 
-                    // result = result + 200D;
-                    //if (size == 0) result = 0D;
-                   
-                    // TODO: the cook should check if he himself or someone else is hungry, 
-                    // he's more eager to cook except when he's tired
-                    double hunger = person.getPhysicalCondition().getHunger();
-                    if ((hunger > 300D) && (result > 0D)) {
-                        result += (hunger - 300D);
+	                    // if more meals (thus more ingredients) are available at kitchen.
+	                    // to Chef's delight, he/she is more motivated to cook 
+	                    result = result + size * 50D;
+	              	  
+	  
+	                    // TODO: if the person likes cooking 
+	                    // result = result + 200D;
+	                    //if (size == 0) result = 0D;
+	                   
+	                    // TODO: the cook should check if he himself or someone else is hungry, 
+	                    // he's more eager to cook except when he's tired
+	                    double hunger = person.getPhysicalCondition().getHunger();
+	                    if ((hunger > 300D) && (result > 0D)) {
+	                        result += (hunger - 300D);
+	                    }
+	                    double fatigue = person.getPhysicalCondition().getFatigue();
+	                    if ((fatigue > 700D) && (result > 0D)) {
+	                        result -= .4D * (fatigue - 700D);
+	                    }
+	                    
+	                    if (result < 0D) {
+	                        result = 0D;
+	                    }
+	                    
+	                    // Crowding modifier.
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
+	                    
                     }
-                    double fatigue = person.getPhysicalCondition().getFatigue();
-                    if ((fatigue > 700D) && (result > 0D)) {
-                        result -= .4D * (fatigue - 700D);
-                    }
-                    
-                    if (result < 0D) {
-                        result = 0D;
-                    }
-                    
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                 }
             }
             catch (Exception e) {
@@ -100,6 +111,7 @@ public class CookMealMeta implements MetaTask {
             Job job = person.getMind().getJob();
             if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);
         
+
             //System.out.println(" cookMealMeta : getProbability " + result);
       	}
 
@@ -126,33 +138,27 @@ public class CookMealMeta implements MetaTask {
 					
 	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	                
-                	if (kitchen.hasCookedMeal() == false)
-                		result += 200D;
-
-                    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-                    // if more meals (thus more ingredients) are available at kitchen.
-                    // to Chef's delight, he/she is more motivated to cook 
-                    result = size * 50D;
-  
-
-                    // TODO: the cook should check if he himself or someone else is hungry, 
-                    // he's more eager to cook except when he's tired
-                    //double hunger = robot.getPhysicalCondition().getHunger();
-                    //if ((hunger > 300D) && (result > 0D)) {
-                    //    result += (hunger - 300D);
-                    //}
-                    //double fatigue = robot.getPhysicalCondition().getFatigue();
-                    //if ((fatigue > 700D) && (result > 0D)) {
-                    //    result -= .4D * (fatigue - 700D);
-                    //}
+	                int population = kitchen.getPopulation();
+                    if (population == 0)
+                    	result = 0;
                     
-                    if (result < 0D) {
-                        result = 0D;
+                    else {
+                    	
+	                    
+	                	if (kitchen.hasCookedMeal() == false)
+	                		result += 100D;
+	
+	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+	                    int size = kitchen.getHotMealCacheSize();
+	                    result = result + size * 50D;
+	                    
+	                    if (result < 0D) {
+	                        result = 0D;
+	                    }
+	                    
+	                    // Crowding modifier.
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
                     }
-                    
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-                    
                 }
             }
             catch (Exception e) {

@@ -95,14 +95,23 @@ implements Serializable {
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
 		   
-		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();	       
+		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+            //int size = kitchen.getHotMealCacheSize();
 	        if (size == 0) {
 	        	counter++;
-	        	if (counter < 2)
+	        	boolean display = true;
+	        	
+	        	if (counter > 10) 
+	        		display = true;
+	        	
+	        	if (display) {
 	        		logger.severe("Warning: cannot cook meals in " 
 	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName() 
 	            		+ " because none of the ingredients of a meal are available ");
-	            
+		            counter = 0;
+		            display = false;
+	        	}
+	        	
 	            endTask();
 	            kitchen.cleanup();
 	        
