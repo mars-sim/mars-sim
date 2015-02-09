@@ -41,7 +41,7 @@ public class MarsClock implements Serializable {
     // Martian/Gregorian calendar conversion
     private static final double SECONDS_IN_MILLISOL = 88.775244;
 
-    public static final int MILLISOLS_ON_FIRST_SOL = 9353;
+    public static final int THE_FIRST_SOL = 9353;
     
     // Martian calendar static strings
     private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri",
@@ -189,6 +189,31 @@ public class MarsClock implements Serializable {
         return result;
     }
 
+    /** Returns the total number of sol since the start of the simulation
+     *  @return the total number of sol as an integer
+     */
+    // 2015-02-09 Added getTotalSol
+    public static int getTotalSol(MarsClock time) {
+    	
+    	int result = 0;
+
+        // Add sols up to current orbit
+        for (int x=1; x < time.orbit; x++) {
+            if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR;
+            else result += SOLS_IN_ORBIT_NON_LEAPYEAR;
+        }
+        
+        // Add sols up to current month
+        for (int x=1; x < time.month; x++)
+            result += MarsClock.getSolsInMonth(x, time.orbit) ;
+            
+        // Add sols up to current sol
+        result += time.sol  ;
+	
+        result = result - THE_FIRST_SOL;
+        
+        return result;
+    }
     
     /** Returns the number of sols in a month for
      *  a given month and orbit.

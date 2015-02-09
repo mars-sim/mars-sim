@@ -104,14 +104,12 @@ implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 		
-		// Create map layers.
-		mapLayers = new ArrayList<SettlementMapLayer>(5);
-		mapLayers.add(new BackgroundTileMapLayer(this));
-		mapLayers.add(new StructureMapLayer(this));
-		mapLayers.add(new VehicleMapLayer(this));
-		mapLayers.add(new PersonMapLayer(this));
-		mapLayers.add(new RobotMapLayer(this));
-		mapLayers.add(new LabelMapLayer(this));
+		//SwingUtilities.invokeLater(new Runnable() {
+        //    @Override
+         //   public void run() {
+        		init(desktop);
+        //    }
+        //});
 
 		// Set foreground and background colors.
 		setOpaque(false);
@@ -122,10 +120,24 @@ implements ClockListener {
 		
 		// 2015-01-16 Added detectMouseMovement() after refactoring
 		detectMouseMovement();
+
+        setVisible(true);
+	}
+	
+	// 2015-02-09 Added init()
+	public void init(MainDesktopPane desktop) {
+
+		// Create map layers.
+		mapLayers = new ArrayList<SettlementMapLayer>(5);
+		mapLayers.add(new BackgroundTileMapLayer(this));
+		mapLayers.add(new StructureMapLayer(this));
+		mapLayers.add(new VehicleMapLayer(this));
+		mapLayers.add(new PersonMapLayer(this));
+		mapLayers.add(new RobotMapLayer(this));
+		mapLayers.add(new LabelMapLayer(this));
 		
         new SettlementTransparentPanel(desktop, this);
-       
-        setVisible(true);
+
 	}
 	
 	/** Constructor 2

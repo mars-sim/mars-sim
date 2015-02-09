@@ -35,7 +35,7 @@ implements Serializable {
 	// Calculation : 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; 
 	
-	private double MILLISOLS_ON_FIRST_SOL = MarsClock.MILLISOLS_ON_FIRST_SOL;
+	private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
 	
 	private double viking_dt;
 	
