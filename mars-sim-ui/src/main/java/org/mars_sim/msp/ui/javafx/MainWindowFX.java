@@ -40,11 +40,11 @@ public class MainWindowFX extends Thread {
 	static Scene settlementScene;
 	
     public static String screen1ID = "mainMenu";
-    public static String screen1File = "MainMenu.fxml";
+    public static String screen1File = "/fxui/fxml/MainMenu.fxml";
     public static String screen2ID = "configuration";
-    public static String screen2File = "Configuration.fxml";
+    public static String screen2File = "/fxui/fxml/Configuration.fxml";
     public static String screen3ID = "credits";
-    public static String screen3File = "Credits.fxml";
+    public static String screen3File = "/fxui/fxml/Credits.fxml";
     
     
     private boolean cleanUI = true;
