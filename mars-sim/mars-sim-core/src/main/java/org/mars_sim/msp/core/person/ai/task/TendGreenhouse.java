@@ -171,7 +171,7 @@ implements Serializable {
 		}
 		else if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
+	        workTime = time/1.5;
 		}
 
         // Determine amount of effective work time based on "Botany" skill

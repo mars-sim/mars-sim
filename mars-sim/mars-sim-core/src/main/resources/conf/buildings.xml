@@ -177,10 +177,9 @@
 				
 			</resource-processing>
 			
-			<robotic-station slots="2">
+			<robotic-station slots="1">
 				<activity>
-					<activity-spot xloc="0.5" yloc="0.1" />
-					<activity-spot xloc="-0.2" yloc="0.65" />
+					<activity-spot xloc="-0.3" yloc="-3.2" />
 				</activity>
 			</robotic-station>
 			
@@ -333,7 +332,8 @@
 				<waste-specialty name="radiactive material" />				
 			-->
 				<activity>
-					<activity-spot xloc="-.99" yloc="-2.89" />
+					<activity-spot xloc="-1.6" yloc="-1.8" />
+					<activity-spot xloc="-1.6" yloc="-1.9" />
 				</activity>
 			</waste-disposal>
 			
@@ -381,6 +381,12 @@
 					<activity-spot xloc="-1.47" yloc="3.68" />
 				</activity>
 			</resource-processing>
+			
+			<robotic-station slots="1">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />					
+				</activity>
+			</robotic-station>
 			
 			<storage>
 				<resource-storage resource="Fertilizer" capacity="500.0" />
@@ -879,6 +885,14 @@
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
 			</resource-processing>
+		
+			<robotic-station slots="2">
+				<activity>
+					<activity-spot xloc="1.6" yloc="0.0" />				
+					<activity-spot xloc="-1.6" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			
 			<storage>
 				<resource-storage resource="Fertilizer" capacity="1000.0" />
 				<resource-storage resource="Nitrogen" capacity="1000.0" />				
@@ -1797,6 +1811,13 @@
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>
 			</resource-processing>
+			
+			<robotic-station slots="1">
+				<activity>
+					<activity-spot xloc="0" yloc="0" />					
+				</activity>
+			</robotic-station>
+			
 			<storage>
 				<resource-storage resource="Fertilizer" capacity="500.0" />
 				<resource-storage resource="Nitrogen" capacity="500.0" />				

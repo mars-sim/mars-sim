@@ -54,7 +54,7 @@ public class TendGreenhouseMeta implements MetaTask {
                     result = 100D;
 
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());
-                    result += needyCropsNum * 10D;
+                    result += needyCropsNum * 30D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
@@ -96,6 +96,7 @@ public class TendGreenhouseMeta implements MetaTask {
                     result += 100D;
 
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
+                    //System.out.println("needyCropsNum is "+needyCropsNum);
                     result += needyCropsNum * 100D;
 
                     // Crowding modifier.
@@ -110,13 +111,15 @@ public class TendGreenhouseMeta implements MetaTask {
 
         // Effort-driven task modifier.
         result *= robot.getPerformanceRating();
-
+        //System.out.println("robot.getPerformanceRating() is " + robot.getPerformanceRating());
         // Job modifier.
         RobotJob robotJob = robot.getMind().getRobotJob();
         if (robotJob != null) {
             result *= robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
+            //System.out.println("modifier is " + robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class));
         }
 
+       // System.out.println("probability is " + result);
         return result;
 	}
 }

@@ -19,6 +19,7 @@ import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
@@ -44,6 +45,9 @@ extends ToolWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
+	private MarsClock marsClock;
+	private javax.swing.Timer marsTimer = null;
+	
     private JStatusBar statusBar;
     private JLabel leftLabel;
     //private JLabel maxMemLabel;
@@ -54,8 +58,9 @@ extends ToolWindow {
     //private int memAV;
     //private int memUsed;
     private String statusText;
+    private String populationText;
 	private String marsTimeString;
-	private javax.swing.Timer marsTimer = null;
+	
     
 	/**
 	 * Constructor.
@@ -66,12 +71,12 @@ extends ToolWindow {
 		super(NAME, desktop);
 		this.desktop = desktop;	
 		
-		SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
+		//SwingUtilities.invokeLater(new Runnable() {
+        //    @Override
+        //    public void run() {
         		init();
-            }
-        });
+        //    }
+        //});
 
 		showMarsTime();
 	}
@@ -95,8 +100,7 @@ extends ToolWindow {
 
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
-        //statusText = "News Today on the Settlement";
-        leftLabel = new JLabel(statusText);
+        leftLabel = new JLabel();  //statusText + populationText;
 		statusBar.setLeftComponent(leftLabel);
 
         timeLabel = new JLabel();
@@ -121,8 +125,13 @@ extends ToolWindow {
 			timeListener = new ActionListener() {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
-			    	marsTimeString = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			    	marsTimeString = marsClock.getTimeStamp();
 					timeLabel.setText("Martian Time : " + marsTimeString);
+				    statusText = "" + MarsClock.getTotalSol(marsClock);
+				    populationText = "" + mapPanel.getSettlement().getCurrentPopulationNum();
+				    // 2015-02-09 Added leftLabel
+				    leftLabel.setText("Sol : " + statusText + "    Population : " + populationText);
 			    }
 			};
 		}

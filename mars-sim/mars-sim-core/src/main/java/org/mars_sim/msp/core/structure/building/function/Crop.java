@@ -333,6 +333,11 @@ implements Serializable {
 
 					// TODO mkung: Modify harvest modifier by amount of artificial light available to the greenhouse
 				
+					// TODO mkung: Modify harvest modifier by temperature of the greenhouse
+					
+					// TODO mkung: Modify harvest modifier by the moisture level
+					
+					// TODO mkung: Modify harvest modifier by the number of bees in the greenhouse
 
 					// Determine harvest modifier by amount of waste water available.
 					double waterUsed = 0;
