@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -65,44 +66,52 @@ public class PrepareDessertMeta implements MetaTask {
                     PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
     			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
                    
-                	if (kitchen.hasFreshDessert() == false)
-                		result += 100D;
-                	
-                    String [] dessert = {   "Soymilk",
-                            "Sugarcane Juice",
-                            "Strawberry",
-                            "Granola Bar",
-                            "Blueberry Muffin", 
-                            "Cranberry Juice"  };
+                    int population = kitchen.getPopulation();
+                    if (population == 0)
+                    	result = 0;
                     
-                    // Put together a list of available dessert 
-                    for(String n : dessert) {
-                        if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
-                        	result += 5D;
-                        }
+                    else {
+                    	
+	                	if (kitchen.hasFreshDessert() == false)
+	                		result += 100D;
+	                	
+	                    String [] dessert = {   "Soymilk",
+	                            "Sugarcane Juice",
+	                            "Strawberry",
+	                            "Granola Bar",
+	                            "Blueberry Muffin", 
+	                            "Cranberry Juice"  };
+	                    
+	                    // Put together a list of available dessert 
+	                    for(String n : dessert) {
+	                        if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
+	                        	result += 5D;
+	                        }
+	                    }
+	                    
+	                    // TODO: if the person likes making desserts
+	                    // result = result + 200D;
+	                    
+	                    // TODO: the cook should check if he himself or someone else is hungry, 
+	                    // he's more eager to cook except when he's tired
+	                    double hunger = person.getPhysicalCondition().getHunger();
+	                    if ((hunger > 300D) && (result > 0D)) {
+	                        result += (hunger - 300D);
+	                    }
+	                    double fatigue = person.getPhysicalCondition().getFatigue();
+	                    if ((fatigue > 700D) && (result > 0D)) {
+	                        result -= .4D * (fatigue - 700D);
+	                    }
+	                    
+	                    if (result < 0D) {
+	                        result = 0D;
+	                    }
+	                    
+	                    // Crowding modifier.
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
+	                    
                     }
-                    
-                    // TODO: if the person likes making desserts
-                    // result = result + 200D;
-                    
-                    // TODO: the cook should check if he himself or someone else is hungry, 
-                    // he's more eager to cook except when he's tired
-                    double hunger = person.getPhysicalCondition().getHunger();
-                    if ((hunger > 300D) && (result > 0D)) {
-                        result += (hunger - 300D);
-                    }
-                    double fatigue = person.getPhysicalCondition().getFatigue();
-                    if ((fatigue > 700D) && (result > 0D)) {
-                        result -= .4D * (fatigue - 700D);
-                    }
-                    
-                    if (result < 0D) {
-                        result = 0D;
-                    }
-                    
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
                 }
             }
             catch (Exception e) {
@@ -125,13 +134,79 @@ public class PrepareDessertMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return null; // new PrepareDessert(robot);
 	}
 
+		
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+	   double result = 20D;
+	   /* 	   
+	   // TODO: if a robot is very hungry, should he come inside and result > 0 ?
+	   if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
+	       result = 0D;
+	   }
+	   
+	   if (PrepareDessert.isDessertTime(robot)) {
+	
+	       try {
+	           // See if there is an available kitchen.
+	           Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
+	
+	           if (kitchenBuilding != null) {
+	               PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
+				      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
+	              
+	               int population = kitchen.getPopulation();
+	               if (population == 0)
+	               	result = 0;
+	               
+	               else {
+	               	
+	               	if (kitchen.hasFreshDessert() == false)
+	               		result += 100D;
+	               	
+	                   String [] dessert = {   "Soymilk",
+	                           "Sugarcane Juice",
+	                           "Strawberry",
+	                           "Granola Bar",
+	                           "Blueberry Muffin", 
+	                           "Cranberry Juice"  };
+	                   
+	                   // Put together a list of available dessert 
+	                   for(String n : dessert) {
+	                       if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
+	                       	result += 5D;
+	                       }
+	                   }
+
+	                   if (result < 0D) {
+	                       result = 0D;
+	                   }
+	                   
+	                   // Crowding modifier.
+	                   result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+	                   //result *= TaskProbabilityUtil.getRelationshipModifier(robot, kitchenBuilding);
+	                   
+	               }
+	           }
+	       }
+	       catch (Exception e) {
+	           //logger.log(Level.INFO,"getProbability() : No room/no kitchen available for cooking dessert or outside settlement", e);
+	       }
+	
+	       // Effort-driven task modifier.
+	       result *= robot.getPerformanceRating();
+	
+	       // Job modifier.
+           RobotJob robotJob = robot.getMind().getRobotJob();
+           if (robotJob != null)
+               result *= robotJob.getStartTaskProbabilityModifier(PrepareDessert.class);
+	   
+	   }
+	   
+	   if (result < 0) result = 0;
+*/
+	   return result;
 	}
 }

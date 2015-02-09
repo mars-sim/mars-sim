@@ -285,7 +285,7 @@ implements Serializable {
     /**
      * Remove dessert from its AmountResource container
      * @return none
-     */
+     
     // 2014-12-30 Updated removeDessertFromAmountResource() with a param
     public void removeDessertFromAmountResource(String name) {
         AmountResource dessertAR = AmountResource.findAmountResource(name);  
@@ -300,8 +300,8 @@ implements Serializable {
   		// 2015-01-09 addDemandRealUsage()
   	    // inv.addDemandTotalRequest(dessertAR);
   	   	inv.addAmountDemand(dessertAR, mass);
-
     }
+    */
     
     /**
      * Gets the quantity of one serving of dessert
@@ -326,6 +326,10 @@ implements Serializable {
         return bestQuality;
     }
 
+ 	public int getPopulation() {
+        return getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
+ 	}
+ 	
     /**
      * Cleanup kitchen after eating.
      */
@@ -454,13 +458,13 @@ implements Serializable {
     
     public void makeADessert(String selectedDessert) {
     	// Take out one serving of the selected dessert from the fridge 
-		removeDessertFromAmountResource(selectedDessert);
+		//removeDessertFromAmountResource(selectedDessert);
+        double dryMass = getDryMass(selectedDessert);
+		retrieveAnResource(dryMass, selectedDessert);
 		
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         int dessertQuality = getBestDessertSkill();
-        
-        double dryMass = getDryMass(selectedDessert);
-        
+
         // Create a serving of dessert and add it into the list
 	    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
 	    
@@ -478,32 +482,10 @@ implements Serializable {
     
     // 2015-01-28 Added useWater()
     public void useWater() {
-
     	//TODO: need to move the hardcoded amount to a xml file	    
-	    double amount = WATER_USAGE_PER_DESSERT;
-	    
-		AmountResource waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-	    inv.addAmountDemandTotalRequest(waterAR);
-	    double capacity = inv.getAmountResourceRemainingCapacity(waterAR, false, false);
-		if (amount > capacity) {
-			amount = capacity;					
-		}
-	    
-		try {
-		    inv.retrieveAmountResource(waterAR, amount);
-		    inv.addAmountDemand(waterAR, amount);		    
-	    } catch (Exception e) {
-	        logger.log(Level.SEVERE,e.getMessage());
-		}
-    
-	    // create waste water
-	    AmountResource wasteWaterAR = AmountResource.findAmountResource("waste water");
-		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWaterAR, false, false);
-		if (amount > wasteWaterCapacity) 
-			amount = wasteWaterCapacity;
-		inv.storeAmountResource(wasteWaterAR, amount, false);
-        inv.addAmountSupplyAmount(wasteWaterAR, amount);   	
-	    
+	    retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupport.WATER);
+		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;		
+		storeAnResource(wasteWaterAmount, "waste water");  
     }
     
     
@@ -591,6 +573,34 @@ implements Serializable {
 		}
 	}
 	
+	 
+    /**
+     * Retrieves the resource
+     * @param name
+     * @parama requestedAmount
+     */
+    //2015-02-07 Added retrieveAnResource()
+    public void retrieveAnResource(double requestedAmount, String name) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all " + name);
+	        }
+	    	else if (remainingCapacity == 0) {
+	    		logger.warning("no more " + name + " in " + settlement.getName());
+	    	}
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    }
+    
     // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
   			
