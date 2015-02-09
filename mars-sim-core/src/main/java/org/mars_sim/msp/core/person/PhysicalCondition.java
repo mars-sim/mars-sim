@@ -1077,7 +1077,7 @@ implements Serializable {
         serious = null;
         person = null;
         robot = null;
-        medicationList.clear();
+        if (medicationList != null) medicationList.clear();
         medicationList = null;
     }
 }
