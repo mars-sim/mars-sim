@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -42,7 +41,6 @@ implements Serializable {
     /** The person owning this mind. */
     private Person person = null;
     private Robot robot = null;
-    
     /** The person's task manager. */
     private TaskManager taskManager;
     /** The person's current mission (if any). */
@@ -50,15 +48,15 @@ implements Serializable {
     /** The person's job. */
     private Job job;
     private RobotJob robotJob;
-    
-    /** Is the job locked so another can't be chosen? */
-    private boolean jobLock;
-    
     /** The person's personality. */
     private PersonalityType personality;
     /** The person's skill manager. */
     private SkillManager skillManager;
 
+    
+    /** Is the job locked so another can't be chosen? */
+    private boolean jobLock;
+    
     /**
      * Constructor 1.
      * @param person the person owning this mind
@@ -519,9 +517,8 @@ implements Serializable {
         taskManager.destroy();
         if (mission != null) mission.destroy();
         mission = null;
-        //job.destroy();
-        job = null;
-        personality.destroy();
+        job = null;       
+        if (personality !=null) personality.destroy();      
         personality = null;
         skillManager.destroy();
         skillManager = null;
