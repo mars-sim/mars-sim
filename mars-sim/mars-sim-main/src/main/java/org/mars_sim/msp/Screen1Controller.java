@@ -1,7 +1,8 @@
-package org.mars_sim.msp.ui.javafx;
+package org.mars_sim.msp;
  
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,26 +24,26 @@ public class Screen1Controller implements Initializable, ControlledScreen {
 
     @FXML
     private void goToOne(ActionEvent event){
-    	switcher.getMainWindowFX().runOne();
+    	switcher.getMainMenu().runOne();
     }
     
     @FXML
     private void goToTwo(ActionEvent event){
-    	switcher.getMainWindowFX().runTwo();
+    	switcher.getMainMenu().runTwo();
     }
     
     @FXML
     private void goToThree(ActionEvent event){
-    	switcher.getMainWindowFX().runThree();
+    	switcher.getMainMenu().runThree();
     }
     
     @FXML
     private void goToScreen2(ActionEvent event){
-       switcher.setScreen(MainWindowFX.screen2ID);
+       switcher.setScreen(MainMenu.screen2ID);
     }
     
     @FXML
     private void goToScreen3(ActionEvent event){
-       switcher.setScreen(MainWindowFX.screen3ID);
+       switcher.setScreen(MainMenu.screen3ID);
     }
 }
