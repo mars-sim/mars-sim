@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2015-01-17
+ * @version 3.07 2015-02-10
  * @author Scott Davis
  */
 
@@ -811,10 +811,11 @@ implements LifeSupport {
         Airlock result = null;
         Building currentBuilding = BuildingManager.getBuilding(person);
         
-        if (currentBuilding == null)
+        if (currentBuilding == null) {
         	throw new IllegalStateException(person.getName() + " is not currently in a building.");
+        }
 
-        getAirlock(currentBuilding, xLocation, yLocation);
+        result = getAirlock(currentBuilding, xLocation, yLocation);
             
         return result;
     }
@@ -823,10 +824,11 @@ implements LifeSupport {
         Airlock result = null;
         Building currentBuilding = BuildingManager.getBuilding(robot);
         
-        if (currentBuilding == null)
+        if (currentBuilding == null) {
         	throw new IllegalStateException(robot.getName() + " is not currently in a building.");
+        }
 
-        getAirlock(currentBuilding, xLocation, yLocation);
+        result = getAirlock(currentBuilding, xLocation, yLocation);
         
         return result;
     }

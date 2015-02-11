@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.07 2014-10-10
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
@@ -20,8 +21,8 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A meta mission for the BuildingConstructionMission mission.
@@ -71,36 +72,32 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             // Check if settlement has construction override flag set.
             boolean constructionOverride = settlement.getConstructionOverride();
             
-            if (reservableLUV && enoughPeople && !constructionOverride) {
+            // No construction until after the first ten sols of the simulation.
+            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+            double totalTimeSols = totalTimeMillisols / 1000D;
+            boolean firstTenSols = (totalTimeSols < 10D);
+            
+            if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
                 
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                     
-                    // Check if enough construction materials are available for new construction site.
-                    if (BuildingConstructionMission.hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
-                        double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                        if (constructionProfit > 0D) {
-                            System.out.println(person.getName() + " construction profit: " + constructionProfit);
-                        }
-                        result += constructionProfit;
-                        if (result > 10D) {
-                            result = 10D;
-                        }
-                    }
-                    
-                    // Check if enough construction materials are available for an existing construction site.
-                    ConstructionManager manager = settlement.getConstructionManager();
-                    Iterator<ConstructionSite> j = manager.getConstructionSitesNeedingConstructionMission().iterator();
-                    while (j.hasNext()) {
-                        ConstructionSite site = j.next();
-                        if (BuildingConstructionMission.hasExistingSiteConstructionMaterials(site, constructionSkill, 
-                                settlement)) {
-                            double constructionProfit = values.getConstructionSiteProfit(site, constructionSkill);
-                            result += constructionProfit;
-                            if (result > 10D) {
-                                result = 10D;
-                            }
+                    // Add construction profit for existing or new construction sites.
+                    double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+                    if (constructionProfit > 0D) {
+                        result = 10D;
+                        
+                        double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
+                        double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
+                        
+                        if (newSiteProfit > existingSiteProfit) {
+                            // Divide profit by 10 to the power of the number of existing construction sites.
+                            ConstructionManager manager = settlement.getConstructionManager();
+                            int numSites = manager.getConstructionSites().size();
+                            result/= Math.pow(10, numSites);
                         }
                     }
                 }

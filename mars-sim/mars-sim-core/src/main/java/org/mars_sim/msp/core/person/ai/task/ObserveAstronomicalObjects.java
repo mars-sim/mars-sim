@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-02-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -122,7 +122,10 @@ implements ResearchScientificStudy, Serializable {
                 Map<Building, Double> observatoryBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         observer, observatoryBuildings);
                 Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);
-                result = (AstronomicalObservation) building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+                if (building != null) {
+                    result = (AstronomicalObservation) building.getFunction(
+                            BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+                }
             }
         }
 

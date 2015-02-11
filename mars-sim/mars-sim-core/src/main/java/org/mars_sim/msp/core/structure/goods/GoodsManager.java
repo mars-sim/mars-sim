@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.07 2015-01-16
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  * 
  */
@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -66,7 +65,6 @@ import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
@@ -81,6 +79,8 @@ import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
@@ -92,8 +92,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 /**
  * A manager for goods values at a settlement.
  */
-public class GoodsManager
-implements Serializable {
+public class GoodsManager implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 12L;
@@ -126,13 +125,15 @@ implements Serializable {
     private static final double VEHICLE_FUEL_FACTOR = 10D;
     private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
     private static final double MANUFACTURING_INPUT_FACTOR = .5D;
-    private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
+    private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
     private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
     private static final double DESSERT_FACTOR = .5D;
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	// 2015-01-10 Added FARMING_FACTOR
     private static final double FARMING_FACTOR = .5D;
+    private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
+    private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 1000D;
     //  SERVING_FRACTION was used in PreparingDessert.java
     public final double FRACTION = PreparingDessert.DESSERT_SERVING_FRACTION;
     
@@ -155,7 +156,6 @@ implements Serializable {
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
-     * @throws Exception if errors constructing instance.
      */
     public GoodsManager(Settlement settlement) {
         this.settlement = settlement;
@@ -207,7 +207,6 @@ implements Serializable {
      * Gets the value per item of a good.
      * @param good the good to check.
      * @return value (VP)
-     * @throws Exception if error getting value.
      */
     public double getGoodValuePerItem(Good good) {
         try {
@@ -227,7 +226,6 @@ implements Serializable {
     /**
      * Time passing
      * @param time the amount of time passing (millisols).
-     * @throws Exception if error during time.
      */
     public void timePassing(double time) {
         updateGoodsValues();
@@ -235,7 +233,6 @@ implements Serializable {
 
     /**
      * Updates the values for all the goods at the settlement.
-     * @throws Exception if error updating goods values.
      */
     public void updateGoodsValues() {
         // Clear parts demand cache.
@@ -256,7 +253,6 @@ implements Serializable {
      * Updates the value of a good at the settlement.
      * @param good the good to update.
      * @param collectiveUpdate true if this update is part of a collective good value update.
-     * @throws Exception if error updating good value.
      */
     public void updateGoodValue(Good good, boolean collectiveUpdate) {
         if (good != null) {
@@ -272,7 +268,6 @@ implements Serializable {
      * @param supply the current supply (# of items) of the good.
      * @param useCache use demand and trade caches to determine value?
      * @return value of good.
-     * @throws Exception if problem determining good value.
      */
     private double determineGoodValue(Good good, double supply, boolean useCache) {
         if (good != null) {
@@ -305,7 +300,6 @@ implements Serializable {
      * @param supply the current supply (kg) of the good.
      * @param useCache use the cache to determine value.
      * @return value (value points / kg)
-     * @throws Exception if error determining resource value.
      */
     private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
     	//System.out.println( "entering determineAmountResourceGoodValue() ");
@@ -373,6 +367,9 @@ implements Serializable {
 
             // Add construction demand.
             projectedDemand += getResourceConstructionDemand(resource);
+            
+            // Add construction site demand.
+            projectedDemand += getResourceConstructionSiteDemand(resource);
 
             // Revert back to projectedDemand per sol for calculating totalDemand
             //projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -465,7 +462,6 @@ implements Serializable {
      * Gets the life support demand for an amount resource.
      * @param resource the resource to check.
      * @return demand (kg)
-     * @throws Exception if error getting life support demand.
      */
     private double getLifeSupportDemand(AmountResource resource) {
 		
@@ -494,7 +490,6 @@ implements Serializable {
      * Gets the potable water usage demand for an amount resource.
      * @param resource the resource to check.
      * @return demand (kg)
-     * @throws Exception if error getting potable water usage demand.
      */
     private double getPotableWaterUsageDemand(AmountResource resource) {
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
@@ -511,7 +506,6 @@ implements Serializable {
      * Gets vehicle demand for an amount resource.
      * @param resource the resource to check.
      * @return demand (kg) for the resource.
-     * @throws Exception if error getting resource demand.
      */
     private double getVehicleDemand(AmountResource resource) {
         double demand = 0D;
@@ -603,7 +597,6 @@ implements Serializable {
      * Gets the farming demand for the resource.
      * @param resource the resource to check.
      * @return demand (kg) for the resource.
-     * @throws Exception if error determining demand.
      */
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
@@ -648,7 +641,6 @@ implements Serializable {
      * @param resource the amount resource.
      * @param useProcessingCache use processing cache to determine value.
      * @return value (value points / kg)
-     * @throws Exception if error getting value.
      */
     private double getResourceProcessingValue(AmountResource resource, 
             boolean useProcessingCache) {
@@ -677,7 +669,6 @@ implements Serializable {
      * @param process the resource process.
      * @param resource the amount resource.
      * @return value (value points / kg)
-     * @throws exception if error getting good value.
      */
     private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
         double value = 0D;
@@ -716,7 +707,6 @@ implements Serializable {
     /**
      * Get all resource processes at settlement.
      * @return list of resource processes.
-     * @throws BuildingException if error getting processes.
      */
     private List<ResourceProcess> getResourceProcesses() {
         List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
@@ -736,7 +726,6 @@ implements Serializable {
      * Gets the demand for an amount resource as an input in the settlement's manufacturing processes.
      * @param resource the amount resource.
      * @return demand (kg)
-     * @throws Exception if error determining demand for resource.
      */
     private double getResourceManufacturingDemand(AmountResource resource) {
         double demand = 0D;
@@ -759,7 +748,6 @@ implements Serializable {
      * Gets the demand for an amount resource as an input in the settlement's Food Production processes.
      * @param resource the amount resource.
      * @return demand (kg)
-     * @throws Exception if error determining demand for resource.
      */
     //2014-12-04 Modified getResourceFoodProductionDemand
     private double getResourceFoodProductionDemand(AmountResource resource) {
@@ -784,7 +772,6 @@ implements Serializable {
      * @param resource the amount resource.
      * @param process the manufacturing process.
      * @return demand (kg)
-     * @throws Exception if error determining resource value.
      */
     private double getResourceManufacturingProcessDemand(AmountResource resource,
             ManufactureProcessInfo process) {
@@ -830,7 +817,6 @@ implements Serializable {
      * @param resource the amount resource.
      * @param process the Food Production process.
      * @return demand (kg)
-     * @throws Exception if error determining resource value.
      */
     // 2014-12-04 Added getResourceFoodProductionProcessDemand()
     private double getResourceFoodProductionProcessDemand(AmountResource resource,
@@ -944,18 +930,43 @@ implements Serializable {
         
         return demand;
     }
+    
+    /**
+     * Gets the demand for a resource from construction sites.
+     * @param resource the resource.
+     * @return demand (kg)
+     */
+    private double getResourceConstructionSiteDemand(AmountResource resource) {
+        
+        double demand = 0D;
+        
+        // Add demand for resource required as remaining construction material on construction sites.
+        Iterator<ConstructionSite> i = settlement.getConstructionManager().getConstructionSites().iterator();
+        while (i.hasNext()) {
+            ConstructionSite site = i.next();
+            if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
+                ConstructionStage stage = site.getCurrentConstructionStage();
+                if (stage.getRemainingResources().containsKey(resource)) {
+                    double requiredAmount = stage.getRemainingResources().get(resource);
+                    demand += requiredAmount * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
+                }
+            }
+        }
+        
+        return demand;
+    }
 
     /**
      * Gets the demand for an amount resource as an input in building construction.
      * @param resource the amount resource.
      * @return demand (kg)
-     * @throws Exception if error determining demand for resource.
      */
     private double getResourceConstructionDemand(AmountResource resource) {
         double demand = 0D;
 
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
-        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues();
+        int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
+        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues(bestConstructionSkill);
         Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
@@ -1017,17 +1028,17 @@ implements Serializable {
      * @param stage the building construction stage.
      * @param stageValue the building construction stage value (VP).
      * @return demand (kg)
-     * @throws Exception if error determining demand for resource.
      */
     private double getResourceConstructionStageDemand(AmountResource resource, ConstructionStageInfo stage, 
             double stageValue) {
         double demand = 0D;
 
-        Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
-        Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
         double resourceAmount = getPrerequisiteConstructionResourceAmount(resource, stage);
 
         if (resourceAmount > 0D) {
+            Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
+            Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
+            
             double totalItems = 0D;
 
             Iterator<AmountResource> i = resources.keySet().iterator();
@@ -1042,19 +1053,24 @@ implements Serializable {
 
             double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
 
-//            demand = (1D / totalItems) * totalInputsValue;
             demand = (resourceAmount / totalItems) * totalInputsValue;
         }
 
         return demand;
     }
 
+    /**
+     * Get all resource amounts required to build a stage including all prestages.
+     * @param stage the stage.
+     * @return map of resources and their amounts (kg).
+     */
     private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
+        
+        // Start with all resources required to build stage.
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
-
+        
+        // Add all resources required to build first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-//        if ((preStage1 != null) && preStage1.isConstructable()) {
-        // TODO
         if ((preStage1 != null)) {
             Iterator<AmountResource> i = preStage1.getResources().keySet().iterator();
             while (i.hasNext()) {
@@ -1069,9 +1085,8 @@ implements Serializable {
                 }
             }
 
+            // Add all resources required to build second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-//            if ((preStage2 != null) && preStage2.isConstructable()) {
-            // TODO
             if ((preStage2 != null)) {
                 Iterator<AmountResource> j = preStage2.getResources().keySet().iterator();
                 while (j.hasNext()) {
@@ -1091,15 +1106,23 @@ implements Serializable {
         return result;
     }
     
+    /**
+     * Gets the total amount of a given resource required to build a stage including all prestages.
+     * @param resource the resource.
+     * @param stage the stage.
+     * @return total amount (kg) of the resource.
+     */
     private double getPrerequisiteConstructionResourceAmount(AmountResource resource, ConstructionStageInfo stage) {
         
         double result = 0D;
         
+        // Add resource amount needed for stage.
         Map<AmountResource, Double> stageResources = stage.getResources();
         if (stageResources.containsKey(resource)) {
             result += stageResources.get(resource);
         }
         
+        // Add resource amount needed for first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null) && preStage1.isConstructable()) {
             Map<AmountResource, Double> preStage1Resources = preStage1.getResources();
@@ -1107,6 +1130,7 @@ implements Serializable {
                 result += preStage1Resources.get(resource);
             }
             
+            // Add resource amount needed for second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null) && preStage2.isConstructable()) {
                 Map<AmountResource, Double> preStage2Resources = preStage2.getResources();
@@ -1119,12 +1143,18 @@ implements Serializable {
         return result;
     }
 
+    /**
+     * Gets a map of all parts required to build a stage including all prestages.
+     * @param stage the stage.
+     * @return map of parts and their numbers.
+     */
     private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
+        
+        // Start with all parts required to build stage.
         Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
-
+        
+        // Add parts from first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-//        if ((preStage1 != null) && preStage1.isConstructable()) {
-        // TODO
         if ((preStage1 != null)) {
             Iterator<Part> i = preStage1.getParts().keySet().iterator();
             while (i.hasNext()) {
@@ -1139,9 +1169,8 @@ implements Serializable {
                 }
             }
 
+            // Add parts from second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-//            if ((preStage2 != null) && preStage2.isConstructable()) {
-            // TODO
             if ((preStage2 != null)) {
                 Iterator<Part> j = preStage2.getParts().keySet().iterator();
                 while (j.hasNext()) {
@@ -1161,15 +1190,23 @@ implements Serializable {
         return result;
     }
     
+    /**
+     * Gets the total number of a given part required to build a stage including all prestages.
+     * @param part the part.
+     * @param stage the stage.
+     * @return total number of parts required.
+     */
     private int getPrerequisiteConstructionPartNum(Part part, ConstructionStageInfo stage) {
         
         int result = 0;
         
+        // Add all parts from stage.
         Map<Part, Integer> stageParts = stage.getParts();
         if (stageParts.containsKey(part)) {
             result += stageParts.get(part);
         }
         
+        // Add all parts from first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null) && preStage1.isConstructable()) {
             Map<Part, Integer> preStage1Parts = preStage1.getParts();
@@ -1177,6 +1214,7 @@ implements Serializable {
                 result += preStage1Parts.get(part);
             }
             
+            // Add all parts from second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null) && preStage2.isConstructable()) {
                 Map<Part, Integer> preStage2Parts = preStage2.getParts();
@@ -1193,7 +1231,6 @@ implements Serializable {
      * Gets the number of a good at the settlement.
      * @param good the good to check.
      * @return the number of the good (or amount (kg) if amount resource good).
-     * @throws InventoryException if error determining the number of the good.
      */
     public double getNumberOfGoodForSettlement(Good good) {
         if (good != null) {
@@ -1217,7 +1254,6 @@ implements Serializable {
      * Gets the amount of an amount resource for a settlement.
      * @param resource the resource to check.
      * @return amount (kg) of resource for the settlement.
-     * @throws InventoryException if error getting the amount of the resource.
      */
     private double getAmountOfResourceForSettlement(AmountResource resource) {
         double amount = 0D;
@@ -1308,7 +1344,6 @@ implements Serializable {
      * @param supply the current supply (# items) of the good.
      * @param useCache use the cache to determine value.
      * @return value (Value Points / item)
-     * @throws Exception if error determining value.
      */
     private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
     {
@@ -1343,6 +1378,9 @@ implements Serializable {
                 
                 // Add construction demand.
                 demand += getPartConstructionDemand(part);
+                
+                // Add construction site demand.
+                demand += getPartConstructionSiteDemand(part);
             }
 
             // Add trade demand.
@@ -1362,7 +1400,6 @@ implements Serializable {
     /**
      * Determines the number demand for all parts at the settlement.
      * @return map of parts and their demand.
-     * @throws Exception if error determining the parts demand.
      */
     private void determinePartsDemand() {
         Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResource.getItemResources().size());
@@ -1494,7 +1531,6 @@ implements Serializable {
     /**
      * Gets the part demand for vehicle attachments.
      * @return map of parts and demand number.
-     * @throws Exception if error getting parts.
      */
     private Map<Part, Number> getVehicleAttachmentParts() {
         Map<Part, Number> result = new HashMap<Part, Number>();
@@ -1521,7 +1557,6 @@ implements Serializable {
      * Gets the manufacturing demand for a part.
      * @param part the part.
      * @return demand (# of parts)
-     * @throws Exception if error getting part manufacturing demand.
      */
     private double getPartManufacturingDemand(Part part) {
         double demand = 0D;
@@ -1545,7 +1580,6 @@ implements Serializable {
      * @param part the input part.
      * @param process the manufacturing process.
      * @return demand (# of parts)
-     * @throws Exception if error determining manufacturing demand.
      */
     private double getPartManufacturingProcessDemand(Part part, 
             ManufactureProcessInfo process) {
@@ -1589,7 +1623,6 @@ implements Serializable {
      * Gets the Food Production demand for a part.
      * @param part the part.
      * @return demand (# of parts)
-     * @throws Exception if error getting part Food Production demand.
      */
     // 2014-12-04 Added getPartFoodProductionDemand()
     private double getPartFoodProductionDemand(Part part) {
@@ -1614,7 +1647,6 @@ implements Serializable {
      * @param part the input part.
      * @param process the Food Production process.
      * @return demand (# of parts)
-     * @throws Exception if error determining Food Production demand.
      */
     // 2014-12-04 Added getPartFoodProductionProcessDemand()
     private double getPartFoodProductionProcessDemand(Part part, 
@@ -1654,16 +1686,41 @@ implements Serializable {
     }
     
     /**
+     * Gets the demand for a part from construction sites.
+     * @param part the part.
+     * @return demand (# of parts).
+     */
+    private double getPartConstructionSiteDemand(Part part) {
+        
+        double demand = 0D;
+        
+        // Add demand for part required as remaining construction material on construction sites.
+        Iterator<ConstructionSite> i = settlement.getConstructionManager().getConstructionSites().iterator();
+        while (i.hasNext()) {
+            ConstructionSite site = i.next();
+            if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
+                ConstructionStage stage = site.getCurrentConstructionStage();
+                if (stage.getRemainingParts().containsKey(part)) {
+                    int requiredNum = stage.getRemainingParts().get(part);
+                    demand += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+                }
+            }
+        }
+        
+        return demand;
+    }
+    
+    /**
      * Gets the construction demand for a part.
      * @param part the part.
-     * @return demand
-     * @throws Exception if error getting part construction demand.
+     * @return demand (# of parts).
      */
     private double getPartConstructionDemand(Part part) {
         double demand = 0D;
 
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
-        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues();
+        int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
+        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues(bestConstructionSkill);
         Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
@@ -1685,18 +1742,18 @@ implements Serializable {
      * @param part the part.
      * @param stage the building construction stage.
      * @param stageValue the building construction stage value (VP).
-     * @return demand
-     * @throws Exception if error determining demand for part.
+     * @return demand (# of parts).
      */
     private double getPartConstructionStageDemand(Part part, ConstructionStageInfo stage, 
             double stageValue) {
         double demand = 0D;
 
-        Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
-        Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
         int partNumber = getPrerequisiteConstructionPartNum(part, stage);
 
         if (partNumber > 0) {
+            Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
+            Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
+            
             double totalNumber = 0D;
 
             Iterator<AmountResource> i = resources.keySet().iterator();
@@ -1717,7 +1774,6 @@ implements Serializable {
      * Gets the number of an item resource for a settlement.
      * @param resource the resource to check.
      * @return number of resource for the settlement.
-     * @throws InventoryException if error getting the number of the resource.
      */
     private double getNumberOfResourceForSettlement(ItemResource resource) {
         double number = 0D;
@@ -1757,7 +1813,6 @@ implements Serializable {
      * @param supply the current supply (# of items) of the good.
      * @param useCache use the cache to determine value.
      * @return the value (value points) 
-     * @throws Exception if error determining value.
      */
     private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
         double value = 0D;
@@ -1790,7 +1845,6 @@ implements Serializable {
      * Determines the demand for a type of equipment.
      * @param equipmentClass the equipment class.
      * @return demand (# of equipment).
-     * @throws Exception if error getting demand.
      */
     private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
         double numDemand = 0D;
@@ -1855,7 +1909,6 @@ implements Serializable {
      * Gets all non-empty containers of a given type associated with this settlement.
      * @param equipmentClass the equipment type.
      * @return number of non-empty containers.
-     * @throws Exception if error determining containers.
      */
     private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
         int result = 0;
@@ -1956,7 +2009,6 @@ implements Serializable {
      * Gets the number of equipment for a settlement.
      * @param equipmentClass the equipmentType to check.
      * @return number of equipment for the settlement.
-     * @throws InventoryException if error getting the number of the equipment.
      */
     private double getNumberOfEquipmentForSettlement(
             Class<? extends Equipment> equipmentClass) {
@@ -1997,7 +2049,6 @@ implements Serializable {
      * @param supply the current supply (# of vehicles) of the good.
      * @param useCache use the cache to determine value.
      * @return the value (value points).
-     * @throws Exception if error determining vehicle value.
      */
     private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) {
         double value = 0D;
@@ -2346,7 +2397,6 @@ implements Serializable {
      * Gets the range of the vehicle type.
      * @param v {@link VehicleDescription}.
      * @return range (km)
-     * @throws Exception if error determining range.
      */
     private double getVehicleRange(VehicleDescription v) {
         double range = 0D;
@@ -2389,7 +2439,6 @@ implements Serializable {
      * Gets the number of the vehicle for the settlement.
      * @param vehicleType the vehicle type.
      * @return the number of vehicles.
-     * @throws InventoryException if error getting the amount.
      */
     private double getNumberOfVehiclesForSettlement(String vehicleType) {
         double number = 0D;
@@ -2412,7 +2461,6 @@ implements Serializable {
      * @param good the good.
      * @param useTradeCache use the goods trade cache to determine trade demand?
      * @return the trade demand.
-     * @throws Exception if error determining trade demand.
      */
     private double determineTradeDemand(Good good, boolean useTradeCache) {
         if (useTradeCache) {

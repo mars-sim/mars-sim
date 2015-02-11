@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2014-02-10
 
  * @author Scott Davis
  */
@@ -136,7 +136,9 @@ public final class RandomUtil {
 	 * @return randomly selected object from the list (or null if empty map).
 	 */
 	public static <T extends Object> T getWeightedRandomObject(Map<T, Double> weightedMap) {
-		if (weightedMap == null) throw new IllegalArgumentException(Msg.getString("RandomUtil.log.weightMapIsNull")); //$NON-NLS-1$
+		if (weightedMap == null) {
+		    throw new IllegalArgumentException(Msg.getString("RandomUtil.log.weightMapIsNull")); //$NON-NLS-1$
+		}
 
 		T result = null;
 
@@ -144,7 +146,10 @@ public final class RandomUtil {
 		double totalWeight = 0D;
 		Iterator<Double> i = weightedMap.values().iterator();
 		while (i.hasNext()) {
-			totalWeight += i.next();
+		    double weight = i.next();
+		    if (weight > 0D) {
+		        totalWeight += weight;
+		    }
 		}
 
 		// Randomly select a weight value.
@@ -155,11 +160,13 @@ public final class RandomUtil {
 		while (j.hasNext()) {
 			T key = j.next();
 			double weight = weightedMap.get(key);
-			if (randWeight <= weight) {
-				result = key;
-				break;
+			if (weight > 0D) {
+			    if (randWeight <= weight) {
+			        result = key;
+			        break;
+			    }
+			    else randWeight -= weight;
 			}
-			else randWeight -= weight;
 		}
 
 		return result;

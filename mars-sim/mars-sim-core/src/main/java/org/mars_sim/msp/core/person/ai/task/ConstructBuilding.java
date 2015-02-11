@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -128,7 +128,9 @@ implements Serializable {
         boolean exitable = false;
         Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
                 site.getYLocation());
-        if (airlock != null) exitable = ExitAirlock.canExitAirlock(person, airlock);
+        if (airlock != null) {
+            exitable = ExitAirlock.canExitAirlock(person, airlock);
+        }
 
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
@@ -140,8 +142,12 @@ implements Serializable {
 
         // Check if person's medical condition will not allow task.
         boolean medical = person.getPerformanceRating() < .5D;
+        
+        // Check if there is work that can be done on the construction stage.
+        ConstructionStage stage = site.getCurrentConstructionStage();
+        boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 
-        return (exitable && (sunlight || darkRegion) && !medical);
+        return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
 
     /**
@@ -230,9 +236,11 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
+        boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+        
         // Check if site duration has ended or there is reason to cut the construction 
         // phase short and return to the rover.
-        if (shouldEndEVAOperation() || addTimeOnSite(time) || stage.isComplete()) {
+        if (shouldEndEVAOperation() || addTimeOnSite(time) || stage.isComplete() || !availableWork) {
 
             // End operating light utility vehicle.
             if ((luv != null) && luv.getInventory().containsUnit(person)) {

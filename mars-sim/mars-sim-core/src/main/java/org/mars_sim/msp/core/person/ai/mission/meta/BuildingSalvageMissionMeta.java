@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMissionMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -71,17 +71,17 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             }
             boolean enoughPeople = (availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE);
             
-            // No salvaging goods until after the first month of the simulation.
+            // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-            double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-            boolean firstMonth = (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG);
+            double totalTimeSols = totalTimeMillisols / 1000D;
+            boolean firstTenSols = (totalTimeSols < 10D);
             
             // Check if settlement has construction override flag set.
             boolean constructionOverride = settlement.getConstructionOverride();
 
-            if (reservableLUV && enoughPeople && !constructionOverride && !firstMonth) {
+            if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     SalvageValues values = settlement.getConstructionManager()

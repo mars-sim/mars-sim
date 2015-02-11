@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionUtil.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-02-10
 
  * @author Scott Davis
  */
@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Utility class for construction.
@@ -231,5 +234,27 @@ public class ConstructionUtil {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Gets the highest construction skill of all people associated with a settlement.
+	 * @param settlement the settlement.
+	 * @return highest effective construction skill.
+	 */
+	public static int getBestConstructionSkillAtSettlement(Settlement settlement) {
+	    int result = 0;
+	    
+	    Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+	    while (i.hasNext()) {
+	        Person person = i.next();
+	        if (!person.getPhysicalCondition().isDead()) {
+	            int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+	            if (constructionSkill > result) {
+	                result = constructionSkill;
+	            }
+	        }
+	    }
+	    
+	    return result;
 	}
 }
