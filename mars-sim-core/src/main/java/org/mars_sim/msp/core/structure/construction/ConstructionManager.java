@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-02-10
 
  * @author Scott Davis
  */
@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -71,13 +73,60 @@ implements Serializable {
 					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
-					if (currentStage.isComplete()) result.add(site);
-					else if (!currentStage.isSalvaging()) result.add(site);
+					if (currentStage.isComplete()) {
+					    result.add(site);
+					}
+					else if (!currentStage.isSalvaging()) {
+					    boolean workNeeded = currentStage.getCompletableWorkTime() > 
+					            currentStage.getCompletedWorkTime();
+					    boolean hasConstructionMaterials = hasRemainingConstructionMaterials(currentStage);
+					    if (workNeeded || hasConstructionMaterials) {
+					        result.add(site);
+					    }
+					}
 				}
-				else result.add(site);
+				else {
+				    result.add(site);
+				}
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Checks if the settlement has any construction materials needed for the stage.
+	 * @param stage the construction stage.
+	 * @return true if remaining materials available.
+	 */
+	public boolean hasRemainingConstructionMaterials(ConstructionStage stage) {
+	    
+	    boolean result = false;
+	    
+	    Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+	    while (i.hasNext() && !result) {
+	        AmountResource resource = i.next();
+	        double amountRequired = stage.getRemainingResources().get(resource);
+	        if (amountRequired > 0D) {
+	            double amountStored = settlement.getInventory().getAmountResourceStored(resource, false);
+	            if (amountStored > 0D) {
+	                result = true;
+	            }
+	        }
+	    }
+	    
+	    Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+	    while (j.hasNext() && !result) {
+	        Part part = j.next();
+	        int numRequired = stage.getRemainingParts().get(part);
+	        if (numRequired > 0) {
+	            int numStored = settlement.getInventory().getItemResourceNum(part);
+	            if (numStored > 0) {
+	                result = true;
+	            }
+	        }
+	    }
+	    
+	    return result;
 	}
 
 	/**

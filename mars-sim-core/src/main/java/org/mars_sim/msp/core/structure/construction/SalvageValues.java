@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageValues.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-02-10
 
  * @author Scott Davis
  */
@@ -230,7 +230,8 @@ implements Serializable {
 		if (building.hasFunction(BuildingFunction.LIVING_ACCOMODATIONS)) {
 			int popSize = settlement.getAllAssociatedPeople().size();
 			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) building.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+			LivingAccommodations livingAccommodations = (LivingAccommodations) building.getFunction(
+			        BuildingFunction.LIVING_ACCOMODATIONS);
 			int buildingPopCapacity = livingAccommodations.getBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
@@ -252,8 +253,12 @@ implements Serializable {
 	 * @throws Exception if error determining value.
 	 */
 	private double getSalvageStageValue(ConstructionStageInfo stageInfo) {
+	    
+	    int bestConstructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
+	    
 		// Use construction stage value.
-		return settlement.getConstructionManager().getConstructionValues().getConstructionStageValue(stageInfo);
+		return settlement.getConstructionManager().getConstructionValues().getConstructionStageValue(
+		        stageInfo, bestConstructionSkill);
 	}
 
 	/**

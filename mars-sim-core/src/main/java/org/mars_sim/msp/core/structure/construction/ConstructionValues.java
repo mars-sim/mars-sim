@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 3.07 2014-10-10
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  */
 
@@ -40,9 +40,9 @@ implements Serializable {
     private Settlement settlement;
     private Map<Integer, Double> settlementConstructionValueCache;
     private MarsClock settlementConstructionValueCacheTime;
-    private Map<ConstructionStageInfo, Double> stageInfoValueCache;
+    private Map<ConstructionStageInfoSkillKey, Double> stageInfoValueCache;
     private MarsClock stageInfoValueCacheTime;
-    private Map<ConstructionStageInfo, Double> allStageInfoValueCache;
+    private Map<ConstructionStageInfoSkillKey, Double> allStageInfoValueCache;
     private MarsClock allStageInfoValueCacheTime;
 
     /**
@@ -56,7 +56,6 @@ implements Serializable {
     /**
      * Gets the overall profit for construction at the settlement.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getSettlementConstructionProfit() {
         return getSettlementConstructionProfit(Integer.MAX_VALUE);
@@ -66,7 +65,6 @@ implements Serializable {
      * Gets the overall profit for construction at the settlement.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getSettlementConstructionProfit(int constructionSkill) {
 
@@ -83,10 +81,14 @@ implements Serializable {
             double profit = 0D;
 
             double existingSitesProfit = getAllConstructionSitesProfit(constructionSkill);
-            if (existingSitesProfit > profit) profit = existingSitesProfit;
+            if (existingSitesProfit > profit) {
+                profit = existingSitesProfit;
+            }
 
             double newSiteProfit = getNewConstructionSiteProfit(constructionSkill);
-            if (newSiteProfit > profit) profit = newSiteProfit;
+            if (newSiteProfit > profit) {
+                profit = newSiteProfit;
+            }
 
             settlementConstructionValueCache.put(constructionSkill, profit);
         }
@@ -99,7 +101,6 @@ implements Serializable {
      * that can be worked on with a given construction skill.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getAllConstructionSitesProfit(int constructionSkill) {
 
@@ -109,7 +110,9 @@ implements Serializable {
         Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
         while (i.hasNext()) {
             double profit = getConstructionSiteProfit(i.next(), constructionSkill);
-            if (profit > result) result = profit;
+            if (profit > result) {
+                result = profit;
+            }
         }
 
         return result;
@@ -119,7 +122,6 @@ implements Serializable {
      * Gets the profit of an existing construction site at a settlement.
      * @param site the construction site.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getConstructionSiteProfit(ConstructionSite site) {
         return getConstructionSiteProfit(site, Integer.MAX_VALUE);
@@ -130,7 +132,6 @@ implements Serializable {
      * @param site the construction site.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) {
 
@@ -138,24 +139,38 @@ implements Serializable {
 
         if (!site.isUndergoingConstruction()) {
             if (site.hasUnfinishedStage()) {
+                
+                // Value for finishing construction stage at site.
                 ConstructionStage stage = site.getCurrentConstructionStage();
-                if (stage.getInfo().getArchitectConstructionSkill() <= constructionSkill)
-                    result = getConstructionStageValue(stage.getInfo());
+                boolean enoughSkill = constructionSkill >= stage.getInfo().getArchitectConstructionSkill();
+                boolean workCompletable = stage.getCompletedWorkTime() < stage.getCompletableWorkTime();
+                boolean availableMaterials = settlement.getConstructionManager().hasRemainingConstructionMaterials(stage);
+                if (enoughSkill && (workCompletable || availableMaterials)) {
+                    result = getConstructionStageValue(stage.getInfo(), constructionSkill);
+                }
             }
             else {
+                
+                // Value for starting new construction stage at site.
                 List<ConstructionStageInfo> nextStageInfos = null;
 
                 ConstructionStage lastStage = site.getCurrentConstructionStage();
-                if (lastStage != null) nextStageInfos = ConstructionUtil.getNextPossibleStages(lastStage.getInfo());
-                else nextStageInfos = ConstructionUtil.getConstructionStageInfoList(
-                        ConstructionStageInfo.FOUNDATION, constructionSkill);
+                if (lastStage != null) {
+                    nextStageInfos = ConstructionUtil.getNextPossibleStages(lastStage.getInfo());
+                }
+                else {
+                    nextStageInfos = ConstructionUtil.getConstructionStageInfoList(
+                            ConstructionStageInfo.FOUNDATION, constructionSkill);
+                }
 
                 if (nextStageInfos != null) {
                     Iterator<ConstructionStageInfo> i = nextStageInfos.iterator();
                     while (i.hasNext()) {
                         ConstructionStageInfo stageInfo = i.next();
-                        double profit = getConstructionStageProfit(stageInfo, true);
-                        if (profit > result) result = profit;
+                        double profit = getConstructionStageProfit(stageInfo, constructionSkill);
+                        if (profit > result) {
+                            result = profit;
+                        }
                     }
                 }
             }
@@ -168,28 +183,20 @@ implements Serializable {
      * Gets the profit of creating a new construction site at a settlement.
      * @param constructionSkill the architect's construction skill.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
     public double getNewConstructionSiteProfit(int constructionSkill) {
 
         double result = 0D;
         Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
-                ConstructionStageInfo.FOUNDATION, constructionSkill, true);
+                ConstructionStageInfo.FOUNDATION, constructionSkill);
         Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo foundationStage = i.next();
             double profit = stageProfits.get(foundationStage);
 
-            // Divide by number of existing construction sites (x 10) with this foundation.
-            int numSites = 0;
-            ConstructionManager manager = settlement.getConstructionManager();
-            Iterator<ConstructionSite> j = manager.getConstructionSites().iterator();
-            while (j.hasNext()) {
-                if (j.next().hasStage(foundationStage)) numSites++;
+            if (profit > result) {
+                result = profit;
             }
-            profit/= ((numSites * 10D) + 1D);
-
-            if (profit > result) result = profit;
         }
 
         return result;
@@ -201,7 +208,6 @@ implements Serializable {
      * @param site the construction site.
      * @param constructionSkill the architect's construction skill.
      * @return map of construction stage infos and their profits (VP).
-     * @throws Exception if error determining profit.
      */
     public Map<ConstructionStageInfo, Double> getNewConstructionStageProfits(
             ConstructionSite site, int constructionSkill) {
@@ -215,13 +221,13 @@ implements Serializable {
                     ConstructionUtil.getNextPossibleStages(lastStageInfo).iterator();
             while (i.hasNext()) {
                 ConstructionStageInfo stageInfo = i.next();
-                double profit = getConstructionStageProfit(stageInfo, true);
+                double profit = getConstructionStageProfit(stageInfo, constructionSkill);
                 result.put(stageInfo, profit);
             }
         }
         else {
             result = getConstructionStageProfit(ConstructionStageInfo.FOUNDATION, 
-                    constructionSkill, true);
+                    constructionSkill);
         }
 
         return result;
@@ -231,12 +237,10 @@ implements Serializable {
      * Gets a map of construction stage infos and their profits for a given stage type.
      * @param stageType the construction stage type.
      * @param constructionSkill the architect's construction skill.
-     * @param checkMaterials should check if settlement has enough construction materials?
      * @return map of construction stage infos and their profits (VP).
-     * @throws Exception if error determining profit.
      */
     public Map<ConstructionStageInfo, Double> getConstructionStageProfit(String stageType, 
-            int constructionSkill, boolean checkMaterials) {
+            int constructionSkill) {
 
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
 
@@ -245,7 +249,7 @@ implements Serializable {
         Iterator<ConstructionStageInfo> i = nextStages.iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stageInfo = i.next();
-            double profit = getConstructionStageProfit(stageInfo, checkMaterials);
+            double profit = getConstructionStageProfit(stageInfo, constructionSkill);
             result.put(stageInfo, profit);
         }
 
@@ -254,84 +258,98 @@ implements Serializable {
 
     /**
      * Gets a map of all construction stage infos and their values.
+     * @param constructionSkill the construction skill of the person.
      * @return map of construction stage infos and their values (VP).
-     * @throws Exception if error determining value.
      */
-    public Map<ConstructionStageInfo, Double> getAllConstructionStageValues() {
+    public Map<ConstructionStageInfo, Double> getAllConstructionStageValues(int constructionSkill) {
 
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((allStageInfoValueCacheTime == null) || 
                 (MarsClock.getTimeDiff(currentTime, allStageInfoValueCacheTime) > 1000D)) {
-            if (allStageInfoValueCache == null) 
-                allStageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+            if (allStageInfoValueCache == null) {
+                allStageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+            }
             allStageInfoValueCache.clear();
 
             Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList()
                     .iterator();
             while (i.hasNext()) {
                 ConstructionStageInfo stageInfo = i.next();
-                allStageInfoValueCache.put(stageInfo, getConstructionStageValue(stageInfo));
+                allStageInfoValueCache.put(new ConstructionStageInfoSkillKey(stageInfo, constructionSkill), 
+                        getConstructionStageValue(stageInfo, constructionSkill));
             }
 
             allStageInfoValueCacheTime = (MarsClock) currentTime.clone();
 
-//            Display building construction values report to System.out for testing purposes.
+            // Display building construction values report to System.out for testing purposes.
 //            displayAllBuildingConstructionValues();
         }
+        
+        // Create result map with just construction stage infos and their values.
+        Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>(allStageInfoValueCache.size());
+        Iterator<ConstructionStageInfoSkillKey> j = allStageInfoValueCache.keySet().iterator();
+        while (j.hasNext()) {
+            ConstructionStageInfoSkillKey key = j.next();
+            double value = allStageInfoValueCache.get(key);
+            result.put(key.stageInfo, value);
+        }
 
-        return allStageInfoValueCache;
+        return result;
     }
 
     /**
      * Gets the value of a construction stage.
      * @param stageInfo the construction stage info.
+     * @param constructionSkill the person's construction skill.
      * @return value (VP).
-     * @throws Exception if error getting value.
      */
-    public double getConstructionStageValue(ConstructionStageInfo stageInfo) {
+    public double getConstructionStageValue(ConstructionStageInfo stageInfo, int constructionSkill) {
 
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((stageInfoValueCacheTime == null) || 
                 (MarsClock.getTimeDiff(currentTime, stageInfoValueCacheTime) > 1000D)) {
-            if (stageInfoValueCache == null) 
-                stageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+            if (stageInfoValueCache == null) {
+                stageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+            }
             stageInfoValueCache.clear();
             stageInfoValueCacheTime = (MarsClock) currentTime.clone();
         }
 
-        if (!stageInfoValueCache.containsKey(stageInfo)) {
+        ConstructionStageInfoSkillKey key = new ConstructionStageInfoSkillKey(stageInfo, constructionSkill);
+        if (!stageInfoValueCache.containsKey(key)) {
             double result = 0D;
 
-            if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
-                result = getBuildingConstructionValue(stageInfo.getName());
-            }
-            else {
-                Iterator<ConstructionStageInfo> i = 
-                        ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
-                while (i.hasNext()) {
-                    ConstructionStageInfo nextStageInfo = i.next();
-                    boolean constructable = nextStageInfo.isConstructable();
-                    boolean hasConstructionMaterials = hasConstructionMaterials(nextStageInfo);
-                    if (constructable && hasConstructionMaterials) {
-                        double stageValue = getConstructionStageProfit(nextStageInfo, true) * 
-                                LOWER_STAGE_VALUE_MODIFIER;
-                        if (stageValue > result) result = stageValue;
+            if (constructionSkill >= stageInfo.getArchitectConstructionSkill()) {
+                if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
+                    result = getBuildingConstructionValue(stageInfo.getName());
+                }
+                else {
+                    Iterator<ConstructionStageInfo> i = 
+                            ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
+                    while (i.hasNext()) {
+                        ConstructionStageInfo nextStageInfo = i.next();
+                        boolean constructable = nextStageInfo.isConstructable();
+                        if (constructable) {
+                            double stageValue = getConstructionStageProfit(nextStageInfo, constructionSkill) * 
+                                    LOWER_STAGE_VALUE_MODIFIER;
+                            if (stageValue > result) {
+                                result = stageValue;
+                            }
+                        }
                     }
-
                 }
             }
             //System.out.println(settlement.getName() + " - " + stageInfo.getName() + ": " + (int) result);
-            stageInfoValueCache.put(stageInfo, result);
+            stageInfoValueCache.put(key, result);
         }
 
-        return stageInfoValueCache.get(stageInfo);
+        return stageInfoValueCache.get(key);
     }
 
     /**
      * Gets the cost of a construction stage.
      * @param stageInfo the construction stage info.
      * @return cost (VP)
-     * @throws Exception if error determining the cost.
      */
     private double getConstructionStageCost(ConstructionStageInfo stageInfo) {
         double cost = 0D;
@@ -366,63 +384,20 @@ implements Serializable {
     /**
      * Gets the profit for a construction stage.
      * @param stageInfo the construction stage info.
-     * @param checkMaterials check availability of construction materials?
+     * @param constructionSkill the person's construction skill.
      * @return profit (VP)
-     * @throws Exception if error determining profit.
      */
-    private double getConstructionStageProfit(ConstructionStageInfo stageInfo, boolean checkMaterials) {
-        double result = getConstructionStageValue(stageInfo) - getConstructionStageCost(stageInfo);
-        if (checkMaterials && !hasConstructionMaterials(stageInfo)) result = 0D;
-
-        return result;
+    private double getConstructionStageProfit(ConstructionStageInfo stageInfo, int constructionSkill) {
+        return getConstructionStageValue(stageInfo, constructionSkill) - getConstructionStageCost(stageInfo);
     }
 
     /**
      * Gets the value of constructing a building.
      * @param buildingName the building's name.
      * @return value (VP)
-     * @throws Exception if error getting construction value.
      */
     private double getBuildingConstructionValue(String buildingName) {
         return settlement.getBuildingManager().getBuildingValue(buildingName, true);
-    }
-
-    /**
-     * Checks if there are enough construction materials at the settlement to construct a stage.
-     * @param stageInfo the construction stage.
-     * @return true if enough construction materials available.
-     * @throws Exception if error determining construction materials.
-     */
-    private boolean hasConstructionMaterials(ConstructionStageInfo stageInfo) {
-        boolean result = true;
-
-        // Check resources.
-        Map<AmountResource, Double> resources = stageInfo.getResources();
-        Iterator<AmountResource> j = resources.keySet().iterator();
-        while (j.hasNext()) {
-            AmountResource resource = j.next();
-            double amount = resources.get(resource);
-            double stored = settlement.getInventory().getAmountResourceStored(resource, false);
-            if (stored < amount) {
-                result = false;
-                break;
-            }
-        }
-
-        // Check parts.
-        Map<Part, Integer> parts = stageInfo.getParts();
-        Iterator<Part> k = parts.keySet().iterator();
-        while (k.hasNext()) {
-            Part part = k.next();
-            int number = parts.get(part);
-            int stored = settlement.getInventory().getItemResourceNum(part);
-            if (stored < number) {
-                result = false;
-                break;
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -432,12 +407,15 @@ implements Serializable {
 
         System.out.println("\n" + settlement.getName() + " constructable building profits:");
         DecimalFormat formatter = new DecimalFormat("0.0");
+        
+        int constructionSkill = ConstructionUtil.getBestConstructionSkillAtSettlement(settlement);
+        
         Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList()
                 .iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stageInfo = i.next();
             if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType()) && isLocallyConstructable(stageInfo)) {
-                double value = getConstructionStageValue(stageInfo);
+                double value = getConstructionStageValue(stageInfo, constructionSkill);
                 double cost = getConstructionStageCost(stageInfo);
                 ConstructionStageInfo buildingStage = stageInfo;
                 ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
@@ -451,12 +429,10 @@ implements Serializable {
                 double profit = value - cost;
 
                 boolean canConstruct = false;
-                if (hasConstructionMaterials(stageInfo)) {
-                    if ((frameStage != null) && frameStage.isConstructable() && hasConstructionMaterials(frameStage)) {
-                        ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
-                        if ((foundationStage != null) && foundationStage.isConstructable() && hasConstructionMaterials(foundationStage)) {
-                            canConstruct = true;
-                        }
+                if ((frameStage != null) && frameStage.isConstructable()) {
+                    ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+                    if ((foundationStage != null) && foundationStage.isConstructable()) {
+                        canConstruct = true;
                     }
                 }
 
@@ -521,18 +497,21 @@ implements Serializable {
     public void clearCache() {
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
-        if (settlementConstructionValueCache == null) 
+        if (settlementConstructionValueCache == null) {
             settlementConstructionValueCache = new HashMap<Integer, Double>();
+        }
         settlementConstructionValueCache.clear();
         settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
 
-        if (stageInfoValueCache == null) 
-            stageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+        if (stageInfoValueCache == null) {
+            stageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+        }
         stageInfoValueCache.clear();
         stageInfoValueCacheTime = (MarsClock) currentTime.clone();
 
-        if (allStageInfoValueCache == null) 
-            allStageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+        if (allStageInfoValueCache == null) {
+            allStageInfoValueCache = new HashMap<ConstructionStageInfoSkillKey, Double>();
+        }
         allStageInfoValueCache.clear();
     }
 
@@ -558,6 +537,38 @@ implements Serializable {
             allStageInfoValueCache.clear();
             allStageInfoValueCache = null;
             allStageInfoValueCacheTime = null;
+        }
+    }
+    
+    /**
+     * Inner class for a construction stage info and skill combination map key value.
+     */
+    private class ConstructionStageInfoSkillKey implements Serializable {
+        
+        /** default serial id. */
+        private static final long serialVersionUID = 1L;
+        
+        // Data members.
+        ConstructionStageInfo stageInfo;
+        int skill;
+        
+        ConstructionStageInfoSkillKey(ConstructionStageInfo stageInfo, int skill) {
+            this.stageInfo = stageInfo;
+            this.skill = skill;
+        }
+        
+        @Override
+        public boolean equals(Object object) {
+            boolean result = false;
+            
+            if (object instanceof ConstructionStageInfoSkillKey) {
+                ConstructionStageInfoSkillKey objectKey = (ConstructionStageInfoSkillKey) object;
+                if (objectKey.stageInfo.equals(stageInfo) && (objectKey.skill == skill)) {
+                    result = true;
+                }
+            }
+            
+            return result;
         }
     }
 }

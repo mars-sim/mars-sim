@@ -118,7 +118,7 @@
 	<frame-list>
 	
 		<frame name="steel frame tower" width="5.0" length="5.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="2" foundation="surface foundation 5m x 5m" >
+		 salvagable="true" work-time="20.0" skill-required="1" foundation="surface foundation 5m x 5m" >
 			<resource name="concrete" amount="50.0" />
 			<resource name="water" amount="20.0" />
 			<part name="steel truss" number="20" />
@@ -140,7 +140,7 @@
 		</frame>
 	
 		<frame name="array frame" width="5.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="2" foundation="surface foundation 10m x 5m" >
+		 salvagable="true" work-time="20.0" skill-required="1" foundation="surface foundation 10m x 5m" >
 			<resource name="concrete" amount="50.0" />
 			<resource name="water" amount="20.0" />
 			<part name="steel truss" number="20" />
@@ -391,7 +391,7 @@
 	<building-list>
 
 		<building name="wind turbine" width="5.0" length="5.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="10.0" skill-required="3" frame="steel frame tower" >
+		 salvagable="true" work-time="10.0" skill-required="1" frame="steel frame tower" >
 			<part name="wind turbine blade" number="4" />
 			<part name="turbine generator" number="1" />
 			<part name="power cable" number="6" />
@@ -403,7 +403,7 @@
 		</building>
 	
 		<building name="solar photovoltaic array" width="5.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="10.0" skill-required="2" frame="array frame" >
+		 salvagable="true" work-time="10.0" skill-required="1" frame="array frame" >
 			<part name="solar panel" number="6" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />
@@ -414,7 +414,7 @@
 		</building>
 		
 		<building name="solar thermal array" width="5.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="15.0" skill-required="3" frame="array frame" >
+		 salvagable="true" work-time="15.0" skill-required="1" frame="array frame" >
 			<resource name="water" amount="200.0" />
 			<part name="solar parabolic mirror" number="3" />
 			<part name="glass tube" number="6" />
@@ -430,7 +430,7 @@
 		</building>
 		
 		<building name="methane power generator" width="5.0" length="5.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="10.0" skill-required="3" frame="small steel frame" >
+		 salvagable="true" work-time="10.0" skill-required="1" frame="small steel frame" >
 			<part name="rover generator" number="1" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
@@ -472,7 +472,7 @@
 		</building>
 		
 		<building name="manufacturing shed" width="5.0" length="5.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+		 salvagable="true" work-time="20.0" skill-required="2" frame="small brick shed frame" >
 			<resource name="cement" amount="20.0" />
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />
@@ -491,7 +491,7 @@
 		</building>
 
 		<building name="bunkhouse" width="5.0" length="5.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+		 salvagable="true" work-time="20.0" skill-required="2" frame="small brick shed frame" >
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="4" />
 			<part name="valve" number="5" />
@@ -507,7 +507,7 @@
 		</building>
 		
 		<building name="small sabatier processor" width="5.0" length="5.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="10.0" skill-required="3" frame="small steel frame" >
+		 salvagable="true" work-time="10.0" skill-required="1" frame="small steel frame" >
 			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
@@ -522,7 +522,7 @@
 		</building>
 		
 		<building name="small battery array" width="5.0" length="10.0" base-level="0" constructable="true" 
-		 salvagable="true" work-time="10.0" skill-required="2" frame="array frame" >
+		 salvagable="true" work-time="10.0" skill-required="1" frame="array frame" >
 			<part name="rover battery" number="10" />
 			<part name="fiberglass cloth" number="10" />
 			<part name="power cable" number="2" />
@@ -929,7 +929,7 @@
 		</building>
 		
 		<building name="storage shed" width="5.0" length="5.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+		 salvagable="true" work-time="20.0" skill-required="2" frame="small brick shed frame" >
 			<resource name="polyester resin" amount="2.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
@@ -945,7 +945,7 @@
 		</building>
 		
 		<building name="loading dock garage" width="15.0" length="18.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="80.0" skill-required="4" frame="garage brick frame" >
+		 salvagable="true" work-time="80.0" skill-required="3" frame="garage brick frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -963,7 +963,7 @@
 		</building>
 		
 		<building name="mining lab" width="5.0" length="5.0" base-level="-1" constructable="true" 
-		 salvagable="true" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+		 salvagable="true" work-time="20.0" skill-required="2" frame="small brick shed frame" >
 		 	<resource name="cement" amount="20.0" />
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />

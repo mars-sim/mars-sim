@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-12-20
+ * @version 3.08 2015-02-10
  * @author Scott Davis
  */
 
@@ -1044,7 +1044,7 @@ public class BuildingManager implements Serializable {
         double wearCondition = building.getMalfunctionManager().getWearCondition();
         result *= (wearCondition / 100D) * .75D + .25D;
 
-        logger.info("getBuildingValue() : value is " + result);
+        logger.fine("getBuildingValue() : value is " + result);
 
         return result;
     }

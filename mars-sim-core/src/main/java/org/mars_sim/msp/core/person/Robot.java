@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Robot.java
- * @version 3.07 2015-01-21
+ * @version 3.08 2015-02-10
  * @author Manny Kung
  */
 
@@ -234,8 +234,6 @@ implements VehicleOperator, Serializable {
      *            the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
-        // Temporary debugging logger output.  May remove later.
-        logger.info(this + " setting container to " + containerUnit);
         
         super.setContainerUnit(containerUnit);
     }
