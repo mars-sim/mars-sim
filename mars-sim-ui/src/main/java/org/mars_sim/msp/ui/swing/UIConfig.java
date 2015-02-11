@@ -29,6 +29,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -112,9 +113,9 @@ public class UIConfig {
 
     /**
      * Creates an XML document for the UI configuration and saves it to a file.
-     * @param window the main window.
+     * @param mainScene the main window.
      */
-    public void saveFile(MainWindow window) {
+    public void saveFile(MainWindow mainWindow) {
         FileOutputStream stream = null;
         
         try {
@@ -128,22 +129,22 @@ public class UIConfig {
             uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
     		
             
-            uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(window.getToolToolBar().isVisible()));
-            uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(window.getUnitToolBar().isVisible()));
+            uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
+            uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
             
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
 
-            mainWindowElement.setAttribute(LOCATION_X, Integer.toString(window.getFrame().getX()));
-            mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(window.getFrame().getY()));
-            mainWindowElement.setAttribute(WIDTH, Integer.toString(window.getFrame().getWidth()));
-            mainWindowElement.setAttribute(HEIGHT, Integer.toString(window.getFrame().getHeight()));
+            mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainWindow.getFrame().getX()));
+            mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
+            mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
+            mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
    
             Element volumeElement = new Element(VOLUME);
             uiElement.addContent(volumeElement);
 
-            AudioPlayer player = window.getDesktop().getSoundPlayer();
+            AudioPlayer player = mainWindow.getDesktop().getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute()));
 
@@ -151,7 +152,98 @@ public class UIConfig {
             uiElement.addContent(internalWindowsElement);
 
             // Add all internal windows.
-            MainDesktopPane desktop = window.getDesktop();
+            MainDesktopPane desktop = mainWindow.getDesktop();
+            JInternalFrame[] windows = desktop.getAllFrames();
+            for (JInternalFrame window1 : windows) {
+                Element windowElement = new Element(WINDOW);
+                internalWindowsElement.addContent(windowElement);
+
+                windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+                windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+                windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+                windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+                windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+
+                if (window1 instanceof ToolWindow) {
+                    windowElement.setAttribute(TYPE, TOOL);
+                    windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+                } else if (window1 instanceof UnitWindow) {
+                    windowElement.setAttribute(TYPE, UNIT);
+                    windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+                } else {
+                    windowElement.setAttribute(TYPE, "other");
+                    windowElement.setAttribute(NAME, "other");
+                }
+            }
+
+            // Save to file.
+            /* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
+             * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
+             * because in a webstart environment, the user has no initial data in his dirs. */
+            File configFile = new File(DIRECTORY, FILE_NAME);
+            
+            // Create save directory if it doesn't exist.
+            if (!configFile.getParentFile().exists()) {
+            	configFile.getParentFile().mkdirs();
+            }
+            
+            // Copy /dtd/ui_settings.dtd resource to save directory.
+            // Always do this as we don't know when the local saved dtd file is out of date.
+            InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
+            IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+            
+            XMLOutputter fmt = new XMLOutputter();
+            fmt.setFormat(Format.getPrettyFormat());
+            stream = new FileOutputStream(configFile);
+            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+            fmt.output(outputDoc, writer);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+    }
+
+    public void saveFile(MainScene mainScene) {
+        FileOutputStream stream = null;
+        
+        try {
+            Document outputDoc = new Document();
+            DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
+            Element uiElement = new Element(UI);
+            outputDoc.setDocType(dtd);
+            outputDoc.addContent(uiElement);
+            outputDoc.setRootElement(uiElement);
+
+            uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
+    		
+            
+            //uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainScene.getToolToolBar().isVisible()));
+            //uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainScene.getUnitToolBar().isVisible()));
+
+            
+            Element mainWindowElement = new Element(MAIN_WINDOW);
+            uiElement.addContent(mainWindowElement);
+
+            //mainWindowElement.setAttribute(LOCATION_X, Integer.toString(mainScene.getFrame().getX()));
+           // mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainScene.getFrame().getY()));
+            //mainWindowElement.setAttribute(WIDTH, Integer.toString(mainScene.getFrame().getWidth()));
+            //mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainScene.getFrame().getHeight()));
+   
+            Element volumeElement = new Element(VOLUME);
+            uiElement.addContent(volumeElement);
+
+            AudioPlayer player = mainScene.getDesktop().getSoundPlayer();
+            volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute()));
+
+            Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+            uiElement.addContent(internalWindowsElement);
+
+            // Add all internal windows.
+            MainDesktopPane desktop = mainScene.getDesktop();
             JInternalFrame[] windows = desktop.getAllFrames();
             for (JInternalFrame window1 : windows) {
                 Element windowElement = new Element(WINDOW);

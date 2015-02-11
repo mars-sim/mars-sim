@@ -14,8 +14,6 @@ import javafx.stage.Stage;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.MenuScene;
-import org.mars_sim.msp.ui.javafx.SettlementScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -63,7 +61,7 @@ public class MainWindowFX extends Thread {
 	}
 
     private void initAndShowGUI() {        
-        
+        /*
         ScreensSwitcher switcher = new ScreensSwitcher(this);
         switcher.loadScreen(MainWindowFX.screen1ID, MainWindowFX.screen1File);
         switcher.loadScreen(MainWindowFX.screen2ID, MainWindowFX.screen2File);
@@ -92,6 +90,7 @@ public class MainWindowFX extends Thread {
 	    MainDesktopPane desktop = new MainDesktopPane(mw);		
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		*/
     }    
  
     public void runOne() {

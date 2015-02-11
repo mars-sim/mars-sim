@@ -1,5 +1,5 @@
-package org.mars_sim.msp.ui.javafx;
- 
+package org.mars_sim.msp;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -8,16 +8,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 
-public class Screen2Controller implements Initializable , ControlledScreen {
+public class Screen3Controller implements Initializable, ControlledScreen {
 
     ScreensSwitcher switcher;
+    
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }
+    }    
     
     public void setScreenParent(ScreensSwitcher screenParent){
         switcher = screenParent;
@@ -25,11 +26,11 @@ public class Screen2Controller implements Initializable , ControlledScreen {
 
     @FXML
     private void goToScreen1(ActionEvent event){
-       switcher.setScreen(MainWindowFX.screen1ID);
+       switcher.setScreen(MainMenu.screen1ID);
     }
     
     @FXML
-    private void goToScreen3(ActionEvent event){
-       switcher.setScreen(MainWindowFX.screen3ID);
+    private void goToScreen2(ActionEvent event){
+       switcher.setScreen(MainMenu.screen2ID);
     }
 }

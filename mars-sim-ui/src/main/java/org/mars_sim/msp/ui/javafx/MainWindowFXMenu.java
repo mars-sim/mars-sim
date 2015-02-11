@@ -7,10 +7,11 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
@@ -18,77 +19,86 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import org.mars_sim.msp.ui.javafx.MainWindowFX;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
+import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
+import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
+import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 
 public class MainWindowFXMenu extends MenuBar  {
 
+    private MainDesktopPane desktop;
 	
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main window pane
 	 * @param desktop our main frame
 	 */
-	public MainWindowFXMenu(MainWindowFX mainWindow) {
-	
+	public MainWindowFXMenu(MainScene mainScene, MainDesktopPane desktop) {	
 		super();
 
         // --- Menu File
         Menu menuFile = new Menu("File");
-        MenuItem newItem = new MenuItem("New...");
+        CheckMenuItem newItem = new CheckMenuItem("New...");
         newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        MenuItem openItem = new MenuItem("Open...");
+        CheckMenuItem openItem = new CheckMenuItem("Open...");
         openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        MenuItem openAutoSaveItem = new MenuItem("Open autosave");
+        CheckMenuItem openAutoSaveItem = new CheckMenuItem("Open autosave");
         openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
-        MenuItem saveItem = new MenuItem("Save");
+        CheckMenuItem saveItem = new CheckMenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        MenuItem saveAsItem = new MenuItem("Save As...");
+        CheckMenuItem saveAsItem = new CheckMenuItem("Save As...");
         saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN , KeyCombination.SHIFT_DOWN));
-        MenuItem exitItem = new MenuItem("Exit");
+        CheckMenuItem exitItem = new CheckMenuItem("Exit");
         exitItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
-        SeparatorMenuItem separatorMenuItem1 = new SeparatorMenuItem();
-        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-        SeparatorMenuItem separatorMenuItem3 = new SeparatorMenuItem();
+        SeparatorMenuItem SeparatorMenuItem1 = new SeparatorMenuItem();
+        SeparatorMenuItem SeparatorMenuItem2 = new SeparatorMenuItem();
+        SeparatorMenuItem SeparatorMenuItem3 = new SeparatorMenuItem();
 
-        menuFile.getItems().addAll(newItem, separatorMenuItem1, openItem, openAutoSaveItem, separatorMenuItem2, saveItem, saveAsItem, separatorMenuItem3, exitItem);
+        menuFile.getItems().addAll(newItem, SeparatorMenuItem1, openItem, openAutoSaveItem, SeparatorMenuItem2, saveItem, saveAsItem, SeparatorMenuItem3, exitItem);
         
         // --- Menu Tools
         Menu menuTools = new Menu("Tools");
-        MenuItem marsNavigatorItem = new MenuItem("Mars Navigator");
+        CheckMenuItem marsNavigatorItem = new CheckMenuItem("Mars Navigator");
         marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
-        MenuItem searchToolItem = new MenuItem("Search Tool");
+        CheckMenuItem searchToolItem = new CheckMenuItem("Search Tool");
         searchToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F2));
-        MenuItem timeToolItem = new MenuItem("Time Tool");
+        CheckMenuItem timeToolItem = new CheckMenuItem("Time Tool");
         timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
-        MenuItem monitorToolItem = new MenuItem("Monitor Tool");
+        CheckMenuItem monitorToolItem = new CheckMenuItem("Monitor Tool");
         monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
-        MenuItem missionToolItem = new MenuItem("Mission Tool");
+        CheckMenuItem missionToolItem = new CheckMenuItem("Mission Tool");
         missionToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
-        MenuItem settlementMapTool = new MenuItem("Settlement Map Tool");
-        settlementMapTool.setAccelerator(new KeyCodeCombination(KeyCode.F6));
-        MenuItem scienceTool = new MenuItem("Science Tool");
-        scienceTool.setAccelerator(new KeyCodeCombination(KeyCode.F7));
-        MenuItem resupplyTool = new MenuItem("Resupply Tool");
-        resupplyTool.setAccelerator(new KeyCodeCombination(KeyCode.F8));
+        CheckMenuItem settlementMapToolItem = new CheckMenuItem("Settlement Map Tool");
+        settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F6));
+        CheckMenuItem scienceToolItem = new CheckMenuItem("Science Tool");
+        scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
+        CheckMenuItem resupplyToolItem = new CheckMenuItem("Resupply Tool");
+        resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
 
-        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem, monitorToolItem, missionToolItem,settlementMapTool, scienceTool, resupplyTool );
+        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem, monitorToolItem, missionToolItem,settlementMapToolItem, scienceToolItem, resupplyToolItem );
+        
         
         // --- Menu Settings
         Menu menuSettings = new Menu("Settings");
-        MenuItem showUnitBarItem = new MenuItem("Show Unit Bar");
+        CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
-        MenuItem showToolBarItem = new MenuItem("Show Tool Bar");
+        CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
         showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-        SeparatorMenuItem separatorMenuItem4 = new SeparatorMenuItem();
-        MenuItem volumeUpItem = new MenuItem("Volume Up");
+        SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
+        CheckMenuItem volumeUpItem = new CheckMenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
-        MenuItem volumeDownItem = new MenuItem("Volume Down");
+        CheckMenuItem volumeDownItem = new CheckMenuItem("Volume Down");
         volumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
-        MenuItem muteItem = new MenuItem("Mute");
+        CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
-        menuSettings.getItems().addAll(showUnitBarItem,showToolBarItem, separatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
+        menuSettings.getItems().addAll(showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
         
         // --- Menu Notification
         Menu menuNotification = new Menu("Notification");
@@ -124,17 +134,83 @@ public class MainWindowFXMenu extends MenuBar  {
         
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
-        MenuItem aboutItem = new MenuItem("About");
-        MenuItem tutorialItem = new MenuItem("Tutorial");
+        CheckMenuItem aboutItem = new CheckMenuItem("About");
+        CheckMenuItem tutorialItem = new CheckMenuItem("Tutorial");
         tutorialItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
-        SeparatorMenuItem separatorMenuItem5 = new SeparatorMenuItem();
-        MenuItem userGuideItem = new MenuItem("User Guide");
+        SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
+        CheckMenuItem userGuideItem = new CheckMenuItem("User Guide");
         userGuideItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 
-        menuHelp.getItems().addAll(aboutItem, tutorialItem,separatorMenuItem5, userGuideItem);
+        menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem5, userGuideItem);
 
         super.getMenus().addAll(menuFile, menuTools, menuSettings, menuNotification, menuHelp);
 		
+        marsNavigatorItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
+    			else desktop.closeToolWindow(NavigatorWindow.NAME);
+    			//if (desktop == null) System.out.println("MainWindowFXMenu : marsNav. ");
+            }
+        });
+        
+        searchToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
+    			else desktop.closeToolWindow(SearchWindow.NAME);
+            }
+        });
+        
+        timeToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
+    			else desktop.closeToolWindow(TimeWindow.NAME);
+            }
+        });
+        
+        monitorToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
+    			else desktop.closeToolWindow(MonitorWindow.NAME);
+            }
+        });
+        
+        missionToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
+    			else desktop.closeToolWindow(MissionWindow.NAME);
+            }
+        });
+        
+        settlementMapToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (settlementMapToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
+    			else desktop.closeToolWindow(SettlementWindow.NAME);
+            }
+        });
+        
+        scienceToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
+    			else desktop.closeToolWindow(ScienceWindow.NAME);
+            }
+        });
+        
+        resupplyToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
+    			else desktop.closeToolWindow(ResupplyWindow.NAME);
+            }
+        });
+        
+        
 		
 	}
 }

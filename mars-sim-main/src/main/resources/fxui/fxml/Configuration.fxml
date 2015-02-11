@@ -7,8 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.mars_sim.msp.ui.javafx.Screen3Controller">
-   <children>
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.mars_sim.msp.Screen2Controller">
+    <children>
       <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
          <center>
           <VBox alignment="CENTER" prefHeight="222.0" prefWidth="301.0" spacing="20.0" BorderPane.alignment="CENTER">
@@ -16,8 +16,8 @@
               <Insets />
             </padding>
                <children>
-			        <Button mnemonicParsing="false" onAction="#goToScreen1" text="Back To Main Menu" />
-			        <Button mnemonicParsing="false" onAction="#goToScreen2" text="Go To Configurations" />
+			        <Button mnemonicParsing="false" onAction="#goToScreen1" text="Back to Main Menu" />
+			        <Button mnemonicParsing="false" onAction="#goToScreen3" text="Go To Credits" />
                </children>
           </VBox>
          </center>
@@ -25,7 +25,7 @@
             <HBox prefHeight="40.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
-           <Label text="Credits" BorderPane.alignment="CENTER">
+           <Label text="Configurations" BorderPane.alignment="CENTER">
           <font>
             <Font size="18.0" />
           </font>

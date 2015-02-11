@@ -44,7 +44,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.ui.javafx.MainWindowFX;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -85,7 +85,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private Collection<ToolWindow> toolWindows;
 	/** The main window frame. */
 	private MainWindow mainWindow;
-	private MainWindowFX mainWindowFX;
+	//private MainWindowFX mainWindowFX;
+	private MainScene mainScene;
 	
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
@@ -126,13 +127,16 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 	
 	
-	public MainDesktopPane(MainWindowFX mainWindowFX) {
-
+	//public MainDesktopPane(MainWindowFX mainWindowFX) {
+	public MainDesktopPane(MainScene mainScene) {	
+		
 		// Initialize data members
 		soundPlayer = new AudioPlayer();
 		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
 
-		this.mainWindowFX = mainWindowFX;
+		//this.mainWindowFX = mainWindowFX;
+		
+		this.mainScene = mainScene;
 
 		init();
 	}
@@ -140,9 +144,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2015-02-04 Added init()
 	public void init() {
 		
+		if (mainWindow != null) {	
+		}
+		
 		unitWindows = new ArrayList<UnitWindow>();
 		toolWindows = new ArrayList<ToolWindow>();
-
+		
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -302,7 +309,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	private void prepareToolWindows() {
 
-		toolWindows.clear();
+		if (toolWindows != null)
+			toolWindows.clear();
 
 		// Prepare navigator window
 		NavigatorWindow navWindow = new NavigatorWindow(this);
@@ -443,6 +451,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void openToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
+				//System.out.println("MainDesktopPane : window is not null ");
 			if (window.isClosed()) {
 				if (!window.wasOpened()) {
 					UIConfig config = UIConfig.INSTANCE;
@@ -539,7 +548,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			unitWindows.add(tempWindow);
 
 			// Create new unit button in tool bar if necessary
-			mainWindow.createUnitButton(unit);
+			if (mainWindow !=null) mainWindow.createUnitButton(unit);
 		}
 
 		tempWindow.setVisible(true);
@@ -599,7 +608,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Have main window dispose of unit button
-		mainWindow.disposeUnitButton(unit);
+		if (mainWindow !=null) mainWindow.disposeUnitButton(unit);
 	}
 
 	/** 
@@ -614,7 +623,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			window.dispose();
 
 			// Have main window dispose of unit button
-			mainWindow.disposeUnitButton(window.getUnit());
+			if (mainWindow !=null) mainWindow.disposeUnitButton(window.getUnit());
 		}
 	}
 
@@ -649,7 +658,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 
-	void clearDesktop() {
+	public void clearDesktop() {
 		// Stop update thread.
 		updateThread.setRun(false);
 
@@ -663,7 +672,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		while (i1.hasNext()) {
 			UnitWindow window = i1.next();
 			window.dispose();
-			mainWindow.disposeUnitButton(window.getUnit());
+			if (mainWindow !=null) mainWindow.disposeUnitButton(window.getUnit());
 			window.destroy();
 		}
 		unitWindows.clear();
@@ -682,7 +691,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Resets all windows on the desktop.  Disposes of all unit windows
 	 * and tool windows, and reconstructs the tool windows.
 	 */
-	void resetDesktop() {
+	public void resetDesktop() {
 		// Prepare tool windows
 		prepareToolWindows();
 
@@ -933,7 +942,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 						if (!config.isInternalWindowDisplayed(name)) {
 							Unit unit = Simulation.instance().getUnitManager().findUnit(name);
 							if (unit != null) {
-								mainWindow.createUnitButton(unit);
+								if (mainWindow !=null) mainWindow.createUnitButton(unit);
 							}
 						}
 					}
@@ -992,25 +1001,21 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			mgr = building.getBuildingManager();
 			settlement = mgr.getSettlement();
-			//System.out.println("MainDesktopPane : mgr is " + mgr);
-			//System.out.println("MainDesktopPane : The settlement is " + settlement);
 			// Select the relevant settlement
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);	
-			getMainWindow().pauseSimulation();
+			if (mainWindow !=null) mainWindow.pauseSimulation();
+			if (mainScene !=null) mainScene.pauseSimulation();
 			openTransportWizard(mgr);//, building); 
 			isTransportingBuilding = false;
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
-			//System.out.println("MainDesktopPane : FINISH_BUILDING_PLACEMENT_EVENT");
 			getMainWindow().unpauseSimulation();
 			disposeTransportWizard();
 			isTransportingBuilding = false;
             //mgr.getResupply().deliverOthers();
             disposeAnnouncementWindow();
-            //getMainWindow().pauseSimulation();
-            //getMainWindow().unpauseSimulation();
             
 		}	
 		// repaint(); // raise cpu util% way too much for putting it here
