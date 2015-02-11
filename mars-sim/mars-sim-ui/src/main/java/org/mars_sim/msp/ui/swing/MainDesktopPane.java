@@ -253,6 +253,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}
+	
+	/** Returns the MainScene instance
+	 *  @return MainScene instance
+	 */
+	public MainScene getMainScene() {
+		return mainScene;
+	}
+	
 
 	/**
 	 * Create background tile when MainDesktopPane is first

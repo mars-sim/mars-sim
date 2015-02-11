@@ -45,6 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
 import javafx.embed.swing.SwingNode;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -56,6 +57,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 
 public class MainScene {
@@ -131,6 +133,13 @@ public class MainScene {
 	
 	public Scene init(Stage stage) {
 	
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		    @Override
+		    public void handle(WindowEvent event) {
+		    	exitSimulation();
+		    }
+		});
+		
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -662,4 +671,10 @@ public class MainScene {
 	public MainWindowFXMenu getMainWindowFXMenu() {
 		return menuBar;
 	}
+	
+	
+	public Stage getStage() {
+		return stage;
+	}
+	
 }

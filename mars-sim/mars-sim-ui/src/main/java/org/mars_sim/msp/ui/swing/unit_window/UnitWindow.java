@@ -124,9 +124,13 @@ public abstract class UnitWindow extends JInternalFrame {
         //TODO: disabled in SVN while in development
         //this.addInternalFrameListener(new UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
 	
-        setStyle();
+        //setStyle();
+        
+  		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
+  	  		    false, true, true, true));
     }
     
+    /*
 	public void setStyle() {
         Container contentPane = desktop.getRootPane();
           
@@ -152,11 +156,9 @@ public abstract class UnitWindow extends JInternalFrame {
   		image = changeImageWidth(image, image.getWidth() * 2);
   		//System.out.println("time = " +
   		//((System.currentTimeMillis() - start) / 1000.0f));
-  		
-  		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
-  		    false, true, true, true));
     }
     
+    */
     /**
      * Adds a tab panel to the center panel.
      *
@@ -197,12 +199,8 @@ public abstract class UnitWindow extends JInternalFrame {
     }
     
     
-    /**
-     * Prepares unit window for deletion.
-     */
-    public void destroy() {}
-     
 
+  /*
     public static BufferedImage changeImageWidth(BufferedImage image, int width) {
 	        float ratio = (float) image.getWidth() / (float) image.getHeight();
 	        int height = (int) (width / ratio);
@@ -256,7 +254,9 @@ public abstract class UnitWindow extends JInternalFrame {
 	 public boolean isOpaque() {
 	     return false;
 	 }
-	
+	 
+	*/
+    
 	 @Override
 	 protected void paintComponent(Graphics g) {
 	     setupGraphics((Graphics2D) g);
@@ -274,6 +274,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	     g.setClip(oldClip);
 	 }
 	
+	 /*
 	 public float getAlpha() {
 	     return alpha;
 	 }
@@ -283,6 +284,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	     repaint();
 	 }
 	
+	*/
 	 private static void setupGraphics(Graphics2D g2) {
 	     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -294,4 +296,9 @@ public abstract class UnitWindow extends JInternalFrame {
 	     }
 	 }
 	    
+	/**
+	 * Prepares unit window for deletion.
+	 */
+	public void destroy() {}
+	     
 }
