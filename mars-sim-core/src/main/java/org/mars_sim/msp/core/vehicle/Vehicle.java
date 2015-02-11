@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -241,14 +242,28 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public void setParkedLocation(double xLocation, double yLocation, double facing) {
         
-        Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
+
+		//if (person != null) {
+			Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
+	        
+	        this.xLocParked = xLocation;
+	        this.yLocParked = yLocation;
+	        this.facingParked = facing;
+	        
+	        // Set the crew members' (if any) location to vehicle's new parked location.
+	        setCrewPositions(currentCrewPositions);
+		//}
+		//else if (robot != null) {
+			Map<Robot, Point2D> currentRobotCrewPositions = getCurrentRobotCrewPositions();
+	        
+	        this.xLocParked = xLocation;
+	        this.yLocParked = yLocation;
+	        this.facingParked = facing;
+	        
+	        // Set the crew members' (if any) location to vehicle's new parked location.
+	        setRobotCrewPositions(currentRobotCrewPositions);
+		//}
         
-        this.xLocParked = xLocation;
-        this.yLocParked = yLocation;
-        this.facingParked = facing;
-        
-        // Set the crew members' (if any) location to vehicle's new parked location.
-        setCrewPositions(currentCrewPositions);
     }
     
     private Map<Person, Point2D> getCurrentCrewPositions() {
@@ -271,6 +286,25 @@ public abstract class Vehicle extends Unit implements Serializable,
         return result;
     }
     
+   private Map<Robot, Point2D> getCurrentRobotCrewPositions() {
+        
+        Map<Robot, Point2D> result = null;
+        
+        // Record current object-relative crew positions if vehicle is crewable.
+        if (this instanceof Crewable) {
+            Crewable crewable = (Crewable) this;
+            result = new HashMap<Robot, Point2D>(crewable.getCrewNum());
+            Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
+            while (i.hasNext()) {
+            	Robot robotCrewmember = i.next();
+                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(robotCrewmember.getXLocation(), 
+                        robotCrewmember.getYLocation(), this);
+                result.put(robotCrewmember, crewPos);
+            }
+        }
+        
+        return result;
+    }
     /**
      * Sets the positions of all crew members (if any) to the vehicle's location.
      */
@@ -287,6 +321,23 @@ public abstract class Vehicle extends Unit implements Serializable,
                         currentCrewPos.getY(), this);
                 crewmember.setXLocation(settlementLoc.getX());
                 crewmember.setYLocation(settlementLoc.getY());
+            }
+        }
+    }
+    
+    private void setRobotCrewPositions(Map<Robot, Point2D> currentRobotCrewPositions) {
+        
+        // Only move crew if vehicle is Crewable.
+        if (this instanceof Crewable) {
+            Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
+            while (i.hasNext()) {
+            	Robot robotCrewmember = i.next();
+                
+                Point2D currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(), 
+                        currentCrewPos.getY(), this);
+                robotCrewmember.setXLocation(settlementLoc.getX());
+                robotCrewmember.setYLocation(settlementLoc.getY());
             }
         }
     }
@@ -604,6 +655,33 @@ public abstract class Vehicle extends Unit implements Serializable,
         return people;
     }
 
+    public Collection<Robot> getAffectedRobots() {
+        Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+
+        // Check all robots.
+        Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
+        while (i.hasNext()) {
+            Robot robot = i.next();
+            Task task = robot.getBotMind().getTaskManager().getTask();
+
+            // Add all robots maintaining this vehicle.
+            if (task instanceof Maintenance) {
+                if (((Maintenance) task).getEntity() == this) {
+                    if (!robots.contains(robot)) robots.add(robot);
+		        }
+            }
+
+            // Add all robots repairing this vehicle.
+            if (task instanceof Repair) {
+                if (((Repair) task).getEntity() == this) {
+                    if (!robots.contains(robot)) robots.add(robot);
+		        }
+            }
+        }
+
+        return robots;
+    }
+    
     /**
      * Gets the vehicle's trail as a collection of coordinate locations.
      * @return trail collection

@@ -461,7 +461,7 @@ implements VehicleOperator, Serializable {
             }
         } else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Crewable crewableVehicle = (Crewable) getVehicle();
-            localGroup = new ConcurrentLinkedQueue<Robot>(crewableVehicle.getRobots());
+            localGroup = new ConcurrentLinkedQueue<Robot>(crewableVehicle.getRobotCrew());
         }
 
         if (localGroup.contains(this)) {
