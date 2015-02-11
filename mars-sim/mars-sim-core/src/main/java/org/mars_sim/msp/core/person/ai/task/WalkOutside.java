@@ -931,7 +931,7 @@ implements Serializable {
 		            double chance = BASE_ACCIDENT_CHANCE;
 
 		            // EVA operations skill modification.
-		            int skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		            int skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		            if (skill <= 3) chance *= (4 - skill);
 		            else chance /= (skill - 2);
 
@@ -954,7 +954,7 @@ implements Serializable {
 	        manager = person.getMind().getSkillManager();
 		}
 		else if (robot != null) {
-	        manager = robot.getMind().getSkillManager();
+	        manager = robot.getBotMind().getSkillManager();
 		}
 		
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
@@ -989,6 +989,6 @@ implements Serializable {
 		if (person != null) 
 	        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		else if (robot != null)
-        	robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        	robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 }

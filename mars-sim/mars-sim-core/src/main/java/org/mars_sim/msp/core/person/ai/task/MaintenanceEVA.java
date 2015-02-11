@@ -191,7 +191,7 @@ implements Serializable {
 		if (person != null) 
 			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);			
 		else if (robot != null)
-			robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is maintenance, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
@@ -202,7 +202,7 @@ implements Serializable {
 			if (person != null) 
 				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);				
 			else if (robot != null)
-				robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
 		}
 	}
 	
@@ -229,7 +229,7 @@ implements Serializable {
 		if (person != null) 
 			mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		
 		if (mechanicSkill == 0) {
 		    workTime /= 2;
@@ -280,7 +280,7 @@ implements Serializable {
 			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);						
 		else if (robot != null)
 			// Mechanic skill modification.
-			skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
@@ -377,7 +377,7 @@ implements Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
 		
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);

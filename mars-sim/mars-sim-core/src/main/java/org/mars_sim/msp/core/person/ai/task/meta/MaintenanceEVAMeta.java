@@ -181,7 +181,7 @@ public class MaintenanceEVAMeta implements MetaTask {
         result *= robot.getPerformanceRating();
         
         // Job modifier.
-        RobotJob robotJob = robot.getMind().getRobotJob();
+        RobotJob robotJob = robot.getBotMind().getRobotJob();
         if (robotJob != null) {
             result *= robotJob.getStartTaskProbabilityModifier(MaintenanceEVA.class);
         }

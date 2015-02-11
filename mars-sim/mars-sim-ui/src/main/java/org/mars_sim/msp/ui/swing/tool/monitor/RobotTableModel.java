@@ -364,19 +364,19 @@ extends UnitTableModel {
 				if (robot.getPhysicalCondition().isDead()) 
 					result = robot.getPhysicalCondition().getDeathDetails().getJob();
 				else {
-					if (robot.getMind().getRobotJob() != null) result = robot.getMind().getRobotJob().getName(robot.getRobotType());
+					if (robot.getBotMind().getRobotJob() != null) result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
 					else result = null;
 				} 
 			} break;
 
 			case TASK : {
 				// If the Robot is dead, there is no Task Manager
-				TaskManager mgr = robot.getMind().getTaskManager();
+				TaskManager mgr = robot.getBotMind().getTaskManager();
 				result = ((mgr != null)? mgr.getTaskName() : null);
 			} break;
 
 			case MISSION : {
-				Mission mission = robot.getMind().getMission();
+				Mission mission = robot.getBotMind().getMission();
 				if (mission != null) {
 					result = mission.getDescription();
 				}

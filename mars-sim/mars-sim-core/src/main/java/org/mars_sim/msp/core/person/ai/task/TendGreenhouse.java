@@ -212,7 +212,7 @@ implements Serializable {
 		if (person != null) 
 	        person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 		else if (robot != null) 
-	        robot.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+	        robot.getBotMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 
     }
 
@@ -359,7 +359,7 @@ implements Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();
 		else if (robot != null) 
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
         
         return manager.getEffectiveSkillLevel(SkillType.BOTANY);
     }  

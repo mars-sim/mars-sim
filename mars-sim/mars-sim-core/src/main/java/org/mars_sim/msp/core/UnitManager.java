@@ -673,7 +673,7 @@ implements Serializable {
             if (jobName != null) {
                 RobotJob robotJob = JobManager.getRobotJob(jobName);
                 if (robotJob != null) {
-                	robot.getMind().setRobotJob(robotJob, true);
+                	robot.getBotMind().setRobotJob(robotJob, true);
                 }
             }
 
@@ -699,7 +699,7 @@ implements Serializable {
                     String skillName = i.next();
                     int level = (Integer) skillMap.get(skillName);
                     robot
-                    .getMind()
+                    .getBotMind()
                     .getSkillManager()
                     .addNewSkill(
                             new Skill(

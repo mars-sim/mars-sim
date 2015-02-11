@@ -503,7 +503,7 @@ implements Repair, Serializable {
         if (person != null)
             person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
         else if (robot != null)
-            robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+            robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
         // If phase is repair malfunction, add experience to mechanics skill.
         if (REPAIRING.equals(getPhase())) {
@@ -515,7 +515,7 @@ implements Repair, Serializable {
             if (person != null)
                 person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
             else if (robot != null)
-            	robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            	robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
             
         }
     }
@@ -561,7 +561,7 @@ implements Repair, Serializable {
 	        mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 	        
 		else if (robot != null)
-	        mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+	        mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 	        
  
         if (mechanicSkill == 0) workTime /= 2;
@@ -635,7 +635,7 @@ implements Repair, Serializable {
 		if (person != null) 
         	manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-        	manager = robot.getMind().getSkillManager();
+        	manager = robot.getBotMind().getSkillManager();
         
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);

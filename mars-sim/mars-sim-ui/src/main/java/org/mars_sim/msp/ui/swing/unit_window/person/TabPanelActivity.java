@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelActivity.java
- * @version 3.07 2015-02-02
+ * @version 3.07 2015-02-11
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -93,6 +94,7 @@ implements ActionListener {
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
+		BotMind botMind = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;  
 	    
@@ -104,7 +106,7 @@ implements ActionListener {
 		}
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
-			mind = robot.getMind();
+			botMind = robot.getBotMind();
 			dead = robot.getPhysicalCondition().isDead();
 			deathInfo = robot.getPhysicalCondition().getDeathDetails();
 		}
@@ -140,9 +142,9 @@ implements ActionListener {
 		}
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
-			mind = robot.getMind();
+			botMind = robot.getBotMind();
 			// Prepare job combo box
-			jobCache = mind.getRobotJob().getName(robot.getRobotType());
+			jobCache = botMind.getRobotJob().getName(robot.getRobotType());
 			List<String> jobNames = new ArrayList<String>();
 			for (RobotJob robotJob : JobManager.getRobotJobs()) {
 				jobNames.add(robotJob.getName(robot.getRobotType()));
@@ -175,7 +177,12 @@ implements ActionListener {
 
 		// Prepare task text area
 		if (dead) taskCache = deathInfo.getTask();
-		else taskCache = mind.getTaskManager().getTaskDescription();
+		else {
+			if (person != null)
+				taskCache = mind.getTaskManager().getTaskDescription();
+			else if (robot != null)
+				taskCache = botMind.getTaskManager().getTaskDescription();
+		}
 		taskTextArea = new JTextArea(2, 20);
 		if (taskCache != null) taskTextArea.setText(taskCache);
 		taskTextArea.setLineWrap(true);
@@ -195,7 +202,15 @@ implements ActionListener {
 		    taskPhaseCache = deathInfo.getTaskPhase();
 		}
 		else {
-		    TaskPhase phase = mind.getTaskManager().getPhase();
+			
+			TaskPhase phase = null;
+			
+				if (person != null)
+					phase = mind.getTaskManager().getPhase();
+				else if (robot != null)
+					phase = botMind.getTaskManager().getPhase();
+			
+			
 		    if (phase != null) {
 		        taskPhaseCache = phase.getName();
 		    }
@@ -227,8 +242,24 @@ implements ActionListener {
 		missionPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
-		if (dead) missionCache = deathInfo.getMission();
-		else if (mind.getMission() != null) missionCache = mind.getMission().getDescription();
+		
+		if (person != null) {
+
+			if (dead) 
+				missionCache = deathInfo.getMission();
+			
+			else if (mind.getMission() != null) 
+				missionCache = mind.getMission().getDescription();
+		}
+		else if (robot != null) {
+	
+			if (dead) 
+				missionCache = deathInfo.getMission();
+		
+			else if (botMind.getMission() != null) 
+				missionCache = botMind.getMission().getDescription();
+		}
+		
 		missionTextArea = new JTextArea(2, 20);
 		if (missionCache != null) missionTextArea.setText(missionCache);
 		missionTextArea.setLineWrap(true);
@@ -243,9 +274,23 @@ implements ActionListener {
 		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
-		// Prepare mission phase text area
-		if (dead) missionPhaseCache = deathInfo.getMissionPhase();
-		else if (mind.getMission() != null) missionPhaseCache = mind.getMission().getPhaseDescription();
+
+		if (person != null) {
+			// Prepare mission phase text area
+			if (dead) 
+				missionPhaseCache = deathInfo.getMissionPhase();
+			else if (mind.getMission() != null) 
+				missionPhaseCache = mind.getMission().getPhaseDescription();
+		}
+		else if (robot != null) {
+			// Prepare mission phase text area
+			if (dead) 
+				missionPhaseCache = deathInfo.getMissionPhase();
+			else if (botMind.getMission() != null) 
+				missionPhaseCache = botMind.getMission().getPhaseDescription();
+		}
+
+		
 		missionPhaseTextArea = new JTextArea(2, 20);
 		if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
 		missionPhaseTextArea.setLineWrap(true);
@@ -261,7 +306,14 @@ implements ActionListener {
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
-		missionButton.setEnabled(mind.getMission() != null);
+		
+		if (person != null) {
+			missionButton.setEnabled(mind.getMission() != null);
+		}
+		else if (robot != null) {
+			missionButton.setEnabled(botMind.getMission() != null);			
+		}
+
 		missionButtonPanel.add(missionButton);
 
 		// Prepare mission monitor button
@@ -269,7 +321,14 @@ implements ActionListener {
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
-		monitorButton.setEnabled(mind.getMission() != null);
+		
+		if (person != null) {
+			monitorButton.setEnabled(mind.getMission() != null);
+		}
+		else if (robot != null) {
+			monitorButton.setEnabled(botMind.getMission() != null);
+		}
+		
 		missionButtonPanel.add(monitorButton);
 	}
 
@@ -282,6 +341,7 @@ implements ActionListener {
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
+		BotMind botMind = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;  
 	    
@@ -293,7 +353,7 @@ implements ActionListener {
 		}
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
-			mind = robot.getMind();
+			botMind = robot.getBotMind();
 			dead = robot.getPhysicalCondition().isDead();
 			deathInfo = robot.getPhysicalCondition().getDeathDetails();
 		}
@@ -391,6 +451,7 @@ implements ActionListener {
 		    Person person = null;
 		    Robot robot = null;
 			Mind mind = null;
+			BotMind botMind = null;
 			boolean dead = false;
 			DeathInfo deathInfo = null;  
 		    
@@ -413,18 +474,18 @@ implements ActionListener {
 			}
 			else if (unit instanceof Robot) {
 		        robot = (Robot) unit;
-				mind = robot.getMind();
+				botMind = robot.getBotMind();
 				dead = robot.getPhysicalCondition().isDead();
 				deathInfo = robot.getPhysicalCondition().getDeathDetails();
 				
 				if (!robot.getPhysicalCondition().isDead()) {
-					mind = robot.getMind();
-					if (mind.hasActiveMission()) {
+					botMind = robot.getBotMind();
+					if (botMind.hasActiveMission()) {
 						if (source == missionButton) {
-							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
+							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(botMind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME);
 						}
-						else if (source == monitorButton) desktop.addModel(new RobotTableModel(mind.getMission()));
+						else if (source == monitorButton) desktop.addModel(new RobotTableModel(botMind.getMission()));
 					}
 				}				
 			}	
@@ -454,7 +515,6 @@ implements ActionListener {
 			else if (unit instanceof Robot) {
 				robot = (Robot) unit;
 				
-				
 				RobotJob selectedJob = null;
 				Iterator<RobotJob> i = JobManager.getRobotJobs().iterator();
 				while (i.hasNext() && (selectedJob == null)) {
@@ -464,7 +524,7 @@ implements ActionListener {
 				    }
 				}
 				
-				robot.getMind().setRobotJob(selectedJob, true);
+				robot.getBotMind().setRobotJob(selectedJob, true);
 			}
 		}
 	}

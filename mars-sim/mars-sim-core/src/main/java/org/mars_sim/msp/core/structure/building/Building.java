@@ -715,7 +715,7 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
-			Task task = robot.getMind().getTaskManager().getTask();
+			Task task = robot.getBotMind().getTaskManager().getTask();
 
 			// Add all robots maintaining this building. 
 			if (task instanceof Maintenance) {

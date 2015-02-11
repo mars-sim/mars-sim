@@ -113,7 +113,7 @@ public class TendGreenhouseMeta implements MetaTask {
         result *= robot.getPerformanceRating();
         //System.out.println("robot.getPerformanceRating() is " + robot.getPerformanceRating());
         // Job modifier.
-        RobotJob robotJob = robot.getMind().getRobotJob();
+        RobotJob robotJob = robot.getBotMind().getRobotJob();
         if (robotJob != null) {
             result *= robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
             //System.out.println("modifier is " + robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class));

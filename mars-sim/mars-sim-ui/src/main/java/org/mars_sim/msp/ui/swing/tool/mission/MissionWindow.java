@@ -22,7 +22,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
@@ -156,14 +158,35 @@ extends ToolWindow {
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-		// Pause simulation.
-		desktop.getMainWindow().pauseSimulation();
+		
+		
+		MainWindow mw = desktop.getMainWindow();
 
-		// Create new mission wizard.
-		new CreateMissionWizard(desktop.getMainWindow().getFrame());
-
-		// Unpause simulation.
-		desktop.getMainWindow().unpauseSimulation();
+		if (mw !=null )  {
+			// Pause simulation.
+			mw.pauseSimulation();
+	
+			// Create new mission wizard.
+			new CreateMissionWizard(mw.getFrame());
+	
+			// Unpause simulation.
+			mw.unpauseSimulation();
+		}
+		
+		MainScene ms = desktop.getMainScene();
+		
+		
+		if (ms !=null )  {
+			// Pause simulation.
+			ms.pauseSimulation();
+	
+			// Create new mission wizard.
+			//new CreateMissionWizard(ms.getFrame());
+	
+			// Unpause simulation.
+			ms.unpauseSimulation();
+		}
+		
 	}
 
 	/**
@@ -171,14 +194,35 @@ extends ToolWindow {
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		// Pause simulation.
-		desktop.getMainWindow().pauseSimulation();
+		
+		
+		MainWindow mw = desktop.getMainWindow();
 
-		// Create new mission wizard.
-		new EditMissionDialog(desktop.getMainWindow().getFrame(), mission);
-
-		// Unpause simulation.
-		desktop.getMainWindow().unpauseSimulation();
+		if (mw !=null )  {
+			// Pause simulation.
+			mw.pauseSimulation();
+	
+			// Create new mission wizard.
+			new EditMissionDialog(mw.getFrame(), mission);
+	
+			// Unpause simulation.
+			mw.unpauseSimulation();
+		}
+		
+		MainScene ms = desktop.getMainScene();
+		
+		if (ms !=null )  {
+			// Pause simulation.
+			ms.pauseSimulation();
+	
+			// Create new mission wizard.
+			//new CreateMissionWizard(ms.getFrame());
+	
+			// Unpause simulation.
+			ms.unpauseSimulation();
+		}
+		
+		
 	}
 
 	/**

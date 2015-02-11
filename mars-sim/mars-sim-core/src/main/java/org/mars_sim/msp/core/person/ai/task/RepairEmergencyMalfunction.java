@@ -189,7 +189,7 @@ implements Repair, Serializable {
                     NaturalAttribute.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();
-            robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+            robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
         }
        
      }
@@ -305,7 +305,7 @@ implements Repair, Serializable {
     	if (person != null) 
             manager = person.getMind().getSkillManager();        
     	else if (robot != null)
-    	    manager = robot.getMind().getSkillManager();
+    	    manager = robot.getBotMind().getSkillManager();
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  
 

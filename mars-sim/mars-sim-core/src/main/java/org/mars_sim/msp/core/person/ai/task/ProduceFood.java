@@ -181,7 +181,7 @@ implements Serializable {
 			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
 			while (i.hasNext()) {
 				Robot tempRobot = i.next();
-				SkillManager skillManager = tempRobot.getMind().getSkillManager();
+				SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.COOKING);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
@@ -243,7 +243,7 @@ implements Serializable {
 
 		Building result = null;
 
-		SkillManager skillManager = robot.getMind().getSkillManager();
+		SkillManager skillManager = robot.getBotMind().getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -393,7 +393,7 @@ implements Serializable {
 	public static double getHighestFoodProductionProcessValue(Robot robot, 
 			Building foodProductionBuilding) {
 
-		int skillLevel = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		int skillLevel = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 		return getHighestProcessValue(skillLevel, foodProductionBuilding);
 	}
@@ -443,9 +443,9 @@ implements Serializable {
 			int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-	        robot.getMind().getSkillManager().addExperience(
+	        robot.getBotMind().getSkillManager().addExperience(
 	                SkillType.COOKING, newPoints * 5 / 7D);
-	        robot.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
+	        robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
 	                newPoints *2 / 7D);
 		}
 	}
@@ -465,7 +465,7 @@ implements Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
 		
 		result += manager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
 		result += manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;

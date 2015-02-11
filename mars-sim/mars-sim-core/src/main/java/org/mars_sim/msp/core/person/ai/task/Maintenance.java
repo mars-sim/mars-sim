@@ -271,7 +271,7 @@ implements Serializable {
 		if (person != null) 
 	        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);			
 		else if (robot != null)
-			robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
         
     }
 
@@ -288,7 +288,7 @@ implements Serializable {
 		if (person != null) 
 		       skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         
         if (skill <= 3) {
             chance *= (4 - skill);
@@ -482,7 +482,7 @@ implements Serializable {
 		if (person != null) 
 	        manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
         
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }   

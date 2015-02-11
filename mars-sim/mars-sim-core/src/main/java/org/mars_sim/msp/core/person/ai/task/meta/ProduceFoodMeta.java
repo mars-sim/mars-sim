@@ -133,7 +133,7 @@ public class ProduceFoodMeta implements MetaTask {
 
                 // If foodProduction building has process requiring work, add
                 // modifier.
-                SkillManager skillManager = robot.getMind().getSkillManager();
+                SkillManager skillManager = robot.getBotMind().getSkillManager();
                 int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
                 if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
                     result += 10D;
@@ -151,7 +151,7 @@ public class ProduceFoodMeta implements MetaTask {
         result *= robot.getPerformanceRating();
 
         // Job modifier.
-        RobotJob robotJob = robot.getMind().getRobotJob();
+        RobotJob robotJob = robot.getBotMind().getRobotJob();
         if (robotJob != null) {
             result *= robotJob.getStartTaskProbabilityModifier(ProduceFood.class);
         }

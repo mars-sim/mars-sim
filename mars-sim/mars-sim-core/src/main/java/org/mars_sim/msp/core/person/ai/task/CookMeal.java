@@ -174,7 +174,7 @@ implements Serializable {
 			    addPhase(COOKING);
 				setPhase(COOKING);	
 				  
-				String jobName = robot.getMind().getRobotJob().getName(robot.getRobotType());
+				String jobName = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
 				logger.finest(jobName + " " + robot.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
 				    	                " in " + robot.getSettlement());      
 
@@ -304,7 +304,7 @@ implements Serializable {
 		if (person != null) 
 			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
 		else if (robot != null)
-			robot.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
     }
 
     /**
@@ -328,7 +328,7 @@ implements Serializable {
 	        // Cooking skill modification.
 	        skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);			
 		else if (robot != null)
-	        skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+	        skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
         
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
@@ -501,7 +501,7 @@ implements Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();
 		else if (robot != null)
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
 		
         return manager.getEffectiveSkillLevel(SkillType.COOKING);
     }

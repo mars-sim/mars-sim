@@ -536,7 +536,7 @@ public abstract class Airlock implements Serializable {
                     }
                     else if (operator instanceof Robot) {
                     	robot = (Robot) operator;
-                    	 task = robot.getMind().getTaskManager().getTask();
+                    	 task = robot.getBotMind().getTaskManager().getTask();
                          
                     }
  
