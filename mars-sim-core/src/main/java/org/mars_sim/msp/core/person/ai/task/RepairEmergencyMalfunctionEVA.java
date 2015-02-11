@@ -396,7 +396,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (person != null) 
             mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);        
         else if (robot != null)
-            mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+            mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
               
         if (mechanicSkill == 0) {
             workTime /= 2;
@@ -429,7 +429,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (person != null) 
             manager = person.getMind().getSkillManager();
         else if (robot != null)
-        	manager = robot.getMind().getSkillManager();
+        	manager = robot.getBotMind().getSkillManager();
          
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
@@ -478,7 +478,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
-            robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+            robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
             // If phase is repair malfunction, add experience to mechanics skill.
             if (REPAIRING.equals(getPhase())) {
@@ -486,7 +486,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 // Experience points adjusted by robot's "Experience Aptitude" attribute.
                 double mechanicsExperience = time / 20D;
                 mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-                robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+                robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
             }
         }
 

@@ -351,7 +351,7 @@ implements Repair, Serializable {
         if (person != null) 
             mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);       
         else if (robot != null)
-        	mechanicSkill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        	mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         
         if (mechanicSkill == 0) {
             workTime /= 2;
@@ -463,7 +463,7 @@ implements Repair, Serializable {
             int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();
-            robot.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+            robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
       
         }
   
@@ -484,7 +484,7 @@ implements Repair, Serializable {
         }
         else if (robot != null) {
             // Mechanic skill modification.
-            skill = robot.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+            skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
      
         }
 
@@ -545,7 +545,7 @@ implements Repair, Serializable {
 		if (person != null) 
 			manager = person.getMind().getSkillManager();
 		else if (robot != null)
-			manager = robot.getMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
 
         return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  

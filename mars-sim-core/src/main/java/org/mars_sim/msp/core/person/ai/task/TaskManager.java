@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.07 2015-01-30
+ * @version 3.08 2015-02-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
@@ -45,6 +46,7 @@ implements Serializable {
 	private Task currentTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
+	private BotMind botMind;
 
 	// Cache variables.
 	private transient MarsClock timeCache;
@@ -63,7 +65,6 @@ implements Serializable {
 		this.mind = mind;
 		
 		this.person = mind.getPerson();
-		this.robot = mind.getRobot();
 		
 		currentTask = null;
 
@@ -73,6 +74,19 @@ implements Serializable {
 		totalProbCache = 0D;
 	}
 
+	public TaskManager(BotMind botMind) {
+		// Initialize data members
+		this.botMind = botMind;
+		
+		this.robot = botMind.getRobot();
+		
+		currentTask = null;
+
+		// Initialize cache values.
+		timeCache = null;
+		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		totalProbCache = 0D;
+	}
 	/**
 	 * Returns true if person has an active task.
 	 * @return true if person has an active task
@@ -341,7 +355,7 @@ implements Serializable {
 						" has zero total task probability weight.");
 			}
 			else if (robot != null) {
-				throw new IllegalStateException(mind.getRobot() + 
+				throw new IllegalStateException(botMind.getRobot() + 
 						" has zero total task probability weight.");			
 			}	
 		}
@@ -366,7 +380,7 @@ implements Serializable {
 				throw new IllegalStateException(mind.getPerson() + 
 						" could not determine a new task.");
 			else if (robot != null)
-					throw new IllegalStateException(mind.getRobot() + 
+					throw new IllegalStateException(botMind.getRobot() + 
 							" could not determine a new task.");
 			
 		}
@@ -376,7 +390,7 @@ implements Serializable {
 		}
 		else if (robot != null) {
 			// Construct the task
-			result = selectedMetaTask.constructInstance(mind.getRobot());
+			result = selectedMetaTask.constructInstance(botMind.getRobot());
 		}
 
 		
@@ -412,8 +426,8 @@ implements Serializable {
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
 			double probability = 0;
-			Person person = mind.getPerson();
-			Robot robot = mind.getRobot();
+			//Person person = mind.getPerson();
+			//Robot robot = botMind.getRobot();
 			
 			if (person != null) {
 				probability = metaTask.getProbability(person);
@@ -435,7 +449,7 @@ implements Serializable {
 							" probability: " + probability);
 				}
 				else if (robot != null) {
-					logger.severe(mind.getRobot().getName() + " bad task probability: " +  metaTask.getName() + 
+					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() + 
 							" probability: " + probability);
 				}
 				
@@ -462,6 +476,7 @@ implements Serializable {
 			currentTask.destroy();
 		}
 		mind = null;
+		botMind = null;
 		person = null;
 		robot = null;
 		timeCache = null;

@@ -141,7 +141,7 @@ extends TabPanel {
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-				manager = robot.getMind().getSkillManager();	       
+				manager = robot.getBotMind().getSkillManager();	       
 	        }
 
 

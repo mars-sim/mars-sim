@@ -137,7 +137,7 @@ public final class JobManager implements Serializable {
 			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 			while (j.hasNext()) {
 				Robot robot = j.next();
-				if (robot.getMind().getJob() == job) result-= job.getCapability(robot);
+				if (robot.getBotMind().getJob() == job) result-= job.getCapability(robot);
 			}
 		
 			result = result/2D;
@@ -154,7 +154,7 @@ public final class JobManager implements Serializable {
 			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 			while (j.hasNext()) {
 				Robot robot = j.next();
-				if (robot.getMind().getRobotJob() == robotJob) result-= robotJob.getCapability(robot);
+				if (robot.getBotMind().getRobotJob() == robotJob) result-= robotJob.getCapability(robot);
 			}
 		
 			result = result/2D;
@@ -216,14 +216,14 @@ public final class JobManager implements Serializable {
 		RobotJob newJob = null;
         Robot robot = (Robot) unit;
         
-        	RobotJob originalJob = robot.getMind().getRobotJob();
+        	RobotJob originalJob = robot.getBotMind().getRobotJob();
 	
 			// Determine robot's associated settlement.
 			Settlement settlement = null;
 			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
 				settlement = robot.getSettlement();
-			else if (robot.getMind().hasActiveMission()) 
-				settlement = robot.getMind().getMission().getAssociatedSettlement();
+			else if (robot.getBotMind().hasActiveMission()) 
+				settlement = robot.getBotMind().getMission().getAssociatedSettlement();
 	
 			// Find new job for robot.
 			double newJobProspect = Integer.MIN_VALUE;					
@@ -280,7 +280,7 @@ public final class JobManager implements Serializable {
         	robot = (Robot) unit;
         	if (robotJob != null) jobCapability = robotJob.getCapability(robot);    		
     		remainingNeed = getRemainingSettlementNeed(settlement, robotJob);    		
-    		if ((robotJob == robot.getMind().getRobotJob()) && isHomeSettlement) remainingNeed+= jobCapability;
+    		if ((robotJob == robot.getBotMind().getRobotJob()) && isHomeSettlement) remainingNeed+= jobCapability;
 
         
 		return (jobCapability + 1D) * remainingNeed;

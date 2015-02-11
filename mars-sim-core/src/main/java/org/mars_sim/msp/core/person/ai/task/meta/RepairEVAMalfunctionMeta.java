@@ -173,7 +173,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
         result *= robot.getPerformanceRating();
 
         // Job modifier if not in vehicle.
-        RobotJob job = robot.getMind().getRobotJob();
+        RobotJob job = robot.getBotMind().getRobotJob();
         if ((job != null)) {
             result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
         }

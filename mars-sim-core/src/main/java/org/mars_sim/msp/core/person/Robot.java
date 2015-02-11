@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Robot.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-02-11
  * @author Manny Kung
  */
 
@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -58,7 +58,7 @@ implements VehicleOperator, Serializable {
     /** Manager for robot's natural attributes. */
     private NaturalAttributeManager attributes;
     /** robot's mind. */
-    private Mind mind;
+    private BotMind botMind;
     /** robot's physical condition. */
     private PhysicalCondition health;
     /** True if robot is dead and buried. */
@@ -106,7 +106,7 @@ implements VehicleOperator, Serializable {
         
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
-        mind = new Mind(this);
+        botMind = new BotMind(this);
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
@@ -252,7 +252,7 @@ implements VehicleOperator, Serializable {
 
     // TODO: allow robot parts to be stowed in storage 
     void setDead() {
-        mind.setInactive();
+        botMind.setInactive();
         buryBody();
     }
 
@@ -273,7 +273,7 @@ implements VehicleOperator, Serializable {
             if (health.timePassing(time, support, config)) {
 
                 // Mental changes with time passing.
-                mind.timePassing(time);
+                botMind.timePassing(time);
             } 
             else {
                 // robot has died as a result of physical condition
@@ -314,8 +314,8 @@ implements VehicleOperator, Serializable {
      * Returns the robot's mind
      * @return the robot's mind
      */
-    public Mind getMind() {
-        return mind;
+    public BotMind getBotMind() {
+        return botMind;
     }
 
     /**
@@ -524,8 +524,8 @@ implements VehicleOperator, Serializable {
         super.destroy();
         attributes.destroy();
         attributes = null;
-        mind.destroy();
-        mind = null;
+        botMind.destroy();
+        botMind = null;
         health.destroy();
         health = null;
         birthTimeStamp = null;

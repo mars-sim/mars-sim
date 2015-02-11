@@ -125,7 +125,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int mechanicSkill = robot.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result = mechanicSkill;
 
 		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();

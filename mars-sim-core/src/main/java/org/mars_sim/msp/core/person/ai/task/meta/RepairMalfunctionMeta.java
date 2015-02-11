@@ -112,7 +112,7 @@ public class RepairMalfunctionMeta implements MetaTask {
         result *= robot.getPerformanceRating();
 
         // Job modifier.
-        RobotJob job = robot.getMind().getRobotJob();
+        RobotJob job = robot.getBotMind().getRobotJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
         }

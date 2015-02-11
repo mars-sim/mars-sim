@@ -651,7 +651,7 @@ implements Serializable {
             double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
-            robot.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+            robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
      
         }
 
@@ -719,7 +719,7 @@ implements Serializable {
     	if (person != null) 
             manager = person.getMind().getSkillManager();
     	else if (robot != null) 
-            manager = robot.getMind().getSkillManager();
+            manager = robot.getBotMind().getSkillManager();
            
     	return manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
     }

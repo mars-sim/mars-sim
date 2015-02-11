@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * Mind.java
- * @version 3.07 2015-01-21
- * @author Scott Davis
+ * BotMind.java
+ * @version 3.07 2015-02-11
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai;
 
@@ -28,18 +28,18 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
  * The Mind class represents a person's mind. It keeps track of missions and 
  * tasks which the person is involved.
  */
-public class Mind
+public class BotMind
 implements Serializable {
 
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(Mind.class.getName());
+    private static Logger logger = Logger.getLogger(BotMind.class.getName());
 
     // Data members
     /** The person owning this mind. */
-    private Person person = null;
+    private Robot robot = null;
     /** The person's task manager. */
     private TaskManager taskManager;
     /** The person's current mission (if any). */
@@ -58,25 +58,25 @@ implements Serializable {
     
     /**
      * Constructor 1.
-     * @param person the person owning this mind
+     * @param robot the robot owning this mind
      * @throws Exception if mind could not be created.
      */
-    public Mind(Person person) {
+    public BotMind(Robot robot) {
 
         // Initialize data members
-        this.person = person;
+        this.robot = robot;
         mission = null;
-        job = null;
+        robotJob = null;
         jobLock = false;
 
         // Set the MBTI personality type.
-        personality = new PersonalityType(person);
+        //personality = new PersonalityType(person);
 
         // Construct a task manager
         taskManager = new TaskManager(this);
 
         // Construct a skill manager.
-        skillManager = new SkillManager(person);
+        skillManager = new SkillManager(robot);
     }
     
     /**
@@ -86,22 +86,14 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-        if (person != null) { 
-	
-	        // Check if this person needs to get a new job or change jobs.
+        	 // Check if this person needs to get a new job or change jobs.
 	        if (!jobLock) {
-	            setJob(JobManager.getNewJob(person), false);
+	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 	        }
 	
 	        // Take action as necessary.
 	        takeAction(time);
 	
-	        // Update stress based on personality.
-	        personality.updateStress(time);
-	
-	        // Update relationships.
-	        Simulation.instance().getRelationshipManager().timePassing(person, time);
-        }
     }
 
     
@@ -120,23 +112,24 @@ implements Serializable {
 
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
-        
-        if (person != null) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                overrideMission = person.getSettlement().getMissionCreationOverride();
+ 
+        if (robot != null) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                overrideMission = robot.getSettlement().getMissionCreationOverride();
             }
 
-            // Perform a task if the person has one, or determine a new task/mission.
+            // Perform a task if the robot has one, or determine a new task/mission.
             if (taskManager.hasActiveTask()) {
-                double remainingTime = taskManager.performTask(time, person
+                double remainingTime = taskManager.performTask(time, robot
                         .getPerformanceRating());
                 if (remainingTime > 0D) {
                     takeAction(remainingTime);
                 }
             } 
             else {
+            	
                 if (activeMission) {
-                    mission.performMission(person);
+                    mission.performMission(robot);
                 }
 
                 if (!taskManager.hasActiveTask()) {
@@ -151,22 +144,18 @@ implements Serializable {
                 if (taskManager.hasActiveTask() || hasActiveMission()) {
                     takeAction(time);
                 }
+                
             }
         	
-        	
         }
-     
+        
 
     }
 
-    /**
-     * Returns the person owning this mind.
-     * @return person
-     */
-    public Person getPerson() {
-        return person;
-    }
 
+    public Robot getRobot() {
+        return robot;
+    }
     /**
      * Returns the person's task manager
      * @return task manager
@@ -208,22 +197,20 @@ implements Serializable {
     }
 
     /**
-     * Sets the person's job.
+     * Sets the robot's job.
      * @param newJob the new job
      * @param locked is the job locked so another can't be chosen?
      */
-    public void setJob(Job newJob, boolean locked) {
+    public void setRobotJob(RobotJob newJob, boolean locked) {
 
         jobLock = locked;
-        if (!newJob.equals(job)) {
-            job = newJob;
+        if (!newJob.equals(robotJob)) {
+        	robotJob = newJob;
 
-        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-
+         robot.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+          
         }
     }
-
-    
     
     /**
      * Returns true if person has an active mission.
@@ -240,9 +227,10 @@ implements Serializable {
     public void setInactive() {
         taskManager.clearTask();
         if (hasActiveMission()) {
-        	if (person != null) 
-                mission.removePerson(person);           
-
+          
+        	if (robot != null)
+                mission.removeRobot(robot);
+   
             mission = null;
         }
     }
@@ -254,18 +242,18 @@ implements Serializable {
     public void setMission(Mission newMission) {
         if (newMission != mission) {
         	
-        	if (person != null) {
+        	if (robot != null) {
         		if (mission != null) {
-                    mission.removePerson(person);
+                    mission.removeRobot(robot);
                 }
 
                 mission = newMission;
 
                 if (newMission != null) {
-                    newMission.addPerson(person);
+                    newMission.addRobot(robot);
                 }
 
-                person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+                robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
         	}
   
         }
@@ -280,13 +268,13 @@ implements Serializable {
 
         MissionManager missionManager = Simulation.instance().getMissionManager();
 
-        if (person != null) {
-            // If this Person is too weak then they can not do Missions
-            if (person.getPerformanceRating() < 0.5D) {
+        if (robot != null) {
+            if (robot.getPerformanceRating() < 0.5D) {
                 missions = false;
             }
         }
         
+
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
@@ -301,22 +289,20 @@ implements Serializable {
         }
 
         if (missions) {
-	        if (person != null) {	
-	           missionWeights = missionManager.getTotalMissionProbability(person);
+	        if (robot != null) {	            
+	           missionWeights = missionManager.getTotalMissionProbability(robot);
 	           weightSum += missionWeights;
 	        }
-	        
 		}
 
-        if (person != null) {	
-	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
+        if (robot != null) {	            
+        	if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
 	                (Double.isInfinite(weightSum))) {
-	            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+        		throw new IllegalStateException("Mind.getNewAction(): weight sum: "
 	                    + weightSum);
-	        }
-        }
+	        }	 
+	    }
         
-	
         
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
@@ -338,11 +324,12 @@ implements Serializable {
         if (missions) {
             if (rand < missionWeights) {
             	Mission newMission = null;
-            	if (person != null) {
-                    logger.fine(person.getName() + " starting a new mission.");
-                    newMission = missionManager.getNewMission(person);
-                    
+            	
+            	if (robot != null) {
+                    logger.fine(robot.getName() + " starting a new mission.");
+                    newMission = missionManager.getNewMission(robot);  
             	}
+
                 
                 if (newMission != null) {
                     missionManager.addMission(newMission);
@@ -356,9 +343,9 @@ implements Serializable {
             }
         }
 
-        if (person != null) {
+       if (robot != null) {
             // If reached this point, no task or mission has been found.
-            logger.severe(person.getName()
+            logger.severe(robot.getName()
                     + " couldn't determine new action - taskWeights: "
                     + taskWeights + ", missionWeights: " + missionWeights);
         }
@@ -385,7 +372,7 @@ implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        person = null;
+        robot = null;
         taskManager.destroy();
         if (mission != null) mission.destroy();
         mission = null;

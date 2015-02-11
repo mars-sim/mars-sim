@@ -310,7 +310,7 @@ implements SettlementMapLayer {
 			);
 
 			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getMind().getTaskManager().getTaskDescription()); //$NON-NLS-1$
+			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getTaskManager().getTaskDescription()); //$NON-NLS-1$
 			drawLabelRight(
 				g2d, taskString, selectedRobot.getXLocation(), 
 				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
@@ -318,7 +318,7 @@ implements SettlementMapLayer {
 			);
 
 			// Draw mission.
-			Mission mission = selectedRobot.getMind().getMission();
+			Mission mission = selectedRobot.getBotMind().getMission();
 			if (mission != null) {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
 				drawLabelRight(

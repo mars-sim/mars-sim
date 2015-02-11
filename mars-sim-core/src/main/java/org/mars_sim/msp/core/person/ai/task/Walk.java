@@ -250,7 +250,7 @@ implements Serializable {
 
             // If no mission and vehicle is at a settlement location, enter settlement.
             boolean walkToSettlement = false;
-            if ((robot.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+            if ((robot.getBotMind().getMission() == null) && (vehicle.getSettlement() != null)) {
 
                 Settlement settlement = vehicle.getSettlement();
                 
@@ -452,8 +452,8 @@ implements Serializable {
         Airlock result = null;
 
         // Determine airlock from other robots on mission.
-        if (robot.getMind().getMission() != null) {
-            Iterator<Robot> i = robot.getMind().getMission().getRobots().iterator();
+        if (robot.getBotMind().getMission() != null) {
+            Iterator<Robot> i = robot.getBotMind().getMission().getRobots().iterator();
             while (i.hasNext() && (result == null)) {
                 Robot p = i.next();
                 if (p != robot) {
