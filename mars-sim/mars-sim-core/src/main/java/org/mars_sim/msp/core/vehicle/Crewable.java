@@ -24,12 +24,15 @@ public interface Crewable {
 	 */
 	public int getCrewCapacity();
 
+	public int getRobotCrewCapacity();
+
 	/**
 	 * Gets the current number of crewmembers.
 	 * @return number of crewmembers
 	 */
 	public int getCrewNum();
 
+	public int getRobotCrewNum();
 	/**
 	 * Gets a collection of the crewmembers.
 	 * @return crewmembers as Collection
@@ -40,7 +43,7 @@ public interface Crewable {
 	 * Gets a collection of the robots.
 	 * @return robots as Collection
 	 */
-	public Collection<Robot> getRobots();
+	public Collection<Robot> getRobotCrew();
 
 	
 	/**
@@ -49,4 +52,6 @@ public interface Crewable {
 	 * @return true if person is a crewmember
 	 */
 	public boolean isCrewmember(Person person);
+	
+	public boolean isRobotCrewmember(Robot robot);
 }

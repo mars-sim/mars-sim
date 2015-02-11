@@ -35,6 +35,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     // Data members.
     /** The LightUtilityVehicle's capacity for crewmembers. */
     private int crewCapacity = 0;
+    private int robotCrewCapacity = 0;
+    
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
 
@@ -57,7 +59,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         }
 
         crewCapacity = config.getCrewSize(description);
-
+        robotCrewCapacity = config.getCrewSize(description);
+        		
         Inventory inv = getInventory();
         inv.addGeneralCapacity(config.getTotalCapacity(description));
 
@@ -109,6 +112,25 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         return getInventory().containsUnit(person);
     }
 
+	@Override
+	public Collection<Robot> getRobotCrew() {
+        return CollectionUtils.getRobot(getInventory().getContainedUnits());
+	}
+
+	@Override
+	public int getRobotCrewCapacity() {
+        return robotCrewCapacity;
+	}
+
+	@Override
+	public int getRobotCrewNum() {
+        return getRobotCrew().size();
+	}
+
+	@Override
+	public boolean isRobotCrewmember(Robot robot) {
+        return getInventory().containsUnit(robot);
+	}
     /**
      * Gets a collection of parts that can be attached to this vehicle.
      * @return collection of parts.
@@ -141,9 +163,5 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         attachments = null;
     }
 
-	@Override
-	public Collection<Robot> getRobots() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 }

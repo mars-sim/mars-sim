@@ -380,7 +380,7 @@ implements ActionListener {
 				jobCache = deathInfo.getJob();
 				jobComboBox.setEnabled(false);
 			} 
-			else jobCache = mind.getRobotJob().getName(robot.getRobotType());
+			else jobCache = botMind.getRobotJob().getName(robot.getRobotType());
 			if (!jobCache.equals(jobComboBox.getSelectedItem())) {
 			    jobComboBox.setSelectedItem(jobCache);
 			}
@@ -394,8 +394,18 @@ implements ActionListener {
 		TaskManager taskManager = null;
 		Mission mission = null;
 		if (!dead) {
-			taskManager = mind.getTaskManager();
-			if (mind.hasActiveMission()) mission = mind.getMission();
+
+			if (person != null) {
+				taskManager = mind.getTaskManager();
+				if (mind.hasActiveMission()) mission = mind.getMission();
+				
+			}
+			else if (robot != null) {
+				taskManager = botMind.getTaskManager();
+				if (botMind.hasActiveMission()) mission = botMind.getMission();
+				
+			}
+
 		}
 
 		// Update task text area if necessary.
