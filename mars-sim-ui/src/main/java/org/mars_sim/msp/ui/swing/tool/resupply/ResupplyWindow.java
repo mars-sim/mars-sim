@@ -24,7 +24,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /**
@@ -131,43 +133,91 @@ implements ListSelectionListener {
 	 * Opens a create dialog.
 	 */
 	private void createNewTransportItem() {
-		// Pause simulation.
-		desktop.getMainWindow().pauseSimulation();
+		
+		MainWindow mw = desktop.getMainWindow();
 
-		// Create new transportItem dialog.
-		new NewTransportItemDialog(desktop.getMainWindow().getFrame());
-
-		// Unpause simulation.
-		desktop.getMainWindow().unpauseSimulation();
+		if (mw !=null )  {
+			// Pause simulation.
+			mw.pauseSimulation();	
+			// Create new transportItem dialog.
+			new NewTransportItemDialog(mw.getFrame());	
+			// Unpause simulation.
+			mw.unpauseSimulation();
+		}
+		
+		MainScene ms = desktop.getMainScene();
+		/*
+		if (ms !=null )  {
+			// Pause simulation.
+			ms.pauseSimulation();	
+			// Create new transportItem dialog.
+			new NewTransportItemStage(ms.getStage());	
+			// Unpause simulation.
+			ms.unpauseSimulation();
+		}
+		*/
 	}
 
 	/**
 	 * Opens a modify dialog for the currently selected transport item.
 	 */
 	private void modifyTransportItem() {
-		// Pause simulation.
-		desktop.getMainWindow().pauseSimulation();
-
-		// Get currently selected incoming transport item.
-		Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
-
-		if ((transportItem != null)) {
-			if (transportItem instanceof Resupply) {
-				// Create modify resupply mission dialog.
-				Resupply resupply = (Resupply) transportItem;
-				String title = "Modify Resupply Mission";
-				new ModifyTransportItemDialog(desktop.getMainWindow().getFrame(), title, resupply);
+		
+		MainWindow mw = desktop.getMainWindow();
+		MainScene ms = desktop.getMainScene();
+		
+		if (mw !=null )  {
+			// Pause simulation.
+			mw.pauseSimulation();
+				
+			// Get currently selected incoming transport item.
+			Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+	
+			if ((transportItem != null)) {
+				if (transportItem instanceof Resupply) {
+					// Create modify resupply mission dialog.
+					Resupply resupply = (Resupply) transportItem;
+					String title = "Modify Resupply Mission";
+					new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
+				}
+				else if (transportItem instanceof ArrivingSettlement) {
+					// Create modify arriving settlement dialog.
+					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+					String title = "Modify Arriving Settlement";
+					new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
+				}
 			}
-			else if (transportItem instanceof ArrivingSettlement) {
-				// Create modify arriving settlement dialog.
-				ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
-				String title = "Modify Arriving Settlement";
-				new ModifyTransportItemDialog(desktop.getMainWindow().getFrame(), title, settlement);
-			}
+
+			// Unpause simulation.
+			mw.unpauseSimulation();
 		}
+		
 
-		// Unpause simulation.
-		desktop.getMainWindow().unpauseSimulation();
+		if (ms !=null )  {
+			// Pause simulation.
+			ms.pauseSimulation();
+				
+			// Get currently selected incoming transport item.
+			Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+	
+			if ((transportItem != null)) {
+				if (transportItem instanceof Resupply) {
+					// Create modify resupply mission dialog.
+					Resupply resupply = (Resupply) transportItem;
+					String title = "Modify Resupply Mission";
+					new ModifyTransportItemDialog(ms.getStage(), title, resupply);
+				}
+				else if (transportItem instanceof ArrivingSettlement) {
+					// Create modify arriving settlement dialog.
+					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+					String title = "Modify Arriving Settlement";
+					new ModifyTransportItemDialog(ms.getStage(), title, settlement);
+				}
+			}
+
+			// Unpause simulation.
+			ms.unpauseSimulation();
+		}
 	}
 
 	/**

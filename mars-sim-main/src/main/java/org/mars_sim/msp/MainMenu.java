@@ -77,11 +77,12 @@ public class MainMenu {
    }    
 
 
-   public void runOne() {      
+   public void runOne() {    
 	   
+	   primaryStage.setIconified(true);
 	   mpFX.handleNewSimulation();
 	   mpFX.startSimulation();
-	   
+
 	   mainScene = new MainScene(stage).createMainScene();
 	   stage.setScene(mainScene);
 	   stage.show();

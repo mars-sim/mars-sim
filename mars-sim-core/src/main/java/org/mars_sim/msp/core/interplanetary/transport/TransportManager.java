@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  * A manager for interplanetary transportation.
  */
 public class TransportManager 
-extends Thread
+extends Thread 
 implements Serializable {
 
 	/** default serial id. */
@@ -41,7 +41,9 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public TransportManager() {}
+	public TransportManager() {
+
+	}
 	
 	// 2015-02-04 Added run()
 	public void run() {		
@@ -51,6 +53,7 @@ implements Serializable {
 		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements());		
 		// Create initial resupply missions.
 		transportItems.addAll(ResupplyUtil.createInitialResupplyMissions());
+		
 	}
 	
 	/**
