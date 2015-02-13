@@ -122,7 +122,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		mainPane.add(descriptionPane);
 
 		// Create the description label.
-		descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", ""),SwingConstants.LEFT); //$NON-NLS-1$
+		descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", "")); //$NON-NLS-1$		
+		//descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", ""),SwingConstants.LEFT); //$NON-NLS-1$
 		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(descriptionLabel);
 

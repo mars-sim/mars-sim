@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /** 
  * The CookMeal class is a task for cooking meals in a building
@@ -70,7 +71,9 @@ implements Serializable {
 	// Data members
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
+	
 	private int counter;
+	private int solElapsedCache;
 
 	/**
 	 * Constructor.
@@ -99,19 +102,28 @@ implements Serializable {
             //int size = kitchen.getHotMealCacheSize();
 	        if (size == 0) {
 	        	counter++;
-	        	boolean display = true;
+	        	boolean display = false;
 	        	
-	        	if (counter > 10) 
+	        	// display the msg when no ingredients are detected at first and after 15 warnings
+	        	if (counter > 15 || counter == 0) 
 	        		display = true;
 	        	
 	        	if (display) {
 	        		logger.severe("Warning: cannot cook meals in " 
 	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName() 
 	            		+ " because none of the ingredients of a meal are available ");
-		            counter = 0;
-		            display = false;
+		            //counter = 0;
 	        	}
 	        	
+	            // 2015-01-15 Added solElapsed
+	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	            int solElapsed = MarsClock.getSolOfYear(marsClock);
+	        	
+	            if (solElapsed != solElapsedCache) {
+	            	counter = 0;
+	            	solElapsedCache = solElapsed;
+	        	
+	            }
 	            endTask();
 	            kitchen.cleanup();
 	        
