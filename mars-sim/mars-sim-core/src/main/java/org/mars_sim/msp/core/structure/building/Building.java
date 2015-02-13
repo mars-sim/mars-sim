@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.BuildingKit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -83,49 +84,50 @@ LocalBoundedObject, InsidePathLocation {
 	private static final double WEAR_LIFETIME = 3340000D;
 	/** Base amount of maintenance time for building. */
 	private static final double BASE_MAINTENANCE_TIME = 50D;
+	
+    private static final double INITIAL_TEMPERATURE = 22.5D;
 
     // Data members
 	protected String buildingType;
 	protected String nickName;
-	protected BuildingManager manager; 	
+	// 2014-11-27 Added description
+	protected String description = "Stay tuned";
+	
 	protected double width;
 	protected double length;
 	protected int baseLevel;
 	protected double xLoc;
 	protected double yLoc;
 	protected double facing;
-	protected PowerMode powerMode;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	protected MalfunctionManager malfunctionManager;
-	protected List<Function> functions;
 	protected int id;
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
-
 	//private static int count;
-	// 2014-10-28  changed variable's name from "name" to "buildingType"
-	protected ThermalGeneration furnace;
 	// Specific Heat Capacity = 4.0 for a typical house
 	protected double SHC = 4.0; 
 	// Building Loss Coefficient = 1.0 for a typical house
 	protected double BLC = 1.0; 
 	protected double floorArea;
 	protected double currentTemperature;
-	//protected double deltaTemperature ;
-    private static final double INITIAL_TEMPERATURE = 22.5D;
+	// 2014-11-02 Added heatGenerated
+	private double heatGenerated = 0; // the initial value is zero 
+	private double heatGeneratedCache = 0; // the initial value is zero 
+
+	/** Unit location coordinates. */
+	private Coordinates location;// = manager.getSettlement().getCoordinates();
+	protected BuildingManager manager; 	
+	// 2014-10-28  changed variable's name from "name" to "buildingType"
+	protected ThermalGeneration furnace;
+	protected MalfunctionManager malfunctionManager;
+	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
 	// 2014-11-02 Added HeatModeCache
 	protected HeatMode heatModeCache;
-	// 2014-11-02 Added heatGenerated
-	private double heatGenerated = 0; // the initial value is zero 
-	private double heatGeneratedCache = 0; // the initial value is zero 
-	// 2014-11-27 Added description
-	protected String description = "Stay tuned";
-	
-	/** Unit location coordinates. */
-	private Coordinates location;// = manager.getSettlement().getCoordinates();
+	protected List<Function> functions;
+	private List<BuildingKit> buildingKit;
 	
 	/** Constructor 1
 	 * Constructs a Building object.

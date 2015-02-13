@@ -330,13 +330,11 @@ implements Serializable {
 					SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 					double sunlight = surface.getSurfaceSunlight(settlement.getCoordinates());
 					harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
-
+				//System.out.println("Farming.java: sunlight harvestModifier is " + harvestModifier);
+					
 					// TODO mkung: Modify harvest modifier by amount of artificial light available to the greenhouse
-				
-					// TODO mkung: Modify harvest modifier by temperature of the greenhouse
-					
-					// TODO mkung: Modify harvest modifier by the moisture level
-					
+					// TODO mkung: Modify harvest modifier by temperature of the greenhouse		
+					// TODO mkung: Modify harvest modifier by the moisture level					
 					// TODO mkung: Modify harvest modifier by the number of bees in the greenhouse
 
 					// Determine harvest modifier by amount of waste water available.
@@ -354,6 +352,7 @@ implements Serializable {
 					retrieveAnResource(wasteWater, wasteWaterUsed);
 					// 2015-01-25 Added waterUsed 
 					harvestModifier = harvestModifier * ((( (wasteWaterUsed + waterUsed) / wasteWaterRequired) * .5D) + .5D);
+				//System.out.println("Farming.java: wasteWater harvestModifier is " + harvestModifier);
 					
 					// Amount of water generated through recycling				
 					double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;					
@@ -369,13 +368,22 @@ implements Serializable {
 					}					
 					retrieveAnResource(carbonDioxide, carbonDioxideUsed);								
 					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
+				//System.out.println("Farming.java: carbonDioxide harvestModifier is " + harvestModifier);
 					
-					// Determine harvest modifier by amount of oxygen available.							
+					// Determine the amount of oxygen generated via gas exchange.							
 					double oxygenAmount = carbonDioxideUsed * OXYGEN_GENERATION_RATE;					
-					storeAnResource(oxygenAmount, org.mars_sim.msp.core.LifeSupport.OXYGEN);					
-					
-					// Check if crop is dying if it's at least 25% along on its growing time and its condition
-					// is less than 10% normal.
+					storeAnResource(oxygenAmount, org.mars_sim.msp.core.LifeSupport.OXYGEN);									
+
+					// Modify harvest amount.
+					actualHarvest += maxPeriodHarvest * harvestModifier;	
+				//System.out.println("Farming.java: maxPeriodHarvest is " + maxPeriodHarvest);
+				//System.out.println("Farming.java: maxPeriodHarvest * harvestModifier is " + maxPeriodHarvest * harvestModifier);
+				//System.out.println("Farming.java: actualHarvest is " + actualHarvest);
+				//System.out.println("Farming.java: maxHarvest is " + maxHarvest);
+				
+						
+					// Check if crop is dying if it's at least 25% along on its growing time 
+					// and its condition is only less than 10% of its full value.
 					if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) &&
 							(getCondition() < .1D)) {
 						phase = FINISHED;
