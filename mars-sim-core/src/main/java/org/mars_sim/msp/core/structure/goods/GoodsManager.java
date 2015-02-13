@@ -125,7 +125,8 @@ public class GoodsManager implements Serializable {
     private static final double VEHICLE_FUEL_FACTOR = 10D;
     private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
     private static final double MANUFACTURING_INPUT_FACTOR = .5D;
-    private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
+    //private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
+    private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
     private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
     private static final double DESSERT_FACTOR = .5D;
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
@@ -138,6 +139,12 @@ public class GoodsManager implements Serializable {
     public final double FRACTION = PreparingDessert.DESSERT_SERVING_FRACTION;
     
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH; 
+    
+    // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
+    private static final double MINIMUM_STORED_SUPPLY = 0.000001;
+    private static final double MINIMUM_TOTAL_DEMAND = 0.000001;    
+    private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 100000;
+    private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001;
     
     // Data members
     private Settlement settlement;
@@ -318,9 +325,12 @@ public class GoodsManager implements Serializable {
         // Compact and/or clear supply and demand maps every 5 days
         solElapsed = solElapsed % SOL_PER_REFRESH + 1;
         
-    	// increment supply by one to avoid divide by zero
-    	supply++;
-    	
+    	//supply++;
+        // 2015-02-13 Using MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when calculating VP
+    	if (supply < MINIMUM_STORED_SUPPLY)
+    		supply = MINIMUM_STORED_SUPPLY;
+        
+        
         AmountResource resource = (AmountResource) resourceGood.getObject();
     	String r = resource.getName().toLowerCase();
     	
@@ -372,14 +382,18 @@ public class GoodsManager implements Serializable {
             projectedDemand += getResourceConstructionSiteDemand(resource);
 
             // Revert back to projectedDemand per sol for calculating totalDemand
-            //projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             
+            // 2015-02-13 Added MINIMUM_TOTAL_DEMAND
+            if (totalDemand < MINIMUM_TOTAL_DEMAND) 
+            	totalDemand = MINIMUM_TOTAL_DEMAND;
+            
             // Add trade value.
             tradeDemand = determineTradeDemand(resourceGood, useCache);
-            tradeDemand = Math.round(tradeDemand* 10000.0) / 10000.0;
+            tradeDemand = Math.round(tradeDemand* 1000000.0) / 1000000.0;
  
             if (tradeDemand > totalDemand) {
             	totalDemand = tradeDemand;
@@ -387,23 +401,28 @@ public class GoodsManager implements Serializable {
 
             goodsDemandCache.put(resourceGood, totalDemand);
         }
+              
+        value = totalDemand / totalSupply;
         
-        //value = Math.log( totalDemand / totalSupply + 1);
-        value =  totalDemand / totalSupply ;
-
+        // 2015-02-13 Added MAXIMUM_ALLOWABLE_VALUE_POINT 
+        if (value > MAXIMUM_ALLOWABLE_VALUE_POINT) 
+        	value = MAXIMUM_ALLOWABLE_VALUE_POINT;
+        else if (value < MINIMUM_ALLOWABLE_VALUE_POINT) 
+        	value = MINIMUM_ALLOWABLE_VALUE_POINT;        
+        
+        
         // Use resource processing value if higher. 
         // Manny: why using higher values?
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
-/*
-//        if (r.equals("concrete")
-//    		|| r.equals("polyethylene")) {
-//        System.out.println( r
-//                + "  projectedDemand per sol is " + Math.round(projectedDemand* 10000.0) / 10000.0     
-//                + "  tradeDemand per sol is " + Math.round(tradeDemand* 10000.0) / 10000.0
-//                + "  VP is " + Math.round(value* 10000.0) / 10000.0);
-//        }
-*/        
+
+       if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+    	   System.out.println( r
+                // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
+                + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
+                + "     VP is " + Math.round(value* 1000000.0) / 1000000.0);
+        }
+
         return value;
     }
 
@@ -413,20 +432,20 @@ public class GoodsManager implements Serializable {
     	String r = resource.getName().toLowerCase();
     	
         double supplyAmount = inv.getAmountSupplyAmount(r);
-        supplyAmount = Math.round(supplyAmount * 10000.0) / 10000.0;
+        supplyAmount = Math.round(supplyAmount * 1000000.0) / 1000000.0;
         int supplyRequest = inv.getAmountSupplyRequest(r);
         // The total daily supply is the sum of the stored supply amount and daily supply amount
         totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
-/*    
-//        if (r.equals("concrete")
-//    		|| r.equals("polyethylene")) {
-//        System.out.println( r 
-//        + " : supplyStored is " + Math.round(supplyStored* 10000.0) / 10000.0
-//        + "  supplyAmount is " + Math.round(supplyAmount* 10000.0) / 10000.0     
-//        + "  supplyRequest is " + supplyRequest
-//        + "  totalSupplyAmount is " + Math.round(totalSupplyAmount * 10000.0) / 10000.0);
-//        }
-*/
+        totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
+        
+        if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+	        System.out.println( r 
+	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
+	        + "  supplyAmount is " + supplyAmount    
+	        + "  supplyRequest is " + supplyRequest
+	        + "  totalSupplyAmount is " + totalSupplyAmount);
+        }
+
     	return totalSupplyAmount;
     }
 
@@ -438,23 +457,22 @@ public class GoodsManager implements Serializable {
     	
     	// sDemand is the amount of successful demand
         double sDemand = inv.getAmountDemandAmount(r);
-        sDemand = Math.round(sDemand * 10000.0) / 10000.0;
-        int sRequest = inv.getAmountDemandMetRequest(r);
+        sDemand = Math.round(sDemand * 1000000.0) / 1000000.0;
+        //int sRequest = inv.getAmountDemandMetRequest(r);
     
         // Get the average demand per orbit 
         // total average demand = projected demand + real demand usage  
         double totalAmountDemand = projectedDemand + sDemand / solElapsed ; 
      
-        totalAmountDemand = Math.round(totalAmountDemand* 10000.0) / 10000.0;
-/*
-//        if (r.equals("concrete")
-//    		|| r.equals("polyethylene")) {
-//        System.out.println( r
-//        + " : demandAmount  is " + sDemand 
-//        + "  demandRequest is " + sRequest
-//        + "  totalAmountDemand is " + totalAmountDemand);
-//        }
-*/        
+        totalAmountDemand = Math.round(totalAmountDemand* 1000000.0) / 1000000.0;
+
+        if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+	        System.out.println( r
+	        + " : demandAmount  is " + sDemand 
+	        + " : projectedDemand is " + projectedDemand
+	        + "  totalAmountDemand is " + totalAmountDemand);
+        }
+        
     	return totalAmountDemand;
     }
     
