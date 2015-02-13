@@ -43,6 +43,7 @@ public final class EquipmentFactory {
 	        equipmentNamesCache.add(GasCanister.TYPE);
 	        equipmentNamesCache.add(LargeBag.TYPE);
 	        equipmentNamesCache.add(SpecimenContainer.TYPE);
+	        equipmentNamesCache.add(BuildingKit.TYPE);	        
 	    }
 	    return new HashSet<String>(equipmentNamesCache);
 	}
@@ -70,6 +71,7 @@ public final class EquipmentFactory {
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return new GasCanister(location);
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return new LargeBag(location);
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
+		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return new BuildingKit(location);
 		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
 
@@ -100,6 +102,7 @@ public final class EquipmentFactory {
 		else if (GasCanister.class.equals(equipmentClass)) return new GasCanister(location);
         else if (LargeBag.class.equals(equipmentClass)) return new LargeBag(location);
 		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
+		else if (BuildingKit.class.equals(equipmentClass)) return new BuildingKit(location);
 		else throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 	
@@ -116,6 +119,7 @@ public final class EquipmentFactory {
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.class;
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.class;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
+		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.class;		
 		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
     
@@ -132,6 +136,7 @@ public final class EquipmentFactory {
         else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.EMPTY_MASS;
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.EMPTY_MASS;
         else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.EMPTY_MASS;
+        else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.EMPTY_MASS;
         else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
     }
 }

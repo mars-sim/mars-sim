@@ -28,7 +28,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	// Static members
 	private static final Color PERSON_COLOR = new Color(0, 255, 255);
 	private static final Color PERSON_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = new Color(255, 255, 255);
+	private static final Color SELECTED_COLOR = Color.ORANGE; // white is (255, 255, 255);
 	private static final Color SELECTED_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 
 	// Data members

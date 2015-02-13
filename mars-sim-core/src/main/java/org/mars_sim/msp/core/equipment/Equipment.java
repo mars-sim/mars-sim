@@ -45,7 +45,7 @@ implements Salvagable {
 	 *  @param name the name of the unit
 	 *  @param location the unit's location
 	 */
-	Equipment(String name, Coordinates location) {
+	protected Equipment(String name, Coordinates location) {
 		super(name, location);
 
 		//this.name = name;

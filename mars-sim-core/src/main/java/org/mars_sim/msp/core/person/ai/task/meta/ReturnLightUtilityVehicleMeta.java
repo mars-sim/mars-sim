@@ -49,13 +49,20 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ReturnLightUtilityVehicle(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            
+            if (robot.getVehicle() instanceof LightUtilityVehicle) {
+                result = 500D;
+            }
+        }
+
+        return result;
+    }
 }

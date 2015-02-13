@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The robot class represents a robot on Mars. It keeps track of everything
- * related to that robot and provides information about him/her.
+ * related to that robot
  */
 public class Robot
 extends Unit
@@ -446,8 +446,8 @@ implements VehicleOperator, Serializable {
      * Gets the robot's local group (in building or rover)
      * @return collection of robots in robot's location.
      */
-    public Collection<Robot> getLocalGroup() {
-        Collection<Robot> localGroup = new ConcurrentLinkedQueue<Robot>();
+    public Collection<Robot> getLocalRobotGroup() {
+        Collection<Robot> localRobotGroup = new ConcurrentLinkedQueue<Robot>();
 
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building building = BuildingManager.getBuilding(this);
@@ -456,18 +456,18 @@ implements VehicleOperator, Serializable {
                     org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport = 
                             (org.mars_sim.msp.core.structure.building.function.LifeSupport) 
                             building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                    localGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobotOccupants());
+                    localRobotGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobotOccupants());
                 }
             }
         } else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            Crewable crewableVehicle = (Crewable) getVehicle();
-            localGroup = new ConcurrentLinkedQueue<Robot>(crewableVehicle.getRobotCrew());
+            Crewable robotCrewableVehicle = (Crewable) getVehicle();
+            localRobotGroup = new ConcurrentLinkedQueue<Robot>(robotCrewableVehicle.getRobotCrew());
         }
 
-        if (localGroup.contains(this)) {
-            localGroup.remove(this);
+        if (localRobotGroup.contains(this)) {
+            localRobotGroup.remove(this);
         }
-        return localGroup;
+        return localRobotGroup;
     }
 
     /**
