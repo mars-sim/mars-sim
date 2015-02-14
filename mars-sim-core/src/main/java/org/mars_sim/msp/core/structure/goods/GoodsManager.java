@@ -140,10 +140,10 @@ public class GoodsManager implements Serializable {
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH; 
     
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
-    private static final double MINIMUM_STORED_SUPPLY = 0.000001;
-    private static final double MINIMUM_TOTAL_DEMAND = 0.000001;    
-    private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 100000;
-    private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001;
+    private static final double MINIMUM_STORED_SUPPLY = 1D; //0.000001D;
+    private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;    
+    private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
+    private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     
     // Data members
     private Settlement settlement;

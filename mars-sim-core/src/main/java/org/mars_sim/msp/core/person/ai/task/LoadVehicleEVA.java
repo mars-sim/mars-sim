@@ -488,8 +488,6 @@ implements Serializable {
                 try {
                     sInv.retrieveAmountResource(resource, resourceAmount);
                     vInv.storeAmountResource(resource, resourceAmount, true);
-       			 	// 2015-01-15 Add addSupplyAmount()
-                    vInv.addAmountSupplyAmount(resource, resourceAmount);
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -513,8 +511,8 @@ implements Serializable {
                 try {
                     vInv.retrieveAmountResource(resource, amountToRemove);
                     sInv.storeAmountResource(resource, amountToRemove, true);
-       			 // 2015-01-15 Add addSupplyAmount()
-                    sInv.addAmountSupplyAmount(resource, amountToRemove);
+       			    // 2015-01-15 Add addSupplyAmount()
+                    //sInv.addAmountSupplyAmount(resource, amountToRemove);
                 }
                 catch (Exception e) {}
             }

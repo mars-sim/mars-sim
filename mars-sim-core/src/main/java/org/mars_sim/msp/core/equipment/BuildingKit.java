@@ -74,6 +74,7 @@ implements Serializable, Malfunctionable, Salvagable {
 	public String getKitName() {
 		return kitName;
 	}
+	
 	/**
 	 * Indicate the start of a salvage process on the item.
 	 * @param info the salvage process info.
@@ -91,14 +92,6 @@ implements Serializable, Malfunctionable, Salvagable {
 	public SalvageInfo getSalvageInfo() {
 		return salvageInfo;
 	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-		if (salvageInfo != null) salvageInfo.destroy();
-		salvageInfo = null;
-	}
-
 
 	/**
 	 * Gets the unit's malfunction manager.
@@ -125,5 +118,13 @@ implements Serializable, Malfunctionable, Salvagable {
 		malfunctionManager.timePassing(time);
 	}
 	
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (salvageInfo != null) salvageInfo.destroy();
+		salvageInfo = null;
+	}
+
 	
 }
