@@ -7,8 +7,8 @@
 <!ATTLIST process process-time CDATA #REQUIRED>
 <!ATTLIST process power-required CDATA #REQUIRED>
 <!ELEMENT description (#PCDATA)>
-<!ELEMENT inputs (resource*, part*)>
-<!ELEMENT outputs (resource*, part*, equipment*)>
+<!ELEMENT inputs (part*, resource*)>
+<!ELEMENT outputs (part*, resource*, equipment*)>
 <!ELEMENT resource EMPTY>
 <!ATTLIST resource name CDATA #REQUIRED>
 <!ATTLIST resource amount CDATA #REQUIRED>

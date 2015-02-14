@@ -123,16 +123,15 @@ public class GoodsManager implements Serializable {
     private static final double VEHICLE_FACTOR = 10000D;
     private static final double LIFE_SUPPORT_FACTOR = 4D;
     private static final double VEHICLE_FUEL_FACTOR = 10D;
-    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
-    private static final double MANUFACTURING_INPUT_FACTOR = .5D;
-    //private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
-    private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
-    private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
-    private static final double DESSERT_FACTOR = .5D;
+    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = 1D;
+    private static final double MANUFACTURING_INPUT_FACTOR = 1D;
+    private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
+    private static final double COOKED_MEAL_INPUT_FACTOR = 1D;
+    private static final double DESSERT_FACTOR = 1D;
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
-    private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
+    private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1D;
 	// 2015-01-10 Added FARMING_FACTOR
-    private static final double FARMING_FACTOR = .5D;
+    private static final double FARMING_FACTOR = 1D;
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
     private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 1000D;
     //  SERVING_FRACTION was used in PreparingDessert.java
@@ -416,7 +415,7 @@ public class GoodsManager implements Serializable {
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
-       if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+       if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
     	   System.out.println( r
                 // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
                 + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
@@ -434,11 +433,11 @@ public class GoodsManager implements Serializable {
         double supplyAmount = inv.getAmountSupplyAmount(r);
         supplyAmount = Math.round(supplyAmount * 1000000.0) / 1000000.0;
         int supplyRequest = inv.getAmountSupplyRequest(r);
-        // The total daily supply is the sum of the stored supply amount and daily supply amount
-        totalSupplyAmount = supplyAmount / solElapsed + supplyStored  ; //* MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR
+        // The total daily supply is the sum of the daily supply amount and the stored supply amount per sol
+        totalSupplyAmount = 0.5D * ( supplyAmount / solElapsed + supplyStored / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR );
         totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
         
-        if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+        if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
 	        System.out.println( r 
 	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
 	        + "  supplyAmount is " + supplyAmount    
@@ -466,7 +465,7 @@ public class GoodsManager implements Serializable {
      
         totalAmountDemand = Math.round(totalAmountDemand* 1000000.0) / 1000000.0;
 
-        if (r.equals("concrete") || r.equals("polyethylene") || r.equals("ice") || r.equals("iron")) {
+        if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
 	        System.out.println( r
 	        + " : demandAmount  is " + sDemand 
 	        + " : projectedDemand is " + projectedDemand

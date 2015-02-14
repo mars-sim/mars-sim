@@ -68,8 +68,8 @@ implements LifeSupport {
     private static final double MAX_TEMP = 48.0D;
 
     //private static int count;
-    public static final int SOL_PER_REFRESH = 3;  
-    public static double MILLISOLS_ON_FIRST_SOL; 
+    public static final int SOL_PER_REFRESH = 5;  
+    
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
      */
@@ -155,8 +155,6 @@ implements LifeSupport {
         this.initialNumOfRobots = initialNumOfRobots;
         this.initialPopulation = populationNumber;
        
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        MILLISOLS_ON_FIRST_SOL = MarsClock.getTotalMillisols(clock);
         //count++;
         //logger.info("constructor 3 : count is " + count);
         inv = getInventory();
@@ -551,7 +549,7 @@ implements LifeSupport {
         buildingManager.timePassing(time);
     
         // 2015-01-09  Added makeDailyReport()
-        //makeDailyReport();
+        makeDailyReport();
 
         updateGoodsManager(time);
     }
@@ -582,18 +580,18 @@ implements LifeSupport {
     // 2015-01-09  Added makeDailyReport()
     public synchronized void makeDailyReport() {
     	
-        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
         
         // check for the passing of each day
-        int newDay = currentTime.getSolOfMonth();
-        //double mSol = currentTime.getMillisol();
-        if ( newDay != solCache) {
+        int solElapsed = MarsClock.getSolOfYear(clock);
+  
+        if ( solElapsed != solCache) {
         	//reportSample = true;
-        	solCache = newDay;
+        	solCache = solElapsed;
         	
-        	//getFoodEnergyIntakeReport(); 	        	
-        	getSupplyDemandReport();
-        	
+        	//getFoodEnergyIntakeReport(); 	           	
+        	//getSupplyDemandReport(solElapsed);       	
+        	refreshSupplyDemandMap(solElapsed);
         }
     }
     
@@ -601,14 +599,9 @@ implements LifeSupport {
      * Provides the daily demand statistics on sample amount resources 
      */
     // 2015-01-15  Added supply data
-   	public void getSupplyDemandReport() {
-   			
-        // 2015-01-15 Added solElapsed
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        double milliSolsElapsed = MarsClock.getTotalMillisols(clock) - MILLISOLS_ON_FIRST_SOL;
-        int solElapsed = (int) (milliSolsElapsed / 1000) + 1;
- 
-   		logger.info("<<< Sol " + solCache 
+   	public void getSupplyDemandReport(int solElapsed) {
+   			   
+   		logger.info("<<< Sol " + solElapsed
    			 + " at " + this.getName()
    			 + " End of Day Report of Amount Resource Supply and Demand Statistics >>>"); 
 	    	 
@@ -656,31 +649,40 @@ implements LifeSupport {
         	logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
       	
 
-            boolean clearNow ;
-        
-            // clearNow = true if solElapsed is an exact multiple of 5
-            // Clear maps once every five days
-            if (solElapsed % SOL_PER_REFRESH == 0)
-                clearNow = true;
-            else
-            	clearNow = false;
-
-            // Should clear only once and at the beginning of the day
-            if (clearNow) {
-            	// carry out the daily average of the previous 5 days
-                inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
-                inv.clearAmountSupplyRequestMap();
-                
-                inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
-            	inv.clearAmountDemandTotalRequestMap();
-            	inv.clearAmountDemandMetRequestMap();
-            	
-            	logger.info("Just compacted supply and demand data");
-            }
-        	
     }
     
     
+    /**
+     * refreshes the supply and demand map data 
+     */
+    // 2015-02-13  Added refreshSupplyDemandMap()
+   	public void refreshSupplyDemandMap(int solElapsed) {
+
+        boolean clearNow ;
+    
+        // clearNow = true if solElapsed is an exact multiple of x
+        // Clear maps once every x number of days
+        if (solElapsed % SOL_PER_REFRESH == 0)
+            clearNow = true;
+        else
+        	clearNow = false;
+
+        // Should clear only once and at the beginning of the day
+        if (clearNow) {
+        	// carry out the daily average of the previous 5 days
+            inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
+            inv.clearAmountSupplyRequestMap();
+            
+            inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
+        	inv.clearAmountDemandTotalRequestMap();
+        	inv.clearAmountDemandMetRequestMap();
+        	
+        	logger.info("Just compacted supply and demand data");
+        }
+    	
+   		
+   	}
+   	
     /**
      * Updates the GoodsManager
      * @param time
