@@ -2602,7 +2602,7 @@
 		</outputs>
 	</process>
 	
-	<!-- 2014-11-19 Added Manufacturing a small water pump. -->
+	<!-- 2014-11-19 Added manufacturing a small water pump. -->
 	<process name="small water pump manufacturing" tech="4" skill="4" work-time="200" process-time="50" 
 			power-required="5.0">
 		<inputs>
@@ -2613,11 +2613,11 @@
 			<part name="wire connector" number="3" />
 		</inputs>
 		<outputs>
-			<part name="water pump" number="5" />
+			<part name="small water pump" number="5" />
 		</outputs>
 	</process>
 	
-	<!-- 2014-11-19 Added Manufacturing an air compressor. -->
+	<!-- 2014-11-19 Added manufacturing an air compressor. -->
 	<process name="air compressor manufacturing" tech="4" skill="4" work-time="200" process-time="50" 
 			power-required="5.0">
 		<inputs>
@@ -2646,7 +2646,7 @@
 		</outputs>
 	</process>
 
-	<!-- 2014-11-19 Added Manufacturing an oven. -->
+	<!-- 2014-11-19 Added manufacturing an oven. -->
 	<process name="oven manufacturing" tech="4" skill="4" work-time="500" process-time="50" 
 			power-required="3.0">
 		<inputs>
@@ -2682,7 +2682,7 @@
 		</outputs>
 	</process>
 	
-	<!-- 2014-11-19 Added Manufacturing a ventilation fan. -->
+	<!-- 2014-11-19 Added manufacturing a ventilation fan. -->
 	<process name="ventilation fan manufacturing" tech="4" skill="4" work-time="100" process-time="20" 
 			power-required="3.0">
 		<inputs>
@@ -2698,7 +2698,7 @@
 		</outputs>
 	</process>	
 	
-	<!-- 2014-11-19 Added Manufacturing a kitchen stove. -->
+	<!-- 2014-11-19 Added manufacturing a kitchen stove. -->
 	<process name="kitchen stove manufacturing" tech="4" skill="4" work-time="300" process-time="20" 
 			power-required="3.0">
 		<inputs>
@@ -2708,13 +2708,14 @@
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="1" />
 			<part name="electric heating element" number="4" />	
+			<part name="ventilation fan" number="1" />			
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
 		</outputs>
 	</process>
 	
-	<!-- 2014-11-19 Added Manufacturing a refrigerator. -->
+	<!-- 2014-11-19 Added manufacturing a refrigerator. -->
 	<process name="refrigerator manufacturing" tech="4" skill="4" work-time="700" process-time="50" 
 			power-required="3.0">
 		<inputs>
@@ -2730,7 +2731,7 @@
 		</outputs>
 	</process>
 
-	<!-- 2014-11-19 Added Manufacturing an autoclave. -->
+	<!-- 2014-11-19 Added manufacturing an autoclave. -->
 	<process name="autoclave manufacturing" tech="4" skill="4" work-time="700" process-time="50" 
 			power-required="3.0">
 		<inputs>
@@ -2741,10 +2742,11 @@
 			<part name="plastic sheet" number="2" />
 			<part name="small water pump" number="4" />	
 			<part name="electric heating element" number="4" />	
-			<part name="microcontroller" number="1" />							
+			<part name="microcontroller" number="1" />	
+			<part name="ventilation fan" number="1" />									
 		</inputs>
 		<outputs>
-			<part name="stove" number="1" />
+			<part name="autoclave" number="1" />
 		</outputs>
 	</process>
 

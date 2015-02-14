@@ -253,7 +253,7 @@ implements Serializable {
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
 
-					// 2015-01-09 addDemandRealUsage()
+					// 2015-01-09 addAmountDemand
 					inventory.addAmountDemand(resource,resourceAmount);
 				}
 				catch (Exception e) {}

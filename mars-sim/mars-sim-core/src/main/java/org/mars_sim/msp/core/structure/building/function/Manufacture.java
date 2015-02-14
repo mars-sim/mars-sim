@@ -245,6 +245,9 @@ implements Serializable {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
                 inv.retrieveAmountResource(resource, item.getAmount());
+                
+				// 2015-02-13 addAmountDemand()
+				inv.addAmountDemand(resource, item.getAmount());
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
