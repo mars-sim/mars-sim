@@ -64,11 +64,11 @@ implements Serializable {
     public static double DOWN = 0.004;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
-    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.01;
-    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.05;
+    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.01D;
+    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.05D;
     
     // amount of water in kg per cooked meal during meal preparation and clean-up
-    public static final double WATER_USAGE_PER_MEAL = 1.0;
+    public static final double WATER_USAGE_PER_MEAL = 1.0D;
     
     private boolean cookNoMore = false;
     

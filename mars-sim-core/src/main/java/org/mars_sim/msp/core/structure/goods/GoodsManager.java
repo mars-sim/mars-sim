@@ -75,6 +75,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
@@ -144,6 +145,8 @@ public class GoodsManager implements Serializable {
     private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;    
     private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
     private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
+    
+    private static final String resource_name = "regolith";
     
     // Data members
     private Settlement settlement;
@@ -365,6 +368,9 @@ public class GoodsManager implements Serializable {
             // Add manufacturing demand.
             projectedDemand += getResourceManufacturingDemand(resource);
  
+            if (r.equals(resource_name))
+         	   System.out.println( r  + "'s projectedDemand : " + Math.round(projectedDemand* 1000000.0) / 1000000.0);
+         			   
             //2014-11-25 Add Food Production demand.
             projectedDemand += getResourceFoodProductionDemand(resource);
             
@@ -415,7 +421,9 @@ public class GoodsManager implements Serializable {
         //double resourceProcessingValue = getResourceProcessingValue(resource, useCache);
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
-       if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
+       //if (r.equals("ethylene") || r.equals("polyethylene") || 
+       if (r.equals("regolith") ) {
+       //|| r.equals("iron") || r.equals("iron oxide")) {
     	   System.out.println( r
                 // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
                 + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
@@ -437,7 +445,9 @@ public class GoodsManager implements Serializable {
         totalSupplyAmount = 0.5D * ( supplyAmount / solElapsed + supplyStored / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR );
         totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
         
-        if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
+        
+        if (r.equals("regolith") ) {
+        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
 	        System.out.println( r 
 	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
 	        + "  supplyAmount is " + supplyAmount    
@@ -465,7 +475,8 @@ public class GoodsManager implements Serializable {
      
         totalAmountDemand = Math.round(totalAmountDemand* 1000000.0) / 1000000.0;
 
-        if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
+        if (r.equals("regolith") ) {
+        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
 	        System.out.println( r
 	        + " : demandAmount  is " + sDemand 
 	        + " : projectedDemand is " + projectedDemand
@@ -617,16 +628,14 @@ public class GoodsManager implements Serializable {
      */
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
-        AmountResource wasteWater = AmountResource.findAmountResource("waste water");
-        AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-     // 2015-01-15 Added fertilizer
-        AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
-
-        // 2015-01-10 Revised getCropARList()
-        List<AmountResource> cropARList = getCropARList();
-              
-        if (resource.equals(wasteWater) || resource.equals(carbonDioxide)
-        		|| resource.equals(fertilizer) ) {
+    	String r = resource.getName().toLowerCase();
+             
+        if (r.equals("waste water") || r.equals("carbon dioxide")
+        		|| r.equals("fertilizer") ) {
+        	
+            // 2015-01-10 Revised getCropARList()
+            List<AmountResource> cropARList = getCropARList();
+     
             // 2014-11-30 Created getValueList()
             List<Double> cropValueList = getValueList(cropARList);
              
@@ -636,11 +645,11 @@ public class GoodsManager implements Serializable {
                 Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
                 double amountNeeded = 0D;
-                if (resource.equals(wasteWater)) 
+                if (r.equals("waste water"))  
                     amountNeeded = Crop.WASTE_WATER_NEEDED;
-                else if (resource.equals(carbonDioxide))
+                else if (r.equals("carbon dioxide"))
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
-                else if (resource.equals(fertilizer))
+                else if (r.equals("fertilizer"))
                 	amountNeeded = Crop.FERTILIZER_NEEDED;
 
                 // 2014-11-30 Created getFarmingTotalDemand()
@@ -750,8 +759,7 @@ public class GoodsManager implements Serializable {
         // Get highest manufacturing tech level in settlement.
         if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
             int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
-                    techLevel).iterator();
+            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel).iterator();
             while (i.hasNext()) {
                 double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
                 demand += manufacturingDemand;
@@ -773,8 +781,7 @@ public class GoodsManager implements Serializable {
         // Get highest Food Production tech level in settlement.
         if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
             int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
-            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(
-                    techLevel).iterator();
+            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(techLevel).iterator();
             while (i.hasNext()) {
                 double FoodProductionDemand = getResourceFoodProductionProcessDemand(resource, i.next());
                 demand += FoodProductionDemand;
@@ -793,15 +800,14 @@ public class GoodsManager implements Serializable {
     private double getResourceManufacturingProcessDemand(AmountResource resource,
             ManufactureProcessInfo process) {
         double demand = 0D;
-
+    	String r = resource.getName().toLowerCase();
+    	
         ManufactureProcessItem resourceInput = null;
         Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
         while ((resourceInput == null) && i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (
-                    Type.AMOUNT_RESOURCE.equals(item.getType()) && 
-                    resource.getName().equalsIgnoreCase(item.getName())
-                    ) {
+            if (Type.AMOUNT_RESOURCE.equals(item.getType()) && 
+                    r.equals(item.getName()) ) {
                 resourceInput = item;
                 break;
             }
@@ -812,17 +818,21 @@ public class GoodsManager implements Serializable {
             Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
             while (j.hasNext()) {
                 outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement, true);
+                if (r.equals(resource_name)) System.out.println("outputsValue : " + outputsValue);
             }
 
             double totalItems = 0D;
             Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
             while (k.hasNext()) {
                 totalItems += k.next().getAmount();
+                if (r.equals(resource_name)) System.out.println("totalItems : " + totalItems);
             }
 
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
-
+            if (r.equals(resource_name)) System.out.println("totalInputsValue : " + totalInputsValue);
+            
             demand = (1D / totalItems) * totalInputsValue;
+            if (r.equals(resource_name)) System.out.println("demand : " + demand);
         }
 
         return demand;
@@ -844,10 +854,8 @@ public class GoodsManager implements Serializable {
         Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
         while ((resourceInput == null) && i.hasNext()) {
             FoodProductionProcessItem item = i.next();
-            if (
-                    Type.AMOUNT_RESOURCE.equals(item.getType()) && 
-                    resource.getName().equalsIgnoreCase(item.getName())
-                    ) {
+            if (Type.AMOUNT_RESOURCE.equals(item.getType()) && 
+                    resource.getName().equalsIgnoreCase(item.getName()) ) {
                 resourceInput = item;
                 break;
             }
@@ -874,6 +882,16 @@ public class GoodsManager implements Serializable {
         return demand;
     }
     
+    private double getCookedMealDemand() {
+	    // Determine total demand for cooked meal mass for the settlement.
+	    PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	    double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+	    double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+	    int numPeople = settlement.getAllAssociatedPeople().size();
+	    double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+    return cookedMealDemand;
+    }
+    
     /**
      * Gets the demand for a resource as a cooked meal ingredient.
      * @param resource the amount resource.
@@ -881,28 +899,37 @@ public class GoodsManager implements Serializable {
      */
     private double getResourceCookedMealIngredientDemand(AmountResource resource) {
         double demand = 0D;
+    	String r = resource.getName().toLowerCase();
+    	
+        double amountNeeded = 0D;
         
-        // Determine total demand for cooked meal mass for the settlement.
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-        double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        int numPeople = settlement.getAllAssociatedPeople().size();
-        double cookedMealDemand = numPeople * cookedMealDemandOrbit;
-        
-        // Determine demand for the resource as an ingredient for each cooked meal recipe.
-        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
-        Iterator<HotMeal> i = mealConfig.getMealList().iterator();
-        while (i.hasNext()) {
-            HotMeal meal = i.next();
-            Iterator<Ingredient> j = meal.getIngredientList().iterator();
-            while (j.hasNext()) {
-                Ingredient ingredient = j.next();
-                if (ingredient.getName().equalsIgnoreCase(resource.getName())) {
-                    demand += ingredient.getProportion() * cookedMealDemand * COOKED_MEAL_INPUT_FACTOR;
-                }
-            }
+        if ( r.equals("Garlic Oil") || r.equals("Sesame Oil") || r.equals("Soybean Oil") || r.equals("Peanut Oil")) {
+        	// Assuming a person takes 2.5 meals per sol
+            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;            
         }
         
+        else if ( r.equals("Table Salt"))
+        	// Assuming a person takes 2.5 meals per sol
+        	demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;  
+        
+        else {
+
+        	double cookedMealDemand = getCookedMealDemand();
+	        // Determine demand for the resource as an ingredient for each cooked meal recipe.
+	        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+	        Iterator<HotMeal> i = mealConfig.getMealList().iterator();
+	        while (i.hasNext()) {
+	            HotMeal meal = i.next();
+	            Iterator<Ingredient> j = meal.getIngredientList().iterator();
+	            while (j.hasNext()) {
+	                Ingredient ingredient = j.next();
+	                if (ingredient.getName().equalsIgnoreCase(r)) {
+	                    demand += ingredient.getProportion() * cookedMealDemand * COOKED_MEAL_INPUT_FACTOR;
+	                }
+	            }
+	        }
+	        
+        }
         return demand;
     }
     
