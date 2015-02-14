@@ -17,13 +17,23 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.manufacture.Salvagable;
+import org.mars_sim.msp.core.manufacture.SalvageInfo;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.ai.BotMind;
+import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Repair;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -40,31 +50,53 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  * related to that robot
  */
 public class Robot
-extends Unit
-//extends Person
-implements VehicleOperator, Serializable {
+//extends Unit
+extends Equipment
+implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     /* default logger. */
-	private static transient Logger logger = Logger.getLogger(Robot.class.getName());
-     
-
+	private static transient Logger logger = Logger.getLogger(Robot.class.getName());    
     /** The base carrying capacity (kg) of a robot. */
     private final static double BASE_CAPACITY = 60D;
-
+    
+	// Static members
+	public static final String TYPE = "Robot";
+	/** Unloaded mass of EVA suit (kg.). */
+	public static final double EMPTY_MASS = 80D;
+	
+	/** 334 Sols (1/2 orbit). */
+	private static final double WEAR_LIFETIME = 334000D;
+	/** 100 millisols. */
+	private static final double MAINTENANCE_TIME = 100D;
+	
+	
     // Data members
+    private String name;
+    /** The height of the robot (in cm). */
+    private int height;
+    /** Settlement X location (meters) from settlement center. */
+    private double xLoc;
+    /** Settlement Y location (meters) from settlement center. */
+    private double yLoc; 
+    /** True if robot is dead and buried. */
+    private boolean isBuried;
+	private boolean isSalvaged;
+	
+	
     /** Manager for robot's natural attributes. */
     private NaturalAttributeManager attributes;
     /** robot's mind. */
     private BotMind botMind;
     /** robot's physical condition. */
     private PhysicalCondition health;
-    /** True if robot is dead and buried. */
-    private boolean isBuried;
-    /** The height of the robot (in cm). */
-    private int height;
+	
+	private SalvageInfo salvageInfo;
+	/** The equipment's malfunction manager. */
+	protected MalfunctionManager malfunctionManager;
+
     /** The birthplace of the robot. */
     private String birthplace;
     /** The birth time of the robot. */
@@ -73,14 +105,11 @@ implements VehicleOperator, Serializable {
     private Settlement associatedSettlement;
     /** The robot's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
-    /** Settlement X location (meters) from settlement center. */
-    private double xLoc;
-    /** Settlement Y location (meters) from settlement center. */
-    private double yLoc;
-    
+
     private RobotType robotType;
-    private String name;
-    
+
+
+
     /**
      * Constructs a robot object at a given settlement.
      * @param name the robot's name
@@ -89,10 +118,14 @@ implements VehicleOperator, Serializable {
      * @param settlement {@link Settlement} the settlement the robot is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Robot(String name, RobotType robotType, String birthplace, Settlement settlement) {
-        super(name, settlement.getCoordinates()); // if extending Unit
+    public Robot(String name, RobotType robotType, String birthplace, Settlement settlement, Coordinates location) {
+        super(name, location);
+    	//super(name, settlement.getCoordinates()); // if extending Unit
         //super(name, null, birthplace, settlement); // if extending Person
          
+		// Initialize data members.
+		isSalvaged = false;
+		salvageInfo = null;
         this.name = name;
         this.robotType = robotType;
         this.birthplace = birthplace;
@@ -102,6 +135,11 @@ implements VehicleOperator, Serializable {
         yLoc = 0D;
         isBuried = false;
         
+
+		// Add scope to malfunction manager.
+		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager.addScopeString(TYPE);
+		
         String timeString = createTimeString();
         
         birthTimeStamp = new EarthClock(timeString);
@@ -262,6 +300,17 @@ implements VehicleOperator, Serializable {
      */
     public void timePassing(double time) {
 
+
+		Unit container = getContainerUnit();
+		if (container instanceof Building) {
+			Building building = (Building) container;
+			//if (!person.getPhysicalCondition().isDead()) {
+			//	malfunctionManager.activeTimePassing(time);
+			//}
+		}
+		
+		malfunctionManager.timePassing(time);
+		
         // If robot is dead, then skip
         if (health.getDeathDetails() == null) {
 
@@ -283,6 +332,7 @@ implements VehicleOperator, Serializable {
 
     }
 
+	
     /**
      * Returns a reference to the robot's natural attribute manager
      * @return the robot's natural attribute manager
@@ -518,10 +568,82 @@ implements VehicleOperator, Serializable {
     
     public void addScientificAchievement(double achievementCredit, ScienceType science) {}
     
+
+	/**
+	 * Gets a collection of people affected by this entity.
+	 * @return person collection
+	 */
+	public Collection<Person> getAffectedPeople() {
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+
+		// Check all people.
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+		while (i.hasNext()) {
+			Person person = i.next();
+			Task task = person.getMind().getTaskManager().getTask();
+
+			// Add all people maintaining this equipment.
+			if (task instanceof Maintenance) {
+				if (((Maintenance) task).getEntity() == this) {
+					if (!people.contains(person)) people.add(person);
+				}
+			}
+
+			// Add all people repairing this equipment.
+			if (task instanceof Repair) {
+				if (((Repair) task).getEntity() == this) {
+					if (!people.contains(person)) people.add(person);
+				}
+			}
+		}	
+
+		return people;
+	}
+
+	/**
+	 * Checks if the item is salvaged.
+	 * @return true if salvaged.
+	 */
+	public boolean isSalvaged() {
+		return isSalvaged;
+	}
+
+	//public String getName() {
+	//	return name;
+	//}
+	
+	/**
+	 * Indicate the start of a salvage process on the item.
+	 * @param info the salvage process info.
+	 * @param settlement the settlement where the salvage is taking place.
+	 */
+	public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
+		salvageInfo = new SalvageInfo(this, info, settlement);
+		isSalvaged = true;
+	}
+
+	/**
+	 * Gets the salvage info.
+	 * @return salvage info or null if item not salvaged.
+	 */
+	public SalvageInfo getSalvageInfo() {
+		return salvageInfo;
+	}
+
+
+	/**
+	 * Gets the unit's malfunction manager.
+	 * @return malfunction manager
+	 */
+	public MalfunctionManager getMalfunctionManager() {
+		return malfunctionManager;
+	}
     
     @Override
     public void destroy() {
         super.destroy();
+    	if (salvageInfo != null) salvageInfo.destroy();
+		salvageInfo = null;
         attributes.destroy();
         attributes = null;
         botMind.destroy();
@@ -533,4 +655,6 @@ implements VehicleOperator, Serializable {
         scientificAchievement.clear();
         scientificAchievement = null;
     }
+
+
 }

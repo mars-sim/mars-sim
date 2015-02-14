@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.person.Robot;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ public final class EquipmentFactory {
 	        equipmentNamesCache.add(LargeBag.TYPE);
 	        equipmentNamesCache.add(SpecimenContainer.TYPE);
 	        equipmentNamesCache.add(BuildingKit.TYPE);	        
+	        equipmentNamesCache.add(Robot.TYPE);
 	    }
 	    return new HashSet<String>(equipmentNamesCache);
 	}
@@ -72,6 +74,7 @@ public final class EquipmentFactory {
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return new LargeBag(location);
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
 		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return new BuildingKit(location);
+		else if (Robot.TYPE.equalsIgnoreCase(type)) return new Robot(null, null, null, null, location);
 		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
 
@@ -103,6 +106,7 @@ public final class EquipmentFactory {
         else if (LargeBag.class.equals(equipmentClass)) return new LargeBag(location);
 		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
 		else if (BuildingKit.class.equals(equipmentClass)) return new BuildingKit(location);
+		else if (Robot.class.equals(equipmentClass)) return new Robot(null, null, null, null, location);
 		else throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 	
@@ -120,6 +124,7 @@ public final class EquipmentFactory {
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.class;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
 		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.class;		
+		else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.class;		
 		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
     
@@ -137,6 +142,7 @@ public final class EquipmentFactory {
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.EMPTY_MASS;
         else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.EMPTY_MASS;
         else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.EMPTY_MASS;
+        else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.EMPTY_MASS;        
         else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
     }
 }

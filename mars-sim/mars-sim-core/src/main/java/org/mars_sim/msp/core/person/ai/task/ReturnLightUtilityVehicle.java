@@ -305,7 +305,7 @@ implements Serializable {
                 luvInv.retrieveAmountResource(resource, amount);
                 rcInv.storeAmountResource(resource, amount, true);
    			 	// 2015-01-15 Add addSupplyAmount()
-                rcInv.addAmountSupplyAmount(resource, amount);
+                //rcInv.addAmountSupplyAmount(resource, amount);
             }
             else {
                 logger.severe(resource.getName() + " of amount " + amount + " kg. cannot be stored in " + 

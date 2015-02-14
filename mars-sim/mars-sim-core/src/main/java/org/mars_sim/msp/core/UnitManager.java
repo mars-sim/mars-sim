@@ -579,7 +579,7 @@ implements Serializable {
                     	else if (num == 3 )
                 			robotType = RobotType.CHEFBOT;
                 	
-                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement); //TODO: read from file
+                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
                     addUnit(robot);
                     //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
 
@@ -664,7 +664,7 @@ implements Serializable {
             }
 
             // Create robot and add to the unit manager.
-            Robot robot = new Robot(name, robotType, "Mars", settlement); //TODO: read from file
+            Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
             addUnit(robot);
             //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
 
