@@ -32,6 +32,19 @@
 		</outputs>
 	</process>
 	
+	<process name="extract iron oxide from regolith (large batch)"
+			tech="1" skill="2"
+			work-time="500"
+			process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="iron oxide" amount="70.0" />
+			<resource name="sand" amount="400.0" />
+		</outputs>
+	</process>
 		
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table salt and other compounds" 
@@ -51,6 +64,7 @@
 			<!--Epsom Salt is Magnesium Sulfate-->			
 		</outputs>
 	</process>
+	
 <!-- http://www.madehow.com/Volume-2/Salt.html
 	One method of evaporating brine is solar evaporation. 
 	Most brine is processed by a multiple-effect vacuum evaporator. 
@@ -73,8 +87,8 @@
 			<resource name="Nitrate" amount="10.0" />
 			<resource name="Nitrite" amount="2.0" />
 			<resource name="Nitrogen" amount="10.0" />
-			<resource name="Ammonia" amount="10.0" />
-			<resource name="regolith" amount="250.0" />						
+			<resource name="Ammonia" amount="10.0" />						
+			<resource name="regolith" amount="250.0" />
 		</outputs>
 	</process>
 	<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix 
@@ -96,7 +110,7 @@
 			<resource name="Nitrite" amount="0.2" />
 			<resource name="Nitrogen" amount="1.0" />
 			<resource name="Ammonia" amount="1.0" />
-			<resource name="regolith" amount="25.0" />						
+			<resource name="regolith" amount="25.0" />					
 		</outputs>
 	</process>
 	
@@ -142,7 +156,7 @@
 		</outputs>
 	</process>	
 	
-		<process name="make fertilizers for growing crops"
+	<process name="make fertilizers for growing crops"
 			tech="2" skill="2"
 			work-time="50"
 			process-time="500" 
@@ -200,21 +214,7 @@
 		</outputs>
 	</process>	
 	
-	<process name="extract iron oxide from regolith (large batch)"
-			tech="1" skill="2"
-			work-time="500"
-			process-time="0" 
-			power-required="0.0">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="iron oxide" amount="70.0" />
-			<resource name="sand" amount="400.0" />
-		</outputs>
-	</process>
-	
-		<process name="extract iron from iron oxide"
+	<process name="extract iron from iron oxide"
 			tech="2" skill="2"
 			work-time="100"
 			process-time="300" 
@@ -2392,34 +2392,37 @@
 	</process>
 	
 	<!-- Melting permafrost ice and filtering the water. -->
-	<process name="melting/filtering ice" tech="1" skill="0" work-time="10.0" process-time="50" 
+	<process name="melting and filtering ice" tech="1" skill="0" work-time="10.0" process-time="50" 
 			power-required="4.0">
 		<inputs>
 			<resource name="ice" amount="100.0" />
 		</inputs>
 		<outputs>
-			<resource name="water" amount="50.0" />
-			<resource name="regolith" amount="45.0" />
+			<resource name="water" amount="80.0" />
+			<resource name="regolith" amount="15.0" />
 			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
 			<resource name="Rock Salt" amount="5.0" />
 		</outputs>
 	</process>
-	<!-- see "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013
-	see http://download.springer.com/static/pdf/858/art%253A10.1007%252Fs11214-012-9956-3.pdf?auth66=1421432558_9bf0c795e4178cf6a503949883374ecf&ext=.pdf
-	-->
 	
-	<!-- Melting permafrost ice and filtering the water. -->
-	<process name="melting/filtering ice (large batch)" tech="1" skill="2" work-time="50.0" process-time="250" 
+		<!-- Melting permafrost ice and filtering the water (large batch). -->
+	<process name="melting and filtering ice (large batch)" tech="1" skill="0" work-time="10.0" process-time="50" 
 			power-required="4.0">
 		<inputs>
 			<resource name="ice" amount="1000.0" />
 		</inputs>
 		<outputs>
-			<resource name="water" amount="500.0" />
-			<resource name="regolith" amount="450.0" />
+			<resource name="water" amount="800.0" />
+			<resource name="regolith" amount="150.0" />
+			<!-- Amount of Rock Salt or Halite is arbitrary. Need more research -->
 			<resource name="Rock Salt" amount="50.0" />
 		</outputs>
 	</process>
+	
+	<!-- see "Water and Brines on Mars: Current Evidence and Implications for MSL", 2013
+	see http://download.springer.com/static/pdf/858/art%253A10.1007%252Fs11214-012-9956-3.pdf?auth66=1421432558_9bf0c795e4178cf6a503949883374ecf&ext=.pdf
+	-->
+	
 	
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
 	<!-- and chlorine gas  -->

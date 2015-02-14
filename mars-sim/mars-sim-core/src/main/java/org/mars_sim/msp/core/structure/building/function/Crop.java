@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.08 2015-02-07
+ * @version 3.08 2015-02-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -39,7 +39,7 @@ implements Serializable {
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
 	
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
-	public static double FERTILIZER_NEEDED = 0.5D ;
+	public static double FERTILIZER_NEEDED = 0.0005D; // 0.5D ;
 	
 	public static final double WATER_RECLAMATION_RATE = .8D;
 	public static final double OXYGEN_GENERATION_RATE = .9D;
@@ -409,7 +409,7 @@ implements Serializable {
 		AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
 		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);		
 		double waterUsed = waterRequired;
-		double fertilizerUsed = FERTILIZER_NEEDED / 500D;
+		double fertilizerUsed = FERTILIZER_NEEDED;
 		if (waterUsed < waterAvailable)
 			retrieveAnResource(water, waterUsed);
 		else 
