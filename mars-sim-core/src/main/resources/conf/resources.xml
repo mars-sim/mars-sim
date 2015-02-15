@@ -175,7 +175,7 @@
 	<resource name="Mortar" phase="solid" />
 	
 <!-- Drugs and Supplements -->	
-	<resource name="Immunue Booster" phase="solid" />
+	<resource name="Immune Booster" phase="solid" />
 
 <!-- Bio-organisms -->
 	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>	
