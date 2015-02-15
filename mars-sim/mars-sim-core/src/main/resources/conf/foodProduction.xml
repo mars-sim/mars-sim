@@ -663,10 +663,10 @@
 		</outputs>
 	</process>
 	
-	<process name="Make Immunue Booster" 
+	<process name="Make Immune Booster" 
 	 tech="3" skill="4" work-time="20" process-time="100" 
 			power-required="1.0">
-		<description>Make Immunue Booster with minerals and fiber </description>
+		<description>Make Immune Booster with minerals and fiber </description>
 		<inputs>
 			<resource name="Potassium" amount=".018" />
 			<resource name="Calcium" amount=".028" />
@@ -676,7 +676,7 @@
 			<resource name="Cane Fiber" amount=".1" />			
 		</inputs>
 		<outputs>
-			<resource name="Immunue Booster" amount=".05" />	
+			<resource name="Immune Booster" amount=".05" />	
 		</outputs>
 		
 	</process>
