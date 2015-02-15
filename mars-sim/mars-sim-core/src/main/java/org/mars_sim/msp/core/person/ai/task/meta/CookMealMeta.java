@@ -65,7 +65,7 @@ public class CookMealMeta implements MetaTask {
 	                	if (kitchen.hasCookedMeal() == false)
 	                		result += 100D;
 	                    
-	                	// TODO: cache the meal ingredients show that it doesn't have to do it again in CookMeal.java and Cooking.java
+	                	// TODO: cache the meal ingredients so that it doesn't have to do it again in CookMeal.java and Cooking.java
 	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
 	                    int size = kitchen.getHotMealCacheSize();
 
