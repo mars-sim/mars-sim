@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-02-15
  * @author Scott Davis
- * 
  */
 package org.mars_sim.msp.core.structure.goods;
 
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
@@ -56,7 +54,6 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -73,8 +70,6 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
@@ -124,7 +119,7 @@ public class GoodsManager implements Serializable {
     private static final double VEHICLE_FACTOR = 10000D;
     private static final double LIFE_SUPPORT_FACTOR = 4D;
     private static final double VEHICLE_FUEL_FACTOR = 10D;
-    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = 1D;
+//    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = 1D;
     private static final double MANUFACTURING_INPUT_FACTOR = 1D;
     private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
     private static final double COOKED_MEAL_INPUT_FACTOR = 1D;
@@ -146,7 +141,7 @@ public class GoodsManager implements Serializable {
     private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
     private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     
-    private static final String resource_name = "regolith";
+//    private static final String resource_name = "regolith";
     
     // Data members
     private Settlement settlement;
@@ -313,7 +308,7 @@ public class GoodsManager implements Serializable {
     private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
     	//System.out.println( "entering determineAmountResourceGoodValue() ");
     	double value = 0D;
-        double demand = 0D;
+//        double demand = 0D;
         double totalDemand = 0D;
         double projectedDemand = 0D;
         double totalSupply = 0;
@@ -334,7 +329,7 @@ public class GoodsManager implements Serializable {
         
         
         AmountResource resource = (AmountResource) resourceGood.getObject();
-    	String r = resource.getName().toLowerCase();
+//    	String r = resource.getName().toLowerCase();
     	
         if (useCache) {
             if (goodsDemandCache.containsKey(resourceGood)) {
@@ -368,8 +363,8 @@ public class GoodsManager implements Serializable {
             // Add manufacturing demand.
             projectedDemand += getResourceManufacturingDemand(resource);
  
-            if (r.equals(resource_name))
-         	   System.out.println( r  + "'s projectedDemand : " + Math.round(projectedDemand* 1000000.0) / 1000000.0);
+//            if (r.equals(resource_name))
+//         	   System.out.println( r  + "'s projectedDemand : " + Math.round(projectedDemand* 1000000.0) / 1000000.0);
          			   
             //2014-11-25 Add Food Production demand.
             projectedDemand += getResourceFoodProductionDemand(resource);
@@ -387,12 +382,15 @@ public class GoodsManager implements Serializable {
             projectedDemand += getResourceConstructionSiteDemand(resource);
 
             // Revert back to projectedDemand per sol for calculating totalDemand
-            projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            // This demand never gets changed back to per orbit, so I'm commenting 
+            // this out for now. - Scott
+            //projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             
             // 2015-02-13 Added MINIMUM_TOTAL_DEMAND
+            // Shouldn't minimum total demand be zero? - Scott
             if (totalDemand < MINIMUM_TOTAL_DEMAND) 
             	totalDemand = MINIMUM_TOTAL_DEMAND;
             
@@ -410,11 +408,11 @@ public class GoodsManager implements Serializable {
         value = totalDemand / totalSupply;
         
         // 2015-02-13 Added MAXIMUM_ALLOWABLE_VALUE_POINT 
+        // Why have a min or max value limit? - Scott
         if (value > MAXIMUM_ALLOWABLE_VALUE_POINT) 
         	value = MAXIMUM_ALLOWABLE_VALUE_POINT;
         else if (value < MINIMUM_ALLOWABLE_VALUE_POINT) 
         	value = MINIMUM_ALLOWABLE_VALUE_POINT;        
-        
         
         // Use resource processing value if higher. 
         // Manny: why using higher values?
@@ -422,13 +420,13 @@ public class GoodsManager implements Serializable {
         //if (resourceProcessingValue > value) value = resourceProcessingValue;
 
        //if (r.equals("ethylene") || r.equals("polyethylene") || 
-       if (r.equals("regolith") ) {
-       //|| r.equals("iron") || r.equals("iron oxide")) {
-    	   System.out.println( r
-                // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
-                + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
-                + "     VP is " + Math.round(value* 1000000.0) / 1000000.0);
-        }
+//       if (r.equals("regolith") ) {
+//       //|| r.equals("iron") || r.equals("iron oxide")) {
+//    	   System.out.println( r
+//                // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
+//                + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
+//                + "     VP is " + Math.round(value* 1000000.0) / 1000000.0);
+//        }
 
         return value;
     }
@@ -440,20 +438,25 @@ public class GoodsManager implements Serializable {
     	
         double supplyAmount = inv.getAmountSupplyAmount(r);
         supplyAmount = Math.round(supplyAmount * 1000000.0) / 1000000.0;
-        int supplyRequest = inv.getAmountSupplyRequest(r);
+//        int supplyRequest = inv.getAmountSupplyRequest(r);
+
         // The total daily supply is the sum of the daily supply amount and the stored supply amount per sol
-        totalSupplyAmount = 0.5D * ( supplyAmount / solElapsed + supplyStored / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR );
+//        totalSupplyAmount = 0.5D * ( supplyAmount / solElapsed + supplyStored / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR );
+        
+        // Setting totalSupplyAmount to supplyStored.  I don't think we want to modify the supply side of the value equation
+        // from it's actual value. - Scott
+        totalSupplyAmount = supplyStored;
         totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
         
         
-        if (r.equals("regolith") ) {
-        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
-	        System.out.println( r 
-	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
-	        + "  supplyAmount is " + supplyAmount    
-	        + "  supplyRequest is " + supplyRequest
-	        + "  totalSupplyAmount is " + totalSupplyAmount);
-        }
+//        if (r.equals("regolith") ) {
+//        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
+//	        System.out.println( r 
+//	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
+//	        + "  supplyAmount is " + supplyAmount    
+//	        + "  supplyRequest is " + supplyRequest
+//	        + "  totalSupplyAmount is " + totalSupplyAmount);
+//        }
 
     	return totalSupplyAmount;
     }
@@ -475,13 +478,12 @@ public class GoodsManager implements Serializable {
      
         totalAmountDemand = Math.round(totalAmountDemand* 1000000.0) / 1000000.0;
 
-        if (r.equals("regolith") ) {
-        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
-	        System.out.println( r
-	        + " : demandAmount  is " + sDemand 
-	        + " : projectedDemand is " + projectedDemand
-	        + "  totalAmountDemand is " + totalAmountDemand);
-        }
+//        if (r.equals("regolith") ) {
+//	        System.out.println( r
+//	        + " : demandAmount  is " + sDemand 
+//	        + " : projectedDemand is " + projectedDemand
+//	        + "  totalAmountDemand is " + totalAmountDemand);
+//        }
         
     	return totalAmountDemand;
     }
@@ -608,17 +610,31 @@ public class GoodsManager implements Serializable {
     }
     
     // 2014-11-30 Created getFarmingTotalDemand()
-    public double getFarmingTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
-    	double demand = 0;
-
-    	Iterator<Double> i = cropValueList.iterator();
-    	
-    	while (i.hasNext()) {	
-    		double cropValue = i.next();
-        	demand += (farm.getEstimatedHarvestPerOrbit() * cropValue) / amountNeeded;
-    	}
+//    public double getFarmingTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
+//    	double demand = 0;
+//
+//    	Iterator<Double> i = cropValueList.iterator();
+//    	
+//    	while (i.hasNext()) {	
+//    		double cropValue = i.next();
+//        	demand += (farm.getEstimatedHarvestPerOrbit() * cropValue) / amountNeeded;
+//    	}
+//    
+//    	return demand;
+//    }
     
-    	return demand;
+    /**
+     * Gets the total demand for a farming resource from a given farm.
+     * @param farm the farm.
+     * @param amountNeeded the amount needed per kg of harvest.
+     * @return total demand (kg).
+     */
+    private double getFarmingTotalDemand(Farming farm, double amountNeeded) {
+        double demand = 0D;
+        
+        demand = farm.getEstimatedHarvestPerOrbit() * amountNeeded;
+        
+        return demand;
     }
     
     /**
@@ -628,16 +644,20 @@ public class GoodsManager implements Serializable {
      */
     private double getFarmingDemand(AmountResource resource) {
         double demand = 0D;
-    	String r = resource.getName().toLowerCase();
-             
-        if (r.equals("waste water") || r.equals("carbon dioxide")
-        		|| r.equals("fertilizer") ) {
-        	
-            // 2015-01-10 Revised getCropARList()
-            List<AmountResource> cropARList = getCropARList();
-     
+        
+        // Create all farming resources.
+        AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+        AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+        AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
+        
+        // 2015-01-10 Revised getCropARList()
+//        List<AmountResource> cropARList = getCropARList();
+              
+        if (resource.equals(wasteWater) || resource.equals(carbonDioxide)
+        		|| resource.equals(fertilizer) ) {
+            
             // 2014-11-30 Created getValueList()
-            List<Double> cropValueList = getValueList(cropARList);
+//            List<Double> cropValueList = getValueList(cropARList);
              
             Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING).iterator();
             while (i.hasNext()) {
@@ -645,15 +665,16 @@ public class GoodsManager implements Serializable {
                 Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
                 double amountNeeded = 0D;
-                if (r.equals("waste water"))  
+                if (resource.equals(wasteWater)) 
                     amountNeeded = Crop.WASTE_WATER_NEEDED;
-                else if (r.equals("carbon dioxide"))
+                else if (resource.equals(carbonDioxide))
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
-                else if (r.equals("fertilizer"))
+                else if (resource.equals(fertilizer))
                 	amountNeeded = Crop.FERTILIZER_NEEDED;
 
                 // 2014-11-30 Created getFarmingTotalDemand()
-                demand += getFarmingTotalDemand(cropValueList, farm, amountNeeded);
+//                demand += getFarmingTotalDemand(cropValueList, farm, amountNeeded);
+                demand += getFarmingTotalDemand(farm, amountNeeded);
             }
         }
     	// 2015-01-10 Added FARMING_FACTOR
@@ -662,91 +683,91 @@ public class GoodsManager implements Serializable {
         return demand;
     }
 
-    /**
-     * Gets the value of a resource from all resource processes.
-     * @param resource the amount resource.
-     * @param useProcessingCache use processing cache to determine value.
-     * @return value (value points / kg)
-     */
-    private double getResourceProcessingValue(AmountResource resource, 
-            boolean useProcessingCache) {
-        double value = 0D;
+//    /**
+//     * Gets the value of a resource from all resource processes.
+//     * @param resource the amount resource.
+//     * @param useProcessingCache use processing cache to determine value.
+//     * @return value (value points / kg)
+//     */
+//    private double getResourceProcessingValue(AmountResource resource, 
+//            boolean useProcessingCache) {
+//        double value = 0D;
+//
+//        if (useProcessingCache) {
+//            if (resourceProcessingCache.containsKey(resource)) value = resourceProcessingCache.get(resource);
+//            else throw new IllegalArgumentException("Amount Resource: " + resource + " not valid.");
+//        }
+//        else {
+//            // Get all resource processes at settlement.
+//            Iterator<ResourceProcess> i = getResourceProcesses().iterator();
+//            while (i.hasNext()) {
+//                ResourceProcess process = i.next();
+//                double processValue = getResourceProcessValue(process, resource);
+//                if (processValue > value) value = processValue;
+//            }
+//            resourceProcessingCache.put(resource, value);
+//        }
+//
+//        return value;
+//    }
 
-        if (useProcessingCache) {
-            if (resourceProcessingCache.containsKey(resource)) value = resourceProcessingCache.get(resource);
-            else throw new IllegalArgumentException("Amount Resource: " + resource + " not valid.");
-        }
-        else {
-            // Get all resource processes at settlement.
-            Iterator<ResourceProcess> i = getResourceProcesses().iterator();
-            while (i.hasNext()) {
-                ResourceProcess process = i.next();
-                double processValue = getResourceProcessValue(process, resource);
-                if (processValue > value) value = processValue;
-            }
-            resourceProcessingCache.put(resource, value);
-        }
+//    /**
+//     * Gets the value of a resource from a resource process.
+//     * @param process the resource process.
+//     * @param resource the amount resource.
+//     * @return value (value points / kg)
+//     */
+//    private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
+//        double value = 0D;
+//
+//        Set<AmountResource> inputResources = process.getInputResources();
+//        Set<AmountResource> outputResources = process.getOutputResources();
+//
+//        if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
+//            double outputValue = 0D;
+//            Iterator<AmountResource> i = outputResources.iterator();
+//            while (i.hasNext()) {
+//                AmountResource output = i.next();
+//                double outputRate = process.getMaxOutputResourceRate(output); 
+//                if (!process.isWasteOutputResource(resource)) {
+//                    outputValue += (getGoodValuePerItem(GoodsUtil.getResourceGood(output)) * outputRate);
+//                }
+//            }
+//
+//            double totalInputRate = 0D;
+//            Iterator<AmountResource> j = process.getInputResources().iterator();
+//            while (j.hasNext()) {
+//                AmountResource inputResource = j.next();
+//                if (!process.isAmbientInputResource(inputResource)) {
+//                    totalInputRate += process.getMaxInputResourceRate(inputResource);
+//                }
+//            }
+//
+//            double totalInputsValue = outputValue * RESOURCE_PROCESSING_INPUT_FACTOR;
+//
+//            value = (1D / totalInputRate) * totalInputsValue;
+//        }
+//
+//        return value;
+//    }
 
-        return value;
-    }
-
-    /**
-     * Gets the value of a resource from a resource process.
-     * @param process the resource process.
-     * @param resource the amount resource.
-     * @return value (value points / kg)
-     */
-    private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
-        double value = 0D;
-
-        Set<AmountResource> inputResources = process.getInputResources();
-        Set<AmountResource> outputResources = process.getOutputResources();
-
-        if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
-            double outputValue = 0D;
-            Iterator<AmountResource> i = outputResources.iterator();
-            while (i.hasNext()) {
-                AmountResource output = i.next();
-                double outputRate = process.getMaxOutputResourceRate(output); 
-                if (!process.isWasteOutputResource(resource)) {
-                    outputValue += (getGoodValuePerItem(GoodsUtil.getResourceGood(output)) * outputRate);
-                }
-            }
-
-            double totalInputRate = 0D;
-            Iterator<AmountResource> j = process.getInputResources().iterator();
-            while (j.hasNext()) {
-                AmountResource inputResource = j.next();
-                if (!process.isAmbientInputResource(inputResource)) {
-                    totalInputRate += process.getMaxInputResourceRate(inputResource);
-                }
-            }
-
-            double totalInputsValue = outputValue * RESOURCE_PROCESSING_INPUT_FACTOR;
-
-            value = (1D / totalInputRate) * totalInputsValue;
-        }
-
-        return value;
-    }
-
-    /**
-     * Get all resource processes at settlement.
-     * @return list of resource processes.
-     */
-    private List<ResourceProcess> getResourceProcesses() {
-        List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
-                ResourceProcessing processing = (ResourceProcessing) building.getFunction(
-                        BuildingFunction.RESOURCE_PROCESSING);
-                processes.addAll(processing.getProcesses());
-            }
-        }
-        return processes;
-    }
+//    /**
+//     * Get all resource processes at settlement.
+//     * @return list of resource processes.
+//     */
+//    private List<ResourceProcess> getResourceProcesses() {
+//        List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
+//        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+//        while (i.hasNext()) {
+//            Building building = i.next();
+//            if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
+//                ResourceProcessing processing = (ResourceProcessing) building.getFunction(
+//                        BuildingFunction.RESOURCE_PROCESSING);
+//                processes.addAll(processing.getProcesses());
+//            }
+//        }
+//        return processes;
+//    }
 
     /**
      * Gets the demand for an amount resource as an input in the settlement's manufacturing processes.
@@ -759,7 +780,8 @@ public class GoodsManager implements Serializable {
         // Get highest manufacturing tech level in settlement.
         if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
             int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(techLevel).iterator();
+            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
+                    techLevel).iterator();
             while (i.hasNext()) {
                 double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
                 demand += manufacturingDemand;
@@ -781,7 +803,8 @@ public class GoodsManager implements Serializable {
         // Get highest Food Production tech level in settlement.
         if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
             int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
-            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(techLevel).iterator();
+            Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechLevel(
+                    techLevel).iterator();
             while (i.hasNext()) {
                 double FoodProductionDemand = getResourceFoodProductionProcessDemand(resource, i.next());
                 demand += FoodProductionDemand;
@@ -818,21 +841,21 @@ public class GoodsManager implements Serializable {
             Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
             while (j.hasNext()) {
                 outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement, true);
-                if (r.equals(resource_name)) System.out.println("outputsValue : " + outputsValue);
+//                if (r.equals(resource_name)) System.out.println("outputsValue : " + outputsValue);
             }
 
             double totalItems = 0D;
             Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
             while (k.hasNext()) {
                 totalItems += k.next().getAmount();
-                if (r.equals(resource_name)) System.out.println("totalItems : " + totalItems);
+//                if (r.equals(resource_name)) System.out.println("totalItems : " + totalItems);
             }
 
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
-            if (r.equals(resource_name)) System.out.println("totalInputsValue : " + totalInputsValue);
+//            if (r.equals(resource_name)) System.out.println("totalInputsValue : " + totalInputsValue);
             
             demand = (1D / totalItems) * totalInputsValue;
-            if (r.equals(resource_name)) System.out.println("demand : " + demand);
+//            if (r.equals(resource_name)) System.out.println("demand : " + demand);
         }
 
         return demand;
@@ -882,16 +905,6 @@ public class GoodsManager implements Serializable {
         return demand;
     }
     
-    private double getCookedMealDemand() {
-	    // Determine total demand for cooked meal mass for the settlement.
-	    PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-	    double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-	    double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-	    int numPeople = settlement.getAllAssociatedPeople().size();
-	    double cookedMealDemand = numPeople * cookedMealDemandOrbit;
-    return cookedMealDemand;
-    }
-    
     /**
      * Gets the demand for a resource as a cooked meal ingredient.
      * @param resource the amount resource.
@@ -899,37 +912,40 @@ public class GoodsManager implements Serializable {
      */
     private double getResourceCookedMealIngredientDemand(AmountResource resource) {
         double demand = 0D;
-    	String r = resource.getName().toLowerCase();
-    	
-        double amountNeeded = 0D;
+        
+        String r = resource.getName().toLowerCase();
         
         if ( r.equals("Garlic Oil") || r.equals("Sesame Oil") || r.equals("Soybean Oil") || r.equals("Peanut Oil")) {
-        	// Assuming a person takes 2.5 meals per sol
+            // Assuming a person takes 2.5 meals per sol
             demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;            
         }
-        
-        else if ( r.equals("Table Salt"))
-        	// Assuming a person takes 2.5 meals per sol
-        	demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;  
-        
-        else {
-
-        	double cookedMealDemand = getCookedMealDemand();
-	        // Determine demand for the resource as an ingredient for each cooked meal recipe.
-	        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
-	        Iterator<HotMeal> i = mealConfig.getMealList().iterator();
-	        while (i.hasNext()) {
-	            HotMeal meal = i.next();
-	            Iterator<Ingredient> j = meal.getIngredientList().iterator();
-	            while (j.hasNext()) {
-	                Ingredient ingredient = j.next();
-	                if (ingredient.getName().equalsIgnoreCase(r)) {
-	                    demand += ingredient.getProportion() * cookedMealDemand * COOKED_MEAL_INPUT_FACTOR;
-	                }
-	            }
-	        }
-	        
+        else if ( r.equals("Table Salt")) {
+            // Assuming a person takes 2.5 meals per sol
+            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
         }
+        
+        // Determine total demand for cooked meal mass for the settlement.
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+        double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        int numPeople = settlement.getAllAssociatedPeople().size();
+        double cookedMealDemand = numPeople * cookedMealDemandOrbit;
+        
+        // Determine demand for the resource as an ingredient for each cooked meal recipe.
+        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+        int numMeals = mealConfig.getMealList().size();
+        Iterator<HotMeal> i = mealConfig.getMealList().iterator();
+        while (i.hasNext()) {
+            HotMeal meal = i.next();
+            Iterator<Ingredient> j = meal.getIngredientList().iterator();
+            while (j.hasNext()) {
+                Ingredient ingredient = j.next();
+                if (ingredient.getName().equalsIgnoreCase(r)) {
+                    demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
+                }
+            }
+        }
+        
         return demand;
     }
     
@@ -947,7 +963,6 @@ public class GoodsManager implements Serializable {
         						"Granola Bar",
         						"Blueberry Muffin", 
         						"Cranberry Juice"  };
-        
         
         String dessertName = resource.getName();
         boolean hasDessert = false;
@@ -1394,9 +1409,9 @@ public class GoodsManager implements Serializable {
         double value = 0D;
         ItemResource resource = (ItemResource) resourceGood.getObject();
         double demand = 0D;
-        double projectedDemand = 0D;
-        double totalDemand = 0D;
-        double totalSupply = 0D;
+//        double projectedDemand = 0D;
+//        double totalDemand = 0D;
+//        double totalSupply = 0D;
         
 
         if (useCache) {
@@ -1949,40 +1964,40 @@ public class GoodsManager implements Serializable {
         return numDemand;
     }
 
-    /**
-     * Gets all non-empty containers of a given type associated with this settlement.
-     * @param equipmentClass the equipment type.
-     * @return number of non-empty containers.
-     */
-    private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
-        int result = 0;
-
-        Inventory inv = settlement.getInventory();
-        Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
-        MissionManager missionManager = Simulation.instance().getMissionManager();
-        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-        while (i.hasNext()) {
-            Mission mission = i.next();
-            if (mission instanceof VehicleMission) {
-                Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-                if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-                    Inventory vehicleInv = vehicle.getInventory();
-                    Iterator <Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
-                    while (j.hasNext()) {
-                        Unit equipment = j.next();
-                        if (!equipmentList.contains(equipment)) equipmentList.add(equipment);
-                    }
-                }
-            }
-        }
-
-        Iterator<Unit> k = equipmentList.iterator();
-        while (k.hasNext()) {
-            if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D) result++;
-        }
-
-        return result;
-    }
+//    /**
+//     * Gets all non-empty containers of a given type associated with this settlement.
+//     * @param equipmentClass the equipment type.
+//     * @return number of non-empty containers.
+//     */
+//    private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
+//        int result = 0;
+//
+//        Inventory inv = settlement.getInventory();
+//        Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+//        MissionManager missionManager = Simulation.instance().getMissionManager();
+//        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+//        while (i.hasNext()) {
+//            Mission mission = i.next();
+//            if (mission instanceof VehicleMission) {
+//                Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//                if ((vehicle != null) && (vehicle.getSettlement() == null)) {
+//                    Inventory vehicleInv = vehicle.getInventory();
+//                    Iterator <Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
+//                    while (j.hasNext()) {
+//                        Unit equipment = j.next();
+//                        if (!equipmentList.contains(equipment)) equipmentList.add(equipment);
+//                    }
+//                }
+//            }
+//        }
+//
+//        Iterator<Unit> k = equipmentList.iterator();
+//        while (k.hasNext()) {
+//            if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D) result++;
+//        }
+//
+//        return result;
+//    }
 
     /**
      * Gets the number of areologists associated with the settlement.
