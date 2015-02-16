@@ -7,7 +7,6 @@
 <!-- References : 
 1. Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006 
 2. NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
-http://sourceforge.net/p/mars-sim/code/2842/
 3. Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
 4. For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
 5. http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
@@ -19,7 +18,19 @@ http://sourceforge.net/p/mars-sim/code/2842/
  d. water content:
 	http://www2.ca.uky.edu/enri/pubs/enri129.pdf    	
 
+6. Typical expected yield for food crop:
+http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
+
+growing-time : # of sols 
+crop-category : crop type
+edible-biomass : in tonnes per hectare  or  gram / m^2 / day
+edible-water-content : in proportion of 1 (1 is 100%)
+inedible-biomass : in tonnes per hectare
+ 
+Note: 1 metric ton = 1 tonnes
+
 -->
+
 
 	<crop name="Cabbage" 
  	  	growing-time="85.0" 
@@ -32,7 +43,7 @@ http://sourceforge.net/p/mars-sim/code/2842/
 	<crop name="Carrot" 
     	growing-time="74.83" 
     	crop-category="Roots" 
-    	edible-biomass="74.83"
+    	edible-biomass="40"
     	edible-water-content=".88"
     	inedible-biomass="59.87" 
     	/>
@@ -256,13 +267,44 @@ http://sourceforge.net/p/mars-sim/code/2842/
     	http://www.ecologynorth.ca/wp-content/uploads/2012/03/Stimulating-Commercial-Berry-Production-FINAL-FEB-2012.pdf
     	Production from mature plants is about 11 tonnes per hectare.
     	Well-managed bogs should produce 100 to 200 barrels of cranberries per acre,
+    	-->  
+ 
+   	<crop name="Cucumber"
+        growing-time="60" 
+    	crop-category="Vegetables" 
+    	edible-biomass="40" 
+    	edible-water-content=".90" 
+    	inedible-biomass="10" 
+    	/>		
+    	<!-- http://teca.fao.org/sites/default/files/technology_files/High%20yielding%20vegetable%20varieties.pdf
+    	-->     	
     	
+	<crop name = "Green Bell Pepper"
+		growing-time= "40"
+		crop-category="Vegetables"
+		edible-biomass= "50"
+		edible-water-content= ".45"
+		inedible-biomass="20"
+		/>    	
+    	
+<!--
     	TODO: multi-year plants
-    	-->     	     	
+-->
+    	
+<!--
+    <crop name="Mushroom" 
+    	growing-time="10.0" 
+    	crop-category="Vegetables" 
+    	edible-biomass="35"
+    	edible-water-content=".35"
+    	inedible-biomass="1" 
+    	/> 
+-->     	     	
     	     	  
-    	 <!-- Rhizomes vs. roots 
+<!-- Rhizomes vs. roots 
     	 Tumeric
     	 Green Pepper 
-    	 Radish -->
+    	 Radish 
+-->
     	  
 </crop-list>

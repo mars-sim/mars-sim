@@ -105,7 +105,7 @@ implements Serializable {
 	        	boolean display = false;
 	        	
 	        	// display the msg when no ingredients are detected at first and after 15 warnings
-	        	if (counter > 15 || counter == 0) 
+	        	if (counter > 30 || counter == 0) 
 	        		display = true;
 	        	
 	        	if (display) {

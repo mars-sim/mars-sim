@@ -64,19 +64,23 @@
 	<resource name="Tofu" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
 	
 	
+<!-- Utility Items derived from crop harvest -->
+	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>	
+	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
+
+	
 <!-- Food items derived from crop harvest -->
 	<resource name="Blueberry Muffin" phase="solid" edible="true"></resource>	
 	<resource name="Brown Rice" phase="solid" edible="true"></resource>
-	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
 	<resource name="Cranberry Juice" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
 	<resource name="Cranberry Sauce" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>	
-	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
 	<resource name="French Fries" phase="solid" edible="true">French fries made from potatoes.</resource>
 	<resource name="Garlic Oil" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
 	<resource name="Granola Bar" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
 	<resource name="Honey" phase="liquid" edible="true">Honey extracted from bee hives</resource>	
 	<resource name="Peanut Butter" phase="solid" edible="true"></resource>
 	<resource name="Peanut Oil" phase="liquid" edible="true"></resource>
+	<resource name="Pizza Dough" phase="solid" edible="true"></resource>
 	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
 	<resource name="Rice Noodle" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
 	<resource name="Rice Flour" phase="solid" edible="true">Flour made from White Rice. </resource>
@@ -96,10 +100,12 @@
 	<resource name="White Rice" phase="solid" edible="true"></resource>
 
 <!-- Crop Produce -->
+	<resource name="Green Bell Pepper" phase="solid" edible="true"></resource>
 	<resource name="Blueberry" phase="solid" edible="true"></resource>
 	<resource name="Cabbage" phase="solid" edible="true"></resource>
 	<resource name="Carrot" phase="solid" edible="true"></resource>
 	<resource name="Celery" phase="solid" edible="true"></resource>
+	<resource name="Cucumber" phase="solid" edible="true"></resource>
 	<resource name="Cranberry" phase="solid" edible="true"></resource>	
 	<resource name="Garlic" phase="solid" edible="true"></resource>
 	<resource name="Ginger" phase="solid" edible="true"></resource>
@@ -127,6 +133,7 @@
 	<resource name="Ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="Calcium Carbonate" phase="solid" />
 	<resource name="Gypsum" phase="solid" />
+	<resource name="Fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>	
 	<resource name="Iron Oxide" phase="solid">also known as rust</resource>
 	<resource name="Iron Powder" phase="solid" />
 	<resource name="Lime" phase="solid" />
@@ -139,9 +146,7 @@
 	<resource name="Rock Samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="Sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="Styrene" phase="solid" />
-	<resource name="Fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
 	<resource name="Rock Salt" phase="solid">Halite, commonly known as rock salt, is the mineral form of sodium chloride (NaCl). It is typically colorless or white, but may also be light blue, dark blue, purple, pink, red, orange, yellow or gray depending on the amount and type of impurities.</resource>
-
 
 
 <!-- Mineral concentrations. -->

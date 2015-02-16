@@ -4,10 +4,11 @@
 
 <meal-list>
 		<meal id="0" name="Kidney Bean Fried Rice with Onion" oil="0.05" salt="0.01" category="meal">
-			<ingredient id="0" name="Kidney Bean" proportion="0.4"/>
+			<ingredient id="0" name="Kidney Bean" proportion="0.3"/>
 			<ingredient id="1" name="White Rice" proportion="0.4"/>
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
 			<ingredient id="3" name="Swiss Chard" proportion="0.1"/>
+			<ingredient id="4" name="Green Bell Pepper" proportion="0.1"/>				
 		</meal>				
 	
 		<meal id="1" name="Roasted Carrot Soup and Brown Rice" oil="0.05" salt="0.01" category="meal">		
@@ -36,10 +37,11 @@
 		</meal>		
 	      	
 		<meal id="4" name="Bean Sprout Garlic Stir Fry" oil="0.05" salt="0.01" category="meal">		
-			<ingredient id="0" name="Soy Sprout" proportion="0.6"/>			
+			<ingredient id="0" name="Soy Sprout" proportion="0.5"/>			
 			<ingredient id="1" name="Green Onion" proportion="0.2"/>
 			<ingredient id="2" name="Garlic" proportion="0.1"/>
-			<ingredient id="3" name="Rice Vinegar" proportion="0.1"/>					
+			<ingredient id="3" name="Rice Vinegar" proportion="0.1"/>
+			<ingredient id="4" name="White Onion" proportion="0.1"/>								
 		</meal>				
 	      	
 		<meal id="5" name="Veggie Burger with French Fries" oil="0.05" salt="0.01" category="meal">		
@@ -67,25 +69,28 @@
 			<ingredient id="5" name="Peanut Butter" proportion="0.05"/>						
 		</meal>		
 				
-		<meal id="8" name="Braised Celery and Peanut Butter Dip with Roasted Peanuts" oil="0.05" salt="0.01" category="meal">		
-			<ingredient id="0" name="Celery" proportion="0.4"/>				
+		<meal id="8" name="Braised Celery and Cucumber, Peanut Butter Dip and Roasted Peanuts" oil="0.05" salt="0.01" category="meal">		
+			<ingredient id="0" name="Celery" proportion="0.3"/>				
 			<ingredient id="1" name="Roasted Peanut" proportion="0.30"/>
-			<ingredient id="2" name="Carrot" proportion="0.25"/>				
-			<ingredient id="3" name="Peanut Butter" proportion="0.05"/>						
+			<ingredient id="2" name="Carrot" proportion="0.2"/>				
+			<ingredient id="3" name="Peanut Butter" proportion="0.05"/>	
+			<ingredient id="4" name="Cucumber" proportion="0.15"/>									
 		</meal>		
 				      	
 		<meal id="9" name="Tofu Menudo" oil="0.05" salt="0.01" category="meal">		
-			<ingredient id="0" name="Tofu" proportion="0.4"/>				
-			<ingredient id="1" name="Potato" proportion="0.30"/>
-			<ingredient id="2" name="Peas" proportion="0.25"/>				
-			<ingredient id="3" name="Tomato" proportion="0.05"/>						
+			<ingredient id="0" name="Tofu" proportion="0.35"/>				
+			<ingredient id="1" name="Potato" proportion="0.2"/>
+			<ingredient id="2" name="Peas" proportion="0.2"/>				
+			<ingredient id="3" name="Tomato" proportion="0.1"/>
+			<ingredient id="4" name="Green Bell Pepper" proportion="0.15"/>										
 		</meal>		
 				      	
 		<meal id="10" name="Garlic Bread and Spaghetti" oil="0.05" salt="0.01" category="meal">		
 			<ingredient id="0" name="Wheat Noodle" proportion="0.4"/>				
 			<ingredient id="1" name="White Bread" proportion="0.3"/>
-			<ingredient id="2" name="Garlic Oil" proportion="0.2"/>				
-			<ingredient id="3" name="Tomato" proportion="0.1"/>						
+			<ingredient id="2" name="Green Bell Pepper" proportion="0.1"/>				
+			<ingredient id="3" name="Tomato" proportion="0.1"/>		
+			<ingredient id="4" name="Garlic" proportion="0.1"/>								
 		</meal>		
 
 		<meal id="11" name="Hearty Quinoa Sprouts with Peas" oil="0.05" salt="0.01" category="meal">		
@@ -103,5 +108,12 @@
 			<ingredient id="4" name="Soy Sprout" proportion="0.2"/>					
 		</meal>	
 		
+		<meal id="13" name="Vegetarian Pizza" oil="0.05" salt="0.01" category="meal">		
+			<ingredient id="0" name="Pizza Dough" proportion="0.6"/>				
+			<ingredient id="1" name="Green Bell Pepper" proportion="0.1"/>
+			<ingredient id="2" name="Cucumber" proportion="0.1"/>				
+			<ingredient id="3" name="Tomato" proportion="0.1"/>	
+			<ingredient id="4" name="White Onion" proportion="0.1"/>					
+		</meal>
 
 </meal-list>

@@ -193,6 +193,13 @@ implements Serializable, MouseListener {
             }
         }; // end of JTable
 		
+    	
+        //final JTable ctable = cropTable;
+	    //SwingUtilities.invokeLater(new Runnable(){
+	    //    public void run()  {
+	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	    //     } });
+		
 		
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false);
@@ -377,14 +384,7 @@ implements Serializable, MouseListener {
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
 		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
-	
 
-        final JTable ctable = table;
-	    SwingUtilities.invokeLater(new Runnable(){
-	        public void run()  {
-	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
-	         } });
-		
 	}
 	
 	/**
@@ -615,11 +615,16 @@ implements Serializable, MouseListener {
 			else if (column == 2) return phase;
 			else if (column == 3) {
 				int growth = 0;
-				if (phase.equals(Crop.GROWING)) {
-					double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+				double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+				if (phase.equals(Crop.GERMINATION)) {
 					growth = (int) (growingCompleted * 100D);
 				}
-				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED)) growth = 100;
+				else if (phase.equals(Crop.GROWING)) {
+					growth = (int) (growingCompleted * 100D);
+				}
+				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED)) 
+					growth = 100;
+				
 				return String.valueOf(growth) + "%";
 			}
 			// 2014-10-10 mkung: added column 4 showing the crop's category
