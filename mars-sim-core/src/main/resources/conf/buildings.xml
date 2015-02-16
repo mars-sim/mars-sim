@@ -255,7 +255,9 @@
 				<resource-storage resource="Quinoa" capacity="100.0" />
 				<resource-storage resource="Cranberry" capacity="100.0" />
 				<resource-storage resource="Blueberry" capacity="100.0" />																	
-																			
+				<resource-storage resource="Cucumber" capacity="100.0" />
+				<resource-storage resource="Green Bell Pepper" capacity="100.0" />
+																											
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially in the building. -->
 				<!-- See resources.xml -->
@@ -312,7 +314,9 @@
 				<resource-initial resource="Quinoa" amount="50.0" />													
 				<resource-initial resource="Cranberry" amount="50.0" />	
 				<resource-initial resource="Blueberry" amount="50.0" />	
-																						
+				<resource-initial resource="Cucumber" amount="50.0" />		
+				<resource-initial resource="Green Bell Pepper" amount="50.0" />
+																														
 			</storage>
 			
 			<!-- The building is capable of producing heat. -->
@@ -1650,7 +1654,10 @@
 				<resource-storage resource="Quinoa" capacity="100.0" />
 				<resource-storage resource="Cranberry" capacity="100.0" />
 				<resource-storage resource="Blueberry" capacity="100.0" />																	
-																			
+				<resource-storage resource="Cucumber" capacity="100.0" />
+				<resource-storage resource="Green Bell Pepper" capacity="100.0" />
+				
+																							
 				<!-- The initial resources in the building. -->
 
 				<resource-initial resource="Nitrogen" amount="100.0" />				
@@ -1705,6 +1712,9 @@
 				<resource-initial resource="Quinoa" amount="50.0" />													
 				<resource-initial resource="Cranberry" amount="50.0" />	
 				<resource-initial resource="Blueberry" amount="50.0" />	
+				<resource-initial resource="Cucumber" amount="50.0" />					
+				<resource-initial resource="Green Bell Pepper" amount="50.0" />	
+	
 	
 			</storage>
 		</functions>

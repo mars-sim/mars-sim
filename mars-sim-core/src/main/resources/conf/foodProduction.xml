@@ -681,5 +681,28 @@
 		
 	</process>
 	
+		
+	<process name="Make Pizza Dough " 
+		tech="1" skill="2" work-time="50" process-time="60" 
+			power-required="0">			
+		<description> Make round pizza dough from three types of flours </description>
+		
+		<inputs>
+			<part name="oven" number="1" />	
+			<resource name="Soy Flour" amount="0.2" />
+			<resource name="Rice Flour" amount="0.4" />	
+			<resource name="Wheat Flour" amount="0.4" />		
+			<resource name="Water" amount="0.33" />
+			<resource name="Yeast" amount="0.01" />	
+			<resource name="Soybean Oil" amount="0.01" />	
+			<resource name="Table Salt" amount="0.01" />						
+		</inputs>
+		<outputs>
+			<part name="oven" number="1" />			
+			<resource name="Pizza Dough" amount="1.2" />
+		</outputs>
+	</process>
+	
+	
 	
 </foodProduction-processes>

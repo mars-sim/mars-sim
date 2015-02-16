@@ -85,8 +85,11 @@ LocalBoundedObject, InsidePathLocation {
 	/** Base amount of maintenance time for building. */
 	private static final double BASE_MAINTENANCE_TIME = 50D;
 	
-    private static final double INITIAL_TEMPERATURE = 22.5D;
+    private static final double ROOM_TEMPERATURE = 22.5D;
 
+    public static final double GREENHOUSE_TEMPERATURE = 24D;
+
+    
     // Data members
 	protected String buildingType;
 	protected String nickName;
@@ -141,16 +144,25 @@ LocalBoundedObject, InsidePathLocation {
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
 				template.getFacing(), manager);		
 		
-		this.currentTemperature = INITIAL_TEMPERATURE;
-		// TODO: what do we need this for?
+		this.manager = manager;
+		this.location = manager.getSettlement().getCoordinates();
+		this.buildingType = template.getBuildingType();
+		
+		if (buildingType.equals("Inflatable Greenhouse")
+				|| buildingType.equals("Large Greenhouse")
+				||	buildingType.equals("Inground Greenhouse") )
+			currentTemperature = GREENHOUSE_TEMPERATURE;
+		else
+			currentTemperature = ROOM_TEMPERATURE;
+
+		powerMode = PowerMode.FULL_POWER;
+		heatMode = HeatMode.FULL_POWER;
+		
 		LifeSupport lifeSupport;
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
+
 		
-		this.manager = manager;
-		this.location = manager.getSettlement().getCoordinates();
-		
-		heatMode = HeatMode.POWER_DOWN;
 		//count++;
 		//Logger.info("constructor 1 : count is " + count);
 	}
@@ -182,18 +194,23 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.manager = manager;
-		powerMode = PowerMode.FULL_POWER;
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-		//count++;
-		//logger.info("constructor2 : count is " + count);
+
+		if (buildingType.equals("Inflatable Greenhouse")
+				|| buildingType.equals("Large Greenhouse")
+				||	buildingType.equals("Inground Greenhouse") )
+			currentTemperature = GREENHOUSE_TEMPERATURE;
+		else
+			currentTemperature = ROOM_TEMPERATURE;
+
+		powerMode = PowerMode.FULL_POWER;
+		heatMode = HeatMode.FULL_POWER;
 	
-		this.currentTemperature = INITIAL_TEMPERATURE;
-		heatMode = HeatMode.POWER_DOWN;
-			
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-	// Get building's dimensions.
+	
+		// Get building's dimensions.
 		if (width != -1D) {
 			this.width = width;
 			}
@@ -282,9 +299,18 @@ LocalBoundedObject, InsidePathLocation {
      */
 	//2014-10-23  Added getInitialTemperature()
     public double getInitialTemperature() {
-            return INITIAL_TEMPERATURE;
+    	double result;
+		//if (config.hasFarming(buildingType))
+		if (buildingType == "Inflatable Greenhouse"
+				|| buildingType == "Large Greenhouse"
+				||	buildingType == "Inground Greenhouse" )
+			return GREENHOUSE_TEMPERATURE;
+		else
+            return ROOM_TEMPERATURE;
     }
 	
+
+
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
