@@ -2753,7 +2753,33 @@
 		</outputs>
 	</process>
 
-
+	<!-- 2015-02-16 Added making a mushroom containment kit. -->
+	<process name="make mushroom containment kit" tech="1" skill="2" work-time="50" process-time="50" 
+			power-required="0">
+		<inputs>
+			<part name="oxygen pump" number="3" />	
+			<part name="carbon dioxide pump" number="3" />	
+			<part name="small water pump" number="3" />	
+			<part name="electric heating element" number="3" />	
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="6" />			
+			<part name="fiberglass cloth" number="3" />	
+			<part name="ventilation fan" number="3" />
+			<part name="valve" number="10" />
+			<part name="gasket" number="10" />
+			<part name="plastic tubing" number="10" />												
+		</inputs>
+		<outputs>
+			<part name="mushroom containment kit" number="1" />
+		</outputs>
+	</process>
+		
+		
+		
+		
+		
+		
+		
 		
 	<!-- Salvage process for an EVA suit. -->
 	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
