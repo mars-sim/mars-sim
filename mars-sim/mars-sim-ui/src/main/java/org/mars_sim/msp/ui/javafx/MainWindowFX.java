@@ -7,15 +7,11 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
  * The MainWindowFX class is the primary JavaFX frame for the project.
