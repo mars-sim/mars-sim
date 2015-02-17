@@ -119,37 +119,5 @@ public class TaskProbabilityUtil {
 
         return result;
     }
-    /*
-    protected static double getRelationshipModifier(Robot robot, Building building) {
-        double result = 1D;
 
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
-        if ((robot == null) || (building == null)) {
-            throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
-        }
-        else {
-            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                double totalOpinion = 0D;
-                Iterator<Robot> i = lifeSupport.getRobotOccupants().iterator();
-                while (i.hasNext()) {
-                	Robot occupant = i.next();
-                    if (robot != occupant) {
-                        totalOpinion+= ((relationshipManager.getOpinionOfPerson(robot, occupant) - 50D) / 50D);
-                    }
-                }
-
-                if (totalOpinion >= 0D) {
-                    result*= (1D + totalOpinion);
-                }
-                else {
-                    result/= (1D - totalOpinion); 
-                }
-            }
-        }
-
-        return result;
-    }
-    */
 }

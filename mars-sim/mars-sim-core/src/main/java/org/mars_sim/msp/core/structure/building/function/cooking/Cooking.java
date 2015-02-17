@@ -722,7 +722,7 @@ implements Serializable {
     	//TODO: need to move the hardcoded amount to a xml file	    
 	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER, true);
 		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;		
-		storeAnResource(wasteWaterAmount, "waste water");  
+		storeAnResource(wasteWaterAmount, "waste water", inv);  
     }
     
     
@@ -849,7 +849,7 @@ implements Serializable {
 	 	      			int num = RandomUtil.getRandomInt(9);
 	 	      			if (num == 0) {
 	 	      				// There is a 10% probability that the expired meal is of no good and must be discarded
-	 	      				storeAnResource(dryMassPerServing, "Food Waste");
+	 	      				storeAnResource(dryMassPerServing, "Food Waste", inv);
 			            	logger.info(dryMassPerServing  + " kg " + meal.getName()	 	      				
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
 			                		+ " in " + settlement.getName() );
@@ -883,7 +883,7 @@ implements Serializable {
     }
 	  
 	// 2015-02-06 Added storeAnResource()
-	public boolean storeAnResource(double amount, String name) {
+	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);      
@@ -962,7 +962,7 @@ implements Serializable {
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true); 
-		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD);
+		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD, inv);
  	}
 
     /**

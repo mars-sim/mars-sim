@@ -54,10 +54,10 @@ implements Serializable {
 	 */
 	public double getCapability(Robot robot) {
 
-		double result = 0D;
+		double result = 10D;
 
 		int botanySkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
-		result = botanySkill;
+		result += botanySkill;
 
 		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
@@ -65,7 +65,7 @@ implements Serializable {
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
 
-		if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 
 		return result;
 	}
@@ -76,26 +76,15 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = 10D;
 
-		// Add (labspace * tech level) / 2 for all labs with botany specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
-			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
-			}
-		}
-
-		// Add (growing area in greenhouses) / 25
+		// Add (growing area in greenhouses) / 10
 		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING);
 		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-			result += (farm.getGrowingArea() / 25D);
+			result += (farm.getGrowingArea() / 10D);
 		}
 
 		return result;	

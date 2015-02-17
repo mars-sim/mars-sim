@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2015-01-04
+ * @version 3.07 2015-02-17
  * @author Scott Davis
  */
 
@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -79,6 +81,10 @@ implements VehicleOperator, Serializable {
     /** Settlement Y location (meters) from settlement center. */
     private double yLoc;
 
+    private Building diningBuilding;
+    private Cooking kitchenWithMeal;
+    private PreparingDessert kitchenWithDessert;
+    
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -604,7 +610,34 @@ implements VehicleOperator, Serializable {
         }
         scientificAchievement.put(science, achievementCredit);
     }
+    
+    
+    public void setDiningBuilding(Building diningBuilding) {
+    	this.diningBuilding = diningBuilding;
+    }
 
+    public Building getDiningBuilding() {
+    	return diningBuilding;
+    }
+    
+    public void setKitchenWithMeal(Cooking kitchen) {
+    	this.kitchenWithMeal = kitchen;
+    }
+
+    public Cooking getKitchenWithMeal() {
+    	return kitchenWithMeal;
+    }
+    
+    
+    
+    public void setKitchenWithDessert(PreparingDessert kitchen) {
+    	this.kitchenWithDessert = kitchen;
+    }
+
+    public PreparingDessert getKitchenWithDessert() {
+    	return kitchenWithDessert;
+    }
+    
     @Override
     public void destroy() {
         super.destroy();

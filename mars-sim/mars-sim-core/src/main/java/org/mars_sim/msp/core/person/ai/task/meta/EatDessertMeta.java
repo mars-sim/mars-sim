@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.EatDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 public class EatDessertMeta implements MetaTask {
   
@@ -22,7 +23,7 @@ public class EatDessertMeta implements MetaTask {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.eatDessert"); //$NON-NLS-1$
+            "Task.description.eatDessertMeta"); //$NON-NLS-1$
     
     public EatDessertMeta() {
     }
@@ -39,48 +40,70 @@ public class EatDessertMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        double hunger = person.getPhysicalCondition().getHunger();
-        double energy = person.getPhysicalCondition().getEnergy();
-        
         double result = 0D;
         
-        if (hunger > 1000 || energy < 2000 )
-	        //result =  0.4 * (hunger - 400D);
-	        result = 0.007 * (12000 - energy);
-        else if (hunger > 800 || energy < 4000 )
-        	result = 40D;
-        else if (hunger > 600 || energy < 6000 )
-        	result = 10D;
-        //else if (hunger > 400 || energy < 7000 )
-        	//result = 5D;        
-        else result = 0;
-        
-        if (result > 0) {
-        	
-        	// TODO: if a person is in a vehicle
-        	
-	        // TODO: if a person is very hungry, should he come inside and result > 0 ?
-	        if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
-	
-	        Building building = EatDessert.getAvailableDiningBuilding(person);
-	        if (building != null) {
-	        	result += 10D;	        	
-	            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	        }
-	
-	        // Check if there's a dessert at a local kitchen.
-	        if (EatDessert.getKitchenWithDessert(person) != null) 
-	        	result += 20D;
-	        else {
-	            // Check if there is food available to eat.
-	            if (!EatDessert.isDessertAvailable(person)) 
-	            	result = 0D;
-	        }
+        // TODO: if a person is very hungry, should he come inside immediately?
+       
+	    if (person.getLocationSituation() == LocationSituation.OUTSIDE)     	
+	    	result = 0D;
 
+    	// TODO: if a person is in a vehicle
+	    
+	    else {
+        	
+	        double hunger = person.getPhysicalCondition().getHunger();
+	        double energy = person.getPhysicalCondition().getEnergy();       
+	        
+	        if (hunger > 1000 || energy < 2000 )
+		        //result =  0.4 * (hunger - 400D);
+		        result = 0.007 * (12000 - energy);
+	        else if (hunger > 800 || energy < 4000 )
+	        	result = 40D;
+	        else if (hunger > 600 || energy < 5000 )
+	        	result = 20D;
+	        //else if (hunger > 400 || energy < 7000 )
+	        	//result = 5D;        
+	        else result = 0;
+	        
+	        if (result > 0) {	        	
+		        
+		        Building building = EatDessert.getAvailableDiningBuilding(person);
+		        if (building != null) {
+		        	
+		        	// 2015-02-17 Called setDiningBuilding()
+		        	person.setDiningBuilding(building);
+		        	
+		        	result += 10D;
+		        	
+		            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+		            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+		        
+		            PreparingDessert kitchen = EatDessert.getKitchenWithDessert(person);
+			        // Check if there's a dessert already made available at a local kitchen. will in terms call kitchen.hasFreshDessert()
+			        if (kitchen != null) {			        	
+			        	// 2015-02-17 Called setDiningBuilding()
+			        	person.setKitchenWithDessert(kitchen);			        	
+			            
+			        	result += 20D;
+			        	
+			        	// TODO: check how many desserts available. increase in choice should increase result
+			        	
+			        }
+			        //TODO: check if the kitchen has the person's favorite dessert
+			        // result += 100D;
+			        
+			        else { // there is no fresh dessert available
+			            // TODO: do we still need to check if the dessert ingredient are available. ?
+			        	// TODO: how to switch to directly preparing the dessert for himself ?
+			            //if (!EatDessert.isDessertIngredientAvailable(person)) 
+			            	result = 0D;
+			        }
+		        
+		        }
+
+	        }
         }
-       //TODO: if the kitchen has the person's favorite dessert
-        // result += 100D;
+
         return result;
     }
 

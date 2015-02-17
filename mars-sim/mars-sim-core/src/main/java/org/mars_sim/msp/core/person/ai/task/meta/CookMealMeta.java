@@ -71,7 +71,7 @@ public class CookMealMeta implements MetaTask {
 
 	                    // if more meals (thus more ingredients) are available at kitchen.
 	                    // to Chef's delight, he/she is more motivated to cook 
-	                    result = result + size * 50D;
+	                    result += size * 50D;
 	              	  
 	  
 	                    // TODO: if the person likes cooking 
@@ -126,10 +126,10 @@ public class CookMealMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 200D;
+        double result = 100D;
         
       	if (CookMeal.isMealTime(robot)) {
-      		result += 100D;
+     
             try {
                 // See if there is an available kitchen.
                 Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
@@ -150,7 +150,7 @@ public class CookMealMeta implements MetaTask {
 	
 	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
 	                    int size = kitchen.getHotMealCacheSize();
-	                    result = result + size * 50D;
+	                    result += size * 50D;
 	                    
 	                    if (result < 0D) {
 	                        result = 0D;
