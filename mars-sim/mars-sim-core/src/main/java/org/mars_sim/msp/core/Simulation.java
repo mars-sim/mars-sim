@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.08 2015-01-30
+ * @version 3.08 2015-02-16
 
  * @author Scott Davis
  */
@@ -158,13 +158,21 @@ implements ClockListener, Serializable {
 		if (simulation.initialSimulationCreated) {
 			simulation.destroyOldSimulation();
 		}
-
+		
 		// Initialize intransient data members.
 		simulation.initializeIntransientData();
 
 		// Initialize transient data members.
 		simulation.initializeTransientData();
-
+		
+	    // Sleep current thread for a short time to make sure all simulation objects are initialized.
+        try {
+            Thread.sleep(50L);
+        }
+        catch (InterruptedException e) {
+            // Do nothing.
+        }
+		
 		simulation.initialSimulationCreated = true;
 		
 		isUpdating = false;

@@ -436,8 +436,10 @@ implements Serializable {
 			if (template.getTemplateName().equals(templateName)) result = template; 
 		}
 		
-		if (result == null) throw new IllegalArgumentException("templateName: " 
+		if (result == null) {
+		    throw new IllegalArgumentException("templateName: "
 				+ templateName + " not found.");
+		}
 		
 		return result;
 	}
