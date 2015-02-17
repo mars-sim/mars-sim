@@ -362,7 +362,7 @@
 		<severity value="70" />
 		<probability value="50.0" />
 		<repair-time value="20.0" />
-		<emergency-repair-time value="1.0" />
+		<emergency-repair-time value="10.0" />
 		<entity-list>
 			<entity name="eva suit" />
 		</entity-list>
@@ -570,8 +570,69 @@
 			<part name="refrigerator" number="1" probability="10" />
 			<part name="valve" number="3" probability="10" />
 			<part name="air compressor" number="1" probability="10" />		
-			<part name="lubricant bottle" number="1" probability="30" />								
+			<part name="lubricant bottle" number="1" probability="3" />								
 		</repair-parts-list>
 	</malfunction>
 
+	<!-- 2015-02-16 Added solar parabolic mirror failure. -->
+	<malfunction name="solar parabolic mirror failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="solar parabolic mirror" number="1" probability="10" />	
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />							
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- 2015-02-16 Added LED Kit failure. -->
+	<malfunction name="LED Lighting Kit failure">
+		<severity value="10" />
+		<probability value="3.0" />
+		<repair-time value="50.0" />
+		<emergency-repair-time value="0.0" />
+		<entity-list>
+			<entity name="cooking" />
+			<entity name="farming" />	
+			<entity name="vehicle" />	
+			<entity name="manufacture" />
+			<entity name="living accommodations" />	
+		</entity-list>
+		<repair-parts-list>
+			<part name="LED kit" number="1" probability="10" />	
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="LED bulb" number="5" probability="20" />								
+		</repair-parts-list>
+	</malfunction>	
+
+	<!-- 2015-02-16 Added mushroom containment kit failure. -->
+	<malfunction name="mushroom containment kit failure">
+		<severity value="30" />
+		<probability value="3.0" />
+		<repair-time value="20.0" />
+		<emergency-repair-time value="10" />
+		<entity-list>
+			<entity name="farming" />	
+		</entity-list>
+		<repair-parts-list>
+			<part name="mushroom containment kit" number="1" probability="3" />
+			<part name="oxygen pump" number="3" probability="3" />	
+			<part name="carbon dioxide pump" number="3" probability="3" />	
+			<part name="small water pump" number="3" probability="3" />		
+			<part name="electric heating element" number="3" probability="20" />	
+			<part name="electrical wire" number="3" probability="10" />
+			<part name="wire connector" number="6" probability="10" />			
+			<part name="fiberglass cloth" number="3" probability="5" />
+			<part name="valve" number="10" probability="5"  />
+			<part name="gasket" number="10" probability="5"  />
+			<part name="plastic tubing" number="10" probability="5"  />													
+		</repair-parts-list>
+	</malfunction>	
+		
 </malfunction-list>

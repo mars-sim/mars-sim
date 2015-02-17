@@ -21,6 +21,9 @@
 6. Typical expected yield for food crop:
 http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
 
+7. 01ICES-307 Design Parameters for Mars Deployable Greenhouses
+http://www.marshome.org/files2/Bucklin1.pdf
+
 growing-time : # of sols 
 crop-category : crop type
 edible-biomass : in tonnes per hectare  or  gram / m^2 / day

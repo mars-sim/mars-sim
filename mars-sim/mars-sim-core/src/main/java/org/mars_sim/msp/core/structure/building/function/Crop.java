@@ -191,7 +191,7 @@ implements Serializable {
 	public boolean requiresWork() {
 		boolean result = false;
 		if (phase.equals(PLANTING) || phase.equals(HARVESTING)) result = true;
-		if (phase.equals(GROWING) || phase.equals(GERMINATION) ) {
+		else if (phase.equals(GROWING) || phase.equals(GERMINATION) ) {
 			if (dailyTendingWorkRequired > currentPhaseWorkCompleted) result = true;
 		}
 
@@ -267,7 +267,7 @@ implements Serializable {
 			}
 		}
 
-		if (phase.equals(HARVESTING)) {
+		else if (phase.equals(HARVESTING)) {
 				//logger.info("addWork() : crop is in Harvesting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= harvestingWorkRequired) {
@@ -278,7 +278,7 @@ implements Serializable {
 				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired;
 				// Store the crop harvest
 				storeAnResource(lastHarvest, cropType.getName());
-				logger.info("addWork() : " + cropType.getName() + " lastHarvest " + Math.round(lastHarvest * 1000.0)/1000.0);
+				//logger.info("addWork() : " + cropType.getName() + " lastHarvest " + Math.round(lastHarvest * 1000.0)/1000.0);
 				remainingWorkTime = overWorkTime;
 				
 				phase = FINISHED;
@@ -289,7 +289,7 @@ implements Serializable {
 			else { 	// continue the harvesting process
 				// 2014-10-07 modified parameter list to include crop name
 				double modifiedHarvest = actualHarvest * workTime / harvestingWorkRequired;
-				logger.info("addWork() : " + cropType.getName() + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
+				//logger.info("addWork() : " + cropType.getName() + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
 				// Store the crop harvest
 				storeAnResource(modifiedHarvest, cropType.getName());
 				remainingWorkTime = 0D;
@@ -305,7 +305,7 @@ implements Serializable {
 		// 2015-02-06 Added Crop Waste
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() +cropType.getEdibleBiomass());
 		storeAnResource(amountCropWaste, "Crop Waste");
-		logger.info("addWork() : " + cropType.getName() + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
+		//logger.info("addWork() : " + cropType.getName() + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 	
 	
@@ -345,13 +345,13 @@ implements Serializable {
 					phase = GERMINATION;
 					currentPhaseWorkCompleted = 0D;
 				}
-				if (growingTimeCompleted > totalGrowingDay * PERCENT_IN_GERMINATION_PHASE / 100D) {
+				
+				else if (growingTimeCompleted < totalGrowingDay) {
 					phase = GROWING;
 					currentPhaseWorkCompleted = 0D;
 				}
 				
-				
-				if (growingTimeCompleted > totalGrowingDay) {
+				if (growingTimeCompleted >= totalGrowingDay) {
 					phase = HARVESTING;
 					currentPhaseWorkCompleted = 0D;
 				}
@@ -428,15 +428,17 @@ implements Serializable {
 							
 		double T_NOW = farm.getBuilding().getTemperature();
 		double t = Building.GREENHOUSE_TEMPERATURE;
+		double temperatureModifier = 0 ;
 		if (T_NOW > (t + T_TOLERANCE))
-			harvestModifier = harvestModifier * (t / T_NOW);		
+			temperatureModifier = t / T_NOW;		
 		else if (T_NOW < (t - T_TOLERANCE))
-			harvestModifier = harvestModifier * (T_NOW / t);						
+			temperatureModifier = T_NOW / t;						
 		else // if (T_NOW < (t + T_TOLERANCE ) && T_NOW > (t - T_TOLERANCE )) {
 			// TODO: implement optimal growing temperature for each particular crop
-			harvestModifier *= harvestModifier *1.01;
+			temperatureModifier = 1.01;
 			
-		//System.out.println("Farming.java: temp harvestModifier is " + harvestModifier);
+		harvestModifier = harvestModifier * temperatureModifier;
+		//System.out.println("Farming.java: temperatureModifier is " + temperatureModifier);
 		
 		// Determine harvest modifier according to amount of waste water available.
 
@@ -470,8 +472,9 @@ implements Serializable {
 		double combinedWaterUsed = wasteWaterUsed + waterUsed;
 		double fractionUsed = combinedWaterUsed / wasteWaterRequired;
 			
-		harvestModifier = harvestModifier * ((( fractionUsed) * .5D) + .5D);
-		//System.out.println("Farming.java: wasteWater harvestModifier is " + harvestModifier);
+		double waterModifier = fractionUsed * .5D + .5D;
+		harvestModifier = harvestModifier * waterModifier;
+		//System.out.println("Farming.java: waterModifier is " + waterModifier);
 		
 		// Amount of water generated through recycling				
 		double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;					
@@ -485,8 +488,10 @@ implements Serializable {
 			if (o2Used > o2Available) {
 				o2Used = o2Available;
 			}					
-			retrieveAnResource(o2ar, o2Used);								
-			harvestModifier = harvestModifier * (((o2Used / o2Required) * .5D) + .5D);
+			retrieveAnResource(o2ar, o2Used);
+			double o2Modifier =  o2Used / o2Required * .5D + .5D;
+			harvestModifier = harvestModifier * o2Modifier;
+			//System.out.println("Farming.java: o2Modifier is " + o2Modifier);
 			
 			// Determine the amount of co2 generated via gas exchange.							
 			double co2Amount = o2Used * CO2_GENERATION_RATE;					
@@ -505,8 +510,9 @@ implements Serializable {
 			}					
 			retrieveAnResource(carbonDioxide, carbonDioxideUsed);								
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
-			harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
-			//System.out.println("Farming.java: carbonDioxide harvestModifier is " + harvestModifier);
+			double co2Modifier = carbonDioxideUsed / carbonDioxideRequired * .5D + .5D;
+			harvestModifier = harvestModifier * co2Modifier;
+			//System.out.println("Farming.java: co2Modifier is " + co2Modifier);
 			
 			// Determine the amount of oxygen generated via gas exchange.							
 			double oxygenAmount = carbonDioxideUsed * OXYGEN_GENERATION_RATE;					

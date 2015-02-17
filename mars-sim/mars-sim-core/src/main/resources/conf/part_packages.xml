@@ -14,6 +14,11 @@
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
+		
+				
+		<part type="LED bulb" number="100" />	
+		<part type="mushroom containment kit" number="5" />
+				
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="30" />	
 		<part type="microwave" number="3" />
@@ -98,6 +103,8 @@
 	
 	<part-package name="package 2" >
 	
+		<part type="LED bulb" number="200" />
+			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="60" />	
 		<part type="microwave" number="10" />
@@ -184,6 +191,8 @@
 	
 	<part-package name="package 3">
 	
+		<part type="LED bulb" number="300" />
+			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="80" />	
 		<part type="microwave" number="15" />
@@ -270,6 +279,8 @@
 	
 	<part-package name="package 4">
 	
+		<part type="LED bulb" number="400" />
+			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="200" />	
 		<part type="microwave" number="10" />

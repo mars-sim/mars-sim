@@ -454,7 +454,6 @@
 		<description>Turbine power generator.</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability="5" max-number="1" />
-			<entity name="solar thermal power source" probability="5" max-number="1" />
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -532,29 +531,29 @@
 	<!-- 2014-11-19 Added a small water pump for greenhouse. -->
 	<part name="small water pump" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="1" />
+			<entity name="farming" probability="5" max-number="10" />
 		</maintenance-entity-list>
 	</part>
 	
 	<!-- 2014-11-19 Added carbon dioxide pump for greenhouse. -->
 	<part name="carbon dioxide pump" mass="1.0" >
 		<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="1" />
+			<entity name="farming" probability="5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
 
 	<!-- 2014-11-19 Added water tank for greenhouse. -->	
 	<part name="water tank" mass="2.0" >
 	 	<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="1" />
+			<entity name="farming" probability="5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
 	
 	<!-- 2014-11-19 Added an air compressor. -->	
 	<part name="air compressor" mass="2.0" >
 	 	<maintenance-entity-list>
-			<entity name="farming" probability="5" max-number="1" />
-			<entity name="cooking" probability="5" max-number="1" />
+			<entity name="farming" probability="5" max-number="3" />
+			<entity name="cooking" probability="5" max-number="3" />
 		</maintenance-entity-list>
 	</part>
 
@@ -572,39 +571,67 @@
 	
 	<!-- 2014-11-19 Added 7 kitchen equipment below -->
 	<part name="blender" mass="2.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
+	
 	<part name="oven" mass="10.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>	
+	
 	<part name="microwave" mass="3.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>	
+	
 	<part name="ventilation fan" mass="0.2">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>	
+	
 	<part name="stove" mass="20.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>	
+	
 	<part name="refrigerator" mass="70.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>		
+	</part>	
+		
 	<part name="autoclave" mass="20.0">
-		 	<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>	
 
+	<part name="LED kit" mass="1.0">
+		<maintenance-entity-list>
+			<entity name="cooking" probability="3" max-number="5" />
+			<entity name="farming" probability="3" max-number="10" />	
+			<entity name="vehicle" probability="5" max-number="3" />	
+			<entity name="manufacture" probability="5" max-number="10" />
+			<entity name="living accommodations" probability="3" max-number="10" />		
+		</maintenance-entity-list>
+	</part>	
+
+	<part name="LED bulb" mass="0.2">
+		<description>Solid state light bulb</description>
+	</part>	
+	
+	<part name="mushroom containment kit" mass="1.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="1" />		
+		</maintenance-entity-list>
+	</part>	
+		
+		
+		
 </part-list>
