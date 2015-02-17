@@ -17,20 +17,29 @@ public class TestCreditManager extends TestCase {
     }
 
     public void testSetCredit() {
-			Collection<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
-			Settlement settlement1 = new MockSettlement();
-			settlements.add(settlement1);
-			Settlement settlement2 = new MockSettlement();
-			settlements.add(settlement2);
-			CreditManager manager = new CreditManager(settlements);
-			
-			manager.setCredit(settlement1, settlement2, 100D);
-			assertEquals( 100D, manager.getCredit(settlement1, settlement2));
-			
-			manager.setCredit(settlement1, settlement2, -100D);
-			assertEquals( -100D, manager.getCredit(settlement1, settlement2));
-			
-			manager.setCredit(settlement2, settlement1, 100D);
-			assertEquals( -100D, manager.getCredit(settlement1, settlement2));
+        Collection<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
+        Settlement settlement1 = new MockSettlement();
+        settlements.add(settlement1);
+        Settlement settlement2 = new MockSettlement();
+        settlements.add(settlement2);
+        CreditManager manager = new CreditManager(settlements);
+        manager.start();
+
+        // Sleeping the thread for a short time to allow the credit manager to finish loading.
+        try {
+            Thread.sleep(50L);
+        }
+        catch (InterruptedException e) {
+            fail();
+        }
+        
+        manager.setCredit(settlement1, settlement2, 100D);
+        assertEquals( 100D, manager.getCredit(settlement1, settlement2));
+
+        manager.setCredit(settlement1, settlement2, -100D);
+        assertEquals( -100D, manager.getCredit(settlement1, settlement2));
+
+        manager.setCredit(settlement2, settlement1, 100D);
+        assertEquals( -100D, manager.getCredit(settlement1, settlement2));
 	}
 }

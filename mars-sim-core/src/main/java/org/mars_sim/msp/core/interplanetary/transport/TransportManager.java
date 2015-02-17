@@ -53,7 +53,6 @@ implements Serializable {
 		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements());		
 		// Create initial resupply missions.
 		transportItems.addAll(ResupplyUtil.createInitialResupplyMissions());
-		
 	}
 	
 	/**

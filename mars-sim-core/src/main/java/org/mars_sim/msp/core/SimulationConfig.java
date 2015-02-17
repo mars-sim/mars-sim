@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.07 2015-01-29
+ * @version 3.08 2015-02-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -406,20 +406,35 @@ public class SimulationConfig implements Serializable {
 		resourceConfig = null;
 		partConfig = null;
 		partPackageConfig.destroy();
+		partPackageConfig = null;
 		personConfig.destroy();
+		personConfig = null;
 		medicalConfig.destroy();
+		medicalConfig = null;
 		landmarkConfig.destroy();
+		landmarkConfig = null;
 		mineralMapConfig.destroy();
+		mineralMapConfig = null;
 		malfunctionConfig.destroy();
+		malfunctionConfig = null;
 		cropConfig.destroy();
+		cropConfig = null;
 		vehicleConfig.destroy();
+		vehicleConfig = null;
 		buildingConfig.destroy();
+		buildingConfig = null;
 		resupplyConfig.destroy();
+		resupplyConfig = null;
 		settlementConfig.destroy();
+		settlementConfig = null;
 		manufactureConfig.destroy();
+		manufactureConfig = null;
 		constructionConfig.destroy();
+		constructionConfig = null;
 		foodProductionConfig.destroy();
+		foodProductionConfig = null;
 		mealConfig.destroy();
+		mealConfig = null;
 		//robotConfig.destroy();
 	}
 
