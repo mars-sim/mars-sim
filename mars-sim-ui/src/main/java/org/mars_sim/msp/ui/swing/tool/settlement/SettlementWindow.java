@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Msg;

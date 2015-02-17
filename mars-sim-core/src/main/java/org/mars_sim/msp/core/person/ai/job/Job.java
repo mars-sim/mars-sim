@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 

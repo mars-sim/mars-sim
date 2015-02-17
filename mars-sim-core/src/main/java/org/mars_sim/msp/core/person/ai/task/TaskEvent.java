@@ -11,7 +11,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.Person;
 
 /**
  * This class represents the historical actions involving tasks.

@@ -18,8 +18,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import com.phoenixst.plexus.DefaultGraph;
-
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */

@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -19,8 +18,6 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -35,9 +32,7 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ColorTintFilter;
 import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
-import org.mars_sim.msp.ui.swing.tool.GraphicsUtilities;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 

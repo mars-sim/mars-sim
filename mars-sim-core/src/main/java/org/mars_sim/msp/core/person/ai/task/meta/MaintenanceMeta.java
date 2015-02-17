@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;

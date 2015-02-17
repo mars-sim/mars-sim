@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.equipment;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
