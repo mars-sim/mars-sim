@@ -170,8 +170,9 @@ implements Serializable {
 	        workTime = time;
 		}
 		else if (robot != null) {
-		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/1.5;
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+			// should it incurs penalty on workTime?
+			workTime = time;
 		}
 
         // Determine amount of effective work time based on "Botany" skill

@@ -85,7 +85,7 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-        	 // Check if this person needs to get a new job or change jobs.
+        	 // Check if this robot needs to get a new job or change jobs.
 	        if (!jobLock) {
 	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 	        }

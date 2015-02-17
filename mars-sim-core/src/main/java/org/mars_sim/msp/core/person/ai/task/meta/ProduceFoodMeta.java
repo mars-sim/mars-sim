@@ -40,11 +40,11 @@ public class ProduceFoodMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 200D;
+        double result = 100D;
         
         // TODO: the cook should check if he himself or someone else is hungry, 
         // he's more eager to cook except when he's tired
-        result = person.getPhysicalCondition().getHunger() - 400D;
+        result += person.getPhysicalCondition().getHunger() - 400D;
         result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
         if (result < 0D) result = 0D;
 
@@ -57,8 +57,8 @@ public class ProduceFoodMeta implements MetaTask {
             // See if there is an available foodProduction building.
             Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
             if (foodProductionBuilding != null) {
-                result = 1D;
-
+            	result += 50D;
+            	
                 // Crowding modifier.
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, foodProductionBuilding);
@@ -66,21 +66,17 @@ public class ProduceFoodMeta implements MetaTask {
                 // FoodProduction good value modifier.
                 result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
 
-                if (result > 100D) {
-                    result = 100D;
-                }
 
                 // If foodProduction building has process requiring work, add
                 // modifier.
                 SkillManager skillManager = person.getMind().getSkillManager();
                 int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
                 if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-                    result += 10D;
+                    result += 100D;
                 }
 
-                // If settlement has foodProduction override, no new
-                // foodProduction processes can be created.
-                else if (person.getSettlement().getManufactureOverride()) {
+                // If settlement has foodProduction override, no new  foodProduction processes can be created.
+                if (person.getSettlement().getFoodProductionOverride()) {
                     result = 0;
                 }
             }
@@ -122,26 +118,24 @@ public class ProduceFoodMeta implements MetaTask {
             // See if there is an available foodProduction building.
             Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
             if (foodProductionBuilding != null) {
-                result = 1D;
+                result += 100D;
 
                 // FoodProduction good value modifier.
                 result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
 
-                if (result > 100D) {
-                    result = 100D;
-                }
 
                 // If foodProduction building has process requiring work, add
                 // modifier.
                 SkillManager skillManager = robot.getBotMind().getSkillManager();
                 int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+                
                 if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-                    result += 10D;
+                    result += 100D;
                 }
 
                 // If settlement has foodProduction override, no new
                 // foodProduction processes can be created.
-                else if (robot.getSettlement().getFoodProductionOverride()) {
+                if (robot.getSettlement().getFoodProductionOverride()) {
                     result = 0;
                 }
             }

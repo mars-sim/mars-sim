@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
+
 //import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -31,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -77,7 +79,7 @@ implements Serializable {
 	
     private String dessertLocation ;
     private PreparingDessert kitchen;
-    
+  
     /** 
      * Constructs a EatMeal object, hence a constructor.
      * @param person the person to perform the task
@@ -91,25 +93,38 @@ implements Serializable {
 
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            // If person is in a settlement, try to find a dining area.
-            Building diningBuilding = getAvailableDiningBuilding(person);
-            if (diningBuilding != null) {
-
+        	
+        	// 2015-02-17 Called getDiningBuilding()
+        	Building diningBuilding = person.getDiningBuilding();
+                         
+        	if (diningBuilding == null)
+        		// If person is in a settlement, try to find a dining area.    
+        		diningBuilding = getAvailableDiningBuilding(person);
+                    
+            else {                 	
                 // Walk to dining building.
                 walkToActivitySpotInBuilding(diningBuilding, true);
                 walkSite = true;
             }
-                // If fresh dessert is available in a local kitchen, go there.
-            kitchen = getKitchenWithDessert(person);
-            if (kitchen != null) {
-            	dessertLocation = kitchen.getBuilding().getNickName(); 
-            	dessert = kitchen.eatADessert();
+        	
+            kitchen = person.getKitchenWithDessert();
+            
+            if (kitchen == null) {
+            	kitchen = getKitchenWithDessert(person);
+            }
+            
+           	else {  // If a fresh dessert in a local kitchen available
+    			dessertLocation = kitchen.getBuilding().getNickName();
+           		// grab this fresh dessert and tag it for this person
+             	dessert = kitchen.eatADessert();
                	if (dessert != null) {
                		//2015-01-12 Added setConsumerName()
                		dessert.setConsumerName(person.getName());
                	}
             }
+            
             walkSite = true;
+            
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -164,6 +179,9 @@ implements Serializable {
      */
 	// 2015-01-05 Reworked if-then-else clauses
     private double eatingPhase(double time) {
+     	
+    	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
+     	 
     	String namePerson = person.getName();
     	//System.out.println(namePerson + " is entering the eatingPhase() in EatDessert.java");	
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -211,7 +229,6 @@ implements Serializable {
                 	hunger = 900;
                 	//energy = 1000;
                 }
-              	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
                 //System.out.println("EatDessert : dessert.getDryMass() "+ Math.round(dessert.getDryMass()*10.0)/10.0);
                 condition.setHunger(hunger);
                 condition.addEnergy(dessert.getDryMass());
@@ -265,7 +282,7 @@ implements Serializable {
     }
 
     /**
-     * Gets a kitchen in the person's settlement that currently has a dessert.
+     * Gets a kitchen in the person's settlement that currently has a dessert made available.
      * @param person the person to check for
      * @return the kitchen or null if none.
      */
@@ -312,11 +329,11 @@ implements Serializable {
     }
     
     /**
-     * Checks if there is a dessert available for the person.
+     * Checks if any dessert ingredient is available.
      * @param person the person to check.
-     * @return true if a dessert is available.
+     * @return true if any dessert ingredient is available.
      */
-    public static boolean isDessertAvailable(Person person) {
+    public static boolean isDessertIngredientAvailable(Person person) {
         boolean result = false;
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {

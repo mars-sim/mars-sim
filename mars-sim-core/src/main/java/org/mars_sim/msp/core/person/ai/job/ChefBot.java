@@ -49,14 +49,14 @@ implements Serializable {
 	/**
 	 * Gets a robot's capability to perform this job.
 	 * @param robot the person to check.
-	 * @return capability (min 0.0).
+	 * @return capability .
 	 */	
 	public double getCapability(Robot robot) {
 
-		double result = 0D;
+		double result = 10D;
 
 		int cookingSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.COOKING);
-		result = cookingSkill;
+		result += cookingSkill;
 
 		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
@@ -71,7 +71,7 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = 10D;
 
 		// Add all kitchen work space in settlement.
 		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.COOKING);

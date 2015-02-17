@@ -38,12 +38,12 @@ public class SleepMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 0D;
+        double result = 10D;
 
         // Fatigue modifier.
         double fatigue = person.getPhysicalCondition().getFatigue();
         if (fatigue > 500D) {
-            result = (fatigue - 500D) / 4D;
+            result += (fatigue - 500D) / 4D;
         }
         
         // Dark outside modifier.
@@ -78,7 +78,7 @@ public class SleepMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 20D;
+        double result = 1D;
         /*
         // Fatigue modifier.
         double fatigue = robot.getPhysicalCondition().getFatigue();

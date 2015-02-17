@@ -48,7 +48,7 @@ implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = 10D;
 
 		// Add number of buildings in settlement.
 		result+= settlement.getBuildingManager().getBuildingNum() / 3D;
@@ -62,14 +62,14 @@ implements Serializable {
 	/**
 	 * Gets a robot's capability to perform this job.
 	 * @param robot the person to check.
-	 * @return capability (min 0.0).
+	 * @return capability.
 	 */
 	public double getCapability(Robot robot) {
 
-		double result = 0D;
+		double result = 10D;
 
 		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill;
+		result += mechanicSkill;
 
 		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);

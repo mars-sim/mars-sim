@@ -66,6 +66,8 @@ implements Serializable {
     
     private Person person;
     private String mealLocation;
+    
+    private Cooking kitchen;
 
     /** 
      * Constructs a EatMeal object, hence a constructor.
@@ -76,32 +78,43 @@ implements Serializable {
                 RandomUtil.getRandomDouble(30D));
 
         this.person = person;
-        //logger.info("just called EatMeal's constructor");
-        
+
         boolean walkSite = false;
 
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            // If person is in a settlement, try to find a dining area.
-            Building diningBuilding = getAvailableDiningBuilding(person);
-            if (diningBuilding != null) {
-
+        	     
+        	// 2015-02-17 Called getDiningBuilding()
+            Building diningBuilding = person.getDiningBuilding();
+                     
+            if (diningBuilding == null)
+                // If person is in a settlement, try to find a dining area.    
+            	diningBuilding = getAvailableDiningBuilding(person);
+ 
+            else {
                 // Walk to dining building.
                 walkToActivitySpotInBuilding(diningBuilding, true);
                 walkSite = true;
             }
 
-            // If cooked meal in a local kitchen available, take it to eat.
-            Cooking kitchen = getKitchenWithFood(person);
-            if (kitchen != null) {
-            	mealLocation = kitchen.getBuilding().getNickName(); 
+            kitchen = person.getKitchenWithMeal();
+            
+            if (kitchen == null) {
+            	kitchen = getKitchenWithMeal(person);
+            }
+            
+           	else {  // If a cooked meal in a local kitchen available
+    			mealLocation = kitchen.getBuilding().getNickName();
+           		// grab this cooked meal and tag it for this person
                 meal = kitchen.eatAMeal();
                 if (meal != null) {
                 	//2015-01-06 Added setConsumerName()
                    	meal.setConsumerName(person.getName());
                  }
             }   
+            
             walkSite = true;
+            
         }
         else if (location == LocationSituation.OUTSIDE) {
             endTask();
@@ -153,13 +166,13 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the eating phase.
      */
     private double eatingPhase(double time) {
-
-        PhysicalCondition condition = person.getPhysicalCondition();
         
+        PhysicalCondition condition = person.getPhysicalCondition();      
 
         // If person consumes a cooked meal, stress and fatigue is reduced.
         if (meal != null) {
-        	
+            setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
+            
             double stress = condition.getStress();
             condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
             
@@ -171,8 +184,7 @@ implements Serializable {
         if (getDuration() <= (getTimeCompleted() + time)) {
             if (meal != null) {
                 // Person consumes the cooked meal.
-                String nameMeal = meal.getName();
-                setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
+                //String nameMeal = meal.getName();
                 //System.out.println(person + " has just eaten " + nameMeal);
                // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
                 condition.setHunger(0D);
@@ -189,6 +201,8 @@ implements Serializable {
 //                       	//logger.info(person + " has just eaten desserts");
 //                	}
 //                	else {
+                    	setDescription(Msg.getString("Task.description.eatPreservedFood")); //$NON-NLS-1$
+                    
 	                    eatPreservedFood();
 	                    //System.out.println(person + " has just eaten preserved food");
 	                    //System.out.println("EatMeal : condition.getMassPerServing() "+ Math.round(condition.getMassPerServing()*10.0)/10.0);  
@@ -230,7 +244,8 @@ implements Serializable {
 		            inv.retrieveAmountResource(food, foodAmount);
 		            // 2015-01-09 addDemandUsage()
 		            inv.addAmountDemand(food, foodAmount);
-		      		addResource(foodAmount, "Food Waste", inv);
+		            // Trash it as food waste
+		      		kitchen.storeAnResource(foodAmount, "Food Waste", inv);
 	      		}
 				
                 // Remove preserved food amount from container unit.
@@ -249,23 +264,7 @@ implements Serializable {
         }
     }
 
-	// 2015-02-06 Added addResource()
-	public void addResource(double amount, String name, Inventory inv) {
-	
-		try {
-		AmountResource ar = AmountResource.findAmountResource(name);      
-		double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-		
-		if (remainingCapacity < amount) {
-		    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-			amount = remainingCapacity;
-		    //logger.info("addHarvest() : storage is full!");
-		}
-		inv.storeAmountResource(ar, amount, true);
-		inv.addAmountSupplyAmount(ar, amount);
-		
-		}  catch (Exception e) {}
-	}    
+
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.
@@ -309,7 +308,7 @@ implements Serializable {
      * @param person the person to check for
      * @return the kitchen or null if none.
      */
-    public static Cooking getKitchenWithFood(Person person) {
+    public static Cooking getKitchenWithMeal(Person person) {
         Cooking result = null;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -328,11 +327,11 @@ implements Serializable {
     }
 
     /**
-     * Checks if there is food available for the person.
+     * Checks if there is preserved food available for the person.
      * @param person the person to check.
-     * @return true if food is available.
+     * @return true if preserved food is available.
      */
-    public static boolean isFoodAvailable(Person person) {
+    public static boolean isPreservedFoodAvailable(Person person) {
         boolean result = false;
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
@@ -367,6 +366,8 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
+        kitchen = null;
+        person = null;
         meal = null;
     }
 }

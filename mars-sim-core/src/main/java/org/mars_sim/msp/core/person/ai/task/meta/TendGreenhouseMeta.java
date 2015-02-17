@@ -51,7 +51,7 @@ public class TendGreenhouseMeta implements MetaTask {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
-                    result = 100D;
+                    result += 100D;
 
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());
                     result += needyCropsNum * 30D;
@@ -86,7 +86,7 @@ public class TendGreenhouseMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 300D;
+        double result = 100D;
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {

@@ -61,16 +61,9 @@ implements Serializable {
     private static final double PERCENT_IN_GERMINATION_PHASE = 5; // Assuming the first 5% of a crop's life is in germination phase 
     
 	// Data members
-	/** The type of crop. */
-	private CropType cropType;
-
-	private Inventory inv;
-	/** Farm crop being grown in. */
-	private Farming farm;
-	/** The settlement the crop is located at. */
-	private Settlement settlement;
 	/** Current phase of crop. */
 	private String phase;
+	private String cropName;
 	/** Maximum possible food harvest for crop. (kg) */
 	private double maxHarvest;
 	/** Required work time for planting (millisols). */
@@ -85,15 +78,19 @@ implements Serializable {
 	private double actualHarvest;
 	/** Growing phase time completed thus far (millisols). */
 	private double growingTimeCompleted; // randomly generated and assigned for each crop at the beginning of a sim
+	private double growingArea;
+	private double totalGrowingDay;
+	private double fractionalGrowthCompleted;
 	/** Current sol of month. */
 	private int currentSol;
 	
-	private double growingArea;
-	
-	private double totalGrowingDay;
-
-	private double fractionalGrowthCompleted;
-	
+	/** The type of crop. */
+	private CropType cropType;
+	private Inventory inv;
+	/** Farm crop being grown in. */
+	private Farming farm;
+	/** The settlement the crop is located at. */
+	private Settlement settlement;
 	/**
 	 * Constructor.
 	 * @param cropType the type of crop.
@@ -105,7 +102,7 @@ implements Serializable {
 	 */
 	public Crop(CropType cropType, double growingArea, double maxHarvest, Farming farm, Settlement settlement, boolean newCrop) {
 		this.cropType = cropType;
-				//logger.info("constructor : the new crop is " + cropType.getName());
+
 		this.maxHarvest = maxHarvest;
 		this.farm = farm;
 		this.settlement = settlement;
@@ -118,6 +115,7 @@ implements Serializable {
 		dailyTendingWorkRequired = maxHarvest;
 		harvestingWorkRequired = maxHarvest * 3D; // old default is 5. why?
 
+		cropName = cropType.getName();
 		totalGrowingDay = cropType.getGrowingTime();
 		
 		if (newCrop) {
@@ -277,23 +275,20 @@ implements Serializable {
 				// 2014-10-07 modified parameter list to include crop name
 				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired;
 				// Store the crop harvest
-				storeAnResource(lastHarvest, cropType.getName());
-				//logger.info("addWork() : " + cropType.getName() + " lastHarvest " + Math.round(lastHarvest * 1000.0)/1000.0);
-				remainingWorkTime = overWorkTime;
-				
-				phase = FINISHED;
-				
+				storeAnResource(lastHarvest, cropName);
+				//logger.info("addWork() : " + cropName + " lastHarvest " + Math.round(lastHarvest * 1000.0)/1000.0);
+				remainingWorkTime = overWorkTime;			
+				phase = FINISHED;			
 				generateCropWaste(lastHarvest);
 	
 			}
 			else { 	// continue the harvesting process
 				// 2014-10-07 modified parameter list to include crop name
 				double modifiedHarvest = actualHarvest * workTime / harvestingWorkRequired;
-				//logger.info("addWork() : " + cropType.getName() + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
+				//logger.info("addWork() : " + cropName + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
 				// Store the crop harvest
-				storeAnResource(modifiedHarvest, cropType.getName());
-				remainingWorkTime = 0D;
-				
+				storeAnResource(modifiedHarvest, cropName);
+				remainingWorkTime = 0D;			
 				generateCropWaste(modifiedHarvest);
 			}
 		}
@@ -305,7 +300,7 @@ implements Serializable {
 		// 2015-02-06 Added Crop Waste
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() +cropType.getEdibleBiomass());
 		storeAnResource(amountCropWaste, "Crop Waste");
-		//logger.info("addWork() : " + cropType.getName() + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
+		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 	
 	
@@ -319,10 +314,8 @@ implements Serializable {
 	                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 	            	amount = remainingCapacity;
 	                //logger.info(" storage is full!");
-	            }
-	            
-	            // TODO: consider the case when it is full  
-	            
+	            }	            
+	            // TODO: consider the case when it is full  	            
 	            inv.storeAmountResource(ar, amount, true);
 	            inv.addAmountSupplyAmount(ar, amount);
 	        }  catch (Exception e) {
@@ -383,22 +376,22 @@ implements Serializable {
 					if (((fractionalGrowthCompleted) > .25D) &&
 							(getCondition() < .1D)) {
 						phase = FINISHED;
-						logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
+						logger.info("Crop " + cropName + " at " + settlement.getName() + " died.");
 						// 2015-02-06 Added Crop Waste
 						double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
 						storeAnResource(amountCropWaste, "Crop Waste");
-						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropType.getName());
+						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
 					}
 					
 					// Seedlings are less resilient and more prone to environmental factors
 					else if ((fractionalGrowthCompleted > .1D) &&
 							(getCondition() < .3D)) {
 						phase = FINISHED;
-						logger.info("The seedlings of " + cropType.getName() + " at " + settlement.getName() + " did not survive.");
+						logger.info("The seedlings of " + cropName + " at " + settlement.getName() + " did not survive.");
 						// 2015-02-06 Added Crop Waste
 						double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
 						storeAnResource(amountCropWaste, "Crop Waste");
-						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropType.getName());
+						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
 					}
 				}
 			}
