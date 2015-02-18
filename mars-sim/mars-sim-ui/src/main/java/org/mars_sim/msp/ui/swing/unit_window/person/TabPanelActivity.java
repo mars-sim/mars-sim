@@ -139,8 +139,13 @@ implements ActionListener {
 			}
 			Collections.sort(jobNames);
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+			jobComboBox.setSelectedItem(jobCache);
+			jobComboBox.addActionListener(this);
+			jobPanel.add(jobComboBox);
 		}
+	    
 		else if (unit instanceof Robot) {
+			
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			// Prepare job combo box
@@ -151,11 +156,14 @@ implements ActionListener {
 			}
 			Collections.sort(jobNames);
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+			jobComboBox.setSelectedItem(jobCache);
+			jobComboBox.addActionListener(this);
+			jobPanel.add(jobComboBox);
+			
+			
 		}
 
-		jobComboBox.setSelectedItem(jobCache);
-		jobComboBox.addActionListener(this);
-		jobPanel.add(jobComboBox);
+
 		
 
 		// Prepare activity panel
@@ -377,7 +385,7 @@ implements ActionListener {
 	
 			// Update job if necessary.
 			if (dead) {
-				jobCache = deathInfo.getJob();
+				jobCache = deathInfo.getRobotJob();
 				jobComboBox.setEnabled(false);
 			} 
 			else jobCache = botMind.getRobotJob().getName(robot.getRobotType());
@@ -528,9 +536,10 @@ implements ActionListener {
 				RobotJob selectedJob = null;
 				Iterator<RobotJob> i = JobManager.getRobotJobs().iterator();
 				while (i.hasNext() && (selectedJob == null)) {
-					RobotJob job = i.next();
-					if (jobName.equals(job.getName(robot.getRobotType()))) {
-				        selectedJob = job;
+					RobotJob robotJob = i.next();				
+					//System.out.println("job : " + job.);
+					if (jobName.equals(robotJob.getName(robot.getRobotType()))) {
+				        selectedJob = robotJob;
 				    }
 				}
 				

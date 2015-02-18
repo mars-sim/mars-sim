@@ -13,6 +13,7 @@ public enum RobotType {
 
 	CHEFBOT (Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
 	GARDENBOT (Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
+	MEDICBOT (Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
 	REPAIRBOT (Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
 	UNKNOWN (Msg.getString("unknown")); //$NON-NLS-1$
 
@@ -31,10 +32,12 @@ public enum RobotType {
 		return this.name;
 	}
 
-	public String getLowerCaseName() {
-		return this.name.toLowerCase();
+	public String getDisplayName() {
+		return this.name;
+		//return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 	}
 
+	
 	
 	public static RobotType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));

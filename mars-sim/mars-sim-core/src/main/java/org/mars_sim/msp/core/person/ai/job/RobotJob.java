@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotJob.java
- * @version 3.07 2015-02-02
+ * @version 3.07 2015-02-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,11 +26,11 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .5D;
+	private static final double NON_JOB_TASK_PENALTY = 0D;
 	/** Probability penalty for starting a non-job-related mission. */
-	private static final double NON_JOB_MISSION_START_PENALTY = .5D;
+	private static final double NON_JOB_MISSION_START_PENALTY = 0D;
 	/** Probability penalty for joining a non-job-related mission. */
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = .5D;
+	private static final double NON_JOB_MISSION_JOIN_PENALTY = 0D;
 
 	// Domain members
 	protected Class<? extends RobotJob> jobClass;
@@ -60,9 +60,10 @@ implements Serializable {
 	public String getName(RobotType robotType) {
 		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
 		switch (robotType) {
-			case CHEFBOT : key.append("chefbot"); break; //$NON-NLS-1$
-			case GARDENBOT : key.append("gardenbot"); break; //$NON-NLS-1$
-			case REPAIRBOT : key.append("repairbot"); break; //$NON-NLS-1$
+			case CHEFBOT : key.append("chefBot"); break; //$NON-NLS-1$
+			case GARDENBOT : key.append("gardenBot"); break; //$NON-NLS-1$
+			case REPAIRBOT : key.append("repairBot"); break; //$NON-NLS-1$
+			case MEDICBOT : key.append("medicBot"); break;
 			default : key.append("bot"); break; //$NON-NLS-1$
 		}
 		//key.append(jobClass.getSimpleName());

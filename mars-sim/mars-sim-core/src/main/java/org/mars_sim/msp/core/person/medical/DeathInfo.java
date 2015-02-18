@@ -20,8 +20,12 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.RobotType;
+import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 
@@ -48,6 +52,7 @@ implements Serializable {
     private Coordinates locationOfDeath;
     /** the person's job at time of death. */
     private Job job;
+    private RobotJob robotJob;
     /** Name of mission at time of death. */
     private String mission;
     /** Phase of mission at time of death. */
@@ -60,6 +65,8 @@ implements Serializable {
     private String malfunction; 
     /** gender at time of death. */
     private PersonGender gender;
+    
+    private RobotType robotType;
 
     /**
      * The construct creates an instance of a DeathInfo class.
@@ -120,6 +127,62 @@ implements Serializable {
         this.gender = person.getGender();
     }
 
+    public DeathInfo(Robot robot) {
+
+        // Initialize data members
+        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+/*
+        Complaint serious = person.getPhysicalCondition().getMostSerious();
+        if (serious != null) illness = serious.getName();
+
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
+        else {
+            containerUnit = person.getContainerUnit();  
+            placeOfDeath = containerUnit.getName();
+        }
+
+        locationOfDeath = person.getCoordinates();
+*/
+        BotMind botMind = robot.getBotMind();
+
+        robotJob = botMind.getRobotJob();
+/*
+        if (mind.getMission() != null) {
+            mission = mind.getMission().getName();
+            missionPhase = mind.getMission().getPhaseDescription();
+        }
+*/
+        TaskManager taskMgr = botMind.getTaskManager();
+        if (taskMgr.hasTask()) {
+            task = taskMgr.getTaskName();
+            TaskPhase phase = taskMgr.getPhase();
+            if (phase != null) {
+                taskPhase = phase.getName();
+            }
+            else {
+                taskPhase = "";
+            }
+        }
+
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+        Malfunction mostSerious = null;
+        int severity = 0;
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
+            if (malfunctionMgr.hasEmergencyMalfunction()) {
+                Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
+        }
+        if (mostSerious != null) malfunction = mostSerious.getName();
+        
+        this.robotType = robot.getRobotType();
+        
+    }
     /**
      * Get the time death happened.
      * @return formatted time.
@@ -174,7 +237,12 @@ implements Serializable {
         if (job != null) return job.getName(gender);
         else return "";
     }
-
+    
+    public String getRobotJob() {
+        if (robotJob != null) return robotJob.getName(robotType);
+        else return "";
+    }
+    
     /**
      * Gets the mission the person was on at time of death.
      * @return mission name

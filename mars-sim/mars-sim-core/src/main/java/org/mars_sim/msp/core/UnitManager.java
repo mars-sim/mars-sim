@@ -148,9 +148,9 @@ implements Serializable {
     private void initializeRobotNames() {
         try {
             robotNameList = new ArrayList<String>();           
-            robotNameList.add("chefbot 001");
-            robotNameList.add("gardenbot 002");
-            robotNameList.add("repairbot 003");
+            //robotNameList.add("ChefBot 001");
+            //robotNameList.add("GardenBot 002");
+            //robotNameList.add("RepairBot 003");
 
             
         } catch (Exception e) {
@@ -215,22 +215,7 @@ implements Serializable {
         }
     }
 
-    /**
-     * Gets a new name for a unit.
-     * @param unitType {@link UnitType} the type of unit.
-     * @param baseName the base name or null if none.
-     * @param type
-     * @return new name
-     * @throws IllegalArgumentException if unitType is not valid.
-     
-    public String getNewRobotName(UnitType unitType, String baseName, String type) {
-    	String name = "Arbie";
-    	//if (unitType == UnitType.ROBOT)     
-    	return name;
-    	
-    }
-    */
-    
+
     /**
      * Gets a new name for a unit.
      * @param unitType {@link UnitType} the type of unit.
@@ -286,14 +271,13 @@ implements Serializable {
                        
         	initialNameList = robotNameList;
         			
-            Iterator<Robot> pi = getRobots().iterator();
-            while (pi.hasNext()) {
-                usedNames.add(pi.next().getName());
+            Iterator<Robot> ri = getRobots().iterator();
+            while (ri.hasNext()) {
+                usedNames.add(ri.next().getName());
             }
             
-            unitName = robotType.getLowerCaseName();
-            
-        
+            unitName = robotType.getDisplayName();
+         
         } else if (unitType == UnitType.EQUIPMENT) {
             if (baseName != null) {
                 int number = 1;
@@ -330,6 +314,8 @@ implements Serializable {
         	else if (num < 1000 )
         		numStr = "" + num;
             result = unitName + " " + numStr;
+            
+            //System.out.println("Name : " +result + "   Type : " + robotType.getDisplayName());
         }
 
         return result;
@@ -569,15 +555,8 @@ implements Serializable {
                     //System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
                     //System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
 
-                	RobotType robotType = null;
-                	
-                    	int num = RandomUtil.getRandomInt(3);
-                    	if (num == 0 || num == 1)
-                    		robotType = RobotType.REPAIRBOT;
-                    	else if (num == 2 )
-                    		robotType = RobotType.GARDENBOT;
-                    	else if (num == 3 )
-                			robotType = RobotType.CHEFBOT;
+                    // Get a robotType randomly
+                	RobotType robotType = getABot();
                 	
                     Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
                     addUnit(robot);
@@ -591,6 +570,21 @@ implements Serializable {
         }
     }
     
+    public RobotType getABot() {
+    	RobotType robotType = null;
+    	
+    	int num = RandomUtil.getRandomInt(9); // 0 to 9
+    	if (num < 4) // 0, 1, 2, 3
+    		robotType = RobotType.REPAIRBOT;
+    	else if (num < 7 ) //  4, 5, 6
+    		robotType = RobotType.GARDENBOT;
+    	else if (num < 9 ) //  7, 8
+			robotType = RobotType.CHEFBOT;
+    	else if (num < 10 ) // 9
+			robotType = RobotType.MEDICBOT;
+    	
+    	return robotType;
+    }
     /**
      * Creates all configured Robots.
      * @throws Exception if error parsing XML.
@@ -601,24 +595,17 @@ implements Serializable {
         // Create all configured robot.
         for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
 
-            // Get robot's gender or randomly determine it if not configured.
-            RobotType robotType = robotConfig.getConfiguredRobotType(x);
-            if (robotType == null) {
-            	int num = RandomUtil.getRandomInt(3);
-            	if (num == 0 || num == 1)
-            		robotType = RobotType.REPAIRBOT;
-            	else if (num == 2 )
-            		robotType = RobotType.GARDENBOT;
-            	else if (num == 3 )
-        			robotType = RobotType.CHEFBOT;            	
-            }
-
+         	
             // Get robot's name (required)
             String name = robotConfig.getConfiguredRobotName(x);
             if (name == null) {         
             	throw new IllegalStateException("Robot name is null");
             }
             
+            // Get robotType
+           	// RobotType robotType = getABot();
+        	RobotType robotType = robotConfig.getConfiguredRobotType(x);
+
             // Get robot's settlement or randomly determine it if not configured.
             String settlementName = robotConfig.getConfiguredRobotSettlement(x);
             //System.out.println("settlementName is " + settlementName);
@@ -627,13 +614,13 @@ implements Serializable {
                 Collection<Settlement> col = CollectionUtils.getSettlement(units);
                 settlement = CollectionUtils.getSettlement(col, settlementName);
                 if (settlement == null) {
-                    // If settlement cannot be found that matches the settlement name,
-                    // put robot in a randomly selected settlement.
                     logger.log(Level.WARNING, "Robot " + name + " could not be located" +
                             " at " + settlementName + " because the settlement doesn't exist.");
                     settlement = CollectionUtils.getRandomSettlement(col);
                 }
             } else {
+                // If settlement cannot be found that matches the settlement name,
+                // put robot in a randomly selected settlement.
                 Collection<Settlement> col = CollectionUtils.getSettlement(units);
                 settlement = CollectionUtils.getRandomSettlement(col);
             }

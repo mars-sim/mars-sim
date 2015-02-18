@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -29,7 +30,13 @@ public class CookMealMeta implements MetaTask {
             "Task.description.cookMeal"); //$NON-NLS-1$
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(CookMealMeta.class.getName());
+    //private static Logger logger = Logger.getLogger(CookMealMeta.class.getName());
+    
+    //private RobotJob robotJob ;
+    
+    public CookMealMeta () {
+
+    }
     
     @Override
     public String getName() {
@@ -56,8 +63,8 @@ public class CookMealMeta implements MetaTask {
 					
 	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	                
-                    int population = kitchen.getPopulation();
-                    if (population == 0)
+                    int population = person.getSettlement().getCurrentPopulationNum();
+                    if (population < 2)
                     	result = 0;
                     
                     else {
@@ -126,56 +133,58 @@ public class CookMealMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 100D;
+        double result = 0D;
         
-      	if (CookMeal.isMealTime(robot)) {
-     
-            try {
-                // See if there is an available kitchen.
-                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
-               
-				if (kitchenBuilding != null) {
-					
-	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
-	                
-	                int population = kitchen.getPopulation();
-                    if (population == 0)
-                    	result = 0;
-                    
-                    else {
-                    	
-	                    
-	                	if (kitchen.hasCookedMeal() == false)
-	                		result += 100D;
-	
-	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-	                    int size = kitchen.getHotMealCacheSize();
-	                    result += size * 50D;
-	                    
-	                    if (result < 0D) {
-	                        result = 0D;
-	                    }
-	                    
-	                    // Crowding modifier.
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-                    }
-                }
-            }
-            catch (Exception e) {
-                //logger.log(Level.INFO,"getProbability() : No room/no kitchen available for cooking meal or outside settlement" ,e);
-            }
-
-            // Effort-driven task modifier.
-            result *= robot.getPerformanceRating();
-
-            // Job modifier.
-            RobotJob robotJob = robot.getBotMind().getRobotJob();
-            if (robotJob != null)
-                result *= robotJob.getStartTaskProbabilityModifier(CookMeal.class);
+        if (robot.getLocationSituation() != LocationSituation.OUTSIDE) 
+            //result = 0D;
+	 
+	        if (CookMeal.isMealTime(robot)) {
+	        	// Job modifier.      
+		        result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(CookMeal.class);
+		        
+		        //System.out.println(robot.getName() + " : CookMeal  : " + result);
+		            
+		        if (result > 0 ) {// if task penalty is not zero
+		     
+		      		result += 100D;
+		      		
+		            try {
+		                // See if there is an available kitchen.
+		                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
+		               
+						if (kitchenBuilding != null) {
+							
+			                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+			                
+		                    int population = robot.getSettlement().getCurrentPopulationNum();
+		                    if (population < 2)
+		                    	result = 0;
+		                    
+		                    else {                    	
+			                    
+			                	if (kitchen.hasCookedMeal() == false)
+			                		result += 100D;
+			
+			                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+			                    int size = kitchen.getHotMealCacheSize();
+			                    result += size * 50D;
+			                    
+			                    if (result < 0D)  result = 0D;
+			                    
+			                    // Crowding modifier.
+			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
+		                    }
+		                }
+		            }
+		            catch (Exception e) {
+		                //logger.log(Level.INFO,"getProbability() : No room/no kitchen available for cooking meal or outside settlement" ,e);
+		            }	
+		            // Effort-driven task modifier.
+		            result *= robot.getPerformanceRating();	
+		        }
+	        
+	        }
         
-            //System.out.println(" cookMealMeta : getProbability " + result);
-      	}
-
         return result;
 	}
 }

@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -129,6 +130,61 @@ implements Serializable {
         else endTask();
     }
     
+	public PrepareDessert(Robot robot) {
+        // Use Task constructor
+        super(NAME, robot, true, false, STRESS_MODIFIER, false, 0D);
+
+        // logger.info("just called PrepareDessert constructor");
+
+        // Initialize data members
+        setDescription(Msg.getString("Task.description.prepareDessert.detail", 
+                getDessertName())); //$NON-NLS-1$
+        
+        // Get available kitchen if any.
+        Building kitchenBuilding = getAvailableKitchen(robot);
+        
+        if (kitchenBuilding != null) {
+            kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
+            // Walk to kitchen building.
+            walkToActivitySpotInBuilding(kitchenBuilding, false);
+
+	        // 2015-01-03 Added dessert[] 
+	        String [] dessert = { 	"Soymilk",
+	        						"Sugarcane Juice",
+	        						"Strawberry",
+	        						"Granola Bar",
+	        						"Blueberry Muffin", 
+	        						"Cranberry Juice"  };
+	    	
+	        boolean hasDessert = false; 	
+	    	// Put together a list of available dessert 
+	        for(String n : dessert) {
+	        	if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
+	        		hasDessert = true;
+	        	}
+	        }
+	 
+	        if (!hasDessert) {
+	        	logger.severe("The food desserts are running out!");
+	        	endTask();
+	        	
+	        } else  {
+	                
+		        // 2015-01-12 Added setChef()
+		        kitchen.setChef(robot.getName());
+		        
+		        // Add task phase
+		        addPhase(PREPARING_DESSERT);
+		        setPhase(PREPARING_DESSERT);
+
+		        String jobName = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
+		        logger.finest(jobName + " " + robot.getName() + " making dessert in " + kitchen.getBuilding().getNickName() + 
+		                " at " + robot.getSettlement());
+	        }
+        }
+        else endTask();
+    }
+	
   	@Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.PREPARING_DESSERT;
@@ -167,11 +223,22 @@ implements Serializable {
             return time;
         }
 
-        if (!isDessertTime(person)) {
-            endTask();
-            kitchen.cleanup();
-            return time;
-        }
+		if (person != null) {
+	        if (!isDessertTime(person)) {
+	            endTask();
+	            kitchen.cleanup();
+	            return time;
+	        }
+		}
+		else if (robot != null) {
+	        if (!isDessertTime(robot)) {
+	            endTask();
+	            kitchen.cleanup();
+	            return time;
+	        }
+		}
+
+        
         
         // 2015-01-04a Added getCookNoMore() condition
         if (kitchen.getMakeNoMoreDessert()) {
@@ -211,11 +278,23 @@ implements Serializable {
         // (1 base experience point per 25 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        int experienceAptitude = 0;
+        
+		if (person != null) 
+	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+	                NaturalAttribute.EXPERIENCE_APTITUDE);	        			
+		else if (robot != null)
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
                 NaturalAttribute.EXPERIENCE_APTITUDE);
+        
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+        
+		if (person != null) 
+		    person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);			
+		else if (robot != null)
+        	robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+        
     }
 
     /**
@@ -233,9 +312,13 @@ implements Serializable {
     private void checkForAccident(double time) {
 
         double chance = .001D;
-
+        int skill = 0;
         // cooking skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		if (person != null) 
+		    skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);			
+		else if (robot != null)
+        	skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+        
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -258,7 +341,9 @@ implements Serializable {
 
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+        			
         double modifiedTime = timeOfDay + timeDiff;
+        
         if (modifiedTime >= 1000D) {
             modifiedTime -= 1000D;
         }
@@ -275,12 +360,35 @@ implements Serializable {
         if ((modifiedTime >= EVENING_START) && (modifiedTime <= (EVENING_START + DURATION))) {
         	result = true;
         }
-        
-        
-        
         return result;
     }
 
+    public static boolean isDessertTime(Robot robot) {
+        boolean result = false;
+
+        double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        double timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
+        
+        double modifiedTime = timeOfDay + timeDiff;
+        
+        if (modifiedTime >= 1000D) {
+            modifiedTime -= 1000D;
+        }
+
+        if ((modifiedTime >= NIGHT_START) && (modifiedTime <= (NIGHT_START + DURATION))) {
+        	result = true;
+        }
+        if ((modifiedTime >= MORNING_START) && (modifiedTime <= (MORNING_START + DURATION))) {
+            result = true;
+        }        
+        if ((modifiedTime >= AFTERNOON_START) && (modifiedTime <= (AFTERNOON_START + DURATION))) {
+        	result = true;
+        }
+        if ((modifiedTime >= EVENING_START) && (modifiedTime <= (EVENING_START + DURATION))) {
+        	result = true;
+        }
+        return result;
+    }
     /**
      * Gets the name of dessert the chef is making based on the time.
      * @return result
@@ -298,8 +406,8 @@ implements Serializable {
      */
     public static Building getAvailableKitchen(Person person) {
         Building result = null;
-
-        LocationSituation location = person.getLocationSituation();
+        LocationSituation location = person.getLocationSituation();	  			
+	    
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
@@ -308,9 +416,34 @@ implements Serializable {
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
 
             if (kitchenBuildings.size() > 0) {
+            	
                 Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, kitchenBuildings);
+                
                 result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
+            }
+        }		
+
+        return result;
+    }
+    
+    public static Building getAvailableKitchen(Robot robot) {
+        Building result = null;
+
+        LocationSituation location = robot.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = robot.getSettlement().getBuildingManager();
+            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
+            kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
+            kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
+            kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
+
+            if (kitchenBuildings.size() > 0) {
+               // Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                //        robot, kitchenBuildings);
+               // result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
+                int selected = RandomUtil.getRandomInt(kitchenBuildings.size()-1);
+            	result = kitchenBuildings.get(selected);	
             }
         }		
 
@@ -340,7 +473,13 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	
+        SkillManager manager = null;
+		if (person != null) 
+	        manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
+        
         return manager.getEffectiveSkillLevel(SkillType.COOKING);
     }
 
