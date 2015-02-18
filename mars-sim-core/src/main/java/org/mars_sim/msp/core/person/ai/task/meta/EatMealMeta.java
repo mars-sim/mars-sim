@@ -105,8 +105,6 @@ public class EatMealMeta implements MetaTask {
 	        
         }
         
-
-
         return result;
     }
 

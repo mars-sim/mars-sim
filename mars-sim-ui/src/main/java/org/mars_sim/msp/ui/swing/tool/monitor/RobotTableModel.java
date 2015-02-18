@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -362,10 +364,13 @@ extends UnitTableModel {
 			case JOB : {
 				// If robot is dead, get job from death info.
 				if (robot.getPhysicalCondition().isDead()) 
-					result = robot.getPhysicalCondition().getDeathDetails().getJob();
+					result = robot.getPhysicalCondition().getDeathDetails().getRobotJob();
 				else {
-					if (robot.getBotMind().getRobotJob() != null) result = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
-					else result = null;
+					RobotJob robotJob = robot.getBotMind().getRobotJob();
+					if (robotJob != null) 
+						result = robotJob.getName(robot.getRobotType());
+					else 
+						result = null;
 				} 
 			} break;
 

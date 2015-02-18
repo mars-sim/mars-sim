@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-02-17
 
  * @author Scott Davis
  */
@@ -67,7 +67,9 @@ public final class JobManager implements Serializable {
 	 */
 	private static void loadRobotJobs() {
 		robotJobs = new ArrayList<RobotJob>();
+		robotJobs.add(new Chefbot());
 		robotJobs.add(new Gardenbot());
+		robotJobs.add(new Medicbot());	
 		robotJobs.add(new Repairbot());
 	}
 	
@@ -131,14 +133,6 @@ public final class JobManager implements Serializable {
 				Person person = i.next();
 				if (person.getMind().getJob() == job) result-= job.getCapability(person);
 			}
-	
-
-			// Check all Robots associated with the settlement.
-			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
-			while (j.hasNext()) {
-				Robot robot = j.next();
-				if (robot.getBotMind().getJob() == job) result-= job.getCapability(robot);
-			}
 		
 			result = result/2D;
 			
@@ -148,7 +142,6 @@ public final class JobManager implements Serializable {
 	// For robots
 	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
 		double result = robotJob.getSettlementNeed(settlement);
-
 
 			// Check all Robots associated with the settlement.
 			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();

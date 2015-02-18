@@ -119,11 +119,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
      * @throws Exception if no inhabitable building available at settlement.
      */
     public Robot(String name, RobotType robotType, String birthplace, Settlement settlement, Coordinates location) {
-        super(name, location);
+        super(name, location); // if extending equipment
     	//super(name, settlement.getCoordinates()); // if extending Unit
         //super(name, null, birthplace, settlement); // if extending Person
          
 		// Initialize data members.
+        this.name = name;
 		isSalvaged = false;
 		salvageInfo = null;
         this.name = name;
@@ -454,23 +455,24 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         return result;
     }
 
-    public void consumeFood(double amount, boolean takeFromInv) {}
+    //public void consumeFood(double amount, boolean takeFromInv) {}
     
-    public void consumeDessert(double amount, boolean takeFromInv) {}
+    //public void consumeDessert(double amount, boolean takeFromInv) {}
     	 
     /**
      * robot consumes given amount of power.
      * @param amount the amount of power to consume (in kg)
      * @param takeFromInv is power taken from local inventory?
-     */
+     
     public void consumePower(double amount, boolean takeFromInv) {
         if (takeFromInv) {
             //System.out.println(this.getName() + " is calling consumeFood() in Robot.java");
         	health.consumePower(amount, getContainerUnit());
         }
     }
-
-    public PersonGender getGender() {return null;}
+*/
+    
+    //public PersonGender getGender() {return null;}
     
     /**
      * Gets the gender of the robot.
@@ -608,9 +610,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 		return isSalvaged;
 	}
 
-	//public String getName() {
-	//	return name;
-	//}
+	public String getName() {
+		return name;
+	}
 	
 	/**
 	 * Indicate the start of a salvage process on the item.

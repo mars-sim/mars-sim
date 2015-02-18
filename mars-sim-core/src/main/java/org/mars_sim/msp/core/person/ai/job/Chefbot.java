@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * ChefBot.java
- * @version 3.07 2015-02-02
- * @author Manny
+ * Chefbot.java
+ * @version 3.07 2015-02-17
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
 
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -22,9 +23,9 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /** 
- * The Chef class represents a job for a chef.
+ * The Chefbot class represents a job for a chefbot.
  */
-public class ChefBot
+public class Chefbot
 extends RobotJob
 implements Serializable {
 
@@ -34,14 +35,13 @@ implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Chef.class.getName());
 
 	/** constructor. */
-	public ChefBot() {
+	public Chefbot() {
 		// Use Job constructor
-		super(ChefBot.class);
+		super(Chefbot.class);
 
-		// Add chef-related tasks.
-		
+		// Add chef-related tasks.		
 		jobTasks.add(CookMeal.class);
-		//jobTasks.add(PrepareDessert.class);
+		jobTasks.add(PrepareDessert.class);
 		jobTasks.add(ProduceFood.class);
 
 	}

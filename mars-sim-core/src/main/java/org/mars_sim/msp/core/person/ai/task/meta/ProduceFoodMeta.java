@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.RobotJob;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -101,54 +102,48 @@ public class ProduceFoodMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        double result = 300D;
+	      
+        double result = 0D;
         
-        // TODO: the cook should check if he himself or someone else is hungry, 
-        // he's more eager to cook except when he's tired
-        //result = person.getPhysicalCondition().getHunger() - 400D;
-        //result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
-        //if (result < 0D) result = 0D;
-
-        // Cancel any foodProduction processes that's beyond the skill of any people 
-        // associated with the settlement.
-        ProduceFood.cancelDifficultFoodProductionProcesses(robot);
-
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // See if there is an available foodProduction building.
-            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
-            if (foodProductionBuilding != null) {
-                result += 100D;
-
-                // FoodProduction good value modifier.
-                result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
-
-
-                // If foodProduction building has process requiring work, add
-                // modifier.
-                SkillManager skillManager = robot.getBotMind().getSkillManager();
-                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
-                
-                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-                    result += 100D;
-                }
-
-                // If settlement has foodProduction override, no new
-                // foodProduction processes can be created.
-                if (robot.getSettlement().getFoodProductionOverride()) {
-                    result = 0;
-                }
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-
         // Job modifier.
         RobotJob robotJob = robot.getBotMind().getRobotJob();
-        if (robotJob != null) {
-            result *= robotJob.getStartTaskProbabilityModifier(ProduceFood.class);
-        }
+        if (robotJob != null)
+            result = robotJob.getStartTaskProbabilityModifier(ProduceFood.class);
+    
+        if (result > 0 ) // if task penalty is not zero
+ 
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        	
+	        	result += 100D;
+	            // See if there is an available foodProduction building.
+	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
+	            if (foodProductionBuilding != null) {
+	                result += 100D;
+	
+	                // FoodProduction good value modifier.
+	                result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
+	
+	
+	                // If foodProduction building has process requiring work, add
+	                // modifier.
+	                SkillManager skillManager = robot.getBotMind().getSkillManager();
+	                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+	                
+	                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
+	                    result += 100D;
+	                }
+	
+	                // If settlement has foodProduction override, no new
+	                // foodProduction processes can be created.
+	                if (robot.getSettlement().getFoodProductionOverride()) {
+	                    result = 0;
+	                }
+	            }
+	            
+	            // Effort-driven task modifier.
+	            result *= robot.getPerformanceRating();
+
+	        }
 
         return result;
 	}

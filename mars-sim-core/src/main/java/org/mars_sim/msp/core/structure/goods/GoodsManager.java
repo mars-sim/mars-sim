@@ -141,7 +141,7 @@ public class GoodsManager implements Serializable {
     private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
     private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     
-//    private static final String resource_name = "regolith";
+    //private static final String resource_name = "regolith";
     
     // Data members
     private Settlement settlement;
@@ -329,7 +329,7 @@ public class GoodsManager implements Serializable {
         
         
         AmountResource resource = (AmountResource) resourceGood.getObject();
-//    	String r = resource.getName().toLowerCase();
+    	String r = resource.getName().toLowerCase();
     	
         if (useCache) {
             if (goodsDemandCache.containsKey(resourceGood)) {
@@ -362,10 +362,7 @@ public class GoodsManager implements Serializable {
 
             // Add manufacturing demand.
             projectedDemand += getResourceManufacturingDemand(resource);
- 
-//            if (r.equals(resource_name))
-//         	   System.out.println( r  + "'s projectedDemand : " + Math.round(projectedDemand* 1000000.0) / 1000000.0);
-         			   
+      			   
             //2014-11-25 Add Food Production demand.
             projectedDemand += getResourceFoodProductionDemand(resource);
             
@@ -386,6 +383,8 @@ public class GoodsManager implements Serializable {
             // this out for now. - Scott
             //projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             
+            //if (r.equals(resource_name)) System.out.println( r  + "'s projectedDemand : " + Math.round(projectedDemand* 1000000.0) / 1000000.0);
+
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             
@@ -422,9 +421,9 @@ public class GoodsManager implements Serializable {
        //if (r.equals("ethylene") || r.equals("polyethylene") || 
 //       if (r.equals("regolith") ) {
 //       //|| r.equals("iron") || r.equals("iron oxide")) {
-//    	   System.out.println( r
-//                // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
-//                + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
+ //   	   System.out.println( r
+                // + "  projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) / 1000000.0     
+ //               + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) / 1000000.0
 //                + "     VP is " + Math.round(value* 1000000.0) / 1000000.0);
 //        }
 
@@ -449,12 +448,12 @@ public class GoodsManager implements Serializable {
         totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
         
         
-//        if (r.equals("regolith") ) {
+ //       if (r.equals("regolith") ) {
 //        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
 //	        System.out.println( r 
 //	        + " : supplyStored is " + Math.round(supplyStored* 1000000.0) / 1000000.0
 //	        + "  supplyAmount is " + supplyAmount    
-//	        + "  supplyRequest is " + supplyRequest
+	        //+ "  supplyRequest is " + supplyRequest
 //	        + "  totalSupplyAmount is " + totalSupplyAmount);
 //        }
 
@@ -857,6 +856,7 @@ public class GoodsManager implements Serializable {
             demand = (1D / totalItems) * totalInputsValue;
 //            if (r.equals(resource_name)) System.out.println("demand : " + demand);
         }
+
 
         return demand;
     }

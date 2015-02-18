@@ -1,16 +1,19 @@
 /**
  * Mars Simulation Project
  * PrescribeMedicationMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-02-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.Medicbot;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.Task;
 
@@ -33,6 +36,10 @@ public class PrescribeMedicationMeta implements MetaTask {
         return new PrescribeMedication(person);
     }
 
+    public Task constructInstance(Robot robot) {
+        return new PrescribeMedication(robot);
+    }
+    
     @Override
     public double getProbability(Person person) {
         
@@ -55,15 +62,29 @@ public class PrescribeMedicationMeta implements MetaTask {
         return result;
     }
 
-	@Override
-	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public double getProbability(Robot robot) {
+        
+        double result = 0D;
+        
+        if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
+        	
+	        // Only medicbot or a doctor is allowed to perform this task.
+	        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
+	            
+	            // Determine patient needing medication.
+	            Person patient = PrescribeMedication.determinePatient(robot);
+	            if (patient != null) {
+	                result = 100D;
+	            }
+	        }
+	        
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+	
+	    }
+        
+        return result;
+    }
 
-	@Override
-	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
 }

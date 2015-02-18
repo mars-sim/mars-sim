@@ -85,36 +85,40 @@ public class RepairMalfunctionMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	    
-        double result = 300D;
-
-        // Add probability for all malfunctionable entities in robot's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            if (!RepairMalfunction.requiresEVA(robot, entity)) {
-                MalfunctionManager manager = entity.getMalfunctionManager();
-                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-                while (j.hasNext()) {
-                    Malfunction malfunction = j.next();
-                    try {
-                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-                            result += 100D;
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace(System.err);
-                    }
-                }
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
+        double result = 0D;
 
         // Job modifier.
-        RobotJob job = robot.getBotMind().getRobotJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
+        RobotJob robotJob = robot.getBotMind().getRobotJob();
+        if (robotJob != null) 
+            result = robotJob.getStartTaskProbabilityModifier(RepairMalfunction.class);               
+        
+        if (result > 0 )  { // if task penalty is not zero
+        	
+        	result += 100D;
+	        // Add probability for all malfunctionable entities in robot's local.
+	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+	        while (i.hasNext()) {
+	            Malfunctionable entity = i.next();
+	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
+	                MalfunctionManager manager = entity.getMalfunctionManager();
+	                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+	                while (j.hasNext()) {
+	                    Malfunction malfunction = j.next();
+	                    try {
+	                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
+	                            result += 100D;
+	                        }
+	                    }
+	                    catch (Exception e) {
+	                        e.printStackTrace(System.err);
+	                    }
+	                }
+	            }
+	        }
+	
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+	        
         }
 
         return result;

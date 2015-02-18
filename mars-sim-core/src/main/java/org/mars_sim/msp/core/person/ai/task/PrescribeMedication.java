@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-02-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
@@ -87,6 +88,35 @@ implements Serializable {
         setPhase(MEDICATING);
     }
     
+	public PrescribeMedication(Robot robot) {
+        // Use task constructor.
+        super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D);
+        
+        // Determine patient needing medication.
+        patient = determinePatient(robot);
+        if (patient != null) {
+            // Determine medication to prescribe.
+            medication = determineMedication(patient);
+            
+            // If in settlement, move doctor to building patient is in.
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                
+                // Walk to patient's building.
+                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
+            }
+            
+            logger.info(robot.getName() + " prescribing " + medication.getName() + 
+                    " to " + patient.getName());
+        }
+        else {
+            endTask();
+        }
+        
+        // Initialize phase
+        addPhase(MEDICATING);
+        setPhase(MEDICATING);
+    }
+    
     /**
      * Determines if there is a patient nearby needing medication.
      * @param doctor the doctor prescribing the medication.
@@ -128,6 +158,43 @@ implements Serializable {
         return result;
     }
     
+    public static Person determinePatient(Robot doctor) {
+        Person result = null;
+        
+        // Get possible patient list.
+        // Note: Doctor can also prescribe medication for himself.
+        Collection<Person> patientList = null;
+        LocationSituation loc = doctor.getLocationSituation();
+        if (loc == LocationSituation.IN_SETTLEMENT) {
+            patientList = doctor.getSettlement().getInhabitants();
+        }
+        else if (loc == LocationSituation.IN_VEHICLE) {
+            Vehicle vehicle = doctor.getVehicle();
+            if (vehicle instanceof Crewable) {
+                Crewable crewVehicle = (Crewable) vehicle;
+                patientList = crewVehicle.getCrew();
+            }
+        }
+        
+        // Determine patient.
+        if (patientList != null) {
+            Iterator<Person> i = patientList.iterator();
+            while (i.hasNext() && (result == null)) {
+                Person person = i.next();
+                PhysicalCondition condition = person.getPhysicalCondition();
+                if (!condition.isDead() && (condition.getStress() >= 100D)) {
+                    // Only prescribing anti-stress medication at the moment.
+                    if (!condition.hasMedication(AntiStressMedication.NAME)) {
+                        result = person;
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+  
     /**
      * Determines a medication for the patient.
      * @param patient the patient to medicate.
@@ -174,11 +241,21 @@ implements Serializable {
         // (1 base experience point per 10 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 10D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttribute.EXPERIENCE_APTITUDE);
+        int experienceAptitude = 0;
+		if (person != null) 
+			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+		            NaturalAttribute.EXPERIENCE_APTITUDE);		       			
+		else if (robot != null)
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
+					NaturalAttribute.EXPERIENCE_APTITUDE);
+        
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
+		if (person != null) 
+			person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);			
+		else if (robot != null)
+			robot.getBotMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
+		
     }
 
     @Override
@@ -190,7 +267,12 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+		if (person != null) 
+		    manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
+        
 		return manager.getEffectiveSkillLevel(SkillType.MEDICINE);
     }
 

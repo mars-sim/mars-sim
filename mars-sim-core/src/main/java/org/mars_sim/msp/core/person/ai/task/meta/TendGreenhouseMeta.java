@@ -86,40 +86,44 @@ public class TendGreenhouseMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 100D;
+        double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            try {
-                // See if there is an available greenhouse.
-                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
-                if (farmingBuilding != null) {
-                    result += 100D;
-
-                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
-                    //System.out.println("needyCropsNum is "+needyCropsNum);
-                    result += needyCropsNum * 100D;
-
-                    // Crowding modifier.
-                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
-                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-        //System.out.println("robot.getPerformanceRating() is " + robot.getPerformanceRating());
         // Job modifier.
         RobotJob robotJob = robot.getBotMind().getRobotJob();
-        if (robotJob != null) {
-            result *= robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
-            //System.out.println("modifier is " + robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class));
-        }
+        if (robotJob != null) 
+            result = robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
+        
+        //System.out.println(robot.getName() + " : TendGreenhouse  : " + result);
+        
+        if (result > 0 ) // if task penalty is not zero
+        	
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        	result += 100D;
+	            try {
+	                // See if there is an available greenhouse.
+	                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
+	                if (farmingBuilding != null) {
+	                    result += 100D;
+	
+	                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
+	                    //System.out.println("needyCropsNum is "+needyCropsNum);
+	                    result += needyCropsNum * 100D;
+	
+	                    // Crowding modifier.
+	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
+	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
+	                }
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
+	            }
+	            
+	            // Effort-driven task modifier.
+	            result *= robot.getPerformanceRating();
+	        }
 
-       // System.out.println("probability is " + result);
+        
+        // System.out.println("probability is " + result);
         return result;
 	}
 }
