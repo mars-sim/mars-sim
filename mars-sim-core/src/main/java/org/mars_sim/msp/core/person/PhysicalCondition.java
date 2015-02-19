@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.07 2015-01-30
+ * @version 3.08 2015-02-18
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -61,6 +61,15 @@ implements Serializable {
     // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
     public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
     
+    /** Performance modifier for hunger. */
+    private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
+    
+    /** Performance modifier for fatigue. */
+    private static final double FATIGUE_PERFORMANCE_MODIFIER = .0003D;
+    
+    /** Performance modifier for stress. */
+    private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
+    
     // Data members
     /** Details of persons death. */
     private DeathInfo deathDetails;
@@ -111,7 +120,7 @@ implements Serializable {
         stress = RandomUtil.getRandomDouble(100D);
 
         hunger = RandomUtil.getRandomDouble(400D);
-        kJoules = RandomUtil.getRandomDouble(8000D);
+        kJoules = 500D + RandomUtil.getRandomDouble(7500D);
         //hunger = 0D;
         //kJoules = 10000D;
         
@@ -728,7 +737,7 @@ implements Serializable {
         	
                 Complaint starvation = getMedicalManager().getStarvation();
                 if (hunger > robotBatteryDrainTime
-                		|| kJoules < 500D ) {
+                		|| ((hunger > 1000D) && (kJoules < 500D))) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
                         isStarving = true;
@@ -754,7 +763,7 @@ implements Serializable {
 	
                 Complaint starvation = getMedicalManager().getStarvation();
                 if (hunger > personStarvationTime
-                		|| kJoules < 500D ) {
+                		|| ((hunger > 1000D) && (kJoules < 500D))) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
                         isBatteryDepleting = true;
@@ -931,48 +940,57 @@ implements Serializable {
         double tempPerformance = 1.0D;
         
         if (person != null) {
-        	   
-	        serious = null;
-	
-	        // Check the existing problems. find most serious & performance
-	        // effecting
-	        Iterator<HealthProblem> iter = problems.values().iterator();
-	        while(iter.hasNext()) {
-	            HealthProblem problem = iter.next();
-	            double factor = problem.getPerformanceFactor();
-	            if (factor < tempPerformance) tempPerformance = factor;
-	
-	            if ((serious == null) || (serious.getIllness().getSeriousness() <
-	                    problem.getIllness().getSeriousness())) {
-	                serious = problem;
-	            }
-	        }
-	
-	        // High hunger reduces performance.
-	        //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-	        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .005D;
-	        
-	        // TODO: change health status as well in all of the following cases
-	        // High fatigue reduces performance.
-	        //if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
-	        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .003D;
-	
-	        // High stress reduces performance.
-	        //if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
-	        if (stress >= 80D) tempPerformance -= (stress - 80D) * .04D;
-	        
-	        }
-	        
+
+            serious = null;
+
+            // Check the existing problems. find most serious & performance
+            // effecting
+            Iterator<HealthProblem> iter = problems.values().iterator();
+            while(iter.hasNext()) {
+                HealthProblem problem = iter.next();
+                double factor = problem.getPerformanceFactor();
+                if (factor < tempPerformance) {
+                    tempPerformance = factor;
+                }
+
+                if ((serious == null) || (serious.getIllness().getSeriousness() <
+                        problem.getIllness().getSeriousness())) {
+                    serious = problem;
+                }
+            }
+
+            // High hunger reduces performance.
+            if (hunger > 1000D) {
+                tempPerformance -= (hunger - 1000D) * HUNGER_PERFORMANCE_MODIFIER;
+            }
+
+            // TODO: change health status as well in all of the following cases
+            // High fatigue reduces performance.
+            if (fatigue > 1000D) {
+                tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER;
+            }
+
+            // High stress reduces performance.
+            if (stress >= 80D) {
+                tempPerformance -= (stress - 80D) * STRESS_PERFORMANCE_MODIFIER;
+            }
+
+        }
+
         else if (robot != null) {
-        
+
             // High hunger reduces performance.
             //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-            if (hunger > 2000D) tempPerformance -= (hunger - 2000D) * .01D;
-            
-        }
-        
+            if (hunger > 2000D) {
+                tempPerformance -= (hunger - 2000D) * .01D;
+            }
 
-        if (tempPerformance < 0D) tempPerformance = 0D;
+        }
+
+
+        if (tempPerformance < 0D) {
+            tempPerformance = 0D;
+        }
 
         setPerformanceFactor(tempPerformance);
     }
