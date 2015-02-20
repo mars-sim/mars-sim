@@ -108,10 +108,10 @@ LocalBoundedObject, InsidePathLocation {
 	protected double baseHeatRequirement;
 	protected double basePowerDownHeatRequirement;
 	//private static int count;
-	// Specific Heat Capacity = 4.0 for a typical house
-	protected double SHC = 4.0; 
-	// Building Loss Coefficient = 1.0 for a typical house
-	protected double BLC = 1.0; 
+	// Specific Heat Capacity = 4.0 for a typical U.S. house
+	protected double SHC = 6.0; 
+	// Building Loss Coefficient = 1.0 for a typical U.S. house
+	protected double BLC = 0.2; 
 	protected double floorArea;
 	protected double currentTemperature;
 	// 2014-11-02 Added heatGenerated
