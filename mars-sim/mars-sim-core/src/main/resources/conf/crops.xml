@@ -290,18 +290,21 @@ Note: 1 metric ton = 1 tonnes
 		inedible-biomass="20"
 		/>    	
     	
-<!--
-    	TODO: multi-year plants
--->
-    	
-<!--
-    <crop name="Mushroom" 
-    	growing-time="10.0" 
-    	crop-category="Vegetables" 
+	<crop name="Morel Mushroom" 
+    	growing-time="15.0" 
+    	crop-category="Fungi" 
     	edible-biomass="35"
     	edible-water-content=".35"
-    	inedible-biomass="1" 
-    	/> 
+    	inedible-biomass="2" 
+    	/>
+    	<!-- Mushrooms provide essential nutrients, including vitamin D and vitamin B-6.
+    	Morel Mushroom is also called MORCHELLA. 	
+    	https://www.sciencenews.org/article/morel-mushroom-may-grow-crop-its-own?mode=magazine&context=189396
+    	Strands of the thick-footed morel fungus serve as a highway for...six times as dense...common soil bacteria.
+      	-->
+    	
+<!--
+   TODO: multi-year plants
 -->     	     	
     	     	  
 <!-- Rhizomes vs. roots 

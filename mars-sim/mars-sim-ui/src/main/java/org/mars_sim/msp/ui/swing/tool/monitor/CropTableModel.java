@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.07 2014-12-17
+ * @version 3.07 2015-02-18
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -38,13 +38,6 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
  * The CropTableModel that maintains a list of crop related objects.
  * It maps food related info into Columns.
  */
-// 2014-10-14 Relocated all food related objects from SettlementTableModel Class to here
-// & Incorporated five major food groups into MSP
-// 2014-11-06 Added SOYBEANS and SOYMILK
-// 2014-11-26 Major Overhaul: commented out all individual food items and moved them to another table
-// & Kept only crop items and changed name to CropTableModel.java
-// 2014-12-01 Added BULB, FLOWER, TUBER, ROOT
-// 2014-12-02 Added GRASSES
 public class CropTableModel
 extends UnitTableModel {
 
@@ -62,27 +55,37 @@ extends UnitTableModel {
 	//private final static int FOOD = 3;
 	private final static int BULBS = 3;
 	private final static int FLOWERS = 4;
-	private final static int FRUITS = 5;
+	private final static int FRUITS = 5;	
+	private final static int FUNGI = 6;
 	
-	private final static int GRAINS = 6;
-	private final static int GRASSES = 7;
-	private final static int LEGUMES = 8;
-	private final static int ROOTS = 9;	
+	private final static int GRAINS = 7;
+	private final static int GRASSES = 8;
+	private final static int LEGUMES = 9;
+	private final static int ROOTS = 10;	
 	
-	private final static int SPICES = 10;
-	private final static int TUBERS = 11;
-	private final static int VEGETABLES = 12;
+	private final static int SPICES = 11;
+	private final static int TUBERS = 12;
+	private final static int VEGETABLES = 13;
 	
 	// 2014-11-25 Added NUMCROPTYPE
-	private final static int NUMCROPTYPE = 10;
+	private final static int NUMCROPTYPE = 11;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 13;
+	private final static int COLUMNCOUNT = 14;
 
 	String name = null;
 	int numHouse = 0;
 	
+	// 2014-10-14 Relocated all food related objects from SettlementTableModel Class to here
+	// & Incorporated five major food groups into MSP
+	// 2014-11-06 Added SOYBEANS and SOYMILK
+	// 2014-11-26 Major Overhaul: commented out all individual food items and moved them to another table
+	// & Kept only crop items and changed name to CropTableModel.java
+	// 2014-12-01 Added BULB, FLOWER, TUBER, ROOT
+	// 2014-12-02 Added GRASSES
+	// 2015-02-18 Added FUNGI
+	
 	enum CropsEnum {
-		BULBS,FLOWERS,FRUITS,GRAINS,GRASSES,LEGUMES,
+		BULBS,FLOWERS,FRUITS,FUNGI,GRAINS,GRASSES,LEGUMES,
 		ROOTS,SPICES,TUBERS,VEGETABLES;
 	}
 
@@ -107,6 +110,8 @@ extends UnitTableModel {
 		columnTypes[FLOWERS] = Integer.class;
 		columnNames[FRUITS] = "Fruits";
 		columnTypes[FRUITS] = Integer.class;
+		columnNames[FUNGI] = "Fungi";
+		columnTypes[FUNGI] = Integer.class;	
 		columnNames[GRAINS] = "Grains";
 		columnTypes[GRAINS] = Integer.class;
 		columnNames[GRASSES] = "Grasses";
@@ -230,7 +235,11 @@ extends UnitTableModel {
 				case FRUITS : {
 					result = getValueAtColumn(rowIndex, "Fruits");
 					} break;
-
+					
+				case FUNGI : {
+					result = getValueAtColumn(rowIndex, "Fungi");
+					} break;
+					
 				case GRAINS : {
 					result = getValueAtColumn(rowIndex, "Grains");
 				} break;
@@ -303,7 +312,8 @@ extends UnitTableModel {
 		
 		List<Integer> intList = new ArrayList<Integer>(NUMCROPTYPE);
 		// initialize the intList
-		for (int i = 0; i<NUMCROPTYPE; i++) intList.add(0);
+		for (int i = 0; i<NUMCROPTYPE; i++) 
+			intList.add(0);
 	
 		Settlement settle = (Settlement) newUnit;
 		BuildingManager bMgr = settle.getBuildingManager();
