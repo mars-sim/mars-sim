@@ -52,6 +52,7 @@ implements Serializable {
     private Inventory inv;
     private Settlement settlement;
     private Building building;
+    private BeeGrowing beeGrowing;
     
     private int cropNum;
     private double powerGrowingCrop;
@@ -77,8 +78,9 @@ implements Serializable {
         super(FUNCTION, building);
 
         this.building = building;
-        		
-        inv = getBuilding().getInventory();
+        this.inv = building.getInventory();
+        this.settlement = building.getBuildingManager().getSettlement();
+        
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
         cropNum = config.getCropNum(building.getBuildingType());
@@ -89,9 +91,7 @@ implements Serializable {
         
         // Load activity spots
         loadActivitySpots(config.getFarmingActivitySpots(building.getBuildingType()));
-
-        settlement = building.getBuildingManager().getSettlement();
-        
+ 
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = Crop.getNewCrop("0");   	
@@ -101,6 +101,9 @@ implements Serializable {
             provideFertilizer();          
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
         }  
+        
+        // 2015-02-18 Created BeeGrowing
+        beeGrowing = new BeeGrowing(this);
     }
     
     
@@ -420,7 +423,7 @@ implements Serializable {
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
-
+        
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
         int newCrops = 0;
@@ -464,6 +467,10 @@ implements Serializable {
             provideFertilizer();           
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
+        
+        // 2015-02-18 Added beeGrowing.timePassing()
+        beeGrowing.timePassing(time);
+
     }
 
     /**

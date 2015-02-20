@@ -56,6 +56,15 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
+		<developer>
+			<id>mkung</id>
+			<name>Manny Kung</name>
+			<email>mkung@users.sourceforge.net</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-8</timezone>
+		</developer>
 	</developers>
 	<!-- ************************************************************************************************* -->
 	<!-- * Project Tools Section                                                                         * -->

@@ -57,7 +57,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
     private static final int BLUR_SIZE = 7;
     private BufferedImage image;
-    private float alpha = 0.0f;
+
 
     /**
      * Constructor
@@ -121,8 +121,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	
         //setStyle();
         
-  		this.setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
-  	  		    false, true, true, true));
+  		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
     }
     
     /*
@@ -249,8 +248,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	 public boolean isOpaque() {
 	     return false;
 	 }
-	 
-	*/
+	 */
+	
     
 	 @Override
 	 protected void paintComponent(Graphics g) {
@@ -278,8 +277,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	     this.alpha = alpha;
 	     repaint();
 	 }
-	
 	*/
+	
 	 private static void setupGraphics(Graphics2D g2) {
 	     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);

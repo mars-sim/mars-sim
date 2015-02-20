@@ -146,6 +146,12 @@ public class MarsClock implements Serializable {
      *  @param time Mars clock instance
      *  @return total millisols
      */
+    
+    public double getMillisols() {
+    	return millisol;
+    }
+
+    
     public static double getTotalMillisols(MarsClock time) {
         double result = 0D;
         
