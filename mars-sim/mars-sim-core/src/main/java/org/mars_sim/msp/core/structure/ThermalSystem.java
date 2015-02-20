@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalSystem.java
- * @version 3.07 2014-11-06
+ * @version 3.07 2015-02-18 
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure;
@@ -87,6 +87,7 @@ implements Serializable {
 	public void setHeatMode(HeatMode newHeatMode) {
 		if (heatMode != newHeatMode) {
 			if (HeatMode.POWER_UP == newHeatMode) heatMode = HeatMode.POWER_UP;
+			else if (HeatMode.HALF_POWER == newHeatMode) heatMode = HeatMode.HALF_POWER;			
 			else if (HeatMode.POWER_DOWN == newHeatMode) heatMode = HeatMode.POWER_DOWN;
 			settlement.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
 		}

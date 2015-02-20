@@ -67,7 +67,7 @@ implements Serializable {
 		// Determine heat sources.
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
-		heatSources = config.getHeatSources(building.getName());
+		heatSources = config.getHeatSources(building.getBuildingType());
 		this.building = building;
 		
 	}
@@ -92,7 +92,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding
-					&& building.getName().equalsIgnoreCase(buildingName)
+					&& building.getBuildingType().equalsIgnoreCase(buildingName)
 					&& !removedBuilding) {
 				removedBuilding = true;
 			} else {
