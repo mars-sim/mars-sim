@@ -23,7 +23,7 @@ public enum BuildingFunction {
 	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("BuildingFunction.groundVehicleMaintenance")), //$NON-NLS-1$
 	//2014-10-17 Added 2 Thermal strings
 	THERMAL_GENERATION			(Msg.getString("BuildingFunction.thermalGeneration")), //$NON-NLS-1$
-	THERMAL_STORAGE				(Msg.getString("BuildingFunction.thermalStorage")), //$NON-NLS-1$
+	//THERMAL_STORAGE				(Msg.getString("BuildingFunction.thermalStorage")), //$NON-NLS-1$
 	LIFE_SUPPORT				(Msg.getString("BuildingFunction.lifeSupport")), //$NON-NLS-1$
 	LIVING_ACCOMODATIONS		(Msg.getString("BuildingFunction.livingAccomodations")), //$NON-NLS-1$
 	MANAGEMENT					(Msg.getString("BuildingFunction.management")), //$NON-NLS-1$

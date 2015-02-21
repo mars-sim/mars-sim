@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
-import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -954,8 +953,8 @@ public class BuildingManager implements Serializable {
             //2014-10-17 Added the effect of heating requirement
             if (config.hasThermalGeneration(buildingType)) 
                 result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasThermalStorage(buildingType))
-                result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
+            //if (config.hasThermalStorage(buildingType))
+            //    result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasLifeSupport(buildingType))
                 result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasLivingAccommodations(buildingType))

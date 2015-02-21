@@ -118,14 +118,14 @@ extends TabPanel {
 		heatInfoPanel.add(heatGenCapacityLabel);
 		
 		// Prepare heat storage capacity label.
-		thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
-		thermalStorageCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.heatStorageCapacity", formatter.format(thermalStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
-		heatInfoPanel.add(thermalStorageCapacityLabel);
+		//thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
+		//thermalStorageCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.heatStorageCapacity", formatter.format(thermalStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
+		//heatInfoPanel.add(thermalStorageCapacityLabel);
 
 		// Prepare heat stored label.
-		heatStoredCache = thermalSystem.getStoredHeat();
-		heatStoredLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatStored", formatter.format(heatStoredCache)), JLabel.CENTER); //$NON-NLS-1$
-		heatInfoPanel.add(heatStoredLabel);
+		//heatStoredCache = thermalSystem.getStoredHeat();
+		//heatStoredLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatStored", formatter.format(heatStoredCache)), JLabel.CENTER); //$NON-NLS-1$
+		//heatInfoPanel.add(heatStoredLabel);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane heatScrollPane = new JScrollPane();
@@ -175,7 +175,7 @@ extends TabPanel {
 		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
 		// Update heat Gen label.
 
-
+/*
 		// Update heat storage capacity label.
 		if (thermalStorageCapacityCache != thermalSystem.getStoredHeatCapacity()) {
 			thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
@@ -193,7 +193,7 @@ extends TabPanel {
 				formatter.format(heatStoredCache)
 			));
 		}
-
+*/
 		// Update thermal control table.
 		heatTableModel.update();
 	}
@@ -237,7 +237,7 @@ extends TabPanel {
 			while (i.hasNext()) {
 				Building b = i.next();
 				String buildingType = b.getBuildingType();
-				if (config.hasThermalGeneration(buildingType)) {
+				if (config.hasThermalGeneration(buildingType) && !buildingType.equals("Hallway") && !buildingType.equals("Tunnel") ) {
 					buildingsWithThermal.add(b);
 				}
 			}

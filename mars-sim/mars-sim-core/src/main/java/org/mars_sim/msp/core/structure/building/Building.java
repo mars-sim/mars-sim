@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
-import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -98,6 +97,8 @@ LocalBoundedObject, InsidePathLocation {
 	
 	protected double width;
 	protected double length;
+	protected double floorArea;
+
 	protected int baseLevel;
 	protected double xLoc;
 	protected double yLoc;
@@ -105,18 +106,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
 	protected int id;
-	protected double baseHeatRequirement;
-	protected double basePowerDownHeatRequirement;
-	//private static int count;
-	// Specific Heat Capacity = 4.0 for a typical U.S. house
-	protected double SHC = 6.0; 
-	// Building Loss Coefficient = 1.0 for a typical U.S. house
-	protected double BLC = 0.2; 
-	protected double floorArea;
-	protected double currentTemperature;
-	// 2014-11-02 Added heatGenerated
-	private double heatGenerated = 0; // the initial value is zero 
-	private double heatGeneratedCache = 0; // the initial value is zero 
+
 
 	/** Unit location coordinates. */
 	private Coordinates location;// = manager.getSettlement().getCoordinates();
@@ -124,6 +114,8 @@ LocalBoundedObject, InsidePathLocation {
 	// 2014-10-28  changed variable's name from "name" to "buildingType"
 	protected ThermalGeneration furnace;
 	protected MalfunctionManager malfunctionManager;
+	protected LifeSupport lifeSupport;
+	
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
@@ -147,18 +139,10 @@ LocalBoundedObject, InsidePathLocation {
 		this.manager = manager;
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
-		
-		if (buildingType.equals("Inflatable Greenhouse")
-				|| buildingType.equals("Large Greenhouse")
-				||	buildingType.equals("Inground Greenhouse") )
-			currentTemperature = GREENHOUSE_TEMPERATURE;
-		else
-			currentTemperature = ROOM_TEMPERATURE;
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.FULL_POWER;
 		
-		LifeSupport lifeSupport;
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
 
@@ -198,12 +182,6 @@ LocalBoundedObject, InsidePathLocation {
 		this.yLoc = yLoc;
 		this.facing = facing;
 
-		if (buildingType.equals("Inflatable Greenhouse")
-				|| buildingType.equals("Large Greenhouse")
-				||	buildingType.equals("Inground Greenhouse") )
-			currentTemperature = GREENHOUSE_TEMPERATURE;
-		else
-			currentTemperature = ROOM_TEMPERATURE;
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.FULL_POWER;
@@ -309,7 +287,9 @@ LocalBoundedObject, InsidePathLocation {
             return ROOM_TEMPERATURE;
     }
 	
-
+	public LifeSupport getLifeSupport() {
+		return lifeSupport;
+	}
 
     /**
      * Gets the temperature of a building.
@@ -317,16 +297,16 @@ LocalBoundedObject, InsidePathLocation {
      */
 	//2014-10-17  Added getTemperature()
     public double getTemperature() {
-            return currentTemperature;
+            return getLifeSupport().getHeating().getTemperature();
     }
     
     /**
      * Sets the current temperature of a building due to heat gain
      * @return temperature (deg C)
-     */
-    public void setTemperature(double t) {
-        currentTemperature = t;
-    }
+     /
+    //public void setTemperature(double t) {
+   //     currentTemperature = t;
+    //}
     
 	//2014-10-17  Added getSHC() and getBLC()
     public double getSHC() {
@@ -335,7 +315,7 @@ LocalBoundedObject, InsidePathLocation {
     public double getBLC() {
     	return BLC;
     }
-    
+    *
     
 
 	/**
@@ -408,7 +388,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		//2014-10-17  Added and imported ThermalStorage
 		// Set thermal storage function.
-		if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
+		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
 		
 		// Set astronomical observation function
 		if (config.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
@@ -622,22 +602,17 @@ LocalBoundedObject, InsidePathLocation {
 	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
 		//double result = baseHeatRequirement;	
-		if ( heatGeneratedCache != heatGenerated) {
-			// if heatGeneratedCache is different from the its last value
-			heatGeneratedCache = heatGenerated;
-		//logger.info("getFullHeatRequired() : heatGenerated is updated to " + 
-				//heatGenerated + " kW");	
-		}
-		// Determine heat required for each function.
-		//TODO: should I add power requirement inside
-		// thermal generation function instead?
-		//Iterator<Function> i = functions.iterator();
-		//while (i.hasNext()) result += i.next().getFullHeatRequired();
-		return heatGenerated;
+		double result = 0;
+				
+		if (lifeSupport != null && lifeSupport.getHeating() != null )
+			lifeSupport.getHeating().getFullHeatRequired();
+		
+		return result;
 	}
 	//2014-11-02 Added setHeatGenerated()
 	public void setHeatGenerated(double heatGenerated) {
-		this.heatGenerated = heatGenerated;
+		//this.heatGenerated = heatGenerated;
+		lifeSupport.getHeating().setHeatGenerated(heatGenerated);
 	}
 	
 	/**
@@ -646,12 +621,8 @@ LocalBoundedObject, InsidePathLocation {
 	*/
 	//2014-10-17  Added heat mode
 	public double getPoweredDownHeatRequired() {
-		double result = basePowerDownHeatRequirement;
-
-		// Determine heat required for each function.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
-
+		double result = lifeSupport.getHeating().getFullHeatRequired();
+		
 		return result;
 	}
 
@@ -820,6 +791,11 @@ LocalBoundedObject, InsidePathLocation {
 
 	}
 
+	public List<Function> getFunctions() {
+		return functions;
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
