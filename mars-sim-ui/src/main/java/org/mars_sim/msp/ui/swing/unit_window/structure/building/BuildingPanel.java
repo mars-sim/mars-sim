@@ -43,7 +43,6 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
-import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -375,6 +374,7 @@ extends JPanel {
 //        }
 //      catch (BuildingException e) {}
   }
+        /*
         //2014-10-17 mkung: Added Heating Storage 
         // Prepare heating storage panel if building has heating storage.
         if (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) {
@@ -387,6 +387,7 @@ extends JPanel {
 //            }
 //            catch (BuildingException e) {}
         }
+        */
         
         // Prepare resource processing panel if building has resource processes.
         if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {

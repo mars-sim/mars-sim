@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
-import org.mars_sim.msp.core.structure.building.function.ThermalStorage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -210,10 +209,10 @@ implements Serializable {
 		updateTotalHeatGenerated();
 
 		// Update the total heat stored in the heating system.
-		updateTotalStoredHeat();
+		//updateTotalStoredHeat();
 
 		// Update the total heat storage capacity in the heating system.
-		updateTotalThermalStorageCapacity();
+		//updateTotalThermalStorageCapacity();
 
 		// Determine total heat required in the heating system.
 		updateTotalRequiredHeat();
@@ -223,9 +222,9 @@ implements Serializable {
 			sufficientHeat = true;
 
 			// Store excess heat in heat storage buildings.
-			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-			double excessHeat = (heatGenerated - heatRequired) * timeHr;
-			storeExcessHeat(excessHeat);
+			//double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			//double excessHeat = (heatGenerated - heatRequired) * timeHr;
+			//storeExcessHeat(excessHeat);
 		}
 		else {
 			sufficientHeat = false;
@@ -234,7 +233,7 @@ implements Serializable {
 			// Retrieve heat from heat storage buildings.
 			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
 			double neededHeatHr = neededHeat * timeHr;
-			neededHeatHr = retrieveStoredHeat(neededHeatHr);
+			//neededHeatHr = retrieveStoredHeat(neededHeatHr);
 			neededHeat = neededHeatHr / timeHr;
 
 			BuildingManager manager = settlement.getBuildingManager();
@@ -318,7 +317,7 @@ implements Serializable {
 	/**
 	 * Updates the total heat stored in the heating system.
 	 * @throws BuildingException if error determining total heat stored.
-	 */
+	
 	private void updateTotalStoredHeat() {
 		double tempHeatStored = 0D;
 		BuildingManager manager = settlement.getBuildingManager();
@@ -339,7 +338,7 @@ implements Serializable {
 			);
 		}
 	}
-
+ */
 	/**
 	 * Updates the total heat required in the heating system.
 	 * @throws BuildingException if error determining total heat required.
@@ -406,7 +405,7 @@ implements Serializable {
 	/**
 	 * Updates the total heat storage capacity in the heating system.
 	 * @throws BuildingException if error determining total thermal storage capacity.
-	 */
+	 
 	private void updateTotalThermalStorageCapacity() {
 		double tempThermalStorageCapacity = 0D;
 		BuildingManager manager = settlement.getBuildingManager();
@@ -427,7 +426,7 @@ implements Serializable {
 			);
 		}
 	}
-
+*/
 	/**
 	 * Checks if building generates more heat 
 	 * than it uses in a given heat mode.
@@ -456,7 +455,7 @@ implements Serializable {
 	 * Stores any excess heat in heat storage buildings if possible.
 	 * @param excessHeat excess heat (in kJ/s).
 	 * @throws BuildingException if error storing excess heat.
-	 */
+	 
 	private void storeExcessHeat(double excessHeat) {
 		BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.THERMAL_STORAGE).iterator();
@@ -472,13 +471,13 @@ implements Serializable {
 			}
 		}
 	}
-
+*/
 	/**
 	 * Retrieves stored heat for the heating system..
 	 * @param neededHeat the heat needed (kJ/s).
 	 * @return stored heat retrieved (kJ/s).
 	 * @throws BuildingException if error retrieving heat.
-	 */
+	
 	private double retrieveStoredHeat(double neededHeat) {
 		BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.THERMAL_STORAGE).iterator();
@@ -494,7 +493,7 @@ implements Serializable {
 		}
 		return neededHeat;
 	}
-
+ */
 	/**
 	 * Gets the value of heat at the settlement.
 	 * @return value of heat (VP per kJ/s).
