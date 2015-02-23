@@ -32,7 +32,7 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 public class MainWindowFXMenu extends MenuBar  {
 
-    private MainDesktopPane desktop;
+    //private MainDesktopPane desktop;
 	
 	/** 
 	 * Constructor.

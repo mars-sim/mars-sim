@@ -73,6 +73,7 @@ public class MainMenu {
        primaryStage.show();
                   
 	   stage = new Stage();
+
 	   stage.setTitle(WINDOW_TITLE);
    }    
 
@@ -84,6 +85,7 @@ public class MainMenu {
 	   mpFX.startSimulation();
 
 	   mainScene = new MainScene(stage).createMainScene();
+	   stage.setFullScreen(true);
 	   stage.setScene(mainScene);
 	   stage.show();
 	   
