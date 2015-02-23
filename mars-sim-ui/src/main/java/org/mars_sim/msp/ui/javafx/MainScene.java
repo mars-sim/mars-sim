@@ -8,7 +8,7 @@
 package org.mars_sim.msp.ui.javafx;
 
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
+//import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Timer;
@@ -16,13 +16,27 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -55,27 +69,32 @@ public class MainScene {
 	private Thread saveSimThread;
 	
 	// 2014-12-27 Added delay timer
-	private Timer delayLaunchTimer;
+	//private Timer delayLaunchTimer;
 	private Timer autosaveTimer;
 	private javax.swing.Timer earthTimer = null;
 	private static int AUTOSAVE_MINUTES = 15;
 	private static final int TIMEDELAY = 900;
 
     //protected ShowDateTime showDateTime;
-    private JStatusBar statusBar;
-    private JLabel leftLabel;
-    private JLabel memMaxLabel;
-    private JLabel memUsedLabel;
+    //private JStatusBar statusBar;
+    //private JLabel leftLabel;
+    //private JLabel memMaxLabel;
+    //private JLabel memUsedLabel;
     //private JLabel dateLabel;
-    private JLabel timeLabel;
+    //private JLabel timeLabel;
+	
+    private Text timeText;    
+    private Text memUsedText;
 
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
     private int memFree;
     
-    private String statusText;
-    private String earthTimeString;
+    //private String statusText;
+    //private String earthTimeString;
+    
+    private StringProperty timeStamp;
  
     private boolean cleanUI = true;
     //private boolean isLoadingFX;
@@ -91,15 +110,12 @@ public class MainScene {
     
     public Scene createMainScene() {
 
-        Scene scene = init(stage);
-        
-		showStatusBar();		
-
-		startAutosaveTimer();
-        
+        Scene scene = init(stage);       
+		//showStatusBar();		
+		//startAutosaveTimer();        
         desktop.openInitialWindows();
         
-        return (scene);
+        return scene;
     }
 	
     
@@ -109,22 +125,25 @@ public class MainScene {
             swingNode.setContent(desktop);           
         });
     }
-	
+	/*
 	private void createSwingNode2(final SwingNode swingNode) {	    
         statusBar = new JStatusBar();
         SwingUtilities.invokeLater(() -> {
             swingNode.setContent(statusBar);           
         });
     }
-	
+	*/
 	public Scene init(Stage stage) {
 	
+		// hit top-right close button to exit not just the stage but the simulation fully
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 		    @Override
 		    public void handle(WindowEvent event) {
 		    	exitSimulation();
 		    }
 		});
+		
+		//TODO: refresh the pull down menu and statusBar when clicking the maximize/iconify/restore button on top-right.
 		
 		// Load UI configuration.
 		if (!cleanUI) {
@@ -136,79 +155,149 @@ public class MainScene {
 
 		setLookAndFeel(false);	
 
-		BorderPane borderPane = new BorderPane();   
-		BorderPane bottomPane = new BorderPane();
-		//HBox statusBox = new HBox();
-    
-        Scene scene = new Scene(borderPane, 1024, 800, Color.WHITE);
-        scene.getStylesheets().addAll("/fxui/css/mainskin.css");		
-  
         //ImageView bg1 = new ImageView();
         //bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map      
         //root.getChildren().add(bg1);
         
-		final SwingNode swingNode1 = new SwingNode();
+		SwingNode swingNode1 = new SwingNode();
 		createSwingNode1(swingNode1);
-		final SwingNode swingNode2 = new SwingNode();
-		createSwingNode2(swingNode2);
 
         menuBar = new MainWindowFXMenu(this, desktop);
+ 
+	    HBox statusBar = new HBox();	    
+	    statusBar.setAlignment(Pos.BASELINE_RIGHT);
+	    //statusBar.setStyle("-fx-background-color: gainsboro");
+        //statusBar.setAlignment(Pos.CENTER);
+        statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt; -fx-border-color:grey;");  
+	    //statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() + 10);
+	    //statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth()  + 10);
+
+	    
+        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+	    Text memMaxText = new Text("Total Designated Memory : " + memMax +  " MB    ");
+	    memMaxText.setTextAlignment(TextAlignment.RIGHT);
+	    statusBar.getChildren().add(memMaxText);
+	    
+	    memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+	    memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+	    memUsed = memTotal - memFree;	       
+	    memUsedText = new Text("Current Used Memory : " + memUsed +  " MB    ");
+	    memUsedText.setTextAlignment(TextAlignment.RIGHT);
+	    //memUsedText.textProperty().bind(valueProperty);
+	    statusBar.getChildren().add(memUsedText);
+
+        MasterClock master = Simulation.instance().getMasterClock();
+        if (master == null) {
+            throw new IllegalStateException("master clock is null");
+        }
+        EarthClock earthclock = master.getEarthClock();
+        if (earthclock == null) {
+            throw new IllegalStateException("earthclock is null"); 
+        }
+
+        //String t = earthclock.getTimeStamp();
+        timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+	    timeText =  new Text("Earth Time : " + timeStamp + "  ");
+	    timeText.setTextAlignment(TextAlignment.RIGHT);
+	    timeText.textProperty().bind(timeStamp);
+	    statusBar.getChildren().add(timeText);	    
+	    
+	    //TextFlow textFlow = new TextFlow(memMaxText, memUsedText, timeText);
+	    //statusBar.getChildren().add(textFlow);
+	    
+	    Timeline timeline = new Timeline(new KeyFrame( Duration.millis(920),
+	            ae -> updateTimeText()));
+
+	    timeline.play();
+	    
+	    
+	    /*
+	    AnimationTimer timer;
+	    
+	    timer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+            	updateTimeText();
+            }
+ 
+        };
+ 
+        //create a keyValue with factory: scaling the circle 2times
+        //KeyValue keyValueX = new KeyValue(stack.scaleXProperty(), 2);
+       //KeyValue keyValueY = new KeyValue(stack.scaleYProperty(), 2);
+ 
+        //create a keyFrame, the keyValue is reached at time 2s
+        Duration duration = Duration.millis(920);
+        //one can add a specific action when the keyframe is reached
+        EventHandler onFinished = new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+            	updateTimeText();
+            }
+        };
+ 
+        //create a timeline for moving the circle
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+        //add the keyframe to the timeline
+        KeyFrame keyFrame = new KeyFrame(duration, onFinished);// , keyValueX, keyValueY)
+        timeline.getKeyFrames().add(keyFrame);
+ 
+        timeline.play();
+        timer.start();
+        */
+        
+	    // later
+	    //timeline.stop();
+
+		BorderPane borderPane = new BorderPane();   
+	    
+        Scene scene = new Scene(borderPane, 1024, 800, Color.WHITE);
+        scene.getStylesheets().addAll("/fxui/css/mainskin.css");		
 
 	    borderPane.setTop(menuBar);	    
-	    //borderPane.setTop(toolbar);  
-	    borderPane.setBottom(bottomPane); 
-		borderPane.setCenter(swingNode1);
-	    //bottomPane.setBottom(statusBox);   
-	    bottomPane.setBottom(swingNode2);     
+	    //borderPane.setTop(toolbar);    
+		borderPane.setCenter(swingNode1);  
+	    borderPane.setBottom(statusBar);
+	   
+	    //stage.show();
 	    
-        //statusBox.getChildren().addAll(swingNode2);
-        //statusBox.setAlignment(Pos.CENTER);
-        //statusBox.setStyle("-fx-border-stylel:solid; -fx-border-width:1pt; -fx-border-color:grey;");  
-        
-        //statusText = "Mars-Sim 3.08 is running";
-        leftLabel = new JLabel(statusText);
-		statusBar.setLeftComponent(leftLabel);
-    
-        memMaxLabel = new JLabel();
-        memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
-        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-        memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
-        statusBar.addRightComponent(memMaxLabel, false);
-
-        memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-        
-        memUsedLabel = new JLabel();
-        memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
-        memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-        memUsed = memTotal - memFree;
-        memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
-        statusBar.addRightComponent(memUsedLabel, false);       
-  
-        timeLabel = new JLabel();
-        timeLabel.setHorizontalAlignment(JLabel.CENTER);
-        statusBar.addRightComponent(timeLabel, false);
-
-        //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
-               
         return (scene);
 	}
 	
-	public JInternalFrame createInternalFrame( String title, int width, int height ) {
-	      final JInternalFrame frame = new JInternalFrame( title, true, true, true, true );
-	      frame.setVisible( true );
-	      frame.setSize( width, height );
-	      return frame;
-	   }
+	public void updateTimeText() {
 
-	// 2015-02-05 Added showEarthTime()
-	public void showStatusBar() {
-
-		if (earthTimer == null) {	
-			delayLaunchTimer = new Timer();
-			int millisec = 500;
-			delayLaunchTimer.schedule(new StatusBar(), millisec );	
-		}
+				//String t = null;
+				//try {
+			        // Check if new simulation is being created or loaded from file.
+			        if (!Simulation.isUpdating()) {
+			             
+			            MasterClock master = Simulation.instance().getMasterClock();
+			            if (master == null) {
+			                throw new IllegalStateException("master clock is null");
+			            }
+			            EarthClock earthclock = master.getEarthClock();
+			            if (earthclock == null) {
+			                throw new IllegalStateException("earthclock is null"); 
+			            }
+			            //t = earthclock.getTimeStamp();
+			            timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+			        }
+			    //}
+			   // catch (Exception ee) {
+			    //    ee.printStackTrace(System.err);
+			    //}
+				//timeText.setText("Earth Time : " + timeStamp + "  ");
+				memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
+				memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+			    memUsed = memTotal - memFree;
+			    int mem = ( memUsedCache + memUsed ) /2;
+			    if (mem > memUsedCache * 1.1 || mem < memUsedCache * 0.9)
+			    	memUsedText.setText("Current Used Memory : " + mem +  " MB    ");
+			    memUsedCache = mem;
+        
 	}
+
 	
 	
 	// 2015-01-07 Added startAutosaveTimer()	
@@ -227,55 +316,6 @@ public class MainScene {
     }
 	
 	
-	// 2015-01-13 Added startEarthTimer()
-	public void startEarthTimer() {
-	
-		earthTimer = new javax.swing.Timer(TIMEDELAY, 
-			new ActionListener() {		
-			String t = null;
-			    @SuppressWarnings("deprecation")
-				@Override
-			    public void actionPerformed(ActionEvent evt) {
-				    try {
-				        // Check if new simulation is being created or loaded from file.
-				        if (!Simulation.isUpdating()) {
-				             
-				            MasterClock master = Simulation.instance().getMasterClock();
-				            if (master == null) {
-				                throw new IllegalStateException("master clock is null");
-				            }
-				            EarthClock earthclock = master.getEarthClock();
-				            if (earthclock == null) {
-				                throw new IllegalStateException("earthclock is null"); 
-				            }
-				            t = earthclock.getTimeStamp();
-				        }
-				    }
-				    catch (Exception ee) {
-				        ee.printStackTrace(System.err);
-				    }
-					timeLabel.setText("Earth Time : " + t);
-					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
-					memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	                memUsed = memTotal - memFree;
-	                int mem = ( memUsedCache + memUsed ) /2;
-	                if (mem > memUsedCache * 1.1 || mem < memUsedCache * 0.9)
-	                	memUsedLabel.setText("Current Used Memory : " + mem +  " MB");
-	                memUsedCache = mem;
-			    }
-			});
-	
-		earthTimer.start();
-	}
-	
-	// 2015-01-19 Added StatusBar
-	class StatusBar extends TimerTask { // (final String t) {
-		public void run() {		
-			startEarthTimer();
-			//delayLaunchTimer.cancel();
-		}
-	}	
-
 	/**
 	 * Gets the main desktop panel.
 	 * @return desktop
@@ -305,11 +345,12 @@ public class MainScene {
 			loadSimThread.interrupt();
 		}
 		
-		if (earthTimer == null) {
-			delayLaunchTimer = new Timer();
-			int seconds = 1;
-			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
-		}
+		//if (earthTimer == null) {
+		//	delayLaunchTimer = new Timer();
+		//	int seconds = 1;
+		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		//}
+		
 	}
 
 
@@ -438,12 +479,12 @@ public class MainScene {
 		}
 	
 		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
-		if (earthTimer == null) {
-			//System.out.println(" newSimulation() : earthTimer == null");
-			delayLaunchTimer = new Timer();
-			int seconds = 1;
-			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
-		}
+		//if (earthTimer == null) {
+		//	//System.out.println(" newSimulation() : earthTimer == null");
+		//	delayLaunchTimer = new Timer();
+		//	int seconds = 1;
+		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		//}
 	}
 
 	/**
@@ -500,7 +541,7 @@ public class MainScene {
                 e.printStackTrace(System.err);
             }
 			
-			startEarthTimer();
+			//startEarthTimer();
 
 			desktop.disposeAnnouncementWindow();
 			
