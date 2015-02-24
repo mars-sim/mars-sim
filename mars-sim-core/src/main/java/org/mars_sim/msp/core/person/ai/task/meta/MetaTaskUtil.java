@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.07 2015-02-17
+ * @version 3.07 2015-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -16,7 +16,7 @@ public class MetaTaskUtil {
 
     // Static values.
     private static List<MetaTask> metaTasks = null;
-    
+    private static List<MetaTask> robotMetaTasks = null;   
     /**
      * Private constructor for utility class.
      */
@@ -81,6 +81,24 @@ public class MetaTaskUtil {
         metaTasks.add(new WorkoutMeta());
     }
     
+   private static void initializeRobotMetaTasks() {
+        
+        robotMetaTasks = new ArrayList<MetaTask>();
+        
+        // Populate robotMetaTasks list with all meta tasks.
+        
+        robotMetaTasks.add(new CookMealMeta());
+        robotMetaTasks.add(new MaintenanceEVAMeta());
+        robotMetaTasks.add(new MaintenanceMeta());
+        robotMetaTasks.add(new RepairEVAMalfunctionMeta());
+        robotMetaTasks.add(new RepairMalfunctionMeta());  
+        robotMetaTasks.add(new PrepareDessertMeta());
+        robotMetaTasks.add(new PrescribeMedicationMeta());         
+        robotMetaTasks.add(new ProduceFoodMeta());        
+        robotMetaTasks.add(new SleepMeta());
+        robotMetaTasks.add(new TendGreenhouseMeta());
+        robotMetaTasks.add(new WalkMeta());
+    }
     /**
      * Gets a list of all meta tasks.
      * @return list of meta tasks.
@@ -94,5 +112,16 @@ public class MetaTaskUtil {
         
         // Return copy of meta task list.
         return new ArrayList<MetaTask>(metaTasks);
+    }
+    
+    public static List<MetaTask> getRobotMetaTasks() {
+        
+        // Lazy initialize meta tasks list if necessary.
+        if (robotMetaTasks == null) {
+            initializeRobotMetaTasks();
+        }
+        
+        // Return copy of meta task list.
+        return new ArrayList<MetaTask>(robotMetaTasks);
     }
 }

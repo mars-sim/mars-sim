@@ -99,11 +99,10 @@ implements Serializable {
     void constructInitialUnits() {
 
         // Initialize name lists
+        initializeRobotNames();
         initializePersonNames();
         initializeSettlementNames();
         initializeVehicleNames();
-        
-        initializeRobotNames();
 
         // Create initial units.
         createInitialSettlements();
@@ -111,9 +110,8 @@ implements Serializable {
         createInitialEquipment();
         createInitialResources();
         createInitialParts();
-        createInitialPeople();
-        
         createInitialRobots();
+        createInitialPeople();       
     }
 
     /**

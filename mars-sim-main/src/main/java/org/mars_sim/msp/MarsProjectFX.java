@@ -116,7 +116,7 @@ public class MarsProjectFX extends Application  {
 	    
 	}
     
-    
+    /*
     public void showSplashScreen(SplashWindow splashWindow) {
 
    		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
@@ -131,7 +131,7 @@ public class MarsProjectFX extends Application  {
         splashWindow.display();
         splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
     }
-    
+    */
     
     /**
      * Initialize the simulation.
