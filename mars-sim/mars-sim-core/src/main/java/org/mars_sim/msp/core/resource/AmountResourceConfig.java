@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @version 3.07 2014-11-25
+ * @version 3.07 2015-02-24
  * @author Scott Davis
  */
 
@@ -59,7 +59,8 @@ public class AmountResourceConfig implements Serializable {
 			String name = "";
 
 			// Get name.
-			name = resourceElement.getAttributeValue(NAME);
+			// 2015-02-24 Added toLowerCase() just in case
+			name = resourceElement.getAttributeValue(NAME).toLowerCase();
 			String description = resourceElement.getText();
 
 			// Get phase.

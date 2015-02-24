@@ -71,11 +71,6 @@ implements Serializable {
 		int population = settlement.getAllAssociatedPeople().size();
 		result+= population / 10D;
 
-		// Add (labspace * tech level) / 2 for all labs with medical specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-	
-
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
 		Iterator<Building> j = medicalBuildings.iterator();

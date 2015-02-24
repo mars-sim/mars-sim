@@ -13,8 +13,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Gardenbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -89,13 +89,13 @@ public class TendGreenhouseMeta implements MetaTask {
         double result = 0D;
 
         // Job modifier.
-        RobotJob robotJob = robot.getBotMind().getRobotJob();
-        if (robotJob != null) 
-            result = robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
-        
+        //RobotJob robotJob = robot.getBotMind().getRobotJob();
+        //if (robotJob != null) 
+        //    result = robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
+        if (robot.getBotMind().getRobotJob() instanceof Gardenbot)
         //System.out.println(robot.getName() + " : TendGreenhouse  : " + result);
         
-        if (result > 0 ) // if task penalty is not zero
+        //if (result > 0 ) // if task penalty is not zero
         	
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        	result += 100D;

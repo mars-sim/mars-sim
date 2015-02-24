@@ -119,18 +119,19 @@ implements ActionListener {
 		JLabel activityLabel = new JLabel(Msg.getString("TabPanelActivity.label"), JLabel.CENTER); //$NON-NLS-1$
 		activityLabelPanel.add(activityLabel);
 
-		// Prepare job panel
-		JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		jobPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(jobPanel);
 
-		// Prepare job label
-		jobLabel = new JLabel(Msg.getString("TabPanelActivity.job"), JLabel.CENTER); //$NON-NLS-1$
-		jobPanel.add(jobLabel);        
-
-		
-	    if (unit instanceof Person) {
-	    	person = (Person) unit;    	
+		if (unit instanceof Person) {			     		
+	    	person = (Person) unit;    		   
+	    	
+			// Prepare job panel
+			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			jobPanel.setBorder(new MarsPanelBorder());
+			topContentPanel.add(jobPanel);
+			
+			// Prepare job label
+			jobLabel = new JLabel(Msg.getString("TabPanelActivity.job"), JLabel.CENTER); //$NON-NLS-1$
+			jobPanel.add(jobLabel);   
+			
 			// Prepare job combo box
 			jobCache = mind.getJob().getName(person.getGender());
 			List<String> jobNames = new ArrayList<String>();
@@ -145,7 +146,7 @@ implements ActionListener {
 		}
 	    
 		else if (unit instanceof Robot) {
-			
+			/*
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			// Prepare job combo box
@@ -158,9 +159,8 @@ implements ActionListener {
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
-			jobPanel.add(jobComboBox);
-			
-			
+			jobPanel.add(jobComboBox);			
+			*/
 		}
 
 
@@ -381,6 +381,7 @@ implements ActionListener {
 			}
 		}
 		else if (unit instanceof Robot) {
+			/*
 	        robot = (Robot) unit;
 	
 			// Update job if necessary.
@@ -392,12 +393,9 @@ implements ActionListener {
 			if (!jobCache.equals(jobComboBox.getSelectedItem())) {
 			    jobComboBox.setSelectedItem(jobCache);
 			}
-
+*/
 		}
 
-
-
-		
 		
 		TaskManager taskManager = null;
 		Mission mission = null;
@@ -531,6 +529,7 @@ implements ActionListener {
 			
 
 			else if (unit instanceof Robot) {
+				/*
 				robot = (Robot) unit;
 				
 				RobotJob selectedJob = null;
@@ -544,6 +543,7 @@ implements ActionListener {
 				}
 				
 				robot.getBotMind().setRobotJob(selectedJob, true);
+				*/
 			}
 		}
 	}

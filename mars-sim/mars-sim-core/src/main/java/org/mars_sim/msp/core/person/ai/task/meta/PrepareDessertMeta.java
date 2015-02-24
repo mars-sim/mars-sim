@@ -11,8 +11,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Chefbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -149,9 +149,9 @@ public class PrepareDessertMeta implements MetaTask {
 		   if (PrepareDessert.isDessertTime(robot)) {
 			   
 		      // Job modifier.
-	           result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(PrepareDessert.class);
-	   
-	           if (result > 0 )  {// if task penalty is not zero
+	           //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(PrepareDessert.class);
+	           if (robot.getBotMind().getRobotJob() instanceof Chefbot)  {
+	           //if (result > 0 )  {// if task penalty is not zero
 		       	   
 			       result += 100D;
 			       try {

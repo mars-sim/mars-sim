@@ -344,10 +344,15 @@ public class MainWindow {
 			        //memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
 					memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	                memUsed = memTotal - memFree;
-	                int mem = ( memUsedCache + memUsed ) /2;
-	                if (mem > memUsedCache * 1.2 || mem < memUsedCache * 0.8)
-	                	memUsedLabel.setText("Current Used Memory : " + mem +  " MB");
-	                memUsedCache = mem;
+
+	                if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9)
+	                	memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
+	                memUsedCache = memUsed;
+			    	
+	                //int mem = ( memUsedCache + memUsed ) /2;
+	                //if (mem > memUsedCache * 1.2 || mem < memUsedCache * 0.8)
+	                //	memUsedLabel.setText("Current Used Memory : " + mem +  " MB");
+	                //memUsedCache = mem; 
 			    }
 			});
 	

@@ -286,11 +286,12 @@ public class MainScene {
 				memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
 				memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 			    memUsed = memTotal - memFree;
-			    int mem = ( memUsedCache + memUsed ) /2;
-			    if (mem > memUsedCache * 1.1 || mem < memUsedCache * 0.9)
-			    	memUsedText.setText("Current Used Memory : " + mem +  " MB    ");
-			    memUsedCache = mem;
-        
+			    //int mem = ( memUsedCache + memUsed ) /2;
+			    if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
+			    	memUsedText.setText("Current Used Memory : " + memUsed +  " MB    ");
+			    }
+		    	memUsedCache = memUsed;
+
 	}
 
 	

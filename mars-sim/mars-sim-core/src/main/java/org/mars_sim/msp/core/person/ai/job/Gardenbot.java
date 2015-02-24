@@ -17,12 +17,10 @@ import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
-import org.mars_sim.msp.core.structure.building.function.Research;
 
 /** 
  * The Gardenbot class represents a job for a gardenbot.

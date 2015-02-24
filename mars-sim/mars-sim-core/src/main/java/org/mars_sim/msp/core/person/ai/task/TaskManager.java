@@ -84,7 +84,7 @@ implements Serializable {
 
 		// Initialize cache values.
 		timeCache = null;
-		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	}
 	/**
@@ -415,44 +415,61 @@ implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-		if (taskProbCache == null) {
-			taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
-		}
-		// Clear total probabilities.
-		totalProbCache = 0D;
-		// Determine probabilities.
-		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+		if (person != null) {
+				
+			if (taskProbCache == null) 
+				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+			
+			// Clear total probabilities.
+			totalProbCache = 0D;
+			// Determine probabilities.
+			Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+			
+			while (i.hasNext()) {
+				MetaTask metaTask = i.next();
+				double probability = 0;
 		
-		while (i.hasNext()) {
-			MetaTask metaTask = i.next();
-			double probability = 0;
-			//Person person = mind.getPerson();
-			//Robot robot = botMind.getRobot();
-			
-			if (person != null) {
 				probability = metaTask.getProbability(person);
+				
+				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+					taskProbCache.put(metaTask, probability);
+					totalProbCache += probability;
+				}
+				else {
+					taskProbCache.put(metaTask, 0D);
+		
+						logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
+								" probability: " + probability);							
+				}
 			}
-			else if (robot != null) {
+		}
+		
+		else if (robot != null) {		
+				
+			if (taskProbCache == null)
+				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
+			
+			// Clear total probabilities.
+			totalProbCache = 0D;
+			// Determine probabilities.
+			Iterator<MetaTask> i = MetaTaskUtil.getRobotMetaTasks().iterator();
+			
+			while (i.hasNext()) {
+				MetaTask metaTask = i.next();
+				double probability = 0;
+
 				probability = metaTask.getProbability(robot);
-			}
-			
-			
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				taskProbCache.put(metaTask, probability);
-				totalProbCache += probability;
-			}
-			else {
-				taskProbCache.put(metaTask, 0D);
-				
-				if (person != null) {
-					logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
-							" probability: " + probability);
+
+				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+					taskProbCache.put(metaTask, probability);
+					totalProbCache += probability;
 				}
-				else if (robot != null) {
+				else {
+					taskProbCache.put(metaTask, 0D);
+					
 					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() + 
-							" probability: " + probability);
+								" probability: " + probability);					
 				}
-				
 			}
 		}
 		// Set the time cache to the current time.

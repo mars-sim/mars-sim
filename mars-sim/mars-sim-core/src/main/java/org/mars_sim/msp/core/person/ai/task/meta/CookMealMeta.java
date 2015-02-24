@@ -6,14 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Chefbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
+
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -140,11 +141,11 @@ public class CookMealMeta implements MetaTask {
 	 
 	        if (CookMeal.isMealTime(robot)) {
 	        	// Job modifier.      
-		        result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(CookMeal.class);
-		        
+		        //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(CookMeal.class);
+		        if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
 		        //System.out.println(robot.getName() + " : CookMeal  : " + result);
 		            
-		        if (result > 0 ) {// if task penalty is not zero
+		        //if (result > 0 ) {// if task penalty is not zero
 		     
 		      		result += 100D;
 		      		
