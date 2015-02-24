@@ -178,7 +178,7 @@
 			<resource name="Calcium" amount="0.02" />
 			<resource name="Sulfur" amount="0.02" />	
 			<resource name="Magnesium" amount="0.02" />	
-			<resource name="Iron" amount="0.02" />					
+			<resource name="Iron Powder" amount="0.02" />					
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="7.0" />			
@@ -207,13 +207,15 @@
 			<resource name="Calcium" amount="0.2" />
 			<resource name="Sulfur" amount="0.2" />	
 			<resource name="Magnesium" amount="0.2" />	
-			<resource name="Iron" amount="0.2" />					
+			<resource name="Iron Powder" amount="0.2" />					
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="70.0" />			
 		</outputs>
 	</process>	
 	
+<!--	DISABLE THIS PROCESS AND USE IRON POWDER INSTEAD OF IRON 
+        ALSO IRON POWDER IS PRODUCED IN TWO PROCESSES ALREADY
 	<process name="extract iron from iron oxide"
 			tech="2" skill="2"
 			work-time="100"
@@ -228,10 +230,9 @@
 			<resource name="Carbon Monoxide" amount="3.0" />
 		</outputs>
 	</process>
-	<!-- TODO: Need to find the real molecular mass of the initial and resulting product
+	 TODO: Need to find the real molecular mass of the initial and resulting product
 			Fe2O3 + 3C → 2Fe + 3CO 
 -->
-
 	
 	<process name="extract aluminum oxide from regolith"
 			tech="1" skill="0"

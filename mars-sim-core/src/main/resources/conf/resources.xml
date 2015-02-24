@@ -176,7 +176,7 @@
 	<resource name="Copper" phase="solid" />
 	<resource name="Calcium" phase="solid">A mineral.</resource>
 	<resource name="Carbon" phase="solid">Carbon powder</resource>
-	<resource name="Iron" phase="solid" />
+<!--	<resource name="Iron" phase="solid" />     -->
 	<resource name="Magnesium" phase="solid" />
 	<resource name="Nickel" phase="solid" />
 	<resource name="Phosphorus" phase="solid">A mineral.</resource>

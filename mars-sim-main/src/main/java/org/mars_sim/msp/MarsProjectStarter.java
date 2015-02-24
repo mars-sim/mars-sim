@@ -34,12 +34,14 @@ public class MarsProjectStarter {
         else command.append("java");
 
         command.append(" -Xms256m");
-        command.append(" -Xmx1024m");
+        //command.append(" -Xmx1024m");
+        command.append(" -Xmx2048m");
         command.append(" -Djava.util.logging.config.file=logging.properties");
         command.append(" -cp .").append(File.pathSeparator);
         command.append("*").append(File.pathSeparator);
         command.append("jars").append(File.separator).append("*");
-        command.append(" org.mars_sim.msp.MarsProject");
+        //command.append(" org.mars_sim.msp.MarsProject");
+        command.append(" org.mars_sim.msp.MarsProjectFX");
 
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);
