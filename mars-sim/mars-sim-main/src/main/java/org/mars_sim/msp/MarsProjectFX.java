@@ -84,14 +84,14 @@ public class MarsProjectFX extends Application  {
         if (useGUI) {
     
             // Create a splash window
-            SplashWindow splashWindow = new SplashWindow();           
-            showSplashScreen(splashWindow);
+            //SplashWindow splashWindow = new SplashWindow();           
+            //showSplashScreen(splashWindow);
             
 	        // 2015-01-26 Added mwFX
 	        MainMenu mmFX = new MainMenu(this, args, primaryStage, true);
 
 	        // Dispose the splash window.
-	        splashWindow.remove();
+	        //splashWindow.remove();
 
 	        // Initialize the simulation.
 	        //initializeSimulation(args);        

@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 import java.awt.Frame;
 //import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,19 +29,15 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -56,7 +52,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
 

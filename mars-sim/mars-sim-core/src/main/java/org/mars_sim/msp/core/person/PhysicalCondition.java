@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2015-02-18
+ * @version 3.08 2015-02-23
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -71,12 +71,7 @@ implements Serializable {
     private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
     
     // Data members
-    /** Details of persons death. */
-    private DeathInfo deathDetails;
-    /** Injury/Illness effecting person. */
-    private HashMap<Complaint, HealthProblem> problems;
-    /** Most serious problem. */
-    private HealthProblem serious;
+
     /** Person's fatigue level. */
     private double fatigue;
     /** Person's hunger level. */
@@ -85,26 +80,37 @@ implements Serializable {
     private double stress;
     /** Performance factor. */
     private double performance;
-    /** Person owning this physical. */
-    private Person person;
-    /** True if person is alive. */
-    private boolean alive;
-    /** List of medication affecting the person. */
-    private List<Medication> medicationList;
-
-    // Person's energy level 
-    // 2015-01-12
-    private double kJoules;
-    private double dryMassPerServing;
-    
-    private Robot robot;
     
     private double personStarvationTime;
-    private double robotBatteryDrainTime;
     
+    // 2015-02-23 Added hygiene
+    private double hygiene; /** Person's hygiene factor (0.0 - 100.0 */
+
+    // 2015-01-12 Person's energy level 
+    private double kJoules;
+    private double dryMassPerServing;
+    private double robotBatteryDrainTime;
+   
+    
+    /** True if person is alive. */
+    private boolean alive;
     private boolean isStarving;
     private boolean isBatteryDepleting;
     
+    /** List of medication affecting the person. */
+    private List<Medication> medicationList;
+    /** Injury/Illness effecting person. */
+    private HashMap<Complaint, HealthProblem> problems;
+    
+    /** Person owning this physical. */
+    private Person person;
+    private Robot robot;
+    /** Details of persons death. */
+    private DeathInfo deathDetails;
+    /** Most serious problem. */
+    private HealthProblem serious;
+
+
     
     /**
      * Constructor 1.
@@ -121,8 +127,9 @@ implements Serializable {
 
         hunger = RandomUtil.getRandomDouble(400D);
         kJoules = 500D + RandomUtil.getRandomDouble(7500D);
-        //hunger = 0D;
-        //kJoules = 10000D;
+        
+        // 2015-02-23 Added hygiene
+        hygiene = RandomUtil.getRandomDouble(100D);
         
         alive = true;
         medicationList = new ArrayList<Medication>();
