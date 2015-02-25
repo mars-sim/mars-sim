@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.08 2015-01-29
+ * @version 3.08 2015-02-24
 
  * @author Scott Davis
  */
@@ -107,9 +107,13 @@ implements ClockListener {
 	private JLabel pulsespersecondLabel; 
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
-	private int sliderpos = 50;
+	
 	private JButton pauseButton;
 
+	private int sliderpos = 50;
+	
+	private int solElapsedCache = 0;
+	
 	/**
 	 * Constructs a TimeWindow object 
 	 * @param desktop the desktop pane
@@ -368,22 +372,28 @@ implements ClockListener {
 		SwingUtilities.invokeLater(
 			new Runnable() {
 				public void run() {
-	
+
+			    	int solElapsed = MarsClock.getSolOfYear(Simulation.instance().getMasterClock().getMarsClock());
+
 					if (marsTime != null) {
 						martianTimeLabel.setText(marsTime.getTimeStamp());
-						martianMonthLabel.setText(marsTime.getMonthName());
-						northernSeasonLabel.setText(
-							Msg.getString(
-								"TimeWindow.northernHemisphere",  //$NON-NLS-1$
-								marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)
-							)
-						);
-						southernSeasonLabel.setText(
-							Msg.getString(
-								"TimeWindow.southernHemisphere", //$NON-NLS-1$
-								marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)
-							)
-						);
+						// 2015-02-24 Added solElapsedCache
+						if (solElapsed != solElapsedCache) {
+							martianMonthLabel.setText(marsTime.getMonthName());
+							northernSeasonLabel.setText(
+								Msg.getString(
+									"TimeWindow.northernHemisphere",  //$NON-NLS-1$
+									marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)
+								)
+							);
+							southernSeasonLabel.setText(
+								Msg.getString(
+									"TimeWindow.southernHemisphere", //$NON-NLS-1$
+									marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)
+								)
+							);
+							solElapsedCache = solElapsed;
+						}	
 					}
 	
 					if (earthTime != null) {

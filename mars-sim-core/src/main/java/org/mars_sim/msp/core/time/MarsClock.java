@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-02-24
 
  * @author Scott Davis
  */
@@ -19,8 +19,12 @@ import org.mars_sim.msp.core.Simulation;
  */
 public class MarsClock implements Serializable {
 
-    // Martian calendar static members
-    public static final int SOLS_IN_ORBIT_NON_LEAPYEAR = 668;
+	// The Mars tropical year is 686.9726 day or 668.5921 sol.
+	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, and is customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth. 	
+	// The Mars sidereal day, as measured with respect to the fixed stars, is 24h 37m 22.663s, as compared with 23h 56m 04.0905s for Earth.
+
+	// Martian calendar static members
+	public static final int SOLS_IN_ORBIT_NON_LEAPYEAR = 668;
     public static final int SOLS_IN_ORBIT_LEAPYEAR = 669;
     private static final int MONTHS_IN_ORBIT = 24;
     private static final int SOLS_IN_MONTH_SHORT = 27;
@@ -33,10 +37,11 @@ public class MarsClock implements Serializable {
     public static final int NORTHERN_HEMISPHERE = 1;
     public static final int SOUTHERN_HEMISPHERE = 2;
     
-	private static final int SUMMER_SOLSTICE = 142;
-	private static final int AUTUMN_EQUUINOX= 309;
-	private static final int WINTER_SOLSTICE = 476;
-	private static final int SPRING_EQUUINOX = 643;
+    // Note: the summer solstice marks the longest day of the calendar year and the beginning of summer in the "Northern Hemisphere". 
+    private static final int SUMMER_SOLSTICE = 168;
+	private static final int AUTUMN_EQUINOX = 346;
+	private static final int WINTER_SOLSTICE = 489;
+	private static final int SPRING_EQUINOX = 643; // or on the -25th sols 
 	
     // Martian/Gregorian calendar conversion
     private static final double SECONDS_IN_MILLISOL = 88.775244;
@@ -419,28 +424,52 @@ public class MarsClock implements Serializable {
      *  @return season as String ("Spring", "Summer", "Autumn" or "Winter")
      */
     public String getSeason(int hemisphere) {
-
-    	String season = "0";
-    	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	String season = "";
+    	int solElapsed = MarsClock.getSolOfYear(Simulation.instance().getMasterClock().getMarsClock());
+    	//System.out.println(" solElapsed :" +  solElapsed );
+    	// 2015-02-24 Added modifier
+    	String modifier = "";
     	
-    	int solElapsed = MarsClock.getSolOfYear(marsClock);
- 		
 		if (solElapsed > SOLS_IN_ORBIT_LEAPYEAR)
 			solElapsed = solElapsed - SOLS_IN_ORBIT_NON_LEAPYEAR; 
 		
-		if (solElapsed < SUMMER_SOLSTICE){
-            if (hemisphere == NORTHERN_HEMISPHERE) season = "Spring";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Autumn";
+		if (solElapsed < SUMMER_SOLSTICE || solElapsed >= SPRING_EQUINOX){
+			if (solElapsed >= SPRING_EQUINOX || solElapsed < 64 - 25 ) //int paddingDay = SOLS_IN_ORBIT_NON_LEAPYEAR - SPRING_EQUINOX = 25
+				modifier = "Early ";
+			else if (solElapsed < 64 - 25 + 66)
+				modifier = "Mid ";
+			else //if (solElapsed < SUMMER_SOLSTICE)
+				modifier = "Late ";			
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Spring";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Autumn";
         }
-		else if (solElapsed < AUTUMN_EQUUINOX) {
-            if (hemisphere == NORTHERN_HEMISPHERE) season = "Summer";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Winter";
+		else if (solElapsed < AUTUMN_EQUINOX) {
+			if (solElapsed < SUMMER_SOLSTICE + 59)
+				modifier = "Early ";
+			else if (solElapsed < SUMMER_SOLSTICE + 59 + 61)
+				modifier = "Mid ";
+			else //if (solElapsed < AUTUMN_EQUINOX)
+				modifier = "Late ";						
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Summer";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Winter";
         }
 		else if (solElapsed < WINTER_SOLSTICE){
+			if (solElapsed < AUTUMN_EQUINOX + 47)
+				modifier = "Early ";
+			else if (solElapsed < AUTUMN_EQUINOX + 47 + 49)
+				modifier = "Mid ";
+			else //if (solElapsed < WINTER_SOLSTICE)
+				modifier = "Late ";			
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Autumn";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
         }
-		else if (solElapsed < SPRING_EQUUINOX) {
+		else if (solElapsed < SPRING_EQUINOX) {
+			if (solElapsed < WINTER_SOLSTICE + 51)
+				modifier = "Early ";
+			else if (solElapsed < WINTER_SOLSTICE + 51 + 53)
+				modifier = "Mid ";
+			else //if (solElapsed < SPRING_EQUINOX)
+				modifier = "Late ";				
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Winter";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
         }
