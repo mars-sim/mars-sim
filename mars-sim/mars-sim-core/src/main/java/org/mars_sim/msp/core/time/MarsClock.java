@@ -460,8 +460,8 @@ public class MarsClock implements Serializable {
 				modifier = "Mid ";
 			else //if (solElapsed < WINTER_SOLSTICE)
 				modifier = "Late ";			
-            if (hemisphere == NORTHERN_HEMISPHERE) season = "Autumn";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Autumn";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Spring";
         }
 		else if (solElapsed < SPRING_EQUINOX) {
 			if (solElapsed < WINTER_SOLSTICE + 51)
@@ -470,8 +470,8 @@ public class MarsClock implements Serializable {
 				modifier = "Mid ";
 			else //if (solElapsed < SPRING_EQUINOX)
 				modifier = "Late ";				
-            if (hemisphere == NORTHERN_HEMISPHERE) season = "Winter";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Winter";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Summer";
         }
 		
 		return season;

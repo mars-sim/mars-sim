@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -66,7 +66,7 @@ implements Serializable {
 				String name = "";
 
 				// Get name.
-				name = crop.getAttributeValue(NAME);
+				name = crop.getAttributeValue(NAME).toLowerCase();
 
 				// Get growing time.
 				String growingTimeStr = crop.getAttributeValue(GROWING_TIME);

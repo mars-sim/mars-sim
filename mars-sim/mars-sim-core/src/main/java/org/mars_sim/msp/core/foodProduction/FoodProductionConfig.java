@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionConfig.java
- * @version 3.07 2014-11-23
+ * @version 3.07 2015-02-24
  * @author Manny Kung
  */
 
@@ -145,7 +145,7 @@ public class FoodProductionConfig implements Serializable {
         for (Element resourceElement : resourceNodes) {
             FoodProductionProcessItem resourceItem = new FoodProductionProcessItem();
             resourceItem.setType(Type.AMOUNT_RESOURCE);
-            resourceItem.setName(resourceElement.getAttributeValue(NAME));
+            resourceItem.setName(resourceElement.getAttributeValue(NAME).toLowerCase());
             resourceItem.setAmount(Double.parseDouble(resourceElement
                     .getAttributeValue(AMOUNT)));
             list.add(resourceItem);

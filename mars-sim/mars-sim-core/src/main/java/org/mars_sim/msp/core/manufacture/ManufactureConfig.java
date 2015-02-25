@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-02-24
 
  * @author Scott Davis
  */
@@ -78,7 +78,7 @@ public class ManufactureConfig implements Serializable {
                 String name = "";
                 String description = "";
 
-                name = processElement.getAttributeValue(NAME);
+                name = processElement.getAttributeValue(NAME).toLowerCase();
                 process.setName(name);
 
                 process.setTechLevelRequired(Integer.parseInt(processElement
@@ -143,7 +143,7 @@ public class ManufactureConfig implements Serializable {
         for (Element resourceElement : resourceNodes) {
             ManufactureProcessItem resourceItem = new ManufactureProcessItem();
             resourceItem.setType(Type.AMOUNT_RESOURCE);
-            resourceItem.setName(resourceElement.getAttributeValue(NAME));
+            resourceItem.setName(resourceElement.getAttributeValue(NAME).toLowerCase());
             resourceItem.setAmount(Double.parseDouble(resourceElement
                     .getAttributeValue(AMOUNT)));
             list.add(resourceItem);
