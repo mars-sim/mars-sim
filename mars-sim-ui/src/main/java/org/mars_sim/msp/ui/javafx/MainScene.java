@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MainWindowFX.java
- * @version 3.08 2015-01-28
+ * MainScene.java
+ * @version 3.08 2015-02-25
  * @author Lars Næsbye Christensen
  */
 
@@ -16,10 +16,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -68,15 +66,7 @@ public class MainScene {
 	private Timer autosaveTimer;
 	private javax.swing.Timer earthTimer = null;
 	private static int AUTOSAVE_MINUTES = 15;
-	private static final int TIMEDELAY = 900;
-
-    //protected ShowDateTime showDateTime;
-    //private JStatusBar statusBar;
-    //private JLabel leftLabel;
-    //private JLabel memMaxLabel;
-    //private JLabel memUsedLabel;
-    //private JLabel dateLabel;
-    //private JLabel timeLabel;
+	private static final int TIME_DELAY = 90;
 	
     private Text timeText;    
     private Text memUsedText;
@@ -86,9 +76,7 @@ public class MainScene {
     private int memUsed, memUsedCache;
     private int memFree;
     
-    //private String statusText;
-    //private String earthTimeString;
-    
+
     private StringProperty timeStamp;
  
     private boolean cleanUI = true;
@@ -120,14 +108,7 @@ public class MainScene {
             swingNode.setContent(desktop);           
         });
     }
-	/*
-	private void createSwingNode2(final SwingNode swingNode) {	    
-        statusBar = new JStatusBar();
-        SwingUtilities.invokeLater(() -> {
-            swingNode.setContent(statusBar);           
-        });
-    }
-	*/
+
 	public Scene init(Stage stage) {
 	
 		// hit top-right close button to exit not just the stage but the simulation fully
@@ -161,7 +142,7 @@ public class MainScene {
  
 	    HBox statusBar = new HBox();	    
 	    statusBar.setAlignment(Pos.BASELINE_RIGHT);
-	    //statusBar.setStyle("-fx-background-color: gainsboro");
+	    statusBar.setStyle("-fx-background-color: gainsboro");
         //statusBar.setAlignment(Pos.CENTER);
         statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt; -fx-border-color:grey;");  
 	    //statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() + 10);
@@ -190,61 +171,22 @@ public class MainScene {
             throw new IllegalStateException("earthclock is null"); 
         }
 
-        //String t = earthclock.getTimeStamp();
-        timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+        String t = earthclock.getTimeStamp();
+        //timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
 	    timeText =  new Text("Earth Time : " + timeStamp + "  ");
 	    timeText.setTextAlignment(TextAlignment.RIGHT);
-	    timeText.textProperty().bind(timeStamp);
+	    //timeText.textProperty().bind(timeStamp);
 	    statusBar.getChildren().add(timeText);	    
 	    
 	    //TextFlow textFlow = new TextFlow(memMaxText, memUsedText, timeText);
 	    //statusBar.getChildren().add(textFlow);
 	    
-	    Timeline timeline = new Timeline(new KeyFrame( Duration.millis(920),
+	    Timeline timeline = new Timeline(new KeyFrame(
+	            Duration.millis(TIME_DELAY),
 	            ae -> updateTimeText()));
-
+	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 	    timeline.play();
 	    
-	    
-	    /*
-	    AnimationTimer timer;
-	    
-	    timer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-            	updateTimeText();
-            }
- 
-        };
- 
-        //create a keyValue with factory: scaling the circle 2times
-        //KeyValue keyValueX = new KeyValue(stack.scaleXProperty(), 2);
-       //KeyValue keyValueY = new KeyValue(stack.scaleYProperty(), 2);
- 
-        //create a keyFrame, the keyValue is reached at time 2s
-        Duration duration = Duration.millis(920);
-        //one can add a specific action when the keyframe is reached
-        EventHandler onFinished = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-            	updateTimeText();
-            }
-        };
- 
-        //create a timeline for moving the circle
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setAutoReverse(true);
-        //add the keyframe to the timeline
-        KeyFrame keyFrame = new KeyFrame(duration, onFinished);// , keyValueX, keyValueY)
-        timeline.getKeyFrames().add(keyFrame);
- 
-        timeline.play();
-        timer.start();
-        */
-        
-	    // later
-	    //timeline.stop();
-
 		BorderPane borderPane = new BorderPane();   
 	    
         Scene scene = new Scene(borderPane, 1024, 800, Color.WHITE);
@@ -255,42 +197,41 @@ public class MainScene {
 		borderPane.setCenter(swingNode1);  
 	    borderPane.setBottom(statusBar);
 	   
-	    //stage.show();
-	    
+	    //stage.show();	    
         return (scene);
 	}
 	
 	public void updateTimeText() {
 
-				//String t = null;
-				//try {
-			        // Check if new simulation is being created or loaded from file.
-			        if (!Simulation.isUpdating()) {
-			             
-			            MasterClock master = Simulation.instance().getMasterClock();
-			            if (master == null) {
-			                throw new IllegalStateException("master clock is null");
-			            }
-			            EarthClock earthclock = master.getEarthClock();
-			            if (earthclock == null) {
-			                throw new IllegalStateException("earthclock is null"); 
-			            }
-			            //t = earthclock.getTimeStamp();
-			            timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
-			        }
-			    //}
-			   // catch (Exception ee) {
-			    //    ee.printStackTrace(System.err);
-			    //}
-				//timeText.setText("Earth Time : " + timeStamp + "  ");
-				memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
-				memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-			    memUsed = memTotal - memFree;
-			    //int mem = ( memUsedCache + memUsed ) /2;
-			    if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-			    	memUsedText.setText("Current Used Memory : " + memUsed +  " MB    ");
-			    }
-		    	memUsedCache = memUsed;
+		String t = null;
+		//try {
+	        // Check if new simulation is being created or loaded from file.
+	        if (!Simulation.isUpdating()) {
+	             
+	            MasterClock master = Simulation.instance().getMasterClock();
+	            if (master == null) {
+	                throw new IllegalStateException("master clock is null");
+	            }
+	            EarthClock earthclock = master.getEarthClock();
+	            if (earthclock == null) {
+	                throw new IllegalStateException("earthclock is null"); 
+	            }
+	            t = earthclock.getTimeStamp();
+	            //timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+	        }
+	    //}
+	   // catch (Exception ee) {
+	    //    ee.printStackTrace(System.err);
+	    //}
+		timeText.setText("Earth Time : " + t + "  ");
+		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
+		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+	    memUsed = memTotal - memFree;
+	    //int mem = ( memUsedCache + memUsed ) /2;
+	    if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
+	    	memUsedText.setText("Current Used Memory : " + memUsed +  " MB    ");
+	    }
+    	memUsedCache = memUsed;
 
 	}
 
