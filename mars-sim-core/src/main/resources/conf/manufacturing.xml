@@ -120,7 +120,7 @@
 			process-time="1000" 
 			power-required="0.5">
 		<inputs>
-			<resource name="Solid Waste" amount="5.0" />
+			<resource name="Crop Waste" amount="5.0" />
 			<resource name="Water" amount="5.0" />
 			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
 			<resource name="Nitrospira spp" amount="0.02" />	
@@ -141,7 +141,7 @@
 			process-time="6000" 
 			power-required="4.0">
 		<inputs>
-			<resource name="Solid Waste" amount="50" />
+			<resource name="Crop Waste" amount="50" />
 			<resource name="Water" amount="50" />
 			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
 			<resource name="Nitrospira spp" amount="0.2" />	

@@ -120,7 +120,7 @@ implements Serializable {
 					
 					// Get name.
 					String ingredientName = "";
-					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME);
+					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
 					
 					// Get proportion 
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
