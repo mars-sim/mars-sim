@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-01-29
+ * @version 3.08 2015-02-25
  * @author Lars Næsbye Christensen
  */
 
@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
@@ -44,17 +45,17 @@ public class MainWindowFXMenu extends MenuBar  {
 
         // --- Menu File
         Menu menuFile = new Menu("File");
-        CheckMenuItem newItem = new CheckMenuItem("New...");
+        MenuItem newItem = new MenuItem("New...");
         newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem openItem = new CheckMenuItem("Open...");
+        MenuItem openItem = new MenuItem("Open...");
         openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem openAutoSaveItem = new CheckMenuItem("Open autosave");
+        MenuItem openAutoSaveItem = new MenuItem("Open autosave");
         openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem saveItem = new CheckMenuItem("Save");
+        MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem saveAsItem = new CheckMenuItem("Save As...");
+        MenuItem saveAsItem = new MenuItem("Save As...");
         saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN , KeyCombination.SHIFT_DOWN));
-        CheckMenuItem exitItem = new CheckMenuItem("Exit");
+        MenuItem exitItem = new MenuItem("Exit");
         exitItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem SeparatorMenuItem1 = new SeparatorMenuItem();
         SeparatorMenuItem SeparatorMenuItem2 = new SeparatorMenuItem();
@@ -91,9 +92,9 @@ public class MainWindowFXMenu extends MenuBar  {
         CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
         showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
-        CheckMenuItem volumeUpItem = new CheckMenuItem("Volume Up");
+        MenuItem volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem volumeDownItem = new CheckMenuItem("Volume Down");
+        MenuItem volumeDownItem = new MenuItem("Volume Down");
         volumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
         CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
@@ -134,17 +135,61 @@ public class MainWindowFXMenu extends MenuBar  {
         
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
-        CheckMenuItem aboutItem = new CheckMenuItem("About");
-        CheckMenuItem tutorialItem = new CheckMenuItem("Tutorial");
+        MenuItem aboutItem = new MenuItem("About");
+        MenuItem tutorialItem = new MenuItem("Tutorial");
         tutorialItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
-        CheckMenuItem userGuideItem = new CheckMenuItem("User Guide");
+        MenuItem userGuideItem = new MenuItem("User Guide");
         userGuideItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem5, userGuideItem);
 
         super.getMenus().addAll(menuFile, menuTools, menuSettings, menuNotification, menuHelp);
 		
+  
+        newItem.setOnAction(new EventHandler<ActionEvent>() {
+     	   @Override 
+     	   public void handle(ActionEvent e) {
+     		   mainScene.newSimulation();
+     	   }
+     	});
+        
+        openItem.setOnAction(new EventHandler<ActionEvent>() {
+     	   @Override 
+     	   public void handle(ActionEvent e) {
+     		   mainScene.loadSimulation(false);
+     	   }
+     	});
+        
+        openAutoSaveItem.setOnAction(new EventHandler<ActionEvent>() {
+     	   @Override 
+     	   public void handle(ActionEvent e) {
+     		   mainScene.loadSimulation(true);
+     	   }
+     	});
+        
+        exitItem.setOnAction(new EventHandler<ActionEvent>() {
+        	   @Override 
+        	   public void handle(ActionEvent e) {
+        		   mainScene.exitSimulation();
+        		   mainScene.getStage().close();
+        	   }
+        	});
+        
+        saveItem.setOnAction(new EventHandler<ActionEvent>() {
+     	   @Override 
+     	   public void handle(ActionEvent e) {
+     		   mainScene.saveSimulation(true, false);
+     	   }
+     	});
+        
+        saveAsItem.setOnAction(new EventHandler<ActionEvent>() {
+      	   @Override 
+      	   public void handle(ActionEvent e) {
+      		   mainScene.saveSimulation(false, false);
+      	   }
+      	});        
+        
         marsNavigatorItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {

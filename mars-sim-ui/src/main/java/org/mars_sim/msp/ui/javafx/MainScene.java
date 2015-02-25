@@ -8,11 +8,7 @@
 package org.mars_sim.msp.ui.javafx;
 
 import java.awt.Frame;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,10 +59,10 @@ public class MainScene {
 	
 	// 2014-12-27 Added delay timer
 	//private Timer delayLaunchTimer;
-	private Timer autosaveTimer;
-	private javax.swing.Timer earthTimer = null;
-	private static int AUTOSAVE_MINUTES = 15;
-	private static final int TIME_DELAY = 90;
+	//private Timer autosaveTimer;
+	//private javax.swing.Timer earthTimer = null;
+	private static int AUTOSAVE_EVERY_X_MINUTE = 1;
+	private static final int TIME_DELAY = 940;
 	
     private Text timeText;    
     private Text memUsedText;
@@ -94,8 +90,7 @@ public class MainScene {
     public Scene createMainScene() {
 
         Scene scene = init(stage);       
-		//showStatusBar();		
-		//startAutosaveTimer();        
+		startAutosaveTimer();        
         desktop.openInitialWindows();
         
         return scene;
@@ -239,6 +234,7 @@ public class MainScene {
 	
 	// 2015-01-07 Added startAutosaveTimer()	
 	public void startAutosaveTimer() {
+		/*
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -249,7 +245,14 @@ public class MainScene {
         };
         autosaveTimer = new Timer();
         autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
-
+*/
+        
+	    Timeline timeline = new Timeline(new KeyFrame(
+	            Duration.millis(1000*60*AUTOSAVE_EVERY_X_MINUTE),
+	            ae -> saveSimulation(true,true)));
+	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+	    timeline.play();
+	    
     }
 	
 	
@@ -267,9 +270,9 @@ public class MainScene {
 	// 2015-01-25 Added autosave
 	public void loadSimulation(boolean autosave) {	
 		final boolean ans = autosave;
-        if (earthTimer != null) 
-            earthTimer.stop();
-        earthTimer = null;
+        //if (earthTimer != null) 
+        //    earthTimer.stop();
+        //earthTimer = null;
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
@@ -338,7 +341,8 @@ public class MainScene {
 	
 	/**
 	 * Performs the process of loading a simulation.
-	 
+	 // (NOT finished) USE JAVAFX's FileChooser instead of swing's JFileChooser
+	   
 	private void loadSimulationProcess(boolean autosave) {
 		String dir = null;
 		String title = null;
@@ -443,10 +447,10 @@ public class MainScene {
 
 			try {
 			    desktop.clearDesktop();
-			    if (earthTimer != null) {
-                    earthTimer.stop();
-			    }
-                earthTimer = null;
+			    //if (earthTimer != null) {
+                //    earthTimer.stop();
+			    //}
+                //earthTimer = null;
 			}
 			catch (Exception e) {
 			    // New simulation process should continue even if there's an exception in the UI.
@@ -582,7 +586,7 @@ public class MainScene {
 
 		sim.getMasterClock().exitProgram();
 		
-		earthTimer = null;
+		//earthTimer = null;
 	}
 
 	/**
