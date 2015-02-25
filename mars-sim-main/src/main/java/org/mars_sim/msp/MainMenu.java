@@ -20,7 +20,8 @@ public class MainMenu {
 
 	public final static String WINDOW_TITLE = Msg.getString(
 			"MainWindow.title", //$NON-NLS-1$
-			Simulation.VERSION + " build " + Simulation.BUILD
+			Simulation.VERSION + " build " + Simulation.BUILD + 
+			"  Java VM " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
 		);
 	
 	// Data members
@@ -41,21 +42,22 @@ public class MainMenu {
     
     public String[] args;
     
-    private boolean cleanUI = true;
+    //private boolean cleanUI = true;
     
 	/** The main desktop. */
-	private MainDesktopPane desktop;
+	//private MainDesktopPane desktop;
 	private MarsProjectFX mpFX;
 
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
-		 this.cleanUI =  cleanUI;
+		 //this.cleanUI =  cleanUI;
 		 this.primaryStage = primaryStage;
 		 this.args = args;
 		 this.mpFX = mpFX;
 		 initAndShowGUI();
 	}
 
-   private void initAndShowGUI() {        
+   @SuppressWarnings("restriction")
+private void initAndShowGUI() {        
        
        ScreensSwitcher switcher = new ScreensSwitcher(this);
        switcher.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);

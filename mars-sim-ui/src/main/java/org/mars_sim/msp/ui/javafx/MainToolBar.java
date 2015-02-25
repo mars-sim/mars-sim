@@ -19,7 +19,13 @@ public class MainToolBar extends ToolBar {
 	public MainToolBar () {
 		super();
 		setOrientation(Orientation.HORIZONTAL);
-		
+
+		//ImageView fullScreenimage = new ImageView("/fxui/icons/appbar.page.new.png");
+		//fullScreenimage.setFitHeight(40);
+		//fullScreenimage.setFitWidth(40);
+        //Button btnFullScreen = new Button(null, fullScreenimage );
+        //btnFullScreen.setTooltip(new Tooltip("Full Screen Mode"));
+        
 		ImageView newimage = new ImageView("/fxui/icons/appbar.page.new.png");
 		newimage.setFitHeight(40);
 		newimage.setFitWidth(40);
@@ -99,6 +105,7 @@ public class MainToolBar extends ToolBar {
         btnQuestion.setTooltip(new Tooltip("User Guide"));
 
         getItems().addAll(
+        		//btnFullScreen,
                 btnNew,
                 btnOpen,
                 btnSave,
