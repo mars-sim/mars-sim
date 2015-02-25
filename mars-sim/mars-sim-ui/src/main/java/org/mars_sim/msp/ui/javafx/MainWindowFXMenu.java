@@ -34,6 +34,7 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 public class MainWindowFXMenu extends MenuBar  {
 
     //private MainDesktopPane desktop;
+	private CheckMenuItem showFullScreenItem ;
 	
 	/** 
 	 * Constructor.
@@ -87,11 +88,16 @@ public class MainWindowFXMenu extends MenuBar  {
         
         // --- Menu Settings
         Menu menuSettings = new Menu("Settings");
+        showFullScreenItem = new CheckMenuItem("Full Screen Mode");
+        showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+		showFullScreenItem.setSelected(true);
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
         showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
+        
         SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
+        
         MenuItem volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
         MenuItem volumeDownItem = new MenuItem("Volume Down");
@@ -99,7 +105,7 @@ public class MainWindowFXMenu extends MenuBar  {
         CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
-        menuSettings.getItems().addAll(showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
+        menuSettings.getItems().addAll(showFullScreenItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
         
         // --- Menu Notification
         Menu menuNotification = new Menu("Notification");
@@ -130,7 +136,6 @@ public class MainWindowFXMenu extends MenuBar  {
         oneItem.setToggleGroup(queueSizeToggleGroup);
         queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
 
-        
         menuNotification.getItems().addAll(messageTypeItem,displayTimeItem,queueSizeItem);
         
         // --- Menu Help
@@ -255,7 +260,20 @@ public class MainWindowFXMenu extends MenuBar  {
             }
         });
         
-        
-		
+        showFullScreenItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+        		showFullScreenItem.setSelected(true);
+            	boolean isFullScreen =  mainScene.getStage().isFullScreen();
+            	if (!isFullScreen) {
+	            	//mainScene.getStage().sizeToScene();
+	            	mainScene.getStage().setFullScreen(true);
+            	}
+            }
+        });
+	}
+	
+	public void exitFullScreen() {
+		showFullScreenItem.setSelected(false);
 	}
 }

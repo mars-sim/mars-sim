@@ -21,6 +21,8 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -61,7 +63,7 @@ public class MainScene {
 	//private Timer delayLaunchTimer;
 	//private Timer autosaveTimer;
 	//private javax.swing.Timer earthTimer = null;
-	private static int AUTOSAVE_EVERY_X_MINUTE = 1;
+	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
 	private static final int TIME_DELAY = 940;
 	
     private Text timeText;    
@@ -92,6 +94,17 @@ public class MainScene {
         Scene scene = init(stage);       
 		startAutosaveTimer();        
         desktop.openInitialWindows();
+        
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+              @Override
+              public void handle(KeyEvent t) {
+                if(t.getCode()==KeyCode.ESCAPE)
+                {
+                 //System.out.println("click on escape");
+                	menuBar.exitFullScreen();
+                }
+              }
+          });
         
         return scene;
     }
