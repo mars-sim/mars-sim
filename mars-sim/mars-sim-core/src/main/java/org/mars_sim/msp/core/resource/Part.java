@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Part.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-02-26
 
  * @author Scott Davis
  */
@@ -20,6 +20,8 @@ public class Part extends ItemResource {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private double mass;
+	
 	// Domain members
 	private List<MaintenanceEntity> maintenanceEntities;
 
@@ -32,10 +34,15 @@ public class Part extends ItemResource {
     public Part(String name, String description, double mass) {
         // Use ItemResource constructor.
         super(name,description,mass);
-
+        this.mass = mass;
+        
         maintenanceEntities = new ArrayList<MaintenanceEntity>();
     }
 
+    public double getMass() {
+    	return mass;
+    }
+    
     /**
      * Adds a maintenance entity for the part.
      * @param name the name of the entity.

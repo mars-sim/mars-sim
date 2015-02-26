@@ -235,7 +235,7 @@ implements Serializable {
 		}
 
 		
-		// Get entities carried by robots on EVA.
+		// Get entities carried by robots
 		Iterator<Robot> jj = settlement.getAllAssociatedRobots().iterator();
 		while (jj.hasNext()) {
 			Robot robot = jj.next();
@@ -243,7 +243,7 @@ implements Serializable {
 				entities.addAll(getMalfunctionables(robot));
 		}
 		
-		// TODO: how to ask robots first and ony ask people if robots are not available ?
+		// TODO: how to ask robots first and only ask people if robots are not available so that the tasks are not duplicated ?
 		// Get entities carried by people on EVA.
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {

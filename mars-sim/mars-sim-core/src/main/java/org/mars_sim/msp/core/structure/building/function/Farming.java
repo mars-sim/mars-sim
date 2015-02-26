@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2015-01-25
+ * @version 3.07 2015-02-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
@@ -48,6 +49,8 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
+    
+    private static final double AVERAGE_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
 
     private Inventory inv;
     private Settlement settlement;
@@ -55,6 +58,7 @@ implements Serializable {
     private BeeGrowing beeGrowing;
     
     private int cropNum;
+	private int solCache = 1;
     private double powerGrowingCrop;
     private double powerSustainingCrop;
     private double maxGrowingArea;
@@ -417,8 +421,15 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-	public void timePassing(double time) {
-
+	public void timePassing(double time) {		
+	    MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();    
+	    // check for the passing of each day
+	    int solElapsed = MarsClock.getSolOfYear(clock);	
+	    if ( solElapsed != solCache) {
+	    	solCache = solElapsed;
+	        produceDailyTendingCropWaste();	    	
+	    }
+	    
         // Determine resource processing production level.
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
@@ -473,6 +484,37 @@ implements Serializable {
 
     }
 
+	/**
+     * Creates crop waste from the daily tending of the greenhouse 
+     * 
+     */
+	// 2015-02-26 Added produceDailyTendingCropWaste()
+	public void produceDailyTendingCropWaste() {		
+		double rand = RandomUtil.getRandomDouble(2);		
+		// add a randomness factor
+		double amountCropWaste = AVERAGE_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
+		storeAnResource(amountCropWaste, "Crop Waste");	    
+	}
+	
+
+   public void storeAnResource(double amount, String name) {
+    	try {
+            AmountResource ar = AmountResource.findAmountResource(name);      
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+
+            if (remainingCapacity < amount) {
+                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+            	amount = remainingCapacity;
+                //logger.info(" storage is full!");
+            }	            
+            // TODO: consider the case when it is full  	            
+            inv.storeAmountResource(ar, amount, true);
+            inv.addAmountSupplyAmount(ar, amount);
+        }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+        }
+    }
+	
     /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)

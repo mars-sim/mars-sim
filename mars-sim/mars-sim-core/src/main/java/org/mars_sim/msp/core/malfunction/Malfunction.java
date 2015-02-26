@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.malfunction;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -279,10 +281,29 @@ public class Malfunction implements Serializable {
         for (String partName : partNames) {
             if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
-                Part part = (Part) ItemResource.findItemResource(partName);
+                Part part = (Part) ItemResource.findItemResource(partName);               
                 repairParts.put(part, number);
                 logger.info("New Malfunction: " + name + " - required part: " + part.getName() + " - number: " + number);
             }
+        }
+    }
+    
+    public void produceSolidWaste(double amount, String name, Inventory inv) {
+        
+    	try {
+            AmountResource ar = AmountResource.findAmountResource(name);      
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+
+            if (remainingCapacity < amount) {
+                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+            	amount = remainingCapacity;
+                //logger.info(" storage is full!");
+            }	            
+            // TODO: consider the case when it is full  	            
+            inv.storeAmountResource(ar, amount, true);
+            inv.addAmountSupplyAmount(ar, amount);
+        }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
         }
     }
     
@@ -299,14 +320,18 @@ public class Malfunction implements Serializable {
      * @param part the part.
      * @param number the number used for repair.
      */
-    public void repairWithParts(Part part, int number) {
+    public void repairWithParts(Part part, int number, Inventory inv) {
     	if (part == null) throw new IllegalArgumentException("part is null");
     	if (repairParts.containsKey(part)) {
     		int numberNeeded = repairParts.get(part);
     		if (number > numberNeeded) throw new IllegalArgumentException("number " + number + 
     				" is greater that number of parts needed: " + numberNeeded);
     		else {
-    			numberNeeded -= number;
+    			numberNeeded -= number;   			
+                
+    			// 2015-02-26 Added produceSolidWaste() 			
+                produceSolidWaste(part.getMass(), "Solid Waste", inv);   
+                
     			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
     			else repairParts.remove(part);
     		}
