@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.07 2015-01-08
+ * @version 3.08 2015-02-26
 
  * @author Barry Evans
  */
@@ -13,8 +13,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -27,11 +29,13 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -157,6 +161,9 @@ extends UnitTableModel {
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
 	private UnitManagerListener unitManagerListener;
+	
+	/** Map for caching a person's hunger, fatigue, stress and performance status strings. */
+	private Map<Unit, Map<Integer, String>> performanceValueCache;
 
 	/**
 	 * constructor.
@@ -275,6 +282,58 @@ extends UnitTableModel {
 	private void setSource(Collection<Person> source) {
 		Iterator<Person> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
+	}
+	
+	@Override
+	protected void addUnit(Unit newUnit) {
+	    
+	    if (performanceValueCache == null) {
+	        performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
+	    }
+	    
+	    if (!performanceValueCache.containsKey(newUnit)) {
+	        try {
+	            Map<Integer, String> performanceItemMap = new HashMap<Integer, String>(4);
+	            
+	            Person person = (Person) newUnit;
+	            PhysicalCondition condition = person.getPhysicalCondition();
+	            
+	            double hunger = condition.getHunger();
+	            double energy = condition.getEnergy();
+	            String hungerString = getHungerStatus(hunger, energy);
+	            performanceItemMap.put(HUNGER, hungerString);
+	            
+	            double fatigue = condition.getFatigue();
+	            String fatigueString = getFatigueStatus(fatigue);
+	            performanceItemMap.put(FATIGUE, fatigueString);
+	            
+	            double stress = condition.getStress();
+	            String stressString = getStressStatus(stress);
+	            performanceItemMap.put(STRESS, stressString);
+	            
+	            double performance = condition.getPerformanceFactor() * 100D;
+	            String performanceString = getPerformanceStatus(performance);
+	            performanceItemMap.put(PERFORMANCE, performanceString);
+	            
+	            performanceValueCache.put(newUnit, performanceItemMap);
+	        }
+	        catch (Exception e) {}
+	    }
+	    super.addUnit(newUnit);
+	}
+
+	@Override
+	protected void removeUnit(Unit oldUnit) {
+	    
+	    if (performanceValueCache == null) {
+	        performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
+	    }
+	    if (performanceValueCache.containsKey(oldUnit)) {
+	        Map<Integer, String> performanceItemMap = performanceValueCache.get(oldUnit);
+	        performanceItemMap.clear();
+	        performanceValueCache.remove(oldUnit);
+	    }
+	    super.removeUnit(oldUnit);
 	}
 
 	/**
@@ -437,10 +496,10 @@ extends UnitTableModel {
 	 */
 	public String getFatigueStatus(double value) {
 		String status= "N/A";
-		if (value < 100) status = Msg.getString("PersonTableModel.column.fatigue.level1");
-		else if (value < 400) status = Msg.getString("PersonTableModel.column.fatigue.level2");
-		else if (value < 800) status = Msg.getString("PersonTableModel.column.fatigue.level3");
-		else if (value < 1200) status = Msg.getString("PersonTableModel.column.fatigue.level4");
+		if (value < 500) status = Msg.getString("PersonTableModel.column.fatigue.level1");
+		else if (value < 800) status = Msg.getString("PersonTableModel.column.fatigue.level2");
+		else if (value < 1200) status = Msg.getString("PersonTableModel.column.fatigue.level3");
+		else if (value < 1500) status = Msg.getString("PersonTableModel.column.fatigue.level4");
 		else status = Msg.getString("PersonTableModel.column.fatigue.level5");
 		return status;
 	}
@@ -505,6 +564,11 @@ extends UnitTableModel {
 			settlementListener = null;
 			settlement = null;
 		}
+		
+		if (performanceValueCache != null) {
+		    performanceValueCache.clear();
+        }
+		performanceValueCache = null;
 	}
 
 	@Override
@@ -548,9 +612,9 @@ extends UnitTableModel {
 
 		private final UnitEvent event;
 
-		private final UnitTableModel tableModel;
+		private final PersonTableModel tableModel;
 
-		private PersonTableUpdater(UnitEvent event, UnitTableModel tableModel) {
+		private PersonTableUpdater(UnitEvent event, PersonTableModel tableModel) {
 			this.event = event;
 			this.tableModel = tableModel;
 		}
@@ -583,7 +647,6 @@ extends UnitTableModel {
 					System.out.println(announcement);
 				}
 			}
-
 			else if (eventType == UnitEventType.ILLNESS_EVENT) {
 				if (event.getTarget() instanceof Person) {
 					Unit unit = (Unit) event.getTarget();
@@ -594,7 +657,71 @@ extends UnitTableModel {
 					System.out.println(announcement);
 				}
 			}
-			
+			else if (eventType == UnitEventType.HUNGER_EVENT) {
+			    Person person = (Person) event.getSource();
+			    double hunger = person.getPhysicalCondition().getHunger();
+			    double energy = person.getPhysicalCondition().getEnergy();
+			    String hungerString = tableModel.getHungerStatus(hunger, energy);
+			    if ((tableModel.performanceValueCache != null) && 
+			            tableModel.performanceValueCache.containsKey(person)) {
+			        Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+			        String oldHungerString = performanceItemMap.get(HUNGER);
+			        if (hungerString.equals(oldHungerString)) {
+			            return;
+			        }
+			        else {
+			            performanceItemMap.put(HUNGER, hungerString);
+			        }
+			    }
+			}
+			else if (eventType == UnitEventType.FATIGUE_EVENT) {
+                Person person = (Person) event.getSource();
+                double fatigue = person.getPhysicalCondition().getFatigue();
+                String fatigueString = tableModel.getFatigueStatus(fatigue);
+                if ((tableModel.performanceValueCache != null) && 
+                        tableModel.performanceValueCache.containsKey(person)) {
+                    Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+                    String oldFatigueString = performanceItemMap.get(FATIGUE);
+                    if (fatigueString.equals(oldFatigueString)) {
+                        return;
+                    }
+                    else {
+                        performanceItemMap.put(FATIGUE, fatigueString);
+                    }
+                }
+            }
+			else if (eventType == UnitEventType.STRESS_EVENT) {
+                Person person = (Person) event.getSource();
+                double stress = person.getPhysicalCondition().getStress();
+                String stressString = tableModel.getStressStatus(stress);
+                if ((tableModel.performanceValueCache != null) && 
+                        tableModel.performanceValueCache.containsKey(person)) {
+                    Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+                    String oldStressString = performanceItemMap.get(STRESS);
+                    if (stressString.equals(oldStressString)) {
+                        return;
+                    }
+                    else {
+                        performanceItemMap.put(STRESS, stressString);
+                    }
+                }
+            }
+			else if (eventType == UnitEventType.PERFORMANCE_EVENT) {
+                Person person = (Person) event.getSource();
+                double performance = person.getPhysicalCondition().getPerformanceFactor() * 100D;
+                String performanceString = tableModel.getPerformanceStatus(performance);
+                if ((tableModel.performanceValueCache != null) && 
+                        tableModel.performanceValueCache.containsKey(person)) {
+                    Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+                    String oldStressString = performanceItemMap.get(PERFORMANCE);
+                    if (performanceString.equals(oldStressString)) {
+                        return;
+                    }
+                    else {
+                        performanceItemMap.put(PERFORMANCE, performanceString);
+                    }
+                }
+            }
 			 
 			if (column != null && column> -1) {
 				Unit unit = (Unit) event.getSource();

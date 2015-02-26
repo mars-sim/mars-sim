@@ -284,10 +284,7 @@ extends UnitTableModel {
 		while(iter.hasNext()) addUnit(iter.next());
 	}
 
-	/**
-	 * Add a unit to the model.
-	 * @param newUnit Unit to add to the model.
-	 */
+	@Override
 	protected void addUnit(Unit newUnit) {
 		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
 		if (!resourceCache.containsKey(newUnit)) {
@@ -316,10 +313,7 @@ extends UnitTableModel {
 		super.addUnit(newUnit);
 	}
 
-	/**
-	 * Remove a unit from the model.
-	 * @param oldUnit Unit to remove from the model.
-	 */
+	@Override
 	protected void removeUnit(Unit oldUnit) {
 		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
 		if (resourceCache.containsKey(oldUnit)) {
