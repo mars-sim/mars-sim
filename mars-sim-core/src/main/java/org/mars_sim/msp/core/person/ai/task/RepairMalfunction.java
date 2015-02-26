@@ -391,8 +391,8 @@ implements Repair, Serializable {
                 while (j.hasNext()) {
                     Part part = j.next();
                     int number = parts.get(part);
-                    inv.retrieveItemResources(part, number);
-                    malfunction.repairWithParts(part, number);
+                    inv.retrieveItemResources(part, number);                    
+                    malfunction.repairWithParts(part, number, inv);
                 }
             }
 
@@ -407,7 +407,7 @@ implements Repair, Serializable {
                     Part part = j.next();
                     int number = parts.get(part);
                     inv.retrieveItemResources(part, number);
-                    malfunction.repairWithParts(part, number);
+                    malfunction.repairWithParts(part, number, inv);
                 }
             }
         }

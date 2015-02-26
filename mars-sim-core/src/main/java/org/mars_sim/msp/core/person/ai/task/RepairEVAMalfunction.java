@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2015-02-02
+ * @version 3.07 2015-02-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -578,7 +578,7 @@ implements Repair, Serializable {
 		                Part part = j.next();
 		                int number = parts.get(part);
 		                inv.retrieveItemResources(part, number);
-		                malfunction.repairWithParts(part, number);
+		                malfunction.repairWithParts(part, number, inv);
 		            }
 		        }
 		        else {
@@ -595,7 +595,7 @@ implements Repair, Serializable {
 		                Part part = j.next();
 		                int number = parts.get(part);
 		                inv.retrieveItemResources(part, number);
-		                malfunction.repairWithParts(part, number);
+		                malfunction.repairWithParts(part, number, inv);
 		            }
 		        }
 		        else {
