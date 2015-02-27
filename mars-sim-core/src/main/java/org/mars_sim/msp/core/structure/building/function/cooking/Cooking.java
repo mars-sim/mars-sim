@@ -74,7 +74,7 @@ implements Serializable {
     
     // Data members
     private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
-    private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
+    //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
     
@@ -365,25 +365,48 @@ implements Serializable {
      * @return the meal
      */
     // Called by EatMeal.java's constructor
-    public CookedMeal eatAMeal() {
+    // 2015-02-27 Renamed to chooseAMeal(). A person will select the favorite main/side dish if available
+    public CookedMeal chooseAMeal(Person person) {    	
+    	CookedMeal result = null; 
+    	CookedMeal bestDish = null;
         CookedMeal bestMeal = null;
         int bestQuality = -1;
+      	String mainDish = person.getFavorite().getFavoriteMainDish();
+      	String sideDish = person.getFavorite().getFavoriteSideDish();
+      	         
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
-            if (meal.getQuality() > bestQuality) {
+            
+            if (meal.getName().equals(mainDish) || meal.getName().equals(sideDish) ) {          
+	            if (meal.getQuality() > bestQuality) {
+	                bestQuality = meal.getQuality();
+	                bestDish = meal;
+	            }	            
+	        }
+            
+            else if (meal.getQuality() > bestQuality) {
                 bestQuality = meal.getQuality();
                 bestMeal = meal;
             }
+            
         }
-
-        if (bestMeal != null) {
+        
+        if (bestDish != null) {
+        	cookedMeals.remove(bestDish);
+        	// 2015-01-06 Added dailyMealList
+        	//dailyMealList.add(bestMainDish);
+        	result = bestDish; 	
+        }
+        
+        else if (bestMeal != null) {
         	cookedMeals.remove(bestMeal);
         	// 2015-01-06 Added dailyMealList
-        	dailyMealList.add(bestMeal);
+        	//dailyMealList.add(bestMeal);
+        	result = bestMeal;
         }
 
-        return bestMeal;
+        return result;
     }
 
     /**
@@ -833,6 +856,7 @@ implements Serializable {
     public void timePassing(double time) {
     	boolean hasAMeal = hasCookedMeal(); 
 	     //logger.info(" hasAMeal : "+ hasAMeal);
+    	//TODO: check for whether it is meal hour. if it's not, bypass some steps below
 	     if ( hasAMeal ) {
 	    	 double rate = settlement.getMealsReplenishmentRate();
 	         //int newNumOfCookedMeal = cookedMeals.size();
@@ -994,8 +1018,8 @@ implements Serializable {
         cookedMeals.clear();
         cookedMeals = null;
         settlement = null;
-        dailyMealList.clear();
-        dailyMealList = null;
+        //dailyMealList.clear();
+        //dailyMealList = null;
         aMeal = null;
         mealConfigMealList.clear();
         mealConfigMealList = null;

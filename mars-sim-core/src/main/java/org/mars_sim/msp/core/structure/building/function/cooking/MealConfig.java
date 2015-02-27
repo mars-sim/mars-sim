@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MealConfig.java
- * @version 3.07 2014-12-12
+ * @version 3.07 2015-02-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -31,12 +31,12 @@ implements Serializable {
 
 	// Element names
 	//private static final String MEAL_LIST = "meal-list";
-	private static final String MEAL = "meal";
+	private static final String MAIN_DISH = "main-dish";
 	
 	private static final String INGREDIENT = "ingredient";
 	
-	private static final String MEAL_NAME = "name";
-	private static final String MEAL_ID = "id";
+	private static final String MAIN_DISH_NAME = "name";
+	private static final String MAIN_DISH_ID = "id";
 	private static final String MEAL_CATEGORY = "category";
 	
 	private static final String INGREDIENT_ID = "id";
@@ -76,31 +76,31 @@ implements Serializable {
 			mealList = new ArrayList<HotMeal>();
 
 			Element root = mealDoc.getRootElement();
-			List<Element> meals = root.getChildren(MEAL);
+			List<Element> mainDishes = root.getChildren(MAIN_DISH);
 
 			//Set<Integer> mealIDs = new HashSet<Integer>();
 			
-			for (Element meal : meals) {	
+			for (Element mainDish : mainDishes) {	
 
 				// Get meal id.
-				String sid = meal.getAttributeValue(MEAL_ID);
+				String sid = mainDish.getAttributeValue(MAIN_DISH_ID);
 				int id = Integer.parseInt(sid);
 
 				// Get name.
 				String name = "";
-				name = meal.getAttributeValue(MEAL_NAME);
+				name = mainDish.getAttributeValue(MAIN_DISH_NAME);
 				
 				// Get oil
-				String oilStr = meal.getAttributeValue(OIL);
+				String oilStr = mainDish.getAttributeValue(OIL);
 				double oil = Double.parseDouble(oilStr);
 
 				// Get salt
-				String saltStr = meal.getAttributeValue(SALT);
+				String saltStr = mainDish.getAttributeValue(SALT);
 				double salt = Double.parseDouble(saltStr);
 
 				// Get meal category
 				String mealCategory ="";
-				mealCategory = meal.getAttributeValue(MEAL_CATEGORY);
+				mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
 				
 				// Create meal
 				
@@ -108,7 +108,7 @@ implements Serializable {
 	    		//System.out.println("MealConfig.java : aMeal is " + aMeal);
 				
 				//2014-12-11 Modified to ingredients = meal.getChildren(INGREDIENT);
-				List<Element> ingredients = meal.getChildren(INGREDIENT);
+				List<Element> ingredients = mainDish.getChildren(INGREDIENT);
 	    		//System.out.println("MealConfig.java : ingredients is " + ingredients);
 		
 				for (Element ingredient : ingredients) {

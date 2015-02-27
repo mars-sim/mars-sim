@@ -1,10 +1,16 @@
-<!ELEMENT meal-list (meal+)>
-<!ELEMENT meal (ingredient+)>
-<!ATTLIST meal id CDATA #REQUIRED>
-<!ATTLIST meal name CDATA #REQUIRED>
-<!ATTLIST meal oil CDATA #REQUIRED>
-<!ATTLIST meal salt CDATA #REQUIRED>
-<!ATTLIST meal category CDATA #REQUIRED>
+<!ELEMENT meal-list (main-dish*, side-dish* )>
+<!ELEMENT main-dish (ingredient+)>
+<!ATTLIST main-dish id CDATA #REQUIRED>
+<!ATTLIST main-dish name CDATA #REQUIRED>
+<!ATTLIST main-dish oil CDATA #REQUIRED>
+<!ATTLIST main-dish salt CDATA #REQUIRED>
+<!ATTLIST main-dish category CDATA #REQUIRED>
+<!ELEMENT side-dish (ingredient+)>
+<!ATTLIST side-dish id CDATA #REQUIRED>
+<!ATTLIST side-dish name CDATA #REQUIRED>
+<!ATTLIST side-dish oil CDATA #REQUIRED>
+<!ATTLIST side-dish salt CDATA #REQUIRED>
+<!ATTLIST side-dish category CDATA #REQUIRED>
 <!ELEMENT ingredient EMPTY >
 <!ATTLIST ingredient id CDATA #REQUIRED>
 <!ATTLIST ingredient name CDATA #REQUIRED>

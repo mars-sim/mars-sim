@@ -46,7 +46,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+	//private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -105,8 +105,8 @@ implements Serializable {
             
            	else {  // If a cooked meal in a local kitchen available
     			mealLocation = kitchen.getBuilding().getNickName();
-           		// grab this cooked meal and tag it for this person
-                meal = kitchen.eatAMeal();
+           		// grab this cooked meal(either his favorite main dish or the best quality) and tag it for this person
+                meal = kitchen.chooseAMeal(person);
                 if (meal != null) {
                 	//2015-01-06 Added setConsumerName()
                    	meal.setConsumerName(person.getName());
