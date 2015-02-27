@@ -46,6 +46,8 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ATTLIST person personality-type CDATA #IMPLIED>
 <!ATTLIST person settlement CDATA #IMPLIED>
 <!ATTLIST person job CDATA #IMPLIED>
+<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
+<!ATTLIST person favorite-side-dish CDATA #IMPLIED>
 <!ELEMENT natural-attribute-list (natural-attribute*)>
 <!ELEMENT natural-attribute EMPTY>
 <!ATTLIST natural-attribute name CDATA #REQUIRED>

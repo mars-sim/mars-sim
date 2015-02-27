@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -29,7 +29,8 @@ implements Serializable {
 	private List<String> alphaCrewGender; // = new ArrayList<String>();
 	private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
 	private List<String> alphaCrewJob; //  = new ArrayList<String>();
-	
+	private List<String> alphaCrewFavoriteMainDish;
+	private List<String> alphaCrewFavoriteSideDish;	
 	
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
@@ -70,6 +71,9 @@ implements Serializable {
 	private static final String RELATIONSHIP = "relationship";
 	private static final String OPINION = "opinion";
 	private static final String PERCENTAGE = "percentage";
+	// 2015-02-27 Added MAIN_DISH and SIDE_DISH
+	private static final String MAIN_DISH = "favorite-main-dish";
+	private static final String SIDE_DISH = "favorite-side-dish";
 
 	private Document personDoc;
 	private List<String> nameList;
@@ -486,6 +490,34 @@ implements Serializable {
 		return result;
 	}
 
+	
+	/**
+	 * Gets the configured person's favorite main dish.
+	 * @param index the person's index.
+	 * @return the name of the favorite main dish name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getFavoriteMainDish(int index) {
+		if (alphaCrewFavoriteMainDish != null)
+			return alphaCrewFavoriteMainDish.get(index) ;
+		else
+			return getValueAsString(index,MAIN_DISH);
+	}
+	
+	/**
+	 * Gets the configured person's favorite side dish.
+	 * @param index the person's index.
+	 * @return the name of the favorite side dish name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getFavoriteSideDish(int index) {
+		if (alphaCrewFavoriteSideDish != null)
+			return alphaCrewFavoriteSideDish.get(index) ;
+		else
+			return getValueAsString(index,SIDE_DISH);
+	}
+	
+    
     /**
      * Prepare object for garbage collection.
      */

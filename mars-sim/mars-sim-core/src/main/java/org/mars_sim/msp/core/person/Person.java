@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2015-02-17
+ * @version 3.07 2015-02-27
  * @author Scott Davis
  */
 
@@ -84,6 +84,11 @@ implements VehicleOperator, Serializable {
     private Building diningBuilding;
     private Cooking kitchenWithMeal;
     private PreparingDessert kitchenWithDessert;
+    private PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+    private org.mars_sim.msp.core.LifeSupport support;
+    
+    // 2015-02-27 Added Favorite class
+    private Favorite favorite;
     
     /**
      * Constructs a Person object at a given settlement.
@@ -112,6 +117,9 @@ implements VehicleOperator, Serializable {
         isBuried = false;
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<ScienceType, Double>(0);
+        
+        // 2015-02-27 Added Favorite class
+        favorite = new Favorite(this);
 
         // Set base mass of person from 58 to 76, peaking at 67.
         setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
@@ -128,9 +136,18 @@ implements VehicleOperator, Serializable {
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
+        
+        support = getLifeSupport();
 
     }
 
+    /**
+     * Gets the instance of Favorite for a person.
+     */
+    public Favorite getFavorite() {
+    	return favorite;
+    }
+    
     /**
      * Create a string representing the birth time of the person.
      * @return birth time string.
@@ -277,10 +294,7 @@ implements VehicleOperator, Serializable {
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
 
-            PersonConfig config = SimulationConfig.instance()
-                    .getPersonConfiguration();
-            LifeSupport support = getLifeSupport();
-
+            support = getLifeSupport();
             // Pass the time in the physical condition first as this may
             // result in death.
             if (health.timePassing(time, support, config)) {

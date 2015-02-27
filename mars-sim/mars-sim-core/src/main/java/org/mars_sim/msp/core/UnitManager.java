@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -497,6 +497,140 @@ implements Serializable {
         }
     }
 
+
+    /**
+     * Creates all configured people.
+     * @throws Exception if error parsing XML.
+     */
+    private void createConfiguredPeople() {
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+        // Create all configured people.
+        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+            // Get person's name (required)
+            String name = personConfig.getConfiguredPersonName(x);
+            if (name == null) {
+                throw new IllegalStateException("Person name is null");
+            }
+
+            // Get person's gender or randomly determine it if not configured.
+            PersonGender gender = personConfig.getConfiguredPersonGender(x);
+            if (gender == null) {
+                gender = PersonGender.FEMALE;
+                if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+                    gender = PersonGender.MALE;
+                }
+            }
+
+            // Get person's settlement or randomly determine it if not configured.
+            String settlementName = personConfig.getConfiguredPersonSettlement(x);
+            Settlement settlement = null;
+            if (settlementName != null) {
+                Collection<Settlement> col = CollectionUtils.getSettlement(units);
+                settlement = CollectionUtils.getSettlement(col, settlementName);
+                if (settlement == null) {
+                    // If settlement cannot be found that matches the settlement name,
+                    // put person in a randomly selected settlement.
+                    logger.log(Level.WARNING, "Person " + name + " could not be located" +
+                            " at " + settlementName + " because the settlement doesn't exist.");
+                    settlement = CollectionUtils.getRandomSettlement(col);
+                }
+            } else {
+                Collection<Settlement> col = CollectionUtils.getSettlement(units);
+                settlement = CollectionUtils.getRandomSettlement(col);
+            }
+
+            // If settlement is still null (no settlements available),
+            // Don't create person.
+            if (settlement == null) {
+                return;
+            }
+
+            // If settlement does not have initial population capacity, try another settlement.
+            if (settlement.getInitialPopulation() <= settlement.getCurrentPopulationNum()) {
+                Iterator<Settlement> i = getSettlements().iterator();
+                Settlement newSettlement = null;
+                while (i.hasNext() && (newSettlement == null)) {
+                    Settlement tempSettlement = i.next();
+                    if (tempSettlement.getInitialPopulation() > tempSettlement.getCurrentPopulationNum()) {
+                        newSettlement = tempSettlement;
+                    }
+                }
+                if (newSettlement != null) {
+                    settlement = newSettlement;
+                }
+                else {
+                    // If no settlement with room found, don't create person.
+                    return;
+                }
+            }
+
+            // Create person and add to the unit manager.
+            Person person = new Person(name, gender, "Earth",settlement); //TODO: read from file
+            addUnit(person);
+            relationshipManager.addInitialSettler(person, settlement);
+
+            // Set person's configured personality type (if any).
+            String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
+            if (personalityType != null) {
+                person.getMind().getPersonalityType().setTypeString(personalityType);
+            }
+
+            // Set person's job (if any).
+            String jobName = personConfig.getConfiguredPersonJob(x);
+            if (jobName != null) {
+                Job job = JobManager.getJob(jobName);
+                if (job != null) {
+                    person.getMind().setJob(job, true);
+                }
+            }
+
+            // 2015-02-27 Added Favorite class
+            String mainDish = personConfig.getFavoriteMainDish(x);
+            String sideDish = personConfig.getFavoriteSideDish(x);
+            person.getFavorite().setFavoriteMainDish(mainDish);
+            person.getFavorite().setFavoriteSideDish(sideDish);
+       
+            
+            // Set person's configured natural attributes (if any).
+            Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
+            if (naturalAttributeMap != null) {
+                Iterator<String> i = naturalAttributeMap.keySet().iterator();
+                while (i.hasNext()) {
+                    String attributeName = i.next();
+                    int value = (Integer) naturalAttributeMap.get(attributeName);
+                    person.getNaturalAttributeManager().setAttribute(
+                            NaturalAttribute.valueOfIgnoreCase(attributeName),
+                            value
+                            );
+                }
+            }
+
+            // Set person's configured skills (if any).
+            Map<String, Integer> skillMap = personConfig.getSkillMap(x);
+            if (skillMap != null) {
+                Iterator<String> i = skillMap.keySet().iterator();
+                while (i.hasNext()) {
+                    String skillName = i.next();
+                    int level = (Integer) skillMap.get(skillName);
+                    person
+                    .getMind()
+                    .getSkillManager()
+                    .addNewSkill(
+                            new Skill(
+                                    SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
+                                    level
+                                    )
+                            );
+                }
+            }
+        }
+
+        // Create all configured relationships.
+        createConfiguredRelationships();
+    }
+    
     /**
      * Creates initial people based on available capacity at settlements.
      * @throws Exception if people can not be constructed.
@@ -523,6 +657,13 @@ implements Serializable {
                     Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, "Earth",settlement); //TODO: read from file
                     addUnit(person);
                     relationshipManager.addInitialSettler(person, settlement);
+                    
+                    // 2015-02-27 Added Favorite class
+                    String mainDish = person.getFavorite().getRandomMainDish();
+                    String sideDish = person.getFavorite().getRandomSideDish();
+                    person.getFavorite().setFavoriteMainDish(mainDish);
+                    person.getFavorite().setFavoriteSideDish(sideDish);
+               
                 }
             }
         } catch (Exception e) {
@@ -583,6 +724,7 @@ implements Serializable {
     	
     	return robotType;
     }
+    
     /**
      * Creates all configured Robots.
      * @throws Exception if error parsing XML.
@@ -770,132 +912,6 @@ implements Serializable {
     }
 
 
-    /**
-     * Creates all configured people.
-     * @throws Exception if error parsing XML.
-     */
-    private void createConfiguredPeople() {
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
-        // Create all configured people.
-        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
-            // Get person's name (required)
-            String name = personConfig.getConfiguredPersonName(x);
-            if (name == null) {
-                throw new IllegalStateException("Person name is null");
-            }
-
-            // Get person's gender or randomly determine it if not configured.
-            PersonGender gender = personConfig.getConfiguredPersonGender(x);
-            if (gender == null) {
-                gender = PersonGender.FEMALE;
-                if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-                    gender = PersonGender.MALE;
-                }
-            }
-
-            // Get person's settlement or randomly determine it if not configured.
-            String settlementName = personConfig.getConfiguredPersonSettlement(x);
-            Settlement settlement = null;
-            if (settlementName != null) {
-                Collection<Settlement> col = CollectionUtils.getSettlement(units);
-                settlement = CollectionUtils.getSettlement(col, settlementName);
-                if (settlement == null) {
-                    // If settlement cannot be found that matches the settlement name,
-                    // put person in a randomly selected settlement.
-                    logger.log(Level.WARNING, "Person " + name + " could not be located" +
-                            " at " + settlementName + " because the settlement doesn't exist.");
-                    settlement = CollectionUtils.getRandomSettlement(col);
-                }
-            } else {
-                Collection<Settlement> col = CollectionUtils.getSettlement(units);
-                settlement = CollectionUtils.getRandomSettlement(col);
-            }
-
-            // If settlement is still null (no settlements available),
-            // Don't create person.
-            if (settlement == null) {
-                return;
-            }
-
-            // If settlement does not have initial population capacity, try another settlement.
-            if (settlement.getInitialPopulation() <= settlement.getCurrentPopulationNum()) {
-                Iterator<Settlement> i = getSettlements().iterator();
-                Settlement newSettlement = null;
-                while (i.hasNext() && (newSettlement == null)) {
-                    Settlement tempSettlement = i.next();
-                    if (tempSettlement.getInitialPopulation() > tempSettlement.getCurrentPopulationNum()) {
-                        newSettlement = tempSettlement;
-                    }
-                }
-                if (newSettlement != null) {
-                    settlement = newSettlement;
-                }
-                else {
-                    // If no settlement with room found, don't create person.
-                    return;
-                }
-            }
-
-            // Create person and add to the unit manager.
-            Person person = new Person(name, gender, "Earth",settlement); //TODO: read from file
-            addUnit(person);
-            relationshipManager.addInitialSettler(person, settlement);
-
-            // Set person's configured personality type (if any).
-            String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
-            if (personalityType != null) {
-                person.getMind().getPersonalityType().setTypeString(personalityType);
-            }
-
-            // Set person's job (if any).
-            String jobName = personConfig.getConfiguredPersonJob(x);
-            if (jobName != null) {
-                Job job = JobManager.getJob(jobName);
-                if (job != null) {
-                    person.getMind().setJob(job, true);
-                }
-            }
-
-            // Set person's configured natural attributes (if any).
-            Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
-            if (naturalAttributeMap != null) {
-                Iterator<String> i = naturalAttributeMap.keySet().iterator();
-                while (i.hasNext()) {
-                    String attributeName = i.next();
-                    int value = (Integer) naturalAttributeMap.get(attributeName);
-                    person.getNaturalAttributeManager().setAttribute(
-                            NaturalAttribute.valueOfIgnoreCase(attributeName),
-                            value
-                            );
-                }
-            }
-
-            // Set person's configured skills (if any).
-            Map<String, Integer> skillMap = personConfig.getSkillMap(x);
-            if (skillMap != null) {
-                Iterator<String> i = skillMap.keySet().iterator();
-                while (i.hasNext()) {
-                    String skillName = i.next();
-                    int level = (Integer) skillMap.get(skillName);
-                    person
-                    .getMind()
-                    .getSkillManager()
-                    .addNewSkill(
-                            new Skill(
-                                    SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
-                                    level
-                                    )
-                            );
-                }
-            }
-        }
-
-        // Create all configured relationships.
-        createConfiguredRelationships();
-    }
-    
     /** 
      * Notify all the units that time has passed.
      * Times they are a changing.
