@@ -992,7 +992,7 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorine",  true);
+		retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorite",  true);
 		retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupport.WATER,  true);				
 	}
 	

@@ -71,7 +71,7 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 10D;
+		double result = 15D;
 
 		// Add all kitchen work space in settlement.
 		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.COOKING);

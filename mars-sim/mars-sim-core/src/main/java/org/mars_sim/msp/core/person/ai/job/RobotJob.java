@@ -57,7 +57,7 @@ implements Serializable {
 	 * @param robotType {@link RobotType}
 	 * @return name
 	 */
-	public String getName(RobotType robotType) {
+	public static String getName(RobotType robotType) {
 		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
 		switch (robotType) {
 			case CHEFBOT : key.append("chefBot"); break; //$NON-NLS-1$

@@ -672,58 +672,6 @@ implements Serializable {
         }
     }
 
-
-    /**
-     * Creates initial Robots based on available capacity at settlements.
-     * @throws Exception if Robots can not be constructed.
-     */
-    private void createInitialRobots() {
-
-        // Create configured robots.
-        createConfiguredRobots();
-
-        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
-        // Randomly create all remaining robots to fill the settlements to capacity.
-        try {
-            Iterator<Settlement> i = getSettlements().iterator();
-            while (i.hasNext()) {
-                Settlement settlement = i.next();
-
-                while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
-                    //System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
-                    //System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
-
-                    // Get a robotType randomly
-                	RobotType robotType = getABot();
-                	
-                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
-                    addUnit(robot);
-                    //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
-
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
-        }
-    }
-    
-    public RobotType getABot() {
-    	RobotType robotType = null;
-    	
-    	int num = RandomUtil.getRandomInt(9); // 0 to 9
-    	if (num < 4) // 0, 1, 2, 3
-    		robotType = RobotType.REPAIRBOT;
-    	else if (num < 7 ) //  4, 5, 6
-    		robotType = RobotType.GARDENBOT;
-    	else if (num < 9 ) //  7, 8
-			robotType = RobotType.CHEFBOT;
-    	else if (num < 10 ) // 9
-			robotType = RobotType.MEDICBOT;
-    	
-    	return robotType;
-    }
     
     /**
      * Creates all configured Robots.
@@ -794,9 +742,11 @@ implements Serializable {
             Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
             addUnit(robot);
             //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
-
+        	//System.out.println("robotType is "+robotType.toString());
+        	
             // Set robot's job (if any).
             String jobName = robotConfig.getConfiguredRobotJob(x);
+            //System.out.println("jobName is "+jobName);
             if (jobName != null) {
                 RobotJob robotJob = JobManager.getRobotJob(jobName);
                 if (robotJob != null) {
@@ -841,6 +791,86 @@ implements Serializable {
     }
 
 
+    /**
+     * Creates initial Robots based on available capacity at settlements.
+     * @throws Exception if Robots can not be constructed.
+     */
+    private void createInitialRobots() {
+
+        // Create configured robots.
+        createConfiguredRobots();
+
+        //RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
+
+        // Randomly create all remaining robots to fill the settlements to capacity.
+        try {
+            Iterator<Settlement> i = getSettlements().iterator();
+            while (i.hasNext()) {
+                Settlement settlement = i.next();
+
+                while (settlement.getCurrentNumOfRobots() < settlement.getInitialNumOfRobots()) {
+                    //System.out.println(" getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
+                    //System.out.println(" getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
+
+                    // Get a robotType randomly
+                	RobotType robotType = getABot();
+                	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                	//System.out.println("robotType is "+robotType.toString());
+                    Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
+                    addUnit(robot);
+                    //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
+                   
+                    
+                    String jobName = RobotJob.getName(robotType);
+                    if (jobName != null) {
+                        RobotJob robotJob = JobManager.getRobotJob(jobName);
+                        //System.out.println("jobName is "+jobName);
+                        if (robotJob != null) {
+                        	robot.getBotMind().setRobotJob(robotJob, true);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
+        }
+    }
+    
+    public RobotType getABot() {
+    	RobotType robotType = null;
+    	boolean hasMedicbot = false;
+    	Robot robot = null;
+    	
+    	// check if the settlement has a medicbot yet
+    	Iterator<Unit> i = units.iterator();
+    	while (i.hasNext()) {
+    		Unit unit = i.next();
+    		if (unit instanceof Robot) { 
+    			robot = (Robot) unit;			
+    			if (robot.getRobotType().equals(RobotType.MEDICBOT)) {
+    				hasMedicbot = true;
+    				break;
+    			}
+    		}
+    	}    	
+    	
+    	int num = RandomUtil.getRandomInt(9); // 0 to 9
+    	if (num < 4) // 0, 1, 2, 3
+    		robotType = RobotType.REPAIRBOT;
+    	else if (num < 7 ) //  4, 5, 6
+    		robotType = RobotType.GARDENBOT;
+    	else if (num < 9 ) //  7, 8
+			robotType = RobotType.CHEFBOT;
+    	else if (!hasMedicbot && num == 9 ) 
+    		// if the settlement does not have a medicbot yet and if num = 9
+			robotType = RobotType.MEDICBOT;
+    	else // if num = 9
+    		robotType = RobotType.REPAIRBOT;
+    	
+    	return robotType;
+    }
+ 
     /**
      * Creates all configured people relationships.
      * @throws Exception if error parsing XML.

@@ -82,7 +82,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-			result += (farm.getGrowingArea() / 10D);
+			result += (farm.getGrowingArea() / 8D); // changed from /10D to /5D
 		}
 
 		return result;	

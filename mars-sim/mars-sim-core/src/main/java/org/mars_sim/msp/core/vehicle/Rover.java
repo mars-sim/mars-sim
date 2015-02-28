@@ -102,6 +102,15 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
 		inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, "Soymilk"));
 
+/*
+		AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
+		inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
+		AmountResource foodWaste = AmountResource.findAmountResource("food waste");
+		inv.addAmountResourceTypeCapacity(foodWaste, config.getCargoCapacity(description, "food waste"));
+		AmountResource toxicWaste = AmountResource.findAmountResource("toxic waste");
+		inv.addAmountResourceTypeCapacity(toxicWaste, config.getCargoCapacity(description, "toxic waste"));
+*/
+		
 		AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 		inv.addAmountResourceTypeCapacity(rockSamples, config.getCargoCapacity(description, "rock samples"));
 		AmountResource ice = AmountResource.findAmountResource("ice");

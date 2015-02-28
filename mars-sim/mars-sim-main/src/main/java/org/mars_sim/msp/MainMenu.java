@@ -10,7 +10,6 @@ package org.mars_sim.msp;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -21,7 +20,7 @@ public class MainMenu {
 	public final static String WINDOW_TITLE = Msg.getString(
 			"MainWindow.title", //$NON-NLS-1$
 			Simulation.VERSION + " build " + Simulation.BUILD + 
-			"  Java VM " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			"  running on Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
 		);
 	
 	// Data members

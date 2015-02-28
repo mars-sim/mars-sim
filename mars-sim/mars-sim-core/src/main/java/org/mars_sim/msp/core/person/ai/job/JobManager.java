@@ -233,8 +233,8 @@ public final class JobManager implements Serializable {
 	
 				if(logger.isLoggable(Level.FINEST)) {
 					if ((newJob != null) && (newJob != originalJob)) 
-						logger.finest(robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType()));
-					else logger.finest(robot.getName() + " keeping old job of " + originalJob.getName(robot.getRobotType()));
+						logger.info(robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType())); // logger.finest(
+					else logger.info(robot.getName() + " keeping old job of " + originalJob.getName(robot.getRobotType()));
 				}	
 			}
 			else newJob = originalJob;
