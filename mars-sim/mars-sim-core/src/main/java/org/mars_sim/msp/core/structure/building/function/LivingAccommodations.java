@@ -7,14 +7,18 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The LivingAccommodations class is a building function for a living accommodations.
@@ -24,14 +28,27 @@ public class LivingAccommodations extends Function implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    /** Mass of water used per person per Sol for bathing, etc. */
+    /* default logger.*/
+ 	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());   
+
+    /** Amount of water in kg used per person per Sol for cleaning, bathing, etc. */
     public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
+    public final static double TOILET_WASTE_PERSON_SOL = .02D;
+    public final static double GREY_WATER_RATIO = .8;
+    public final static double BLACK_WATER_RATIO = .2;
 
     private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
     private int beds;
     private int sleepers;
+	private int solCache = 1;
+    
+    private double washWaterUsagePerPersonPerTime;
 
+    private Settlement settlement;
+    private Inventory inv;
+
+    
     /**
      * Constructor
      * @param building the building this function is for.
@@ -47,6 +64,14 @@ public class LivingAccommodations extends Function implements Serializable {
 
         // Load activity spots
         loadActivitySpots(config.getLivingAccommodationsActivitySpots(building.getBuildingType()));
+        
+        settlement = building.getBuildingManager()
+                .getSettlement();
+ 
+        inv = building.getInventory();
+        
+        washWaterUsagePerPersonPerTime = WASH_WATER_USAGE_PERSON_SOL / 1000D;
+
     }
 
     /**
@@ -133,48 +158,116 @@ public class LivingAccommodations extends Function implements Serializable {
      * @param time amount of time passing (millisols)
      * @throws Exception if error in water usage.
      */
-    public void waterUsage(double time) {
+    //2015-02-27 Modified and renamed to useWater()
+    public void useWater(double time) {
 
-        Settlement settlement = getBuilding().getBuildingManager()
-                .getSettlement();
-        double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
-        double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
+        double waterUsageSettlement = washWaterUsagePerPersonPerTime  * time * settlement.getCurrentPopulationNum();
         double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
         double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
-
-        Inventory inv = getBuilding().getInventory();
-        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-        double waterUsed = waterUsageBuilding;
-        double waterAvailable = inv.getAmountResourceStored(water, false);
-    	// 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(water);
-        if (waterUsed > waterAvailable)
-            waterUsed = waterAvailable;
-        inv.retrieveAmountResource(water, waterUsed);        
-    	// 2015-01-09 addDemandRealUsage()
-       	inv.addAmountDemand(water, waterUsed);
+        double waterUsed = waterUsageBuilding;        
         
-        AmountResource wasteWater = AmountResource
-                .findAmountResource("waste water");
-        double wasteWaterProduced = waterUsed *.95;
-        double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
-                wasteWater, false, false);
-        if (wasteWaterProduced > wasteWaterCapacity)
-            wasteWaterProduced = wasteWaterCapacity;
-        inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
-        // 2015-01-15 Add addSupplyAmount()
-        inv.addAmountSupplyAmount(wasteWater, wasteWaterProduced);
+        retrieveAnResource(org.mars_sim.msp.core.LifeSupport.WATER, waterUsed);
+
+        produceWasteWater(waterUsed);
     }
 
+    /**
+     * Retrieves an resource
+     * @param name
+     * @param requestedAmount
+     */
+    //2015-02-27 Added retrieveAnResource()
+    public void retrieveAnResource(String name, double requestedAmount) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all " + name);
+	        }
+	    	else if (remainingCapacity == 0) {
+	            Settlement settlement = getBuilding().getBuildingManager()
+	                    .getSettlement();
+	    		logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
+	    	}
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    }
+    
+
+    /**
+     * Stores an resource
+     * @param amount
+     * @param name
+     */
+    //2015-02-27 Added storeAnResource()
+    public void storeAnResource(double amount, String name) {
+    	try {
+            AmountResource ar = AmountResource.findAmountResource(name);      
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+
+            if (remainingCapacity < amount) {
+                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+            	amount = remainingCapacity;
+                //logger.info(" storage is full!");
+            }	            
+            // TODO: consider the case when it is full  	            
+            inv.storeAmountResource(ar, amount, true);
+            inv.addAmountSupplyAmount(ar, amount);
+        }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+        }
+    }
+
+
+    /**
+     * Creates and stores black and grey water
+     */  
+    //2015-02-27 Added produceWasteWater()
+    public void produceWasteWater(double waterUsed) {
+        
+        double greyWaterProduced = waterUsed * GREY_WATER_RATIO;
+        double blackWaterProduced = waterUsed * BLACK_WATER_RATIO;             
+        //System.out.println("blackWaterProduced "+ blackWaterProduced);      
+        storeAnResource(greyWaterProduced, "grey water");
+        storeAnResource(blackWaterProduced, "black water");    
+    }	   
+    
     /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
-        waterUsage(time);
+        useWater(time);
+        produceToiletWaste();
     }
 
+
+    /**
+     * Calculates the amount of toilet waste on average for each building having living Accommodation function.
+     */  
+    public void produceToiletWaste() {
+        // calculate toilet waste only once per day
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();       
+        int solElapsed = MarsClock.getSolOfYear(clock);  
+        if (solElapsed != solCache) {
+        	solCache = solElapsed;
+            double amountPerSettlement = TOILET_WASTE_PERSON_SOL * settlement.getCurrentPopulationNum();
+            double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
+            double amountPerBuilding = Math.round(amountPerSettlement * buildingProportionCap*1000.0)/1000.0;
+            retrieveAnResource("toilet tissue", amountPerBuilding);
+            storeAnResource(amountPerBuilding, "toxic waste");
+            //System.out.println("Toilet Toxic Waste "+ amountPerBuilding);    
+        }   
+    }
+    
     /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)

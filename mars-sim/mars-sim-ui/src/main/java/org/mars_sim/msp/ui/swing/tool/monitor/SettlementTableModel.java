@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.07 2014-12-04
+ * @version 3.07 2015-02-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -57,11 +57,12 @@ extends UnitTableModel {
 	private final static int METHANE = 8;
 	
 	private final static int WATER = 9;
-	private final static int WASTE_WATER = 10;
-	private final static int ROCK_SAMPLES = 11;
-	private final static int ICE = 12;
+	private final static int GREY_WATER = 10;
+	private final static int BLACK_WATER = 11;
+	private final static int ROCK_SAMPLES = 12;
+	private final static int ICE = 13;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 13;
+	private final static int COLUMNCOUNT = 14;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -90,8 +91,10 @@ extends UnitTableModel {
 		columnTypes[ROCK_SAMPLES] = Integer.class;
 		columnNames[HYDROGEN] = "Hydrogen";
 		columnTypes[HYDROGEN] = Integer.class;
-		columnNames[WASTE_WATER] = "Waste Water";
-		columnTypes[WASTE_WATER] = Integer.class;
+		columnNames[GREY_WATER] = "Grey Wter";
+		columnTypes[GREY_WATER] = Integer.class;
+		columnNames[BLACK_WATER] = "Black Water";
+		columnTypes[BLACK_WATER] = Integer.class;
 		columnNames[CO2] = "CO2";
 		columnTypes[CO2] = Integer.class;
 		columnNames[ICE] = "Ice";
@@ -195,11 +198,16 @@ extends UnitTableModel {
 							AmountResource.findAmountResource("hydrogen"));
 				} break;
 
-				case WASTE_WATER : {
+				case GREY_WATER : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource("waste water"));
+							AmountResource.findAmountResource("grey water"));
 				} break;
 
+				case BLACK_WATER : {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("black water"));
+				} break;
+				
 				case CO2 : {
 					result = resourceMap.get(
 							AmountResource.findAmountResource("carbon dioxide"));
@@ -250,8 +258,10 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("waste water"))) 
-					tempColumnNum = WASTE_WATER;
+				else if (target.equals(AmountResource.findAmountResource("grey water"))) 
+					tempColumnNum = GREY_WATER;
+				else if (target.equals(AmountResource.findAmountResource("black water"))) 
+					tempColumnNum = BLACK_WATER;
 				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
 					tempColumnNum = ROCK_SAMPLES;
 				else if (target.equals(AmountResource.findAmountResource("ice"))) 
@@ -300,8 +310,10 @@ extends UnitTableModel {
 				resourceMap.put(methane, getResourceStored(newUnit, methane));
 				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
-				AmountResource wasteWater = AmountResource.findAmountResource("waste water");
-				resourceMap.put(wasteWater, getResourceStored(newUnit, wasteWater));
+				AmountResource greyWater = AmountResource.findAmountResource("grey water");
+				resourceMap.put(greyWater, getResourceStored(newUnit, greyWater));
+				AmountResource blackWater = AmountResource.findAmountResource("black water");
+				resourceMap.put(blackWater, getResourceStored(newUnit, blackWater));
 				AmountResource ice = AmountResource.findAmountResource("ice");
 				resourceMap.put(ice, getResourceStored(newUnit, ice));
 				AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");

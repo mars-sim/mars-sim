@@ -13,7 +13,7 @@
 			<ingredient id="3" name="Green Bell Pepper" proportion="0.1"/>				
 		</main-dish>				
 	
-		<main-dish id="1" name="Steamed Green Onion Brown Rice" oil="0.05" salt="0.01" category="meal">					
+		<main-dish id="1" name="Steamed Brown Rice" oil="0.05" salt="0.01" category="meal">					
 			<ingredient id="0" name="Green Onion" proportion="0.2"/>
 			<ingredient id="1" name="Celery" proportion="0.2"/>
 			<ingredient id="2" name="Brown Rice" proportion="0.4"/>

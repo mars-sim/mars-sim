@@ -81,13 +81,13 @@ extends BuildingFunctionPanel {
 		labelPanel.add(cookCapacityLabel);
 
 		// Prepare # of available meal label
-		numMealsCache = kitchen.getNumberOfCookedMeals();
+		numMealsCache = kitchen.getNumberOfAvailableCookedMeals();
 		numMealsLabel = new JLabel(Msg.getString("BuildingPanelCooking.availableMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsLabel);
 
 		// 2015-01-06 Added numMealsTodayLabel
 		// Prepare # of today cooked meal label
-		numMealsTodayCache = kitchen.getNumberOfCookedMealsToday();
+		numMealsTodayCache = kitchen.getTotalNumberOfCookedMealsToday();
 		numMealsTodayLabel = new JLabel(Msg.getString("BuildingPanelCooking.mealsToday", numMealsTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsTodayLabel);
 
@@ -117,7 +117,7 @@ extends BuildingFunctionPanel {
 		}
 
 		int numMeals = 0;
-		numMeals = kitchen.getNumberOfCookedMeals();
+		numMeals = kitchen.getNumberOfAvailableCookedMeals();
 		// Update # of available meals
 		if (numMealsCache != numMeals) {
 			numMealsCache = numMeals;
@@ -126,7 +126,7 @@ extends BuildingFunctionPanel {
 
 		// 2015-01-06 Added numMealsTodayLabel
 		int numMealsToday = 0;
-		numMealsToday = kitchen.getNumberOfCookedMealsToday();
+		numMealsToday = kitchen.getTotalNumberOfCookedMealsToday();
 		// Update # of meals cooked today
 		if (numMealsTodayCache != numMealsToday) {
 			numMealsTodayCache = numMealsToday;

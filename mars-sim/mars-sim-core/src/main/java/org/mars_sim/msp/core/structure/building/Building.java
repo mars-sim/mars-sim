@@ -619,11 +619,9 @@ LocalBoundedObject, InsidePathLocation {
 	 * Gets the heat the building requires for power-down mode.
 	 * @return heat in kJ/s.
 	*/
-	//2014-10-17  Added heat mode
+	//2014-10-17  Added getPoweredDownHeatRequired()
 	public double getPoweredDownHeatRequired() {
-		double result = lifeSupport.getHeating().getFullHeatRequired();
-		
-		return result;
+		return lifeSupport.getHeating().getPoweredDownHeatRequired();
 	}
 
 	/**

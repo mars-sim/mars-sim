@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 
@@ -32,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -203,8 +204,9 @@ implements Serializable {
             	if (dessert != null) {
                    	String nameDessert = dessert.getName();
             		//logger.info( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
+                	retrieveAnResource("napkin", .0025D, kitchen.getBuilding().getInventory());
             	}
-            	else { // if a person does not get a hold of a piece of cooked meal 
+            	else { // if a person does not get a hold of a serving of dessert 
             		
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (dessert == null));
@@ -242,6 +244,35 @@ implements Serializable {
         return 0D; 
     }
 
+    /**
+     * Retrieves an resource
+     * @param name
+     * @param requestedAmount
+     */
+    //2015-02-27 Added retrieveAnResource()
+    public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all " + name + " at " + dessertLocation);
+	        }
+	    	else if (remainingCapacity == 0) {
+	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+	    		//logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
+	    		logger.warning("no more " + name + " at " + dessertLocation);	
+	    	}
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    } 
+    
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.

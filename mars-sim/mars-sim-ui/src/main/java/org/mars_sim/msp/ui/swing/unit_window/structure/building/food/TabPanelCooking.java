@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -133,8 +134,8 @@ private CookingTableModel cookingTableModel;
         	if (building.hasFunction(COOK_MEAL)) {      		
 				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
 				
-				availableMealsCache += kitchen.getNumberOfCookedMeals();				
-				mealsTodayCache += kitchen.getNumberOfCookedMealsToday();
+				availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();				
+				mealsTodayCache += kitchen.getTotalNumberOfCookedMealsToday();
 				cookCapacityCache += kitchen.getCookCapacity();
 				numCooksCache += kitchen.getNumCooks();	
         	}
@@ -148,8 +149,8 @@ private CookingTableModel cookingTableModel;
         	if (building.hasFunction(PREPARE_DESSERT)) {      		
 				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
 				
-				availableDessertsCache += kitchen.getServingsDesserts();				
-				dessertsTodayCache += kitchen.getServingsOfDessertsToday();
+				availableDessertsCache += kitchen.getAvailableServingsDesserts();				
+				dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
         	}
         }
 		// Prepare cooking label panel.
@@ -230,7 +231,60 @@ private CookingTableModel cookingTableModel;
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		JTable table = new JTable(cookingTableModel);
+		JTable table = new JTable(cookingTableModel) {
+		
+        public String getToolTipText(java.awt.event.MouseEvent e) {
+            String personName = null;
+            MarsClock time = null;
+            java.awt.Point p = e.getPoint();
+            int rowIndex = rowAtPoint(p);
+            int colIndex = columnAtPoint(p);
+            
+            java.util.List<CookedMeal> meals;
+			StringBuilder result = new StringBuilder("<html>");
+			
+			try {
+				
+               	result.append("&emsp;&nbsp;Eaten by :&emsp;");
+            	result.append(personName);
+              	result.append("&emsp;&nbsp;Time :&emsp;");
+            	result.append(time);
+				/*
+                    //meals = kitchen.get();
+                    //Crop crop = crops.get(rowIndex);
+                    ////double time;
+                    //double mass0, mass1;
+                    //double water;
+                    //String cropName, cat;
+                    //cropName = crop.getCropType().getName();
+                    //cat = crop.getCropType().getCropCategory();
+                	//mass0 = crop.getCropType().getEdibleBiomass();
+                	//water = 100 * crop.getCropType().getEdibleWaterContent();
+                	//mass1 = crop.getCropType().getInedibleBiomass();
+                	//time = crop.getCropType().getGrowingTime() /1000;
+                	result.append("&emsp;&nbsp;Crop Name:&emsp;");
+                	result.append(cropName);
+                	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;");
+                	result.append(cat);
+                	result.append("<br>&emsp;Edible Mass:&emsp;");
+                	result.append(mass0).append(" kg");
+                	result.append("<br>&nbsp;Inedible Mass:&emsp;");
+                	result.append(mass1).append(" kg");              
+                	result.append("<br>&nbsp;Growing Days:&emsp;");
+                	result.append(time); 
+                	result.append("<br>&nbsp;Water Content:&emsp;");
+                	result.append(water).append(" %"); 	                	
+  */
+	            } catch (RuntimeException e1) {
+	                //catch null pointer exception if mouse is over an empty line
+	            }
+				result.append("</html>");
+				return result.toString();
+	        }
+	        
+		};
+		
+		
 
 		scrollPane.setViewportView(table);
 		table.setCellSelectionEnabled(false);
@@ -351,8 +405,8 @@ private CookingTableModel cookingTableModel;
         	if (building.hasFunction(COOK_MEAL)) {      		
 				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
 				
-				availableMeals += kitchen.getNumberOfCookedMeals();				
-				mealsToday += kitchen.getNumberOfCookedMealsToday();
+				availableMeals += kitchen.getNumberOfAvailableCookedMeals();				
+				mealsToday += kitchen.getTotalNumberOfCookedMealsToday();
 				cookCapacity += kitchen.getCookCapacity();
 				numCooks += kitchen.getNumCooks();
 				mealsReplenishment = settlement.getMealsReplenishmentRate();;
@@ -406,8 +460,8 @@ private CookingTableModel cookingTableModel;
         	if (building.hasFunction(PREPARE_DESSERT)) {      		
 				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
 				
-				availableDesserts += kitchen.getServingsDesserts();				
-				dessertsToday += kitchen.getServingsOfDessertsToday();
+				availableDesserts += kitchen.getAvailableServingsDesserts();				
+				dessertsToday += kitchen.getTotalServingsOfDessertsToday();
 				dessertsReplenishment = settlement.getDessertsReplenishmentRate();
         	}
         }

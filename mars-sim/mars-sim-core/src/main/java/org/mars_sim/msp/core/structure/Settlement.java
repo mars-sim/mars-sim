@@ -76,8 +76,8 @@ implements LifeSupport {
     /** The settlement template name. */
     private String template;
     
-    public double mealsReplenishmentRate = 0.9;
-    public double dessertsReplenishmentRate = 1.1;  
+    public double mealsReplenishmentRate = 0.6;
+    public double dessertsReplenishmentRate = 0.7;  
     
     /** The initial population of the settlement. */
     private int initialPopulation;
