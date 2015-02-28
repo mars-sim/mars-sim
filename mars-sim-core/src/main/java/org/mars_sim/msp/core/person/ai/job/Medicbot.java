@@ -65,11 +65,11 @@ implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = 1D;
 
 		// Add total population / 10
 		int population = settlement.getAllAssociatedPeople().size();
-		result+= population / 10D;
+		result+= population / 15D; // changed from /10D to /15D
 
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);

@@ -69,7 +69,8 @@ implements Serializable {
     private String mealLocation;
     
     private Cooking kitchen;
-
+    private Inventory inv ;
+    
     /** 
      * Constructs a EatMeal object, hence a constructor.
      * @param person the person to perform the task
@@ -105,7 +106,9 @@ implements Serializable {
             }
             
            	else {  // If a cooked meal in a local kitchen available
-    			mealLocation = kitchen.getBuilding().getNickName();
+           		Building building = kitchen.getBuilding();
+           		inv = building.getInventory();
+    			mealLocation = building.getNickName();
            		// grab this cooked meal(either his favorite main dish or the best quality) and tag it for this person
                 meal = kitchen.chooseAMeal(person);
                 if (meal != null) {
@@ -123,6 +126,7 @@ implements Serializable {
 
         if (!walkSite) {
             if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            	mealLocation = person.getContainerUnit().getName();
                 // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -169,7 +173,7 @@ implements Serializable {
     private double eatingPhase(double time) {
         
         PhysicalCondition condition = person.getPhysicalCondition();      
-
+ 
         // If person consumes a cooked meal, stress and fatigue is reduced.
         if (meal != null) {
             setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
@@ -188,7 +192,8 @@ implements Serializable {
                 //String nameMeal = meal.getName();
                 //System.out.println(person + " has just eaten " + nameMeal);
                 // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
-            	retrieveAnResource("napkin", .0025D, kitchen.getBuilding().getInventory());
+            	retrieveAnResource("napkin", .0025D, inv);
+      			storeAnResource("solid waste",.0025D, inv);
                 condition.setHunger(0D);
                 condition.addEnergy(meal.getDryMass());
             }
@@ -232,26 +237,22 @@ implements Serializable {
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
+            
+		 	// 2015-02-06 There is a 10% probability that the preserved food is of no good and must be discarded
+      		// Remove the bad food amount from container unit.
+      		int num = RandomUtil.getRandomInt(9);
+      		if (num == 0) {
+      			//System.out.println("EatMeal. preserved food is bad ");
+      			retrieveAnResource(org.mars_sim.msp.core.LifeSupport.FOOD, foodAmount, inv);
+      			storeAnResource("food waste", foodAmount, inv);
+      		}
+            /*        
             AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
             double foodAvailable = inv.getAmountResourceStored(food, false);
             // 2015-01-09 Added addDemandRequest()
         	inv.addAmountDemandTotalRequest(food);
             if (foodAvailable >= foodAmount) {
-            	
-            	retrieveAnResource("napkin", .0025D, inv);
-            	
-			 	// 2015-02-06 Added addResource()
-	      		int num = RandomUtil.getRandomInt(19);
-	      		if (num == 0){
-		      		// There is a 5% probability that the preserved food is of no good and must be discarded
-		      		// Remove the bad food amount from container unit.
-		            inv.retrieveAmountResource(food, foodAmount);
-		            // 2015-01-09 addDemandUsage()
-		            inv.addAmountDemand(food, foodAmount);
-		            // Trash it as food waste
-		      		kitchen.storeAnResource(foodAmount, "Food Waste", inv);
-	      		}
-				
+		
                 // Remove preserved food amount from container unit.
                 inv.retrieveAmountResource(food, foodAmount);
             	// 2015-01-09 addDemandUsage()
@@ -262,10 +263,17 @@ implements Serializable {
                 throw new Exception(person + " doesn't have enough preserved food to eat in " + containerUnit + 
                         " - food available: " + foodAvailable);
             }
+            */   
+      		
+        	if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        		retrieveAnResource("napkin", .0025D, inv);
+      			storeAnResource("solid waste",.0025D, inv);
+        	}
         }
         else {
             throw new Exception(person + " does not have a container unit to get preserved food from.");
         }
+        
     }
 
 
@@ -280,14 +288,9 @@ implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (remainingCapacity < requestedAmount) {
+	        if (requestedAmount > remainingCapacity ) {
 	     		requestedAmount = remainingCapacity;
-	    		logger.warning("Just used up all " + name + " at " + mealLocation);
-	        }
-	    	else if (remainingCapacity == 0) {
-	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-	    		//logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
-	    		logger.warning("no more " + name + " at " + mealLocation);	
+	     		logger.warning(person + " doesn't have enough " + name + " at " + mealLocation);
 	    	}
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
@@ -298,6 +301,31 @@ implements Serializable {
 	    }
     }    
 
+	// 2015-02-28 Added storeAnResource()
+	public boolean storeAnResource(String name, double amount, Inventory inv) {
+		boolean result = false;
+		try {
+			AmountResource ar = AmountResource.findAmountResource(name);      
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			
+			if (amount > remainingCapacity) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+				result = false;
+			    logger.info(" cannot store more of " + name);
+			}
+			else {
+				inv.storeAmountResource(ar, amount, false); // set to false
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
+		
+		return result;
+	}
+	
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.

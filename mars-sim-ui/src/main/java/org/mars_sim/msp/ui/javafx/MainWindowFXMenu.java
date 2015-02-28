@@ -20,7 +20,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -263,14 +265,72 @@ public class MainWindowFXMenu extends MenuBar  {
         showFullScreenItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-        		showFullScreenItem.setSelected(true);
             	boolean isFullScreen =  mainScene.getStage().isFullScreen();
             	if (!isFullScreen) {
 	            	//mainScene.getStage().sizeToScene();
+            		showFullScreenItem.setSelected(true);
 	            	mainScene.getStage().setFullScreen(true);
+            	}
+            	else { 
+            		showFullScreenItem.setSelected(false);
+	            	mainScene.getStage().setFullScreen(false);
             	}
             }
         });
+
+        volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+            	float oldvolume = desktop.getSoundPlayer().getVolume();
+    			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+            }
+        });
+		
+        volumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+            	float oldvolume = desktop.getSoundPlayer().getVolume();
+    			desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+            }
+        });
+        
+        muteItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			desktop.getSoundPlayer().setMute(muteItem.isSelected());
+            }
+        });
+		
+        aboutItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			desktop.openToolWindow(GuideWindow.NAME);
+    			GuideWindow ourGuide;
+    			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+    			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
+    		}
+        });
+ 
+        tutorialItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			desktop.openToolWindow(GuideWindow.NAME);
+    			GuideWindow ourGuide;
+    			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+    			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+    		}
+        });
+
+        userGuideItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			desktop.openToolWindow(GuideWindow.NAME);
+    			GuideWindow ourGuide;
+    			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+    			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
+    		}
+        });
+		
 	}
 	
 	public void exitFullScreen() {
