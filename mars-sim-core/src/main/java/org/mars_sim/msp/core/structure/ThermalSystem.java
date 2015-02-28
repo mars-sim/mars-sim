@@ -361,7 +361,7 @@ implements Serializable {
 					logger.fine(
 						Msg.getString(
 							"ThermalSystem.log.buildingFullHeatUsed", //$NON-NLS-1$
-							building.getName(),
+							building.getBuildingType(),
 							Double.toString(building.getFullHeatRequired())
 						)
 					);
@@ -383,7 +383,7 @@ implements Serializable {
 					logger.fine(
 						Msg.getString(
 							"ThermalSystem.log.buildingHeatDownHeatUsed", //$NON-NLS-1$
-							building.getName(),
+							building.getBuildingType(),
 							Double.toString(building.getPoweredDownHeatRequired())
 						)
 					);

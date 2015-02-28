@@ -61,11 +61,12 @@ implements Serializable {
     // 2015-01-12 Dynamically adjusted the rate of generating meals 
     //public double mealsReplenishmentRate;
     public static double UP = 0.01;
-    public static double DOWN = 0.004;
+    public static double DOWN = 0.005;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
-    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.01D;
-    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.05D;
+    public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
+    public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
+    public static final double CLEANING_AGENT_PER_SOL = 0.1D;
     
     // amount of water in kg per cooked meal during meal preparation and clean-up
     public static final double WATER_USAGE_PER_MEAL = 1.0D;
@@ -352,11 +353,11 @@ implements Serializable {
      * Gets the number of cooked meals in this facility.
      * @return number of meals
      */
-    public int getNumberOfCookedMeals() {
+    public int getNumberOfAvailableCookedMeals() {
         return cookedMeals.size();
     }
 
-    public int getNumberOfCookedMealsToday() {
+    public int getTotalNumberOfCookedMealsToday() {
         return mealCounterPerSol;
     }
     
@@ -745,7 +746,7 @@ implements Serializable {
     	//TODO: need to move the hardcoded amount to a xml file	    
 	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER, true);
 		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;		
-		storeAnResource(wasteWaterAmount, "waste water", inv);  
+		storeAnResource(wasteWaterAmount, "grey water");  
     }
     
     
@@ -869,11 +870,11 @@ implements Serializable {
 	            	//dailyMealList.add(meal);
 	 	      		try {
 	 	      			i.remove();
-	 	      			// 2015-02-06 Added storeAnResource()
-	 	      			int num = RandomUtil.getRandomInt(9);
-	 	      			if (num == 0) {
-	 	      				// There is a 10% probability that the expired meal is of no good and must be discarded
-	 	      				storeAnResource(dryMassPerServing, "Food Waste", inv);
+		            	// 2015-02-27 The probability that the expired dessert is of no good and must be discarded is also dependent upon the food quality
+		            	double quality = meal.getQuality()/2D + 1D;
+	 	      			double num = RandomUtil.getRandomDouble(8*quality);
+	 	      			if (num < 1) {	 	      				
+	 	      				storeAnResource(dryMassPerServing, "Food Waste");
 			            	logger.info(dryMassPerServing  + " kg " + meal.getName()	 	      				
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
 			                		+ " in " + settlement.getName() );
@@ -894,18 +895,23 @@ implements Serializable {
 		      	        // 2015-01-12 Adjust the rate to go down for each meal
 			  	    	if (rate > 0 ) 
 			  	    		rate -= DOWN;
+				         settlement.setMealsReplenishmentRate(rate);
 	 	      		} catch (Exception e) {}
 	          	}
 	 	      	
 	         }
-	         settlement.setMealsReplenishmentRate(rate);
 	     }
 	     //numOfCookedMealCache = newNumOfCookedMeal; 	
 	     
 	     // 2015-01-12 Added checkEndOfDay()
 	     checkEndOfDay();
     }
-	  
+
+	public boolean storeAnResource(double amount, String name) {
+		Inventory inventory = inv;
+		return storeAnResource(amount, name, inventory);	
+	}
+    
 	// 2015-02-06 Added storeAnResource()
 	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
@@ -936,8 +942,7 @@ implements Serializable {
 	    	 
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();	         
 	    // Added 2014-12-08 : Sanity check for the passing of each day
-	    int newSol = currentTime.getSolOfMonth();
-	    int newMonth = currentTime.getMonth();  
+	    int newSol = currentTime.getSolOfMonth();  
 	    double rate = settlement.getMealsReplenishmentRate();
 	    if ( newSol != solCache) {
 	    	// 2015-01-12 Adjust the rate to go up automatically by default
@@ -948,6 +953,8 @@ implements Serializable {
 	 		mealCounterPerSol = 0;
 	        if (!timeMap.isEmpty()) timeMap.clear();	
 	 		if (!qualityMap.isEmpty()) qualityMap.clear();
+	 		
+	 		cleanUpKitchen();
 	 		
 	       	/*
 	       	// TODO: do we need to clear all desserts by the end of the day?
@@ -982,11 +989,17 @@ implements Serializable {
 	    } // end of if ( newSol != solCache)
 	    
 	}
-    
+
+	// 2015-02-27 Added cleanUpKitchen()
+	public void cleanUpKitchen() {
+		retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorine",  true);
+		retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupport.WATER,  true);				
+	}
+	
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true); 
-		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD, inv);
+		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD);
  	}
 
     /**

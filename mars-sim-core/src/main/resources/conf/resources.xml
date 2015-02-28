@@ -24,12 +24,14 @@
 
 	<resource name="E-Waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
 	<resource name="Food Waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
-	<resource name="Manure" phase="solid" life-support="true">Human feces</resource>
+	<!-- <resource name="Manure" phase="solid" life-support="true">Human feces</resource> -->
 
 	<resource name="Solid Waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
 	<resource name="Toxic Waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
-	<resource name="Waste Water" phase="liquid">Sewage water can be used as crop fertilizer.</resource>
+	<resource name="Grey Water" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
+	<resource name="Black Water" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens. 
+		Need special treatment to be useful.</resource>
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
 -->
@@ -47,7 +49,6 @@
 <!-- Cooking Condiment -->
 	<resource name="Baking Powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
 	<resource name="Epsom Salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="Sodium Hypochlorite" phase="solid" >For sanitization of Soybean.</resource>
 	<resource name="Table Salt" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
 	<resource name="Yeast" phase="solid" edible="true">For making bread.</resource>
 	
@@ -154,11 +155,19 @@
 	<resource name="Regolith" phase="solid">Martian soil</resource>
 	<resource name="Rock Samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="Sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="Sodium Hypochlorite" phase="liquid">Sodium Hypochlorite is one of the bleaching chemical for sanitization of Soybean as well as pulp bleaching during paper making </resource>
 	<resource name="Styrene" phase="solid" />
 	<resource name="Rock Salt" phase="solid">Halite, commonly known as rock salt, is the mineral form of sodium chloride (NaCl). It is typically colorless or white, but may also be light blue, dark blue, purple, pink, red, orange, yellow or gray depending on the amount and type of impurities.</resource>
 
 
-
+<!-- Paper related products. -->
+ 
+	<resource name="pulp" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
+	<resource name="paper" phase="solid" />
+	<resource name="napkin" phase="solid" />
+	<resource name="toilet tissue" phase="solid" />
+	<resource name="bleaching chemical" phase="solid">Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
+	
 
 <!-- Mineral concentrations. -->
 	<resource name="Chalcopyrite" phase="solid" />

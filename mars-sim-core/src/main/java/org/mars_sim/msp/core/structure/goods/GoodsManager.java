@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.08 2015-02-15
+ * @version 3.08 2015-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -645,7 +645,7 @@ public class GoodsManager implements Serializable {
         double demand = 0D;
         
         // Create all farming resources.
-        AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+        AmountResource wasteWater = AmountResource.findAmountResource("grey water");
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
         AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
         

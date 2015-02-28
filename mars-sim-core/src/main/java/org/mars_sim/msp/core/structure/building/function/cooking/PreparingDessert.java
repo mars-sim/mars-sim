@@ -56,7 +56,7 @@ implements Serializable {
     // 2015-01-12 Dynamically adjusted the rate of generating desserts
     //public double dessertsReplenishmentRate;
     public static double UP = 0.01;
-    public static double DOWN = 0.004;
+    public static double DOWN = 0.005;
     //  SERVING_FRACTION also used in GoodsManager
     public static final int NUM_OF_DESSERT_PER_SOL = 4;
     
@@ -230,14 +230,14 @@ implements Serializable {
      * @return true if yes
      */
     public boolean hasFreshDessert() {
-        return (getServingsDesserts() > 0);
+        return (getAvailableServingsDesserts() > 0);
     }
 
     /**
      * Gets the number of cups of fresh dessert in this facility.
      * @return number of servingsOfDessertList
      */
-    public int getServingsDesserts() {
+    public int getAvailableServingsDesserts() {
         return servingsOfDessertList.size();
     }
 
@@ -406,7 +406,7 @@ implements Serializable {
 	        // max allowable # of dessert servings per sol
 	        double maxServings = population * settlement.getDessertsReplenishmentRate() / 10.0;
 	        
-	        int numServings = getServingsDesserts();
+	        int numServings = getAvailableServingsDesserts();
         	//System.out.println("addWork() maxServings : " + maxServings);
         	//System.out.println("addWork() numServings: " + numServings);
 	        //if ( numServingsCache != numServings )numServingsCache = numServings;
@@ -463,6 +463,7 @@ implements Serializable {
 		retrieveAnResource(dryMass, selectedDessert);
 		
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        // TODO: quality also dependent upon the hygiene of a person
         int dessertQuality = getBestDessertSkill();
 
         // Create a serving of dessert and add it into the list
@@ -485,7 +486,7 @@ implements Serializable {
     	//TODO: need to move the hardcoded amount to a xml file	    
 	    retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupport.WATER);
 		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;		
-		storeAnResource(wasteWaterAmount, "waste water");  
+		storeAnResource(wasteWaterAmount, "grey water");  
     }
     
     
@@ -499,7 +500,7 @@ implements Serializable {
     public void timePassing(double time) {
     	boolean hasAServing = hasFreshDessert(); 
     	if ( hasAServing ) {
-    	  int newNumOfServings = getServingsDesserts();
+    	  int newNumOfServings = getAvailableServingsDesserts();
     	  double rate = settlement.getDessertsReplenishmentRate();
           //if ( NumOfServingsCache != newNumOfServings) logger.info("Has " + newNumOfServings +  " Fresh Dessert" );
     		
@@ -513,10 +514,10 @@ implements Serializable {
 	            if (MarsClock.getTimeDiff(dessert.getExpirationTime(), currentTime) < 0D) {	            	   	      
 	            	try {
 		            	i.remove();
-		            	// 2015-02-06 Added storeAnResource()
-	 	      			int num = RandomUtil.getRandomInt(9);
-	 	      			if (num == 0) {
-	 	      				// There is a 10% probability that the expired dessert is of no good and must be discarded
+		            	// 2015-02-27 The probability that the expired dessert is of no good and must be discarded is also dependent upon the food quality
+		            	double quality = dessert.getQuality()/2D + 1D;
+	 	      			double num = RandomUtil.getRandomDouble(8*quality);
+	 	      			if (num < 1) {
 	 	      				storeAnResource(getDryMass(dessert.getName()), "Food Waste");
 	 	      				logger.info(getDryMass(dessert.getName()) + " kg " 
 			                		+ dessert.getName()
@@ -541,11 +542,10 @@ implements Serializable {
 		  	    		// Adjust the rate to go down 
 			  	    	if (rate > 0 ) 
 			  	    		rate -= DOWN; 
-		                  
+			          	settlement.setDessertsReplenishmentRate(rate);  
 	            	} catch (Exception e) {}
 	            } //end of if (MarsClock.getTimeDiff(
 	        } // end of  while (i.hasNext())
-          	settlement.setDessertsReplenishmentRate(rate);
 	      //NumOfServingsCache = newNumOfServings;
     	} // end of if ( hasAServing )
  
@@ -663,7 +663,7 @@ implements Serializable {
 	}
     
     
-    public int getServingsOfDessertsToday() {
+    public int getTotalServingsOfDessertsToday() {
         return dessertCounterPerSol;
     }
     

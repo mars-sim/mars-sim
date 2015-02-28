@@ -34,7 +34,7 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
-	/** Amount of waste water needed per harvest mass. */
+	/** Amount of grey water needed per harvest mass. */
 	public static final double WASTE_WATER_NEEDED = 5D;
 	/** Amount of carbon dioxide needed per harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
@@ -304,24 +304,29 @@ implements Serializable {
 	}
 	
 	
+    /**
+     * Stores an resource
+     * @param amount
+     * @param name
+     */
 	// 2015-02-06 Added storeAnResource()
-	   public void storeAnResource(double amount, String name) {
-	    	try {
-	            AmountResource ar = AmountResource.findAmountResource(name);      
-	            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+    public void storeAnResource(double amount, String name) {
+    	try {
+            AmountResource ar = AmountResource.findAmountResource(name);      
+            double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
 
-	            if (remainingCapacity < amount) {
-	                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-	            	amount = remainingCapacity;
-	                //logger.info(" storage is full!");
-	            }	            
-	            // TODO: consider the case when it is full  	            
-	            inv.storeAmountResource(ar, amount, true);
-	            inv.addAmountSupplyAmount(ar, amount);
-	        }  catch (Exception e) {
-	    		logger.log(Level.SEVERE,e.getMessage());
-	        }
-	    }
+            if (remainingCapacity < amount) {
+                // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+            	amount = remainingCapacity;
+                //logger.info(" storage is full!");
+            }	            
+            // TODO: consider the case when it is full  	            
+            inv.storeAmountResource(ar, amount, true);
+            inv.addAmountSupplyAmount(ar, amount);
+        }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+        }
+    }
 
 	   
 	/**
@@ -433,7 +438,7 @@ implements Serializable {
 		harvestModifier = harvestModifier * temperatureModifier;
 		//System.out.println("Farming.java: temperatureModifier is " + temperatureModifier);
 		
-		// Determine harvest modifier according to amount of waste water available.
+		// Determine harvest modifier according to amount of grey water available.
 
 		double factor = 0;
 		// amount of wastewater/water needed is also based on % of growth
@@ -450,11 +455,11 @@ implements Serializable {
 			
 		double waterUsed = 0;
 		double wasteWaterRequired = factor * maxPeriodHarvest * WASTE_WATER_NEEDED;
-		AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+		AmountResource wasteWater = AmountResource.findAmountResource("grey water");
 		double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater, false);
 		double wasteWaterUsed = wasteWaterRequired;
 		if (wasteWaterUsed > wasteWaterAvailable) {
-			// 2015-01-25 Added diff, waterUsed and consumeWater() when waste water is not available
+			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
 			double diff = wasteWaterUsed - wasteWaterAvailable;
 			waterUsed = consumeWater(diff);
 			wasteWaterUsed = wasteWaterAvailable;

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
@@ -46,7 +47,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -186,7 +187,8 @@ implements Serializable {
                 // Person consumes the cooked meal.
                 //String nameMeal = meal.getName();
                 //System.out.println(person + " has just eaten " + nameMeal);
-               // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
+                // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
+            	retrieveAnResource("napkin", .0025D, kitchen.getBuilding().getInventory());
                 condition.setHunger(0D);
                 condition.addEnergy(meal.getDryMass());
             }
@@ -236,6 +238,8 @@ implements Serializable {
         	inv.addAmountDemandTotalRequest(food);
             if (foodAvailable >= foodAmount) {
             	
+            	retrieveAnResource("napkin", .0025D, inv);
+            	
 			 	// 2015-02-06 Added addResource()
 	      		int num = RandomUtil.getRandomInt(19);
 	      		if (num == 0){
@@ -264,6 +268,35 @@ implements Serializable {
         }
     }
 
+
+    /**
+     * Retrieves an resource
+     * @param name
+     * @param requestedAmount
+     */
+    //2015-02-27 Added retrieveAnResource()
+    public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (remainingCapacity < requestedAmount) {
+	     		requestedAmount = remainingCapacity;
+	    		logger.warning("Just used up all " + name + " at " + mealLocation);
+	        }
+	    	else if (remainingCapacity == 0) {
+	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+	    		//logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
+	    		logger.warning("no more " + name + " at " + mealLocation);	
+	    	}
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    }    
 
     /**
      * Adds experience to the person's skills used in this task.

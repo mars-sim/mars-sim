@@ -144,16 +144,16 @@
 			<!-- when building is in 'power down' mode. -->
 			<resource-processing power-down-level=".5">
 				
-				<!-- Water recycling process for cleaning waste water. -->
+				<!-- Water recycling process for cleaning grey water. -->
 				<process name="Water Recycling" power-required="4.0" default="off">
 				
-					<!-- Waste water influx. -->
+					<!-- grey water influx. -->
 					<!-- resource: the resource added to the process. -->
 					<!-- See resources.xml -->
 					<!-- rate: the rate (kg/sol) the resource is being added to the process. -->
 					<!-- ambient: true if resource is being drown from the external environment, -->
 					<!-- false if resource is being drawn from the settlement's inventory. -->
-					<input resource="Waste Water" rate="100.0" ambient="false" />
+					<input resource="grey water" rate="100.0" ambient="false" />
 					
 					<!-- Clean water outflux. -->
 					<!-- resource: the resource resulting from the process. -->
@@ -190,16 +190,12 @@
 				<!-- resource: the resource that the building can store. -->
 				<!-- See resources.txt -->
 				<!-- capacity: the building's capacity (kg) for the resource. -->
-
-				<resource-storage resource="Nitrogen" capacity="500.0" />				
-				<resource-storage resource="Ammonia" capacity="500.0" />
-				<resource-storage resource="Nitrate" capacity="500.0" />				
-				<resource-storage resource="Nitrite" capacity="500.0" />
-								
-				<resource-storage resource="Waste Water" capacity="500.0" />
-				<resource-storage resource="Solid Waste" capacity="500.0" />
-				<resource-storage resource="Food Waste" capacity="500.0" />
-				
+			
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />				
+				<resource-storage resource="black water" capacity="500.0" />				
+					
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
 				
@@ -217,7 +213,13 @@
 				<resource-storage resource="Fertilizer" capacity="500.0" />
 								
 				<resource-storage resource="Food" capacity="500.0" />
-							
+				
+				<resource-storage resource="toilet tissue" capacity="500.0" />							
+				<resource-storage resource="paper" capacity="500.0" />							
+				<resource-storage resource="napkin" capacity="500.0" />
+				<resource-storage resource="bleaching chemical" capacity="100.0" />							
+				<resource-storage resource="pulp" capacity="500.0" />									
+											
 				<resource-storage resource="Cane Fiber" capacity="500.0" />							
 				<resource-storage resource="Yeast" capacity="500.0" />
 				<resource-storage resource="Epsom Salt" capacity="500.0" />
@@ -262,12 +264,7 @@
 				<!-- resource: the resource initially in the building. -->
 				<!-- See resources.xml -->
 				<!-- amount: the amount (kg) of the resource. -->
-				<resource-initial resource="Nitrogen" amount="100.0" />				
-				<resource-initial resource="Ammonia" amount="100.0" />
-				<resource-initial resource="Nitrate" amount="100.0" />				
-				<resource-initial resource="Nitrite" amount="100.0" />
 				<resource-initial resource="Solid Waste" amount="0.0" />
-				<resource-initial resource="Fertilizer" amount="100.0" />
 				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
@@ -278,7 +275,13 @@
 				<resource-initial resource="Nitrospira spp" amount="20.0" />
 				<resource-initial resource="Rhizobia" amount="20.0" />
 															
-				<resource-initial resource="Food" amount="300.0" />																			
+				<resource-initial resource="Food" amount="300.0" />		
+
+				<resource-initial resource="toilet tissue" amount="100.0" />							
+				<resource-initial resource="paper" amount="100.0" />							
+				<resource-initial resource="napkin" amount="100.0" />	
+				<resource-initial resource="bleaching chemical" amount="50.0" />	
+				<resource-initial resource="pulp" amount="100.0" />																									
 																								
 				<resource-initial resource="Cane Fiber" amount="100.0" />
 				<resource-initial resource="Yeast" amount="50.0" />
@@ -400,9 +403,11 @@
 				<resource-storage resource="Nitrate" capacity="500.0" />				
 				<resource-storage resource="Nitrite" capacity="500.0" />
 				
-				<resource-storage resource="Compost" capacity="500.0" />
+				<resource-storage resource="Soil" capacity="500.0" />				
+				<resource-storage resource="Compost" capacity="500.0" />				
 				<resource-storage resource="Crop Waste" capacity="1000.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />
+			
 								
 				<resource-storage resource="Water" capacity="500.0" />				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
@@ -424,7 +429,13 @@
 				<resource-storage resource="Sugarcane" capacity="100.0" />
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
-									
+
+				<resource-initial resource="Nitrogen" amount="100.0" />				
+				<resource-initial resource="Ammonia" amount="100.0" />
+				<resource-initial resource="Nitrate" amount="100.0" />				
+				<resource-initial resource="Nitrite" amount="100.0" />
+				<resource-initial resource="Fertilizer" amount="100.0" />
+				<resource-initial resource="Soil" amount="200.0" />													
 			</storage>
 					
 			<thermal-generation>
@@ -567,7 +578,7 @@
 					<output resource="Carbon Monoxide" rate="5.25" ambient="true" />
 				</process>
 				<process name="Water Recycling" power-required="40.0" default="off">
-					<input resource="Waste Water" rate="100.0" ambient="false" />
+					<input resource="grey water" rate="100.0" ambient="false" />
 					<output resource="Water" rate="85.0" ambient="false" />
 				</process>
 				<process name="Carbon Scrubbing" power-required="20.0" default="off">
@@ -610,6 +621,27 @@
 					<activity-spot xloc="-2.2" yloc="-3.4" />
 				</activity>
 			</living-accommodations>
+			
+			<storage>
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />				
+				<resource-storage resource="black water" capacity="500.0" />
+
+				<resource-storage resource="Food" capacity="500.0" />
+				
+				<resource-storage resource="toilet tissue" capacity="500.0" />							
+				<resource-storage resource="paper" capacity="500.0" />							
+				<resource-storage resource="napkin" capacity="500.0" />				
+				
+				<resource-initial resource="toilet tissue" amount="100.0" />							
+				<resource-initial resource="paper" amount="100.0" />							
+				<resource-initial resource="napkin" amount="100.0" />																											
+			</storage>
+			
 		</functions> 
 	</building>
 	
@@ -717,7 +749,12 @@
 			<storage>
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
+				
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />				
+				<resource-storage resource="black water" capacity="500.0" />
+				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
 				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
@@ -726,7 +763,11 @@
 				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
 
 				<resource-storage resource="Food" capacity="500.0" />
-							
+				
+				<resource-storage resource="toilet tissue" capacity="500.0" />							
+				<resource-storage resource="paper" capacity="500.0" />							
+				<resource-storage resource="napkin" capacity="500.0" />
+											
 				<resource-storage resource="Cane Fiber" capacity="500.0" />							
 				<resource-storage resource="Yeast" capacity="500.0" />
 				<resource-storage resource="Epsom Salt" capacity="500.0" />
@@ -764,7 +805,12 @@
 				<resource-storage resource="Quinoa" capacity="100.0" />
 				<resource-storage resource="Cranberry" capacity="100.0" />
 				<resource-storage resource="Blueberry" capacity="100.0" />
-																						
+																	
+				<resource-initial resource="toilet tissue" amount="100.0" />							
+				<resource-initial resource="paper" amount="100.0" />							
+				<resource-initial resource="napkin" amount="100.0" />	
+
+																										
 			</storage>
 			
 		</functions>
@@ -906,10 +952,11 @@
 				<resource-storage resource="Ammonia" capacity="1000.0" />
 				<resource-storage resource="Nitrate" capacity="1000.0" />				
 				<resource-storage resource="Nitrite" capacity="1000.0" />
-				
+
+				<resource-storage resource="Soil" capacity="1000.0" />				
 				<resource-storage resource="Compost" capacity="1000.0" />
 				<resource-storage resource="Crop Waste" capacity="1000.0" />
-				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="grey water" capacity="1000.0" />
 				
 				<resource-storage resource="Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
@@ -933,7 +980,14 @@
 				<resource-storage resource="Strawberry" capacity="500.0" />
 				<resource-storage resource="Quinoa" capacity="500.0" />
 				
+				<resource-initial resource="Nitrogen" amount="200.0" />				
+				<resource-initial resource="Ammonia" amount="200.0" />
+				<resource-initial resource="Nitrate" amount="200.0" />				
+				<resource-initial resource="Nitrite" amount="200.0" />
+				<resource-initial resource="Fertilizer" amount="200.0" />
+				<resource-initial resource="Soil" amount="500.0" />						
 			</storage>
+			
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="10.0" />
 				<heat-source type="Electric Heat Source" capacity="30.0" />
@@ -964,7 +1018,7 @@
 			</resource-processing>
 			<storage>
 				<resource-storage resource="Water" capacity="1000.0" />
-				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="grey water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
 				<resource-storage resource="Food" capacity="500.0" />
 			</storage>
@@ -1398,7 +1452,7 @@
 			<storage>
 				<resource-storage resource="Oxygen" capacity="5000.0" />
 				<resource-storage resource="Water" capacity="25000.0" />
-				<resource-storage resource="Waste Water" capacity="2500.0" />
+				<resource-storage resource="grey water" capacity="2500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="2500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
@@ -1590,16 +1644,11 @@
 
 			<storage>			
 				<!-- The building's storage capacity for a variety of resource. -->
-
-				<resource-storage resource="Nitrogen" capacity="500.0" />				
-				<resource-storage resource="Ammonia" capacity="500.0" />
-				<resource-storage resource="Nitrate" capacity="500.0" />				
-				<resource-storage resource="Nitrite" capacity="500.0" />
-				
-				<resource-storage resource="Compost" capacity="500.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
-				<resource-storage resource="Solid Waste" capacity="500.0" />
-				<resource-storage resource="Food Waste" capacity="500.0" />
+								
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />				
+				<resource-storage resource="black water" capacity="500.0" />				
 				
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
@@ -1618,7 +1667,13 @@
 				<resource-storage resource="Fertilizer" capacity="500.0" />
 								
 				<resource-storage resource="Food" capacity="500.0" />
-							
+
+				<resource-storage resource="toilet tissue" capacity="500.0" />							
+				<resource-storage resource="paper" capacity="500.0" />							
+				<resource-storage resource="napkin" capacity="500.0" />
+				<resource-storage resource="bleaching chemical" capacity="100.0" />							
+				<resource-storage resource="pulp" capacity="500.0" />								
+																		
 				<resource-storage resource="Cane Fiber" capacity="500.0" />							
 				<resource-storage resource="Yeast" capacity="500.0" />
 				<resource-storage resource="Epsom Salt" capacity="500.0" />
@@ -1662,12 +1717,7 @@
 																							
 				<!-- The initial resources in the building. -->
 
-				<resource-initial resource="Nitrogen" amount="100.0" />				
-				<resource-initial resource="Ammonia" amount="100.0" />
-				<resource-initial resource="Nitrate" amount="100.0" />				
-				<resource-initial resource="Nitrite" amount="100.0" />
 				<resource-initial resource="Solid Waste" amount="0.0" />
-				<resource-initial resource="Fertilizer" amount="100.0" />
 				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
@@ -1679,7 +1729,13 @@
 				<resource-initial resource="Rhizobia" amount="20.0" />
 															
 				<resource-initial resource="Food" amount="300.0" />																			
-																								
+
+				<resource-initial resource="toilet tissue" amount="100.0" />							
+				<resource-initial resource="paper" amount="100.0" />							
+				<resource-initial resource="napkin" amount="100.0" />	
+				<resource-initial resource="bleaching chemical" amount="50.0" />	
+				<resource-initial resource="pulp" amount="100.0" />									
+																												
 				<resource-initial resource="Cane Fiber" amount="100.0" />
 				<resource-initial resource="Yeast" amount="50.0" />
 				<resource-initial resource="Epsom Salt" amount="50.0" />
@@ -1731,13 +1787,17 @@
 			<life-support capacity="2" power-required="4.0" />
 			<storage>
 				<resource-storage resource="Oxygen" capacity="1000.0" />
-				<resource-storage resource="Water" capacity="5000.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Water" capacity="5000.0" />						
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Methane" capacity="2000.0" />
 				<resource-storage resource="Food" capacity="2000.0" />
+											
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />				
+				<resource-storage resource="black water" capacity="500.0" />				
 
 			</storage>
 		</functions>
@@ -1838,9 +1898,10 @@
 				<resource-storage resource="Nitrate" capacity="500.0" />				
 				<resource-storage resource="Nitrite" capacity="500.0" />
 				
+				<resource-storage resource="Soil" capacity="500.0" />
 				<resource-storage resource="Compost" capacity="500.0" />
-				<resource-storage resource="Crop Waste" capacity="1000.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Crop Waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />
 								
 				<resource-storage resource="Water" capacity="500.0" />				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
@@ -1863,6 +1924,12 @@
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
 									
+				<resource-initial resource="Nitrogen" amount="100.0" />				
+				<resource-initial resource="Ammonia" amount="100.0" />
+				<resource-initial resource="Nitrate" amount="100.0" />				
+				<resource-initial resource="Nitrite" amount="100.0" />
+				<resource-initial resource="Fertilizer" amount="100.0" />
+				<resource-initial resource="Soil" amount="200.0" />											
 
 			</storage>	
 			<thermal-generation>

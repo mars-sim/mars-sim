@@ -80,13 +80,13 @@ extends BuildingFunctionPanel {
 		labelPanel.add(cookCapacityLabel);
 
 		// Prepare serving number label
-		servingsDessertCache = kitchen.getServingsDesserts();
+		servingsDessertCache = kitchen.getAvailableServingsDesserts();
 		servingsDessertLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.availableDesserts", servingsDessertCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertLabel);
 		
 		// 2015-01-06 Added servingsDessertTodayLabel
 		// Prepare servings dessert today label
-		servingsDessertTodayCache = kitchen.getServingsOfDessertsToday();
+		servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
 		servingsDessertTodayLabel = new JLabel(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(servingsDessertTodayLabel);
 
@@ -112,14 +112,14 @@ extends BuildingFunctionPanel {
 		}
 
 		// Update servings of dessert
-		if (servingsDessertCache != kitchen.getServingsDesserts()) {
-			servingsDessertCache = kitchen.getServingsDesserts();
+		if (servingsDessertCache != kitchen.getAvailableServingsDesserts()) {
+			servingsDessertCache = kitchen.getAvailableServingsDesserts();
 			servingsDessertLabel.setText(Msg.getString("BuildingPanelPreparingDessert.availableDesserts", servingsDessertCache)); //$NON-NLS-1$
 		}
 
 		// Update servings of dessert today
-		if (servingsDessertTodayCache != kitchen.getServingsOfDessertsToday()) {
-			servingsDessertTodayCache = kitchen.getServingsOfDessertsToday();
+		if (servingsDessertTodayCache != kitchen.getTotalServingsOfDessertsToday()) {
+			servingsDessertTodayCache = kitchen.getTotalServingsOfDessertsToday();
 			servingsDessertTodayLabel.setText(Msg.getString("BuildingPanelPreparingDessert.dessertsToday", servingsDessertTodayCache)); //$NON-NLS-1$
 		}
 				
