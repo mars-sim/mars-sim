@@ -245,7 +245,12 @@ implements Serializable {
 
 	
 	public void produceMedicalWaste() {
-        Unit containerUnit = person.getContainerUnit();
+	    Unit containerUnit = null;
+		if (person != null) 
+		       containerUnit = person.getContainerUnit();
+		else if (robot != null)
+			containerUnit = robot.getContainerUnit();
+        
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
             storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
