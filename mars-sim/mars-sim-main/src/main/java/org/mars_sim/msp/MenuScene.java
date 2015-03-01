@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * MainMenu.java
+ * MenuScene.java
  * @version 3.08 2015-01-28
  * @author Lars Næsbye Christensen
  */
@@ -39,7 +39,7 @@ public class MenuScene {
         	MainMenu.changeScene(3);
         }
     });
-    Button loadButton = new Button("Load an Autosave Simulation");
+    Button loadButton = new Button("Load an Autosaved Simulation");
     loadButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent arg0) {

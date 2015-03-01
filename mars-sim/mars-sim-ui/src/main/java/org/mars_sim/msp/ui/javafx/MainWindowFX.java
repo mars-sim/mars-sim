@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 /**
  * The MainWindowFX class is the primary JavaFX frame for the project.
- * It replaces the MainWindow class from version 4.0 on.
+ * It replaces the MainWindow class in later versions.
  */
 public class MainWindowFX {
 
