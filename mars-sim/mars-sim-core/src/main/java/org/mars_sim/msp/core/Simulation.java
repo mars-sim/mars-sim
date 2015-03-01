@@ -226,7 +226,6 @@ implements ClockListener, Serializable {
 		mars = new Mars();
 		
 		missionManager = new MissionManager();
-		missionManager.start();
 		
 		relationshipManager = new RelationshipManager();
 		relationshipManager.start();

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.embed.swing.SwingNode;
+
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -144,9 +146,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2015-02-04 Added init()
 	public void init() {
 		
-		if (mainWindow != null) {	
-		}
-		
 		unitWindows = new ArrayList<UnitWindow>();
 		toolWindows = new ArrayList<ToolWindow>();
 		
@@ -169,9 +168,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Initialize firstDisplay to true
 		firstDisplay = true;
 
+		if (mainWindow != null) {
+		}
+		else if (mainScene !=null ) {
+		}
+		
 		// Prepare tool windows.
 		prepareToolWindows();
-
+		
 		// Create update thread.
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
@@ -187,6 +191,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		
 	}
 
+	/*
+	private void createSwingNode1(final SwingNode swingNode) {
+		//desktop = new MainDesktopPane(this);
+        SwingUtilities.invokeLater(() -> {
+            swingNode.setContent(desktop);           
+        });
+    }
+	*/
+	
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * @param announcement the announcement text to display.

@@ -430,12 +430,12 @@
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
 
-				<resource-initial resource="Nitrogen" amount="100.0" />				
-				<resource-initial resource="Ammonia" amount="100.0" />
-				<resource-initial resource="Nitrate" amount="100.0" />				
-				<resource-initial resource="Nitrite" amount="100.0" />
-				<resource-initial resource="Fertilizer" amount="100.0" />
-				<resource-initial resource="Soil" amount="200.0" />													
+				<resource-initial resource="Nitrogen" amount="50.0" />				
+				<resource-initial resource="Ammonia" amount="50.0" />
+				<resource-initial resource="Nitrate" amount="50.0" />				
+				<resource-initial resource="Nitrite" amount="50.0" />
+				<resource-initial resource="Fertilizer" amount="50.0" />
+				<resource-initial resource="Soil" amount="100.0" />													
 			</storage>
 					
 			<thermal-generation>
@@ -980,12 +980,12 @@
 				<resource-storage resource="Strawberry" capacity="500.0" />
 				<resource-storage resource="Quinoa" capacity="500.0" />
 				
-				<resource-initial resource="Nitrogen" amount="200.0" />				
-				<resource-initial resource="Ammonia" amount="200.0" />
-				<resource-initial resource="Nitrate" amount="200.0" />				
-				<resource-initial resource="Nitrite" amount="200.0" />
-				<resource-initial resource="Fertilizer" amount="200.0" />
-				<resource-initial resource="Soil" amount="500.0" />						
+				<resource-initial resource="Nitrogen" amount="100.0" />				
+				<resource-initial resource="Ammonia" amount="100.0" />
+				<resource-initial resource="Nitrate" amount="100.0" />				
+				<resource-initial resource="Nitrite" amount="100.0" />
+				<resource-initial resource="Fertilizer" amount="100.0" />
+				<resource-initial resource="Soil" amount="200.0" />						
 			</storage>
 			
 			<thermal-generation>
@@ -1924,12 +1924,12 @@
 				<resource-storage resource="Strawberry" capacity="100.0" />
 				<resource-storage resource="Quinoa" capacity="100.0" />
 									
-				<resource-initial resource="Nitrogen" amount="100.0" />				
-				<resource-initial resource="Ammonia" amount="100.0" />
-				<resource-initial resource="Nitrate" amount="100.0" />				
-				<resource-initial resource="Nitrite" amount="100.0" />
-				<resource-initial resource="Fertilizer" amount="100.0" />
-				<resource-initial resource="Soil" amount="200.0" />											
+				<resource-initial resource="Nitrogen" amount="50.0" />				
+				<resource-initial resource="Ammonia" amount="50.0" />
+				<resource-initial resource="Nitrate" amount="50.0" />				
+				<resource-initial resource="Nitrite" amount="50.0" />
+				<resource-initial resource="Fertilizer" amount="50.0" />
+				<resource-initial resource="Soil" amount="100.0" />											
 
 			</storage>	
 			<thermal-generation>

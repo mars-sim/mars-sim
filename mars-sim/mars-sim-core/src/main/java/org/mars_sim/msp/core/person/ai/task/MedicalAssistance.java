@@ -416,7 +416,7 @@ implements Serializable {
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
             storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
-            System.out.println("Medical Toxic Waste "+ AVERAGE_MEDICAL_WASTE);  
+            //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);  
 	     }
 	}
 	

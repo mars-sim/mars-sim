@@ -41,8 +41,12 @@ implements Serializable {
 	/** Amount of oxygen needed per harvest mass. */
 	public static final double OXYGEN_NEEDED = 2D;
 	 	
+	public static final double SOIL_NEEDED_PER_SQM = 1D; 
+	
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
-	public static double FERTILIZER_NEEDED = 0.0005D; // 0.5D ;
+	public static double FERTILIZER_NEEDED = 0.001D;  // a very minute amount needed per timePassing() call if grey water is not available
+
+	public static final double FERTILIZER_NEEDED_PER_SQM = 1D; // amount needed when planting a new crop
 	
 	public static final double WATER_RECLAMATION_RATE = .8D;
 	public static final double OXYGEN_GENERATION_RATE = .9D;
@@ -483,10 +487,11 @@ implements Serializable {
 			double o2Required = factor * maxPeriodHarvest * OXYGEN_NEEDED;
 			double o2Available = inv.getAmountResourceStored(o2ar, false);
 			double o2Used = o2Required;
-			if (o2Used > o2Available) {
-				o2Used = o2Available;
-			}					
+			
+			if (o2Used > o2Available) 
+				o2Used = o2Available;								
 			retrieveAnResource(o2ar, o2Used);
+			
 			double o2Modifier =  o2Used / o2Required * .5D + .5D;
 			harvestModifier = harvestModifier * o2Modifier;
 			//System.out.println("Farming.java: o2Modifier is " + o2Modifier);
@@ -503,10 +508,11 @@ implements Serializable {
 			double carbonDioxideRequired = factor * maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
 			double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide, false);
 			double carbonDioxideUsed = carbonDioxideRequired;
-			if (carbonDioxideUsed > carbonDioxideAvailable) {
-				carbonDioxideUsed = carbonDioxideAvailable;
-			}					
-			retrieveAnResource(carbonDioxide, carbonDioxideUsed);								
+			
+			if (carbonDioxideUsed > carbonDioxideAvailable) 
+				carbonDioxideUsed = carbonDioxideAvailable;							
+			retrieveAnResource(carbonDioxide, carbonDioxideUsed);	
+			
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
 			double co2Modifier = carbonDioxideUsed / carbonDioxideRequired * .5D + .5D;
 			harvestModifier = harvestModifier * co2Modifier;
@@ -527,24 +533,33 @@ implements Serializable {
 	 */
 	// 2015-01-25 consumeWater()
 	public double consumeWater(double waterRequired) {
+	
+		/*
 		AmountResource water = AmountResource.findAmountResource("water");
 		double waterAvailable = inv.getAmountResourceStored(water, false);
-		AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
-		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);		
 		double waterUsed = waterRequired;
+		
+		AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
+		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);	
 		double fertilizerUsed = FERTILIZER_NEEDED;
-		if (waterUsed < waterAvailable)
-			retrieveAnResource(water, waterUsed);
-		else 
+		
+		if (waterUsed > waterAvailable)
 			waterUsed = waterAvailable;
-			
-		if (fertilizerUsed < fertilizerAvailable)
-			retrieveAnResource(fertilizer, fertilizerUsed);
-		else
-			fertilizerUsed = fertilizerAvailable;			
-			//TODO: if not enough fertilizer is available
-			// should it send out an alert and/or have impact in crop growing?	
-	    return waterUsed;
+		
+		retrieveAnResource(water, waterUsed);		
+		
+		if (fertilizerUsed >= fertilizerAvailable)
+			fertilizerUsed = fertilizerAvailable;	
+		
+		retrieveAnResource(fertilizer, fertilizerUsed);	
+
+		*/
+		
+		double amountFertilizer = retrieveAnResource("fertilizer", FERTILIZER_NEEDED);	
+		//System.out.println("fertilizer used when grey water is not available: " + amountFertilizer);
+		double amountWater = retrieveAnResource("water", waterRequired);
+		
+	    return amountWater;
 	}
 	
 	/**
@@ -563,6 +578,33 @@ implements Serializable {
 	        logger.log(Level.SEVERE,e.getMessage());
 		}
 	}
+	   /**
+     * Retrieves the resource
+     * @param name
+     * @parama requestedAmount
+     */
+    //2015-02-28 Added retrieveAnResource()
+    public double retrieveAnResource(String name, double requestedAmount) {
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (amountStored < requestedAmount) {
+	     		requestedAmount = amountStored;
+	    		logger.warning("Just used up all " + name);
+	        }
+	    	else if (amountStored < 0.00001)
+	    		logger.warning("no more " + name + " in " + settlement.getName());
+	    	else {
+	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		inv.addAmountDemand(nameAR, requestedAmount);
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    	
+    	return requestedAmount;
+    }
 	
 	/**
 	 * Gets a random crop type.

@@ -286,11 +286,16 @@ implements Serializable {
     public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (requestedAmount > remainingCapacity ) {
-	     		requestedAmount = remainingCapacity;
+	        if (requestedAmount > amountStored ) {
+	     		requestedAmount = amountStored;
 	     		logger.warning(person + " doesn't have enough " + name + " at " + mealLocation);
+	    	}
+	    	else if (amountStored < 0.00001) {
+	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+	    		//logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
+	    		logger.warning("no more " + name + " at " + mealLocation);	
 	    	}
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);

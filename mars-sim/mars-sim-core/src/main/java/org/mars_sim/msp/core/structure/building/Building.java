@@ -277,11 +277,11 @@ LocalBoundedObject, InsidePathLocation {
      */
 	//2014-10-23  Added getInitialTemperature()
     public double getInitialTemperature() {
-    	double result;
+    	//double result;
 		//if (config.hasFarming(buildingType))
-		if (buildingType == "Inflatable Greenhouse"
-				|| buildingType == "Large Greenhouse"
-				||	buildingType == "Inground Greenhouse" )
+		if (buildingType.equals("Inflatable Greenhouse")
+				|| buildingType.equals("Large Greenhouse")
+				||	buildingType.equals("Inground Greenhouse") )
 			return GREENHOUSE_TEMPERATURE;
 		else
             return ROOM_TEMPERATURE;

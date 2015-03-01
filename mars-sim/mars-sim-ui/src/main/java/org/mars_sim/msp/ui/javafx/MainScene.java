@@ -147,12 +147,13 @@ public class MainScene {
 		createSwingNode1(swingNode1);
 
         menuBar = new MainWindowFXMenu(this, desktop);
- 
+
+        
 	    HBox statusBar = new HBox();	    
 	    statusBar.setAlignment(Pos.BASELINE_RIGHT);
 	    statusBar.setStyle("-fx-background-color: gainsboro");
         //statusBar.setAlignment(Pos.CENTER);
-        statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt; -fx-border-color:grey;");  
+        statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt; -fx-border-color:grey; -fx-font: 14 arial; -fx-base: #cce6ff;");  
 	    //statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() + 10);
 	    //statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth()  + 10);
 
