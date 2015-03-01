@@ -670,7 +670,14 @@ public class GoodsManager implements Serializable {
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
                 else if (resource.equals(fertilizer))
                 	amountNeeded = Crop.FERTILIZER_NEEDED;
+                // Crop.FERTILIZER_NEEDED = 0.001D // a very minute amount needed per timePassing() call if grey water is not available
 
+                // TODO: how to account for the new Crop.FERTILIZER_NEEDED_PER_SQM 
+
+                // Crop.FERTILIZER_NEEDED_PER_SQM = 1D // average amount needed when planting a new crop
+                
+                // assuming each crop occupies on average 10 sq meter. a crop has on average 60 growing days....
+ 
                 // 2014-11-30 Created getFarmingTotalDemand()
 //                demand += getFarmingTotalDemand(cropValueList, farm, amountNeeded);
                 demand += getFarmingTotalDemand(farm, amountNeeded);

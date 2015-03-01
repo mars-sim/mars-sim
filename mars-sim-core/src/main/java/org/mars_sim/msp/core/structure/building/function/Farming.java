@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2015-02-26
+ * @version 3.08 2015-02-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 // 2014-11-29 Added harvesting crops to turn into corresponding amount resource having the same name as the crop's name
 // 2014-12-09 Added crop queue
 // 2015-02-16 Added Germination phase and custom growing area
+// 2015-02-28 Added soil usage (and changed fertilizer usage) based on sq meter
 public class Farming
 extends Function
 implements Serializable {
@@ -50,7 +51,7 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
     
-    private static final double AVERAGE_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
+    private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
 
     private Inventory inv;
     private Settlement settlement;
@@ -100,9 +101,7 @@ implements Serializable {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = Crop.getNewCrop("0");   	
         	Crop crop = plantACrop(cropType, false, 0);     	
-            crops.add(crop);            
-            // Retrieves the fertilizer and add to the soil for the crop
-            provideFertilizer();          
+            crops.add(crop);                   
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
         }  
         
@@ -138,7 +137,26 @@ implements Serializable {
     	//logger.info(cropType.getName() + " : max possible harvest : " + Math.round(maxHarvestinKg*100.0)/100.0 + " kg");
         crop = new Crop(cropType, cropArea, maxHarvestinKg, this, settlement, isNewCrop);
         
+        // 2015-01-14 Added fertilizer to the soil for the new crop
+        provideFertilizer(cropArea, isNewCrop);   
+        // 2015-02-28 Replaced some amount of old soil with new soil  
+        provideNewSoil(cropArea, isNewCrop);
+
     	return crop;
+    }
+    
+    /**
+     * Retrieves new soil when planting new crop
+     */
+    // 2015-02-28 provideNewSoil()
+    public void provideNewSoil(double cropArea, boolean isNewCrop) {
+        // 2015-02-28 Replaced some amount of old soil with new soil  
+        if (isNewCrop) {
+        	double rand = RandomUtil.getRandomDouble(2);
+        	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
+        	retrieveAnResource("soil", amount );
+        	storeAnResource(amount, "crop waste");
+        }
     }
     
     public Building getBuilding() {
@@ -148,12 +166,14 @@ implements Serializable {
     /**
      * Retrieves the fertilizer and add to the soil when planting the crop
      */
-    //2015-01-14 provideFertilizer()
-    public void provideFertilizer() {
-	    String name = "fertilizer";
-		//TODO: need to move the hardcoded amount to a xml file
-		double requestedAmount = Crop.FERTILIZER_NEEDED;
-	    retrieveAnResource(name, requestedAmount);    
+    //2015-02-28 Modified provideFertilizer()
+    public void provideFertilizer(double cropArea, boolean isNewCrop) {
+        if (isNewCrop) {
+        	double rand = RandomUtil.getRandomDouble(2);
+        	double amount = Crop.FERTILIZER_NEEDED_PER_SQM * cropArea / 10D * rand;
+        	retrieveAnResource("fertilizer", amount );
+    		//System.out.println("fertilizer used in planting a new crop : " + amount);
+        }
     }
     
     /**
@@ -165,13 +185,13 @@ implements Serializable {
     public void retrieveAnResource(String name, double requestedAmount) {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (remainingCapacity < requestedAmount) {
-	     		requestedAmount = remainingCapacity;
+	        if (amountStored < requestedAmount) {
+	     		requestedAmount = amountStored;
 	    		logger.warning("Just used up all " + name);
 	        }
-	    	else if (remainingCapacity == 0)
+	    	else if (amountStored < 0.00001)
 	    		logger.warning("no more " + name + " in " + settlement.getName());
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
@@ -475,7 +495,7 @@ implements Serializable {
             //System.out.println("Farming timePassing() : calling plantACrop()");
           	Crop crop = plantACrop(cropType, true, 0);          	
             crops.add(crop);            
-            provideFertilizer();           
+            
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
         
@@ -492,7 +512,7 @@ implements Serializable {
 	public void produceDailyTendingCropWaste() {		
 		double rand = RandomUtil.getRandomDouble(2);		
 		// add a randomness factor
-		double amountCropWaste = AVERAGE_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
+		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
 		storeAnResource(amountCropWaste, "Crop Waste");	    
 	}
 	
@@ -505,7 +525,7 @@ implements Serializable {
             if (remainingCapacity < amount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	amount = remainingCapacity;
-                //logger.info(" storage is full!");
+                logger.info(" storage is full!");
             }	            
             // TODO: consider the case when it is full  	            
             inv.storeAmountResource(ar, amount, true);

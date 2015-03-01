@@ -180,13 +180,13 @@ public class LivingAccommodations extends Function implements Serializable {
     public void retrieveAnResource(String name, double requestedAmount) {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (remainingCapacity < requestedAmount) {
-	     		requestedAmount = remainingCapacity;
+	        if (amountStored < requestedAmount) {
+	     		requestedAmount = amountStored;
 	    		logger.warning("Just used up all " + name);
 	        }
-	    	else if (remainingCapacity == 0) {
+	    	else if (amountStored < 0.00001) {
 	            Settlement settlement = getBuilding().getBuildingManager()
 	                    .getSettlement();
 	    		logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	

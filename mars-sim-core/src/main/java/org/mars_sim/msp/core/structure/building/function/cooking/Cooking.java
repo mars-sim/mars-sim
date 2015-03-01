@@ -770,14 +770,14 @@ implements Serializable {
     	boolean result = false;
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (remainingCapacity < requestedAmount) {
-	     		//requestedAmount = remainingCapacity;
+	        if (amountStored < requestedAmount) {
+	     		//requestedAmount = amountStored;
 	    		//logger.warning("Not enough " + name + " for making a meal.");
 	    		result = false;
 	        }
-	    	else if (Math.round(remainingCapacity*10000.0)/10000.0 < 0.0001) {
+	    	else if (Math.round(amountStored*10000.0)/10000.0 < 0.0001) {
 	    		//logger.warning("no more " + name + " in " + settlement.getName());
 	    		result = false;
 	    	}

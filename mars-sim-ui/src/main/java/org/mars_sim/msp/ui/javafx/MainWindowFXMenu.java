@@ -19,6 +19,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Priority;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

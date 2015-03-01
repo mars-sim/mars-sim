@@ -583,13 +583,13 @@ implements Serializable {
     public void retrieveAnResource(double requestedAmount, String name) {
     	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double remainingCapacity = inv.getAmountResourceStored(nameAR, false);
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (remainingCapacity < requestedAmount) {
-	     		requestedAmount = remainingCapacity;
+	        if (amountStored < requestedAmount) {
+	     		requestedAmount = amountStored;
 	    		logger.warning("Just used up all " + name);
 	        }
-	    	else if (remainingCapacity == 0) {
+	    	else if (amountStored  < 0.00001) {
 	    		logger.warning("no more " + name + " in " + settlement.getName());
 	    	}
 	    	else {

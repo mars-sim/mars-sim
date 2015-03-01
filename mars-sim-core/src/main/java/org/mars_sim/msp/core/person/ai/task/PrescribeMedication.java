@@ -11,9 +11,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -23,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -43,7 +47,9 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
-	
+
+	private static final double AVERAGE_MEDICAL_WASTE = .1;
+    
     /** Task phases. */
     private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
             "Task.phase.medicating")); //$NON-NLS-1$
@@ -222,6 +228,8 @@ implements Serializable {
                     if (!condition.hasMedication(medication.getName())) {
                         // Medicate patient.
                         condition.addMedication(medication);
+                        
+                        produceMedicalWaste();
                     }
                 }
                 else throw new IllegalStateException("medication is null");
@@ -234,6 +242,42 @@ implements Serializable {
         
         return 0D;
     }
+
+	
+	public void produceMedicalWaste() {
+        Unit containerUnit = person.getContainerUnit();
+        if (containerUnit != null) {
+            Inventory inv = containerUnit.getInventory();
+            storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
+            //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);  
+	     }
+	}
+	
+	   
+	// 2015-02-06 Added storeAnResource()
+	public boolean storeAnResource(double amount, String name, Inventory inv) {
+		boolean result = false;
+		try {
+			AmountResource ar = AmountResource.findAmountResource(name);      
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+				result = false;
+			    //logger.info("addHarvest() : storage is full!");
+			}
+			else {
+				inv.storeAmountResource(ar, amount, true);
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
+		
+		return result;
+	}	    
     
     @Override
     protected void addExperience(double time) {
