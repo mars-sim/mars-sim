@@ -570,9 +570,9 @@ public class GoodsManager implements Serializable {
         return vehicles;
     }
 
-  
-    // 2014-11-30 Created getValueList()    		
-    public List<Double> getValueList(List<AmountResource> cropARList) {
+/*  
+    // 2014-11-30 Created getCropValueList()    		
+    public List<Double> getCropValueList(List<AmountResource> cropARList) {
     	
     	double cropValue = 0;
     	List<Double> cropValueList = new ArrayList<Double>();
@@ -607,12 +607,13 @@ public class GoodsManager implements Serializable {
 
     	return cropARList;
     }
+ */
     
     // 2014-11-30 Created getFarmingTotalDemand()
 //    public double getFarmingTotalDemand(List<Double> cropValueList, Farming farm, double amountNeeded) {
 //    	double demand = 0;
 //
-//    	Iterator<Double> i = cropValueList.iterator();
+//    	Iterator<Double> i = cropCropValueList.iterator();
 //    	
 //    	while (i.hasNext()) {	
 //    		double cropValue = i.next();

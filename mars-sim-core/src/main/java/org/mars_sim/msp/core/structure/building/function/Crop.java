@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.08 2015-02-14
+ * @version 3.08 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+
 
 /**
  * The Crop class is a food crop grown on a farm.
@@ -95,6 +96,7 @@ implements Serializable {
 	private Farming farm;
 	/** The settlement the crop is located at. */
 	private Settlement settlement;
+
 	/**
 	 * Constructor.
 	 * @param cropType the type of crop.
@@ -111,7 +113,7 @@ implements Serializable {
 		this.farm = farm;
 		this.settlement = settlement;
 		this.growingArea = growingArea;
-
+		
 		inv = settlement.getInventory();
 		
 		// Determine work required.
@@ -605,32 +607,8 @@ implements Serializable {
     	
     	return requestedAmount;
     }
-	
-	/**
-	 * Gets a random crop type.
-	 * @return crop type
-	 * @throws Exception if crops could not be found.
-	 */
-   	// 2014-12-09 Added new param cropInQueue and changed method name to getNewCrop()
-	public static CropType getNewCrop(String cropInQueue) {
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		List<CropType> cropTypes = cropConfig.getCropList();
-		//cropTypeList = cropTypes;
-		if (cropInQueue.equals("0")) {
-			int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
-			return cropTypes.get(r);
-		} else {
-			CropType crop = null;
-			Iterator<CropType> i = cropTypes.iterator();
-			while (i.hasNext()) {
-				CropType c = i.next();
-				if (c.getName() == cropInQueue)
-					crop = c;
-			}
-			return crop;	
-		}
-	}
 
+	
 	/**
 	 * Gets the average growing time for a crop.
 	 * @return average growing time (millisols)

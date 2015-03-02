@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.08 2015-02-28
+ * @version 3.08 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -26,6 +26,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -57,6 +59,8 @@ implements Serializable {
     private Settlement settlement;
     private Building building;
     private BeeGrowing beeGrowing;
+	private GoodsManager goodsManager;
+	
     
     private int cropNum;
 	private int solCache = 1;
@@ -70,6 +74,7 @@ implements Serializable {
   	// 2014-12-09 Added cropInQueue, cropListInQueue
     private String cropInQueue;
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
+    private List<CropType> cropTypeList = new ArrayList<CropType>();
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
 
     
@@ -85,21 +90,25 @@ implements Serializable {
         this.building = building;
         this.inv = building.getInventory();
         this.settlement = building.getBuildingManager().getSettlement();
-        
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
-        cropNum = config.getCropNum(building.getBuildingType());
-        powerGrowingCrop = config.getPowerForGrowingCrop(building.getBuildingType());
-        powerSustainingCrop = config.getPowerForSustainingCrop(building.getBuildingType());
-        maxGrowingArea = config.getCropGrowingArea(building.getBuildingType());
+		this.goodsManager = settlement.getGoodsManager();
+		
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
+        powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
+        maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
         remainingGrowingArea = maxGrowingArea;
         
+        
+    	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+		cropTypeList = cropConfig.getCropList();	
+        cropNum = buildingConfig.getCropNum(building.getBuildingType());
+        
         // Load activity spots
-        loadActivitySpots(config.getFarmingActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
  
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
-        	CropType cropType = Crop.getNewCrop("0");   	
+        	CropType cropType = getNewCrop("0", false);   	
         	Crop crop = plantACrop(cropType, false, 0);     	
             crops.add(crop);                   
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
@@ -108,7 +117,60 @@ implements Serializable {
         // 2015-02-18 Created BeeGrowing
         beeGrowing = new BeeGrowing(this);
     }
-    
+ 
+	
+	/**
+	 * Gets a random crop type.
+	 * @return crop type
+	 * @throws Exception if crops could not be found.
+	 */
+   	// 2014-12-09 Added new param cropInQueue and changed method name to getNewCrop()
+    // 2015-03-02 Added highest VP crop selection
+	public CropType getNewCrop(String cropInQueue, boolean isInitialCrop) {
+		CropType crop = null;
+		List<CropType> cropTypes = cropTypeList;
+		if (cropInQueue.equals("0")) {
+			if (!isInitialCrop) {
+				int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
+				crop = cropTypes.get(r);
+			}
+			else 
+				crop = selectHighestDemandCropType();	
+		} else {
+			Iterator<CropType> i = cropTypes.iterator();
+			while (i.hasNext()) {
+				CropType c = i.next();
+				if (c.getName() == cropInQueue)
+					crop = c;
+			}	
+		}
+		return crop;
+	}
+	
+    // 2015-03-02 Added selectHighestDemandCropType()
+	public CropType selectHighestDemandCropType() {
+		CropType highestDemandCropType = null;
+		double highestCropVP = 0;
+		List<CropType> cropCache = new ArrayList<CropType>(cropTypeList);
+		Iterator<CropType> i = cropCache.iterator();
+		while (i.hasNext()) {
+			CropType c = i.next();
+			String cropName = c.getName();
+			AmountResource ar = AmountResource.findAmountResource(cropName);
+			double cropVP = getCropValue(ar);
+			if (cropVP >= highestCropVP) {
+				highestCropVP = cropVP;
+				highestDemandCropType = c;
+			}
+		}
+		return highestDemandCropType;
+	}
+	
+	// 2015-03-02 Added	getCropValue()
+    public double getCropValue(AmountResource resource) {
+    	double cropValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));		
+    	return cropValue;
+    }   
     
     // 2015-02-15 added plantACrop()
     public Crop plantACrop(CropType cropType, boolean isNewCrop, double designatedGrowingArea) {
@@ -489,8 +551,7 @@ implements Serializable {
         			break; // remove the first entry only
         		}
           	} else
-        		// TODO: put in the crop with highest demand into getNewCrop()
-        		cropType = Crop.getNewCrop("0"); //
+        		cropType = getNewCrop("0", true); 
  
             //System.out.println("Farming timePassing() : calling plantACrop()");
           	Crop crop = plantACrop(cropType, true, 0);          	
