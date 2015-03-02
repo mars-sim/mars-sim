@@ -60,6 +60,7 @@ implements Serializable {
 	public MissionManager() {
 		// Initialize cache values.
 		personCache = null;
+		robotCache = null;
 		timeCache = null;
 		totalProbCache = 0D;
 
@@ -135,7 +136,16 @@ implements Serializable {
 		}
 		return result;
 	}
-
+	public Mission getMission(Robot robot) {
+		Mission result = null;
+		for (Mission tempMission : missions) {
+			if (tempMission.hasRobot(robot)) {
+				result = tempMission;
+			}
+		}
+		return result;
+	}
+	
 	/** 
 	 * Adds a new mission to the mission list.
 	 * @param newMission new mission to be added
@@ -260,13 +270,6 @@ implements Serializable {
 
 		return result;
 	}
-
-
-	/** 
-	 * Gets a new mission for a person based on potential missions available.
-	 * @param person person to find the mission for 
-	 * @return new mission
-	 */
 	public Mission getNewMission(Robot robot) {
 		Mission result = null;
 		// If cache is not current, calculate the probabilities.

@@ -15,8 +15,8 @@ public enum MissionEventType {
 	MIN_ROBOTS_EVENT			("minimum robots"),
 	ASSOCIATED_SETTLEMENT_EVENT	("associated settlement"),
 	CAPACITY_EVENT				("capacity"),
-	ADD_MEMBER_EVENT			("remove member"),
-	REMOVE_MEMBER_EVENT			("add member"),
+	ADD_MEMBER_EVENT			("add member"),
+	REMOVE_MEMBER_EVENT			("remove member"),
 	END_MISSION_EVENT			("end mission"),
 
 	// from Exploration.java

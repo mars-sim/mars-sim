@@ -297,7 +297,7 @@ public final class JobManager implements Serializable {
 		return bestProspect;
 	}
 	
-	public static double getBestJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
+	public static double getBestRobotJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
 		double bestProspect = Double.MIN_VALUE;
 		Iterator<RobotJob> i = getRobotJobs().iterator();
 		while (i.hasNext()) {

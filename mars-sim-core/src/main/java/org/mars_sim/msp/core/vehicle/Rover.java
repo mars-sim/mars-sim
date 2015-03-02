@@ -449,7 +449,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	       // 2015-01-04 Added Soymilk
     	// Check dessert capacity as range limit.
     	AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-    	double dessertConsumptionRate = config.getFoodConsumptionRate() / 6D;
+    	double dessertConsumptionRate = config.getDessertConsumptionRate();
     	double dessertCapacity = getInventory().getAmountResourceCapacity(dessert, false);
     	double dessertSols = dessertCapacity / (dessertConsumptionRate * crewCapacity);
     	double dessertRange = distancePerSol * dessertSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -63,6 +64,8 @@ implements Serializable {
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
+    private static final double FOOD_RESERVE_FACTOR = 1.5D;
+    
 	/** Task phases. */
     private static final TaskPhase LOADING = new TaskPhase(Msg.getString(
             "Task.phase.loading")); //$NON-NLS-1$
@@ -133,7 +136,46 @@ implements Serializable {
     		endTask();
     	}
     }
-    
+	public LoadVehicleGarage(Robot robot) {
+    	// Use Task constructor
+    	super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
+    	
+    	VehicleMission mission = getMissionNeedingLoading();
+    	if (mission != null) {
+    		vehicle = mission.getVehicle();
+    		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
+    		        vehicle.getName())); //$NON-NLS-1$
+    		requiredResources = mission.getRequiredResourcesToLoad();
+    		optionalResources = mission.getOptionalResourcesToLoad();
+    		requiredEquipment = mission.getRequiredEquipmentToLoad();
+    		optionalEquipment = mission.getOptionalEquipmentToLoad();
+    		settlement = robot.getSettlement();
+    		if (settlement == null) {
+    		    endTask();
+    		}
+    		
+    		// If vehicle is in a garage, add robot to garage.
+            Building garageBuilding = BuildingManager.getBuilding(vehicle);
+            if (garageBuilding != null) {
+                
+                // Walk to garage.
+                walkToActivitySpotInBuilding(garageBuilding, false);
+            }
+            
+            // End task if vehicle or garage not available.
+            if ((vehicle == null) || (garageBuilding == null)) {
+                endTask();    
+            }
+    		
+    		// Initialize task phase
+            addPhase(LOADING);
+            setPhase(LOADING);
+    	}
+    	else {
+    		endTask();
+    	}
+    }
+	
     /**
      * Constructor
      * @param person the person performing the task.
@@ -169,6 +211,43 @@ implements Serializable {
         settlement = person.getSettlement();
         
         // If vehicle is in a garage, add person to garage.
+        Building garage = BuildingManager.getBuilding(vehicle);
+        if (garage != null) {
+            
+            // Walk to garage.
+            walkToActivitySpotInBuilding(garage, false);
+        }
+        
+        // Initialize task phase
+        addPhase(LOADING);
+        setPhase(LOADING);
+    }
+    public LoadVehicleGarage(Robot robot, Vehicle vehicle, Map<Resource, Number> requiredResources, 
+            Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment, 
+            Map<Class, Integer> optionalEquipment) {
+    	// Use Task constructor.
+    	super("Loading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
+    	
+    	setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
+                vehicle.getName())); //$NON-NLS-1$
+        this.vehicle = vehicle;
+        
+        if (requiredResources != null) {
+            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+        }
+        if (optionalResources != null) {
+            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+        }
+        if (requiredEquipment != null) {
+            this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
+        }
+        if (optionalEquipment != null) {
+            this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        }
+        
+        settlement = robot.getSettlement();
+        
+        // If vehicle is in a garage, add robot to garage.
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage != null) {
             
@@ -229,8 +308,11 @@ implements Serializable {
     private VehicleMission getMissionNeedingLoading() {
     	
     	VehicleMission result = null;
-    	
-    	List<Mission> loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());
+    	List<Mission> loadingMissions = null;
+		if (person != null) 
+	   		loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());			
+		else if (robot != null)    	
+    		loadingMissions = getAllMissionsNeedingLoading(robot.getSettlement());
     	
     	if (loadingMissions.size() > 0) {
     		int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
@@ -276,9 +358,12 @@ implements Serializable {
     		endTask();
     		return 0D;
     	}
-    	
+        int strength = 0;
         // Determine load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+		if (person != null) 
+	       	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+		else if (robot != null)        
+        	strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time;
         
@@ -854,8 +939,8 @@ implements Serializable {
 
     	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
     	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
-    	else if (resource.equals(soymilk)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate()/6D;
+    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate()  * FOOD_RESERVE_FACTOR;
+    	else if (resource.equals(soymilk)) amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * FOOD_RESERVE_FACTOR;
     	
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }
