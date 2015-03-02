@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarageMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -72,13 +72,35 @@ public class LoadVehicleGarageMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+		return new LoadVehicleGarage(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+        
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
+                result = 50D * missions.size();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+        
+        // Job modifier.
+        //Job job = robot.getMind().getJob();
+       // if (job != null)
+        //    result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
+        
+    
+        return result;
+    }
 }

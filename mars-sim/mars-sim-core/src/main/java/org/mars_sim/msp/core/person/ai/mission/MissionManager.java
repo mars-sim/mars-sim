@@ -52,6 +52,7 @@ implements Serializable {
 	private transient Robot robotCache;
 	private transient MarsClock timeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
+	private transient Map<MetaMission, Double> robotMissionProbCache;
 	private transient double totalProbCache;
 
 	/** 
@@ -68,6 +69,7 @@ implements Serializable {
 		missions = new ArrayList<Mission>(0);
 		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
+		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
 	
 
@@ -290,10 +292,10 @@ implements Serializable {
 
 		// Determine which mission is selected.
 		MetaMission selectedMetaMission = null;
-		Iterator<MetaMission> i = missionProbCache.keySet().iterator();
+		Iterator<MetaMission> i = robotMissionProbCache.keySet().iterator();
 		while (i.hasNext() && (selectedMetaMission == null)) {
 			MetaMission metaMission = i.next();
-			double probWeight = missionProbCache.get(metaMission);
+			double probWeight = robotMissionProbCache.get(metaMission);
 			if (r <= probWeight) {
 				selectedMetaMission = metaMission;
 			} 
@@ -444,24 +446,24 @@ implements Serializable {
 	}
 
 	private void calculateProbability(Robot robot) {
-		if (missionProbCache == null) {
-			missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
+		if (robotMissionProbCache == null) {
+			robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 		}
 
 		// Clear total probabilities.
 		totalProbCache = 0D;
 
 		// Determine probabilities.
-		Iterator<MetaMission> i = MetaMissionUtil.getMetaMissions().iterator();
+		Iterator<MetaMission> i = MetaMissionUtil.getRobotMetaMissions().iterator();
 		while (i.hasNext()) {
 			MetaMission metaMission = i.next();
 			double probability = metaMission.getProbability(robot);
 			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				missionProbCache.put(metaMission, probability);
+				robotMissionProbCache.put(metaMission, probability);
 				totalProbCache += probability;
 			}
 			else {
-				missionProbCache.put(metaMission, 0D);
+				robotMissionProbCache.put(metaMission, 0D);
 				logger.severe(robot.getName() + " bad mission probability: " +  metaMission.getName() + 
 						" probability: " + probability);
 			}
@@ -516,5 +518,10 @@ implements Serializable {
 			missionProbCache.clear();
 			missionProbCache = null;
 		}
+		if (robotMissionProbCache != null) {
+			robotMissionProbCache.clear();
+			robotMissionProbCache = null;
+		}
+		
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarageMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 
 /**
@@ -73,13 +74,38 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new UnloadVehicleEVA(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+        
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                int numVehicles = 0;
+                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+                result = 50D * numVehicles;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+        
+        // Job modifier.
+        //Job job = person.getMind().getJob();
+        //if (job != null) {
+         //   result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
+        //}
+    
+        return result;
+    }
 }

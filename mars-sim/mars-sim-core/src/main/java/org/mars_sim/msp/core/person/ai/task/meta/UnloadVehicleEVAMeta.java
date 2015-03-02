@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -98,13 +98,59 @@ public class UnloadVehicleEVAMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+		return new UnloadVehicleEVA(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	     
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                int numVehicles = 0;
+                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+                result = 50D * numVehicles;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
+        }
+
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+                result = 0D;
+            }
+        } 
+
+        // Crowded settlement modifier
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = robot.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+        }
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+
+        // Job modifier.
+        //Job job = person.getMind().getJob();
+        //if (job != null)
+        //    result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);        
+        
+
+        return result;
+    }
 }
