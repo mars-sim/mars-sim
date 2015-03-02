@@ -139,7 +139,8 @@ implements Serializable {
 		//Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource(LifeSupport.FOOD));
 		//double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 		//result *= foodValue;
-
+		//System.out.println("getSettlementNeed() : result is " + result);
+	    
 		return result;	
 	}
 

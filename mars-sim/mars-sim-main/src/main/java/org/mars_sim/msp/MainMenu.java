@@ -20,7 +20,7 @@ public class MainMenu {
 	public final static String WINDOW_TITLE = Msg.getString(
 			"MainWindow.title", //$NON-NLS-1$
 			Simulation.VERSION + " build " + Simulation.BUILD + 
-			"  running on Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			"  running Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
 		);
 	
 	// Data members

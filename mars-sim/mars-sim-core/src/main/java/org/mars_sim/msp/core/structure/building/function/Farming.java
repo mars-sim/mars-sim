@@ -417,6 +417,7 @@ implements Serializable {
             workTimeRemaining = needyCrop.addWork(workTimeRemaining);
         }
 
+        //System.out.println("addWork() : workTimeRemaining is " + workTimeRemaining);
         return workTimeRemaining;
     }
 

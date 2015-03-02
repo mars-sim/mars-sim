@@ -310,9 +310,6 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index) {
-		//String s = getValueAsString(index,NAME);
-		//alphaCrewName.add(s);
-		//return s;	
 		if (alphaCrewName != null)
 			return alphaCrewName.get(index) ;
 		else 

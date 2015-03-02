@@ -25,9 +25,9 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private List<String> alphaCrewRobotName; // = new ArrayList<String>();
-	private List<String> alphaCrewRobotType; // = new ArrayList<String>();
-	private List<String> alphaCrewRobotJob; //  = new ArrayList<String>();
+	private List<String> alphaRobotCrewName; // = new ArrayList<String>();
+	private List<String> alphaRobotCrewType; // = new ArrayList<String>();
+	private List<String> alphaRobotCrewJob; //  = new ArrayList<String>();
 	
 	// Element names
 	private static final String ROBOT_NAME = "name";
@@ -171,8 +171,8 @@ implements Serializable {
 		//String s = getValueAsString(index,TYPE);
 		//alphaCrewName.add(s);
 		//return s;	
-		if (alphaCrewRobotName != null)
-			return alphaCrewRobotName.get(index) ;
+		if (alphaRobotCrewName != null)
+			return alphaRobotCrewName.get(index) ;
 		else 
 			return getValueAsString(index,ROBOT_TYPE);
 	}
@@ -194,19 +194,19 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredRobotJob(int index) {
-		if (alphaCrewRobotJob != null)
-			return alphaCrewRobotJob.get(index) ;
+		if (alphaRobotCrewJob != null)
+			return alphaRobotCrewJob.get(index) ;
 		else
 			return getValueAsString(index,JOB);
 	}
 
 	public void setRobotName(int index, String value) {
-		if (alphaCrewRobotName == null) 
-			alphaCrewRobotName = new ArrayList<String>(4);
-		if (alphaCrewRobotName.size() == 4) {
-			alphaCrewRobotName.set(index, value);
+		if (alphaRobotCrewName == null) 
+			alphaRobotCrewName = new ArrayList<String>(4);
+		if (alphaRobotCrewName.size() == 4) {
+			alphaRobotCrewName.set(index, value);
 		} else
-			alphaCrewRobotName.add(value);
+			alphaRobotCrewName.add(value);
 	}
 /*
 	public void setPersonPersonality(int index, String value) {
@@ -219,12 +219,12 @@ implements Serializable {
 	}
 */
 	public void setRobotJob(int index,String value) {
-		if (alphaCrewRobotJob == null)  
-			alphaCrewRobotJob = new ArrayList<String>(4);
-		if (alphaCrewRobotJob.size() == 4) {
-			alphaCrewRobotJob.set(index, value);
+		if (alphaRobotCrewJob == null)  
+			alphaRobotCrewJob = new ArrayList<String>(4);
+		if (alphaRobotCrewJob.size() == 4) {
+			alphaRobotCrewJob.set(index, value);
 		} else
-			alphaCrewRobotJob.add(value);
+			alphaRobotCrewJob.add(value);
 	}
 	
 
@@ -249,13 +249,10 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredRobotName(int index) {
-		String s = getValueAsString(index,ROBOT_NAME);
-		//alphaCrewName.add(s);
-		return s;	
-		//if (alphaCrewName != null)
-		//	return alphaCrewName.get(index) ;
-		//else 
-		//	return getValueAsString(index,ROBOT_NAME);
+		if (alphaRobotCrewName != null)
+			return alphaRobotCrewName.get(index) ;
+		else 
+			return getValueAsString(index,ROBOT_NAME);
 	}
 
 	/**
@@ -265,8 +262,8 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public RobotType getConfiguredRobotType(int index) {
-		if (alphaCrewRobotType != null)
-			return RobotType.valueOfIgnoreCase(alphaCrewRobotType.get(index)) ;
+		if (alphaRobotCrewType != null)
+			return RobotType.valueOfIgnoreCase(alphaRobotCrewType.get(index)) ;
 		else 
 			return RobotType.valueOfIgnoreCase(getValueAsString(index, ROBOT_TYPE));
 	}
@@ -351,14 +348,14 @@ implements Serializable {
             nameList = null;
         }
         
-        if (alphaCrewRobotName != null) {
-            alphaCrewRobotName.clear();
-            alphaCrewRobotName = null;
+        if (alphaRobotCrewName != null) {
+            alphaRobotCrewName.clear();
+            alphaRobotCrewName = null;
         }
         
-        if (alphaCrewRobotJob != null) {
-            alphaCrewRobotJob.clear();
-            alphaCrewRobotJob = null;
+        if (alphaRobotCrewJob != null) {
+            alphaRobotCrewJob.clear();
+            alphaRobotCrewJob = null;
         }
     }
 }

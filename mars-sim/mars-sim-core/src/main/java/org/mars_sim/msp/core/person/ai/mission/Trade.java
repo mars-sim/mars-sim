@@ -598,7 +598,20 @@ implements Serializable {
             performTradeEmbarkingPhase(person);
         }
     }
-
+    protected void performPhase(Robot robot) {
+        super.performPhase(robot);
+        if (TRADE_DISEMBARKING.equals(getPhase())) {
+            performTradeDisembarkingPhase(robot);
+        } else if (TRADE_NEGOTIATING.equals(getPhase())) {
+            performTradeNegotiatingPhase(robot);
+        } else if (UNLOAD_GOODS.equals(getPhase())) {
+            performUnloadGoodsPhase(robot);
+        } else if (LOAD_GOODS.equals(getPhase())) {
+            performLoadGoodsPhase(robot);
+        } else if (TRADE_EMBARKING.equals(getPhase())) {
+            performTradeEmbarkingPhase(robot);
+        }
+    }
     /**
      * Performs the trade disembarking phase.
      * @param person the person performing the mission.
@@ -644,7 +657,47 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
+    private void performTradeDisembarkingPhase(Robot robot) {
 
+        // If rover is not parked at settlement, park it.
+        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+
+            tradingSettlement.getInventory().storeUnit(getVehicle());
+            getVehicle().determinedSettlementParkedLocationAndFacing();
+
+            // Add vehicle to a garage if available.
+            BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), tradingSettlement);
+        }
+
+        // Have robot exit rover if necessary.
+        if (robot.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+            
+            // Get random inhabitable building at trading settlement.
+            Building destinationBuilding = tradingSettlement.getBuildingManager().
+                    getRandomAirlockBuilding();
+            if (destinationBuilding != null) {
+                Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+                        destinationLoc.getY(), destinationBuilding);
+                
+                if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+                    assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+                }
+                else {
+                    logger.severe("Unable to walk to building " + destinationBuilding);
+                }
+            }
+            else {
+                logger.severe("No inhabitable buildings at " + tradingSettlement);
+                endMission("No inhabitable buildings at " + tradingSettlement);
+            }
+        }
+
+        // End the phase when everyone is out of the rover.
+        if (isNoOneInRover()) {
+            setPhaseEnded(true);
+        }
+    }
     /**
      * Perform the trade negotiating phase.
      * @param person the person performing the phase.
@@ -694,7 +747,51 @@ implements Serializable {
             TRADE_PROFIT_CACHE.remove(getStartingSettlement());
         }
     }
+    private void performTradeNegotiatingPhase(Robot robot) {
+        if (doNegotiation) {
+            if (robot == getMissionRobotTrader()) {
+                if (negotiationTask != null) {
+                    if (negotiationTask.isDone()) {
+                        buyLoad = negotiationTask.getBuyLoad();
+                        profit = estimateTradeProfit(buyLoad);
+                        fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+                        setPhaseEnded(true);
+                    }
+                } 
+                else {
+                    if (startNegotiationTime == null) {
+                        startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+                    }
+                    Robot settlementTrader = getSettlementRobotTrader();
+                    if (settlementTrader != null) {
+                        negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), 
+                                sellLoad, robot, settlementTrader);
+                        assignTask(robot, negotiationTask);
+                    } 
+                    else {
+                        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+                        double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
+                        if (timeDiff > 1000D) {
+                            buyLoad = new HashMap<Good, Integer>(0);
+                            profit = 0D;
+                            fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+                            setPhaseEnded(true);
+                        }
+                    }
+                }
+            }
+        } else {
+            setPhaseEnded(true);
+        }
 
+        if (getPhaseEnded()) {
+            outbound = false;
+            equipmentNeededCache = null;
+            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
+                    getStartingSettlement().getName()));
+            TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+        }
+    }
     /**
      * Perform the unload goods phase.
      * @param person the person performing the phase.
@@ -730,7 +827,37 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
+    private void performUnloadGoodsPhase(Robot robot) {
 
+        // Unload towed vehicle (if necessary).
+        unloadTowedVehicle();
+
+        // Unload rover if necessary.
+        boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
+        if (!roverUnloaded) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                // Random chance of having robot unload (this allows robot to do other things sometimes)
+                if (RandomUtil.lessThanRandPercent(50)) {
+                    if (isRoverInAGarage()) {
+                        assignTask(robot, new UnloadVehicleGarage(robot, getRover()));
+                    }
+                    else {
+                        // Check if it is day time.
+                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                        if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+                                surface.inDarkPolarRegion(robot.getCoordinates())) {
+                            assignTask(robot, new UnloadVehicleEVA(robot, getRover()));
+                        }
+                    }
+
+                    return;
+                }
+            }
+        } 
+        else {
+            setPhaseEnded(true);
+        }
+    }
     /**
      * Performs the load goods phase.
      * @param person the person performing the phase.
@@ -772,7 +899,43 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
+    private void performLoadGoodsPhase(Robot robot) {
 
+        if (!isDone()) {
+
+            // Load towed vehicle (if necessary).
+            loadTowedVehicle();
+        }
+
+        if (!isDone() && !isVehicleLoaded()) {
+
+            // Check if vehicle can hold enough supplies for mission.
+            if (isVehicleLoadable()) {
+                if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                    // Random chance of having robot load (this allows robot to do other things sometimes)
+                    if (RandomUtil.lessThanRandPercent(50)) {
+                        if (isRoverInAGarage()) {
+                            assignTask(robot, new LoadVehicleGarage(robot, getVehicle(), getRequiredResourcesToLoad(),
+                                    getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                        }
+                        else {
+                            // Check if it is day time.
+                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                            if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+                                    surface.inDarkPolarRegion(robot.getCoordinates())) {
+                                assignTask(robot, new LoadVehicleEVA(robot, getVehicle(), getRequiredResourcesToLoad(),
+                                        getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                            }
+                        }
+                    }
+                }
+            } else {
+                endMission("Vehicle is not loadable (RoverMission).");
+            }
+        } else {
+            setPhaseEnded(true);
+        }
+    }
     /**
      * Unload any towed vehicles.
      */
@@ -861,7 +1024,56 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
+    private void performTradeEmbarkingPhase(Robot robot) {
 
+        // If robot is not aboard the rover, board rover.
+        if (!isDone() && robot.getLocationSituation() != LocationSituation.IN_VEHICLE && 
+                robot.getLocationSituation() != LocationSituation.BURIED) {
+
+            // Move robot to random location within rover.
+            Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                    vehicleLoc.getY(), getVehicle());
+            if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+                assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+            }
+            else {
+                logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
+                endMission(robot.getName() + " unable to enter rover " + getVehicle());
+            }
+            
+            if (!isDone() && isRoverInAGarage()) {
+
+                // Store one EVA suit for robot (if possible).
+                if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
+                    EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
+                    if (getVehicle().getInventory().canStoreUnit(suit, false)) {
+                        tradingSettlement.getInventory().retrieveUnit(suit);
+                        getVehicle().getInventory().storeUnit(suit);
+                    }
+                    else {
+                        endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
+                        return;
+                    }
+                }
+            }
+        }
+
+        // If rover is loaded and everyone is aboard, embark from settlement.
+        if (!isDone() && isEveryoneInRover()) {
+
+            // Remove from garage if in garage.
+            Building garageBuilding = BuildingManager.getBuilding(getVehicle());
+            if (garageBuilding != null) {
+                VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                garage.removeVehicle(getVehicle());
+            }
+
+            // Embark from settlement
+            tradingSettlement.getInventory().retrieveUnit(getVehicle());
+            setPhaseEnded(true);
+        }
+    }
     /** 
      * Performs the embark from settlement phase of the mission.
      * @param person the person currently performing the mission
@@ -884,7 +1096,24 @@ implements Serializable {
             }
         }
     }
+    protected void performEmbarkFromSettlementPhase(Robot robot) {
+        super.performEmbarkFromSettlementPhase(robot);
 
+        if (!isDone() && (getRover().getTowedVehicle() == null)) {
+            String vehicleType = getLoadVehicleType(false);
+            if (vehicleType != null) {
+                Vehicle sellVehicle = getInitialLoadVehicle(vehicleType, false);
+                if (sellVehicle != null) {
+                    sellVehicle.setReservedForMission(true);
+                    getRover().setTowedVehicle(sellVehicle);
+                    sellVehicle.setTowingVehicle(getRover());
+                    getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
+                } else {
+                    endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+                }
+            }
+        }
+    }
     /**
      * Performs the disembark to settlement phase of the mission.
      * @param person the person currently performing the mission.
@@ -904,7 +1133,21 @@ implements Serializable {
 
         super.performDisembarkToSettlementPhase(person, disembarkSettlement);
     }
+    protected void performDisembarkToSettlementPhase(Robot robot, Settlement disembarkSettlement) {
 
+        // Unload towed vehicle if any.
+        if (!isDone() && (getRover().getTowedVehicle() != null)) {
+            Vehicle towed = getRover().getTowedVehicle();
+            towed.setReservedForMission(false);
+            getRover().setTowedVehicle(null);
+            towed.setTowingVehicle(null);
+            disembarkSettlement.getInventory().storeUnit(towed);
+            towed.determinedSettlementParkedLocationAndFacing();
+        }
+
+        super.performDisembarkToSettlementPhase(robot, disembarkSettlement);
+    }
+    
     @Override
     public void endMission(String reason) {
         super.endMission(reason);
@@ -1057,7 +1300,17 @@ implements Serializable {
         }
         return false;
     }
-
+    protected boolean isCapableOfMission(Robot robot) {
+        if (super.isCapableOfMission(robot)) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (robot.getSettlement() == getStartingSettlement()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     @Override
     protected void recruitPeopleForMission(Person startingPerson) {
         super.recruitPeopleForMission(startingPerson);
@@ -1129,6 +1382,22 @@ implements Serializable {
 
         return bestTrader;
     }
+    private Robot getMissionRobotTrader() {
+    	Robot bestTrader = null;
+        int bestTradeSkill = -1;
+
+        Iterator<Robot> i = getRobots().iterator();
+        while (i.hasNext()) {
+        	Robot robot = i.next();
+            int tradeSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+            if (tradeSkill > bestTradeSkill) {
+                bestTradeSkill = tradeSkill;
+                bestTrader = robot;
+            }
+        }
+
+        return bestTrader;
+    }
 
     /**
      * Gets the trader and the destination settlement for the mission.
@@ -1152,7 +1421,24 @@ implements Serializable {
 
         return bestTrader;
     }
+    private Robot getSettlementRobotTrader() {
+    	Robot bestTrader = null;
+        int bestTradeSkill = -1;
 
+        Iterator<Robot> i = tradingSettlement.getRobots().iterator();
+        while (i.hasNext()) {
+        	Robot robot = i.next();
+            if (!getRobots().contains(robot)) {
+                int tradeSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+                if (tradeSkill > bestTradeSkill) {
+                    bestTradeSkill = tradeSkill;
+                    bestTrader = robot;
+                }
+            }
+        }
+
+        return bestTrader;
+    }
     /**
      * Gets the load that is being sold in the trade.
      * @return sell load.

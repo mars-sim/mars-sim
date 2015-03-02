@@ -93,11 +93,11 @@ public class TendGreenhouseMeta implements MetaTask {
         //if (robotJob != null) 
         //    result = robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
         if (robot.getBotMind().getRobotJob() instanceof Gardenbot)
-        //System.out.println(robot.getName() + " : TendGreenhouse  : " + result);
         
         //if (result > 0 ) // if task penalty is not zero
         	
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            //System.out.println(robot.getBotMind().getRobotJob().toString());
 	        	result += 100D;
 	            try {
 	                // See if there is an available greenhouse.
@@ -120,10 +120,9 @@ public class TendGreenhouseMeta implements MetaTask {
 	            
 	            // Effort-driven task modifier.
 	            result *= robot.getPerformanceRating();
+	            //System.out.println("probability is " + result);
 	        }
-
-        
-        // System.out.println("probability is " + result);
+       
         return result;
 	}
 }

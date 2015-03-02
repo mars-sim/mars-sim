@@ -61,9 +61,10 @@ implements Serializable {
 		StringBuffer key = new StringBuffer().append("job."); //$NON-NLS-1$
 		switch (robotType) {
 			case CHEFBOT : key.append("chefBot"); break; //$NON-NLS-1$
+			case DELIVERYBOT : key.append("deliveryBot"); break; //$NON-NLS-1$			
 			case GARDENBOT : key.append("gardenBot"); break; //$NON-NLS-1$
+			case MEDICBOT : key.append("medicBot"); break; //$NON-NLS-1$			
 			case REPAIRBOT : key.append("repairBot"); break; //$NON-NLS-1$
-			case MEDICBOT : key.append("medicBot"); break;
 			default : key.append("bot"); break; //$NON-NLS-1$
 		}
 		//key.append(jobClass.getSimpleName());

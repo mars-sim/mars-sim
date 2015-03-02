@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.08 2015-02-27
+ * @version 3.08 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.goods;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,8 +63,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -130,9 +127,8 @@ public class GoodsManager implements Serializable {
     private static final double FARMING_FACTOR = 1D;
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
     private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 1000D;
-    //  SERVING_FRACTION was used in PreparingDessert.java
-    public final double FRACTION = PreparingDessert.DESSERT_SERVING_FRACTION;
-    
+    private static final double REGOLITH_INPUT_FACTOR = 1000D;
+       
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH; 
     
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
@@ -377,6 +373,10 @@ public class GoodsManager implements Serializable {
             
             // Add construction site demand.
             projectedDemand += getResourceConstructionSiteDemand(resource);
+
+            // 2015-03-02 Added REGOLITH_INPUT_FACTOR adjustment
+            if (r.equals("regolith"))
+            	projectedDemand *=  REGOLITH_INPUT_FACTOR;
 
             // Revert back to projectedDemand per sol for calculating totalDemand
             // This demand never gets changed back to per orbit, so I'm commenting 
@@ -863,6 +863,7 @@ public class GoodsManager implements Serializable {
             
             demand = (1D / totalItems) * totalInputsValue;
 //            if (r.equals(resource_name)) System.out.println("demand : " + demand);
+            
         }
 
 
@@ -962,34 +963,23 @@ public class GoodsManager implements Serializable {
      * @param resource the amount resource.
      * @return demand (kg)
      */
+
     private double getResourceDessertDemand(AmountResource resource) {
+    	
         double demand = 0D;
-        // 2015-01-03 Added more food dessert item
-        String [] dessert = { 	"Soymilk",
-        						"Sugarcane Juice",
-        						"Strawberry",
-        						"Granola Bar",
-        						"Blueberry Muffin", 
-        						"Cranberry Juice"  };
-        
+        // 2015-03-02 Used PreparingDessert.getArrayOfDesserts()
+        String[] dessert = PreparingDessert.getArrayOfDesserts();        
+        //List<String> dessertList = PreparingDessert.getAListOfDesserts();
         String dessertName = resource.getName();
         boolean hasDessert = false;
         
-        for(String n : dessert) {
-        	if (n.equalsIgnoreCase(dessertName)) {
+        for(String n : dessert) 
+        	if (n.equalsIgnoreCase(dessertName))
         		hasDessert = true;
-        	}
-        }	
         
-        if (hasDessert) {
-        	
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();      
-
-            // see PrepareDessert.java for the number of dessert served per sol
-            //final double NUM_OF_DESSERT_PER_SOL = 3D;
-            
-            // Note: getFoodConsumptionRate has already been used by meal
-            double amountNeededSol = config.getFoodConsumptionRate() * FRACTION / dessert.length;
+        if (hasDessert) {	
+            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();         
+            double amountNeededSol = config.getDessertConsumptionRate() / dessert.length;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * DESSERT_FACTOR;

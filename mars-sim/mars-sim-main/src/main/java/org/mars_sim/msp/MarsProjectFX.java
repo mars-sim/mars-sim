@@ -9,12 +9,9 @@ package org.mars_sim.msp;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.awt.Cursor;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,8 +23,6 @@ import javax.swing.JOptionPane;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 /**
@@ -48,7 +43,7 @@ public class MarsProjectFX extends Application  {
 
 	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
     private Image img;
-    private final static String IMAGE_DIR = "/images/";
+    //private final static String IMAGE_DIR = "/images/";
     
     /**
      * Constructor
@@ -57,7 +52,9 @@ public class MarsProjectFX extends Application  {
 
     public void start(Stage primaryStage) {
 
-        logger.info("Starting Mars Simulation Project FX");
+        logger.info("Starting Mars Simulation Project FX (" +
+    			Simulation.VERSION + " build " + Simulation.BUILD + 
+    			" running Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion() + ")");
         /*
         Button btn = new Button();
         btn.setText("Say 'Hello Mars-simmers!'");

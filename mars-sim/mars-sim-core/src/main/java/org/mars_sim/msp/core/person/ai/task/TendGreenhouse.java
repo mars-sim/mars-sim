@@ -165,14 +165,15 @@ implements Serializable {
         }
 
         double workTime = 0;
+        double factor = 2D;
         
 		if (person != null) {			
-	        workTime = time;
+	        workTime = time * factor;
 		}
 		else if (robot != null) {
 		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
 			// should it incurs penalty on workTime?
-			workTime = time;
+			workTime = time * factor;
 		}
 
         // Determine amount of effective work time based on "Botany" skill
@@ -186,7 +187,8 @@ implements Serializable {
 
         // Add this work to the greenhouse.
         greenhouse.addWork(workTime);
-
+        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+        
         // Add experience
         addExperience(time);
 
@@ -300,7 +302,7 @@ implements Serializable {
                 	selected = RandomUtil.getRandomInt(size-1);         
                 	result = buildings.get(selected);
                 }
-                //System.out.println("selected is "+selected); 
+                //System.out.println("getAvailableGreenhouse() : selected is "+selected); 
             }
         }
         return result;
@@ -348,7 +350,7 @@ implements Serializable {
                 }
             }
         }
-
+        //System.out.println("getCropsNeedingTending() : result is " + result); 
         return result;
     }
 
