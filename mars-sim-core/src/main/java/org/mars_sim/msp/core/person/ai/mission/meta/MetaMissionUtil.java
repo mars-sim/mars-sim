@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaMissionUtil.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -16,7 +16,7 @@ public class MetaMissionUtil {
 
     // Static values.
     private static List<MetaMission> metaMissions = null;
-    
+    private static List<MetaMission> robotMetaMissions = null;
     /**
      * Private constructor for utility class.
      */
@@ -43,6 +43,14 @@ public class MetaMissionUtil {
         metaMissions.add(new TradeMeta());
         metaMissions.add(new TravelToSettlementMeta());
     }
+    private static void initializeRobotMetaMissions() {
+        
+        robotMetaMissions = new ArrayList<MetaMission>(12);
+        
+        // Populate robotMetaMissions list with all meta missions.
+        robotMetaMissions.add(new TradeMeta());
+        robotMetaMissions.add(new TravelToSettlementMeta());
+    }    
     
     /**
      * Gets a list of all meta missions.
@@ -57,5 +65,15 @@ public class MetaMissionUtil {
         
         // Return copy of meta mission list.
         return new ArrayList<MetaMission>(metaMissions);
+    }
+    public static List<MetaMission> getRobotMetaMissions() {
+        
+        // Lazy initialize meta missions list if necessary.
+        if (robotMetaMissions == null) {
+            initializeRobotMetaMissions();
+        }
+        
+        // Return copy of meta mission list.
+        return new ArrayList<MetaMission>(robotMetaMissions);
     }
 }
