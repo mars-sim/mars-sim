@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.07 2015-02-27
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -39,6 +39,7 @@ implements Serializable {
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
+	private static final String DESSERT_CONSUMPTION_RATE = "dessert-consumption-rate";
 	private static final String OXYGEN_DEPRIVATION_TIME = "oxygen-deprivation-time";
 	private static final String WATER_DEPRIVATION_TIME = "water-deprivation-time";
 	private static final String FOOD_DEPRIVATION_TIME = "food-deprivation-time";
@@ -156,6 +157,15 @@ implements Serializable {
 		return getValueAsDouble(FOOD_CONSUMPTION_RATE);
 	}
 
+	/**
+	 * Gets the dessert consumption rate.
+	 * @return dessert rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	public double getDessertConsumptionRate() {
+		return getValueAsDouble(DESSERT_CONSUMPTION_RATE);
+	}
+	
 	/**
 	 * Gets the oxygen deprivation time.
 	 * @return oxygen time in millisols.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelMission.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-03-01
 
  * @author Scott Davis
  */
@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -47,8 +49,7 @@ extends Mission {
      * @param startingPerson the person starting the mission.
      * @param minPeople the minimum number of people required for mission.
      * @throws MissionException if error constructing mission.
-     */
-    protected TravelMission(String name, Person startingPerson, int minPeople) {
+   protected TravelMission(String name, Person startingPerson, int minPeople) {
         // Use Mission constructor.
         super(name, startingPerson, minPeople);
 
@@ -67,7 +68,64 @@ extends Mission {
 
         setTravelStatus(AT_NAVPOINT);
     }
+    protected TravelMission(String name, Robot robot, int minPeople) {
+        // Use Mission constructor.
+        super(name, robot, minPeople);
 
+        NavPoint startingNavPoint = null;
+        if (robot.getSettlement() != null) {
+            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                    robot.getSettlement(), robot
+                            .getSettlement().getName());
+        }
+        else {
+            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                    "starting location");
+        }
+        addNavpoint(startingNavPoint);
+        lastStopNavpoint = startingNavPoint;
+
+        setTravelStatus(AT_NAVPOINT);
+    }
+    */
+    protected TravelMission(String name, Unit unit, int minPeople) {
+        // Use Mission constructor.
+        super(name, unit, minPeople);
+
+        Person person = null;
+        Robot robot = null;
+                
+        NavPoint startingNavPoint = null;
+        
+        if (unit instanceof Person) {
+        	person = (Person) unit; 
+            if (person.getSettlement() != null) 
+                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                		person.getSettlement(), person
+                                .getSettlement().getName());          
+            else 
+                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                        "starting location");
+
+        }
+        else if (unit instanceof Robot) {
+        	robot = (Robot) unit;
+            if (robot.getSettlement() != null)
+                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                        robot.getSettlement(), robot
+                                .getSettlement().getName()); 
+            else 
+                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                        "starting location");
+
+        }
+ 
+        addNavpoint(startingNavPoint);
+        lastStopNavpoint = startingNavPoint;
+
+        setTravelStatus(AT_NAVPOINT);
+    }
+    
     /**
      * Adds a navpoint to the mission.
      * @param navPoint the new nav point location to be added.
@@ -254,6 +312,7 @@ extends Mission {
      * @throws MissionException if error performing travel phase.
      */
     protected abstract void performTravelPhase(Person person);
+    protected abstract void performTravelPhase(Robot robot);
 
     /**
      * Gets the starting time of the current leg of the mission.

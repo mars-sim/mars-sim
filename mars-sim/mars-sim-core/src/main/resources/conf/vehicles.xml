@@ -62,6 +62,11 @@
 			<!-- Default: 2000.0 -->
 			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
+			<capacity resource="Grey Water" value="200.0" />
+			<capacity resource="Black Water" value="200.0" />			
+			<capacity resource="Solid Waste" value="200.0" />
+			<capacity resource="Food Waste" value="200.0" />
+			<capacity resource="Toxic Waste" value="200.0" />			
 		</cargo>
 
 		<!-- Sickbay -->
@@ -110,6 +115,12 @@
 			<capacity resource="Water" value="1400.0" />
 			<capacity resource="Food" value="525.0" />
 			<capacity resource="Soymilk" value="300.0" />
+			
+			<capacity resource="Grey Water" value="200.0" />
+			<capacity resource="Black Water" value="200.0" />			
+			<capacity resource="Solid Waste" value="200.0" />
+			<capacity resource="Food Waste" value="200.0" />
+			<capacity resource="Toxic Waste" value="200.0" />			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
@@ -140,6 +151,12 @@
 			<capacity resource="Water" value="1400.0" />
 			<capacity resource="Food" value="525.0" />
 			<capacity resource="Soymilk" value="300.0" />
+			
+			<capacity resource="Grey Water" value="200.0" />
+			<capacity resource="Black Water" value="200.0" />			
+			<capacity resource="Solid Waste" value="200.0" />
+			<capacity resource="Food Waste" value="200.0" />
+			<capacity resource="Toxic Waste" value="200.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0" 
@@ -180,7 +197,7 @@
 		<empty-mass value="250.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">
-			<capacity resource="methane" value="100.0" />
+			<capacity resource="methane" value="100.0" />			
 		</cargo>
 	</vehicle>-->
 <!--

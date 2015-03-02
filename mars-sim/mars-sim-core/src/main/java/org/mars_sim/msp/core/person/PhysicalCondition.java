@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2015-02-23
+ * @version 3.08 2015-03-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -135,7 +135,7 @@ implements Serializable {
         medicationList = new ArrayList<Medication>();
         
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / Cooking.NUMBER_OF_MEAL_PER_SOL);
+        dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
         try {
         	personStarvationTime = personConfig.getStarvationStartTime() * 1000D;
@@ -1045,6 +1045,16 @@ implements Serializable {
         return config.getFoodConsumptionRate();
     }
 
+    /**
+     * Gets the dessert consumption rate per Sol.
+     * @return dessert consumed (kg/Sol)
+     * @throws Exception if error in configuration.
+     */
+    public static double getDessertConsumptionRate() {
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return config.getDessertConsumptionRate();
+    }
+    
     /**
      * Gets the power consumption rate per Sol.
      * @return power consumed (kJ/Sol)

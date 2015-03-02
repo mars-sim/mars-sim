@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -81,7 +82,22 @@ implements Serializable {
 
         logger.fine(person.getName() + " is driving " + vehicle.getName());
     }
+	public DriveGroundVehicle(Robot robot, GroundVehicle vehicle,
+            Coordinates destination, MarsClock startTripTime, double startTripDistance) {
+    	
+    	// Use OperateVehicle constructor
+        super(NAME, robot, vehicle, destination, startTripTime, 
+        		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
+        // Set initial parameters
+        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+                vehicle.getName())); //$NON-NLS-1$
+        addPhase(AVOID_OBSTACLE);
+        addPhase(WINCH_VEHICLE);
+
+        logger.fine(robot.getName() + " is driving " + vehicle.getName());
+    }
+	
     /**
      * Constructs with a given starting phase.
      * @param person the person to perform the task
@@ -107,7 +123,22 @@ implements Serializable {
 
         logger.fine(person.getName() + " is driving " + vehicle.getName());
     }
-    
+    public DriveGroundVehicle(Robot robot, GroundVehicle vehicle, Coordinates destination, 
+            MarsClock startTripTime, double startTripDistance, TaskPhase startingPhase) {
+    	
+        // Use OperateVehicle constructor
+    	super(NAME, robot, vehicle, destination, startTripTime, 
+        		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
+    	
+        // Set initial parameters
+    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+                vehicle.getName())); //$NON-NLS-1$
+        addPhase(AVOID_OBSTACLE);
+        addPhase(WINCH_VEHICLE);
+		if (startingPhase != null) setPhase(startingPhase);
+
+        logger.fine(robot.getName() + " is driving " + vehicle.getName());
+    }    
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
@@ -391,7 +422,12 @@ implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = null;
+		if (person != null) 
+			manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
+		
 		return manager.getEffectiveSkillLevel(SkillType.DRIVING);
 	}
 	
@@ -414,22 +450,32 @@ implements Serializable {
         // Add experience points for driver's 'Driving' skill.
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-        	NaturalAttribute.EXPERIENCE_APTITUDE);
+        int experienceAptitude = 0;
+		if (person != null) 
+	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);			
+		else if (robot != null)
+			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		double phaseModifier = 1D;
 		if (AVOID_OBSTACLE.equals(getPhase())) phaseModifier = 4D;
 		newPoints *= phaseModifier;
-        person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
+		if (person != null) 
+		       person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);			
+		else if (robot != null)
+			robot.getBotMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
+        
 	}
 	
     /**
      * Ends the task and performs any final actions.
      */
     public void endTask() {
-    	
-        logger.fine(person.getName() + " finished driving " + getVehicle().getName());
+		if (person != null) 
+		       logger.fine(person.getName() + " finished driving " + getVehicle().getName());			
+		else if (robot != null)
+			logger.fine(robot.getName() + " finished driving " + getVehicle().getName());
         // ((GroundVehicle) getVehicle()).setStuck(false);
     	
     	super.endTask();

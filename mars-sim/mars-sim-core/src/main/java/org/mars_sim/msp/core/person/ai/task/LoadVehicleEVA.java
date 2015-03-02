@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -66,6 +67,8 @@ implements Serializable {
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
+    private static final double FOOD_RESERVE_FACTOR = 1.5D;
+    
     /** Task phases. */
     private static final TaskPhase LOADING = new TaskPhase(Msg.getString(
             "Task.phase.loading")); //$NON-NLS-1$
@@ -135,6 +138,50 @@ implements Serializable {
             endTask();
         }
     }
+    public LoadVehicleEVA(Robot robot) {
+        // Use Task constructor
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+
+        List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(robot.getSettlement());
+        if (roversNeedingEVASuits.size() > 0) {
+            int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
+            vehicle = roversNeedingEVASuits.get(roverIndex);
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
+                    vehicle.getName())); //$NON-NLS-1$
+            requiredResources = new HashMap<Resource, Number>(2);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupport.WATER), 40D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupport.OXYGEN), 10D);
+            optionalResources = new HashMap<Resource, Number>(0);
+            requiredEquipment = new HashMap<Class, Integer>(1);
+            requiredEquipment.put(EVASuit.class, 1);
+            optionalEquipment = new HashMap<Class, Integer>(0);
+            settlement = robot.getSettlement();
+        }
+
+        VehicleMission mission = getMissionNeedingLoading();
+        if ((vehicle == null) && (mission != null)) {
+            vehicle = mission.getVehicle();
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
+                    vehicle.getName())); //$NON-NLS-1$
+            requiredResources = mission.getRequiredResourcesToLoad();
+            optionalResources = mission.getOptionalResourcesToLoad();
+            requiredEquipment = mission.getRequiredEquipmentToLoad();
+            optionalEquipment = mission.getOptionalEquipmentToLoad();
+            settlement = robot.getSettlement();
+        }
+
+        if (vehicle != null) {
+            // Determine location for loading.
+            Point2D loadingLoc = determineLoadingLocation();
+            setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
+
+            // Initialize task phase
+            addPhase(LOADING);
+        }
+        else {
+            endTask();
+        }
+    }
 
     /**
      * Constructor
@@ -177,7 +224,39 @@ implements Serializable {
         // Initialize task phase
         addPhase(LOADING);
     }
+    public LoadVehicleEVA(Robot robot, Vehicle vehicle, Map<Resource, Number> requiredResources, 
+            Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment, 
+            Map<Class, Integer> optionalEquipment) {
+        // Use Task constructor.
+        super("Loading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
+                vehicle.getName())); //$NON-NLS-1$
+        this.vehicle = vehicle;
+
+        if (requiredResources != null) {
+            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+        }
+        if (optionalResources != null) {
+            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+        }
+        if (requiredEquipment != null) {
+            this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
+        }
+        if (optionalEquipment != null) {
+            this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        }
+
+        settlement = robot.getSettlement();
+
+        // Determine location for loading.
+        Point2D loadingLoc = determineLoadingLocation();
+        setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
+
+        // Initialize task phase
+        addPhase(LOADING);
+    }
+    
     /**
      * Gets a list of all embarking vehicle missions at a settlement with vehicle 
      * currently in a garage.
@@ -238,6 +317,8 @@ implements Serializable {
                                 result.add(rover);
                             }
                         }
+                        
+                        // robots need no suits, water, oxygen
                     }
                 }
             }
@@ -253,8 +334,11 @@ implements Serializable {
     private VehicleMission getMissionNeedingLoading() {
 
         VehicleMission result = null;
-
-        List<Mission> loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());
+        List<Mission> loadingMissions = null;
+		if (person != null) 
+	       	loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());			
+		else if (robot != null)
+        	loadingMissions = getAllMissionsNeedingLoading(robot.getSettlement());
 
         if (loadingMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
@@ -284,8 +368,12 @@ implements Serializable {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                     boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getCoordinates());
+			if (person != null) 
+	            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+	                    person.getCoordinates());				
+			else if (robot != null)
+				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+						robot.getCoordinates());
         }
 
         return newLocation;
@@ -335,7 +423,12 @@ implements Serializable {
         }
 
         // Determine load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        int strength =  0;
+		if (person != null) 
+			strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+		else if (robot != null)
+			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time / 4D;
 
@@ -906,6 +999,7 @@ implements Serializable {
         AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource dessert = AmountResource.findAmountResource("dessert");
         if (resource.equals(oxygen)) {
             amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
         }
@@ -913,9 +1007,11 @@ implements Serializable {
             amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
         }
         else if (resource.equals(food)) {
-            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
+            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() * FOOD_RESERVE_FACTOR;
         }
-
+        else if (resource.equals(dessert)) {
+            amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * FOOD_RESERVE_FACTOR;
+        }
         return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }
 
@@ -1199,7 +1295,12 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+		if (person != null) 
+	   		manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+    		manager = robot.getBotMind().getSkillManager();
+        
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         return EVAOperationsSkill; 
     }
@@ -1217,14 +1318,20 @@ implements Serializable {
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
-
+        NaturalAttributeManager nManager = null;
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		if (person != null) 
+			nManager = person.getNaturalAttributeManager();			
+		else if (robot != null)
+			nManager = robot.getNaturalAttributeManager(); 
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		if (person != null) 
+	        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);			
+		else if (robot != null)        
+			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 
     @Override

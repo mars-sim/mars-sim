@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -97,7 +98,44 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Set initial phase
 		setPhase(MOBILIZE);
 	}
-    
+	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
+			MarsClock startTripTime, double startTripDistance, double stressModifier, 
+			boolean hasDuration, double duration) {
+		
+		// Use Task constructor
+		super(name, robot, false, false, stressModifier, hasDuration, duration);
+		
+		// Check for valid parameters.
+		if (vehicle == null) {
+		    throw new IllegalArgumentException("vehicle is null");
+		}
+		if (destination == null) {
+		    throw new IllegalArgumentException("destination is null");
+		}
+		if (startTripTime == null) {
+		    throw new IllegalArgumentException("startTripTime is null");
+		}
+		if (startTripDistance < 0D) {
+		    throw new IllegalArgumentException("startTripDistance is < 0");
+		}
+		
+		// Initialize data members.
+		this.vehicle = vehicle;
+		this.destination = destination;
+		this.startTripTime = startTripTime;
+		this.startTripDistance = startTripDistance;
+		
+		// Walk to operation activity spot in vehicle.
+		if (vehicle instanceof Rover) {
+		    walkToOperatorActivitySpotInRover((Rover) vehicle, false);
+		}
+		
+		addPhase(MOBILIZE);
+		
+		// Set initial phase
+		setPhase(MOBILIZE);
+	}    
+	
     @Override
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
@@ -195,10 +233,20 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) {
 		
-        // Set person as the vehicle operator if he/she isn't already.
-        if (!person.equals(vehicle.getOperator())) {
-            vehicle.setOperator(person);
-        }
+		if (person != null) {
+	        // Set person as the vehicle operator if he/she isn't already.
+	        if (!person.equals(vehicle.getOperator())) {
+	            vehicle.setOperator(person);
+	        }
+
+		}
+		else if (robot != null) {
+	        // Set robot as the vehicle operator if it isn't already.
+	        if (!robot.equals(vehicle.getOperator())) {
+	            vehicle.setOperator(robot);
+	        }
+
+		}		
 		
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();

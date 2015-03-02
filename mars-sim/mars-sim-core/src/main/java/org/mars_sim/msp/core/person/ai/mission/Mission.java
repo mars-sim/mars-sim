@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.07 2014-09-15
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -19,12 +19,14 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.Resource;
@@ -75,7 +77,7 @@ implements Serializable {
 	 * @param name the name of the mission
 	 * @param startingPerson the person starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
-	 */
+	 
 	public Mission(String name, Person startingPerson, int minPeople) {
 
 		// Initialize data members
@@ -102,7 +104,88 @@ implements Serializable {
 		// Add starting person to mission.
 		startingPerson.getMind().setMission(this);
 	}
+	public Mission(String name, Robot robot, int minPeople) {
 
+		// Initialize data members
+		this.name = name;
+		description = name;
+		people = new ConcurrentLinkedQueue<Person>();
+		robots = new ConcurrentLinkedQueue<Robot>();
+		done = false;
+		phase = null;
+		phaseDescription = null;
+		phases = new ArrayList<MissionPhase>();
+		phaseEnded = false;
+		this.minPeople = minPeople;
+		missionCapacity = Integer.MAX_VALUE;
+		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+
+		// Created mission starting event.
+		HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_START);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+		// Log mission starting.
+		logger.info(description + " started by " + robot.getName() + " at "  + robot.getSettlement());
+
+		// Add starting person to mission.
+		robot.getBotMind().setMission(this);
+	}
+	*/
+	public Mission(String name, Unit unit, int minPeople) {
+
+		// Initialize data members
+		this.name = name;
+		description = name;
+		people = new ConcurrentLinkedQueue<Person>();
+		robots = new ConcurrentLinkedQueue<Robot>();
+		done = false;
+		phase = null;
+		phaseDescription = null;
+		phases = new ArrayList<MissionPhase>();
+		phaseEnded = false;
+		this.minPeople = minPeople;
+		missionCapacity = Integer.MAX_VALUE;
+		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+
+		Person person = null;
+		Robot robot = null;
+		        
+		if (unit instanceof Person) {
+			person = (Person) unit;    	
+		}
+		else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+		}
+		
+		// Created mission starting event.
+		HistoricalEvent newEvent = null;
+		
+		if (unit instanceof Person) {
+			person = (Person) unit;    	
+			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_START);
+			
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			// Log mission starting.
+			logger.info(description + " started by " + person.getName() + " at "  + person.getSettlement());
+
+			// Add starting person to mission.
+			person.getMind().setMission(this);
+		}
+		else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_START);
+			
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			// Log mission starting.
+			logger.info(description + " started by " + robot.getName() + " at "  + robot.getSettlement());
+
+			// Add starting person to mission.
+			robot.getBotMind().setMission(this);
+		}
+
+	}	
 	
 	/**
 	 * Adds a listener.
@@ -554,7 +637,18 @@ implements Serializable {
 			person.getMind().getTaskManager().addTask(task);
 		}
 	}
+	protected void assignTask(Robot robot, Task task) {
+		boolean canPerformTask = true;
 
+		// If task is effort-driven and robot too ill, do not assign task.
+		if (task.isEffortDriven() && (robot.getPerformanceRating() == 0D)) {
+			canPerformTask = false;
+		}
+
+		if (canPerformTask) {
+			robot.getBotMind().getTaskManager().addTask(task);
+		}
+	}
 	/**
 	 * Checks to see if any of the people in the mission have any dangerous medical 
 	 * problems that require treatment at a settlement. 
@@ -716,7 +810,18 @@ implements Serializable {
 
 		return false;
 	}
+	protected boolean isCapableOfMission(Robot robot) {
+		if (robot == null) throw new IllegalArgumentException("robot is null");
 
+		// Make sure robot isn't already on a mission.
+		if (robot.getBotMind().getMission() == null) {
+			// Make sure robot doesn't have any serious health problems.
+			//if (!person.getPhysicalCondition().hasSeriousMedicalProblems())
+			//	return true;			
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets the mission qualification value for the person.
 	 * Person is qualified and interested in joining the mission if the value is larger than 0.
@@ -739,7 +844,21 @@ implements Serializable {
 
 		return result;
 	}
+	protected double getMissionQualification(Robot robot) {
 
+		double result = 0D;
+
+		if (isCapableOfMission(robot)) {
+			// Get base result for job modifier.
+			RobotJob job = robot.getBotMind().getRobotJob();
+			if (job != null) {
+				result = job.getJoinMissionProbabilityModifier(this.getClass());
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Checks if the current phase has ended or not.
 	 * @return true if phase has ended
@@ -801,10 +920,15 @@ implements Serializable {
 	 * @throws MissionException if error determining location.
 	 */
 	public final Coordinates getCurrentMissionLocation() {
+		
 		if (getPeopleNumber() > 0) {
 			return ((Person) people.toArray()[0]).getCoordinates();
 		}
-		throw new IllegalStateException(phase + " : No people in the mission.");
+		else if (getRobotsNumber() > 0) {
+			return ((Robot) robots.toArray()[0]).getCoordinates();
+		}
+		else throw new IllegalStateException(phase + " : No people or robots in the mission.");
+	
 	}
 
 	/**

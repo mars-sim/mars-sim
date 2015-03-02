@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -114,7 +115,45 @@ implements Serializable {
         }
         else endTask();
     }
+    public UnloadVehicleGarage(Robot robot) {
+        // Use Task constructor.
+        super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
 
+        settlement = robot.getSettlement();
+
+        VehicleMission mission = getMissionNeedingUnloading();
+        if (mission != null) {
+            vehicle = mission.getVehicle();
+        }
+        else {
+            List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
+            if (nonMissionVehicles.size() > 0) {
+                vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
+            }
+        }
+
+        if (vehicle != null) {
+            setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", 
+                    vehicle.getName()));  //$NON-NLS-1$
+
+            // If vehicle is in a garage, add robot to garage.
+            Building garageBuilding = BuildingManager.getBuilding(vehicle);
+            if (garageBuilding != null) {
+                // Walk to garage building.
+                walkToActivitySpotInBuilding(garageBuilding, false);
+            }
+
+            // End task if vehicle or garage not available.
+            if ((vehicle == null) || (garageBuilding == null)) {
+                endTask();    
+            }
+
+            // Initialize task phase
+            addPhase(UNLOADING);
+            setPhase(UNLOADING);
+        }
+        else endTask();
+    }
     /** 
      * Constructor
      * @param person the person to perform the task
@@ -143,7 +182,30 @@ implements Serializable {
 
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
+    public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
+        // Use Task constructor.
+        super("Unloading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
 
+        setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", 
+                vehicle.getName()));  //$NON-NLS-1$;
+        this.vehicle = vehicle;
+
+        settlement = robot.getSettlement();
+
+        // If vehicle is in a garage, add robot to garage.
+        Building garageBuilding = BuildingManager.getBuilding(vehicle);
+        if (garageBuilding != null) {
+            // Walk to garage building.
+            walkToActivitySpotInBuilding(garageBuilding, false);
+        }
+
+        // Initialize phase
+        addPhase(UNLOADING);
+        setPhase(UNLOADING);
+
+        logger.fine(robot.getName() + " is unloading " + vehicle.getName());
+    }
+    
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
@@ -177,6 +239,25 @@ implements Serializable {
                             }
                         }
                     }
+                    
+                    int robotsOnboard = CollectionUtils.getRobot(
+                            vehicle.getInventory().getContainedUnits()).size();
+                    if (robotsOnboard == 0) {
+                        if (BuildingManager.getBuilding(vehicle) != null) {
+                            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+                                needsUnloading = true;
+                            }
+                            if (vehicle instanceof Towing) {
+                                if (((Towing) vehicle).getTowedVehicle() != null) {
+                                    needsUnloading = true;
+                                }
+                            }
+                        }
+                    }                    
+                    
+                    
+                    
+                    
                 }
                 if (needsUnloading) {
                     result.add(vehicle);
@@ -215,7 +296,17 @@ implements Serializable {
                                     }
                                 }
                             }
-                        }
+                            
+                            int robotsOnboard = CollectionUtils.getRobot(
+                                    vehicle.getInventory().getContainedUnits()).size();
+                            if (robotsOnboard == 0) {
+                                if (!isFullyUnloaded(vehicle)) {
+                                    if (BuildingManager.getBuilding(vehicle) != null) {
+                                        result.add(vehicleMission);
+                                    }
+                                }
+                            }   
+                        }  
                     }
                 }
             }
@@ -231,8 +322,11 @@ implements Serializable {
     private VehicleMission getMissionNeedingUnloading() {
 
         VehicleMission result = null;
-
-        List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+        List<Mission> unloadingMissions = null;
+		if (person != null) 
+	        unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());			
+		else if (robot != null)
+			unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
 
         if (unloadingMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
@@ -269,9 +363,13 @@ implements Serializable {
      * @return the amount of time (millisol) after performing the phase.
      */
     protected double unloadingPhase(double time) {
-
+    	int strength = 0;
         // Determine unload rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+		if (person != null) 
+	        strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+		else if (robot != null)
+			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        
         double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 

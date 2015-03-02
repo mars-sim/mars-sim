@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
@@ -48,6 +49,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
+	private Collection<Unit> mixPeopleRobots;
 	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
@@ -81,7 +83,7 @@ class MissionDataBean {
 
 	    Mission mission = null;
 	    if (TRAVEL_MISSION.equals(type)) {
-	        mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, 
+	        mission = new TravelToSettlement(mixPeopleRobots, startingSettlement, destinationSettlement, rover, 
 	                description);
 	    }
 	    else if (RESCUE_MISSION.equals(type)) {
@@ -103,7 +105,7 @@ class MissionDataBean {
 	        mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (TRADE_MISSION.equals(type)) {
-	        mission = new Trade(members, startingSettlement, destinationSettlement, rover, description, 
+	        mission = new Trade(mixPeopleRobots, startingSettlement, destinationSettlement, rover, description, 
 	                sellGoods, buyGoods);
 	    }
 	    else if (MINING_MISSION.equals(type)) {

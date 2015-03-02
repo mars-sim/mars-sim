@@ -146,7 +146,7 @@ implements Serializable {
            	
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
-        dryMassPerServing = personConfig.getFoodConsumptionRate() * (1D / NUMBER_OF_MEAL_PER_SOL);
+        dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
         
        	// 2014-12-12 Added computeDryMass()
         computeDryMass();

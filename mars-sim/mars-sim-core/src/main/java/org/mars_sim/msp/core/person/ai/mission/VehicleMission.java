@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.07 2014-09-22
+ * @version 3.07 2015-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
@@ -85,7 +87,7 @@ implements UnitListener {
 	 * @param startingPerson the person starting the mission
 	 * @param minPeople the minimum number of mission members allowed
 	 * @throws MissionException if error constructing mission.
-	 */
+	 
 	protected VehicleMission(String name, Person startingPerson, int minPeople) {
 		// Use TravelMission constructor.
 		super(name, startingPerson, minPeople);
@@ -100,7 +102,47 @@ implements UnitListener {
 			endMission("No reservable vehicles.");
 		}
 	}
+	protected VehicleMission(String name, Robot robot, int minPeople) {
+		// Use TravelMission constructor.
+		super(name, robot, minPeople);
 
+		// Add mission phases.
+		addPhase(EMBARKING);
+		addPhase(TRAVELLING);
+		addPhase(DISEMBARKING);
+
+		// Reserve a vehicle.
+		if (!reserveVehicle(robot)) {
+			endMission("No reservable vehicles.");
+		}
+	}
+	*/
+	protected VehicleMission(String name, Unit unit, int minPeople) {
+		// Use TravelMission constructor.
+		super(name, unit, minPeople);
+
+		Person person = null;
+		Robot robot = null;
+		
+		// Add mission phases.
+		addPhase(EMBARKING);
+		addPhase(TRAVELLING);
+		addPhase(DISEMBARKING);
+
+
+		// Reserve a vehicle.	        
+		if (unit instanceof Person) {
+			person = (Person) unit;   
+			if (!reserveVehicle(person)) 
+				endMission("No reservable vehicles.");		
+		}
+		else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+			if (!reserveVehicle(robot)) 
+				endMission("No reservable vehicles.");		
+		}
+	}
+	
 	/**
 	 * Constructor with vehicle.
 	 * @param name the name of the mission.
@@ -108,7 +150,7 @@ implements UnitListener {
 	 * @param minPeople the minimum number of mission members allowed
 	 * @param vehicle the vehicle to use on the mission.
 	 * @throws MissionException if error constructing mission.
-	 */
+	
 	protected VehicleMission(String name, Person startingPerson, int minPeople,
 			Vehicle vehicle) {
 		// Use TravelMission constructor.
@@ -122,7 +164,33 @@ implements UnitListener {
 		// Set the vehicle.
 		setVehicle(vehicle);
 	}
+	protected VehicleMission(String name, Robot robot, int minPeople,
+			Vehicle vehicle) {
+		// Use TravelMission constructor.
+		super(name, robot, minPeople);
 
+		// Add mission phases.
+		addPhase(EMBARKING);
+		addPhase(TRAVELLING);
+		addPhase(DISEMBARKING);
+
+		// Set the vehicle.
+		setVehicle(vehicle);
+	}
+	 */
+	protected VehicleMission(String name, Unit unit, int minPeople,
+			Vehicle vehicle) {
+		// Use TravelMission constructor.
+		super(name, unit, minPeople);
+
+		// Add mission phases.
+		addPhase(EMBARKING);
+		addPhase(TRAVELLING);
+		addPhase(DISEMBARKING);
+
+		// Set the vehicle.
+		setVehicle(vehicle);
+	}
 	/**
 	 * Gets the mission's vehicle if there is one.
 	 * @return vehicle or null if none.
@@ -269,7 +337,41 @@ implements UnitListener {
 
 		return hasVehicle();
 	}
+	protected final boolean reserveVehicle(Robot robot) {
 
+		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
+
+		// Create list of best unreserved vehicles for the mission.
+		Iterator<Vehicle> i = getAvailableVehicles(robot.getSettlement())
+				.iterator();
+		while (i.hasNext()) {
+			Vehicle availableVehicle = i.next();
+			if (bestVehicles.size() > 0) {
+				int comparison = compareVehicles(availableVehicle,
+						(Vehicle) bestVehicles.toArray()[0]);
+				if (comparison == 0) {
+					bestVehicles.add(availableVehicle);
+				}
+				else if (comparison == 1) {
+					bestVehicles.clear();
+					bestVehicles.add(availableVehicle);
+				}
+			} else
+				bestVehicles.add(availableVehicle);
+		}
+
+		// Randomly select from the best vehicles.
+		if (bestVehicles.size() > 0) {
+			int bestVehicleIndex = RandomUtil
+					.getRandomInt(bestVehicles.size() - 1);
+			try {
+				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
+			} catch (Exception e) {
+			}
+		}
+
+		return hasVehicle();
+	}
 	/**
 	 * Gets a collection of available vehicles at a settlement that are usable for this mission.
 	 * @param settlement the settlement to find vehicles.
@@ -299,7 +401,10 @@ implements UnitListener {
 		// Set emergency beacon if vehicle is not at settlement.
 		if (hasVehicle()) {
 			if (vehicle.getSettlement() == null) {
-				setEmergencyBeacon(null, vehicle, true);
+				//if (person != null) 
+					setEmergencyBeacon(null, vehicle, true);
+				//else if (robot != null)
+				//	setEmergencyBeacon(null, vehicle, true);
 			}
 		}
 
@@ -409,7 +514,19 @@ implements UnitListener {
 					.getSettlement());
 		}
 	}
-
+	protected void performPhase(Robot robot) {
+		super.performPhase(robot);
+		if (EMBARKING.equals(getPhase())) {
+			performEmbarkFromSettlementPhase(robot);
+		}
+		else if (TRAVELLING.equals(getPhase())) {
+			performTravelPhase(robot);
+		}
+		else if (DISEMBARKING.equals(getPhase())) {
+			performDisembarkToSettlementPhase(robot, getCurrentNavpoint()
+					.getSettlement());
+		}
+	}
 	/**
 	 * Performs the travel phase of the mission.
 	 * @param person the person currently performing the mission.
@@ -470,7 +587,61 @@ implements UnitListener {
 			endMission("unrepairable malfunction");
 		}
 	}
+	protected final void performTravelPhase(Robot robot) {
 
+		NavPoint destination = getNextNavpoint();
+
+		// If vehicle has not reached destination and isn't broken down, travel to destination.
+		boolean reachedDestination = vehicle.getCoordinates().equals(
+				destination.getLocation());
+		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
+		if (!reachedDestination && !malfunction) {
+			// Don't operate vehicle if robot was the last operator.
+			if (robot != lastOperator) {
+				// If vehicle doesn't currently have an operator, set this robot as the operator.
+				if (vehicle.getOperator() == null) {
+					if (operateVehicleTask != null) {
+						operateVehicleTask = getOperateVehicleTask(robot,
+								operateVehicleTask.getTopPhase());
+					} else {
+						operateVehicleTask = getOperateVehicleTask(robot, null);
+					}
+					assignTask(robot, operateVehicleTask);
+					lastOperator = robot;
+				} else {
+					// If emergency, make sure current operate vehicle task is pointed home.
+					if (!operateVehicleTask.getDestination().equals(
+							destination.getLocation())) {
+						operateVehicleTask.setDestination(destination
+								.getLocation());
+						setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+								getNextNavpoint().getDescription())); //$NON-NLS-1$
+					}
+				}
+			} else {
+				lastOperator = null;
+			}
+		}
+
+		// If the destination has been reached, end the phase.
+		if (reachedDestination) {
+			reachedNextNode();
+			setPhaseEnded(true);
+		}
+
+		// Check if enough resources for remaining trip
+		// or if there is an emergency medical problem.
+		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
+
+			// If not, determine an emergency destination.
+			determineEmergencyDestination(robot);
+		}
+
+		// If vehicle has unrepairable malfunction, end mission.
+		if (hasUnrepairableMalfunction()) {
+			endMission("unrepairable malfunction");
+		}
+	}
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
 	 * @param person the person operating the vehicle.
@@ -479,6 +650,8 @@ implements UnitListener {
 	 */
 	protected abstract OperateVehicle getOperateVehicleTask(Person person,
 			TaskPhase lastOperateVehicleTaskPhase);
+	protected abstract OperateVehicle getOperateVehicleTask(Robot robot,
+			TaskPhase lastOperateVehicleTaskPhase);
 
 	/**
 	 * Performs the embark from settlement phase of the mission.
@@ -486,6 +659,7 @@ implements UnitListener {
 	 * @throws MissionException if error performing phase.
 	 */
 	protected abstract void performEmbarkFromSettlementPhase(Person person);
+	protected abstract void performEmbarkFromSettlementPhase(Robot robot);
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
@@ -494,6 +668,8 @@ implements UnitListener {
 	 * @throws MissionException if error performing phase.
 	 */
 	protected abstract void performDisembarkToSettlementPhase(Person person,
+			Settlement disembarkSettlement);
+	protected abstract void performDisembarkToSettlementPhase(Robot robot,
 			Settlement disembarkSettlement);
 
 	/**
@@ -566,7 +742,9 @@ implements UnitListener {
 	private double getAverageVehicleSpeedForOperator(Person person) {
 		return OperateVehicle.getAverageVehicleSpeed(vehicle, person);
 	}
-
+	private double getAverageVehicleSpeedForOperator(Robot robot) {
+		return OperateVehicle.getAverageVehicleSpeed(vehicle, robot);
+	}
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
@@ -727,13 +905,60 @@ implements UnitListener {
 			endMission("No emergency settlement destination found.");
 		}
 	}
+	
+	protected final void determineEmergencyDestination(Robot robot) {
 
+		// Determine closest settlement.
+		Settlement newDestination = findClosestSettlement();
+		if (newDestination != null) {
+
+			// Check if enough resources to get to settlement.
+			double distance = getCurrentMissionLocation().getDistance(
+					newDestination.getCoordinates());
+			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
+					&& !hasEmergencyAllCrew()) {
+
+				// Check if closest settlement is already the next navpoint.
+				boolean sameDestination = false;
+				NavPoint nextNav = getNextNavpoint();
+				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
+					sameDestination = true;
+				}
+
+				if (!sameDestination) {
+					logger.severe(vehicle.getName()
+							+ " setting emergency destination to "
+							+ newDestination.getName() + ".");
+
+					// Creating emergency destination mission event.
+					HistoricalEvent newEvent = new MissionHistoricalEvent(
+							robot, this,
+							EventType.MISSION_EMERGENCY_DESTINATION);
+					Simulation.instance().getEventManager().registerNewEvent(
+							newEvent);
+
+					// Set the new destination as the travel mission's next and final navpoint.
+					clearRemainingNavpoints();
+					addNavpoint(new NavPoint(newDestination.getCoordinates(),
+							newDestination, "emergency destination: "
+									+ newDestination.getName()));
+					associateAllMembersWithSettlement(newDestination);
+				}
+			} else {
+				endMission("Not enough resources to continue.");
+			}
+		} else {
+			endMission("No emergency settlement destination found.");
+		}
+	}
+	
 	/**
 	 * Sets the vehicle's emergency beacon on or off.
 	 * @param person the person performing the mission.
 	 * @param vehicle the vehicle on the mission.
 	 * @param beaconOn true if beacon is on, false if not.
 	 */
+	/*
 	public void setEmergencyBeacon(Person person, Vehicle vehicle,
 			boolean beaconOn) {
 		// Creating mission emergency beacon event.
@@ -748,7 +973,47 @@ implements UnitListener {
 
 		vehicle.setEmergencyBeacon(beaconOn);
 	}
+	public void setEmergencyBeacon(Robot robot, Vehicle vehicle,
+			boolean beaconOn) {
+		// Creating mission emergency beacon event.
+		HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		if (beaconOn) {
+			logger.info("Emergency beacon activated on " + vehicle.getName());
+		}
+		else {
+			logger.info("Emergency beacon deactivated on " + vehicle.getName());
+		}
 
+		vehicle.setEmergencyBeacon(beaconOn);
+	}
+	*/
+	public void setEmergencyBeacon(Unit unit, Vehicle vehicle, boolean beaconOn) {
+		// Creating mission emergency beacon event.
+		HistoricalEvent newEvent = null;
+		Person person = null;
+		Robot robot = null;
+		        
+		if (unit instanceof Person) {
+			person = (Person) unit;  
+			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);
+		}
+		else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);
+		}
+
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		if (beaconOn) {
+			logger.info("Emergency beacon activated on " + vehicle.getName());
+		}
+		else {
+			logger.info("Emergency beacon deactivated on " + vehicle.getName());
+		}
+
+		vehicle.setEmergencyBeacon(beaconOn);
+	}
+	
 	/**
 	 * Update mission to the next navpoint destination.
 	 */

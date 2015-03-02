@@ -57,10 +57,11 @@ implements Serializable {
     //public double dessertsReplenishmentRate;
     public static double UP = 0.01;
     public static double DOWN = 0.005;
+    
     //  SERVING_FRACTION also used in GoodsManager
     public static final int NUM_OF_DESSERT_PER_SOL = 4;
     
-    public static final double DESSERT_SERVING_FRACTION = 1D / 4D;
+    public static final double DESSERT_SERVING_FRACTION = .25D;
     
     // amount of water in kg per dessert during preparation and clean-up
     public static final double WATER_USAGE_PER_DESSERT = 1.0;
@@ -110,7 +111,7 @@ implements Serializable {
         //dessertsReplenishmentRate = settlement.getDessertsReplenishmentRate();
         
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        massPerServing = personConfig.getFoodConsumptionRate() * DESSERT_SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
+        massPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL;    
         //System.out.println("massPerServing is " +massPerServing);
         
         preparingWorkTime = 0D;
