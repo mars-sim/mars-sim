@@ -135,7 +135,7 @@ public final class JobManager implements Serializable {
 			}
 		
 			result = result/2D;
-			
+
 		return result;
 	}
 	
@@ -151,7 +151,7 @@ public final class JobManager implements Serializable {
 			}
 		
 			result = result/2D;
-			
+		//System.out.println("getRemainingSettlementNeed : result is " + result);	
 		return result;
 	}
 	
@@ -238,7 +238,7 @@ public final class JobManager implements Serializable {
 				}	
 			}
 			else newJob = originalJob;
-        
+		//System.out.println("getNewRobotJob() : newJob is " + newJob.toString());
 		return newJob;
 	}
 
@@ -253,7 +253,6 @@ public final class JobManager implements Serializable {
 	 */
 	public static double getJobProspect(Unit unit, Job job, Settlement settlement, boolean isHomeSettlement) {
         Person person = null;
-
 		double jobCapability = 0D;
 		double remainingNeed = 0D;
 	

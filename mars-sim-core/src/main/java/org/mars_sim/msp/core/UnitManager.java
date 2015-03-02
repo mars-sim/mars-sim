@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.07 2015-02-27
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -682,17 +682,18 @@ implements Serializable {
  
         // Create all configured robot.
         for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
-
-         	
+        	//System.out.println("x is "+ x);
             // Get robot's name (required)
             String name = robotConfig.getConfiguredRobotName(x);
             if (name == null) {         
             	throw new IllegalStateException("Robot name is null");
             }
             
+            //System.out.println("name is "+ name);
             // Get robotType
            	// RobotType robotType = getABot();
         	RobotType robotType = robotConfig.getConfiguredRobotType(x);
+            //System.out.println("robotType is "+ robotType.getName());
 
             // Get robot's settlement or randomly determine it if not configured.
             String settlementName = robotConfig.getConfiguredRobotSettlement(x);
@@ -737,54 +738,49 @@ implements Serializable {
                     return;
                 }
             }
-
-            // Create robot and add to the unit manager.
-            Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
-            addUnit(robot);
-            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
-        	//System.out.println("robotType is "+robotType.toString());
-        	
-            // Set robot's job (if any).
-            String jobName = robotConfig.getConfiguredRobotJob(x);
-            //System.out.println("jobName is "+jobName);
-            if (jobName != null) {
-                RobotJob robotJob = JobManager.getRobotJob(jobName);
-                if (robotJob != null) {
-                	robot.getBotMind().setRobotJob(robotJob, true);
-                }
-            }
-
-            // Set robot's configured natural attributes (if any).
-            Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
-            if (naturalAttributeMap != null) {
-                Iterator<String> i = naturalAttributeMap.keySet().iterator();
-                while (i.hasNext()) {
-                    String attributeName = i.next();
-                    int value = (Integer) naturalAttributeMap.get(attributeName);
-                    robot.getNaturalAttributeManager().setAttribute(
-                            NaturalAttribute.valueOfIgnoreCase(attributeName),
-                            value
-                            );
-                }
-            }
-
-            // Set robot's configured skills (if any).
-            Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-            if (skillMap != null) {
-                Iterator<String> i = skillMap.keySet().iterator();
-                while (i.hasNext()) {
-                    String skillName = i.next();
-                    int level = (Integer) skillMap.get(skillName);
-                    robot
-                    .getBotMind()
-                    .getSkillManager()
-                    .addNewSkill(
-                            new Skill(
-                                    SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
-                                    level
-                                    )
-                            );
-                }
+            // 2015-03-02 Added "if (settlement != null)" to stop the last instance of robot from getting overwritten
+            if (settlement != null) {
+	            // Create robot and add to the unit manager.
+	            Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
+	            addUnit(robot);
+	            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
+	        	//System.out.println("robotType is "+robotType.toString());
+	        	
+	            // Set robot's job (if any).
+	            String jobName = robotConfig.getConfiguredRobotJob(x);
+	            //System.out.println("jobName is "+jobName);
+	            if (jobName != null) {
+	                RobotJob robotJob = JobManager.getRobotJob(jobName);
+	                if (robotJob != null) {
+	                	robot.getBotMind().setRobotJob(robotJob, true);
+	                }
+	            }
+	
+	            // Set robot's configured natural attributes (if any).
+	            Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
+	            if (naturalAttributeMap != null) {
+	                Iterator<String> i = naturalAttributeMap.keySet().iterator();
+	                while (i.hasNext()) {
+	                    String attributeName = i.next();
+	                    int value = (Integer) naturalAttributeMap.get(attributeName);
+	                    robot.getNaturalAttributeManager().setAttribute(
+	                            NaturalAttribute.valueOfIgnoreCase(attributeName),
+	                            value);
+	                }
+	            }
+	
+	            // Set robot's configured skills (if any).
+	            Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+	            if (skillMap != null) {
+	                Iterator<String> i = skillMap.keySet().iterator();
+	                while (i.hasNext()) {
+	                    String skillName = i.next();
+	                    int level = (Integer) skillMap.get(skillName);
+	                    robot.getBotMind().getSkillManager().addNewSkill(new Skill(
+	                      SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
+	                      level));
+	                }
+	            }
             }
         }
 
@@ -855,17 +851,19 @@ implements Serializable {
     		}
     	}    	
     	
-    	int num = RandomUtil.getRandomInt(9); // 0 to 9
-    	if (num < 4) // 0, 1, 2, 3
+    	int num = RandomUtil.getRandomInt(10); // 0 to 109
+    	if (num < 4) // if num == 0, 1, 2, 3
     		robotType = RobotType.REPAIRBOT;
     	else if (num < 7 ) //  4, 5, 6
     		robotType = RobotType.GARDENBOT;
     	else if (num < 9 ) //  7, 8
 			robotType = RobotType.CHEFBOT;
-    	else if (!hasMedicbot && num == 9 ) 
-    		// if the settlement does not have a medicbot yet and if num = 9
+    	else if (num < 10 ) //  9
+			robotType = RobotType.DELIVERYBOT;    	
+    	else if (!hasMedicbot && num == 10 ) 
+    		// if the settlement does not have a medicbot yet and if num = 10
 			robotType = RobotType.MEDICBOT;
-    	else // if num = 9
+    	else // if num = 10
     		robotType = RobotType.REPAIRBOT;
     	
     	return robotType;

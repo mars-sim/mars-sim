@@ -146,11 +146,12 @@ public class PrepareDessertMeta implements MetaTask {
 	   if (robot.getLocationSituation() != LocationSituation.OUTSIDE)
 	       //result = 0D;
 	
-		   if (PrepareDessert.isDessertTime(robot)) {
+		   //if (robot.getBotMind().getRobotJob() instanceof Chefbot)  {
+			   if (PrepareDessert.isDessertTime(robot)) {
 			   
 		      // Job modifier.
 	           //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(PrepareDessert.class);
-	           if (robot.getBotMind().getRobotJob() instanceof Chefbot)  {
+	          
 	           //if (result > 0 )  {// if task penalty is not zero
 		       	   
 			       result += 100D;
@@ -201,8 +202,6 @@ public class PrepareDessertMeta implements MetaTask {
 			   }
 			   
 			   if (result < 0) result = 0;
-	
-		   }
 	   
 		   return result;
 	}

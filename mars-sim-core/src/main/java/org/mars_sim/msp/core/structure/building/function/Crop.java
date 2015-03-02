@@ -262,6 +262,7 @@ implements Serializable {
 		// 2015-02-15 Added GERMINATION
 		if (phase.equals(GERMINATION) || phase.equals(GROWING)) {
 			currentPhaseWorkCompleted += remainingWorkTime;
+	        //System.out.println("addWork() : currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
 			if (currentPhaseWorkCompleted >= dailyTendingWorkRequired) {
 				remainingWorkTime = currentPhaseWorkCompleted - dailyTendingWorkRequired;
 				currentPhaseWorkCompleted = dailyTendingWorkRequired;
@@ -372,6 +373,7 @@ implements Serializable {
 					}
 
 					double maxPeriodHarvest = maxHarvest * (time / totalGrowingDay);
+					// Compute each harvestModifiers and sum them up below 
 					double harvestModifier = calculateHarvestModifier(maxPeriodHarvest);
 					
 					// Modify harvest amount.

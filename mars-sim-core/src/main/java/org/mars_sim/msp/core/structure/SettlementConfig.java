@@ -341,6 +341,7 @@ implements Serializable {
 			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
 			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
+			//System.out.println("loadInitialSettlements() : numOfRobots is "+numOfRobots);
 			if (number < 0) {
 				throw new IllegalStateException("The number of robots cannot be less than zero: " + number);
 			}

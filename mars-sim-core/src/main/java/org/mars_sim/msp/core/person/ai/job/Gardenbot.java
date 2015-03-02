@@ -12,10 +12,8 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
-
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
-
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -74,7 +72,7 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 10D;
+		double result = 5D;
 
 		// Add (growing area in greenhouses) / 10
 		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.FARMING);
@@ -85,6 +83,8 @@ implements Serializable {
 			result += (farm.getGrowingArea() / 8D); // changed from /10D to /5D
 		}
 
+	    //System.out.println("getSettlementNeed() : result is " + result);
+	       
 		return result;	
 	}
 

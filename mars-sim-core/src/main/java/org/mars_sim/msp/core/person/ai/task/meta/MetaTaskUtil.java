@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.07 2015-02-24
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -85,9 +85,10 @@ public class MetaTaskUtil {
         
         robotMetaTasks = new ArrayList<MetaTask>();
         
-        // Populate robotMetaTasks list with all meta tasks.
-        
+        // Populate robotMetaTasks list with all robotMeta tasks.        
         robotMetaTasks.add(new CookMealMeta());
+        robotMetaTasks.add(new LoadVehicleEVAMeta());
+        robotMetaTasks.add(new LoadVehicleGarageMeta());
         robotMetaTasks.add(new MaintenanceEVAMeta());
         robotMetaTasks.add(new MaintenanceMeta());
         robotMetaTasks.add(new RepairEVAMalfunctionMeta());
@@ -97,7 +98,10 @@ public class MetaTaskUtil {
         robotMetaTasks.add(new ProduceFoodMeta());        
         robotMetaTasks.add(new SleepMeta());
         robotMetaTasks.add(new TendGreenhouseMeta());
+        robotMetaTasks.add(new UnloadVehicleEVAMeta());
+        robotMetaTasks.add(new UnloadVehicleGarageMeta());
         robotMetaTasks.add(new WalkMeta());
+        
     }
     /**
      * Gets a list of all meta tasks.

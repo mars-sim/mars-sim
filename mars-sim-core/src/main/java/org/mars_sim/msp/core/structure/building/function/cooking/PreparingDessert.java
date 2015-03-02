@@ -84,7 +84,7 @@ implements Serializable {
     private Settlement settlement;
     private Inventory inv ;
     // 2015-01-03 Added availableDesserts
-    private String [] availableDesserts = 
+    private static String [] availableDesserts = 
     	{ 	"Soymilk",
 			"Sugarcane Juice",
 			"Strawberry",
@@ -126,6 +126,11 @@ implements Serializable {
     
     }
 
+    public static String[] getArrayOfDesserts() {
+    	return availableDesserts; 
+    }
+    
+    
     // 2015-01-12 Added setChef()
     public void setChef(String name) {
     	this.producerName = name;

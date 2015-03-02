@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-03-02b
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,9 +15,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
@@ -60,8 +62,13 @@ implements Serializable {
     private Settlement buyingSettlement;
     private Rover rover;
     private Map<Good, Integer> soldLoad;
-    private Person buyingTrader;
-    private Person sellingTrader;
+    //private Person buyingTrader;
+    //private Person sellingTrader;
+    //private Robot buyingRobotTrader;
+    //private Robot sellingRobotTrader;  
+    private Unit buyingTrader;
+    private Unit sellingTrader;
+     
 
     /**
      * Constructor.
@@ -72,6 +79,25 @@ implements Serializable {
      * @param buyingTrader the buying trader.
      * @param sellingTrader the selling trader.
      */
+    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
+            Map<Good, Integer> soldLoad, Unit buyingTrader, Unit sellingTrader) {
+
+        // Use trade constructor.
+        super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
+
+        // Initialize data members.
+        this.sellingSettlement = sellingSettlement;
+        this.buyingSettlement = buyingSettlement;
+        this.rover = rover;
+        this.soldLoad = soldLoad;
+        this.buyingTrader = buyingTrader;
+        this.sellingTrader = sellingTrader;
+
+        // Initialize task phase.
+        addPhase(NEGOTIATING);
+        setPhase(NEGOTIATING);
+    }
+    /*
     public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
             Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
 
@@ -90,6 +116,25 @@ implements Serializable {
         addPhase(NEGOTIATING);
         setPhase(NEGOTIATING);
     }
+    public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
+            Map<Good, Integer> soldLoad, Robot buyingRobotTrader, Robot sellingRobotTrader) {
+
+        // Use trade constructor.
+        super(NAME, buyingRobotTrader, false, false, STRESS_MODIFIER, true, DURATION);
+
+        // Initialize data members.
+        this.sellingSettlement = sellingSettlement;
+        this.buyingSettlement = buyingSettlement;
+        this.rover = rover;
+        this.soldLoad = soldLoad;
+        this.buyingRobotTrader = buyingRobotTrader;
+        this.sellingRobotTrader = sellingRobotTrader;
+
+        // Initialize task phase.
+        addPhase(NEGOTIATING);
+        setPhase(NEGOTIATING);
+    }
+    */
 
     /**
      * Performs the negotiating phase of the task.
@@ -144,9 +189,25 @@ implements Serializable {
      * Has the buying trader follow the selling trader if he/she has moved to a different building.
      */
     private void followSeller() {
-        Building sellerBuilding = BuildingManager.getBuilding(sellingTrader);
-        Building personBuilding = BuildingManager.getBuilding(person);
-        if ((sellerBuilding != null) && (!sellerBuilding.equals(personBuilding))) {
+    	 Building sellerBuilding = null;
+    	 Building building = null;
+    	 Person person = null;
+    	 Robot robot = null;
+    	         
+    	 
+    	 if (sellingTrader instanceof Person) {
+     	 	person = (Person) sellingTrader; 
+			sellerBuilding = BuildingManager.getBuilding(person);		
+		      building = BuildingManager.getBuilding(person);
+		}
+    	 else if (sellingTrader instanceof Robot) {
+     	 	robot = (Robot) sellingTrader;
+			sellerBuilding = BuildingManager.getBuilding(robot);
+		      building = BuildingManager.getBuilding(robot);
+		}
+  
+        
+        if ((sellerBuilding != null) && (!sellerBuilding.equals(building))) {
 
             // Walk to seller trader's building.
             walkToRandomLocInBuilding(sellerBuilding, false);
@@ -163,8 +224,25 @@ implements Serializable {
 
         // Note: buying and selling traders are reversed here since this is regarding the goods
         // that the buyer is selling and the seller is buying.
-        NaturalAttributeManager sellerAttributes = buyingTrader.getNaturalAttributeManager();
-        NaturalAttributeManager buyerAttributes = sellingTrader.getNaturalAttributeManager();
+        NaturalAttributeManager sellerAttributes = null;
+        NaturalAttributeManager buyerAttributes = null;
+	   	if (buyingTrader instanceof Person) {
+	   		person = (Person) buyingTrader; 
+	        sellerAttributes = person.getNaturalAttributeManager();
+		}
+	 	else if (buyingTrader instanceof Robot) {
+	  	 	robot = (Robot) sellingTrader;
+	        sellerAttributes = robot.getNaturalAttributeManager();
+		}
+	   	if (sellingTrader instanceof Person) {
+	   		person = (Person) buyingTrader; 
+	   		buyerAttributes = person.getNaturalAttributeManager();
+		}
+	 	else if (sellingTrader instanceof Robot) {
+	  	 	robot = (Robot) sellingTrader;
+	  	 	buyerAttributes = robot.getNaturalAttributeManager();
+		}
+  
 
         // Modify by 10% for conversation natural attributes in buyer and seller.
         modifier += sellerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
@@ -175,22 +253,46 @@ implements Serializable {
         modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
 
         // Modify by 10% for each skill level in trading for buyer and seller.
-        modifier += buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
-        modifier -= sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+	   	if (buyingTrader instanceof Person) {
+	   		person = (Person) buyingTrader; 
+	        modifier += person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;	        
+		}
+	 	else if (buyingTrader instanceof Robot) {
+	  	 	robot = (Robot) sellingTrader;
+	        modifier += robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;	       
+		}
+	   	
+	   	if (sellingTrader instanceof Person) {
+	   		person = (Person) buyingTrader; 
+	        modifier += person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;	        
+		}
+	 	else if (sellingTrader instanceof Robot) {
+	  	 	robot = (Robot) sellingTrader;
+	        modifier += robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;	       
+		}
 
+	   	
         // Modify by 10% for the relationship between the buyer and seller.
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-        modifier += relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
-        modifier -= relationshipManager.getOpinionOfPerson(sellingTrader, buyingTrader) / 1000D;
+	   	if (buyingTrader instanceof Person && sellingTrader instanceof Person) {
+	   		Person person1 = (Person) buyingTrader; 
+	   		Person person2 = (Person) sellingTrader;
+	        modifier += relationshipManager.getOpinionOfPerson(person1, person2) / 1000D;	               
+		}
 
+	   	if (buyingTrader instanceof Person && sellingTrader instanceof Person) {
+	   		Person person1 = (Person) sellingTrader; 
+	   		Person person2 = (Person) buyingTrader;
+	        modifier += relationshipManager.getOpinionOfPerson(person1, person2) / 1000D;	               
+		}	   	
+ 
         return modifier;
     }
 
     @Override
     protected void addExperience(double time) {
         // Add experience for the buying trader.
-        addExperience(time, buyingTrader);
-
+    	addExperience(time, buyingTrader);
         // Add experience for the selling trader.
         addExperience(time, sellingTrader);
     }
@@ -200,17 +302,33 @@ implements Serializable {
      * @param time the amount of time (ms) the task is performed.
      * @param trader the trader to add the experience to.
      */
-    private void addExperience(double time, Person trader) {
+    private void addExperience(double time, Unit trader) {
         // Add experience to "Trading" skill for the trader.
         // (1 base experience point per 2 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 2D;
-        int experienceAptitude = trader.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        trader.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
+        int experienceAptitude = 0;
+    	Person person = null;
+    	Robot robot = null;
+    	        
+    	if (trader instanceof Person) {
+    		person = (Person) trader;    
+    	    experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();          
+            person.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
+               
+    	}
+    	else if (trader instanceof Robot) {
+    		robot = (Robot) trader;
+    		experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            newPoints *= getTeachingExperienceModifier();            
+            robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);           
+    	}
     }
 
+    
     @Override
     public List<SkillType> getAssociatedSkills() {
         List<SkillType> skills = new ArrayList<SkillType>(1);
@@ -220,7 +338,11 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+		if (person != null) 
+		   	manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
         return manager.getEffectiveSkillLevel(SkillType.TRADING);
     }
 
