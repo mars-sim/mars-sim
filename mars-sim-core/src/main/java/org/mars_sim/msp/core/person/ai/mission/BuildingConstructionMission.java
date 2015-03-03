@@ -91,6 +91,9 @@ implements Serializable {
 	// Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+    
+    /** Minimum length of a building connector (meters). */
+    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 	
 	// Data members
 	private Settlement settlement;
@@ -921,7 +924,7 @@ implements Serializable {
                                 double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                         startingBuilding.getYLocation(), building.getXLocation(), 
                                         building.getYLocation());
-                                if ((distance < leastDistance) && (distance >= 1D)) {
+                                if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
                                     
                                     // Check that new building can be placed between the two buildings.
                                     if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding, 
@@ -962,7 +965,7 @@ implements Serializable {
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
                                 building.getYLocation());
-                        if ((distance < leastDistance) && (distance >= 1D)) {
+                        if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
                             
                             // Check that new building can be placed between the two buildings.
                             if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding, 
@@ -1000,7 +1003,7 @@ implements Serializable {
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
                                 building.getYLocation());
-                        if ((distance < leastDistance) && (distance >= 5D)) {
+                        if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
                             
                             // Check that new building can be placed between the two buildings.
                             if (positionConnectorBetweenTwoBuildings(buildingType, site, startingBuilding, 
@@ -1067,7 +1070,7 @@ implements Serializable {
                 double distance = Point2D.distance(firstBuildingPos.getX(), firstBuildingPos.getY(), 
                         secondBuildingPos.getX(), secondBuildingPos.getY());
                 
-                if (distance > 1D) {
+                if (distance >= MINIMUM_CONNECTOR_LENGTH) {
                     // Check line rect between positions for obstacle collision.
                     Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(), 
                             secondBuildingPos.getX(), secondBuildingPos.getY());

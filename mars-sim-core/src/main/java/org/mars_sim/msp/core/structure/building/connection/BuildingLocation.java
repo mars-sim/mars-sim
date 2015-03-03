@@ -16,6 +16,9 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class BuildingLocation implements Serializable, InsidePathLocation {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     // Data members
     private Building building;
     private double xLoc;
