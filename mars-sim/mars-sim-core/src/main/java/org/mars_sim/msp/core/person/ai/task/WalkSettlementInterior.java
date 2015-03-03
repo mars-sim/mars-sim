@@ -182,20 +182,18 @@ implements Serializable {
     double walkingPhase(double time) {
         
     	if (person != null) {
-    	       // Check that remaining path locations are valid.
+    	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
                 logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
             }
     	}
     	else if (robot != null) {
-    	       // Check that remaining path locations are valid.
+    	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
                 logger.severe(robot.getName() + " unable to continue walking due to missing path objects.");
             }
     	}
 
- 
-        
         // Determine walking distance.
         double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
         double distanceKm = WALKING_SPEED * timeHours;
