@@ -190,15 +190,7 @@ implements Serializable {
         return job;
     }
 
-    /**
-     * Gets the person's job
-     * @return job or null if none.
-     */
-    public RobotJob getRobotJob() {
-        return robotJob;
-    }
-    
-    /**
+     /**
      * Checks if the person's job is locked and can't be changed.
      * @return true if job lock.
      */

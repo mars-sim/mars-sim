@@ -57,7 +57,7 @@ extends VehicleMission {
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
 	// Static members
-	public static final int MIN_PEOPLE = 2;
+	public static final int MIN_PEOPLE = 1; // Changed from 2 to 1
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
 
 	// Data members

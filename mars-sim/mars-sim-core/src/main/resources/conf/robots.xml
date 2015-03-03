@@ -43,9 +43,10 @@
 				<skill name="Botany" level="1"/>
 				<skill name="Mechanics" level="1"/>
 				<skill name="EVA Operations" level="2"/>
-				<skill name="Areology" level="1"/>
+				<skill name="Trading" level="1"/>
 				<skill name="Medicine" level="1"/>
 				<skill name="Cooking" level="2"/>
+				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>
 		
@@ -66,9 +67,10 @@
 				<skill name="Botany" level="2"/>
 				<skill name="Mechanics" level="1"/>
 				<skill name="EVA Operations" level="2"/>
-				<skill name="Areology" level="1"/>
+				<skill name="Trading" level="1"/>
 				<skill name="Medicine" level="1"/>
 				<skill name="Cooking" level="1"/>
+				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>
 		
@@ -89,14 +91,84 @@
 				<skill name="Botany" level="1"/>
 				<skill name="Mechanics" level="2"/>
 				<skill name="EVA Operations" level="2"/>
-				<skill name="Areology" level="1"/>
+				<skill name="Trading" level="1"/>
 				<skill name="Medicine" level="1"/>
 				<skill name="Cooking" level="1"/>
+				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>
 		
+		<robot name="ConstructionBot 004" type="ConstructionBot" settlement="Schiaparelli Point" job="Builder">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Construction" level="2"/>
+				<skill name="EVA Operations" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="1"/>				
+				<skill name="Trading" level="1"/>
+			</skill-list>
+		</robot>
 
-		
+		<robot name="DeliveryBot 005" type="DeliveryBot" settlement="Schiaparelli Point" job="Postman">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Trading" level="2"/>
+				<skill name="EVA Operations" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Construction" level="1"/>
+				<skill name="Cooking" level="1"/>				
+			</skill-list>
+		</robot>	
+
+		<robot name="MedicBot 006" type="MedicBot" settlement="Schiaparelli Point" job="Medic">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Trading" level="1"/>
+				<skill name="EVA Operations" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="2"/>
+				<skill name="Cooking" level="1"/>				
+				<skill name="Construction" level="1"/>
+			</skill-list>
+		</robot>				
 	</robot-list>
 
 </robot-configuration>

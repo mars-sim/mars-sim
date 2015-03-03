@@ -719,21 +719,21 @@ public final class TradeUtil {
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		Good foodGood = GoodsUtil.getResourceGood(food);
 		neededResources.put(foodGood, (int) foodAmount);
 
 		// Get dessert amount.
-		double dessertAmount = PhysicalCondition.getFoodConsumptionRate() /6D * tripTimeSols * Trade.MAX_MEMBERS * 
+		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
 		Good dessertGood = GoodsUtil.getResourceGood(dessert);

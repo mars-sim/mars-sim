@@ -51,6 +51,8 @@ implements Serializable {
 
     /** Stress jump resulting from being in an accident. */
     public static final double ACCIDENT_STRESS = 40D;
+    
+    public static final double FOOD_RESERVE_FACTOR = 1.5D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String ANXIETY_ATTACK = "Anxiety Attack";
@@ -69,6 +71,7 @@ implements Serializable {
     
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
+    
     
     // Data members
 

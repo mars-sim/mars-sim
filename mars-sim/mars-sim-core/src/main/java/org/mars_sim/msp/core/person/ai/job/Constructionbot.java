@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
  * Architect.java
- * @version 3.07 2014-12-06
- * @author Scott Davis
+ * @version 3.07 2015-03-02
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
 
@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  * The Architect class represents an architect job focusing on construction of buildings, settlement 
  * and other structures.
  */
-public class Architect
+public class Constructionbot
 extends Job
 implements Serializable {
 
@@ -37,26 +37,21 @@ implements Serializable {
 	//private static Logger logger = Logger.getLogger(Architect.class.getName());
 
 	/** Constructor. */
-	public Architect() {
+	public Constructionbot() {
 		// Use Job constructor.
-		super(Architect.class);
+		super(Constructionbot.class);
 
 		// Add architect-related tasks.
-		jobTasks.add(ManufactureConstructionMaterials.class);
+		//jobTasks.add(ManufactureConstructionMaterials.class);
 		jobTasks.add(ConstructBuilding.class);
-		jobTasks.add(SalvageBuilding.class);
+		//jobTasks.add(SalvageBuilding.class);
 
 		// Add architect-related missions.
-		jobMissionStarts.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionStarts.add(BuildingSalvageMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		//jobMissionStarts.add(BuildingConstructionMission.class);
+		//jobMissionJoins.add(BuildingConstructionMission.class);
+		//jobMissionStarts.add(BuildingSalvageMission.class);
+		//jobMissionJoins.add(BuildingSalvageMission.class);
+
 	}
 
 	@Override
