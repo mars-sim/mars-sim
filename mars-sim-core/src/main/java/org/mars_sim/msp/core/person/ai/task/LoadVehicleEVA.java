@@ -67,8 +67,6 @@ implements Serializable {
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
-    private static final double FOOD_RESERVE_FACTOR = 1.5D;
-    
     /** Task phases. */
     private static final TaskPhase LOADING = new TaskPhase(Msg.getString(
             "Task.phase.loading")); //$NON-NLS-1$
@@ -1007,10 +1005,10 @@ implements Serializable {
             amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
         }
         else if (resource.equals(food)) {
-            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() * FOOD_RESERVE_FACTOR;
+            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR;
         }
         else if (resource.equals(dessert)) {
-            amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * FOOD_RESERVE_FACTOR;
+            amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR;
         }
         return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }

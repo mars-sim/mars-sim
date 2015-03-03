@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Msg;
 public enum RobotType {
 
 	CHEFBOT (Msg.getString("RobotType.chefBot")), //$NON-NLS-1$
+	CONSTRUCTIONBOT (Msg.getString("RobotType.constructionBot")), //$NON-NLS-1$
 	DELIVERYBOT (Msg.getString("RobotType.deliveryBot")), //$NON-NLS-1$)
 	GARDENBOT (Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
 	MEDICBOT (Msg.getString("RobotType.medicBot")), //$NON-NLS-1$

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.07 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -95,15 +95,51 @@ public class ConstructBuildingMeta implements MetaTask {
         return result;
     }
 
-	@Override
+
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new ConstructBuilding(robot);
 	}
 
-	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	       
+        double result = 0D;
+
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            // Check all building construction missions occurring at the settlement.
+            try {
+                List<BuildingConstructionMission> missions = ConstructBuilding.
+                        getAllMissionsNeedingAssistance(robot.getSettlement());
+                result = 50D * missions.size();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+            }
+        }
+
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(robot.getCoordinates()))
+                result = 0D;
+        } 
+        
+        // Crowded settlement modifier
+        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = robot.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+        }
+        
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
+        
+        return result;
+    }
 }

@@ -48,9 +48,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Technician.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add technician-related tasks.
 		jobTasks.add(Maintenance.class);
 		jobTasks.add(MaintenanceEVA.class);

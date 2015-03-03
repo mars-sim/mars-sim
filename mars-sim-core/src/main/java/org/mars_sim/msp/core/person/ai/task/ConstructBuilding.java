@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-03-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -91,7 +92,29 @@ implements Serializable {
             endTask();
         }
     }
+    public ConstructBuilding(Robot robot) {
+        // Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+        BuildingConstructionMission mission = getMissionNeedingAssistance();
+        if ((mission != null) && canConstruct(robot, mission.getConstructionSite())) {
+
+            // Initialize data members.
+            this.stage = mission.getConstructionStage();
+            this.site = mission.getConstructionSite();
+            this.vehicles = mission.getConstructionVehicles();
+
+            // Determine location for construction site.
+            Point2D constructionSiteLoc = determineConstructionLocation();
+            setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+
+            // Add task phase
+            addPhase(CONSTRUCTION);
+        }
+        else {
+            endTask();
+        }
+    }
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -116,7 +139,23 @@ implements Serializable {
         // Add task phase
         addPhase(CONSTRUCTION);
     }
+    public ConstructBuilding(Robot robot, ConstructionStage stage, 
+            ConstructionSite site, List<GroundVehicle> vehicles) {
+        // Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+        // Initialize data members.
+        this.stage = stage;
+        this.site = site;
+        this.vehicles = vehicles;
+
+        // Determine location for construction site.
+        Point2D constructionSiteLoc = determineConstructionLocation();
+        setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+
+        // Add task phase
+        addPhase(CONSTRUCTION);
+    }
     /**
      * Checks if a given person can work on construction at this time.
      * @param person the person.
@@ -149,7 +188,34 @@ implements Serializable {
 
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
+    public static boolean canConstruct(Robot robot, ConstructionSite site) {
 
+        // Check if robot can exit the settlement airlock.
+        boolean exitable = false;
+        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), 
+                site.getYLocation());
+        if (airlock != null) {
+            exitable = ExitAirlock.canExitAirlock(robot, airlock);
+        }
+
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        // Check if it is night time outside.
+        boolean sunlight = surface.getSurfaceSunlight(robot.getCoordinates()) > 0;
+
+        // Check if in dark polar region.
+        boolean darkRegion = surface.inDarkPolarRegion(robot.getCoordinates());
+
+        // Check if robot's medical condition will not allow task.
+        boolean medical = robot.getPerformanceRating() < .5D;
+        
+        // Check if there is work that can be done on the construction stage.
+        ConstructionStage stage = site.getCurrentConstructionStage();
+        boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+
+        return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
+    }
+    
     /**
      * Gets a random building construction mission that needs assistance.
      * @return construction mission or null if none found.
@@ -168,7 +234,7 @@ implements Serializable {
 
         return result;
     }
-
+ 
     /**
      * Gets a list of all building construction missions that need assistance at a settlement.
      * @param settlement the settlement.
@@ -313,14 +379,23 @@ implements Serializable {
      * @throws Exception if error returning construction vehicle.
      */
     private void returnVehicle() {
-        luv.getInventory().retrieveUnit(person);
+    	if (person != null) 
+            luv.getInventory().retrieveUnit(person);			
+		else if (robot != null)
+	        luv.getInventory().retrieveUnit(robot);
+        
         luv.setOperator(null);
         operatingLUV = false;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+    	if (person != null) 
+    	   	manager = person.getMind().getSkillManager();			
+		else if (robot != null)        
+			manager = robot.getBotMind().getSkillManager();
+        
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
         return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D); 
@@ -336,14 +411,23 @@ implements Serializable {
 
     @Override
     protected void addExperience(double time) {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+    	if (person != null) 
+        	manager = person.getMind().getSkillManager();			
+		else if (robot != null)    	
+        	manager = robot.getBotMind().getSkillManager();
 
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = null;
+        if (person != null) 
+            nManager = person.getNaturalAttributeManager();
+      	else if (robot != null)        
+      		nManager = robot.getNaturalAttributeManager();
+        
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
@@ -378,7 +462,12 @@ implements Serializable {
             double chance = BASE_LUV_ACCIDENT_CHANCE;
 
             // Driving skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            int skill = 0;
+            if (person != null) 
+				skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);			
+			else if (robot != null)
+				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            
             if (skill <= 3) {
                 chance *= (4 - skill);
             }

@@ -44,9 +44,6 @@ implements Serializable {
 		// Use Job constructor.
 		super(Trader.class);
 		
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add trader-related tasks.
 		jobTasks.add(LoadVehicleEVA.class);
         jobTasks.add(LoadVehicleGarage.class);
