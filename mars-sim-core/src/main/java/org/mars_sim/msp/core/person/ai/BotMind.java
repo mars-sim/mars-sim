@@ -85,10 +85,11 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
+        // I don't think robots should be changing jobs on their own. - Scott
         	 // Check if this robot needs to get a new job or change jobs.
-	        if (!jobLock) {
-	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
-	        }
+//	        if (!jobLock) {
+//	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
+//	        }
 	
 	        // Take action as necessary.
 	        takeAction(time);
