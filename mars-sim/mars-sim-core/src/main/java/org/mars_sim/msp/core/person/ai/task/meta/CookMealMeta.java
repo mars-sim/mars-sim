@@ -137,8 +137,6 @@ public class CookMealMeta implements MetaTask {
         double result = 0D;
         
         if (robot.getLocationSituation() != LocationSituation.OUTSIDE) 
-            //result = 0D;
-	 
 	        if (CookMeal.isMealTime(robot)) {
 	        	// Job modifier.      
 		        //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(CookMeal.class);

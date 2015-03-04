@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-03-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -109,7 +109,37 @@ extends Airlock {
 			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
 	}
+	protected void exitAirlock(Robot robot) {
 
+		if (inAirlock(robot)) {
+			if (PRESSURIZED.equals(getState())) {
+				if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+					// Exit robot to inside vehicle.
+					vehicle.getInventory().storeUnit(robot);
+				}
+				else if (LocationSituation.BURIED != robot.getLocationSituation()) {
+					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
+				}
+			}
+			else if (DEPRESSURIZED.equals(getState())) {
+				if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+					// Exit robot outside vehicle.  
+					vehicle.getInventory().retrieveUnit(robot);
+				}
+				else if (LocationSituation.BURIED != robot.getLocationSituation()) {
+					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
+				}
+			}
+			else {
+				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
+			}
+		}
+		else {
+			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",robot.getName(),getEntityName())); //$NON-NLS-1$
+		}
+	}
+
+	
 	/**
 	 * Gets the name of the entity this airlock is attached to.
 	 * @return name {@link String}

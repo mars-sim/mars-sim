@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 public class MainMenu {
 
+	@SuppressWarnings("restriction")
 	public final static String WINDOW_TITLE = Msg.getString(
 			"MainWindow.title", //$NON-NLS-1$
 			Simulation.VERSION + " build " + Simulation.BUILD + 
@@ -30,7 +31,7 @@ public class MainMenu {
 	
 	public static Scene menuScene;
 	public static Scene mainScene;
-	public static Scene settlementScene;
+	public static Scene modtoolScene;
 	
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/Main.fxml";
@@ -55,8 +56,7 @@ public class MainMenu {
 		 initAndShowGUI();
 	}
 
-   @SuppressWarnings("restriction")
-private void initAndShowGUI() {        
+   private void initAndShowGUI() {        
        
        ScreensSwitcher switcher = new ScreensSwitcher(this);
        switcher.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
@@ -87,6 +87,7 @@ private void initAndShowGUI() {
 
 	   mainScene = new MainScene(stage).createMainScene();
 	   stage.setFullScreen(true);
+	   stage.setResizable(true);
 	   stage.setScene(mainScene);
 	   stage.show();
 	   
@@ -99,8 +100,8 @@ private void initAndShowGUI() {
    }
    
    public void runThree() {
-   		settlementScene = new SettlementScene().createSettlementScene();
-	    stage.setScene(settlementScene);
+   		modtoolScene = new SettlementScene().createSettlementScene();
+	    stage.setScene(modtoolScene);
 	    stage.show();
    }
    
@@ -112,7 +113,7 @@ private void initAndShowGUI() {
 		}
    		case 2: {stage.setScene(mainScene);
 		}
-   		case 3: {stage.setScene(settlementScene);
+   		case 3: {stage.setScene(modtoolScene);
 		}
 
 	   }

@@ -143,18 +143,13 @@ public class PrepareDessertMeta implements MetaTask {
 	public double getProbability(Robot robot) {
 	   double result = 0D;
 
-	   if (robot.getLocationSituation() != LocationSituation.OUTSIDE)
-	       //result = 0D;
-	
-		   //if (robot.getBotMind().getRobotJob() instanceof Chefbot)  {
-			   if (PrepareDessert.isDessertTime(robot)) {
-			   
-		      // Job modifier.
+	   if (robot.getBotMind().getRobotJob() instanceof Chefbot)
+		   if (robot.getLocationSituation() != LocationSituation.OUTSIDE)
+			   if (PrepareDessert.isDessertTime(robot)) {		   
+		       // Job modifier.
 	           //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(PrepareDessert.class);
-	          
-	           //if (result > 0 )  {// if task penalty is not zero
-		       	   
-			       result += 100D;
+	           //if (result > 0 )  {// if task penalty is not zero		       	   
+			       result += 10D;
 			       try {
 			           // See if there is an available kitchen.
 			           Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);

@@ -18,8 +18,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
-import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.job.Repairbot;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
@@ -118,15 +117,17 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	      
-        double result = 0D;
+        double result = 10D;
         
         // Job modifier.
-        RobotJob robotJob = robot.getBotMind().getRobotJob();
-        if (robotJob != null)
-            result = robotJob.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);
-    
+        //RobotJob robotJob = robot.getBotMind().getRobotJob();
+        //if (robotJob != null)
+        //    result = robotJob.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);   
+        if (robot.getBotMind().getRobotJob() instanceof Repairbot)
+        	result = 0D;
+        
         // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) 
+        else if (EVAOperation.getWalkableAvailableAirlock(robot) == null) 
             result = 0D;
            	
         // Check if it is night time.
@@ -137,9 +138,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
             }
         } 
         
-        if (result > 0 )  {// if task penalty is not zero
+        if (result != 0 )  {// if task penalty is not zero
         	
-        	result += 100D;
+        	result += 10D;
 	        // Add probability for all malfunctionable entities in person's local.
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 	        while (i.hasNext()) {

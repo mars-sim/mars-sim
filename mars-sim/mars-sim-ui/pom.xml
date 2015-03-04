@@ -67,5 +67,10 @@
 	<artifactId>trident</artifactId>
 	<version>7.2.1</version>
     </dependency>
+    <dependency>
+    	<groupId>org.controlsfx</groupId>
+    	<artifactId>controlsfx</artifactId>
+   		<version>8.20.8</version>
+	</dependency>
   </dependencies>
 </project>

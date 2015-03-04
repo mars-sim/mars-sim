@@ -523,4 +523,10 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
         towedVehicle = null;
     }
 
+	@Override
+	public Collection<Unit> getUnitCrew() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

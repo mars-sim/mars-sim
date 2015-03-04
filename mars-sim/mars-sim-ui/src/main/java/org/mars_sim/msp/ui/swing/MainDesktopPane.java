@@ -356,13 +356,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { monitorWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(monitorWindow);
-
-		// Prepare mission tool window
-		MissionWindow missionWindow = new MissionWindow(this);
-		try { missionWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(missionWindow);
-
+		
 		// Prepare settlement tool window
 		SettlementWindow settlementWindow = new SettlementWindow(this);
 		//Thread sw = new Thread(settlementWindow);
@@ -380,6 +374,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(scienceWindow);
 		
+
+		// Prepare mission tool window
+		MissionWindow missionWindow = new MissionWindow(this);
+		try { missionWindow.setClosed(true); }
+		catch (PropertyVetoException e) { }
+		toolWindows.add(missionWindow);
+
 		// Prepare resupply tool window
 		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
 		try { resupplyWindow.setClosed(true); }

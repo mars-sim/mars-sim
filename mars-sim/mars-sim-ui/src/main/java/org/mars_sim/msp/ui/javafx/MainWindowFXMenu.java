@@ -7,19 +7,31 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.Priority;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -39,6 +51,9 @@ public class MainWindowFXMenu extends MenuBar  {
     //private MainDesktopPane desktop;
 	private CheckMenuItem showFullScreenItem ;
 	
+	private Stage stage;
+	private Stage webStage;
+	//private GreenhouseTool greenhouseTool;
 	/** 
 	 * Constructor.
 	 * @param mainWindow the main window pane
@@ -47,6 +62,8 @@ public class MainWindowFXMenu extends MenuBar  {
 	public MainWindowFXMenu(MainScene mainScene, MainDesktopPane desktop) {	
 		super();
 
+		this.stage = mainScene.getStage();
+	
         // --- Menu File
         Menu menuFile = new Menu("File");
         MenuItem newItem = new MenuItem("New...");
@@ -85,15 +102,24 @@ public class MainWindowFXMenu extends MenuBar  {
         scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
         CheckMenuItem resupplyToolItem = new CheckMenuItem("Resupply Tool");
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
+        CheckMenuItem marsNetItem = new CheckMenuItem("Mars Net");
+        marsNetItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
+        CheckMenuItem webToolItem = new CheckMenuItem("Online Tool");
+        webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
-        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem, monitorToolItem, missionToolItem,settlementMapToolItem, scienceToolItem, resupplyToolItem );
+        
+        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,
+        		monitorToolItem, missionToolItem,settlementMapToolItem, 
+        		scienceToolItem, resupplyToolItem, marsNetItem, webToolItem);
         
         
         // --- Menu Settings
         Menu menuSettings = new Menu("Settings");
+
         showFullScreenItem = new CheckMenuItem("Full Screen Mode");
         showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		showFullScreenItem.setSelected(true);
+		
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
@@ -112,6 +138,18 @@ public class MainWindowFXMenu extends MenuBar  {
         
         // --- Menu Notification
         Menu menuNotification = new Menu("Notification");
+        
+        Menu newsPaneItem = new Menu("News Pane");
+        
+        CheckMenuItem slideFromTop = new CheckMenuItem("Slide from Top");
+        slideFromTop.setSelected(true);
+       
+        CheckMenuItem showHideNewsPane = new CheckMenuItem("Toggle Show/Hide");
+		//showNewsPaneItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+		showHideNewsPane.setSelected(false);
+		
+		newsPaneItem.getItems().addAll(slideFromTop, showHideNewsPane);
+		
         Menu messageTypeItem = new Menu("Message Type");
         CheckMenuItem medicalItem = new CheckMenuItem("Medical");
         CheckMenuItem malfunctionItem = new CheckMenuItem("Malfunction");
@@ -139,7 +177,7 @@ public class MainWindowFXMenu extends MenuBar  {
         oneItem.setToggleGroup(queueSizeToggleGroup);
         queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
 
-        menuNotification.getItems().addAll(messageTypeItem,displayTimeItem,queueSizeItem);
+        menuNotification.getItems().addAll(newsPaneItem, messageTypeItem,displayTimeItem,queueSizeItem);
         
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
@@ -263,6 +301,29 @@ public class MainWindowFXMenu extends MenuBar  {
             }
         });
         
+        marsNetItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (marsNetItem.isSelected()) {
+    				mainScene.openMarsNet();
+    			}
+    			else 
+    				mainScene.closeMarsNet();
+            }
+        });
+        
+        webToolItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+    			if (webToolItem.isSelected())  {
+    				webStage = startWebTool();
+    				webStage.show();
+    			}
+    			else 
+    				webStage.close() ;
+            }
+        });
+        
         showFullScreenItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -279,6 +340,32 @@ public class MainWindowFXMenu extends MenuBar  {
             }
         });
 
+		showHideNewsPane.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent arg0) {
+                if (!mainScene.getNotificationPane().isShowing()) {
+                	mainScene.getNotificationPane().show(); // setNotificationPane(true);
+                	showHideNewsPane.setSelected(false);
+                } else {
+                	mainScene.getNotificationPane().hide(); // setNotificationPane(false);
+                	showHideNewsPane.setSelected(false);
+                }
+            }
+        });
+ 
+		slideFromTop.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent arg0) {
+                if (!mainScene.getNotificationPane().isShowFromTop()) {
+                	mainScene.getNotificationPane().setShowFromTop(true);
+                	slideFromTop.setText("Slide from Top");
+                	slideFromTop.setSelected(true);
+                } else {
+                	mainScene.getNotificationPane().setShowFromTop(false);
+                	slideFromTop.setText("Slide from Bottom");
+                	slideFromTop.setSelected(true);
+                }
+            }
+        });		      
+	        
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -330,11 +417,43 @@ public class MainWindowFXMenu extends MenuBar  {
     			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
     			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
     		}
-        });
-		
+        });		
 	}
 	
+	public Stage startWebTool() {
+		
+	    Stage webStage = new Stage();
+	    
+	    final WebView browser = new WebView();
+	    final WebEngine webEngine = browser.getEngine();
+
+	    ScrollPane scrollPane = new ScrollPane();
+	    scrollPane.setFitToWidth(true);
+	    scrollPane.setContent(browser);
+	    
+	    webEngine.getLoadWorker().stateProperty()
+	        .addListener(new ChangeListener<State>() {
+	          @Override
+	          public void changed(@SuppressWarnings("rawtypes") ObservableValue ov, State oldState, State newState) {
+	            if (newState == Worker.State.SUCCEEDED) {
+	            	webStage.setTitle(webEngine.getLocation());
+	            }
+	          }
+	        });
+	    
+	    webEngine.load("http://mars-sim.sourceforge.net/#development");
+	    
+	    
+	    Scene webScene = new Scene(scrollPane);
+	    webStage.setScene(webScene);
+	    
+	    return webStage;
+	}
+	
+	// Toggle the full screen mode off
 	public void exitFullScreen() {
 		showFullScreenItem.setSelected(false);
 	}
+
+	
 }

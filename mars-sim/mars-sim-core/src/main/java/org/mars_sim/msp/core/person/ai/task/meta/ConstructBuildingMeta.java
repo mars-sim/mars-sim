@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Constructionbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
@@ -48,20 +49,7 @@ public class ConstructBuildingMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all building construction missions occurring at the settlement.
-            try {
-                List<BuildingConstructionMission> missions = ConstructBuilding.
-                        getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
-            }
-        }
+        double result = 10D;
 
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
@@ -75,21 +63,38 @@ public class ConstructBuildingMeta implements MetaTask {
                 result = 0D;
         } 
         
-        // Crowded settlement modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);        
+        if (result != 0 )  {// if task penalty is not zero
+	            
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            // Check all building construction missions occurring at the settlement.
+	            try {
+	                List<BuildingConstructionMission> missions = ConstructBuilding.
+	                        getAllMissionsNeedingAssistance(person.getSettlement());
+	                result = 50D * missions.size();
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+	            }
+	        }
+	        
+	        // Crowded settlement modifier
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = person.getSettlement();
+	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+	                result *= 2D;
+	            }
+	        }
+	        
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	        
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);        
+	        }
+	        
         }
     
         return result;
@@ -102,21 +107,11 @@ public class ConstructBuildingMeta implements MetaTask {
 
 	public double getProbability(Robot robot) {
 	       
-        double result = 0D;
+        double result = 10D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all building construction missions occurring at the settlement.
-            try {
-                List<BuildingConstructionMission> missions = ConstructBuilding.
-                        getAllMissionsNeedingAssistance(robot.getSettlement());
-                result = 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
-            }
-        }
-
+        if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
+    	result = 0D;
+        
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
             result = 0D;
@@ -129,17 +124,35 @@ public class ConstructBuildingMeta implements MetaTask {
                 result = 0D;
         } 
         
-        // Crowded settlement modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = robot.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
+        if (result != 0 )  {// if task penalty is not zero
+        
+            
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                
+                // Check all building construction missions occurring at the settlement.
+                try {
+                    List<BuildingConstructionMission> missions = ConstructBuilding.
+                            getAllMissionsNeedingAssistance(robot.getSettlement());
+                    result = 50D * missions.size();
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+                }
             }
+
+        	
+	        // Crowded settlement modifier
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = robot.getSettlement();
+	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+	                result *= 2D;
+	            }
+	        }
+	        
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+	        
         }
-        
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-        
         return result;
     }
 }
