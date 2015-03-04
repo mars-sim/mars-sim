@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
+import org.mars_sim.msp.core.person.ai.job.Repairbot;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.Task;
 
@@ -85,16 +85,19 @@ public class RepairMalfunctionMeta implements MetaTask {
 	@Override
 	public double getProbability(Robot robot) {
 	    
-        double result = 0D;
+        double result = 10D;
 
         // Job modifier.
-        RobotJob robotJob = robot.getBotMind().getRobotJob();
-        if (robotJob != null) 
-            result = robotJob.getStartTaskProbabilityModifier(RepairMalfunction.class);               
+        //RobotJob robotJob = robot.getBotMind().getRobotJob();
+        //if (robotJob != null) 
+        //    result = robotJob.getStartTaskProbabilityModifier(RepairMalfunction.class);               
         
-        if (result > 0 )  { // if task penalty is not zero
+        if (robot.getBotMind().getRobotJob() instanceof Repairbot)
+        	result = 0D;
+        
+        if (result != 0 )  { // if task penalty is not zero
         	
-        	result += 100D;
+        	result += 10D;
 	        // Add probability for all malfunctionable entities in robot's local.
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 	        while (i.hasNext()) {

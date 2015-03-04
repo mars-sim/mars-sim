@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Chefbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -106,14 +107,11 @@ public class ProduceFoodMeta implements MetaTask {
         // Job modifier.
         //RobotJob robotJob = robot.getBotMind().getRobotJob();
         //if (robotJob != null)
-         //   result = robotJob.getStartTaskProbabilityModifier(ProduceFood.class);
-        
-        //if (robot.getBotMind().getRobotJob() instanceof Chefbot)
-        //if (result > 0 ) // if task penalty is not zero
- 
+         //   result = robotJob.getStartTaskProbabilityModifier(ProduceFood.class);        
+        if (robot.getBotMind().getRobotJob() instanceof Chefbot)
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        	
-	        	result += 100D;
+	        	result += 10D;
 	            // See if there is an available foodProduction building.
 	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
 	            if (foodProductionBuilding != null) {

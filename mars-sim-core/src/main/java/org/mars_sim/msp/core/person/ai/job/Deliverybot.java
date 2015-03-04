@@ -48,8 +48,8 @@ implements Serializable {
         jobTasks.add(UnloadVehicleEVA.class);
         jobTasks.add(UnloadVehicleGarage.class);
         //jobTasks.add(ConsolidateContainers.class);.
-		jobMissionStarts.add(Trade.class);
-		jobMissionJoins.add(Trade.class);
+		//jobMissionStarts.add(Trade.class);
+		//jobMissionJoins.add(Trade.class);
         jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 

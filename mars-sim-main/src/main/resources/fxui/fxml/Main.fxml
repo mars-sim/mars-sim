@@ -16,9 +16,9 @@
               <Insets />
             </padding>
                <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Simulation" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Sim" />
           	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToTwo" text="Options" />
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Bonus" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Modtool" />
 
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" text="Configurations" />
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" text="Credits" />

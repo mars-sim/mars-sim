@@ -48,7 +48,7 @@ public class MetaMissionUtil {
         robotMetaMissions = new ArrayList<MetaMission>(12);
         
         // Populate robotMetaMissions list with all meta missions.
-        robotMetaMissions.add(new TradeMeta());
+        //robotMetaMissions.add(new TradeMeta());
         robotMetaMissions.add(new TravelToSettlementMeta());
     }    
     

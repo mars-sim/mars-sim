@@ -19,7 +19,7 @@ public class SettlementScene {
         Group  root  =  new  Group();
         Scene  settlementScene  =  new  Scene(root);
         settlementScene.getStylesheets().addAll("/fxui/css/settlementskin.css");		
-        Button continueButton = new Button("Go to Menu Scene");
+        Button continueButton = new Button("Back to Main Menu");
         continueButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent arg0) {

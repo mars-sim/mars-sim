@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.util.Collection;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 
@@ -44,6 +45,8 @@ public interface Crewable {
 	 * @return robots as Collection
 	 */
 	public Collection<Robot> getRobotCrew();
+
+	public Collection<Unit> getUnitCrew();
 
 	
 	/**

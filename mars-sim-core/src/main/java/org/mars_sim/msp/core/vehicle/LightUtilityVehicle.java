@@ -163,5 +163,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         attachments = null;
     }
 
+	@Override
+	public Collection<Unit> getUnitCrew() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

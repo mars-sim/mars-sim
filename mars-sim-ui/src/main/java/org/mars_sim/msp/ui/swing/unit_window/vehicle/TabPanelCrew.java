@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -49,8 +50,12 @@ implements MouseListener, ActionListener {
 	private JLabel crewNumLabel;
 	private JLabel crewCapLabel;
 	private DefaultListModel<Person> crewListModel;
+	//private DefaultListModel<Unit> crewListModel;
 	private JList<Person> crewList;
+	//private JList<Unit> crewList;
 	private Collection<Person> crewCache;
+	//private Collection<Unit> crewCache;
+
 	private int crewNumCache;
 	private int crewCapacityCache;
 
@@ -97,12 +102,16 @@ implements MouseListener, ActionListener {
 
 		// Create crew list model
 		crewListModel = new DefaultListModel<Person>();
+		//crewListModel = new DefaultListModel<Unit>();
 		crewCache = crewable.getCrew();
+		//crewCache = crewable.getUnitCrew();
 		Iterator<Person> i = crewCache.iterator();
+		//Iterator<Unit> i = crewCache.iterator();
 		while (i.hasNext()) crewListModel.addElement(i.next());
 
 		// Create crew list
 		crewList = new JList<Person>(crewListModel);
+		//crewList = new JList<Unit>(crewListModel);
 		crewList.addMouseListener(this);
 		crewScrollPanel.setViewportView(crewList);
 
@@ -122,8 +131,8 @@ implements MouseListener, ActionListener {
 		Crewable crewable = (Crewable) vehicle;
 
 		// Update crew num
-		if (crewNumCache != crewable.getCrewNum()) {
-			crewNumCache = crewable.getCrewNum();
+		if (crewNumCache != crewable.getCrewNum() + crewable.getRobotCrewNum()) {
+			crewNumCache = crewable.getCrewNum() + crewable.getRobotCrewNum();
 			crewNumLabel.setText(Msg.getString("TabPanelCrew.crew", crewNumCache)); //$NON-NLS-1$
 		}
 
@@ -134,10 +143,13 @@ implements MouseListener, ActionListener {
 		}
 
 		// Update crew list
+		//if (!Arrays.equals(crewCache.toArray(), crewable.getUnitCrew().toArray())) {
 		if (!Arrays.equals(crewCache.toArray(), crewable.getCrew().toArray())) {
+			//crewCache = crewable.getUnitCrew();
 			crewCache = crewable.getCrew();
 			crewListModel.clear();
 			Iterator<Person> i = crewCache.iterator();
+			//Iterator<Unit> i = crewCache.iterator();
 			while (i.hasNext()) crewListModel.addElement(i.next());
 		}
 
