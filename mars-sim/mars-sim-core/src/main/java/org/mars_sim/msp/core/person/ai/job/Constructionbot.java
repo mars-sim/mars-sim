@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.structure.Settlement;
  * and other structures.
  */
 public class Constructionbot
-extends Job
+extends RobotJob
 implements Serializable {
 
 	/** default serial id. */
@@ -54,24 +54,24 @@ implements Serializable {
 
 	}
 
-	@Override
-	public double getCapability(Person person) {
-
-		double result = 0D;
-
-		int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-		result = constructionSkill;
-
-		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result+= result * ((averageAptitude - 50D) / 100D);
-
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-
-		return result;
-	}
+//	@Override
+//	public double getCapability(Person person) {
+//
+//		double result = 0D;
+//
+//		int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+//		result = constructionSkill;
+//
+//		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
+//		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+//		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+//		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+//		result+= result * ((averageAptitude - 50D) / 100D);
+//
+//		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+//
+//		return result;
+//	}
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {

@@ -750,7 +750,7 @@ implements Serializable {
 	            String jobName = robotConfig.getConfiguredRobotJob(x);
 	            //System.out.println("jobName is "+jobName);
 	            if (jobName != null) {
-	                RobotJob robotJob = JobManager.getRobotJob(jobName);
+	                RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
 	                if (robotJob != null) {
 	                	robot.getBotMind().setRobotJob(robotJob, true);
 	                }
@@ -819,7 +819,8 @@ implements Serializable {
                     
                     String jobName = RobotJob.getName(robotType);
                     if (jobName != null) {
-                        RobotJob robotJob = JobManager.getRobotJob(jobName);
+//                        RobotJob robotJob = JobManager.getRobotJob(jobName);
+                        RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
                         //System.out.println("jobName is "+jobName);
                         if (robotJob != null) {
                         	robot.getBotMind().setRobotJob(robotJob, true);

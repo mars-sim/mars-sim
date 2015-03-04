@@ -71,6 +71,8 @@ public final class JobManager implements Serializable {
 		robotJobs.add(new Gardenbot());
 		robotJobs.add(new Medicbot());	
 		robotJobs.add(new Repairbot());
+		robotJobs.add(new Constructionbot());
+		robotJobs.add(new Deliverybot());
 	}
 	
 	/**
@@ -109,7 +111,7 @@ public final class JobManager implements Serializable {
 	public static RobotJob getRobotJob(String jobClassName) {
 		if (robotJobs == null) loadRobotJobs();
 		for (RobotJob robotJob : robotJobs) {
-			if (robotJob.getClass().getSimpleName().compareTo(jobClassName) == 0) {
+			if (robotJob.getClass().getSimpleName().compareToIgnoreCase(jobClassName) == 0) {
 				return robotJob;
 			}
 		}
