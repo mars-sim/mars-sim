@@ -1,4 +1,4 @@
-package org.mars_sim.msp;
+package org.mars_sim.msp.javafx;
  
 import java.util.HashMap;
 

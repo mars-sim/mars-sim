@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.geometry.*?>
@@ -7,33 +10,70 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.mars_sim.msp.Screen1Controller">
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
   <children>
       <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="222.0" prefWidth="301.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="302.0" prefWidth="400.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
                <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Sim" />
-          	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToTwo" text="Options" />
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Modtool" />
+              <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" opacity="0.67" prefHeight="54.0" prefWidth="339.0" text="Main Menu">
+                <font>
+                  <Font name="System Bold Italic" size="24.0" />
+                </font>
+                     <effect>
+                        <Glow level="0.38" />
+                     </effect>
+                     <textFill>
+                        <RadialGradient centerX="0.5" centerY="0.5" cycleMethod="REFLECT" radius="0.3953488372093023">
+                           <stops>
+                              <Stop color="BLACK" />
+                              <Stop color="#7784d3" offset="1.0" />
+                           </stops>
+                        </RadialGradient>
+                     </textFill>
+              </Label>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Sim" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea Bold" size="12.0" />
+                     </font></Button>
+          	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToTwo" text="Options" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea Bold" size="12.0" />
+                     </font></Button>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Modtool" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea Bold" size="12.0" />
+                     </font></Button>
 
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" text="Configurations" />
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" text="Credits" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" text="Config" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea Bold" size="12.0" />
+                     </font></Button>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" text="Credits" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea" size="12.0" />
+                     </font></Button>
                </children>
           </VBox>
          </center>
          <bottom>
-            <HBox prefHeight="40.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+            <HBox prefHeight="0.0" prefWidth="382.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
-        <Label text="Main Menu" BorderPane.alignment="CENTER">
-          <font>
-            <Font size="18.0" />
-          </font>
-        </Label>
+            <Label prefHeight="55.0" prefWidth="353.0" text="Mars Simulation Project" textFill="#bf8e24" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Buxton Sketch" size="36.0" />
+               </font>
+               <BorderPane.margin>
+                  <Insets top="20.0" />
+               </BorderPane.margin>
+               <effect>
+                  <Reflection />
+               </effect>
+            </Label>
          </top>
       </BorderPane>
   </children>

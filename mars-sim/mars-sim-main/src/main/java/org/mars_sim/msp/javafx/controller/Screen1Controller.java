@@ -1,7 +1,11 @@
-package org.mars_sim.msp;
+package org.mars_sim.msp.javafx.controller;
  
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import org.mars_sim.msp.javafx.ControlledScreen;
+import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.msp.javafx.ScreensSwitcher;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
