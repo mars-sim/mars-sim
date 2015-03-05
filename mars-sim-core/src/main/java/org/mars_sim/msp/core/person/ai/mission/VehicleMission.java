@@ -1001,8 +1001,19 @@ implements UnitListener {
 		else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);
+			
 		}
 
+		// TODO: for future debugging NullPointerException when calling registerNewEvent()
+		
+		 if (unit == null) {
+             throw new IllegalStateException("unit is null");
+         }
+         if (newEvent == null) {
+             throw new IllegalStateException("newEvent is null"); 
+         }
+         
+         
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {
 			logger.info("Emergency beacon activated on " + vehicle.getName());

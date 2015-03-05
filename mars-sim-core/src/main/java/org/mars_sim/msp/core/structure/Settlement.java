@@ -87,7 +87,7 @@ implements LifeSupport {
 	private int solCache = 1;
 	
     //2014-11-23 Added foodProductionOverride
-    private boolean foodProductionOverride;
+    private boolean foodProductionOverride = false;
 	//private boolean reportSample = true;
     /** Override flag for mission creation at settlement. */
     private boolean missionCreationOverride;
