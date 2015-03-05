@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.mars_sim.msp.Screen3Controller">
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" 
+fx:controller="org.mars_sim.msp.javafx.controller.Screen3Controller">
    <children>
       <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
          <center>

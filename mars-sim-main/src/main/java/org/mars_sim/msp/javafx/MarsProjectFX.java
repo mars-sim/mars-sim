@@ -4,7 +4,7 @@
  * @version 3.08 2015-02-05
  * @author Manny Kung
  */
-package org.mars_sim.msp;
+package org.mars_sim.msp.javafx;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -52,9 +52,11 @@ public class MarsProjectFX extends Application  {
 
     public void start(Stage primaryStage) {
 
+        primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+        
         logger.info("Starting Mars Simulation Project FX (" +
     			Simulation.VERSION + " build " + Simulation.BUILD + 
-    			" running Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion() + ")");
+    			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion() + ")");
         /*
         Button btn = new Button();
         btn.setText("Say 'Hello Mars-simmers!'");
