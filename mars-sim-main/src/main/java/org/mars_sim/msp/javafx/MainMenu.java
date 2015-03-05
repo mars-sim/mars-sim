@@ -107,7 +107,7 @@ public class MainMenu {
        scene.setFill(Color.BLACK);
     		   
        //primaryStage.setFullScreen(true);
-       //primaryStage.setResizable(false);            
+       primaryStage.setResizable(false);            
 	   primaryStage.setTitle(WINDOW_TITLE);
        primaryStage.setScene(scene);
        primaryStage.show();
@@ -212,7 +212,7 @@ public class MainMenu {
        rt.play();
        
        // Use a SubScene       
-       SubScene subScene = new SubScene(root, 640, 512, true, SceneAntialiasing.BALANCED);
+       SubScene subScene = new SubScene(root, 480, 480, true, SceneAntialiasing.BALANCED);
        subScene.setFill(Color.TRANSPARENT);
        
        subScene.setCamera(camera);

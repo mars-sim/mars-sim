@@ -55,43 +55,30 @@ public class PrepareDessertMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
              
-        double result = 20D;
+        double result = 0D;
         
         // TODO: if a person is very hungry, should he come inside and result > 0 ?
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-            result = 0D;
-        }
         
-        if (PrepareDessert.isDessertTime(person)) {
-        	
+        if (person.getLocationSituation() != LocationSituation.OUTSIDE) 
+        
+        	if (PrepareDessert.isDessertTime(person)) {
+        		
             try {
                 // See if there is an available kitchen.
                 Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
 
                 if (kitchenBuilding != null) {
                     PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
-    			      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
                    
                     int population = person.getSettlement().getCurrentPopulationNum();
-                    if (population < 2)
-                    	result = 0;
-                    
-                    else {
+                    if (population > 1) {
                     	
-	                	if (kitchen.hasFreshDessert() == false)
-	                		result += 100D;
-	                	
-	                    String [] dessert = {   "Soymilk",
-	                            "Sugarcane Juice",
-	                            "Strawberry",
-	                            "Granola Bar",
-	                            "Blueberry Muffin", 
-	                            "Cranberry Juice"  };
-	                    
-	                    // Put together a list of available dessert 
-	                    for(String n : dessert) {
+		                   String [] desserts = PreparingDessert.getArrayOfDesserts();
+		                   
+		                   // See if the desserts are available to be served 
+		                   for(String n : desserts) {
 	                        if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
-	                        	result += 5D;
+	                        	result += 10D;
 	                        }
 	                    }
 	                    
@@ -144,12 +131,11 @@ public class PrepareDessertMeta implements MetaTask {
 	   double result = 0D;
 
 	   if (robot.getBotMind().getRobotJob() instanceof Chefbot)
+		   
 		   if (robot.getLocationSituation() != LocationSituation.OUTSIDE)
+			   
 			   if (PrepareDessert.isDessertTime(robot)) {		   
-		       // Job modifier.
-	           //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(PrepareDessert.class);
-	           //if (result > 0 )  {// if task penalty is not zero		       	   
-			       result += 10D;
+
 			       try {
 			           // See if there is an available kitchen.
 			           Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
@@ -159,31 +145,23 @@ public class PrepareDessertMeta implements MetaTask {
 						      	//logger.info("kitchenBuilding.toString() : "+ kitchenBuilding.toString());
 			              
 		                    int population = robot.getSettlement().getCurrentPopulationNum();
-		                    if (population < 2)
-		                    	result = 0;
-			               
-			               else {
+		                    if (population > 1) {
 			               	
 			               	if (kitchen.hasFreshDessert() == false)
 			               		result += 100D;
 			               	
-			                   String [] dessert = {   "Soymilk",
-			                           "Sugarcane Juice",
-			                           "Strawberry",
-			                           "Granola Bar",
-			                           "Blueberry Muffin", 
-			                           "Cranberry Juice"  };
+			                   String [] desserts = PreparingDessert.getArrayOfDesserts();
 			                   
-			                   // Put together a list of available dessert 
-			                   for(String n : dessert) {
+			                   // See if the desserts are available to be served 
+			                   for(String n : desserts) {
 			                       if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n))
-			                       	result += 5D;
+			                       	result += 10D;
 			                   }
 			                   
+			                   // TODO: should we program the robot to avoid crowded places for the benefit of humans? 
 			                   // Crowding modifier.
 			                   result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-			                   //result *= TaskProbabilityUtil.getRelationshipModifier(robot, kitchenBuilding);
-			                   
+				                   
 			               }
 			           }
 			       }

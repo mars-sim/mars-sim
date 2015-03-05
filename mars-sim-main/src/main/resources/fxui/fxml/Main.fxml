@@ -10,70 +10,91 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
+<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
   <children>
-      <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
+      <BorderPane layoutX="-1.0" prefHeight="480.0" prefWidth="600.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="302.0" prefWidth="400.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="230.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
                <children>
-              <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" opacity="0.67" prefHeight="54.0" prefWidth="339.0" text="Main Menu">
+              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="54.0" prefWidth="136.0" style="-fx-background-color: black;" text="Main Menu" textFill="#ffee00">
                 <font>
-                  <Font name="System Bold Italic" size="24.0" />
+                  <Font name="Aharoni Bold" size="24.0" />
                 </font>
                      <effect>
-                        <Glow level="0.38" />
+                        <Glow />
                      </effect>
-                     <textFill>
-                        <RadialGradient centerX="0.5" centerY="0.5" cycleMethod="REFLECT" radius="0.3953488372093023">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="#7784d3" offset="1.0" />
-                           </stops>
-                        </RadialGradient>
-                     </textFill>
               </Label>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" text="New Sim" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="New Sim" textFill="#f75d0c">
                      <font>
-                        <Font name="Caladea Bold" size="12.0" />
-                     </font></Button>
-          	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToTwo" text="Options" textFill="#f75d0c">
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Options" textFill="#f75d0c">
                      <font>
-                        <Font name="Caladea Bold" size="12.0" />
-                     </font></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" text="Modtool" textFill="#f75d0c">
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Modtool" textFill="#f75d0c">
                      <font>
-                        <Font name="Caladea Bold" size="12.0" />
-                     </font></Button>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
 
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" text="Config" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Config" textFill="#f75d0c">
                      <font>
-                        <Font name="Caladea Bold" size="12.0" />
-                     </font></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" text="Credits" textFill="#f75d0c">
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Credits" textFill="#f75d0c">
                      <font>
-                        <Font name="Caladea" size="12.0" />
-                     </font></Button>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
                </children>
+               <BorderPane.margin>
+                  <Insets bottom="35.0" left="370.0" />
+               </BorderPane.margin>
           </VBox>
          </center>
          <bottom>
             <HBox prefHeight="0.0" prefWidth="382.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
-            <Label prefHeight="55.0" prefWidth="353.0" text="Mars Simulation Project" textFill="#bf8e24" BorderPane.alignment="CENTER">
-               <font>
-                  <Font name="Buxton Sketch" size="36.0" />
-               </font>
-               <BorderPane.margin>
-                  <Insets top="20.0" />
-               </BorderPane.margin>
-               <effect>
-                  <Reflection />
-               </effect>
-            </Label>
+            <VBox>
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="508.0" text="Mars Simulation Project" textFill="#eb810f" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="Aharoni Bold" size="36.0" />
+                     </font>
+                     <BorderPane.margin>
+                        <Insets top="20.0" />
+                     </BorderPane.margin>
+                     <effect>
+                        <Lighting>
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant />
+                           </light>
+                        </Lighting>
+                     </effect>
+                  </Label>
+               </children>
+            </VBox>
          </top>
       </BorderPane>
   </children>

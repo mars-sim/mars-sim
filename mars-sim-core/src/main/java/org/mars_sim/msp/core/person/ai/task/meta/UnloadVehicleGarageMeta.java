@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
@@ -82,29 +83,26 @@ public class UnloadVehicleGarageMeta implements MetaTask {
         
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                int numVehicles = 0;
-                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
-                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-                result = 50D * numVehicles;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                e.printStackTrace(System.err);
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-        
-        // Job modifier.
-        //Job job = person.getMind().getJob();
-        //if (job != null) {
-         //   result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
-        //}
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            // Check all vehicle missions occurring at the settlement.
+	            try {
+	                int numVehicles = 0;
+	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+	                result = 50D * numVehicles;
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+	                e.printStackTrace(System.err);
+	            }
+	        
+	
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+	        
+	        }
     
         return result;
     }

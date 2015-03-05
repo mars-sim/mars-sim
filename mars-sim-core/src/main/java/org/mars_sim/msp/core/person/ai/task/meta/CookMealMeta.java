@@ -138,15 +138,8 @@ public class CookMealMeta implements MetaTask {
         
         if (robot.getLocationSituation() != LocationSituation.OUTSIDE) 
 	        if (CookMeal.isMealTime(robot)) {
-	        	// Job modifier.      
-		        //result = robot.getBotMind().getRobotJob().getStartTaskProbabilityModifier(CookMeal.class);
 		        if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
-		        //System.out.println(robot.getName() + " : CookMeal  : " + result);
-		            
-		        //if (result > 0 ) {// if task penalty is not zero
-		     
-		      		result += 100D;
-		      		
+	
 		            try {
 		                // See if there is an available kitchen.
 		                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
@@ -156,10 +149,7 @@ public class CookMealMeta implements MetaTask {
 			                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 			                
 		                    int population = robot.getSettlement().getCurrentPopulationNum();
-		                    if (population < 2)
-		                    	result = 0;
-		                    
-		                    else {                    	
+		                    if (population > 1) {                    	
 			                    
 			                	if (kitchen.hasCookedMeal() == false)
 			                		result += 100D;
@@ -167,9 +157,7 @@ public class CookMealMeta implements MetaTask {
 			                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
 			                    int size = kitchen.getHotMealCacheSize();
 			                    result += size * 50D;
-			                    
-			                    if (result < 0D)  result = 0D;
-			                    
+		                    
 			                    // Crowding modifier.
 			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
 		                    }
@@ -180,6 +168,9 @@ public class CookMealMeta implements MetaTask {
 		            }	
 		            // Effort-driven task modifier.
 		            result *= robot.getPerformanceRating();	
+                    
+                    if (result < 0D)  result = 0D;
+
 		        }
 	        
 	        }

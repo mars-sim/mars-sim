@@ -72,9 +72,11 @@ public class RelaxMeta implements MetaTask {
 	public double getProbability(Robot robot) {
         double result = 0D;
 
+        // TODO: in what case should a bot "relax" or slow down its pace?  
+        // result += robot.getPhysicalCondition().getStress();
+        
         /*
-        // Stress modifier
-        result += robot.getPhysicalCondition().getStress();
+  
 
         // Crowding modifier
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
