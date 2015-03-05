@@ -83,6 +83,11 @@ public class HistoricalEventManager {
 
 		MarsClock timestamp;
 
+		// TODO: for debugging the NullPointerException when calling registerNewEvent()		
+        if (newEvent == null) {
+            throw new IllegalStateException("newEvent is null"); 
+        }
+        
 		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent); 
 		// check if event is MALFUNCTION or MEDICAL, save it for notification box display	
 		
@@ -96,6 +101,12 @@ public class HistoricalEventManager {
 		if (masterClock != null) {
 			if (mainClock == null) mainClock = masterClock.getMarsClock();
 			 timestamp = (MarsClock) mainClock.clone();
+			 
+			// TODO: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
+			 if (timestamp == null) {
+		            throw new IllegalStateException("timestamp is null");
+		        }
+			 
 			newEvent.setTimestamp(timestamp);
 		}
 

@@ -41,22 +41,22 @@ public class ProduceFoodMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
-        // If settlement has foodProduction override, no new  foodProduction processes can be created.
-        if (!person.getSettlement().getFoodProductionOverride()) {
-	        
-	        // TODO: the cook should check if he himself or someone else is hungry, 
-	        // he's more eager to cook except when he's tired
-	        result += person.getPhysicalCondition().getHunger() - 400D;
-	        result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
-	        
-	        if (result < 0D) result = 0D;
+          
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {       
 	
 	        // Cancel any foodProduction processes that's beyond the skill of any people 
 	        // associated with the settlement.
 	        ProduceFood.cancelDifficultFoodProductionProcesses(person);
 	
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        // If settlement has foodProduction override, no new foodProduction processes can be created.	        
+	        if (!person.getSettlement().getFoodProductionOverride()) {
+	        	
+		        // TODO: the cook should check if he himself or someone else is hungry, 
+		        // he's more eager to cook except when he's tired
+		        result += person.getPhysicalCondition().getHunger() - 400D;
+		        result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
+		        
+		        if (result < 0D) result = 0D;
 	
 	            // See if there is an available foodProduction building.
 	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
