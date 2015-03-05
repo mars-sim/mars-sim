@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.07 2015-01-14
+ * @version 3.08 2015-03-05
  * @author Scott Davis
  */
 
@@ -241,31 +241,29 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param facing (degrees from North clockwise).
      */
     public void setParkedLocation(double xLocation, double yLocation, double facing) {
+          
+		// Get current human crew positions relative to the vehicle.
+        Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
         
-
-		//if (person != null) {
-			Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
+        // Get current robot crew positions relative to the vehicle.
+        Map<Robot, Point2D> currentRobotCrewPositions = getCurrentRobotCrewPositions();
 	        
-	        this.xLocParked = xLocation;
-	        this.yLocParked = yLocation;
-	        this.facingParked = facing;
+        // Set new parked location for the vehicle.
+	    this.xLocParked = xLocation;
+	    this.yLocParked = yLocation;
+	    this.facingParked = facing;
 	        
-	        // Set the crew members' (if any) location to vehicle's new parked location.
-	        setCrewPositions(currentCrewPositions);
-		//}
-		//else if (robot != null) {
-			Map<Robot, Point2D> currentRobotCrewPositions = getCurrentRobotCrewPositions();
-	        
-	        this.xLocParked = xLocation;
-	        this.yLocParked = yLocation;
-	        this.facingParked = facing;
-	        
-	        // Set the crew members' (if any) location to vehicle's new parked location.
-	        setRobotCrewPositions(currentRobotCrewPositions);
-		//}
-        
+	    // Set the human crew locations to the vehicle's new parked location.
+	    setCrewPositions(currentCrewPositions);
+	    
+	    // Set the robot crew locations to the vehicle's new parked location.
+	    setRobotCrewPositions(currentRobotCrewPositions);
     }
     
+    /**
+     * Gets all human crew member positions relative to within the vehicle.
+     * @return map of crew members and their relative vehicle positions.
+     */
     private Map<Person, Point2D> getCurrentCrewPositions() {
         
         Map<Person, Point2D> result = null;
@@ -286,27 +284,32 @@ public abstract class Vehicle extends Unit implements Serializable,
         return result;
     }
     
-   private Map<Robot, Point2D> getCurrentRobotCrewPositions() {
-        
+    /**
+     * Gets all robot crew member positions relative to within the vehicle.
+     * @return map of crew members and their relative vehicle positions.
+     */
+    private Map<Robot, Point2D> getCurrentRobotCrewPositions() {
+
         Map<Robot, Point2D> result = null;
-        
+
         // Record current object-relative crew positions if vehicle is crewable.
         if (this instanceof Crewable) {
             Crewable crewable = (Crewable) this;
             result = new HashMap<Robot, Point2D>(crewable.getCrewNum());
             Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
             while (i.hasNext()) {
-            	Robot robotCrewmember = i.next();
+                Robot robotCrewmember = i.next();
                 Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(robotCrewmember.getXLocation(), 
                         robotCrewmember.getYLocation(), this);
                 result.put(robotCrewmember, crewPos);
             }
         }
-        
+
         return result;
     }
+   
     /**
-     * Sets the positions of all crew members (if any) to the vehicle's location.
+     * Sets the positions of all human crew members (if any) to the vehicle's location.
      */
     private void setCrewPositions(Map<Person, Point2D> currentCrewPositions) {
         
@@ -325,6 +328,9 @@ public abstract class Vehicle extends Unit implements Serializable,
         }
     }
     
+    /**
+     * Sets the positions of all robot crew members (if any) to the vehicle's location.
+     */
     private void setRobotCrewPositions(Map<Robot, Point2D> currentRobotCrewPositions) {
         
         // Only move crew if vehicle is Crewable.
