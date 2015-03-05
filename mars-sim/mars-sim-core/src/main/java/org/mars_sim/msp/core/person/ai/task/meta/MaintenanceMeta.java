@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.Repairbot;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -97,51 +96,43 @@ public class MaintenanceMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        double result = 10D;
+        double result = 0D;
 
-        // Job modifier.
-        //RobotJob robotJob = robot.getBotMind().getRobotJob();
-        //if (robotJob != null) 
-        //    result = robotJob.getStartTaskProbabilityModifier(Maintenance.class);
-           
-        if (robot.getBotMind().getRobotJob() instanceof Repairbot)
-        	result = 0D;
-        
-        if (result != 0 )  { // if task penalty is not zero
-        	
-        	result += 10D;
-	             
-	        try {
-	            // Total probabilities for all malfunctionable entities in robot's local.
-	            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-	            while (i.hasNext()) {
-	                Malfunctionable entity = i.next();
-	                boolean isVehicle = (entity instanceof Vehicle);
-	                boolean uninhabitableBuilding = false;
-	                if (entity instanceof Building) 
-	                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
-	                MalfunctionManager manager = entity.getMalfunctionManager();
-	                boolean hasMalfunction = manager.hasMalfunction();
-	                boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
-	                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-	                boolean minTime = (effectiveTime >= 1000D);
-	                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
-	                    double entityProb = effectiveTime / 1000D;
-	                    if (entityProb > 100D) {
-	                        entityProb = 100D;
-	                    }
-	                    result += entityProb;
-	                }
-	            }
-	        }
-	        catch (Exception e) {
-	            logger.log(Level.SEVERE,"getProbability()",e);
-	        }
+        if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
 	
-	        // Effort-driven task modifier.
-	        result *= robot.getPerformanceRating();
-
-        }
+	        //if (result != 0 )  { // if task penalty is not zero
+	      
+		        try {
+		            // Total probabilities for all malfunctionable entities in robot's local.
+		            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+		            while (i.hasNext()) {
+		                Malfunctionable entity = i.next();
+		                boolean isVehicle = (entity instanceof Vehicle);
+		                boolean uninhabitableBuilding = false;
+		                if (entity instanceof Building) 
+		                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
+		                MalfunctionManager manager = entity.getMalfunctionManager();
+		                boolean hasMalfunction = manager.hasMalfunction();
+		                boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
+		                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		                boolean minTime = (effectiveTime >= 1000D);
+		                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+		                    double entityProb = effectiveTime / 1000D;
+		                    if (entityProb > 100D) {
+		                        entityProb = 100D;
+		                    }
+		                    result += entityProb;
+		                }
+		            }
+		        }
+		        catch (Exception e) {
+		            logger.log(Level.SEVERE,"getProbability()",e);
+		        }
+		
+		        // Effort-driven task modifier.
+		        result *= robot.getPerformanceRating();
+	
+	        }
 
         return result;
 	}

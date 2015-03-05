@@ -87,6 +87,7 @@ public class MetaTaskUtil {
         
         // Populate robotMetaTasks list with all robotMeta tasks.        
         robotMetaTasks.add(new CookMealMeta());
+        robotMetaTasks.add(new ConsolidateContainersMeta());
         robotMetaTasks.add(new ConstructBuildingMeta());
         robotMetaTasks.add(new LoadVehicleEVAMeta());
         robotMetaTasks.add(new LoadVehicleGarageMeta());

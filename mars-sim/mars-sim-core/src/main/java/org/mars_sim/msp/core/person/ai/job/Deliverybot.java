@@ -39,15 +39,11 @@ implements Serializable {
 		// Use Job constructor.
 		super(Deliverybot.class);
 		
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
-		// Add trader-related tasks.
 		jobTasks.add(LoadVehicleEVA.class);
         jobTasks.add(LoadVehicleGarage.class);
         jobTasks.add(UnloadVehicleEVA.class);
         jobTasks.add(UnloadVehicleGarage.class);
-        //jobTasks.add(ConsolidateContainers.class);.
+        jobTasks.add(ConsolidateContainers.class);
 		//jobMissionStarts.add(Trade.class);
 		//jobMissionJoins.add(Trade.class);
         jobMissionStarts.add(TravelToSettlement.class);

@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.Task;
 
@@ -54,13 +55,27 @@ public class ConsolidateContainersMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new ConsolidateContainers(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
+        
+        double result = 0D;
+        
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+	        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation() || 
+	                LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+	        
+	            // Check if there are local containers that need resource consolidation.
+	            if (ConsolidateContainers.needResourceConsolidation(robot)) {
+	                result = 10D;
+	            }
+	        
+	            // Effort-driven task modifier.
+	            result *= robot.getPerformanceRating();
+	        }
+
+        return result;
 	}
 }

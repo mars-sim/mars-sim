@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.geometry.*?>
@@ -7,29 +8,46 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" 
-fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
+<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
     <children>
-      <BorderPane minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0">
+      <BorderPane prefHeight="480.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="222.0" prefWidth="301.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="600.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
                <children>
-			        <Button mnemonicParsing="false" onAction="#goToScreen1" text="Back to Main Menu" />
-			        <Button mnemonicParsing="false" onAction="#goToScreen3" text="Go To Credits" />
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Go To Credits" textAlignment="CENTER" textFill="#f75d0c">
+			        <font>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen1" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Back to Main Menu" textAlignment="CENTER" textFill="#f75d0c">
+			        <font>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
                </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
           </VBox>
          </center>
          <bottom>
-            <HBox prefHeight="40.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
-           <Label text="Configurations" BorderPane.alignment="CENTER">
+           <Label prefHeight="20.0" prefWidth="110.0" style="-fx-background-color: transparent;" text="Config" textFill="#fff600" BorderPane.alignment="CENTER">
           <font>
-            <Font size="18.0" />
+            <Font name="Aharoni Bold" size="36.0" />
           </font>
+               <BorderPane.margin>
+                  <Insets top="10.0" />
+               </BorderPane.margin>
         </Label>
          </top>
       </BorderPane>

@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -80,26 +81,24 @@ public class LoadVehicleGarageMeta implements MetaTask {
         
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
-                result = 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding loading missions.", e);
-            }
-        }
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+        	
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            // Check all vehicle missions occurring at the settlement.
+	            try {
+	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
+	                result = 50D * missions.size();
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+	            }
+	            
 
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-        
-        // Job modifier.
-        //Job job = robot.getMind().getJob();
-       // if (job != null)
-        //    result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
-        
+	            // Effort-driven task modifier.
+	            result *= robot.getPerformanceRating();
+	            
+	        }
     
         return result;
     }

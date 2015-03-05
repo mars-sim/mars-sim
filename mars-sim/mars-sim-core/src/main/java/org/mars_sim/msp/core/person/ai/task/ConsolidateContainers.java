@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -91,17 +92,53 @@ implements Serializable {
         addPhase(CONSOLIDATING);
         setPhase(CONSOLIDATING);
     }
-    
+    public ConsolidateContainers(Robot robot) {
+        // Use Task constructor
+        super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
+                
+        topInventory = robot.getTopContainerUnit().getInventory();
+        if (topInventory != null) {
+            
+            if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If robot is in rover, walk to passenger activity spot.
+                if (robot.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
+                }
+            }
+            else {
+                // Walk to location to consolidate containers.
+                walkToRandomLocation(true);
+            }
+        }
+        else {
+            logger.severe("A top inventory could not be determined for consolidating containers for " + 
+                    robot.getName());
+            endTask();
+        }
+        
+        // Add task phase
+        addPhase(CONSOLIDATING);
+        setPhase(CONSOLIDATING);
+    }    
     /**
      * Checks if containers need resource consolidation at the person's location.
      * @param person the person.
      * @return true if containers need resource consolidation.
      */
     public static boolean needResourceConsolidation(Person person) {
+        Inventory inv = person.getTopContainerUnit().getInventory();    
+        return consolidate(inv);
+    }
+    public static boolean needResourceConsolidation(Robot robot) {
+        Inventory inv = robot.getTopContainerUnit().getInventory();     
+        return consolidate(inv);
+    }
+    
+    public static boolean consolidate(Inventory inv) {   	
         boolean result = false;
         
         Set<AmountResource> partialResources = new HashSet<AmountResource>();
-        Inventory inv = person.getTopContainerUnit().getInventory();
+        
         Iterator<Unit> i = inv.getContainedUnits().iterator();
         while (i.hasNext() && !result) {
             Unit unit = i.next();
@@ -136,9 +173,10 @@ implements Serializable {
                     }
                 }
             }
+            
         }
-        
-        return result;
+    	
+    	return result;
     }
     
     @Override
@@ -162,7 +200,12 @@ implements Serializable {
     private double consolidatingPhase(double time) {
         
         // Determine consolidation load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+    	int strength = 0;
+    	if (person != null) 
+    	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+		else if (robot != null)
+			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        
         double strengthModifier = .1D + (strength * .018D);
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
         double remainingAmountLoading = totalAmountLoading;

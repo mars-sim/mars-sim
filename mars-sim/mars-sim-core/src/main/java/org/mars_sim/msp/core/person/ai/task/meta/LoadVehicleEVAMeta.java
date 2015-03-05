@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -113,25 +114,6 @@ public class LoadVehicleEVAMeta implements MetaTask {
 	       
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
-                result += 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding loading missions.", e);
-            }
-            
-            if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
-                int numEVASuits = robot.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
-                if (numEVASuits >= 2) {
-                    result += 100D;
-                }
-            }
-        }
-
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
             result = 0D;
@@ -145,23 +127,37 @@ public class LoadVehicleEVAMeta implements MetaTask {
             }
         } 
         
-        // Crowded settlement modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = robot.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-        
-        // Job modifier.
-        //Job job = person.getMind().getJob();
-       // if (job != null) 
-        //    result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);        
-        
-    
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+        	
+        	if (result !=0 )
+	        	
+		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		            
+		            // Check all vehicle missions occurring at the settlement.
+		            try {
+		                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
+		                result += 50D * missions.size();
+		            }
+		            catch (Exception e) {
+		                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+		            }
+		            
+		            if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
+		                int numEVASuits = robot.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+		                if (numEVASuits >= 2) {
+		                    result += 100D;
+		                }
+		            }
+		            
+		            Settlement settlement = robot.getSettlement();
+		            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+		                result *= 2D;
+		            }	           
+		            
+		            // Effort-driven task modifier.
+		            result *= robot.getPerformanceRating();
+		        }
+
         return result;
     }
 

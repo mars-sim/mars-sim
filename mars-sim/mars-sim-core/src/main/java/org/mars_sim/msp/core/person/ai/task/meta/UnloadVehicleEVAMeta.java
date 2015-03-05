@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -106,26 +107,12 @@ public class UnloadVehicleEVAMeta implements MetaTask {
 	     
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                int numVehicles = 0;
-                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
-                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-                result = 50D * numVehicles;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                e.printStackTrace(System.err);
-            }
-        }
-
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
             result = 0D;
         }
 
+        // TODO: should  mission continue at night time?
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
@@ -133,24 +120,35 @@ public class UnloadVehicleEVAMeta implements MetaTask {
                 result = 0D;
             }
         } 
-
-        // Crowded settlement modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = robot.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= robot.getPerformanceRating();
-
-        // Job modifier.
-        //Job job = person.getMind().getJob();
-        //if (job != null)
-        //    result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);        
         
-
+    	if (result !=0 )
+    		
+	        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  
+	   
+		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		
+		            // Check all vehicle missions occurring at the settlement.
+		            try {
+		                int numVehicles = 0;
+		                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+		                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+		                result = 50D * numVehicles;
+		            }
+		            catch (Exception e) {
+		                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+		                e.printStackTrace(System.err);
+		            }
+		       
+		            Settlement settlement = robot.getSettlement();
+		            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+		                result *= 2D;
+		            }
+		            
+			        // Effort-driven task modifier.
+			        result *= robot.getPerformanceRating();
+		
+		        }
+	        
         return result;
     }
 }

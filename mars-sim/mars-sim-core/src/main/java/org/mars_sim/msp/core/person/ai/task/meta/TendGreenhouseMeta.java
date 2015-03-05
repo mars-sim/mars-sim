@@ -88,17 +88,10 @@ public class TendGreenhouseMeta implements MetaTask {
 	      
         double result = 0D;
 
-        // Job modifier.
-        //RobotJob robotJob = robot.getBotMind().getRobotJob();
-        //if (robotJob != null) 
-        //    result = robotJob.getStartTaskProbabilityModifier(TendGreenhouse.class);
         if (robot.getBotMind().getRobotJob() instanceof Gardenbot)
-        
-        //if (result > 0 ) // if task penalty is not zero
-        	
+              	
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            //System.out.println(robot.getBotMind().getRobotJob().toString());
-	        	result += 100D;
+
 	            try {
 	                // See if there is an available greenhouse.
 	                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
@@ -110,7 +103,7 @@ public class TendGreenhouseMeta implements MetaTask {
 	                    result += needyCropsNum * 100D;
 	
 	                    // Crowding modifier.
-	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
+	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
 	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
 	                }
 	            }

@@ -74,9 +74,6 @@ implements Serializable {
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
 		jobTasks.add(StudyFieldSamples.class);
-
-		//2014-11-23 Added ProduceFood.class
-		jobTasks.add(ProduceFood.class);
 		
 		// Add chemist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
