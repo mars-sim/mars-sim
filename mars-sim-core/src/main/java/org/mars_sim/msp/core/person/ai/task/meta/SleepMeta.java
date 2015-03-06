@@ -82,6 +82,11 @@ public class SleepMeta implements MetaTask {
 	      
         double result = 0D;
         
+        // No sleeping outside.
+        if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
+            result = 0D;
+        
+        
         // TODO: in what case should a bot "relax" or slow down its pace?  
         // result += robot.getPhysicalCondition().getStress();
         
@@ -100,18 +105,18 @@ public class SleepMeta implements MetaTask {
         
         // Crowding modifier.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+        	result = result + 2;
+        	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
+            	
+            	// TODO: go to that building to recharge if battery is low
+            	
+                //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
                 //result *= TaskProbabilityUtil.getRelationshipModifier(robot, building);
             }
         }
         
-        // No sleeping outside.
-        if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
-            result = 0D;
-        }
 
         return result;
 	}

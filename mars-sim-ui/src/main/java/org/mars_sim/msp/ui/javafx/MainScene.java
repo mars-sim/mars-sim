@@ -248,7 +248,7 @@ public class MainScene {
 	
 	public StatusBar createStatusBar() {
 		StatusBar statusBar = new StatusBar();
-
+		statusBar.setText("");
 	    //statusBar.setAlignment(Pos.BASELINE_RIGHT);
 	    //statusBar.setStyle("-fx-background-color: gainsboro;");
         //statusBar.setAlignment(Pos.CENTER);
