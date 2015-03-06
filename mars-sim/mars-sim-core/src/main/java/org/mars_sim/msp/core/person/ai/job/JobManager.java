@@ -68,11 +68,13 @@ public final class JobManager implements Serializable {
 	private static void loadRobotJobs() {
 		robotJobs = new ArrayList<RobotJob>();
 		robotJobs.add(new Chefbot());
-		robotJobs.add(new Gardenbot());
-		robotJobs.add(new Medicbot());	
-		robotJobs.add(new Repairbot());
 		robotJobs.add(new Constructionbot());
 		robotJobs.add(new Deliverybot());
+		robotJobs.add(new Gardenbot());
+		robotJobs.add(new Makerbot());	
+		robotJobs.add(new Medicbot());	
+		robotJobs.add(new Repairbot());
+		
 	}
 	
 	/**
