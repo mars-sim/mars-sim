@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.07 2015-03-02
+ * @version 3.07 2015-03-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -93,6 +93,7 @@ public class MetaTaskUtil {
         robotMetaTasks.add(new LoadVehicleGarageMeta());
         robotMetaTasks.add(new MaintenanceEVAMeta());
         robotMetaTasks.add(new MaintenanceMeta());
+        robotMetaTasks.add(new ManufactureGoodMeta());
         robotMetaTasks.add(new RepairEVAMalfunctionMeta());
         robotMetaTasks.add(new RepairMalfunctionMeta());  
         robotMetaTasks.add(new PrepareDessertMeta());

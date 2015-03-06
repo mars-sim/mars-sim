@@ -11,7 +11,7 @@
 	<!--             workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="extract iron oxide from regolith"
+	<process name="extract iron oxide and sand from regolith"
 			tech="1" skill="0"
 			work-time="100"
 			process-time="0" 
@@ -32,7 +32,7 @@
 		</outputs>
 	</process>
 	
-	<process name="extract iron oxide from regolith (large batch)"
+	<process name="extract iron oxide and sand from regolith (large batch)"
 			tech="1" skill="2"
 			work-time="500"
 			process-time="0" 
@@ -47,7 +47,7 @@
 	</process>
 		
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
-	<process name="purify rock salt into table salt and other compounds" 
+	<process name="purify rock salt into table/epsom salt and other compounds" 
 	tech="1" skill="1" work-time="10.0" process-time="100" 
 			power-required="1.0">
 		<inputs>

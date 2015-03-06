@@ -45,11 +45,11 @@ public class MetaMissionUtil {
     }
     private static void initializeRobotMetaMissions() {
         
-        robotMetaMissions = new ArrayList<MetaMission>(12);
+        robotMetaMissions = new ArrayList<MetaMission>();
         
         // Populate robotMetaMissions list with all meta missions.
         //robotMetaMissions.add(new TradeMeta());
-        robotMetaMissions.add(new TravelToSettlementMeta());
+        //robotMetaMissions.add(new TravelToSettlementMeta());
     }    
     
     /**
