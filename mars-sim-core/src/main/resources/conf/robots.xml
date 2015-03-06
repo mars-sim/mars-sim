@@ -169,6 +169,31 @@
 				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>				
+		
+		<robot name="MakerBot 007" type="MakerBot" settlement="Schiaparelli Point" job="Maker">
+			<natural-attribute-list>
+				<natural-attribute name="Strength" value="95"/>
+				<natural-attribute name="Endurance" value="95"/>
+				<natural-attribute name="Agility" value="40"/>
+				<natural-attribute name="Teaching" value="10"/>
+				<natural-attribute name="Academic Aptitude" value="95"/>
+				<natural-attribute name="Experience Aptitude" value="95"/>
+				<natural-attribute name="Stress Resilience" value="95"/>
+				<natural-attribute name="Attractiveness" value="10"/>
+				<natural-attribute name="Leadership" value="10"/>
+				<natural-attribute name="Conversation" value="10"/>
+			</natural-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Materials Science" level="2"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="2"/>				
+				<skill name="Construction" level="1"/>
+			</skill-list>
+		</robot>				
+	
 	</robot-list>
 
 </robot-configuration>

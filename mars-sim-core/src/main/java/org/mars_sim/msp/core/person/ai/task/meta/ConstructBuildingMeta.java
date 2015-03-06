@@ -49,7 +49,7 @@ public class ConstructBuildingMeta implements MetaTask {
     @Override
     public double getProbability(Person person) {
         
-        double result = 10D;
+        double result = 0D;
 
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {

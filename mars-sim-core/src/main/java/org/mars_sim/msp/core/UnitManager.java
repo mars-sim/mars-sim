@@ -852,21 +852,23 @@ implements Serializable {
     		}
     	}    	
     	
-    	int num = RandomUtil.getRandomInt(12); // 0 to 109
-    	if (num < 4) // if num == 0, 1, 2, 3
+    	int num = RandomUtil.getRandomInt(15); // 0 to 15
+    	if (num < 3) // if num == 0, 1, 2,
     		robotType = RobotType.REPAIRBOT;
-    	else if (num < 7 ) //  4, 5, 6
+    	else if (num < 6 ) //  3, 4, 5,
     		robotType = RobotType.GARDENBOT;
-    	else if (num < 9 ) //  7, 8
+    	else if (num < 8 ) //  6, 7
 			robotType = RobotType.CHEFBOT;
-    	else if (num < 11 ) //  9, 10
+    	else if (num < 10 ) //  8, 9,
 			robotType = RobotType.CONSTRUCTIONBOT;
-    	else if (num < 12 ) //  11
+       	else if (num < 13 ) //  10, 11, 12
+    			robotType = RobotType.MAKERBOT;    	
+    	else if (num < 14 ) //  13
 			robotType = RobotType.DELIVERYBOT;    	
-    	else if (!hasMedicbot && num == 12 ) 
-    		// if the settlement does not have a medicbot yet and if num = 12
+    	else if (!hasMedicbot && num == 14 ) 
+    		// if the settlement does not have a medicbot yet and if num = 14
 			robotType = RobotType.MEDICBOT;
-    	else // if num = 12
+    	else // if num = 15
     		robotType = RobotType.REPAIRBOT;
     	
     	return robotType;

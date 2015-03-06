@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotType.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-03-05
  * @author Manny Kung
  */
 
@@ -15,6 +15,7 @@ public enum RobotType {
 	CONSTRUCTIONBOT (Msg.getString("RobotType.constructionBot")), //$NON-NLS-1$
 	DELIVERYBOT (Msg.getString("RobotType.deliveryBot")), //$NON-NLS-1$)
 	GARDENBOT (Msg.getString("RobotType.gardenBot")), //$NON-NLS-1$
+	MAKERBOT (Msg.getString("RobotType.makerBot")), //$NON-NLS-1$
 	MEDICBOT (Msg.getString("RobotType.medicBot")), //$NON-NLS-1$
 	REPAIRBOT (Msg.getString("RobotType.repairBot")), //$NON-NLS-1$
 	UNKNOWN (Msg.getString("unknown")); //$NON-NLS-1$

@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Chefbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.Makerbot;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -42,11 +43,11 @@ public class ProduceFoodMeta implements MetaTask {
         
         double result = 0D;
           
+        // Cancel any foodProduction processes that's beyond the skill of any people 
+        // associated with the settlement.
+        ProduceFood.cancelDifficultFoodProductionProcesses(person);
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {       
-	
-	        // Cancel any foodProduction processes that's beyond the skill of any people 
-	        // associated with the settlement.
-	        ProduceFood.cancelDifficultFoodProductionProcesses(person);
 	
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.	        
 	        if (!person.getSettlement().getFoodProductionOverride()) {
@@ -105,14 +106,14 @@ public class ProduceFoodMeta implements MetaTask {
 	      
         double result = 0D;
               
-        // If settlement has foodProduction override, no new
-        // foodProduction processes can be created.
-        if (! robot.getSettlement().getFoodProductionOverride())
-        	
-	        if (robot.getBotMind().getRobotJob() instanceof Chefbot)
+        if (robot.getBotMind().getRobotJob() instanceof Chefbot || robot.getBotMind().getRobotJob() instanceof Makerbot)
 	        	
-		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
 	
+		        // If settlement has foodProduction override, no new
+		        // foodProduction processes can be created.
+		        if (! robot.getSettlement().getFoodProductionOverride()) {
+		            	
 		            // See if there is an available foodProduction building.
 		            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);
 		            if (foodProductionBuilding != null) {

@@ -1000,18 +1000,19 @@ implements UnitListener {
 		}
 		else if (unit instanceof Robot) {
 			robot = (Robot) unit;
-			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);
-			
+			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);			
 		}
 
-		// TODO: for future debugging NullPointerException when calling registerNewEvent()
+		// TODO: for future debugging NullPointerException when calling registerNewEvent()		
+		else if (unit == null) {
+             //throw new IllegalStateException("unit is null");
+			// can use either person or robot
+			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);		
+		}
 		
-		 if (unit == null) {
-             throw new IllegalStateException("unit is null");
-         }
-         if (newEvent == null) {
-             throw new IllegalStateException("newEvent is null"); 
-         }
+		if (newEvent == null) {
+			throw new IllegalStateException("newEvent is null"); 
+		}
          
          
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);

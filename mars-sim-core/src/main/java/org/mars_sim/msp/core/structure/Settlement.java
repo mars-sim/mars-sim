@@ -90,13 +90,13 @@ implements LifeSupport {
     private boolean foodProductionOverride = false;
 	//private boolean reportSample = true;
     /** Override flag for mission creation at settlement. */
-    private boolean missionCreationOverride;
+    private boolean missionCreationOverride = false;
     /** Override flag for manufacturing at settlement. */
-    private boolean manufactureOverride;
+    private boolean manufactureOverride = false;
     /** Override flag for resource process at settlement. */
-    private boolean resourceProcessOverride;
+    private boolean resourceProcessOverride = false;
     /** Override flag for construction/salvage mission creation at settlement. */
-    private boolean constructionOverride;
+    private boolean constructionOverride = false;
     
     /** The settlement's building manager. */
     protected BuildingManager buildingManager;

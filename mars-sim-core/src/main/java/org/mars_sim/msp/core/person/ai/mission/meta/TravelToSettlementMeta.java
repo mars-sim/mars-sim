@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
@@ -84,10 +85,10 @@ public class TravelToSettlementMeta implements MetaMission {
             getMission(settlement, robot);
             
 	        // Job modifier.
-	        //Job job = robot.getMind().getJob();
-	        //if (job != null)
-	        //    missionProbability *= job.getStartMissionProbabilityModifier(
-	        //            TravelToSettlement.class);
+	        RobotJob job = robot.getBotMind().getRobotJob();
+	        if (job != null)
+	            missionProbability *= job.getStartMissionProbabilityModifier(
+	                    TravelToSettlement.class);
 	        }
         
         return missionProbability;

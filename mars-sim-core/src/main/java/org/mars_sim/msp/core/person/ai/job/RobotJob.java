@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotJob.java
- * @version 3.07 2015-02-17
+ * @version 3.07 2015-03-05
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -64,6 +64,7 @@ implements Serializable {
 			case CONSTRUCTIONBOT : key.append("constructionBot"); break; //$NON-NLS-1$
 			case DELIVERYBOT : key.append("deliveryBot"); break; //$NON-NLS-1$			
 			case GARDENBOT : key.append("gardenBot"); break; //$NON-NLS-1$
+			case MAKERBOT : key.append("makerBot"); break; //$NON-NLS-1$			
 			case MEDICBOT : key.append("medicBot"); break; //$NON-NLS-1$			
 			case REPAIRBOT : key.append("repairBot"); break; //$NON-NLS-1$
 			default : key.append("bot"); break; //$NON-NLS-1$
