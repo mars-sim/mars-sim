@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -49,12 +49,12 @@ public class Sleep extends Task implements Serializable {
             "Task.phase.sleeping")); //$NON-NLS-1$
 
     /** Task name */
-    private static final String ROBOTIC = Msg.getString(
-            "Task.description.selfMaintenance"); //$NON-NLS-1$
+    private static final String SLEEP_MODE = Msg.getString(
+            "Task.description.sleepMode"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase SELF_MAINTENANCE = new TaskPhase(Msg.getString(
-            "Task.phase.selfMaintenance")); //$NON-NLS-1$
+    private static final TaskPhase SLEEP_MODE_PHASE = new TaskPhase(Msg.getString(
+            "Task.phase.sleepMode")); //$NON-NLS-1$
     
     
     // Static members
@@ -118,7 +118,7 @@ public class Sleep extends Task implements Serializable {
     }
 
     public Sleep(Robot robot) {
-        super(ROBOTIC, robot, false, false, STRESS_MODIFIER, true, 
+        super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 
                 (250D + RandomUtil.getRandomDouble(80D)));
 
         boolean walkSite = false;
@@ -169,8 +169,8 @@ public class Sleep extends Task implements Serializable {
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
 
         // Initialize phase
-        addPhase(SELF_MAINTENANCE);
-        setPhase(SELF_MAINTENANCE);
+        addPhase(SLEEP_MODE_PHASE);
+        setPhase(SLEEP_MODE_PHASE);
     }
     
     @Override
@@ -196,7 +196,7 @@ public class Sleep extends Task implements Serializable {
         else if (robot != null) {
 	    	if (getPhase() == null) 
 	            throw new IllegalArgumentException("Task phase is null");     
-	    	else if (SELF_MAINTENANCE.equals(getPhase())) 
+	    	else if (SLEEP_MODE_PHASE.equals(getPhase())) 
 	            return sleepingPhase(time);
 	        else 
 	            return time;

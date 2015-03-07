@@ -50,29 +50,12 @@ public class MarsProjectFX extends Application  {
      * @param args command line arguments.
      */ 
 
-    public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) {
 
         primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
         
-        logger.info("Starting Mars Simulation Project FX (" +
-    			Simulation.VERSION + " build " + Simulation.BUILD + 
-    			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion() + ")");
-        /*
-        Button btn = new Button();
-        btn.setText("Say 'Hello Mars-simmers!'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {     
-        @Override
-        public void handle(ActionEvent event) {
-             System.out.println("Hello Mars-simmers!");
-                }
-        });            
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        Scene scene = new Scene(root, 300, 250);
-        primaryStage.setTitle("Mars Simulation Project FX");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        */
+        logger.info("Starting " + Simulation.WINDOW_TITLE);
+    
         setLogging();  
         setDirectory(); 
            	

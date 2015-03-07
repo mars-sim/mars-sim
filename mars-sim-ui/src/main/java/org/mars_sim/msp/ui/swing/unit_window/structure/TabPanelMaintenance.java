@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 3.07 2014-11-20
+ * @version 3.07 2015-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -99,6 +99,8 @@ extends TabPanel {
 
 		// Create malfunctions label.
 		JLabel malfunctionsLabel = new JLabel("Building Malfunctions", JLabel.CENTER);
+		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunctions list panel.
@@ -204,7 +206,8 @@ extends TabPanel {
 	 * Gets the parts string.
 	 * @return string.
 	 */
-	private String getPartsString(Map<Part, Integer> parts) {
+	private String getPartsString(Map<Part, Integer> parts, boolean useHtml) {
+		/*
 		StringBuilder buf = new StringBuilder("Parts: ");
 		if (parts.size() > 0) {
 			Iterator<Part> i = parts.keySet().iterator();
@@ -216,8 +219,28 @@ extends TabPanel {
 				if (i.hasNext()) buf.append(", ");
 			}
 		}
-		else buf.append("none");
+		else buf.append("None.");
 		return buf.toString();
+		*/
+        StringBuilder buf = new StringBuilder("Needed Parts: ");	
+    	//Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+    	if (parts.size() > 0) {
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = parts.get(part);
+				if (useHtml) buf.append("<br>");
+				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
+				if (i.hasNext()) buf.append(", ");
+				else {		
+					buf.append(".");
+					if (useHtml) buf.append("<br>");
+				}		
+      		}
+    	}
+    	else buf.append("None.");
+    	
+    	return buf.toString();
 	}
 
 	/**
@@ -249,14 +272,14 @@ extends TabPanel {
 			setLayout(new GridLayout(3, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 
-			JLabel buildingLabel = new JLabel(building.getName(), JLabel.LEFT);
+			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
 			add(buildingLabel);
 
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " sols", JLabel.LEFT);
+			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " Sols", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
 
 			// Prepare progress bar panel.
@@ -277,12 +300,12 @@ extends TabPanel {
 			progressBarModel.setValue(percentDone);
 
 			// Prepare parts label.
-			partsLabel = new JLabel(getPartsString(manager.getMaintenanceParts()), JLabel.CENTER);
+			partsLabel = new JLabel(getPartsString(manager.getMaintenanceParts(), false), JLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
 			// Add tooltip.
-			setToolTipText(getToolTipString());
+			lastLabel.setToolTipText(getToolTipString());
 		}
 
 		/**
@@ -299,26 +322,39 @@ extends TabPanel {
 			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			if (lastCompleted != lastCompletedCache) {
 				lastCompletedCache = lastCompleted;
-				lastLabel.setText("Last Completed: " + lastCompletedCache + " sols");
+				lastLabel.setText("Last Completed: " + lastCompletedCache + " Sols");
 			}
 
+			Map<Part, Integer> parts = manager.getMaintenanceParts();
+			
 			// Update parts label.
-			partsLabel.setText(getPartsString(manager.getMaintenanceParts()));
+			partsLabel.setText(getPartsString(parts, false));
 
 			// Update tool tip.
-			setToolTipText(getToolTipString());
+			lastLabel.setToolTipText(getToolTipString());
+			
+	        // Update tool tip.
+			partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
+
 		}
 
 		/**
 		 * Creates multi-line tool tip text.
-		 */
+		 
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-			result.append("Last completed maintenance: ").append(maintSols).append(" sols<br>");
+			result.append("Last completed maintenance: ").append(maintSols).append(" Sols<br>");
 			result.append("Repair ").append(getPartsString(manager.getMaintenanceParts()).toLowerCase());
 			result.append("</html>");
 
+			return result.toString();
+		}
+		*/
+		private String getToolTipString() {
+			StringBuilder result = new StringBuilder("<html>");
+			result.append("The Last Complete Maintenance Was Done ").append(lastCompletedCache).append(" Sols Ago<br>");
+			result.append("</html>");
 			return result.toString();
 		}
 	}
@@ -355,7 +391,7 @@ extends TabPanel {
 			setBorder(new MarsPanelBorder());
 
 			// Prepare the building label.
-			JLabel buildingLabel = new JLabel(building.getName(), JLabel.LEFT);
+			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
 			add(buildingLabel);
 
 			// Prepare the malfunction label.
@@ -386,7 +422,7 @@ extends TabPanel {
 			progressBarModel.setValue(percentComplete);
 
 			// Prepare parts label.
-			partsLabel = new JLabel(getPartsString(malfunction.getRepairParts()), JLabel.CENTER);
+			partsLabel = new JLabel(getPartsString(malfunction.getRepairParts(), false), JLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
@@ -418,7 +454,7 @@ extends TabPanel {
 			progressBarModel.setValue(percentComplete);
 
 			// Update parts label.
-			partsLabel.setText(getPartsString(malfunction.getRepairParts()));
+			partsLabel.setText(getPartsString(malfunction.getRepairParts(), false));
 
 			// Update tool tip.
 			setToolTipText(getToolTipString());
@@ -430,10 +466,10 @@ extends TabPanel {
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append(malfunction.getName()).append("<br>");
-			result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" millisols<br>");
-			result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
-			result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
-			result.append("Repair ").append(getPartsString(malfunction.getRepairParts()).toLowerCase());
+			result.append("General Repair Time: ").append((int) malfunction.getWorkTime()).append(" millisols<br>");
+			result.append("EVA Repair Time: ").append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
+			result.append("Emergency Repair Time: ").append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
+			result.append("Repair ").append(getPartsString(malfunction.getRepairParts(), false).toLowerCase());
 			result.append("</html>");
 
 			return result.toString();

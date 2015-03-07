@@ -197,7 +197,7 @@ public class MainScene {
 	    //borderPane.setStyle("-fx-background-color: palegorange");
 
 	    VBox vBox = new VBox();
-	    Label label = new Label("MarsNet");
+	    Label label = new Label("");
 	    label.setAlignment(Pos.TOP_CENTER);
 	    //vBox.getStylesheets().addAll("/fxui/css/mainskin.css");
 	    
@@ -205,7 +205,7 @@ public class MainScene {
 	    //borderPane.setLeft(listView);
 
 	    HiddenSidesPane pane = new HiddenSidesPane();
-	    Text text = new Text("ABCDEFG");
+	    Text text = new Text("");
 	    pane.setContent(text);
 	    Text bottomText = new Text("Note: under construction !!");
 	    pane.setBottom(bottomText);	    

@@ -69,6 +69,14 @@ implements ClockListener, Serializable {
 			File.separator +
 			Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$	
 	
+	@SuppressWarnings("restriction")
+	public final static String WINDOW_TITLE = Msg.getString(
+			"Simulation.title", Simulation.VERSION +
+			" Build " + Simulation.BUILD + 
+			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+		); //$NON-NLS-1$
+	
+	
 	/** Singleton instance. */
 	private static final Simulation instance = new Simulation();
 
