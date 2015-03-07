@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.08 2015-02-04
+ * @version 3.08 2015-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
-
+ 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1019,12 +1019,21 @@ implements Serializable, Comparable<Task> {
     		String type = robot.getRobotType().getName();
     		//List<Building> buildingList;
     		BuildingFunction fct = null;
+    		
     		if (type.equals("CHEFBOT"))
     			fct = BuildingFunction.COOKING;
-    		else if (type.equals("REPAIRBOT"))
-    			fct = BuildingFunction.MANUFACTURE;
+    		else if (type.equals("CONSTRUCTIONBOT"))
+    			fct = BuildingFunction.ROBOTIC_STATION;
+    		else if (type.equals("DELIVERYBOT"))
+    			fct = BuildingFunction.ROBOTIC_STATION;
     		else if (type.equals("GARDENBOT"))
     			fct = BuildingFunction.FARMING;
+    		else if (type.equals("MAKERBOT"))
+    			fct = BuildingFunction.MANUFACTURE;
+    		else if (type.equals("MEDICBOT"))
+    			fct = BuildingFunction.MEDICAL_CARE;
+    		else if (type.equals("REPAIRBOT"))
+    			fct = BuildingFunction.ROBOTIC_STATION;
     		
             List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
             

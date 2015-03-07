@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2015-01-19
+ * @version 3.07 2015-03-06
  * @author Scott Davis
  */
 
@@ -57,7 +57,7 @@ implements ActionListener {
 	private JLabel locationLabel;
 	//private Color THEME_COLOR = Color.ORANGE;
 	private double airPressureCache;
-	private double temperatureCache;
+	private int temperatureCache;
 	private Unit containerCache;
 	
 	private JPanel locationCoordsPanel;
@@ -191,8 +191,8 @@ implements ActionListener {
 		//return fmt.format(getTemperature()) + " °C"; //2 b localized?
     	return result;
     }
-    public double getTemperature() {
-    	double outsideTemp = Simulation.instance().getMars().getWeather()
+    public int getTemperature() {
+    	int outsideTemp = (int) Simulation.instance().getMars().getWeather()
     			.getTemperature(unit.getCoordinates());
 		return outsideTemp;
     }
@@ -239,7 +239,7 @@ implements ActionListener {
 		//outsideReadingPanel.add(tpPanel);
 		
 		if (unit instanceof Settlement) {
-			Settlement settlement = (Settlement) unit;
+			//Settlement settlement = (Settlement) unit;
 			outsideReadingPanel.remove(tpPanel);
 			outsideReadingPanel.add(tpPanel);	
 		}	

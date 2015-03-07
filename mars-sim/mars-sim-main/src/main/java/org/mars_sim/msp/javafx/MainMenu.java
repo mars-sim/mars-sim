@@ -39,13 +39,6 @@ import javafx.util.Duration;
 
 public class MainMenu {
 
-	@SuppressWarnings("restriction")
-	public final static String WINDOW_TITLE = Msg.getString(
-			"MainWindow.title", //$NON-NLS-1$
-			Simulation.VERSION + " build " + Simulation.BUILD + 
-			"  running Java RE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
-		);
-	
 	// Data members
 	private Stage primaryStage;
 	
@@ -108,12 +101,12 @@ public class MainMenu {
     		   
        //primaryStage.setFullScreen(true);
        primaryStage.setResizable(false);            
-	   primaryStage.setTitle(WINDOW_TITLE);
+	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
        primaryStage.show();
                   
 	   stage = new Stage();
-	   stage.setTitle(WINDOW_TITLE);
+	   stage.setTitle(Simulation.WINDOW_TITLE);
    }    
 
 

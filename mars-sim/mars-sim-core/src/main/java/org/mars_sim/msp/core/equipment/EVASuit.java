@@ -208,6 +208,7 @@ implements LifeSupport, Serializable, Malfunctionable {
 		double result = NORMAL_TEMP
 				* (malfunctionManager.getTemperatureModifier() / 100D);
 		double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
+		// the temperature of the suit will not be lower than the ambient temperature
 		if (result < ambient) {
 			return ambient;
 		} else {

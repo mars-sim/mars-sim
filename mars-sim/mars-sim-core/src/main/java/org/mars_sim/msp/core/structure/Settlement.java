@@ -591,7 +591,7 @@ implements LifeSupport {
         	
         	//getFoodEnergyIntakeReport(); 	           	
         	//getSupplyDemandReport(solElapsed);       	
-        	refreshSupplyDemandMap(solElapsed);
+        	refreshMapDaily(solElapsed);
         }
     }
     
@@ -656,7 +656,7 @@ implements LifeSupport {
      * refreshes the supply and demand map data 
      */
     // 2015-02-13  Added refreshSupplyDemandMap()
-   	public void refreshSupplyDemandMap(int solElapsed) {
+   	public void refreshMapDaily(int solElapsed) {
 
         boolean clearNow ;
     
@@ -677,7 +677,10 @@ implements LifeSupport {
         	inv.clearAmountDemandTotalRequestMap();
         	inv.clearAmountDemandMetRequestMap();
         	
-        	logger.info("Just compacted supply and demand data");
+        	// 2015-03-06 Added clearing of weather data map 
+        	Simulation.instance().getMars().getWeather().clearMap();
+        	
+        	logger.info("Just compacted supply & demand data map and cleared weather data maps");
         }
     	
    		

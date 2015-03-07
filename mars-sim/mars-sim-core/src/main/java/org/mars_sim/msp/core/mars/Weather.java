@@ -8,8 +8,11 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -35,19 +38,35 @@ implements Serializable {
 	// Calculation : 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; 
 	
-	private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
+	private static final int TEMPERATURE = 0;
+	private static final int AIR_PRESSURE = 1;
 	
+	//private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
+	
+	//2015-02-19 Added MILLISOLS_PER_UPDATE 
+	private static final int MILLISOLS_PER_UPDATE = 5 ; // one update per x millisols  
+
 	private double viking_dt;
 	
 	private double final_temperature = EXTREME_COLD;
 	
-	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D; 
+	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D;
+	
+	private int millisols;
+	
+	//private int count = 0;
 	
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
 	
+	private static Map<Coordinates, Double> temperatureCacheMap = new HashMap<Coordinates, Double>();
+	private static Map<Coordinates, Double> airPressureCacheMap = new HashMap<Coordinates, Double>();
+	
+
 	/** Constructs a Weather object */
 	public Weather() {
+		//count++;
+		//System.out.print(" calling Weather.java " + count + " times");
 		
 		viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;			
 		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
@@ -64,16 +83,36 @@ implements Serializable {
 		
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
-		
-		
+			
 	}
 
 	/**
 	 * Gets the air pressure at a given location.
 	 * @return air pressure in Pa.
 	 */
+	// 2015-03-06 Added getAirPressure()
 	public double getAirPressure(Coordinates location) {
 
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();		
+	    millisols =  (int) marsClock.getMillisols() ;
+		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
+		
+		if (millisols % MILLISOLS_PER_UPDATE == 1) {	
+			double cache = updateAirPressure(location);
+			airPressureCacheMap.put(location, cache);
+			//System.out.println("updated : ");
+			return cache;
+		}
+		
+		else return getCacheValue(airPressureCacheMap, location, AIR_PRESSURE);
+		
+	}
+	
+	/**
+	 * Updates the air pressure at a given location.
+	 * @return air pressure in Pa.
+	 */
+	public double updateAirPressure(Coordinates location) {
 		// Get local elevation in meters.
 		Mars mars = Simulation.instance().getMars();
 		TerrainElevation terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
@@ -94,7 +133,80 @@ implements Serializable {
 	 */
 	public double getTemperature(Coordinates location) {
 		
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();	
+	    millisols =  (int) marsClock.getMillisols() ;
+		
+		if (millisols % MILLISOLS_PER_UPDATE == 0) {	
+			double temperatureCache = updateTemperature(location);
+			temperatureCacheMap.put(location,temperatureCache);
+			//System.out.println("Weather.java: temperatureCache is " + temperatureCache);
+			return temperatureCache;
+		}
+		
+		else return getCacheValue(temperatureCacheMap, location, TEMPERATURE);
+			
+	}
+	
+	/**
+	 * Clears weather-related parameter cache map to prevent excessive build-up of key-value sets
+	 */
+	// 2015-03-06 Added clearMap()
+    public synchronized void clearMap() {   	
+    	temperatureCacheMap.clear();
+    	airPressureCacheMap.clear();
+    }
+	
+	/**
+	 * Provides the surface temperature /air pressure at a given location from the temperatureCacheMap.
+	 * If calling the given location for the first time from the cache map, call update temperature/air pressure instead
+	 * @return temperature or pressure 
+	 */
+	// 2015-03-06 Added getCacheValue()
+    public double getCacheValue(Map<Coordinates, Double> map, Coordinates location, int value) {
+    	double result;
+ 
+       	if (map.containsKey(location)) {      		
+       		result = map.get(location);
+    	}
+    	else {
+    		double cache = 0;
+    		if (value == TEMPERATURE ) 
+    			cache = updateTemperature(location);
+    		else if (value == AIR_PRESSURE ) 
+    			cache = updateAirPressure(location);
+    		
+			map.put(location, cache);
+			
+    		result = cache;
+    	}
+       	
+    	return result;
+    }
+    
+	/*
+    public double getTemperatureCache(Coordinates location) {
+    	double result;
+
+       	if (temperatureCacheMap.containsKey(location)) {      		
+       		result = temperatureCacheMap.get(location);
+    	}
+    	else {
+    		double temperatureCache = updateTemperature(location);
+			temperatureCacheMap.put(location,temperatureCache);
+    		result = temperatureCache;
+    	}
+       	
+    	return result;
+    }
+    */
+    
+    
+	/**
+	 * Computes the surface temperature at a given location.
+	 * @return temperature in Celsius.
+	 */		
+	public double updateTemperature(Coordinates location) {
+		
 		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 		if (surfaceFeatures.inDarkPolarRegion(location)){
@@ -102,20 +214,20 @@ implements Serializable {
 			final_temperature = -150D;
 			
 		} else {
-			
-
 			// 2015-01-28 We arrived at this temperature model based on Viking 1 & Opportunity Rover
 			// by assuming the temperature is the linear combination of the following factors:
 			// 1. Time of day and longitude,
 			// 2. Terrain elevation, 
 			// 3. Latitude,
 			// 4. Seasonal variation (dependent upon latitude)
+			// 5. Randomness
 			
 			// 1. Time of day and longitude
 			double theta = location.getTheta(); // theta is the longitude in radian
 			theta = theta /Math.PI * 500D; // in millisols;
 			//System.out.println(" theta: " + theta);			
 	        double time  = marsClock.getMillisol();
+			//double time = (double) oneTenthmillisols * 10D;
 	        double x_offset = time - 360 - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS + theta;     
 	        double equatorial_temperature = 27.5 * Math.sin  ( 2*Math.PI/1000D * x_offset ) -58.5 ;  			
 			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0; 
@@ -159,7 +271,12 @@ implements Serializable {
 			seasonal_dt = Math.round (seasonal_dt * 100.0)/ 100.0;
 			//System.out.println("  seasonal_dt: " + seasonal_dt ); 
 			 
-			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt;
+			
+			// 5. Add randomness
+			double up = RandomUtil.getRandomDouble(3);
+			double down = RandomUtil.getRandomDouble(3);
+			
+			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
 			final_temperature = Math.round (final_temperature * 100.0)/100.0;
 			//System.out.println("  final T: " + final_temperature );
 		}

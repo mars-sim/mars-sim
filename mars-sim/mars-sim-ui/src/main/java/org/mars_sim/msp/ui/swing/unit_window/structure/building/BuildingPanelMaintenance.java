@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelMaintenance.java
- * @version 3.07 2014-11-22
+ * @version 3.07 2015-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -60,7 +60,7 @@ extends BuildingFunctionPanel {
 		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
 		// Set the layout
-		setLayout(new GridLayout(5, 1, 0, 0));
+		setLayout(new GridLayout(6, 1, 0, 0));
 
 		// Create maintenance label.
 		// 2014-11-21 Changed font type, size and color and label text
@@ -102,12 +102,10 @@ extends BuildingFunctionPanel {
 		progressBarModel.setValue(percentDone);
 
 		// Prepare maintenance parts label.
-		partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+		partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
 		partsLabel.setPreferredSize(new Dimension(-1, -1));
 		add(partsLabel);
 
-		// Add tooltip.
-		setToolTipText(getToolTipString());
 	}
 
 	/**
@@ -133,25 +131,29 @@ extends BuildingFunctionPanel {
 					lastCompletedTime));
 		}
 
+		// Update tool tip.
+		lastCompletedLabel.setToolTipText(getToolTipString());
+		
 		// Update progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
 		double total = manager.getMaintenanceWorkTime();
 		int percentDone = (int) (100D * (completed / total));
 		progressBarModel.setValue(percentDone);
 
-		// Update parts label.
-		partsLabel.setText(getPartsString());
+	      // Update parts label.
+        partsLabel.setText(getPartsString(false));
+        // Update tool tip.
+		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
 
-		// Update tool tip.
-		setToolTipText(getToolTipString());
 	}
 
 	/**
 	 * Gets the parts string.
 	 * @return string.
 	 */
-	private String getPartsString() {
-		StringBuilder buf = new StringBuilder("Parts: ");
+	// 2015-03-06 Reformatted part list and capitalized part.getName()
+	private String getPartsString(boolean useHtml) {
+		StringBuilder buf = new StringBuilder("Needed Parts: ");
 
 		Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
 		if (parts.size() > 0) {
@@ -160,11 +162,16 @@ extends BuildingFunctionPanel {
 				Part part = i.next();
 				int number = parts.get(part);
 				// 2014-11-21 Capitalized part.getName()
+				if (useHtml) buf.append("<br>");
 				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
+				else {		
+					buf.append(".");
+					if (useHtml) buf.append("<br>");
+				}
 			}
 		}
-		else buf.append("none");
+		else buf.append("None.");
 
 		return buf.toString();
 	}
@@ -173,13 +180,11 @@ extends BuildingFunctionPanel {
 	 * Creates multi-line tool tip text.
 	 */
 	private String getToolTipString() {
-		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 		StringBuilder result = new StringBuilder("<html>");
-		int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-		result.append("Last Completed Maintenance: ").append(maintSols).append(" sols<br>");
-		result.append("Repair ").append(getPartsString().toLowerCase());
+		result.append("The Very Last Maintenance Was Completed ").append(lastCompletedTime).append(" Sols Ago<br>");
 		result.append("</html>");
-
 		return result.toString();
 	}
+	
+	
 }

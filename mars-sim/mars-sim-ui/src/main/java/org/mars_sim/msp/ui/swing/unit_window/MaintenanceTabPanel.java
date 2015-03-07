@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.07 2015-03-06
 
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -17,6 +18,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +54,7 @@ public class MaintenanceTabPanel extends TabPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         
         // Create maintenance panel
-        JPanel maintenancePanel = new JPanel(new GridLayout(5, 1, 0, 0));
+        JPanel maintenancePanel = new JPanel(new GridLayout(6, 1, 0, 0));
         maintenancePanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(maintenancePanel);
         
@@ -78,7 +80,7 @@ public class MaintenanceTabPanel extends TabPanel {
         maintenancePanel.add(progressPanel);
         
         // Prepare maintenance parts label.
-        partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+        partsLabel = new JLabel(getPartsString(false), JLabel.CENTER);
         partsLabel.setPreferredSize(new Dimension(-1, -1));
         maintenancePanel.add(partsLabel);
     
@@ -147,9 +149,12 @@ public class MaintenanceTabPanel extends TabPanel {
         int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         if (lastComplete != lastCompletedTime) {
             lastCompletedTime = lastComplete;
-            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " sols");
+            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " Sols");
         }
         
+		// Update tool tip.
+		lastCompletedLabel.setToolTipText(getToolTipString());
+		
         // Update progress bar.
         double completed = manager.getMaintenanceWorkTimeCompleted();
         double total = manager.getMaintenanceWorkTime();
@@ -157,7 +162,10 @@ public class MaintenanceTabPanel extends TabPanel {
         progressBarModel.setValue(percentDone);
         
         // Update parts label.
-        partsLabel.setText(getPartsString());
+        partsLabel.setText(getPartsString(false));
+        // Update tool tip.
+		partsLabel.setToolTipText("<html>" + getPartsString(true) + "</html>");
+
         
         // Get list of malfunctions.
         Collection<Malfunction> malfunctions = manager.getMalfunctions();
@@ -201,9 +209,10 @@ public class MaintenanceTabPanel extends TabPanel {
      * Gets the parts string.
      * @return string.
      */
-    private String getPartsString() {
+	// 2015-03-06 Reformatted part list and capitalized part.getName()
+    private String getPartsString(boolean useHtml) {
     	Malfunctionable malfunctionable = (Malfunctionable) unit;
-        StringBuilder buf = new StringBuilder("Parts: ");
+        StringBuilder buf = new StringBuilder("Needed Parts: ");
     	
     	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
@@ -211,15 +220,30 @@ public class MaintenanceTabPanel extends TabPanel {
     		while (i.hasNext()) {
     			Part part = i.next();
     			int number = parts.get(part);
-                buf.append(number).append(" ").append(part.getName());
-    			if (i.hasNext()) buf.append(", ");
-    		}
+				if (useHtml) buf.append("<br>");
+				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
+				if (i.hasNext()) buf.append(", ");
+				else {		
+					buf.append(".");
+					if (useHtml) buf.append("<br>");
+				}		
+      		}
     	}
-    	else buf.append("none");
+    	else buf.append("None.");
     	
     	return buf.toString();
     }
     
+	/**
+	 * Creates multi-line tool tip text.
+	 */
+	private String getToolTipString() {
+		StringBuilder result = new StringBuilder("<html>");
+		result.append("The Last Complete Maintenance Was Done ").append(lastCompletedTime).append(" Sols Ago<br>");
+		result.append("</html>");
+		return result.toString();
+	}
+	
     /**
      * Gets an existing malfunction panel for a given malfunction.
      *

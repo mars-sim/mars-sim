@@ -478,7 +478,8 @@ extends JPanel {
 			logger.info("Old name was " + oldName);
 		newName = askNameDialog();
 				
-		if (newName.trim().equals(null) || (newName.trim().length() == 0)) {
+		// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+		if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
 			newName = askNameDialog();
 		}
 		else {

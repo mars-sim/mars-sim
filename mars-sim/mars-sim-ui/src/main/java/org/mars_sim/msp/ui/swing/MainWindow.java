@@ -50,11 +50,6 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
  */
 public class MainWindow {
 
-	public static final String WINDOW_TITLE = Msg.getString(
-		"MainWindow.title", //$NON-NLS-1$
-		Simulation.VERSION + " build " + Simulation.BUILD
-	);
-
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
 
 	// Data members
@@ -134,7 +129,7 @@ public class MainWindow {
 	// 2015-02-04 Added init()
 	public void init() {
 		// use JFrame constructor
-		frame = new JFrame(WINDOW_TITLE);
+		frame = new JFrame(Simulation.WINDOW_TITLE);
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
