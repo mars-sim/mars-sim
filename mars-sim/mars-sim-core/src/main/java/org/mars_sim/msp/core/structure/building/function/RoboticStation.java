@@ -42,7 +42,7 @@ public class RoboticStation extends Function implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        slots = config.getRoboticStation(building.getBuildingType());
+        slots = config.getRoboticStationSlots(building.getBuildingType());
 
         // Load activity spots
         loadActivitySpots(config.getRoboticStationActivitySpots(building.getBuildingType()));
@@ -82,7 +82,7 @@ public class RoboticStation extends Function implements Serializable {
 
         BuildingConfig config = SimulationConfig.instance()
                 .getBuildingConfiguration();
-        double stationCapacity = config.getRoboticStation(buildingName);
+        double stationCapacity = config.getRoboticStationSlots(buildingName);
 
         return stationCapacity * stationCapacityValue;
     }

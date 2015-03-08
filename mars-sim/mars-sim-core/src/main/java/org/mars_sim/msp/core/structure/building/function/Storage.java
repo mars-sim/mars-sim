@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 3.07 2014-06-12
+ * @version 3.07 2015-03-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -32,6 +32,9 @@ implements Serializable {
 
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 
+	private double stockCapacity = 0;
+	//private static int count = 0;
+
 	private Map<AmountResource, Double> storageCapacity;
 
 	/**
@@ -43,16 +46,25 @@ implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
+    	//count++;
+		//System.out.println("Storage.java : for " + count + " times for " + building );
+
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		Inventory inventory = building.getInventory();	
-
+		
+		// 2015-03-07 Added stockCapacity
+	    stockCapacity = config.getStockCapacity(building.getBuildingType());
+		//System.out.println("Storage.java : stockCapacity is " +stockCapacity);
 		// Get building resource capacity.
 		storageCapacity = config.getStorageCapacities(building.getBuildingType());
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
+			//System.out.println("resource : " + resource.getName()); 
 			double currentCapacity = inventory.getAmountResourceCapacity(resource, false);
+			//System.out.println("currentCapacity is "+currentCapacity);
 			double buildingCapacity = (Double) storageCapacity.get(resource);
+			//System.out.println("buildingCapacity is "+buildingCapacity);
 			inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
 		}
 

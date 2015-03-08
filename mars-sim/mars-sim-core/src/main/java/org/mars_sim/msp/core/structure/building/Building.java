@@ -299,24 +299,6 @@ LocalBoundedObject, InsidePathLocation {
     public double getTemperature() {
             return getLifeSupport().getHeating().getTemperature();
     }
-    
-    /**
-     * Sets the current temperature of a building due to heat gain
-     * @return temperature (deg C)
-     /
-    //public void setTemperature(double t) {
-   //     currentTemperature = t;
-    //}
-    
-	//2014-10-17  Added getSHC() and getBLC()
-    public double getSHC() {
-    	return SHC;
-    }
-    public double getBLC() {
-    	return BLC;
-    }
-    *
-    
 
 	/**
 	 * Determines the building functions.
@@ -472,8 +454,8 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Sets the building's nickName
 	 * @return none
-	 * 2014-10-27  Called by TabPanelBuilding.java for building nickname change
 	 */
+	// 2014-10-27  Called by TabPanelBuilding.java for building nickname change
 	public void setNickName(String nickName) {
 		//System.out.println("input nickName is " + nickName);
 		this.nickName = nickName;
@@ -482,8 +464,8 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Gets the building's nickName
 	 * @return building's nickName as a String
-	 * 2014-10-27  Called by TabPanelBuilding.java for building nickname change
 	 */
+	// 2014-10-27  Called by TabPanelBuilding.java for building nickname change
 	public String getNickName() {
 		return nickName;
 	}
@@ -509,12 +491,12 @@ LocalBoundedObject, InsidePathLocation {
 	 * Sets the building's type (formerly name)
 	 * @return none
 	 * "buildingType" was formerly "name"
-	 * 2014-10-28  Called by TabPanelBuilding.java for generating a building list
 	 */
-	public void setType(String type) {
-		System.out.println("input nickName is " + nickName);
+	//2014-10-28  Called by TabPanelBuilding.java for generating a building list
+	public void setBuildingType(String type) {
+		//System.out.println("input nickName is " + nickName);
 		this.buildingType = type;
-		System.out.println("new buildingType is " + this.buildingType);
+		//System.out.println("new buildingType is " + this.buildingType);
 	}
 	@Override
 	public double getWidth() {
