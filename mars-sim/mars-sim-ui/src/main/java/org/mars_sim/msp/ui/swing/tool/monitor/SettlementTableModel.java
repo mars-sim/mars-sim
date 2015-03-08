@@ -91,7 +91,7 @@ extends UnitTableModel {
 		columnTypes[ROCK_SAMPLES] = Integer.class;
 		columnNames[HYDROGEN] = "Hydrogen";
 		columnTypes[HYDROGEN] = Integer.class;
-		columnNames[GREY_WATER] = "Grey Wter";
+		columnNames[GREY_WATER] = "Grey Water";
 		columnTypes[GREY_WATER] = Integer.class;
 		columnNames[BLACK_WATER] = "Black Water";
 		columnTypes[BLACK_WATER] = Integer.class;

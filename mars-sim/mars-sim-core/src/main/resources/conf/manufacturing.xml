@@ -120,13 +120,13 @@
  If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.  -->
  
 	<process name="extract nitrogen compounds from black water"
-			tech="2" skill="2"
-			work-time="50"
-			process-time="1000" 
+			tech="1" skill="2"
+			work-time="20"
+			process-time="200" 
 			power-required="0.5">
 		<inputs>
-			<resource name="Crop Waste" amount="5.0" />
-			<resource name="Black Water" amount="5.0" />
+			<resource name="Crop Waste" amount="1.0" />
+			<resource name="Black Water" amount="10.0" />
 			<resource name="Nitrospira spp" amount="0.02" />	
 			<resource name="Nitrosomonas spp" amount="0.02" />	
 			
@@ -134,20 +134,20 @@
 		<outputs>
 			<resource name="Nitrate" amount="0.1" />
 			<resource name="Nitrite" amount="0.02" />
-			<resource name="Nitrogen" amount="0.5" />
-			<resource name="Ammonia" amount="0.5" />
+			<resource name="Nitrogen" amount="0.1" />
+			<resource name="Ammonia" amount="0.1" />
 			<resource name="Grey Water" amount="10.0" />			
 		</outputs>
 	</process>	
 	
 	<process name="extract nitrogen compounds from black water (large batch)"
-			tech="2" skill="2"
-			work-time="200"
-			process-time="6000" 
-			power-required="4.0">
+			tech="1" skill="2"
+			work-time="80"
+			process-time="800" 
+			power-required="2.0">
 		<inputs>
-			<resource name="Crop Waste" amount="50" />
-			<resource name="Black Water" amount="50" />
+			<resource name="Crop Waste" amount="10" />
+			<resource name="Black Water" amount="100" />
 			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
 			<resource name="Nitrospira spp" amount="0.2" />	
 			<resource name="Nitrosomonas spp" amount="0.2" />					

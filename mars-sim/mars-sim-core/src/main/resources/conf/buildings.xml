@@ -164,6 +164,11 @@
 					<output resource="Water" rate="85.0" ambient="false" />
 				</process>
 				
+				<process name="Black Water Recycling" power-required="4.0" default="off">
+					<input resource="black water" rate="40.0" ambient="false" />
+					<output resource="grey water" rate="35.0" ambient="false" />
+				</process>
+				
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
 				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".067" ambient="false" />
@@ -569,21 +574,25 @@
 					<output resource="Methane" rate="18.0" ambient="false" />
 					<output resource="Water" rate="40.0" ambient="false" />
 				</process>
-				<process name="Water Electrolysis" power-required="40.0" default="off">
+				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="Water" rate="1.0" ambient="false" />
 					<output resource="Hydrogen" rate=".11" ambient="false" />
 					<output resource="Oxygen" rate=".89" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" power-required="20.0" default="off">
+				<process name="CO2 Reduction" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate="8.25" ambient="true" />
 					<output resource="Oxygen" rate="3.0" ambient="false" />
 					<output resource="Carbon Monoxide" rate="5.25" ambient="true" />
 				</process>
-				<process name="Water Recycling" power-required="40.0" default="off">
+				<process name="Water Recycling" power-required="4.0" default="off">
 					<input resource="grey water" rate="100.0" ambient="false" />
 					<output resource="Water" rate="85.0" ambient="false" />
 				</process>
-				<process name="Carbon Scrubbing" power-required="20.0" default="off">
+				<process name="Black Water Recycling" power-required="4.0" default="off">
+					<input resource="black water" rate="40.0" ambient="false" />
+					<output resource="grey water" rate="35.0" ambient="false" />
+				</process>				
+				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
 					<output resource="Oxygen" rate=".5" ambient="false" />
 				</process>
@@ -1780,8 +1789,6 @@
 				<resource-initial resource="Blueberry" amount="50.0" />	
 				<resource-initial resource="Cucumber" amount="50.0" />					
 				<resource-initial resource="Green Bell Pepper" amount="50.0" />	
-	
-	
 			</storage>
 		</functions>
 	</building>
