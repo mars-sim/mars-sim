@@ -1034,7 +1034,13 @@ implements Serializable, Comparable<Task> {
     			fct = BuildingFunction.MEDICAL_CARE;
     		else if (type.equals("REPAIRBOT"))
     			fct = BuildingFunction.ROBOTIC_STATION;
+
+    		if (fct == null) 
+    			fct = BuildingFunction.LIVING_ACCOMODATIONS;
     		
+       		if (fct == null) 
+    			fct = BuildingFunction.LIFE_SUPPORT;
+			
             List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
             
             if (buildingList.size() > 0) {

@@ -104,7 +104,8 @@ resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-s
 <!ATTLIST output resource CDATA #REQUIRED>
 <!ATTLIST output rate CDATA #REQUIRED>
 <!ATTLIST output ambient (true|false) #REQUIRED>
-<!ELEMENT storage (resource-storage+, resource-initial*)>
+<!ELEMENT storage (resource-storage*, resource-initial*)>
+<!ATTLIST storage stock-capacity CDATA #REQUIRED>
 <!ELEMENT resource-storage EMPTY>
 <!ATTLIST resource-storage resource CDATA #REQUIRED>
 <!ATTLIST resource-storage capacity CDATA #REQUIRED>

@@ -8,14 +8,25 @@
 package org.mars_sim.msp.ui.javafx;
 
 import static javafx.geometry.Orientation.VERTICAL;
+import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
+import org.controlsfx.control.GridCell;
+import org.controlsfx.control.GridView;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.HiddenSidesPane;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.control.cell.ColorGridCell;
+import org.controlsfx.tools.Utils;
 
 import java.awt.Frame;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,32 +34,55 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import javax.swing.JFileChooser;
@@ -62,6 +96,8 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -179,10 +215,8 @@ public class MainScene {
 		
 		// Create ControlFX's StatusBar   
 		StatusBar statusBar = createStatusBar(); 
-		HBox notifyBar = new HBox();
-		        
+	        
 		VBox bottomBox = new VBox();
-		//bottomBox.getChildren().addAll(node, statusBar);
 		bottomBox.getChildren().addAll(statusBar);
 		
 		// Create menuBar
@@ -196,28 +230,41 @@ public class MainScene {
 	    borderPane.setBottom(bottomBox);
 	    //borderPane.setStyle("-fx-background-color: palegorange");
 
-	    VBox vBox = new VBox();
-	    Label label = new Label("");
-	    label.setAlignment(Pos.TOP_CENTER);
-	    //vBox.getStylesheets().addAll("/fxui/css/mainskin.css");
-	    
-	    //ListView<String> listView = new ListView<>(FXCollections.observableArrayList("List"));
-	    //borderPane.setLeft(listView);
 
-	    HiddenSidesPane pane = new HiddenSidesPane();
-	    Text text = new Text("");
-	    pane.setContent(text);
-	    Text bottomText = new Text("Note: under construction !!");
-	    pane.setBottom(bottomText);	    
-	    vBox.getChildren().addAll(label, pane);
+	    TabPane tabPane = new TabPane();
+	    Tab settlementTab = new Tab();
+	    tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
+	    settlementTab.setText("Settlement Nodes");
+	    //settlementTab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
+	    settlementTab.setContent(createPane("black"));
+	    tabPane.getTabs().add(settlementTab);
+	    
+	    // create a button to toggle floating.
+	    final RadioButton floatControl = new RadioButton("Toggle floating");
+	    floatControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
+	      @Override public void changed(ObservableValue<? extends Boolean> prop, Boolean wasSelected, Boolean isSelected) {
+	        if (isSelected) {
+	          tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
+	        } else {
+	          tabPane.getStyleClass().remove(TabPane.STYLE_CLASS_FLOATING);
+	        }
+	      }
+	    });
+	    
+	    // layout the stage.
+	    VBox layout = new VBox(10);
+	    layout.getChildren().addAll(floatControl, tabPane);
+	    VBox.setVgrow(tabPane, Priority.ALWAYS);
+	    //layout.setStyle("-fx-background-color: cornsilk; -fx-padding: 10;");
+	    layout.setStyle("-fx-padding: 10;");
+	    
 	    
 	    splitPane = new SplitPane();
 	    //splitPane.setPrefWidth(100);
 	    splitPane.setOrientation(Orientation.HORIZONTAL);
 	    //splitPane.setMinWidth(Region.USE_PREF_SIZE);
 	    splitPane.setDividerPositions(1.0f);
-        //splitPane.setPrefSize(1000, 1280);
-	    splitPane.getItems().addAll(swingPane, vBox);
+	    splitPane.getItems().addAll(swingPane, layout);
 	    
 		Node node = createNotificationPane();
 		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
@@ -245,6 +292,183 @@ public class MainScene {
    
         return (scene);
 	}
+	
+	  // create a pane of a given color to hold tab content.
+	  private Pane createPane(String color) {
+	    Pane pane = new Pane();
+	    //pane.setPrefSize(400, 200);
+	    pane.setStyle("-fx-background-color: " + color);
+	    VBox vb = new VBox();
+	    //Label label = new Label("");
+	    
+	    Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();	    
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		Iterator<Settlement> i = settlementList.iterator();
+		while(i.hasNext()) {	
+			 vb.getChildren().addAll(new Label(""), createButton(i.next()));
+		}
+		
+		pane.getChildren().add(vb);
+		
+	    return pane;
+	  }
+	  
+	public Button createButton(Settlement settlement) {
+		Button b = new Button(settlement.getName());
+		b.setPadding(new Insets(10));
+		
+        b.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        	PopOver popOver = null;
+            @Override
+            public void handle(MouseEvent evt) {
+            	if (popOver == null)
+                    popOver = createPopOver(b, settlement);
+            	
+            	else if (popOver.isShowing() && !popOver.isDetached()) {
+                    popOver.hide(Duration.seconds(.5));  // (Duration.ZERO)
+                    //popOver = null;
+                }
+
+            	else if (popOver.isShowing() && popOver.isDetached()) {
+                    popOver.hide(Duration.ZERO);  // (Duration.ZERO)
+                    //popOver.show(b);
+                    //popOver.setDetached(true);
+                }         	
+            	
+            	else if (!popOver.isShowing()) {
+                    popOver = createPopOver(b, settlement);
+                    //popOver.setDetached(false);
+            		//popOver.show(b);
+                }
+            	
+            	else if (evt.getClickCount() == 2 ) {
+            		if (!popOver.isShowing()) {
+            			popOver = createPopOver(b, settlement);
+            			popOver.setDetached(false);
+            		}
+            		//popOver.show(b);
+                }   
+            	
+            }
+        });
+        /*
+		// Handle Button event.
+		b.setOnAction((event) -> {
+
+			if (popover == null)
+				popover = createPopOver(b);
+			else 
+				popover.hide();
+			//System.out.println("create popover");
+		});
+				
+		
+		b.setOnMouseDragged(new EventHandler<MouseEvent>() {
+	        @Override
+	        public void handle(MouseEvent t) {
+	            if (t.isPrimaryButtonDown()) {
+	                System.out.println("rockets armed");
+	            }
+	            if (t.isSecondaryButtonDown()) {
+	                System.out.println("autoaim engaged");
+	            }            
+	        }
+	    });
+		*/		
+		
+		b.setStyle("-fx-background-color: orange");
+	       
+		return b;
+	}	  
+	
+	public PopOver createPopOver(Button b, Settlement settlement) {
+		//isPopped = true;
+		String title = b.getText();
+		PopOver popover = new PopOver();	
+		popover.setDetachedTitle(title);
+		popover.setDetachable(true);
+        popover.show(b);
+        
+		/*
+        popover.setOnShown(evt -> {
+        // The user clicked somewhere into the transparent background. If
+        // this is the case the hide the window (when attached).
+	    	popover.getScene().addEventHandler(MOUSE_CLICKED, mouseEvent -> {
+	            if (mouseEvent.getTarget().equals(popover.getScene().getRoot())) {
+	                if (!popover.isDetached()) {
+	                	popover.hide();
+	                }
+	            }
+	        });
+	
+	    });
+	      */ 
+        HBox root = new HBox();
+        
+        VBox yesaccordion = new VBox();       
+        Accordion acc = new Accordion();
+        acc.getPanes().addAll(this.createPanes(settlement));
+        yesaccordion.getChildren().add(acc);
+        root.getChildren().addAll(yesaccordion);	 
+        
+        // Fade In
+        Node skinNode = popover.getSkin().getNode();
+        skinNode.setOpacity(0);
+
+        Duration fadeInDuration = Duration.seconds(1);
+        
+        FadeTransition fadeIn = new FadeTransition(fadeInDuration, skinNode);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+        
+        popover.setContentNode(root);
+        
+        return popover;
+	}
+	
+	private Collection<TitledPane> createPanes(Settlement settlement){
+        Collection<TitledPane> result = new ArrayList<TitledPane>();
+        TitledPane tp = new TitledPane();
+        tp.setText("Population");
+        
+        String family = "Helvetica";
+        double size = 16;
+     
+        TextFlow textFlow = new TextFlow();
+        textFlow.setLayoutX(80);
+        textFlow.setLayoutY(80);
+        Text text1 = new Text("Settlers: " + settlement.getCurrentPopulationNum() + " of " + settlement.getPopulationCapacity() + "\n");
+        text1.setFont(Font.font(family, FontWeight.BOLD, size));
+        //Text text2 = new Text("\nNames: " + settlement.getInhabitants());
+        //text2.setFont(Font.font(family, FontPosture.ITALIC, size));
+        Text text3 = new Text("Bots: " + settlement.getCurrentNumOfRobots() + " of " + settlement.getRobotCapacity() + "\n");
+        text3.setFont(Font.font(family, FontWeight.BOLD, size));
+        //Text text4 = new Text("\nNames: " + settlement.getRobots());
+        //text4.setFont(Font.font(family, FontPosture.ITALIC, size));
+        textFlow.getChildren().addAll(text1, text3);
+        
+        //TextArea ta1 = new TextArea();
+        //ta1.setText("Settlers: " + settlement.getCurrentPopulationNum() + " of " + settlement.getPopulationCapacity() );
+        //ta1.appendText("Names: " + settlement.getInhabitants());       
+        //ta1.appendText("Bots: " + settlement.getCurrentNumOfRobots() + " of " + settlement.getRobotCapacity() );
+        //ta1.appendText("Names: " + settlement.getRobots());
+ 
+        tp.setContent(textFlow);         
+        result.add(tp);
+        
+        tp = new TitledPane();
+        tp.setText("Food Preparation");
+        tp.setContent(new TextArea("1 2 3 4 5..."));
+        result.add(tp);
+        
+        tp = new TitledPane();
+        tp.setText("Greenhouse");
+        tp.setContent(new TextArea("1 2 3 4 5..."));
+        result.add(tp);
+        
+        return result;
+    }
 	
 	public StatusBar createStatusBar() {
 		StatusBar statusBar = new StatusBar();

@@ -97,6 +97,7 @@ public class BuildingConfig implements Serializable {
 	private static final String RATE = "rate";
 	private static final String AMBIENT = "ambient";
 	private static final String STORAGE = "storage";
+	private static final String STOCK_CAPACITY = "stock-capacity";	
 	private static final String RESOURCE_STORAGE = "resource-storage";
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String RESOURCE = "resource";
@@ -388,7 +389,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if robotic slots
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasRoboticStation(String buildingType) {
+	public boolean hasRoboticStation(String buildingType) {		
 		return hasElements(buildingType,FUNCTIONS,ROBOTIC_STATION);
 	}
 	
@@ -398,7 +399,7 @@ public class BuildingConfig implements Serializable {
 	 * @return number of slots.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public int getRoboticStation(String buildingType) {
+	public int getRoboticStationSlots(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,ROBOTIC_STATION,SLOTS);
 	}
 	
@@ -724,8 +725,7 @@ public class BuildingConfig implements Serializable {
 		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
-		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
-		
+		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);		
 		for (Element resourceStorageElement : resourceStorageNodes) {
 			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
             AmountResource resource = AmountResource.findAmountResource(resourceName);
@@ -734,6 +734,27 @@ public class BuildingConfig implements Serializable {
 		}
 		return capacities;
 	}
+	
+	/**
+	 * Gets the stock capacity in a building with storage function.
+	 * @param buildingType the type of the building.
+	 * @return stock capacity.
+	 * @throws Exception if building type cannot be found or XML parsing error.	 
+    // 2015-03-07 Added getStockCapacity()
+	public double getStockCapacity(String buildingType) {
+		Element buildingElement = getBuildingElement(buildingType);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		// 2015-03-07 Added stockCapacity
+		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));	
+		return stockCapacity;
+	}
+	*/
+    // 2015-03-07 Added getStockCapacity()
+	public double getStockCapacity(String buildingType) {
+		return getValueAsDouble(buildingType, FUNCTIONS, STORAGE, STOCK_CAPACITY);
+	}
+   
 	
 	/**
 	 * Gets a map of the initial resources stored in this building.
