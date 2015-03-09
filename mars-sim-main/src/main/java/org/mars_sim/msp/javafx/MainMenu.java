@@ -20,6 +20,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.AmbientLight;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
@@ -98,7 +99,7 @@ public class MainMenu {
        
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
-    		   
+       scene.setCursor(Cursor.HAND);
        //primaryStage.setFullScreen(true);
        primaryStage.setResizable(false);            
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
