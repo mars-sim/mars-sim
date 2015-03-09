@@ -166,7 +166,9 @@
 				
 				<process name="Black Water Recycling" power-required="4.0" default="off">
 					<input resource="black water" rate="40.0" ambient="false" />
-					<output resource="grey water" rate="35.0" ambient="false" />
+					<input resource="oxygen" rate="5.0" ambient="false" />
+					<input resource="chlorine" rate="0.02" ambient="false" />
+					<output resource="water" rate="35.0" ambient="false" />
 				</process>
 				
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
@@ -207,7 +209,7 @@
 				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
-				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
+				<resource-storage resource="chlorine" capacity="100.0" />				
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
 				<resource-storage resource="Rock Salt" capacity="100.0" />
@@ -274,6 +276,7 @@
 				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
+				<resource-initial resource="chlorine" amount="50.0" />
 								
 				<resource-initial resource="Sodium Hypochlorite" amount="20.0" />
 				<resource-initial resource="Acetic Acid Bacteria" amount="20.0" />
@@ -590,7 +593,9 @@
 				</process>
 				<process name="Black Water Recycling" power-required="4.0" default="off">
 					<input resource="black water" rate="40.0" ambient="false" />
-					<output resource="grey water" rate="35.0" ambient="false" />
+					<input resource="oxygen" rate="5.0" ambient="false" />
+					<input resource="chlorine" rate="0.02" ambient="false" />
+					<output resource="water" rate="35.0" ambient="false" />
 				</process>				
 				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
@@ -768,7 +773,7 @@
 				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
-				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
+				<resource-storage resource="chlorine" capacity="100.0" />			
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />				
 				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
@@ -1469,7 +1474,7 @@
 				<resource-storage resource="grey water" capacity="2500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="2500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
-<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
+ 				<resource-storage resource="chlorine" capacity="500.0" />
 				<resource-storage resource="Food" capacity="2500.0" />
 
 				<resource-storage resource="Ice" capacity="500.0" />
@@ -1672,7 +1677,7 @@
 				
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
-				<!-- <resource-storage resource="chlorine" capacity="500.0" /> -->				
+				<resource-storage resource="chlorine" capacity="100.0" />				
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
 				<resource-storage resource="Rock Salt" capacity="100.0" />
@@ -1738,7 +1743,8 @@
 				
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
-								
+
+				<resource-initial resource="chlorine" amount="50.0" />								
 				<resource-initial resource="Sodium Hypochlorite" amount="20.0" />
 				<resource-initial resource="Acetic Acid Bacteria" amount="20.0" />
 				<resource-initial resource="Nitrosomonas spp" amount="20.0" />
@@ -1805,7 +1811,7 @@
 				<resource-storage resource="Water" capacity="5000.0" />						
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
-<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
+	 			<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="Methane" capacity="2000.0" />
 				<resource-storage resource="Food" capacity="2000.0" />
 											

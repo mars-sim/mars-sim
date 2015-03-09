@@ -114,10 +114,14 @@
 		</outputs>
 	</process>
 	
-	 <!-- TODO: chemist can isolate these bacteria and grow them in the lab
- Note: https://microbewiki.kenyon.edu/index.php/Nitrospira. Nitrospira are nitrite-oxidizing bacteria that are important
+<!-- TODO: chemist can isolate these bacteria and grow them in the lab
+ Note 1: https://microbewiki.kenyon.edu/index.php/Nitrospira. Nitrospira are nitrite-oxidizing bacteria that are important
  for healthy marine ecosystems/habitats and find their use in wastewater treatment plants. 
- If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die.  -->
+ If the ammonia/nitrite/nitrate cycle is thrown off, the ecosystems suffers and fish can get sick or die. 
+ 
+ Note 2: http://www.dep.state.fl.us/legal/Rules/drinkingwater/62-555.pdf
+ All suppliers of water shall maintain a minimum free chlorine residual of 0.2 milligram per liter, 
+-->
  
 	<process name="extract nitrogen compounds from black water"
 			tech="1" skill="2"
@@ -127,6 +131,7 @@
 		<inputs>
 			<resource name="Crop Waste" amount="1.0" />
 			<resource name="Black Water" amount="10.0" />
+			<resource name="sodium hypochlorite" amount="0.002" />
 			<resource name="Nitrospira spp" amount="0.02" />	
 			<resource name="Nitrosomonas spp" amount="0.02" />	
 			
@@ -148,6 +153,7 @@
 		<inputs>
 			<resource name="Crop Waste" amount="10" />
 			<resource name="Black Water" amount="100" />
+			<resource name="sodium hypochlorite" amount="0.02" />
 			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
 			<resource name="Nitrospira spp" amount="0.2" />	
 			<resource name="Nitrosomonas spp" amount="0.2" />					
@@ -265,7 +271,7 @@ TODO 2: need to recruit chemist to monitor the process
 			<resource name="oxygen" amount=".2" />
 			<resource name="Sulfur" amount=".05" />	
 			<resource name="Ammonia" amount=".05" />		
-			<resource name="Sodium Hypochlorite" amount=".05" />
+			<resource name="sodium hypochlorite" amount=".05" />
 			<resource name="Calcium Carbonate" amount=".1" />
 			<resource name="Magnesium" amount=".05" />												
 		</inputs>
@@ -283,7 +289,7 @@ TODO 2: need to recruit chemist to monitor the process
 			<resource name="oxygen" amount="2" />
 			<resource name="Sulfur" amount=".5" />	
 			<resource name="Ammonia" amount=".5" />		
-			<resource name="Sodium Hypochlorite" amount=".5" />
+			<resource name="sodium hypochlorite" amount=".5" />
 			<resource name="Calcium Carbonate" amount="1" />
 			<resource name="Magnesium" amount=".5" />					
 		</inputs>
@@ -293,27 +299,43 @@ TODO 2: need to recruit chemist to monitor the process
 	</process>
 	
 					
-	<!-- https://en.wiki2.org/wiki/Electrochlorination
+<!-- https://en.wiki2.org/wiki/Electrochlorination
 		NaCl + H2O + ENERGY → NaOCl + H2 energy is added to sodium chloride (table salt) in water, resulting in sodium hypochlorite and hydrogen gas.
-TODO 1: need to compute the exact chemical amount needed
-TODO 2: need to recruit chemist to monitor the process
-		 -->	 
-	<process name="make Sodium Hypochlorite for pulp bleaching and cooking sanitation"
+TODO: need to recruit chemist to monitor the process
+Note: 1 kg of H2 is 14.13 liter
+
+-->	 
+	<process name="make sodium hypochlorite for bleaching and sanitation"
 			tech="2" skill="3"
 			work-time="20"
 			process-time="50" 
 			power-required="1">
 		<inputs>
-			<resource name="Table Salt" amount="1" />
-			<resource name="water" amount="1" />	
+			<resource name="Table Salt" amount="5.85" />
+			<resource name="water" amount="1.8" />	
 												
 		</inputs>
 		<outputs>
-			<resource name="Sodium Hypochlorite" amount="1.8" />	
+			<resource name="sodium hypochlorite" amount="7.45" />	
 			<resource name="Hydrogen" amount=".2" />										
 		</outputs>
 	</process>	
 	
+	<process name="make sodium hypochlorite for bleaching and sanitation (large batch)"
+			tech="2" skill="3"
+			work-time="800"
+			process-time="300" 
+			power-required="4">
+		<inputs>
+			<resource name="Table Salt" amount="58.5" />
+			<resource name="water" amount="18" />	
+												
+		</inputs>
+		<outputs>
+			<resource name="sodium hypochlorite" amount="74.5" />	
+			<resource name="Hydrogen" amount="2" />										
+		</outputs>
+	</process>	
 					
 	<process name="make compost by mixing crop waste and food waste"
 			tech="1" skill="0"

@@ -154,7 +154,7 @@
 			<part name="refrigerator" number="1" />		
 			<resource name="Soybean" amount="3.0" />
 			<resource name="Water" amount="3.0" />
-			<resource name="Sodium Hypochlorite" amount="0.1" />
+			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		
 		<outputs>
@@ -527,7 +527,7 @@
 			<resource name="Acetic Acid Bacteria" amount="0.3" />
 			<resource name="Sugar" amount=".5" />						
 			<resource name="Water" amount="10" />
-			<resource name="Sodium hypochlorite" amount="0.1" />				
+			<resource name="sodium hypochlorite" amount="0.003" />				
 		</inputs>
 		<outputs>
 			<part name="bottle" number="5" />

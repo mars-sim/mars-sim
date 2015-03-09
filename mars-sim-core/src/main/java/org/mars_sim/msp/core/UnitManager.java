@@ -836,7 +836,13 @@ implements Serializable {
     
     public RobotType getABot() {
     	RobotType robotType = null;
-    	boolean hasMedicbot = false;
+    	int numChefbot = 0;
+    	int numConstructionbot = 0;
+    	int numDeliverybot = 0;
+    	int numGardenbot = 0;
+    	int numMakerbot = 0;
+    	int numMedicbot = 0;
+    	int numRepairbot = 0;
     	Robot robot = null;
     	
     	// check if the settlement has a medicbot yet
@@ -845,31 +851,41 @@ implements Serializable {
     		Unit unit = i.next();
     		if (unit instanceof Robot) { 
     			robot = (Robot) unit;			
-    			if (robot.getRobotType().equals(RobotType.MEDICBOT)) {
-    				hasMedicbot = true;
-    				break;
-    			}
+    			if (robot.getRobotType().equals(RobotType.CHEFBOT))
+    				numChefbot++;
+    			else if (robot.getRobotType().equals(RobotType.CONSTRUCTIONBOT))
+        			numConstructionbot++;	
+    			else if (robot.getRobotType().equals(RobotType.DELIVERYBOT))
+    				numDeliverybot++;
+    			else if (robot.getRobotType().equals(RobotType.GARDENBOT))
+        			numGardenbot++;
+    			else if (robot.getRobotType().equals(RobotType.MAKERBOT))
+    				numMakerbot++;
+    			else if (robot.getRobotType().equals(RobotType.MEDICBOT))
+        			numMedicbot++;
+    			else if (robot.getRobotType().equals(RobotType.REPAIRBOT))
+        			numRepairbot++;
     		}
     	}    	
     	
     	int num = RandomUtil.getRandomInt(15); // 0 to 15
-    	if (num < 3) // if num == 0, 1, 2,
-    		robotType = RobotType.REPAIRBOT;
-    	else if (num < 6 ) //  3, 4, 5,
-    		robotType = RobotType.GARDENBOT;
-    	else if (num < 8 ) //  6, 7
+
+    	if (numChefbot < 5 && num < 2 ) // 0, 1
 			robotType = RobotType.CHEFBOT;
-    	else if (num < 10 ) //  8, 9,
+    	else if (numConstructionbot < 5 && num < 4 ) //  2, 3
 			robotType = RobotType.CONSTRUCTIONBOT;
-       	else if (num < 13 ) //  10, 11, 12
-    			robotType = RobotType.MAKERBOT;    	
-    	else if (num < 14 ) //  13
-			robotType = RobotType.DELIVERYBOT;    	
-    	else if (!hasMedicbot && num == 14 ) 
-    		// if the settlement does not have a medicbot yet and if num = 14
+    	else if (numDeliverybot < 2 && num < 5 ) //  4
+			robotType = RobotType.DELIVERYBOT;  
+    	else if (numGardenbot < 5 && num < 8 ) //  5, 6, 7
+    		robotType = RobotType.GARDENBOT;
+       	else if (numMakerbot < 6 && num < 11 ) //  8, 9, 10 
+    		robotType = RobotType.MAKERBOT;    	
+    	else if (numMedicbot < 2 && num < 12 ) //  11,
 			robotType = RobotType.MEDICBOT;
-    	else // if num = 15
+    	else if (numRepairbot < 5 && num < 15) // 12, 13, 14,
     		robotType = RobotType.REPAIRBOT;
+    	else // if a particular robottype already exceeded the limit
+    		robotType = RobotType.MAKERBOT;
     	
     	return robotType;
     }

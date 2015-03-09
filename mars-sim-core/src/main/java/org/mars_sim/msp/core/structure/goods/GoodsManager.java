@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -152,7 +151,8 @@ public class GoodsManager implements Serializable {
     private boolean initialized = false;
 
     private Inventory inv;
-    
+	//private static int count = 0;
+
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -160,7 +160,9 @@ public class GoodsManager implements Serializable {
     public GoodsManager(Settlement settlement) {
         this.settlement = settlement;
         inv = settlement.getInventory();
-
+       	//count++;
+    	//System.out.println(" calling GoodsManager.java " + count + " times");
+     
         populateGoodsValues();
     }
 

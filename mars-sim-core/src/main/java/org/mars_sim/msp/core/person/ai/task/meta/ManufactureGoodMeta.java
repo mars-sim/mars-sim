@@ -112,7 +112,7 @@ public class ManufactureGoodMeta implements MetaTask {
 			            // See if there is an available manufacturing building.
 			            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
 			            if (manufacturingBuilding != null) {
-			                result = 1D;
+			                result = 100D;
 			
 			                // Crowding modifier.
 			                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, manufacturingBuilding);
