@@ -316,6 +316,8 @@
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
+			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
+			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />			
 		</effect-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
@@ -338,6 +340,8 @@
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Food" change-rate="-1.0" />
+			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
+			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />
 		</effect-list>
 	</malfunction>
 

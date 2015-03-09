@@ -128,9 +128,9 @@ extends ToolWindow {
 			    	marsTimeString = marsClock.getTimeStamp();
 					timeLabel.setText("Martian Time : " + marsTimeString);
 				    statusText = "" + MarsClock.getTotalSol(marsClock);
-				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + "  of  " + mapPanel.getSettlement().getPopulationCapacity();
+				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + " of " + mapPanel.getSettlement().getPopulationCapacity();
 				    // 2015-02-09 Added leftLabel
-				    leftLabel.setText("Sol :  " + statusText + "      Population :  " + populationText);
+				    leftLabel.setText("Sol : " + statusText + "      Population : " + populationText);
 			    }
 			};
 		}

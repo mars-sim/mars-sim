@@ -44,7 +44,7 @@
 	<resource name="Methane" phase="gas" />
 	<resource name="Nitrogen" phase="gas"> N2 is an odorless gas </resource>
 	<resource name="Oxygen" phase="gas" life-support="true" />	
-	<resource name="Chlorine" phase="gas"/>
+	<resource name="chlorine" phase="gas"/>
 
 <!-- Cooking Condiment -->
 	<resource name="Baking Powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	

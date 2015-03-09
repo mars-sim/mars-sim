@@ -89,7 +89,8 @@ implements Serializable {
 	private Map<String, Integer> itemSupplyMap =  new HashMap<String, Integer>();
 	private Map<String, Integer> itemSupplyRequestMap =  new HashMap<String, Integer>();
 
-	
+	//private static int count = 0;
+
     /** 
      * Constructor
      * @param owner the unit that owns this inventory
@@ -97,6 +98,8 @@ implements Serializable {
     public Inventory(Unit owner) {
         // Set owning unit.
         this.owner = owner;
+    	//count++;
+		//System.out.println(" calling Inventory.java " + count + " times");
         
     }
     
