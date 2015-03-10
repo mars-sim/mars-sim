@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -724,7 +725,7 @@ implements Serializable {
       	//if (cacheAmount < amount)
   	    // 2b. if not, retrieve whatever amount from inv 
   		// Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
-  		boolean hasFive = retrieveAnResource(amount * 5, name, isRetrieving);
+  		boolean hasFive = Storage.retrieveAnResource(amount * 5, name, inv, isRetrieving);
       	// 2b1. if inv has it, save it to local map cache
       	if (hasFive) {
       		// take 5 out, put 4 into resourceMap, use 1 right now
@@ -732,7 +733,7 @@ implements Serializable {
       		//result = true && result; // not needed since there is no change to the value of result
       	} 
       	else { // 2b2.
-      		boolean hasOne = retrieveAnResource(amount, name, isRetrieving);
+      		boolean hasOne = Storage.retrieveAnResource(amount, name, inv, isRetrieving);
       		if (hasOne) 		    			
   	    		; // no change to resourceMap since resourceMap.put(name, cacheAmount); 		    				    	
       		else 
@@ -746,7 +747,7 @@ implements Serializable {
     	//TODO: need to move the hardcoded amount to a xml file	    
 	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER, true);
 		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;		
-		storeAnResource(wasteWaterAmount, "grey water");  
+		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);  
     }
     
     
@@ -764,7 +765,7 @@ implements Serializable {
      * Retrieves the resource
      * @param name
      * @param requestedAmount
-     */
+     
     //2015-02-07 Added retrieveAnResource()
     public boolean retrieveAnResource(double requestedAmount, String name, boolean isRetrieving ) {
     	boolean result = false;
@@ -794,6 +795,7 @@ implements Serializable {
     	
     	return result;
     }
+    */
     
     public void setChef(String name) {
     	this.producerName = name;
@@ -874,7 +876,7 @@ implements Serializable {
 		            	double quality = meal.getQuality()/2D + 1D;
 	 	      			double num = RandomUtil.getRandomDouble(8*quality);
 	 	      			if (num < 1) {	 	      				
-	 	      				storeAnResource(dryMassPerServing, "Food Waste");
+	 	      				Storage.storeAnResource(dryMassPerServing, "Food Waste", inv);
 			            	logger.info(dryMassPerServing  + " kg " + meal.getName()	 	      				
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
 			                		+ " in " + settlement.getName() );
@@ -906,7 +908,7 @@ implements Serializable {
 	     // 2015-01-12 Added checkEndOfDay()
 	     checkEndOfDay();
     }
-
+/*
 	public boolean storeAnResource(double amount, String name) {
 		Inventory inventory = inv;
 		return storeAnResource(amount, name, inventory);	
@@ -936,7 +938,7 @@ implements Serializable {
 		
 		return result;
 	}
-
+*/
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
 	    	 
@@ -992,14 +994,14 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorite",  true);
-		retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupport.WATER,  true);				
+		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorite", inv, true);
+		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupport.WATER, inv, true);				
 	}
 	
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true); 
-		storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD);
+		Storage.storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD, inv);
  	}
 
     /**

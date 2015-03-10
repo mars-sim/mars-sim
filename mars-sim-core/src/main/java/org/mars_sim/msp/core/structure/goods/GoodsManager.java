@@ -132,9 +132,9 @@ public class GoodsManager implements Serializable {
     
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
     private static final double MINIMUM_STORED_SUPPLY = 1D; //0.000001D;
-    private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;    
-    private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
-    private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
+    //private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;    
+    //private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
+    //private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
     
     //private static final String resource_name = "regolith";
     
@@ -392,8 +392,8 @@ public class GoodsManager implements Serializable {
             
             // 2015-02-13 Added MINIMUM_TOTAL_DEMAND
             // Shouldn't minimum total demand be zero? - Scott
-            if (totalDemand < MINIMUM_TOTAL_DEMAND) 
-            	totalDemand = MINIMUM_TOTAL_DEMAND;
+            //if (totalDemand < MINIMUM_TOTAL_DEMAND) 
+            //	totalDemand = MINIMUM_TOTAL_DEMAND;
             
             // Add trade value.
             tradeDemand = determineTradeDemand(resourceGood, useCache);
@@ -410,10 +410,10 @@ public class GoodsManager implements Serializable {
         
         // 2015-02-13 Added MAXIMUM_ALLOWABLE_VALUE_POINT 
         // Why have a min or max value limit? - Scott
-        if (value > MAXIMUM_ALLOWABLE_VALUE_POINT) 
-        	value = MAXIMUM_ALLOWABLE_VALUE_POINT;
-        else if (value < MINIMUM_ALLOWABLE_VALUE_POINT) 
-        	value = MINIMUM_ALLOWABLE_VALUE_POINT;        
+        //if (value > MAXIMUM_ALLOWABLE_VALUE_POINT) 
+        //	value = MAXIMUM_ALLOWABLE_VALUE_POINT;
+        //else if (value < MINIMUM_ALLOWABLE_VALUE_POINT) 
+        //	value = MINIMUM_ALLOWABLE_VALUE_POINT;        
         
         // Use resource processing value if higher. 
         // Manny: why using higher values?

@@ -566,13 +566,13 @@
 		crushing peeled sugarcane in a mill or by hand cranked machine. </description>
 		<inputs>
 			<!-- <equipment name="oven" number="1" /> -->
-			<resource name="Sugarcane" amount="8.0" />
-			<resource name="Water" amount="10.0" />				
+			<resource name="Sugarcane" amount="8" />
+			<resource name="Water" amount="5" />				
 		</inputs>
 		<outputs>
 			<resource name="Sugar" amount="2" />
-			<resource name="Cane Fiber" amount="6" />
-			<resource name="Sugarcane Juice" amount="10" />			
+			<resource name="cane fiber" amount="6" />
+			<resource name="Sugarcane Juice" amount="5" />			
 		</outputs>
 	</process>
 	
@@ -581,7 +581,7 @@
 			power-required="3.0">
 		<description>Fiber cloth Weaving </description>
 		<inputs>
-			<resource name="Cane Fiber" amount="2" />
+			<resource name="cane fiber" amount="2" />
 			<resource name="Soy Fiber" amount="2" />			
 		</inputs>
 		<outputs>
@@ -673,7 +673,7 @@
 			<resource name="Magnesium" amount=".028" />
 			<resource name="Phosphorus" amount=".07" />	
 			<resource name="Zinc" amount=".01" />	
-			<resource name="Cane Fiber" amount=".1" />			
+			<resource name="cane fiber" amount=".1" />			
 		</inputs>
 		<outputs>
 			<resource name="Immune Booster" amount=".05" />	

@@ -100,7 +100,7 @@ implements Serializable {
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {	
 			double cache = updateAirPressure(location);
 			airPressureCacheMap.put(location, cache);
-			//System.out.println("updated : ");
+			//System.out.println("air pressure : "+cache);
 			return cache;
 		}
 		
@@ -179,7 +179,7 @@ implements Serializable {
 			
     		result = cache;
     	}
-       	
+		//System.out.println("air pressure cache : "+ result);
     	return result;
     }
     

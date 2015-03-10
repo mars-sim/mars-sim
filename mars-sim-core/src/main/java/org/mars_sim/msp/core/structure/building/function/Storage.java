@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -30,6 +32,9 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+    /* default logger.*/
+	private static Logger logger = Logger.getLogger(Storage.class.getName());   
+ 	
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 
 	private double stockCapacity = 0;
@@ -200,14 +205,6 @@ implements Serializable {
 	}
 
 	@Override
-	public void destroy() {
-		super.destroy();
-
-		storageCapacity.clear();
-		storageCapacity = null;
-	}
-
-	@Override
 	public double getFullHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -217,5 +214,82 @@ implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+    /**
+     * Stores a resource
+     * @param name
+     * @param Amount
+     * @param inv
+     */	
+	// 2015-03-09 Added storeAnResource()
+	public static boolean storeAnResource(double amount, String name, Inventory inv) {
+		boolean result = false;
+		try {
+			AmountResource ar = AmountResource.findAmountResource(name);      
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+				result = false;
+			    //logger.info(name + " storage is full!");
+			}
+			else {
+				inv.storeAmountResource(ar, amount, true);
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
+		
+		return result;
+	}
+
+	
+    /**
+     * Retrieves a resource or test if a resource is available
+     * @param name
+     * @param requestedAmount
+     * @param inv
+     * @param isRetrieving
+     */
+    //2015-03-09 Added retrieveAnResource()
+    public static boolean retrieveAnResource(double requestedAmount, String name, Inventory inv, boolean isRetrieving ) {
+    	boolean result = false;
+    	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	        double amountStored = inv.getAmountResourceStored(nameAR, false);
+	    	inv.addAmountDemandTotalRequest(nameAR);  
+	        if (amountStored < requestedAmount) {
+	     		//requestedAmount = amountStored;
+	    		//logger.warning("Not enough " + name + " for making a meal.");
+	    		result = false;
+	        }
+	    	else if (Math.round(amountStored*10000.0)/10000.0 < 0.0001) {
+	    		//logger.warning("no more " + name + " in " + settlement.getName());
+	    		result = false;
+	    	}
+	    	else { 
+	    		if (isRetrieving) {
+		    		inv.retrieveAmountResource(nameAR, requestedAmount);
+		    		inv.addAmountDemand(nameAR, requestedAmount);
+	    		}
+	    		result = true;
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+    	
+    	return result;
+    }
+    
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		storageCapacity.clear();
+		storageCapacity = null;
 	}
 }

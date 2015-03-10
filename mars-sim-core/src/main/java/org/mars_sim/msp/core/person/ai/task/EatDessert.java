@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 
 
+
 //import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
@@ -34,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -183,7 +185,7 @@ implements Serializable {
      	
     	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
      	 
-    	String namePerson = person.getName();
+    	//String namePerson = person.getName();
     	//System.out.println(namePerson + " is entering the eatingPhase() in EatDessert.java");	
         PhysicalCondition condition = person.getPhysicalCondition();
 
@@ -202,9 +204,11 @@ implements Serializable {
             try {
       	
             	if (dessert != null) {
-                   	String nameDessert = dessert.getName();
+            		Inventory inv = kitchen.getBuilding().getInventory();
+                   	//String nameDessert = dessert.getName();
             		//logger.info( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
-                	retrieveAnResource("napkin", .0025D, kitchen.getBuilding().getInventory());
+                   	Storage.retrieveAnResource(.0025D, "napkin", inv, true);
+                	Storage.storeAnResource(.0025D,"solid waste", inv);
             	}
             	else { // if a person does not get a hold of a serving of dessert 
             		
@@ -248,7 +252,7 @@ implements Serializable {
      * Retrieves an resource
      * @param name
      * @param requestedAmount
-     */
+     
     //2015-02-27 Added retrieveAnResource()
     public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
     	try {
@@ -272,7 +276,7 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
     } 
-    
+    */
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.

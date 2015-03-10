@@ -16,7 +16,7 @@
 		<!-- number: the number of parts. -->
 		
 				
-		<part type="LED bulb" number="100" />	
+		<part type="light emitting diode bulb" number="100" />	
 		<part type="mushroom containment kit" number="5" />
 				
 		<!-- 2014-11-20 Added the following new parts -->		
@@ -103,7 +103,7 @@
 	
 	<part-package name="package 2" >
 	
-		<part type="LED bulb" number="200" />
+		<part type="light emitting diode bulb" number="200" />
 			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="60" />	
@@ -191,7 +191,7 @@
 	
 	<part-package name="package 3">
 	
-		<part type="LED bulb" number="300" />
+		<part type="light emitting diode bulb" number="300" />
 			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="80" />	
@@ -279,7 +279,7 @@
 	
 	<part-package name="package 4">
 	
-		<part type="LED bulb" number="400" />
+		<part type="light emitting diode bulb" number="400" />
 			
 		<!-- 2014-11-20 Added the following new parts -->		
 		<part type="microcontroller" number="200" />	

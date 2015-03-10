@@ -594,8 +594,8 @@
 		</repair-parts-list>
 	</malfunction>
 	
-	<!-- 2015-02-16 Added LED Kit failure. -->
-	<malfunction name="LED Lighting Kit failure">
+	<!-- 2015-02-16 Added light emitting diode Kit failure. -->
+	<malfunction name="light emitting diode Lighting Kit failure">
 		<severity value="10" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />
@@ -608,10 +608,10 @@
 			<entity name="living accommodations" />	
 		</entity-list>
 		<repair-parts-list>
-			<part name="LED kit" number="1" probability="10" />	
+			<part name="light emitting diode kit" number="1" probability="10" />	
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
-			<part name="LED bulb" number="5" probability="20" />								
+			<part name="light emitting diode bulb" number="5" probability="20" />								
 		</repair-parts-list>
 	</malfunction>	
 

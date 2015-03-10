@@ -376,12 +376,12 @@ implements LifeSupport {
  
     
         // TODO: check against indoor air pressure
-        if (getAirPressure() != NORMAL_AIR_PRESSURE)
-            result = false;
+        //if (getAirPressure() != NORMAL_AIR_PRESSURE)
+        //    result = false;
         // TODO: check if this is working
         // 2014-11-28 Added MAX_TEMP
-        if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
-            result = false;
+        //if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
+       //     result = false;
 
         return result;
     }
@@ -394,11 +394,8 @@ implements LifeSupport {
                 result = false;
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (getInventory().getAmountResourceStored(water, false) <= 0D)
-                result = false;
-      
-    }
-       
-    
+                result = false;      
+    }  
         // TODO: check against indoor air pressure
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
@@ -406,7 +403,6 @@ implements LifeSupport {
         // 2014-11-28 Added MAX_TEMP
         if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
             result = false;
-
         return result;
     }
      */
@@ -481,6 +477,7 @@ implements LifeSupport {
         double result = NORMAL_AIR_PRESSURE;
         double ambient = Simulation.instance().getMars().getWeather()
                 .getAirPressure(getCoordinates());
+        
         if (result < ambient)
             return ambient;
         else
@@ -491,20 +488,18 @@ implements LifeSupport {
      * Gets the temperature of the life support system.
      * @return temperature (degrees C)
      */
-    //TODO: what is the use of this method
     public double getTemperature() {
         double result = NORMAL_TEMP;
-        //double result = getLifeSupport().getTemperature();
-        
-        /*
+        //double result = getLifeSupport().getTemperature();   
         double ambient = Simulation.instance().getMars().getWeather()
                 .getTemperature(getCoordinates());
+        
         if (result < ambient)
             return ambient;
         else
             return result;
-        */
-        return result;
+        
+        //return result;
     }
      
     /**
