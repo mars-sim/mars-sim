@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -192,8 +193,8 @@ implements Serializable {
                 //String nameMeal = meal.getName();
                 //System.out.println(person + " has just eaten " + nameMeal);
                 // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
-            	retrieveAnResource("napkin", .0025D, inv);
-      			storeAnResource("solid waste",.0025D, inv);
+            	Storage.retrieveAnResource(.0025D, "napkin", inv, true);
+            	Storage.storeAnResource(.0025D,"solid waste", inv);
                 condition.setHunger(0D);
                 condition.addEnergy(meal.getDryMass());
             }
@@ -243,8 +244,8 @@ implements Serializable {
       		int num = RandomUtil.getRandomInt(9);
       		if (num == 0) {
       			//System.out.println("EatMeal. preserved food is bad ");
-      			retrieveAnResource(org.mars_sim.msp.core.LifeSupport.FOOD, foodAmount, inv);
-      			storeAnResource("food waste", foodAmount, inv);
+      			Storage.retrieveAnResource(foodAmount, org.mars_sim.msp.core.LifeSupport.FOOD, inv, true);
+      			Storage.storeAnResource(foodAmount, "food waste", inv);
       		}
             /*        
             AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
@@ -266,8 +267,8 @@ implements Serializable {
             */   
       		
         	if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        		retrieveAnResource("napkin", .0025D, inv);
-      			storeAnResource("solid waste",.0025D, inv);
+        		Storage.retrieveAnResource(.0025D, "napkin", inv, true);
+        		Storage.storeAnResource(.0025D,"solid waste", inv);
         	}
         }
         else {
@@ -281,7 +282,7 @@ implements Serializable {
      * Retrieves an resource
      * @param name
      * @param requestedAmount
-     */
+     
     //2015-02-27 Added retrieveAnResource()
     public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
     	try {
@@ -330,7 +331,7 @@ implements Serializable {
 		
 		return result;
 	}
-	
+	*/
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.

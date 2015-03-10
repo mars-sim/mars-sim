@@ -78,7 +78,7 @@ public class FoodProductionConfig implements Serializable {
                 String name = "";
                 String description = "";
 
-                name = processElement.getAttributeValue(NAME);
+                name = processElement.getAttributeValue(NAME).toLowerCase();
                 process.setName(name);
 
                 process.setTechLevelRequired(Integer.parseInt(processElement
@@ -164,7 +164,7 @@ public class FoodProductionConfig implements Serializable {
         for (Element partElement : partNodes) {
             FoodProductionProcessItem partItem = new FoodProductionProcessItem();
             partItem.setType(Type.PART);
-            partItem.setName(partElement.getAttributeValue(NAME));
+            partItem.setName(partElement.getAttributeValue(NAME).toLowerCase());
             partItem.setAmount(Integer.parseInt(partElement
                     .getAttributeValue(NUMBER)));
             list.add(partItem);

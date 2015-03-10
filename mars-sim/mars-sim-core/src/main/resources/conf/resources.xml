@@ -66,8 +66,8 @@
 	
 	
 <!-- Utility Items derived from crop harvest -->
-	<resource name="Cane Fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>	
-	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and Cane Fiber.</resource>
+	<resource name="cane fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>	
+	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
 
 	
 <!-- Food items derived from crop harvest -->

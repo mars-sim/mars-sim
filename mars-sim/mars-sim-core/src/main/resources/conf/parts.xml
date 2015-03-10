@@ -612,7 +612,7 @@
 		</maintenance-entity-list>
 	</part>	
 
-	<part name="LED kit" mass="1.0">
+	<part name="light emitting diode kit" mass="1.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="5" />
 			<entity name="farming" probability="3" max-number="10" />	
@@ -622,7 +622,7 @@
 		</maintenance-entity-list>
 	</part>	
 
-	<part name="LED bulb" mass="0.2">
+	<part name="light emitting diode bulb" mass="0.2">
 		<description>Solid state light bulb</description>
 	</part>	
 	

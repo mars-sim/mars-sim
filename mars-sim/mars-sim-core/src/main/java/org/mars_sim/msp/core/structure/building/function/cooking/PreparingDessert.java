@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -466,7 +467,7 @@ implements Serializable {
     	// Take out one serving of the selected dessert from the fridge 
 		//removeDessertFromAmountResource(selectedDessert);
         double dryMass = getDryMass(selectedDessert);
-		retrieveAnResource(dryMass, selectedDessert);
+        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 		
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         // TODO: quality also dependent upon the hygiene of a person
@@ -490,9 +491,9 @@ implements Serializable {
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file	    
-	    retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupport.WATER);
+    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupport.WATER, inv, true);
 		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;		
-		storeAnResource(wasteWaterAmount, "grey water");  
+		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);  
     }
     
     
@@ -524,7 +525,7 @@ implements Serializable {
 		            	double quality = dessert.getQuality()/2D + 1D;
 	 	      			double num = RandomUtil.getRandomDouble(8*quality);
 	 	      			if (num < 1) {
-	 	      				storeAnResource(getDryMass(dessert.getName()), "Food Waste");
+	 	      				Storage.storeAnResource(getDryMass(dessert.getName()), "Food Waste", inv);
 	 	      				logger.info(getDryMass(dessert.getName()) + " kg " 
 			                		+ dessert.getName()
 			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName() 
@@ -558,7 +559,7 @@ implements Serializable {
     	checkEndOfDay();
     }
 
-	  
+/*	  
 	// 2015-02-06 Added storeAnResource()
 	public void storeAnResource(double amount, String name) {
 	
@@ -578,13 +579,13 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 		}
 	}
-	
+*/	
 	 
     /**
      * Retrieves the resource
      * @param name
      * @parama requestedAmount
-     */
+     
     //2015-02-07 Added retrieveAnResource()
     public void retrieveAnResource(double requestedAmount, String name) {
     	try {
@@ -606,6 +607,7 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
     }
+    */
     
     // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
