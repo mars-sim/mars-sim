@@ -14,11 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-
-
-
-//import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -182,8 +177,6 @@ implements Serializable {
      */
 	// 2015-01-05 Reworked if-then-else clauses
     private double eatingPhase(double time) {
-     	
-    	setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
      	 
     	//String namePerson = person.getName();
     	//System.out.println(namePerson + " is entering the eatingPhase() in EatDessert.java");	
@@ -204,18 +197,21 @@ implements Serializable {
             try {
       	
             	if (dessert != null) {
+            		setDescription(Msg.getString("Task.description.eatDessert.made")); //$NON-NLS-1$
             		Inventory inv = kitchen.getBuilding().getInventory();
                    	//String nameDessert = dessert.getName();
             		//logger.info( namePerson + " has just eaten " + nameDessert + " in " + dessertLocation );
                    	Storage.retrieveAnResource(.0025D, "napkin", inv, true);
                 	Storage.storeAnResource(.0025D,"solid waste", inv);
             	}
-            	else { // if a person does not get a hold of a serving of dessert 
-            		
+            	else {
+            		// if a person does not get a hold of a serving of dessert in a settlement
             		if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            			person.consumeDessert(config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL , (dessert == null));
-            			
-            			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()
+            			//person.consumeDessert(config.getDessertConsumptionRate() / NUM_OF_DESSERT_PER_SOL , (dessert == null));
+                      	setDescription(Msg.getString("Task.description.eatDessert.vehicle")); //$NON-NLS-1$
+                        
+	                    eatDessert();
+	           			//System.out.println( namePerson + " has just eaten a dessert in " + person.getContainerUnit()); //or person.getVehicle().getName()
             		}
             		else 
             		{
@@ -223,6 +219,7 @@ implements Serializable {
                         endTask();
             		}
             	}
+            	
             	// 2014-11-28 Computed new hunger level
                 double hunger = condition.getHunger();
                 // 2015-02-01 Added energy level 
@@ -238,6 +235,7 @@ implements Serializable {
                 //System.out.println("EatDessert : dessert.getDryMass() "+ Math.round(dessert.getDryMass()*10.0)/10.0);
                 condition.setHunger(hunger);
                 condition.addEnergy(dessert.getDryMass());
+                
             }
             catch (Exception e) {
                 // If person can't obtain dessert from container, end the task.
@@ -246,37 +244,64 @@ implements Serializable {
         }
 
         return 0D; 
+        
+    }
+    
+    /**
+     * Eats a dessert of choice or random selection.
+     * @throws Exception if problems finding preserved food to eat.
+     */
+    // 2015-03-10 Added eatDessert()
+    private void eatDessert() throws Exception {
+    	
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        double amount = config.getDessertConsumptionRate() / NUM_OF_DESSERT_PER_SOL;
+        Unit containerUnit = person.getContainerUnit();
+        
+        if (containerUnit != null) {
+        	
+            Inventory inv = containerUnit.getInventory();
+            boolean exit = false;
+            String dessertName = null;
+            
+            while (!exit) {
+	        	List<String> dessertList = new ArrayList<String>();
+	      	  	// Put together a list of available dessert 
+	    		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+	            for(String n : availableDesserts) {   	
+	             	boolean isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
+	            	if (isAvailable) dessertList.add(n);   	  	        	
+	            }
+	            // Pick one of the desserts
+	            dessertName = PreparingDessert.getADessert(dessertList);	
+	            
+			 	// 10% probability that the preserved food is of no good and must be discarded from container unit.
+	      		int num = RandomUtil.getRandomInt(9);
+	      		if (num == 0) {
+	      			//System.out.println("EatMeal. preserved food is bad ");
+	      			Storage.retrieveAnResource(amount, dessertName, inv, true);
+	      			Storage.storeAnResource(amount, "food waste", inv);
+	      			exit = false;
+	      		}
+	      		else
+	      			// exit the while loop
+	      			exit = true;
+      		
+            }
+      		
+        	//if (person.getLocationSituation() != LocationSituation.IN_VEHICLE) {
+        		Storage.retrieveAnResource(.0025D, "napkin", inv, true);
+      			Storage.retrieveAnResource(amount, dessertName, inv, true);
+        		Storage.storeAnResource(.0025D,"solid waste", inv);
+        	//}
+        }
+        else {
+            throw new Exception(person + " does not have a container unit to get preserved food from.");
+        }
+        
     }
 
-    /**
-     * Retrieves an resource
-     * @param name
-     * @param requestedAmount
-     
-    //2015-02-27 Added retrieveAnResource()
-    public void retrieveAnResource(String name, double requestedAmount, Inventory inv) {
-    	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
-	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (amountStored < requestedAmount) {
-	     		requestedAmount = amountStored;
-	    		logger.warning("Just used up all " + name + " at " + dessertLocation);
-	        }
-	    	else if (amountStored < 0.00001) {
-	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-	    		//logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
-	    		logger.warning("no more " + name + " at " + dessertLocation);	
-	    	}
-	    	else {
-	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addAmountDemand(nameAR, requestedAmount);
-	    	}
-	    }  catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-	    }
-    } 
-    */
+    
     /**
      * Adds experience to the person's skills used in this task.
      * @param time the amount of time (ms) the person performed this task.
@@ -342,7 +367,7 @@ implements Serializable {
     /**
      * Gets the amount of dessert in the whole settlement.
      * @return dessertAvailable
-     */
+     
     public static Boolean checkAmountAV(String name, Inventory inv) {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
 		double dessertAvailable = inv.getAmountResourceStored(dessertAR, false);
@@ -353,6 +378,7 @@ implements Serializable {
 			result = false;
 		return result;
     }
+    */
     
     /**
      * Gets the quantity of one serving of dessert
@@ -360,7 +386,7 @@ implements Serializable {
      */
     public static double getMassPerServing() {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getFoodConsumptionRate() * SERVING_FRACTION / NUM_OF_DESSERT_PER_SOL;    
+        return config.getDessertConsumptionRate() / NUM_OF_DESSERT_PER_SOL;    
     }
     
     /**
@@ -369,27 +395,34 @@ implements Serializable {
      * @return true if any dessert ingredient is available.
      */
     public static boolean isDessertIngredientAvailable(Person person) {
-        boolean result = false;
+        boolean isAvailable = false;
         Unit containerUnit = person.getContainerUnit();
+        // if a person is inside a settlement or a vehicle
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
-     
+          		String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
+    	        for(String n : availableDesserts) {
+    	        	//double amount = PreparingDessert.getDryMass(n);
+    	        	double amount = PreparingDessert.getMassPerServing();
+    	        	isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
+    	        } 	         	
+/*
                 boolean d1 = checkAmountAV("Soymilk", inv);
                 boolean d2 = checkAmountAV("Sugarcane Juice", inv);
                 boolean d3 = checkAmountAV("Strawberry", inv);
                 boolean d4 = checkAmountAV("Granola Bar", inv);
                 boolean d5 = checkAmountAV("Blueberry Muffin", inv);
-                boolean d6 = checkAmountAV("Cranberry Juice", inv);
-                             
+                boolean d6 = checkAmountAV("Cranberry Juice", inv);                           
             	result = d1 || d2 || d3 || d4 || d5 || d6;
+ */
  
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
             }
         }
-        return result;
+        return isAvailable;
     }
 
     @Override

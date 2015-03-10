@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -997,7 +998,8 @@ implements Serializable {
         AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-        AmountResource dessert = AmountResource.findAmountResource("dessert");
+        //AmountResource dessert = AmountResource.findAmountResource("dessert");
+        
         if (resource.equals(oxygen)) {
             amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
         }
@@ -1005,11 +1007,24 @@ implements Serializable {
             amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
         }
         else if (resource.equals(food)) {
-            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR;
+            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() ;
         }
-        else if (resource.equals(dessert)) {
-            amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR;
-        }
+        //else if (resource.equals(dessert)) {
+        //    amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() ;
+        //}
+/*        
+        else {
+    		// 2015-03-09 Added all desserts to the matching test
+    		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
+    	  	// Put together a list of available dessert 
+            for(String n : availableDesserts) {
+            	AmountResource dessert = AmountResource.findAmountResource(n);
+            	if (resource.equals(dessert)) 
+            		amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate(); 	  
+            }  		
+    	}
+    	
+*/
         return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }
 

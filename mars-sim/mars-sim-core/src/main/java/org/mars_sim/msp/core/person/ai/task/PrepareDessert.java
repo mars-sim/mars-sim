@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /** 
@@ -92,25 +93,17 @@ implements Serializable {
             kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);
-
-	        // 2015-01-03 Added dessert[] 
-	        String [] dessert = { 	"Soymilk",
-	        						"Sugarcane Juice",
-	        						"Strawberry",
-	        						"Granola Bar",
-	        						"Blueberry Muffin", 
-	        						"Cranberry Juice"  };
-	    	
-	        boolean hasDessert = false; 	
-	    	// Put together a list of available dessert 
-	        for(String n : dessert) {
-	        	if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
-	        		hasDessert = true;
-	        	}
+            
+       		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+	        boolean isAvailable = false;
+	        for(String n : availableDesserts) {
+	        	double amount = PreparingDessert.getDryMass(n);
+	        	// see if a food resource is available
+	        	isAvailable = Storage.retrieveAnResource(amount, n, kitchen.getInventory(), false);
 	        }
-	 
-	        if (!hasDessert) {
-	        	logger.severe("The food desserts are running out!");
+	        
+	        if (!isAvailable) {
+	        	//logger.severe("No food dessert available!");
 	        	endTask();
 	        	
 	        } else  {
@@ -148,24 +141,16 @@ implements Serializable {
             // Walk to kitchen building.
             walkToActivitySpotInBuilding(kitchenBuilding, false);
 
-	        // 2015-01-03 Added dessert[] 
-	        String [] dessert = { 	"Soymilk",
-	        						"Sugarcane Juice",
-	        						"Strawberry",
-	        						"Granola Bar",
-	        						"Blueberry Muffin", 
-	        						"Cranberry Juice"  };
-	    	
-	        boolean hasDessert = false; 	
-	    	// Put together a list of available dessert 
-	        for(String n : dessert) {
-	        	if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n)) {
-	        		hasDessert = true;
-	        	}
+      		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+	        boolean isAvailable = false;
+	        
+	        for(String n : availableDesserts) {
+	        	double amount = PreparingDessert.getDryMass(n);
+	        	isAvailable = Storage.retrieveAnResource(amount, n, kitchen.getInventory(), false);
 	        }
-	 
-	        if (!hasDessert) {
-	        	logger.severe("The food desserts are running out!");
+	        
+	        if (!isAvailable) {
+	        	//logger.severe("No food dessert available!");
 	        	endTask();
 	        	
 	        } else  {

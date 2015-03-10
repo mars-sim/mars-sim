@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -105,6 +106,7 @@ implements Serializable {
     		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
     		        vehicle.getName())); //$NON-NLS-1$
     		requiredResources = mission.getRequiredResourcesToLoad();
+    		// TODO: add extra food/dessert as optionalResources
     		optionalResources = mission.getOptionalResourcesToLoad();
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
     		optionalEquipment = mission.getOptionalEquipmentToLoad();
@@ -144,6 +146,7 @@ implements Serializable {
     		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
     		        vehicle.getName())); //$NON-NLS-1$
     		requiredResources = mission.getRequiredResourcesToLoad();
+    		// TODO: add extra food/dessert as optionalResources
     		optionalResources = mission.getOptionalResourcesToLoad();
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
     		optionalEquipment = mission.getOptionalEquipmentToLoad();
@@ -928,17 +931,33 @@ implements Serializable {
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
     	
-    	// 2015-01-04 Added Soymilk
     	// Only life support resources are required at settlement at this time.
     	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
     	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
     	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-    	AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+    	//AmountResource soymilk = AmountResource.findAmountResource("Soymilk"); 
 
+    	//String dessertName = vehicle.getTypeOfDessertLoaded();
+    	//AmountResource dessert = AmountResource.findAmountResource(dessertName);
+    	
     	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
     	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate()  * PhysicalCondition.FOOD_RESERVE_FACTOR;
-    	else if (resource.equals(soymilk)) amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR;
+    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
+    	//else if (resource.equals(dessert)) amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION;
+/*    	
+    	else {
+    		// 2015-03-09 Added all desserts to the matching test
+    		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
+    	  	// Put together a list of available dessert 
+            for(String n : availableDesserts) {
+            	AmountResource dessert = AmountResource.findAmountResource(n);
+            	if (resource.equals(dessert)) {
+            		System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
+            		amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION; 	
+            	}
+            }  		
+    	}
+*/		
     	
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }

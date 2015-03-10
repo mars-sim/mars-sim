@@ -13,6 +13,8 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -98,13 +100,20 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, LifeSupport.WATER));
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, LifeSupport.FOOD));
-		  // 2015-01-04 Added Soymilk
-		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-		inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, "Soymilk"));
+				
+		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
+		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
+    	// getRover().getInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
+		
+		
+        //String dessertName = PreparingDessert.getADessert(dessertList);		
+		//AmountResource dessert = AmountResource.findAmountResource(dessertName);
+		//inv.addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(description, dessertName));
 
-/*
-		AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
-		inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
+		//AmountResource solidWaste = AmountResource.findAmountResource("solid waste");
+		//inv.addAmountResourceTypeCapacity(solidWaste, config.getCargoCapacity(description, "solid waste"));
+		
+		/*
 		AmountResource foodWaste = AmountResource.findAmountResource("food waste");
 		inv.addAmountResourceTypeCapacity(foodWaste, config.getCargoCapacity(description, "food waste"));
 		AmountResource toxicWaste = AmountResource.findAmountResource("toxic waste");
@@ -446,6 +455,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
+    	/*
 	       // 2015-01-04 Added Soymilk
     	// Check dessert capacity as range limit.
     	AmountResource dessert = AmountResource.findAmountResource("Soymilk");
@@ -454,6 +464,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     	double dessertSols = dessertCapacity / (dessertConsumptionRate * crewCapacity);
     	double dessertRange = distancePerSol * dessertSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (dessertRange < range) range = dessertRange;
+    	*/
     	
     	// Check water capacity as range limit.
     	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);

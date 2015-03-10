@@ -19,6 +19,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
  * Provides configuration information about vehicle units.
@@ -116,10 +117,22 @@ implements Serializable {
 					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
 					for (Element capacityElement : capacityList) {
 						resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
-						v.cargoCapacity.put(
-							capacityElement.getAttributeValue(RESOURCE).toLowerCase(),
-							resourceCapacity
-						);
+						
+
+						// TODO: if RESOURCE is the placeholder "dessert", will need to change it in future. 
+						/*
+						// 2015-03-09 Added to cargoCapacity map all possible desserts
+						String [] availableDesserts = PreparingDessert.getArrayOfDesserts();							
+					  	// Put together a list of available dessert 
+				        for(String n : availableDesserts) {   	
+				        	if (capacityElement.getAttributeValue(RESOURCE).equals("dessert"))
+							v.cargoCapacity.put(n, resourceCapacity);  	        	
+				        }   
+				        */					
+						
+						// toLowerCase() is crucial in matching resource name
+						v.cargoCapacity.put(capacityElement.getAttributeValue(RESOURCE).toLowerCase(), resourceCapacity);
+						
 					}
 					v.totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
 				} else v.totalCapacity = 0d;

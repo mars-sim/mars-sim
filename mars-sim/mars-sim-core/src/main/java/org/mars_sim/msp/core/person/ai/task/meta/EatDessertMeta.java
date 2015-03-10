@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.EatDessert;
+import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -65,43 +66,53 @@ public class EatDessertMeta implements MetaTask {
 	        	//result = 5D;        
 	        else result = 0;
 	        
-	        if (result > 0) {	        	
-		        
-		        Building building = EatDessert.getAvailableDiningBuilding(person);
-		        if (building != null) {
-		        	
-		        	// 2015-02-17 Called setDiningBuilding()
-		        	person.setDiningBuilding(building);
-		        	
-		        	result += 10D;
-		        	
-		            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-		            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-		        
-		            PreparingDessert kitchen = EatDessert.getKitchenWithDessert(person);
-			        // Check if there's a dessert already made available at a local kitchen. will in terms call kitchen.hasFreshDessert()
-			        if (kitchen != null) {			        	
+	        if (result > 0) 
+	        	
+	        	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        		
+	        		// check if desserts are available in the vehicle.
+		            if (!EatDessert.isDessertIngredientAvailable(person))
+		  	          //TODO: is there a way to switch to EatFoodMeta at this point?
+		                result = 0D; 	
+	        	}
+	        
+	        	else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		                
+	        		Building building = EatDessert.getAvailableDiningBuilding(person);
+			        if (building != null) {
+			        	
 			        	// 2015-02-17 Called setDiningBuilding()
-			        	person.setKitchenWithDessert(kitchen);			        	
-			            
-			        	result += 20D;
+			        	person.setDiningBuilding(building);
 			        	
-			        	// TODO: check how many desserts available. increase in choice should increase result
+			        	result += 10D;
 			        	
-			        }
-			        //TODO: check if the kitchen has the person's favorite dessert
-			        // result += 100D;
+			            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+			            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 			        
-			        else { // there is no fresh dessert available
-			            // TODO: do we still need to check if the dessert ingredient are available. ?
-			        	// TODO: how to switch to directly preparing the dessert for himself ?
-			            //if (!EatDessert.isDessertIngredientAvailable(person)) 
-			            	result = 0D;
+			            PreparingDessert kitchen = EatDessert.getKitchenWithDessert(person);
+				        // Check if there's a dessert already made available at a local kitchen. will in terms call kitchen.hasFreshDessert()
+				        if (kitchen != null) {			        	
+				        	// 2015-02-17 Called setDiningBuilding()
+				        	person.setKitchenWithDessert(kitchen);			        	
+				            
+				        	result += 20D;
+				        	
+				        	// TODO: check how many desserts available. increase in choice should increase result
+				        	
+				        }
+				        //TODO: check if the kitchen has the person's favorite dessert
+				        // result += 100D;
+				        
+				        else { // there is no fresh dessert available
+				            // TODO: do we still need to check if the dessert ingredient are available. ?
+				        	// TODO: how to switch to directly preparing the dessert for himself ?
+				            //if (!EatDessert.isDessertIngredientAvailable(person)) 
+				            	result = 0D;
+				        }
+			        
 			        }
-		        
-		        }
-
-	        }
+	
+		        } // IN_SETTLEMENT
         }
 
         return result;

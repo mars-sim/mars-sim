@@ -90,7 +90,9 @@ public abstract class Vehicle extends Unit implements Serializable,
     private List<Point2D> passengerActivitySpots; // List of passenger activity spots
 
     private String vehicleType;
-    
+
+    private String typeOfDessertLoaded;
+
     // Get vehicle configuration.
     private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
@@ -780,6 +782,15 @@ public abstract class Vehicle extends Unit implements Serializable,
      * Set initial parked location and facing at settlement.
      */
     public abstract void determinedSettlementParkedLocationAndFacing();
+    
+    public String getTypeOfDessertLoaded() {
+    	return typeOfDessertLoaded;
+    }
+
+    public void setTypeOfDessertLoaded(String dessertName) {
+        System.out.println("Vehicle.java : setTypeOfDessertLoaded() : dessert choice : " + dessertName); 
+    	typeOfDessertLoaded = dessertName;
+    }    
     
     @Override
     public void destroy() {

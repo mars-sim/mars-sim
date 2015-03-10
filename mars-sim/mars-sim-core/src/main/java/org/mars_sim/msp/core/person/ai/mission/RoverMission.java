@@ -7,7 +7,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -17,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -38,10 +41,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -864,20 +870,55 @@ extends VehicleMission {
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
 		result.put(water, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate()  * PhysicalCondition.FOOD_RESERVE_FACTOR
 				* timeSols * crewNum;
 		if (useBuffer)
 			foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		result.put(food, foodAmount);
 
-		// 2015-01-04 Added Soymilk
-		double soymilkAmount = PhysicalCondition.getFoodConsumptionRate() / 6D
-				* timeSols * crewNum;
-		if (useBuffer)
-			soymilkAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
-		result.put(soymilk, soymilkAmount);
+		
+		// 2015-03-09 Added picking a dessert randomly for the journey		
+    	List<String> dessertList = new ArrayList<String>();
+    	// TODO: tweak the dessertAmount. Desserts are optional but important when food is running out.
+		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION;
+		
+	  	// Put together a list of available dessert 
+		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+        for(String n : availableDesserts) {   	
+        	//double amount = PreparingDessert.getDryMass(n);  
+        	// see if a food resource is available
+        	boolean isAvailable = Storage.retrieveAnResource(dessertAmount, n, startingSettlement.getInventory(), false);
+        	if (isAvailable) dessertList.add(n);   	  	        	
+        }
+        //System.out.println("RoverMission.java : getResourcesNeededForTrip() : dessertList.size() is " + dessertList.size());
+		// TODO: implement an algorithm for the vehicle occupants to decide which dessert to pick based on the favorite dessert and other factors
+        // Pick one of the desserts
+        String dessertName = PreparingDessert.getADessert(dessertList);	
+        //System.out.println("RoverMission.java : getResourcesNeededForTrip() : dessert choice is " + dessertName); 
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		
+	    if (dessertName != null) {	    	
+	    	AmountResource dessert = AmountResource.findAmountResource(dessertName);  
+			//  Added capacity for a dessert
+	    	//System.out.println("RoverMission.java : getResourcesNeededForTrip() : vehicle is " + getRover().getName()); 
+	    	getRover().getInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
+	    	boolean isItThere = Storage.retrieveAnResource(dessertAmount, dessertName, getRover().getInventory(), false);
+			//System.out.println("RoverMission.java : getResourcesNeededForTrip() :  isItThere is "  + isItThere);
+			
+	    	if (isItThere) {
+		    	if (useBuffer)
+			    	dessertAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+			    
+		    	result.put(dessert, dessertAmount);
+				//System.out.println("RoverMission.java : getResourcesNeededForTrip() : "  + result.get(dessert) + " : " + dessertName +" kg added to the map");
+				// save the name of the chosen dessert into the vehicle
+				//getRover().setTypeOfDessertLoaded(dessertName);
+	    	}
+			
+	    }	
+	
+	    
 		
 		return result;
 	}
@@ -921,6 +962,10 @@ extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
+			AmountResource methane = AmountResource.findAmountResource("methane");
+			if (inv.getAmountResourceStored(methane, false) < 100D) {
+				hasBasicResources = false;
+			}
 			AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 			if (inv.getAmountResourceStored(oxygen, false) < 50D) {
 				hasBasicResources = false;
@@ -934,16 +979,11 @@ extends VehicleMission {
 				hasBasicResources = false;
 			}
 	    	// 2015-01-04 Added Soymilk
-			AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
-			if (inv.getAmountResourceStored(soymilk, false) < 20D) {
-				hasBasicResources = false;
-			}
-			
-			AmountResource methane = AmountResource
-					.findAmountResource("methane");
-			if (inv.getAmountResourceStored(methane, false) < 100D) {
-				hasBasicResources = false;
-			}
+			//AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
+			//if (inv.getAmountResourceStored(soymilk, false) < 20D) {
+			//	hasBasicResources = false;
+			//}	
+
 		} 
 		catch (Exception e) {
 			e.printStackTrace(System.err);

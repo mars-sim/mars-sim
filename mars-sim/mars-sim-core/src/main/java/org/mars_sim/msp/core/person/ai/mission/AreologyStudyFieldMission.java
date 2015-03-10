@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -274,7 +275,7 @@ implements Serializable {
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
 		}
-
+/*
         // 2015-01-04 Added Soymilk
         // Check dessert1 capacity as time limit.
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
@@ -283,7 +284,7 @@ implements Serializable {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
-        
+ */     
 		
 		// Check water capacity as time limit.
 		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
@@ -644,19 +645,34 @@ implements Serializable {
 		result.put(water, waterAmount);
 
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * PhysicalCondition.FOOD_RESERVE_FACTOR;
 		if (result.containsKey(food)) {
 			foodAmount += (Double) result.get(food);
 		}
 		result.put(food, foodAmount);
-
+		
+		///* 
+		// 2015-03-09 Added the chosen dessert for the journey
+		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();		
+	  	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
+		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION ;		
+	  	// Put together a list of available dessert 
+        for(String n : availableDesserts) {   	
+    		AmountResource dessert = AmountResource.findAmountResource(n); 
+        	// match the chosen dessert for the journey
+            if (result.containsKey(dessert))
+                dessertAmount += (Double) result.get(dessert);
+            result.put(dessert, dessertAmount);	        	
+        }
+      //*/       
+		/*
 	       // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
         double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;
         if (result.containsKey(dessert1))
             dessert1Amount += (Double) result.get(dessert1);
         result.put(dessert1, dessert1Amount);
-        
+        */
 		return result;
 	}
 
