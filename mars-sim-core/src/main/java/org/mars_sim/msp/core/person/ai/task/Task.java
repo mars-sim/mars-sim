@@ -1041,6 +1041,15 @@ implements Serializable, Comparable<Task> {
        		if (fct == null) 
     			fct = BuildingFunction.LIFE_SUPPORT;
 			
+       		// Added debugging statement below
+       		if (currentBuilding == null)
+                throw new IllegalStateException("currentBuilding is null");
+            if (currentBuilding.getBuildingManager() == null)
+                throw new IllegalStateException("currentBuilding.getBuildingManager() is null");
+            if (currentBuilding.getBuildingManager().getBuildings(fct) == null)
+                throw new IllegalStateException("currentBuilding.getBuildingManager().getBuildings(fct) is null");
+                                
+       		
             List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
             
             if (buildingList.size() > 0) {

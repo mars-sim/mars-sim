@@ -30,27 +30,27 @@
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 1600.0 -->
-			<capacity resource="Methane" value="1600.0" />
+			<capacity resource="methane" value="1600.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 140.0 -->
-			<capacity resource="Oxygen" value="140.0" />
+			<capacity resource="oxygen" value="140.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 560.0 -->
-			<capacity resource="Water" value="560.0" />
+			<capacity resource="water" value="560.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 210.0 -->
-			<capacity resource="Food" value="210.0" />
+			<capacity resource="food" value="210.0" />
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 300.0 -->
-			<capacity resource="Soymilk" value="300.0" />
+			<!-- Default: 100.0 -->
+			<capacity resource="dessert" value="100.0" /> 
 			
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
@@ -62,11 +62,13 @@
 			<!-- Default: 2000.0 -->
 			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
-			<capacity resource="Grey Water" value="100.0" />
-			<capacity resource="Black Water" value="100.0" />			
-			<capacity resource="Solid Waste" value="100.0" />
-			<capacity resource="Food Waste" value="100.0" />
-			<capacity resource="Toxic Waste" value="100.0" />			
+<!--			
+			<capacity resource="solid waste" value="100.0" />					
+			<capacity resource="grey water" value="100.0" />
+			<capacity resource="black water" value="100.0" />			
+			<capacity resource="food waste" value="100.0" />
+			<capacity resource="toxic waste" value="100.0" />
+-->		
 		</cargo>
 
 		<!-- Sickbay -->
@@ -110,17 +112,19 @@
 		<empty-mass value="10000.0" />
 		<crew-size value="8" />
 		<cargo total-capacity="7300.0">
-			<capacity resource="Methane" value="2000.0" />
-			<capacity resource="Oxygen" value="350.0" />
-			<capacity resource="Water" value="1400.0" />
-			<capacity resource="Food" value="525.0" />
-			<capacity resource="Soymilk" value="300.0" />
+			<capacity resource="methane" value="2000.0" />
+			<capacity resource="oxygen" value="350.0" />
+			<capacity resource="water" value="1400.0" />
+			<capacity resource="food" value="525.0" />
+			<capacity resource="dessert" value="100.0" />	
 			
-			<capacity resource="Grey Water" value="100.0" />
-			<capacity resource="Black Water" value="100.0" />			
-			<capacity resource="Solid Waste" value="100.0" />
-			<capacity resource="Food Waste" value="100.0" />
-			<capacity resource="Toxic Waste" value="100.0" />			
+<!--			
+			<capacity resource="solid waste" value="100.0" />					
+			<capacity resource="grey water" value="100.0" />
+			<capacity resource="black water" value="100.0" />			
+			<capacity resource="food waste" value="100.0" />
+			<capacity resource="toxic waste" value="100.0" />
+-->						
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
@@ -146,17 +150,19 @@
 		<empty-mass value="10000.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
-			<capacity resource="Methane" value="2000.0" />
-			<capacity resource="Oxygen" value="350.0" />
-			<capacity resource="Water" value="1400.0" />
-			<capacity resource="Food" value="525.0" />
-			<capacity resource="Soymilk" value="300.0" />
+			<capacity resource="methane" value="2000.0" />
+			<capacity resource="oxygen" value="350.0" />
+			<capacity resource="water" value="1400.0" />
+			<capacity resource="food" value="525.0" />
+			<capacity resource="dessert" value="100.0" />	
 			
-			<capacity resource="Grey Water" value="100.0" />
-			<capacity resource="Black Water" value="100.0" />			
-			<capacity resource="Solid Waste" value="100.0" />
-			<capacity resource="Food Waste" value="100.0" />
-			<capacity resource="Toxic Waste" value="100.0" />
+<!--			
+			<capacity resource="solid waste" value="100.0" />					
+			<capacity resource="grey water" value="100.0" />
+			<capacity resource="black water" value="100.0" />			
+			<capacity resource="food waste" value="100.0" />
+			<capacity resource="toxic waste" value="100.0" />
+-->		
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0" 

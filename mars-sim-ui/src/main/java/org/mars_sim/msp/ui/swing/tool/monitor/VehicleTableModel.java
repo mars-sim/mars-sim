@@ -7,11 +7,13 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +41,10 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -136,7 +141,7 @@ extends UnitTableModel {
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private LocalMissionManagerListener missionManagerListener;
-	private Map<Unit, Map<AmountResource, Integer>> resourceCache;
+	private Map<Unit, Map<AmountResource, Double>> resourceCache;
 
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
@@ -169,7 +174,7 @@ extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Vehicle vehicle = (Vehicle)getUnit(rowIndex);
-			Map<AmountResource, Integer> resourceMap = resourceCache.get(vehicle);
+			Map<AmountResource, Double> resourceMap = resourceCache.get(vehicle);
 
 			try {
 				// Invoke the appropriate method, switch is the best solution
@@ -196,12 +201,43 @@ extends UnitTableModel {
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD));
+					result= resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD));				 
 				} break;
 
 				case DESSERT : {
-					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result = resourceMap.get(AmountResource.findAmountResource("Soymilk"));
+					double sum = 0;
+					//String dessert = vehicle.getTypeOfDessertLoaded();
+					// add the amount from each dessert
+					// get a list of dessert loaded
+					// get the amounts and sum them up
+					
+			   		Iterator<AmountResource> j = resourceMap.keySet().iterator();
+		    		while (j.hasNext()) {
+		    			AmountResource ar = j.next();
+				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
+		    	        for(String n : availableDesserts) {
+		    	        	if (AmountResource.findAmountResource(n) == ar)
+		    				 	sum += resourceMap.get(ar);
+		    			}
+		    		}
+		    		
+		    		/*		
+					Iterator map = resourceMap.entrySet().iterator();
+				    while (map.hasNext()) {
+				        Map.Entry pair = (Map.Entry)map.next();
+				        AmountResource ar = (AmountResource) pair.getKey();
+				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
+		    	        for(String n : availableDesserts) {
+		    	        	if (AmountResource.findAmountResource(n) == ar)
+		    	        		sum +=  resourceMap.get(ar); //pair.getValue();	    	        
+		    	        } 				       
+				    }
+				    */
+				    result = sum;    				        
+					//if (dessert != null)
+					////	result = resourceMap.get(AmountResource.findAmountResource(dessert));
+					//else
+					//	result = 0;
 				} break;
 				
 				case OXYGEN : {
@@ -349,26 +385,31 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.FOOD))) 
 					tempColumnNum = FOOD;
-				else if (target.equals(AmountResource.findAmountResource("Soymilk"))) 
-					tempColumnNum = DESSERT;
+				//else if (target.equals(AmountResource.findAmountResource("Soymilk"))) ?
+				//		tempColumnNum = DESSERT;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
 					tempColumnNum = ROCK_SAMPLES;
 				else if (target.equals(AmountResource.findAmountResource("ice"))) 
 					tempColumnNum = ICE;
-
+				else {					
+					// 2015-03-09 Added matching the dessert chosen for the journey
+					String [] availableDesserts = PreparingDessert.getArrayOfDesserts();											
+				  	// Put together a list of available dessert 
+			        for(String n : availableDesserts) { 	
+			        	if (target.equals(AmountResource.findAmountResource(n)))
+			    			tempColumnNum = DESSERT;
+			        }
+				}
+				
 				if (tempColumnNum > -1) {
-					// Only update cell if value as int has changed.
-					// 2015-01-05 Used Math.ceil to round up the value
-					//double value =  (double) getValueAt(unitIndex, tempColumnNum) ;
-					//value = Math.ceil(value);
-					//int currentValue = (int) value;
-					int currentValue =  (Integer) getValueAt(unitIndex, tempColumnNum) ;
-					int newValue = getResourceStored(unit, (AmountResource) target);
+					// 2015-03-10 Converted resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
+					double currentValue =  (Double) getValueAt(unitIndex, tempColumnNum) ;
+					double newValue = Math.round (getResourceStored(unit, (AmountResource) target) * 10.0)/ 10.0;
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
-						Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
+						Map<AmountResource, Double> resourceMap = resourceCache.get(unit);
 						resourceMap.put((AmountResource) target, newValue);
 					}
 				}
@@ -396,14 +437,14 @@ extends UnitTableModel {
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
+		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Double>>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
-				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(7);
+				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 				AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-				resourceMap.put(food, getResourceStored(newUnit, food));
-				AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-				resourceMap.put(dessert, getResourceStored(newUnit, dessert));
+				resourceMap.put(food, getResourceStored(newUnit, food));			
+				//AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+				//resourceMap.put(dessert, getResourceStored(newUnit, dessert));			
 				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
 				AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
@@ -414,7 +455,17 @@ extends UnitTableModel {
 				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
 				AmountResource ice = AmountResource.findAmountResource("ice");
 				resourceMap.put(ice, getResourceStored(newUnit, ice));
-				resourceCache.put(newUnit, resourceMap);
+				
+				// 2015-03-09 Added all dessert to the resourceMap
+				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
+			  	// Put together a list of available dessert 
+		        for(String n : availableDesserts) {
+		        	AmountResource dessert = AmountResource.findAmountResource(n);    
+		        	resourceMap.put(dessert, getResourceStored(newUnit, dessert));
+		        }
+	        
+				resourceCache.put(newUnit, resourceMap);			
+				
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE, "", e);
@@ -428,9 +479,9 @@ extends UnitTableModel {
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
+		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Double>>();
 		if (resourceCache.containsKey(oldUnit)) {
-			Map<AmountResource, Integer> resourceMap = resourceCache.get(oldUnit);
+			Map<AmountResource, Double> resourceMap = resourceCache.get(oldUnit);
 			resourceMap.clear();
 			resourceCache.remove(oldUnit);
 		}
@@ -443,10 +494,10 @@ extends UnitTableModel {
 	 * @param resource the resource to check.
 	 * @return integer amount of resource.
 	 */
-	private Integer getResourceStored(Unit unit, AmountResource resource) {
-		Integer result = null;	
+	private double getResourceStored(Unit unit, AmountResource resource) {
+		double result = 0;	
 		Inventory inv = unit.getInventory();
-		result = (int) inv.getAmountResourceStored(resource, true);
+		result = inv.getAmountResourceStored(resource, true);
 
 		return result;
 	}

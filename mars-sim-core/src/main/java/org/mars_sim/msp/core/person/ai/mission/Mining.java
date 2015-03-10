@@ -679,7 +679,7 @@ extends RoverMission {
         if (foodTimeLimit < timeLimit) {
             timeLimit = foodTimeLimit;
         }
-
+/*
         // 2015-01-04 Added Soymilk
         // Check dessert1 capacity as time limit.
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
@@ -688,7 +688,7 @@ extends RoverMission {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
-        
+ */       
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();
@@ -839,7 +839,7 @@ extends RoverMission {
             foodAmount += (Double) result.get(food);
         }
         result.put(food, foodAmount);
-
+/*
         // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
         double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D
@@ -847,7 +847,7 @@ extends RoverMission {
         if (result.containsKey(dessert1))
             dessert1Amount += (Double) result.get(dessert1);
         result.put(dessert1, dessert1Amount);
-        
+ */       
         return result;
     }
 

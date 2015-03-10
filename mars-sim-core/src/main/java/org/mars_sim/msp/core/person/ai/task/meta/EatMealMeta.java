@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 public class EatMealMeta implements MetaTask {
@@ -43,7 +42,7 @@ public class EatMealMeta implements MetaTask {
             result = 0D;
         }
         
-     	// TODO: if a person is in a vehicle
+     	// TODO: what if a person is in a vehicle
      
         else {
         		        
@@ -62,46 +61,57 @@ public class EatMealMeta implements MetaTask {
 	        else 
 	        	result = 0;
   
-	        if (result > 0) {
-	        	
-		        Building building = EatMeal.getAvailableDiningBuilding(person);
-		        if (building != null) {
+	        if (result > 0) 
+	        
+	        	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        		// check if preserved food is available to eat.
+		            if (!EatMeal.isPreservedFoodAvailable(person))
+		  	          //TODO: is there a way to switch to EatDessertMeta at this point ?
+		                result = 0D; 	        		
+	        	}
+	        
+	        	else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		                
 		        	
-		        	// 2015-02-17 Called setDiningBuilding()
-		        	person.setDiningBuilding(building);
-		        	
-		        	result += 10D;
-		            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-		            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-		       
-		            
-		            Cooking kitchen = EatMeal.getKitchenWithMeal(person);
-		            // Check if there's a cooked meal at a local kitchen. will in terms call kitchen.hasCookedMeal()
-			        if (kitchen != null) {
+			        Building building = EatMeal.getAvailableDiningBuilding(person);
+			        if (building != null) {
+			        	
 			        	// 2015-02-17 Called setDiningBuilding()
-			        	person.setKitchenWithMeal(kitchen);			        	
-			            result += 10D;
-			                        
-			            //Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-			            // TODO: how do we make this person go ahead to cook himself a cooked meal, if all the ingredients of a meal is available?
-			            //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-			            // should be more interested in eating if the kitchen has a variety of meals in the menu.
-			            //result += size * 10D;
-
-			            //TODO: check if the kitchen has the person's favorite meal  result += 100D;
+			        	person.setDiningBuilding(building);
+			        	
+			        	result += 10D;
+			            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+			            result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+			       
 			            
+			            Cooking kitchen = EatMeal.getKitchenWithMeal(person);
+			            // Check if there's a cooked meal at a local kitchen. will in terms call kitchen.hasCookedMeal()
+				        if (kitchen != null) {
+				        	// 2015-02-17 Called setDiningBuilding()
+				        	person.setKitchenWithMeal(kitchen);			        	
+				            result += 10D;
+				                        
+				            //Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+				            // TODO: how do we make this person go ahead to cook himself a cooked meal, if all the ingredients of a meal is available?
+				            //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+				            // should be more interested in eating if the kitchen has a variety of meals in the menu.
+				            //result += size * 10D;
+	
+				            //TODO: check if the kitchen has the person's favorite meal  result += 100D;
+				            
+				        }
+				        
+				        else { // since there is no cooked meal available
+				        	
+				            // check if preserved food is available to eat.
+				            if (!EatMeal.isPreservedFoodAvailable(person))
+				  	          //TODO: how do we switch to EatDessertMeta at this point ?
+				                result = 0D;    
+				        }
+				        
 			        }
 			        
-			        else { // since there is no cooked meal available
-			            // check if preserved food is available to eat.
-			            if (!EatMeal.isPreservedFoodAvailable(person))
-			  	          //TODO: how do we switch to EatDessertMeta at this point ?
-			                result = 0D;    
-			        }
-			        
-		        }	  
-		        
-	        }
+		        } // IN_SETTLEMENT
 	        
         }
         

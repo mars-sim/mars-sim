@@ -62,7 +62,8 @@ implements Serializable {
     //  SERVING_FRACTION also used in GoodsManager
     public static final int NUM_OF_DESSERT_PER_SOL = 4;
     
-    public static final double DESSERT_SERVING_FRACTION = .25D;
+    // DESSERT_SERVING_FRACTION is used in every mission expedition
+    public static final double DESSERT_SERVING_FRACTION = .1D;
     
     // amount of water in kg per dessert during preparation and clean-up
     public static final double WATER_USAGE_PER_DESSERT = 1.0;
@@ -78,7 +79,7 @@ implements Serializable {
 	private double preparingWorkTime; // used in numerous places
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
-    private double massPerServing;
+    private static double massPerServing;
     private String producerName;
     
     private Building building;
@@ -92,6 +93,16 @@ implements Serializable {
 			"Granola Bar",
 			"Blueberry Muffin", 
 			"Cranberry Juice"  };
+    
+	// TODO: get the real world figure on each serving
+    // arbitrary dry mass of the corresponding dessert/beverage.  
+	private static double [] dryMass = 
+    	{ 	0.05,
+			0.01,
+			0.03,
+			0.08,
+			0.07, 
+			0.01 };
     
     /**
      * Constructor.
@@ -127,6 +138,11 @@ implements Serializable {
     
     }
 
+    public Inventory getInventory() {
+    	return inv;
+    }
+    
+    
     public static String[] getArrayOfDesserts() {
     	return availableDesserts; 
     }
@@ -251,7 +267,7 @@ implements Serializable {
     /**
      * Gets the amount of dessert in the whole settlement.
      * @return dessertAvailable
-     */
+     
     // 2014-12-30 Changed name to checkAmountAV() and added a param
     public double checkAmountAV(String name) {
 	    AmountResource dessertAR = AmountResource.findAmountResource(name);  
@@ -266,6 +282,7 @@ implements Serializable {
 		dessertAvailable = Math.round(dessertAvailable * 10000.0) / 10000.0;
 		return dessertAvailable;
 	}
+    */
     
     /**
      * Gets a dessert from this facility.
@@ -314,9 +331,9 @@ implements Serializable {
      * Gets the quantity of one serving of dessert
      * @return quantity
      */
-    //public double getMassPerServing() {
-    //    return massPerServing;
-    //}
+    public static double getMassPerServing() {
+       return massPerServing;
+    }
     
     /**
      * Gets the quality of the best quality fresh Dessert at the facility.
@@ -357,21 +374,33 @@ implements Serializable {
 
     	List<String> dessertList = new ArrayList<String>();
 	
+	  	// Put together a list of available dessert 
+        for(String n : availableDesserts) {
+        	double amount = PreparingDessert.getDryMass(n);
+        	boolean isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
+        	
+        	if (isAvailable) {
+        		dessertList.add(n);
+            	//logger.info("adding " + n + " into the dessertList at " 
+                //    	+ getBuilding().getNickName() + " in " + settlement.getName());
+        	}
+        }
+        /*
     	// Put together a list of available dessert 
         for(String n : availableDesserts) {
         	if (checkAmountAV(n) > getDryMass(n)) {
         		dessertList.add(n);
             	//logger.info("adding " + n + " into the dessertList at " 
                 //    	+ getBuilding().getNickName() + " in " + settlement.getName());
-        		// 2015-01-09 Added addDemandTotalRequest()
         	}
         }
+        */
 		return dessertList;
  	    
  	}
  
 	// 2015-01-10 getADessert()
- 	public String getADessert(List<String> dessertList) {
+ 	public static String getADessert(List<String> dessertList) {
     	String selectedDessert = "None";
     	
     	if ( dessertList.size() > 0 ) {
@@ -382,7 +411,7 @@ implements Serializable {
 	    	if (upperbound > 1) {
 	    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
 	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-	    		selectedDessert = dessertList.get(index);
+	    		selectedDessert = dessertList.get(index-1);
 	    	}
 	    	else if (upperbound == 1) {
 	    		selectedDessert = dessertList.get(0);
@@ -435,7 +464,7 @@ implements Serializable {
      * Gets the dry mass of a dessert 
      */
     // 2015-01-12 Added getDryMass()
-    public double getDryMass(String selectedDessert) {
+    public static double getDryMass(String selectedDessert) {
     	double result = 0;
     	/* availableDesserts = 
         	{ 	"Soymilk",
@@ -444,17 +473,7 @@ implements Serializable {
     			"Granola Bar",
     			"Blueberry Muffin", 
     			"Cranberry Juice"  };
-    	*/
-    	
-    	// TODO: get the real world figure on each serving
-    	double [] dryMass = 
-        	{ 	0.05,
-    			0.01,
-    			0.03,
-    			0.08,
-    			0.07, 
-    			0.01 };
-    	
+    	*/    	
     	for(int i = 0; i <availableDesserts.length; i++) {
         	if ( availableDesserts[i].equals(selectedDessert) ) {
         		result = dryMass[i];
@@ -657,8 +676,8 @@ implements Serializable {
 			String dessertName = dessert.getName();
 			AmountResource dessertAR = AmountResource.findAmountResource(dessertName);            	
 			double capacity = inv.getAmountResourceRemainingCapacity(dessertAR, true, false);            	        	
-		    double massPerServing = getDryMass(dessertName)  ;
-			
+		    double mass = getDryMass(dessertName)  ;
+			/*
 			if (massPerServing > capacity) 
 				massPerServing = capacity;
 			
@@ -667,6 +686,9 @@ implements Serializable {
 		    inv.storeAmountResource(dessertAR, massPerServing , false);
 			// 2015-01-15 Add addSupplyAmount()
             inv.addAmountSupplyAmount(dessertAR, massPerServing);
+            */
+            Storage.storeAnResource(mass, dessertName , inv);
+            
 		} catch (Exception e) {}
 	}
     

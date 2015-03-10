@@ -264,11 +264,11 @@ implements Serializable {
 	    	inv.addAmountDemandTotalRequest(nameAR);  
 	        if (amountStored < requestedAmount) {
 	     		//requestedAmount = amountStored;
-	    		//logger.warning("Not enough " + name + " for making a meal.");
+	    		//logger.warning("Just ran out of " + name);
 	    		result = false;
 	        }
 	    	else if (Math.round(amountStored*10000.0)/10000.0 < 0.0001) {
-	    		//logger.warning("no more " + name + " in " + settlement.getName());
+	    		//logger.warning("No more " + name);
 	    		result = false;
 	    	}
 	    	else { 

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
@@ -73,6 +74,16 @@ public class PrepareDessertMeta implements MetaTask {
                     int population = person.getSettlement().getCurrentPopulationNum();
                     if (population > 1) {
                     	
+                  		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+            	        boolean isAvailable = false;
+            	        for(String n : availableDesserts) {
+            	        	double amount = PreparingDessert.getDryMass(n);
+            	        	// see if a food resource is available
+            	        	isAvailable = Storage.retrieveAnResource(amount, n, kitchen.getInventory(), false);
+            	        	if (isAvailable)
+            	        		result += 10D;
+            	        }
+                    	/*
 		                   String [] desserts = PreparingDessert.getArrayOfDesserts();
 		                   
 		                   // See if the desserts are available to be served 
@@ -81,7 +92,7 @@ public class PrepareDessertMeta implements MetaTask {
 	                        	result += 10D;
 	                        }
 	                    }
-	                    
+	                    */
 	                    // TODO: if the person likes making desserts
 	                    // result = result + 200D;
 	                    
@@ -147,16 +158,17 @@ public class PrepareDessertMeta implements MetaTask {
 		                    int population = robot.getSettlement().getCurrentPopulationNum();
 		                    if (population > 1) {
 			               	
-			               	if (kitchen.hasFreshDessert() == false)
-			               		result += 100D;
-			               	
-			                   String [] desserts = PreparingDessert.getArrayOfDesserts();
-			                   
-			                   // See if the desserts are available to be served 
-			                   for(String n : desserts) {
-			                       if (kitchen.checkAmountAV(n) > kitchen.getDryMass(n))
-			                       	result += 10D;
-			                   }
+				               	if (kitchen.hasFreshDessert() == false)
+				               		result += 100D;
+				               	
+		                 		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+		            	        boolean isAvailable = false;
+		            	        for(String n : availableDesserts) {
+		            	        	double amount = PreparingDessert.getDryMass(n);
+		            	        	isAvailable = Storage.retrieveAnResource(amount, n, kitchen.getInventory(), false);
+		            	        	if (isAvailable)
+		            	        		result += 10D;
+		            	        }
 			                   
 			                   // TODO: should we program the robot to avoid crowded places for the benefit of humans? 
 			                   // Crowding modifier.

@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -267,6 +268,8 @@ implements Serializable {
             boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
 
+            //System.out.println("CollectResourcesMission.java : getNewMissionProbability() : enoughMethane is "+ enoughMethane );
+            
             if (reservableRover && backupRover && minNum && enoughContainers
                     && !embarkingMissions && hasBasicResources && enoughMethane)
                 result = 1D;
@@ -637,8 +640,8 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(
-            boolean useBuffer) {
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+    	
         Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
         double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
@@ -662,12 +665,29 @@ implements Serializable {
         result.put(water, waterAmount);
 
         AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-        double foodAmount = PhysicalCondition.getFoodConsumptionRate()
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR
                 * timeSols * crewNum;
         if (result.containsKey(food))
             foodAmount += (Double) result.get(food);
         result.put(food, foodAmount);
+     
         
+        /*
+		// 2015-03-09 Added the chosen dessert for the journey
+		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+    	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
+		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum;// * PreparingDessert.DESSERT_SERVING_FRACTION;
+	  	// Put together a list of available dessert 
+        for(String n : availableDesserts) {   	
+    		AmountResource dessert = AmountResource.findAmountResource(n); 
+        	// match the chosen dessert for the journey
+    		// TODO: or load vehicle.getTypeOfDessertLoaded()
+            if (result.containsKey(dessert))
+                dessertAmount += (Double) result.get(dessert);           
+            result.put(dessert, dessertAmount);	        	
+        }
+*/
+        /*
         // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
         double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D
@@ -675,7 +695,7 @@ implements Serializable {
         if (result.containsKey(dessert1))
             dessert1Amount += (Double) result.get(dessert1);
         result.put(dessert1, dessert1Amount);
-
+        */
         return result;
     }
 
@@ -767,6 +787,7 @@ implements Serializable {
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
         
+        /*
         // 2015-01-04 Added Soymilk
         // Check dessert1 capacity as time limit.
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
@@ -775,7 +796,7 @@ implements Serializable {
         double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
         if (dessert1TimeLimit < timeLimit)
             timeLimit = dessert1TimeLimit;
-
+        */
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();

@@ -1114,6 +1114,7 @@ implements UnitListener {
 	 * @return resources and their number.
 	 */
 	public Map<Resource, Number> getOptionalResourcesToLoad() {
+		// TODO: add extra food/dessert as optionalResources
 		return getPartsNeededForTrip(getTotalRemainingDistance());
 	}
 
