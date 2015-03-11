@@ -127,9 +127,9 @@ public class MainMenu {
    }
    
    public void runTwo() {
-       menuScene = new MenuScene().createMenuScene();
+/*       menuScene = new MenuScene().createMenuScene();
 	   stage.setScene(menuScene);
-       stage.show();
+       stage.show();*/
    }
    
    public void runThree() {
