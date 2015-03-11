@@ -651,7 +651,7 @@ implements Serializable {
 		}
 		result.put(food, foodAmount);
 		
-		///* 
+		/* 
 		// 2015-03-09 Added the chosen dessert for the journey
 		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();		
 	  	// Added PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional and is only meant to help if food is low.
@@ -664,7 +664,7 @@ implements Serializable {
                 dessertAmount += (Double) result.get(dessert);
             result.put(dessert, dessertAmount);	        	
         }
-      //*/       
+      */       
 		/*
 	       // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");

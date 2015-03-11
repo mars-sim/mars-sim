@@ -262,13 +262,13 @@ implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (amountStored < requestedAmount) {
+	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
+	    		//logger.warning("No more " + name);
+	    		result = false;
+	    	}
+	    	else if (amountStored < requestedAmount) {
 	     		//requestedAmount = amountStored;
 	    		//logger.warning("Just ran out of " + name);
-	    		result = false;
-	        }
-	    	else if (Math.round(amountStored*10000.0)/10000.0 < 0.0001) {
-	    		//logger.warning("No more " + name);
 	    		result = false;
 	    	}
 	    	else { 

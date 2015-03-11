@@ -63,7 +63,7 @@ implements Serializable {
     public static final int NUM_OF_DESSERT_PER_SOL = 4;
     
     // DESSERT_SERVING_FRACTION is used in every mission expedition
-    public static final double DESSERT_SERVING_FRACTION = .1D;
+    public static final double DESSERT_SERVING_FRACTION = .5D;
     
     // amount of water in kg per dessert during preparation and clean-up
     public static final double WATER_USAGE_PER_DESSERT = 1.0;
@@ -79,7 +79,7 @@ implements Serializable {
 	private double preparingWorkTime; // used in numerous places
     @SuppressWarnings("unused")
 	private int NumOfServingsCache; // used in timePassing
-    private static double massPerServing;
+    private static double dessertMassPerServing;
     private String producerName;
     
     private Building building;
@@ -87,12 +87,12 @@ implements Serializable {
     private Inventory inv ;
     // 2015-01-03 Added availableDesserts
     private static String [] availableDesserts = 
-    	{ 	"Soymilk",
-			"Sugarcane Juice",
-			"Strawberry",
-			"Granola Bar",
-			"Blueberry Muffin", 
-			"Cranberry Juice"  };
+    	{ 	"soymilk",
+			"sugarcane juice",
+			"strawberry",
+			"granola bar",
+			"blueberry muffin", 
+			"cranberry juice"  };
     
 	// TODO: get the real world figure on each serving
     // arbitrary dry mass of the corresponding dessert/beverage.  
@@ -123,7 +123,7 @@ implements Serializable {
         //dessertsReplenishmentRate = settlement.getDessertsReplenishmentRate();
         
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        massPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL;    
+        dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;    
         //System.out.println("massPerServing is " +massPerServing);
         
         preparingWorkTime = 0D;
@@ -331,8 +331,8 @@ implements Serializable {
      * Gets the quantity of one serving of dessert
      * @return quantity
      */
-    public static double getMassPerServing() {
-       return massPerServing;
+    public static double getDessertMassPerServing() {
+       return dessertMassPerServing;
     }
     
     /**
