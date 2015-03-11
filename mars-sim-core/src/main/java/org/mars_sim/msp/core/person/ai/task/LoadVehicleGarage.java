@@ -944,7 +944,7 @@ implements Serializable {
     	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
     	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
     	//else if (resource.equals(dessert)) amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION;
-/*    	
+    	
     	else {
     		// 2015-03-09 Added all desserts to the matching test
     		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
@@ -952,12 +952,14 @@ implements Serializable {
             for(String n : availableDesserts) {
             	AmountResource dessert = AmountResource.findAmountResource(n);
             	if (resource.equals(dessert)) {
-            		System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
-            		amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION; 	
+            		//System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
+            		amountPersonPerSol = PreparingDessert.getDessertMassPerServing(); 
+            		// not using PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION; 
+ 
             	}
             }  		
     	}
-*/		
+		
     	
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }

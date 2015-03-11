@@ -6,17 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -41,9 +37,7 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -58,7 +52,7 @@ extends UnitTableModel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
+	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
 	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
@@ -206,38 +200,21 @@ extends UnitTableModel {
 
 				case DESSERT : {
 					double sum = 0;
-					//String dessert = vehicle.getTypeOfDessertLoaded();
-					// add the amount from each dessert
 					// get a list of dessert loaded
-					// get the amounts and sum them up
-					
+					// get the amount of each and sum them up					
 			   		Iterator<AmountResource> j = resourceMap.keySet().iterator();
 		    		while (j.hasNext()) {
-		    			AmountResource ar = j.next();
+		    			AmountResource ar = j.next(); 
 				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
 		    	        for(String n : availableDesserts) {
-		    	        	if (AmountResource.findAmountResource(n) == ar)
-		    				 	sum += resourceMap.get(ar);
+		    	        	if (AmountResource.findAmountResource(n).equals(ar)) {
+		    	        		sum += resourceMap.get(ar);
+		    	        	}
 		    			}
 		    		}
 		    		
-		    		/*		
-					Iterator map = resourceMap.entrySet().iterator();
-				    while (map.hasNext()) {
-				        Map.Entry pair = (Map.Entry)map.next();
-				        AmountResource ar = (AmountResource) pair.getKey();
-				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
-		    	        for(String n : availableDesserts) {
-		    	        	if (AmountResource.findAmountResource(n) == ar)
-		    	        		sum +=  resourceMap.get(ar); //pair.getValue();	    	        
-		    	        } 				       
-				    }
-				    */
-				    result = sum;    				        
-					//if (dessert != null)
-					////	result = resourceMap.get(AmountResource.findAmountResource(dessert));
-					//else
-					//	result = 0;
+				    result = (Double) sum;    				        
+				    
 				} break;
 				
 				case OXYGEN : {
@@ -341,6 +318,7 @@ extends UnitTableModel {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
 					result = resourceMap.get(AmountResource.findAmountResource("ice"));
 				} break;
+				
 				}
 			}
 			catch (Exception e) {
@@ -405,8 +383,8 @@ extends UnitTableModel {
 				
 				if (tempColumnNum > -1) {
 					// 2015-03-10 Converted resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
-					double currentValue =  (Double) getValueAt(unitIndex, tempColumnNum) ;
-					double newValue = Math.round (getResourceStored(unit, (AmountResource) target) * 10.0)/ 10.0;
+					double currentValue =  (double) getValueAt(unitIndex, tempColumnNum) ;
+					double newValue = Math.round ( getResourceStored(unit, (AmountResource) target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						Map<AmountResource, Double> resourceMap = resourceCache.get(unit);
@@ -489,13 +467,13 @@ extends UnitTableModel {
 	}
 
 	/**
-	 * Gets the integer amount of resources stored in a unit.
+	 * Gets the Double amount of resources stored in a unit.
 	 * @param unit the unit to check.
 	 * @param resource the resource to check.
-	 * @return integer amount of resource.
+	 * @return  amount of resource.
 	 */
 	private double getResourceStored(Unit unit, AmountResource resource) {
-		double result = 0;	
+		double result = 0; //null;	
 		Inventory inv = unit.getInventory();
 		result = inv.getAmountResourceStored(resource, true);
 

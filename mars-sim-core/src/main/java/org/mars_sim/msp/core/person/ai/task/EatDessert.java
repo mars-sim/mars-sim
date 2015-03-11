@@ -404,7 +404,7 @@ implements Serializable {
           		String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
     	        for(String n : availableDesserts) {
     	        	//double amount = PreparingDessert.getDryMass(n);
-    	        	double amount = PreparingDessert.getMassPerServing();
+    	        	double amount = PreparingDessert.getDessertMassPerServing();
     	        	isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
     	        } 	         	
 /*

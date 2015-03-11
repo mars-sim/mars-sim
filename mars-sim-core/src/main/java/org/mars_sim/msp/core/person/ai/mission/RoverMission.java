@@ -877,11 +877,11 @@ extends VehicleMission {
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		result.put(food, foodAmount);
 
-		
+	///*	
 		// 2015-03-09 Added picking a dessert randomly for the journey		
     	List<String> dessertList = new ArrayList<String>();
     	// TODO: tweak the dessertAmount. Desserts are optional but important when food is running out.
-		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum * PreparingDessert.DESSERT_SERVING_FRACTION;
+		double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * timeSols;// not using * crew; // not using PreparingDessert.getDessertMassPerServing()  
 		
 	  	// Put together a list of available dessert 
 		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
@@ -898,7 +898,7 @@ extends VehicleMission {
         //System.out.println("RoverMission.java : getResourcesNeededForTrip() : dessert choice is " + dessertName); 
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
-	    if (dessertName != null) {	    	
+	    if (!dessertName.equals("None")) {	    	
 	    	AmountResource dessert = AmountResource.findAmountResource(dessertName);  
 			//  Added capacity for a dessert
 	    	//System.out.println("RoverMission.java : getResourcesNeededForTrip() : vehicle is " + getRover().getName()); 
@@ -906,7 +906,7 @@ extends VehicleMission {
 	    	boolean isItThere = Storage.retrieveAnResource(dessertAmount, dessertName, getRover().getInventory(), false);
 			//System.out.println("RoverMission.java : getResourcesNeededForTrip() :  isItThere is "  + isItThere);
 			
-	    	if (isItThere) {
+	    	//if (isItThere) {
 		    	if (useBuffer)
 			    	dessertAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 			    
@@ -914,11 +914,11 @@ extends VehicleMission {
 				//System.out.println("RoverMission.java : getResourcesNeededForTrip() : "  + result.get(dessert) + " : " + dessertName +" kg added to the map");
 				// save the name of the chosen dessert into the vehicle
 				//getRover().setTypeOfDessertLoaded(dessertName);
-	    	}
+	    	//}
 			
 	    }	
 	
-	    
+	    //*/
 		
 		return result;
 	}

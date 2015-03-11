@@ -188,6 +188,7 @@ implements Serializable {
         }
 
         if (getDuration() <= (getTimeCompleted() + time)) {
+        	
             if (meal != null) {
                 // Person consumes the cooked meal.
                 //String nameMeal = meal.getName();
@@ -199,6 +200,20 @@ implements Serializable {
                 condition.addEnergy(meal.getDryMass());
             }
             else {
+              	if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+              		setDescription(Msg.getString("Task.description.eatPreservedFood")); //$NON-NLS-1$
+                
+	                eatPreservedFood();
+	                //System.out.println(person + " has just eaten preserved food");
+	                //System.out.println("EatMeal : condition.getMassPerServing() "+ Math.round(condition.getMassPerServing()*10.0)/10.0);  
+	                condition.setHunger(0D);
+	                condition.addEnergy(condition.getMassPerServing());
+	            }
+	    		else {
+	    			//System.out.println(namePerson + " not in a vehicle. can't obtain food from container, end the task.");
+	                endTask();
+	    		}
+              	/*
                 // Person consumes preserved food.
                 try {                	
 //                	// In a settlement, the person will choose to eat
@@ -223,8 +238,9 @@ implements Serializable {
                     endTask();
                 }
             }
+            */
+            }
         }
-
         return 0D; 
     }
     
@@ -232,21 +248,28 @@ implements Serializable {
      * Eat a meal of preserved food.
      * @throws Exception if problems finding preserved food to eat.
      */
-    private void eatPreservedFood() throws Exception {
+    private void eatPreservedFood() {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
+            boolean exit = false;
             
-		 	// 2015-02-06 There is a 10% probability that the preserved food is of no good and must be discarded
-      		// Remove the bad food amount from container unit.
-      		int num = RandomUtil.getRandomInt(9);
-      		if (num == 0) {
-      			//System.out.println("EatMeal. preserved food is bad ");
-      			Storage.retrieveAnResource(foodAmount, org.mars_sim.msp.core.LifeSupport.FOOD, inv, true);
-      			Storage.storeAnResource(foodAmount, "food waste", inv);
-      		}
+            while (!exit) {
+			 	// 2015-02-06 There is a 10% probability that the preserved food is of no good and must be discarded
+	      		// Remove the bad food amount from container unit.
+	      		int num = RandomUtil.getRandomInt(9);
+	      		if (num == 0) {
+	      			//System.out.println("EatMeal. preserved food is bad ");
+	      			Storage.retrieveAnResource(foodAmount, org.mars_sim.msp.core.LifeSupport.FOOD, inv, true);
+	      			Storage.storeAnResource(foodAmount, "food waste", inv);
+	      			exit = false;
+	      		}
+	      		else
+	      			// exit the while loop
+	      			exit = true;
+	        }
             /*        
             AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
             double foodAvailable = inv.getAmountResourceStored(food, false);
@@ -266,14 +289,15 @@ implements Serializable {
             }
             */   
       		
-        	if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	//if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         		Storage.retrieveAnResource(.0025D, "napkin", inv, true);
         		Storage.storeAnResource(.0025D,"solid waste", inv);
-        	}
+      			Storage.retrieveAnResource(foodAmount, org.mars_sim.msp.core.LifeSupport.FOOD, inv, true);
+        	//}
         }
-        else {
-            throw new Exception(person + " does not have a container unit to get preserved food from.");
-        }
+        //else {
+         //   throw new Exception(person + " does not have a container unit to get preserved food from.");
+        //}
         
     }
 
