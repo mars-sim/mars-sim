@@ -26,6 +26,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -255,9 +256,11 @@ extends TabPanel {
 		// Data members 
 		private MalfunctionManager manager;
 		private int lastCompletedCache;
+		private int wearConditionCache;
 		private BoundedRangeModel progressBarModel;
 		private JLabel lastLabel;
 		private JLabel partsLabel;
+		private JLabel wearConditionLabel;
 
 		/**
 		 * Constructor.
@@ -269,15 +272,22 @@ extends TabPanel {
 
 			manager = building.getMalfunctionManager();
 
-			setLayout(new GridLayout(3, 1, 0, 0));
+			setLayout(new GridLayout(4, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 
 			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
 			add(buildingLabel);
 
+			// 2015-03-12 Added wear condition cache and label.
+			wearConditionCache = (int) Math.round(manager.getWearCondition());
+			wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition",
+					wearConditionCache), JLabel.CENTER);
+			wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
+			add(wearConditionLabel);
+			
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 			add(mainPanel);
-
+			
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " Sols", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
@@ -318,6 +328,14 @@ extends TabPanel {
 			int percentDone = (int) (100D * (completed / total));
 			progressBarModel.setValue(percentDone);
 
+			// // 2015-03-12 Added wear condition cache and label
+			int wearCondition = (int) Math.round(manager.getWearCondition());
+			if (wearCondition != wearConditionCache) {
+				wearConditionCache = wearCondition;
+				wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition",
+						wearConditionCache));
+			}
+			
 			// Update last completed.
 			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			if (lastCompleted != lastCompletedCache) {

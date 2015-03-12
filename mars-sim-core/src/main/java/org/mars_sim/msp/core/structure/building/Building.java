@@ -72,27 +72,24 @@ LocalBoundedObject, InsidePathLocation {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	// default logger.
-	private static Logger logger = Logger.getLogger(Building.class.getName());
+	//private static Logger logger = Logger.getLogger(Building.class.getName());
 	 
 	DecimalFormat fmt = new DecimalFormat("###.####"); 
 	
-	// TODO Maintenance info should not be hard coded but initialized from some config files
-	/** 3340 Sols (5 orbits). */
-	private static final double WEAR_LIFETIME = 3340000D;
-	/** Base amount of maintenance time for building. */
-	private static final double BASE_MAINTENANCE_TIME = 50D;
-	
-    private static final double ROOM_TEMPERATURE = 22.5D;
-
-    public static final double GREENHOUSE_TEMPERATURE = 24D;
-
+	// 2015-03-12 Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
+	/** Default : 3340 Sols (5 orbits). */
+	private int wearLifeTime = 3340000;
+	/** Default : 50 millisols maintenance time. */
+	private int maintenanceTime = 50;	
+	/** Default : 22.5 deg celsius. */	
+    private double roomTemperature = 22.5D;
+    //public double GREENHOUSE_TEMPERATURE = 24D;
     
     // Data members
 	protected String buildingType;
 	protected String nickName;
-	// 2014-11-27 Added description
+	// 2014-11-27 Added description for each building
 	protected String description = "Stay tuned";
 	
 	protected double width;
@@ -144,9 +141,7 @@ LocalBoundedObject, InsidePathLocation {
 		heatMode = HeatMode.FULL_POWER;
 		
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
-			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
-
-		
+			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);			
 		//count++;
 		//Logger.info("constructor 1 : count is " + count);
 	}
@@ -219,13 +214,17 @@ LocalBoundedObject, InsidePathLocation {
 		// Get base power requirements.
 		basePowerRequirement = config.getBasePowerRequirement(buildingType);
 		basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(buildingType);
-
+		wearLifeTime = config.getWearLifeTime(buildingType);
+		maintenanceTime = config.getMaintenanceTime(buildingType);
+		roomTemperature = config.getRoomTemperature(buildingType);
+		
+		 
 		// TODO: determine the benefit of adding base heat requirements.
 		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
 		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
 
 		// Determine total maintenance time.
-		double totalMaintenanceTime = BASE_MAINTENANCE_TIME;
+		double totalMaintenanceTime = maintenanceTime;
 		Iterator<Function> j = functions.iterator();
 		while (j.hasNext()) {
 			Function function = j.next();
@@ -233,7 +232,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
 		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, totalMaintenanceTime);
+		malfunctionManager = new MalfunctionManager(this, wearLifeTime, totalMaintenanceTime);
 		malfunctionManager.addScopeString("Building");
 
 		// Add each function to the malfunction scope.
@@ -279,12 +278,12 @@ LocalBoundedObject, InsidePathLocation {
     public double getInitialTemperature() {
     	//double result;
 		//if (config.hasFarming(buildingType))
-		if (buildingType.equals("Inflatable Greenhouse")
-				|| buildingType.equals("Large Greenhouse")
-				||	buildingType.equals("Inground Greenhouse") )
-			return GREENHOUSE_TEMPERATURE;
-		else
-            return ROOM_TEMPERATURE;
+		//if (buildingType.equals("Inflatable Greenhouse")
+		//		|| buildingType.equals("Large Greenhouse")
+		//		||	buildingType.equals("Inground Greenhouse") )
+		//	return GREENHOUSE_TEMPERATURE;
+		//else
+            return roomTemperature;
     }
 	
 	public LifeSupport getLifeSupport() {
@@ -602,8 +601,12 @@ LocalBoundedObject, InsidePathLocation {
 	 * @return heat in kJ/s.
 	*/
 	//2014-10-17  Added getPoweredDownHeatRequired()
-	public double getPoweredDownHeatRequired() {
-		return lifeSupport.getHeating().getPoweredDownHeatRequired();
+	public double getPoweredDownHeatRequired() {		
+		double result = 0;		
+		if (lifeSupport != null && lifeSupport.getHeating() != null)
+			lifeSupport.getHeating().getPoweredDownHeatRequired();		
+		return result;
+		//return lifeSupport.getHeating().getPoweredDownHeatRequired();
 	}
 
 	/**

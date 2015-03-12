@@ -13,10 +13,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.Iterator;
 
 /**
- * The Heating class is a building function for life support and managing inhabitants.
+ * The Heating class is a building function for regulating temperature in a settlement..
  */
 public class Heating
 extends Function
@@ -27,7 +26,6 @@ implements Serializable {
 
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(Heating.class.getName());
-	/** default logger. */
 
 	DecimalFormat fmt = new DecimalFormat("#.#######"); 
 	
@@ -35,12 +33,9 @@ implements Serializable {
 
 	// Data members
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
-	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
-	
+	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;	
     private static final double ROOM_TEMPERATURE = 22.5D;
-
     public static final double GREENHOUSE_TEMPERATURE = 24D;
-
     // Thermostat's temperature allowance 
     private static final double T_UPPER_SENSITIVITY = 1D; 
     private static final double T_LOWER_SENSITIVITY = 2.5D; 
@@ -50,9 +45,8 @@ implements Serializable {
 	protected double width;
 	protected double length;
 	protected double floorArea;
-
 	protected double baseHeatRequirement;
-	protected double basePowerDownHeatRequirement;
+	protected double basePowerDownHeatRequirement = 0;
 	//private static int count;
 	// Specific Heat Capacity = 4.0 for a typical U.S. house
 	protected double SHC = 6.0; 
@@ -148,24 +142,6 @@ implements Serializable {
             return currentTemperature;
     }
     
-    /**
-     * Sets the current temperature of a building due to heat gain
-     * @return temperature (deg C)
-     
-    public void setTemperature(double t) {
-        currentTemperature = t;
-    }
-    */
-    
-    /*
-	//2014-10-17  Added getSHC() and getBLC()
-    public double getSHC() {
-    	return SHC;
-    }
-    public double getBLC() {
-    	return BLC;
-    }
-    */
     
 	/** Turn heat source off if reaching pre-setting temperature 
 	 * @return none. set heatMode
@@ -195,7 +171,6 @@ implements Serializable {
 	 */
 	public void updateTemperature() {
 		currentTemperature += deltaTemperature;
-		//building.setTemperature(building.getTemperature() + deltaTemperature);
 	}
 
 	
@@ -322,9 +297,7 @@ implements Serializable {
 	 */
 	// 2014-10-25 Currently skip calling for thermal control for Hallway 
 	public void timePassing(double time) {
-		
-		//Inventory inv = getBuilding().getInventory();
-		
+			
 		// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
 		//if (!building.getBuildingType().equals("Hallway")) 
 			//System.out.println("ID: " + building.getID() + "\t" + building.getName()); 		
@@ -339,16 +312,11 @@ implements Serializable {
 	 */
 	// 2014-10-25 Added adjustThermalControl()
 	public void adjustThermalControl() {
-		// Skip Hallway
-		//if (!building.getBuildingType().equals("Hallway")) {
-			
+		
 			MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 		    int oneTenthmillisols =  (int) (clock.getMillisols() * 10);
-			//System.out.println("millisols : " + millisols);
 			
 			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 1) {	
-				//logger.info("timePassing() : building is " + building.getName());
-				
 
 				// Detect temperature change based on heat gain and heat loss  
 				// Step 2 of Thermal Control
@@ -397,12 +365,8 @@ implements Serializable {
 	 */
 	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
-		//double result = baseHeatRequirement;	
 		if ( heatGeneratedCache != heatGenerated) {
-			// if heatGeneratedCache is different from the its last value
-			heatGeneratedCache = heatGenerated;
-		//logger.info("getFullHeatRequired() : heatGenerated is updated to " + 
-				//heatGenerated + " kW");	
+			heatGeneratedCache = heatGenerated;	
 		}
 		// Determine heat required for each function.
 		//TODO: should I add power requirement inside
@@ -425,8 +389,8 @@ implements Serializable {
 		double result = basePowerDownHeatRequirement;
 
 		// Determine heat required for each function.
-		Iterator<Function> i = building.getFunctions().iterator();;
-		while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
+		//Iterator<Function> i = building.getFunctions().iterator();;
+		//while (i.hasNext()) result += i.next().getPoweredDownHeatRequired();
 
 		return result;
 	}

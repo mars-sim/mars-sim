@@ -86,6 +86,7 @@ implements Serializable {
 	private double growingArea;
 	private double totalGrowingDay;
 	private double fractionalGrowthCompleted;
+	private double t;
 	/** Current sol of month. */
 	private int currentSol;
 	
@@ -115,6 +116,7 @@ implements Serializable {
 		this.growingArea = growingArea;
 		
 		inv = settlement.getInventory();
+		t = farm.getBuilding().getInitialTemperature();
 		
 		// Determine work required.
 		plantingWorkRequired = maxHarvest;
@@ -433,7 +435,6 @@ implements Serializable {
 		}
 							
 		double T_NOW = farm.getBuilding().getTemperature();
-		double t = Building.GREENHOUSE_TEMPERATURE;
 		double temperatureModifier = 0 ;
 		if (T_NOW > (t + T_TOLERANCE))
 			temperatureModifier = t / T_NOW;		

@@ -4,6 +4,9 @@
 <!ATTLIST building width CDATA #REQUIRED>
 <!ATTLIST building length CDATA #REQUIRED>
 <!ATTLIST building base-level CDATA #REQUIRED>
+<!ATTLIST building wear-lifetime CDATA #REQUIRED>
+<!ATTLIST building maintenance-time CDATA #REQUIRED>
+<!ATTLIST building room-temperature CDATA #REQUIRED>
 <!ELEMENT description (#PCDATA)>
 <!ELEMENT power-required EMPTY>
 <!ATTLIST power-required base-power CDATA #REQUIRED>

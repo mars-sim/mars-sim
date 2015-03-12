@@ -60,7 +60,11 @@ public class BuildingConfig implements Serializable {
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String BASE_LEVEL = "base-level";
-
+	
+	private static final String WEAR_LIFETIME = "wear-lifetime";
+	private static final String MAINTENANCE_TIME = "maintenance-time";	
+    private static final String ROOM_TEMPERATURE = "room-temperature";
+    
 	private static final String FUNCTIONS = "functions";
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String CAPACITY = "capacity";
@@ -255,6 +259,23 @@ public class BuildingConfig implements Serializable {
         return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
 	
+    // 2015-03-12 Added getWearLifeTime()
+    public int getWearLifeTime(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
+        return Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
+    }    
+    
+    // 2015-03-12 Added getMaintenanceTime
+    public int getMaintenanceTime(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
+        return Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
+    }   
+    
+    // 2015-03-12 Added getRoomTemperature
+    public double getRoomTemperature(String buildingType) {
+        Element buildingElement = getBuildingElement(buildingType);
+        return Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
+    }       
 	/**
 	 * Gets the description of the building.
 	 * @param buildingType the type of the building

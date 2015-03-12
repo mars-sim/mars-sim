@@ -52,7 +52,11 @@ implements Serializable {
 		addAttributeModifier(NaturalAttribute.TEACHING, 40);
 		addAttributeModifier(NaturalAttribute.ACADEMIC_APTITUDE, 80);
 		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 60);
-
+		addAttributeModifier(NaturalAttribute.ARTISTRY, 60);
+		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 60);
+		addAttributeModifier(NaturalAttribute.BRAVERY, 60);
+		addAttributeModifier(NaturalAttribute.EMOTIONAL_STABILITY, 60);
+		
 		// Adjust certain attributes reflective of differences between the genders.
 		// TODO: Do more research on this and cite references if possible.
 		if (person.getGender() == PersonGender.MALE) {
@@ -82,15 +86,18 @@ implements Serializable {
 			attributeList.put(attributeKey, attributeValue);
 		}
 
-		// Adjust certain attributes reflective of Martian settlers.
+		// Adjust certain attributes reflective of bots.
 		addAttributeModifier(NaturalAttribute.STRENGTH, 95);
 		addAttributeModifier(NaturalAttribute.ENDURANCE, 95);
 		addAttributeModifier(NaturalAttribute.AGILITY, 20);
-		addAttributeModifier(NaturalAttribute.STRESS_RESILIENCE, 80);
-		addAttributeModifier(NaturalAttribute.TEACHING, 40);
+		addAttributeModifier(NaturalAttribute.STRESS_RESILIENCE, 95);
+		addAttributeModifier(NaturalAttribute.TEACHING, 1);
 		addAttributeModifier(NaturalAttribute.ACADEMIC_APTITUDE, 80);
-		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 60);
-
+		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 10);
+		addAttributeModifier(NaturalAttribute.ARTISTRY, 1);
+		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 1);
+		addAttributeModifier(NaturalAttribute.BRAVERY, 1);
+		addAttributeModifier(NaturalAttribute.EMOTIONAL_STABILITY, 99);
 	}
 
 	/**
