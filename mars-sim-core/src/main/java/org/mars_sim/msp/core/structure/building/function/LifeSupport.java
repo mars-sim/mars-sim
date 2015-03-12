@@ -89,10 +89,6 @@ implements Serializable {
 		floorArea = length * width ;
 		
 		this.buildingType = building.getBuildingType();
-		
-		if (!buildingType.equals("Hallway") && !buildingType.equals("Tunnel"))
-			heating = new Heating(building);
-
 	}
 
 	/**
@@ -120,9 +116,6 @@ implements Serializable {
 		floorArea = length * width ;
 
 		this.buildingType = building.getBuildingType();
-		
-		if (!buildingType.equals("Hallway") && !buildingType.equals("Tunnel"))
-			heating = new Heating(building);
 	}
 	
 	/**
@@ -359,10 +352,6 @@ implements Serializable {
 				}
 			}
 		}	
-
-		if (!buildingType.equals("Hallway"))
-			heating.timePassing(time);
-	
 	}
 
 
@@ -398,11 +387,6 @@ implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-	
-
-	public Heating getHeating() {
-		return heating;
 	}
 	
 	@Override

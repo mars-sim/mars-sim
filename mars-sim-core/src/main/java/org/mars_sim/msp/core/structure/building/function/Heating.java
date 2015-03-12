@@ -34,8 +34,8 @@ implements Serializable {
 	// Data members
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;	
-    private static final double ROOM_TEMPERATURE = 22.5D;
-    public static final double GREENHOUSE_TEMPERATURE = 24D;
+    //private static final double ROOM_TEMPERATURE = 22.5D;
+    //public static final double GREENHOUSE_TEMPERATURE = 24D;
     // Thermostat's temperature allowance 
     private static final double T_UPPER_SENSITIVITY = 1D; 
     private static final double T_LOWER_SENSITIVITY = 2.5D; 
@@ -110,7 +110,7 @@ implements Serializable {
 		
 		SHC_Area = floorArea * SHC * floorArea;
 
-		t_initial = getInitialTemperature();
+		t_initial = building.getInitialTemperature();
 		
 		currentTemperature = t_initial;
 	}
@@ -118,20 +118,20 @@ implements Serializable {
 
 	/**
      * Gets the initial temperature of a building.
-     * @return temperature (deg C)
-     */
+     * @return temperature (deg C)     
 	//2014-10-23  Added getInitialTemperature()
     public double getInitialTemperature() {
     	//double result;
 		//if (config.hasFarming(buildingType))
-		if (buildingType == "Inflatable Greenhouse"
-				|| buildingType == "Large Greenhouse"
-				||	buildingType == "Inground Greenhouse" )
-			return GREENHOUSE_TEMPERATURE;
-		else
-            return ROOM_TEMPERATURE;
+		//if (buildingType == "Inflatable Greenhouse"
+		//		|| buildingType == "Large Greenhouse"
+		//		||	buildingType == "Inground Greenhouse" )
+		//	return GREENHOUSE_TEMPERATURE;
+		//else
+        //    return ROOM_TEMPERATURE;
+		return building.getInitialTemperature();
     }
-	
+	*/
 
     /**
      * Gets the temperature of a building.

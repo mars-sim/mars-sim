@@ -141,9 +141,11 @@ LocalBoundedObject, InsidePathLocation {
 		heatMode = HeatMode.FULL_POWER;
 		
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
-			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);			
-		//count++;
-		//Logger.info("constructor 1 : count is " + count);
+			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
+		
+		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
+			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);	
+		
 	}
 
 	/** Constructor 2
@@ -164,11 +166,7 @@ LocalBoundedObject, InsidePathLocation {
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 		
 		super(nickName, manager.getSettlement().getCoordinates());
-		
-		//logger.info("constructor2 : purple width is " + width);	
-		//logger.info("constructor2 : purple length is " + length);	
-		//logger.info("constructor2 : blue width is " + this.width);
-		//logger.info("constructor2 : blue length is " + this.length);
+
 		this.id = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
@@ -243,7 +241,6 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 		}
-		//logger.info("constructor 2 : end of constructor 2");
 	}
 
 	//Constructor 3
@@ -290,13 +287,17 @@ LocalBoundedObject, InsidePathLocation {
 		return lifeSupport;
 	}
 
+	public ThermalGeneration getThermalGeneration() {
+		return furnace;
+	}
+	
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
      */
 	//2014-10-17  Added getTemperature()
     public double getTemperature() {
-            return getLifeSupport().getHeating().getTemperature();
+            return getThermalGeneration().getHeating().getTemperature();
     }
 
 	/**
@@ -585,15 +586,14 @@ LocalBoundedObject, InsidePathLocation {
 		//double result = baseHeatRequirement;	
 		double result = 0;
 				
-		if (lifeSupport != null && lifeSupport.getHeating() != null )
-			lifeSupport.getHeating().getFullHeatRequired();
+		if (furnace != null && furnace.getHeating() != null )
+			furnace.getHeating().getFullHeatRequired();
 		
 		return result;
 	}
 	//2014-11-02 Added setHeatGenerated()
 	public void setHeatGenerated(double heatGenerated) {
-		//this.heatGenerated = heatGenerated;
-		lifeSupport.getHeating().setHeatGenerated(heatGenerated);
+		furnace.getHeating().setHeatGenerated(heatGenerated);
 	}
 	
 	/**
@@ -603,10 +603,9 @@ LocalBoundedObject, InsidePathLocation {
 	//2014-10-17  Added getPoweredDownHeatRequired()
 	public double getPoweredDownHeatRequired() {		
 		double result = 0;		
-		if (lifeSupport != null && lifeSupport.getHeating() != null)
-			lifeSupport.getHeating().getPoweredDownHeatRequired();		
+		if (furnace != null && furnace.getHeating() != null)
+			furnace.getHeating().getPoweredDownHeatRequired();		
 		return result;
-		//return lifeSupport.getHeating().getPoweredDownHeatRequired();
 	}
 
 	/**
@@ -621,13 +620,11 @@ LocalBoundedObject, InsidePathLocation {
 	 * Sets the building's heat mode.
 	 */
 	//2014-10-17  Added heat mode
-	public void setHeatMode(HeatMode heatMode) {
-		//logger.info("setHeatMode() : heatMode was " + heatMode);		
+	public void setHeatMode(HeatMode heatMode) {	
 		if ( heatModeCache != heatMode) {
 			// if heatModeCache is different from the its last value
 			heatModeCache = heatMode;
 			this.heatMode = heatMode;
-			//logger.info("setHeatMode() : heatMode is now " + heatMode);
 		}
 	}
 	
@@ -759,8 +756,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Send time to each building function.
 		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) i.next().timePassing(time);
-			
+		while (i.hasNext()) i.next().timePassing(time);		
 
 		// Update malfunction manager.
 		malfunctionManager.timePassing(time);
@@ -769,9 +765,6 @@ LocalBoundedObject, InsidePathLocation {
 		//2014-10-17  Added HeatMode
 		// If heat is on, active time passing.
 		if (heatMode == HeatMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
-
-		//logger.info("timePassing() : calling determineDeltaTemperature()");
-
 	}
 
 	public List<Function> getFunctions() {

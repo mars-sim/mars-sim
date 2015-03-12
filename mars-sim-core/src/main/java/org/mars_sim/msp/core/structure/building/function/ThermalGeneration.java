@@ -54,6 +54,8 @@ implements Serializable {
 	// 2014-10-25 Added heatSource
 	private HeatSource heatSource;
 	
+	private Heating heating;
+	
   	//protected HeatMode heatMode;
 	/**
 	 * Constructor
@@ -64,6 +66,9 @@ implements Serializable {
 		//count++;
 		//logger.info("constructor : count is " + count);
 		
+	
+		heating = new Heating(building);
+
 		// Determine heat sources.
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
@@ -235,8 +240,15 @@ implements Serializable {
 			}
 			*/
 		}
+		
+		heating.timePassing(time);
 	}
 
+	
+	public Heating getHeating() {
+		return heating;
+	}
+	
 	/**
 	 * Gets the amount of heat required when function is at full power.
 	 * @return heat (J)
