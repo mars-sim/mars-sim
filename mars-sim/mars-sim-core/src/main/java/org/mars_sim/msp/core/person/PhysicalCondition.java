@@ -91,7 +91,7 @@ implements Serializable {
 
     // 2015-01-12 Person's energy level 
     private double kJoules;
-    private double dryMassPerServing;
+    private double foodDryMassPerServing;
     private double robotBatteryDrainTime;
    
     
@@ -138,7 +138,7 @@ implements Serializable {
         medicationList = new ArrayList<Medication>();
         
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
+        foodDryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
         try {
         	personStarvationTime = personConfig.getStarvationStartTime() * 1000D;
@@ -177,7 +177,7 @@ implements Serializable {
     
     
     public double getMassPerServing() {
-        return dryMassPerServing;
+        return foodDryMassPerServing;
     }
     
     /**

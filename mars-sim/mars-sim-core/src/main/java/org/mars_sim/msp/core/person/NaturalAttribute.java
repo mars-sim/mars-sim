@@ -12,16 +12,20 @@ import org.mars_sim.msp.core.Msg;
  */
 public enum NaturalAttribute {
 
-	STRENGTH (Msg.getString("NaturalAttribute.strength")), //$NON-NLS-1$
-	ENDURANCE (Msg.getString("NaturalAttribute.endurance")), //$NON-NLS-1$
-	AGILITY (Msg.getString("NaturalAttribute.agility")), //$NON-NLS-1$
-	TEACHING (Msg.getString("NaturalAttribute.teaching")), //$NON-NLS-1$
 	ACADEMIC_APTITUDE (Msg.getString("NaturalAttribute.academicAptitude")), //$NON-NLS-1$
-	EXPERIENCE_APTITUDE (Msg.getString("NaturalAttribute.experienceAptitude")), //$NON-NLS-1$
-	STRESS_RESILIENCE (Msg.getString("NaturalAttribute.stressResilience")), //$NON-NLS-1$
+	AGILITY (Msg.getString("NaturalAttribute.agility")), //$NON-NLS-1$
+	ARTISTRY (Msg.getString("NaturalAttribute.artistry")), //$NON-NLS-1$
 	ATTRACTIVENESS (Msg.getString("NaturalAttribute.attractiveness")), //$NON-NLS-1$
+	BRAVERY (Msg.getString("NaturalAttribute.bravery")), //$NON-NLS-1$
+	CONVERSATION (Msg.getString("NaturalAttribute.conversation")), //$NON-NLS-1$
+	EMOTIONAL_STABILITY (Msg.getString("NaturalAttribute.emotionalStability")), //$NON-NLS-1$
+	ENDURANCE (Msg.getString("NaturalAttribute.endurance")), //$NON-NLS-1$
+	EXPERIENCE_APTITUDE (Msg.getString("NaturalAttribute.experienceAptitude")), //$NON-NLS-1$
 	LEADERSHIP (Msg.getString("NaturalAttribute.leadership")), //$NON-NLS-1$
-	CONVERSATION (Msg.getString("NaturalAttribute.conversation")); //$NON-NLS-1$
+	STRENGTH (Msg.getString("NaturalAttribute.strength")), //$NON-NLS-1$
+	STRESS_RESILIENCE (Msg.getString("NaturalAttribute.stressResilience")), //$NON-NLS-1$
+	SPIRITUALITY (Msg.getString("NaturalAttribute.spirituality")), //$NON-NLS-1$
+	TEACHING (Msg.getString("NaturalAttribute.teaching")); //$NON-NLS-1$
 
 	private String name;
 

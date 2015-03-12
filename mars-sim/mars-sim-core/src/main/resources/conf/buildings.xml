@@ -8,7 +8,11 @@
 	<!-- width: the width of the building in meters. -->
 	<!-- length: the length of the building in meters. -->
 	<!-- base-level: 0 for above-ground building, -1 for in-ground building. -->
-	<building type="Lander Hab" width="9.0" length="9.0" base-level="0">
+	<!-- wear-lifetime: in millisols (old default : 3340 Sols or 5 orbits). -->
+	<!-- maintenance-time: in millisols (old default : 50 millisols). -->	
+	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->	
+	<building type="Lander Hab" width="9.0" length="9.0" base-level="0"
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The Lander Hab is a general purpose habitat for four persons.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
 	 		to jump start a settlement.  
@@ -18,6 +22,7 @@
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
 		<!-- There can be additional power requirements by the building's functions. -->
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+		
 		
 		<!-- The functions the building is capable of performing/fulfilling. -->
 		<functions>
@@ -337,8 +342,7 @@
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
 				<heat-source type="Solar Heat Source" capacity="10.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 	
 			<waste-disposal tech-level="1" capacity="2">
@@ -358,13 +362,16 @@
 		
 	</building>
 	
-	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0">
+	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0"
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "24">
 		<description> The Inflatable Greenhouse is made of reinforced flexisble UV-resistant plastic cladding material with an 
 		aluminized Mylar reflector curtain on top of interwoven layers of Kevlar around a flexible air bladder. It retains
 		an atmosphere adequate for growing a limited number of crops as the food source for the settlers. It also
 	 	houses one workbench with instruments for botany research.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		
+		<power-required base-power="0.0" base-power-down-power="0.0"/>
+		
 		<functions>	
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
@@ -450,19 +457,20 @@
 					
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="10.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
-				<heat-source type="Electric Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 			
 		</functions>
 	</building>
 	
-	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0">
+	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0" 		
+		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>The MD1 Nuclear Reactor is the first generation, small and self-contained
 		 	80kW nuclear reactor that is built for Martian environment and requires minimal maintenance.
 		</description>
 		
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+		
 		<functions>
 			<power-generation>
 				<power-source type="Standard Power Source" power="80.0" />
@@ -470,11 +478,13 @@
 		</functions>
 	</building>
 	
-	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0">
+	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The starting ERV base was sent ahead of the arrival
 			of the human crew and stores full tanks of hydrogen for settlement's use.
 		</description>		
-		<power-required base-power="2.0" base-power-down-power="1.0" />
+		<power-required base-power="2.0" base-power-down-power="1.0"/>
+				
 		<functions>
 			<earth-return crew-capacity="4" />
 			<power-generation>
@@ -509,12 +519,14 @@
 		</functions>
 	</building>
 	
-	<building type="ERV Base" width="10.0" length="10.0" base-level="0">
+	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The Earth Return Vehicle (ERV) is a spacecraft structure 
 			with built-in Sabatier chemical reactor. The ERV base has already 
 			converted its initial load of hydrogen into carbon dioxide, water and oxygen.
 		</description>	
-		<power-required base-power="8.0" base-power-down-power="1.0" />
+		<power-required base-power="8.0" base-power-down-power="1.0"/>
+				
 		<functions>
 			<earth-return crew-capacity="4" />
 			<power-generation>
@@ -551,12 +563,14 @@
 		</functions>
 	</building>
 	
-	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0">
+	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description> 
 			The MD4 Nuclear Reactor is a medium-sized, self-contained 200kW Martian-reated 
 			nuclear reactor that requires minimal maintenance. 
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="0.0" base-power-down-power="0.0"/>
+				
 		<functions>
 			<power-generation>
 				<power-source type="Standard Power Source" power="200.0" />
@@ -564,11 +578,13 @@
 		</functions>
 	</building>	
 	
-	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0">
+	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"	
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Atmospheric Processor is an uninhabitable specialized building providing
 			automatic water and air processing and recycling for the settlement
 		</description>
-		<power-required base-power="5.0" base-power-down-power="1.0" />
+		<power-required base-power="5.0" base-power-down-power="1.0"/>
+			
 		<functions>
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="5.0" default="on">
@@ -614,11 +630,13 @@
 		</functions>
 	</building>		
 	
-	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0">
+	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Residential Quarters is the first specialized living accommodation building 
 			that is configurable with enough space to house as many as 12 beds.
 		</description>
 		<power-required base-power="20.0" base-power-down-power="0.0" />
+			
 		<functions>
 			<life-support capacity="12" power-required="24.0" />
 			<living-accommodations beds="12">
@@ -658,16 +676,23 @@
 				<resource-initial resource="napkin" amount="100.0" />																											
 			</storage>
 			
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
+			
 		</functions> 
 	</building>
 	
-	<building type="Lounge" width="7.0" length="9.0" base-level="0">
+	<building type="Lounge" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Lounge is a rest and relaxation living space furnished 
 			with dining tables and chairs for serving almost three dozens of people at a time. 
 			It has a well furnished kitchen supporting a lot of food processing activities and 
 			plenty of resource storage space. It also has a small gym room with exercise equipment.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+			
 		<functions>
 			<cooking capacity="4">
 				<activity>
@@ -824,20 +849,24 @@
 																	
 				<resource-initial resource="toilet tissue" amount="100.0" />							
 				<resource-initial resource="paper" amount="100.0" />							
-				<resource-initial resource="napkin" amount="100.0" />	
-
-																										
+				<resource-initial resource="napkin" amount="100.0" />																									
 			</storage>
 			
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Infirmary" width="7.0" length="9.0" base-level="0">
+	<building type="Infirmary" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> 
 			The Infirmary is the first medical facility equipped to provide more adequate
 			medical care for settlers. It houses one workbench with equipment for medical research.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+			
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
 			<medical-care tech-level="5" beds="8">
@@ -859,16 +888,22 @@
 					<activity-spot xloc="-1.72" yloc="3.2" />
 				</activity>
 			</research>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Command and Control" width="7.0" length="9.0" base-level="0">
+	<building type="Command and Control" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> 
 			The Command and Control is a communication facility with networking 
 			capability for high speed communications, central EVA operations
 			and colony-width connectivity.
 		</description>
 		<power-required base-power="50.0" base-power-down-power="10.0" />
+			
 		<functions>
 			<administration population-support="25">
 				<activity>
@@ -911,17 +946,23 @@
 					<activity-spot xloc="-.46" yloc="-2.08" />
 				</activity>
 			</management>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 
 
-	<building type="Large Greenhouse" width="12.0" length="18.0" base-level="0">
+	<building type="Large Greenhouse" width="12.0" length="18.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> 
 			The Large Greenhouse is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
 			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a botany research lab with instruments. It has a spacious interior
 			for high volume crop cultivation and has a high resource storage capability. 
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0">
 				<activity>
@@ -1012,7 +1053,8 @@
 	</building>
 
 <!--
-	<building type="Large Algae Greenhouse" width="12.0" length="18.0">
+	<building type="Large Algae Greenhouse" width="12.0" length="18.0"
+				wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> A Large Algae Greenhouse is a spacious greenhouse 
 			equipped with algae ponds and a biology lab. The availability of algae 
 			ensure the continuous supply of nutritious food source that is
@@ -1020,6 +1062,7 @@
 			 conditions that require peak physical condition. 
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+			
 		<functions>
 			<farming crops="0" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
 			<life-support capacity="10" power-required="20.0" />
@@ -1042,16 +1085,22 @@
 				<heat-source type="Solar Heat Source" capacity="10.0" />
 				<heat-source type="Electric Heat Source" capacity="30.0" />
 			</thermal-generation>								
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	-->
 
-	<building type="Laboratory" width="7.0" length="9.0" base-level="0">
+	<building type="Laboratory" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Laboratory is a modest facility furnished with workbench,
 		instruments, computers and tablets and peer collaboration communication 
 		suites of equipment that enables making scientific inquiries on the froniter of Mars.
 		</description>
 		<power-required base-power="30.0" base-power-down-power="10.0" />
+
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="4">
@@ -1080,14 +1129,20 @@
 					<activity-spot xloc="-1.61" yloc="-2.19" />
 				</activity>
 			</research>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>		
 		</functions>
 	</building>
 	
-	<building type="Garage" width="12.0" length="16.0" base-level="0">
+	<building type="Garage" width="12.0" length="16.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Garage is an enclosed maintenance facility for 
 			building, repairing and modifying Martian rovers and vehicles 
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+			
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0" 
 			exterior-xloc="0.0" exterior-yloc="9.0" />
@@ -1107,15 +1162,21 @@
 			<storage stock-capacity="5000">
 				<resource-storage resource="Methane" capacity="1000.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Workshop" width="7.0" length="9.0" base-level="0">
+	<building type="Workshop" width="7.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The Workshop is a manufacturing building furnished with 
 			computerized machinaries for processing resources,
 			snythesizing parts and assembling items for settlement's use.  
 		</description>
 		<power-required base-power="7.0" base-power-down-power="0.0" />
+
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="4" concurrent-processes="4">
@@ -1162,15 +1223,21 @@
 				<resource-storage resource="Cement" capacity="500.0" />
 				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Methane Power Generator" width="5.0" length="5.0" base-level="0">
+	<building type="Methane Power Generator" width="5.0" length="5.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Methane Power generator utilized methane gas for the
 			generation of electricity. It makes use of the freely available carbon dioxide 
 			in the Martian atmosphere and creates non-polluting by-products.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="15.0" fuel-type="methane" 
@@ -1180,13 +1247,15 @@
 	</building>
 
 
-	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0">
+	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Wind Turbine power generator provides a completely non-polluting 
 		form of renewable energy. Asides from the typical maintenance tasks,
 		it is an integral part of a modular distributed renewable energy generation system complimenting 
 			the nuclear power generators for the power grid.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+		
 		<functions>
 			<power-generation>
 				<power-source type="Wind Power Source" power="5.0" />
@@ -1194,12 +1263,14 @@
 		</functions>
 	</building>
 	
-	<building type="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0">
+	<building type="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Solar Photovoltaic Array is an array of steerable photovoltaic panels 
 		that generates electricity from Martian sunlight. It is an essential part of 
 		a modular distributed renewable energy generation system for the power grid.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<power-generation>
 				<power-source type="Solar Power Source" power="10.0" />
@@ -1208,12 +1279,14 @@
 	</building>
 	
 	<!-- Array of solar thermal mirrors with steam power generator. -->
-	<building type="Solar Thermal Array" width="5.0" length="10.0" base-level="0">
+	<building type="Solar Thermal Array" width="5.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Solar Thermal Array is an array of steerable parabolic
 			reflectors that concentrates sunlight for heating up molten materials
 			that move mechanical turbines generating power.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="10.0" />
@@ -1222,11 +1295,13 @@
 	</building>
 	
 	<!-- A small areothermal electrical generator. -->
-	<building type="Small Areothermal Well" width="5.0" length="10.0" base-level="0">
+	<building type="Small Areothermal Well" width="5.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description>  The Small Areothermal Well is an geothermal energy production system
 			that captures the trapped underground heat for the power grid.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="0.0" base-power-down-power="0.0"/>
+
 		<functions>
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="30.0" />
@@ -1234,12 +1309,14 @@
 		</functions>
 	</building>
 	
-	<building type="Large Areothermal Well" width="10.0" length="15.0" base-level="0">
+	<building type="Large Areothermal Well" width="10.0" length="15.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for 
 			capturing heat and creating electricity.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<power-generation>
 				<power-source type="Areothermal Power Source" power="100.0" />
@@ -1247,11 +1324,13 @@
 		</functions>
 	</building>
 	
-	<building type="Concrete Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Concrete Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Concrete Storage Bin is a small brick bin for 
 			storing dry concrete material for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Concrete" capacity="5000.0" />
@@ -1259,11 +1338,13 @@
 		</functions>
 	</building>
 	
-	<building type="Cement Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Cement Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Cement Storage Bin is a small brick bin for 
 			storing dry cement for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Cement" capacity="5000.0" />
@@ -1271,11 +1352,13 @@
 		</functions>
 	</building>
 	
-	<building type="Mortar Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Mortar Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Mortar Storage Bin is a small brick bin for 
 			storing dry mortar for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+		
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Mortar" capacity="5000.0" />
@@ -1283,11 +1366,13 @@
 		</functions>
 	</building>
 	
-	<building type="Lime Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Lime Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Lime Storage Bin is a small brick bin for 
 			storing lime for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Lime" capacity="5000.0" />
@@ -1295,11 +1380,13 @@
 		</functions>
 	</building>
 	
-	<building type="Carbon Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Carbon Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Carbon Storage Bin is a small brick bin for 
 			storing carbon for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Carbon" capacity="5000.0" />
@@ -1307,11 +1394,13 @@
 		</functions>
 	</building>
 	
-	<building type="Regolith Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Regolith Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Regolith Storage Bin is a small brick bin for 
 			storing Martian regolith for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Regolith" capacity="5000.0" />
@@ -1319,11 +1408,13 @@
 		</functions>
 	</building>
 	
-	<building type="Sand Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Sand Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Sand Storage Bin is a small brick bin for 
 			storing Martian sand for light contruction project.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Sand" capacity="5000.0" />
@@ -1331,11 +1422,13 @@
 		</functions>
 	</building>
 	
-	<building type="Ice Storage Bin" width="2.0" length="3.0" base-level="0">
+	<building type="Ice Storage Bin" width="2.0" length="3.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "-40">
 		<description> The Ice Storage Bin is a small brick bin for handling and 
 			storing extracted ice for future use.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<storage stock-capacity="5000">
 				<resource-storage resource="Ice" capacity="5000.0" />
@@ -1343,11 +1436,13 @@
 		</functions>
 	</building>
 	
-	<building type="Manufacturing Shed" width="5.0" length="5.0" base-level="-1">
+	<building type="Manufacturing Shed" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Manufacturing Shed is a small brick manufacturing 
 			building for forming, cutting, coating and glazing bricks for construction projects.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.0" />
+
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<manufacture tech-level="3" concurrent-processes="2">
@@ -1370,15 +1465,21 @@
 				<resource-storage resource="Cement" capacity="500.0" />
 				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1">
+	<building type="Bunkhouse" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Bunkhouse is a spartan living quarters with 
 			two beds. It is a retractable housing custom-tailored for 
 			temporary mining outpost operation.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.0" />
+	
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<living-accommodations beds="2">
@@ -1388,16 +1489,22 @@
 				</activity>
 			</living-accommodations>
 			<storage stock-capacity="5000"/>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
 
-	<building type="Small Sabatier Processor" width="5.0" length="5.0" base-level="0">
+	<building type="Small Sabatier Processor" width="5.0" length="5.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Small Sabatier Processor is a small building housing a sabatier
 			system that features the reaction hydrogen with carbon dioxide at elevated temperatures 
 			and pressures in the presence of a nickel catalyst to produce methane and water
 		</description>
 		<power-required base-power="5.0" base-power-down-power="2.0" />
+
 		<functions>
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
@@ -1412,24 +1519,28 @@
 	</building>
 	
 	<!-- Array of rover batteries -->
-	<building type="Small Battery Array" width="5.0" length="10.0" base-level="0">
+	<building type="Small Battery Array" width="5.0" length="10.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description> The Small Battery Array showcased an advanced battery system that 
 			stored excess power during non-peak hours and released power during peak power 
 			usage. Array of rover batteries
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<!-- power storage capacity in kW hr. -->
 			<power-storage capacity="500.0" />
 		</functions>
 	</building>
 	
-	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0">
+	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Astronomy Observatory is a small self-contained observatory building
 			furnished with an optical telescope, research workbench and astronomy laboratory
 			as well as a built-in EVA airlock for ingress and egress.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
 				<activity>
@@ -1451,16 +1562,22 @@
 				</activity>
 			</research>
 			<storage stock-capacity="5000"/>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
 	<!-- A lander hab refitted for storage. -->
-	<building type="Storage Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Storage Hab" width="9.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Storage Hab is a Lander Hab refitted storage 
 			building with ample storage space. It has built-in PV panels
 			as backup power source.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.0" />
+
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
@@ -1480,15 +1597,21 @@
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Research Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Research Hab" width="9.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Research Hab is a Lander Hab refitted laboratory 
 			building for scientific research. It can be custom-tailored with computer 
 			systems for	up to four research subjects and has built-in solar panels.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
@@ -1511,15 +1634,21 @@
 				</activity>
 			</research>
 			<storage stock-capacity="5000"/>
-		</functions>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
+	</functions>
 	</building>
 	
-	<building type="Residential Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Residential Hab" width="9.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Residential Hab is a Lander Hab refitted residential 
 			quarters for living accommodation of up to 8 persons. It uses solar
 			panels as backup power source.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
@@ -1537,16 +1666,22 @@
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<storage stock-capacity="5000"/>			
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
 	<!-- A lander hab refitted as a medical facility. -->
-	<building type="Medical Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Medical Hab" width="9.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Medical Hab is a Lander Hab refitted medical facility
 		 for providing medical basic care. It also has medical research workbench and 
 		 uses solar	panels as backup power source.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
@@ -1567,15 +1702,21 @@
 				</activity>
 			</research>
 			<storage stock-capacity="5000"/>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Machinery Hab" width="9.0" length="9.0" base-level="0">
+	<building type="Machinery Hab" width="9.0" length="9.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Machinery Hab is a Lander Hab refitted manufacturing workshop
 		 	for making items and synthesizing resource. It provides storage space for 
 		 	housing commonly used resources.
 		</description>
 		<power-required base-power="10.0" base-power-down-power="0.0" />
+
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
@@ -1604,15 +1745,21 @@
 				<resource-storage resource="Cement" capacity="250.0" />
 				<resource-storage resource="Concrete" capacity="250.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1">
+	<building type="Outpost Hub" width="10.0" length="10.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Outpost Hub is a vaulted brick building that acts 
 			as the main hub of a trading or mining outpost. Like its cousin
 			Lander Hab, it hosts a suite of functions to its inhabitants.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.0" />
+
 		<functions>
 			<communication>
 				<activity>
@@ -1796,14 +1943,20 @@
 				<resource-initial resource="Cucumber" amount="50.0" />					
 				<resource-initial resource="Green Bell Pepper" amount="50.0" />	
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>		
 		</functions>
 	</building>
 	
-	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1">
+	<building type="Storage Shed" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Storage Shed is a small brick building for 
 			storing resources for the settlement.
 		</description>	
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<storage stock-capacity="10000">
@@ -1825,12 +1978,14 @@
 	</building>
 	
 
-	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1">
+	<building type="Loading Dock Garage" width="15.0" length="18.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Loading Dock Garage is an enclosed maintenance facility 
 			featuring a brick loading dock for easy access. It has equipment for
 			building, repairing and modifying rovers and vehicles. 
 		</description>
 		<power-required base-power="8.0" base-power-down-power="0.0" />
+	
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5" 
 			exterior-xloc="0.0" exterior-yloc="10.0" />
@@ -1848,14 +2003,20 @@
 			<storage stock-capacity="10000">
 				<resource-storage resource="Methane" capacity="2000.0" />
 			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1">
+	<building type="Mining Lab" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Mining Lab is a small brick laboratory furnished for 
 			mining-related scientific instruments and research workbench.
 		</description>
 		<power-required base-power="3.0" base-power-down-power="0.0" />
+
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<research tech-level="2" capacity="2">
@@ -1871,15 +2032,21 @@
 				</activity>
 			</research>
 			<storage stock-capacity="5000"/>
+			<thermal-generation>
+				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
+			</thermal-generation>	
 		</functions>
 	</building>
 	
-	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1">
+	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Inground Greenhouse is a semi underground structure with a 
 			vaulted flber glass roof which is less suceptible to meteor damage. 
 			It grows crops as food for the settlement. 
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>		
 			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0">
 				<activity>
@@ -1956,19 +2123,21 @@
 			</storage>	
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="10.0" />
-				<heat-source type="Electric Heat Source" capacity="30.0" />
+				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>			
 		</functions>
 	</building>
 	
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
-	<building type="Hallway" width="2.0" length="-1.0" base-level="0">
+	<building type="Hallway" width="2.0" length="-1.0" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Hallway is a pressurized access tube connecting 
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required=".5" />
@@ -1976,12 +2145,14 @@
 	</building>
 	
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
-	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1">
+	<building type="Tunnel" width="3.0" length="-1.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Tunnel is an underground pressurized access tube connecting 
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
+
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required=".2" />

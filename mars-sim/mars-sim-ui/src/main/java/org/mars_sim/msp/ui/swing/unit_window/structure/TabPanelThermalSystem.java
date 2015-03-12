@@ -58,9 +58,9 @@ extends TabPanel {
 	/** The total heat used label. */
 	//private JLabel heatGenLabel;
 	/** The total heat storage capacity label. */
-	private JLabel thermalStorageCapacityLabel;
+	//private JLabel thermalStorageCapacityLabel;
 	/** The total heat stored label. */
-	private JLabel heatStoredLabel;
+	//private JLabel heatStoredLabel;
 	/** Table model for heat info. */
 	private HeatTableModel heatTableModel;
 	/** The settlement's Heating System */
@@ -73,9 +73,9 @@ extends TabPanel {
 	/** The total heat used cache. */
 	//private double heatGenCache;
 	/** The total thermal storage capacity cache. */
-	private double thermalStorageCapacityCache;
+	//private double thermalStorageCapacityCache;
 	/** The total heat stored cache. */
-	private double heatStoredCache;
+	//private double heatStoredCache;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
 
