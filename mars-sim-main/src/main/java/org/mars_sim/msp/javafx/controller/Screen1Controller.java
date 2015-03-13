@@ -50,4 +50,9 @@ public class Screen1Controller implements Initializable, ControlledScreen {
     private void goToScreen3(ActionEvent event){
        switcher.setScreen(MainMenu.screen3ID);
     }
+    
+    @FXML
+    private void exit(ActionEvent event){
+    	System.exit(0);
+    }
 }
