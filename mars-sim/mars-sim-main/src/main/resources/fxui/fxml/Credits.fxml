@@ -17,11 +17,7 @@
               <Insets />
             </padding>
                <children>
-			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Go To Config" textAlignment="CENTER" textFill="#f75d0c">
-			        <font>
-                        <Font name="Caladea Bold" size="18.0" />
-                     </font></Button>
-			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen1" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Back To Main Menu" textAlignment="CENTER" textFill="#f75d0c">
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen1" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Back" textAlignment="CENTER" textFill="#f75d0c">
 			        <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font></Button>
