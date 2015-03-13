@@ -34,14 +34,14 @@
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Options" textFill="#f75d0c">
+          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Load Sim" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Modtool" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Mod Tool" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
@@ -57,6 +57,13 @@
                         <SepiaTone />
                      </effect></Button>
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Credits" textFill="#f75d0c">
+                     <font>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Exit" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
