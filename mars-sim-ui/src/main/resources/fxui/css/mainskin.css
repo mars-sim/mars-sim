@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * mainskin.css
- * JavaFX classes for MSP's main navigation window
+ * General CSS classes for MSP UI
  * @version 3.08 2015-01-27
  * @author Lars Næsbye Christensen
  */
@@ -67,14 +67,6 @@ src: url("../fonts/jura/Jura-Regular.ttf");
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
 }
  
-.status-bar {
--fx-font-weight: bold;
--fx-font-family: "Jura";
--fx-font-size: 8pt;
-}
-
-
-
 .table-view {
 -fx-table-cell-border-color:derive(-fx-base,+10%);
 -fx-table-header-border-color:derive(-fx-base,+20%);

@@ -17,7 +17,14 @@
               <Insets />
             </padding>
                <children>
-			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Credits" textAlignment="CENTER" textFill="#f75d0c">
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Graphics" textAlignment="CENTER" textFill="#f75d0c">
+			        <font>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Audio" textAlignment="CENTER" textFill="#f75d0c">
 			        <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
