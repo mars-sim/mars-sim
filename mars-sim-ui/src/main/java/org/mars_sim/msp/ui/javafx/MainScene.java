@@ -8,18 +8,11 @@
 package org.mars_sim.msp.ui.javafx;
 
 import static javafx.geometry.Orientation.VERTICAL;
-import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.PopOver.ArrowLocation;
-import org.controlsfx.control.GridCell;
-import org.controlsfx.control.GridView;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
-import org.controlsfx.control.HiddenSidesPane;
 import org.controlsfx.control.action.Action;
-import org.controlsfx.control.cell.ColorGridCell;
-import org.controlsfx.tools.Utils;
 
 import java.awt.Frame;
 import java.io.File;
@@ -38,22 +31,14 @@ import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -74,15 +59,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import javafx.util.Duration;
 
 import javax.swing.JFileChooser;
@@ -97,7 +77,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -110,41 +89,30 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
+	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
+	private static final int TIME_DELAY = 940;
+	
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 	
-	// 2014-12-27 Added delay timer
-	//private Timer delayLaunchTimer;
-	//private Timer autosaveTimer;
-	//private javax.swing.Timer earthTimer = null;
-	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
-	private static final int TIME_DELAY = 940;
-	
     private Text timeText;    
     private Text memUsedText;
+    private SplitPane splitPane;
 
+    private StringProperty timeStamp;
+    
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
-    private int memFree;
-    
+    private int memFree;  
 
-    private StringProperty timeStamp;
- 
     private boolean cleanUI = true;
-    //private boolean isLoadingFX;
     
     private MainDesktopPane desktop = null;
-    private Stage stage;
-    
+    private Stage stage;   
     private MainWindowFXMenu menuBar;
-    
-    private SplitPane splitPane;
     private NotificationPane notificationPane;
-    //private CheckBox cbUseDarkTheme;
-    //private CheckBox cbHideCloseBtn;
-    //private TextField textField;
     
     public MainScene(Stage stage) {
          	this.stage = stage;
@@ -152,26 +120,22 @@ public class MainScene {
     
     public Scene createMainScene() {
 
-        Scene scene = init();   
-      
-		startAutosaveTimer();        
+        Scene scene = init();        
+		startAutosaveTimer();        		
+        //desktop.openInitialWindows(); // doesn't work here
 		
-        desktop.openInitialWindows();
-        
         // Detect if a user hits ESC
         scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
               @Override
               public void handle(KeyEvent t) {
-                if (t.getCode()==KeyCode.ESCAPE) {
-                	//System.out.println("click on escape");
-                	// Toggle the full screen mode to OFF in the pull-down menu under setting
+                if (t.getCode() == KeyCode.ESCAPE) {
+                 	// Toggle the full screen mode to OFF in the pull-down menu under setting
                 	menuBar.exitFullScreen();
                 	// close the MarsNet side panel
                 	closeMarsNet();
                 }
               }
           });
-        
         return scene;
     }
 	
@@ -186,17 +150,19 @@ public class MainScene {
 
 		// Set look and feel of UI.
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
-
 		setLookAndFeel(false);	
 
 		// Detect if a user hits the top-right close button
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-		    @Override
-		    public void handle(WindowEvent event) {
+		//stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		//    @Override
+		//    public void handle(WindowEvent event) {
 		    	// Exit not just the stage but the simulation entirely
-		    	exitSimulation();
-		    }
-		});
+		//    	exitSimulation();
+		//    }
+		//});
+		
+		// Exit not just the stage but the simulation entirely
+		stage.setOnCloseRequest(e -> exitSimulation());
 		
         //ImageView bg1 = new ImageView();
         //bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map      
@@ -204,18 +170,14 @@ public class MainScene {
 	   
 		// Create group to hold swingNode1 which holds the swing desktop
 		StackPane swingPane = new StackPane();
-		SwingNode swingNode1 = new SwingNode();
-		createSwingNode1(swingNode1);
-		swingPane.getChildren().add(swingNode1);
-		//swingBox.setAutoSizeChildren(false);
-		//swingPane.setPrefWidth(1024);
+		SwingNode swingNode = new SwingNode();
+		createSwingNode(swingNode);
+		swingPane.getChildren().add(swingNode);
 		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-		//swingPane.setMaxWidth(Region.USE_PREF_SIZE);
 		
 		// Create ControlFX's StatusBar   
-		StatusBar statusBar = createStatusBar(); 
-	        
+		StatusBar statusBar = createStatusBar(); 	        
 		VBox bottomBox = new VBox();
 		bottomBox.getChildren().addAll(statusBar);
 		
@@ -239,6 +201,7 @@ public class MainScene {
 	    settlementTab.setContent(createPane("black"));
 	    tabPane.getTabs().add(settlementTab);
 	    
+/*
 	    // create a button to toggle floating.
 	    final RadioButton floatControl = new RadioButton("Toggle floating");
 	    floatControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -250,15 +213,13 @@ public class MainScene {
 	        }
 	      }
 	    });
-	    
+*/
 	    // layout the stage.
 	    VBox layout = new VBox(10);
-	    layout.getChildren().addAll(floatControl, tabPane);
+	    layout.getChildren().addAll(tabPane);
 	    VBox.setVgrow(tabPane, Priority.ALWAYS);
-	    //layout.setStyle("-fx-background-color: cornsilk; -fx-padding: 10;");
-	    layout.setStyle("-fx-padding: 10;");
-	    
-	    
+	    layout.setStyle("-fx-padding: 10;");	    
+
 	    splitPane = new SplitPane();
 	    //splitPane.setPrefWidth(100);
 	    splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -273,9 +234,7 @@ public class MainScene {
 	    
 	    //borderPane.setCenter(splitPane);  
 	    borderPane.setCenter(node);
-	    
-	    StackPane rootStackPane = new StackPane(borderPane);
-	    //StackPane.setAlignment(borderPane, Pos.TOP_LEFT);	    
+	    StackPane rootStackPane = new StackPane(borderPane);	    
 		
 	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
 	    scene.getStylesheets().addAll("/fxui/css/mainskin.css");
@@ -289,8 +248,7 @@ public class MainScene {
 	            ae -> updateTimeText()));
 	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 	    timeline.play();
-   
-        return (scene);
+        return scene;
 	}
 	
 	  // create a pane of a given color to hold tab content.
@@ -1020,7 +978,7 @@ public class MainScene {
 	}
 	
     
-	private void createSwingNode1(final SwingNode swingNode) {
+	private void createSwingNode(final SwingNode swingNode) {
 		desktop = new MainDesktopPane(this);
         SwingUtilities.invokeLater(() -> {
             swingNode.setContent(desktop);           

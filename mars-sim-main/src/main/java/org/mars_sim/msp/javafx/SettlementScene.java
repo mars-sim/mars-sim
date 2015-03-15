@@ -15,7 +15,7 @@ import javafx.scene.control.Button;
 
 public class SettlementScene {
 
-    public Scene createSettlementScene() {
+    public Scene createScene() {
         Group  root  =  new  Group();
         Scene  settlementScene  =  new  Scene(root);
         settlementScene.getStylesheets().addAll("/fxui/css/settlementskin.css");		
@@ -23,7 +23,7 @@ public class SettlementScene {
         continueButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent arg0) {
-        	MainMenu.changeScene(1);
+        	//MainMenu.changeScene(1);
         }
     });
         

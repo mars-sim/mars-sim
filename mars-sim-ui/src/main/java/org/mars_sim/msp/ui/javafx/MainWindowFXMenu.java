@@ -63,7 +63,7 @@ public class MainWindowFXMenu extends MenuBar  {
 		super();
 
 		this.stage = mainScene.getStage();
-	
+       
         // --- Menu File
         Menu menuFile = new Menu("File");
         MenuItem newItem = new MenuItem("New...");

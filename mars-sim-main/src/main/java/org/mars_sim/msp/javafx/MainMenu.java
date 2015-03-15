@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.javafx;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
@@ -29,7 +28,6 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -43,11 +41,11 @@ public class MainMenu {
 	// Data members
 	private Stage primaryStage;
 	
-	private static Stage stage;
+	private Stage stage;
 	
-	public static Scene menuScene;
-	public static Scene mainScene;
-	public static Scene modtoolScene;
+	//public MenuScene menuScene;
+	public MainScene mainScene;
+	//public ModtoolScene modtoolScene;
 	
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/Main.fxml";
@@ -90,38 +88,42 @@ public class MainMenu {
        switcher.setScreen(MainMenu.screen1ID);
        
        Group root = new Group();
-       //switchScreen.getChildren().addAll(switcher);
-       //Scene scene = new Scene(root);
-       //AnchorPane root = new AnchorPane(); 
        root.getChildren().addAll(createMarsGlobe(), switcher);
-       //root.getChildren().add(create3DMars());
        Scene scene = new Scene(root);
        
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
        scene.setCursor(Cursor.HAND);
-       //primaryStage.setFullScreen(true);
+       
        primaryStage.setResizable(false);            
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
        primaryStage.show();
-                  
+                         
 	   stage = new Stage();
 	   stage.setTitle(Simulation.WINDOW_TITLE);
+	   
+	   mainScene = new MainScene(stage);
+	   //menuScene = new MenuScene(stage);
+	   //modtoolScene = new ModtoolScene(stage);
    }    
 
 
    public void runOne() {    
-	   
-	   primaryStage.setIconified(true);
+       //System.out.println("just started runOne()");
 	   mpFX.handleNewSimulation();
 	   mpFX.startSimulation();
-	   
-	   mainScene = new MainScene(stage).createMainScene();
+       //System.out.println("just startSimulation()");
+	   Scene scene = mainScene.createMainScene();
+       //System.out.println("just return scene with mainScene.createMainScene()");
+	   primaryStage.setIconified(true);
+
        stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
 	   stage.setFullScreen(true);
 	   stage.setResizable(true);
-	   stage.setScene(mainScene);
+	   stage.centerOnScreen();
+	   stage.setScene(scene);
+       //System.out.println("just setScene()");
 	   stage.show();
 	   
    }
@@ -133,17 +135,27 @@ public class MainMenu {
    }
    
    public void runThree() {
-   		modtoolScene = new SettlementScene().createSettlementScene();
-	    stage.setScene(modtoolScene);
-	    stage.show();
+   		//modtoolScene = new SettlementScene().createSettlementScene();
+	    //stage.setScene(modtoolScene);
+	    //stage.show();
    }
    
-   public static void changeScene(int toscene) {	
-	   switch(toscene) {	   
-		   	case 1: {stage.setScene(menuScene);}
-	   		case 2: {stage.setScene(mainScene);}
-	   		case 3: {stage.setScene(modtoolScene);}
-	   }
+   public void changeScene(int toscene) {	
+	   
+	   //switch (toscene) {	   
+	   
+		   	//case 1: 
+		   		//scene = new MenuScene().createScene();
+		   	//	break;
+	   		//case 2: 
+	   			Scene scene = mainScene.createMainScene();
+	   			//break;
+	   		//case 3: 
+	   			//scene = modtoolScene.createScene(stage);
+	   		//	break;
+	   			
+	   		stage.setScene(scene);
+	   //}
    }   
    
    //public Scene getMainScene() {

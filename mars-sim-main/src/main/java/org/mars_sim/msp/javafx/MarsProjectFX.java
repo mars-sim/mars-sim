@@ -71,7 +71,6 @@ public class MarsProjectFX extends Application  {
             
 	        // 2015-01-26 Added mwFX
 	        MainMenu mmFX = new MainMenu(this, args, primaryStage, true);
-
 	        // Dispose the splash window.
 	        //splashWindow.remove();
 
@@ -81,7 +80,7 @@ public class MarsProjectFX extends Application  {
 	        //startSimulation();
 	        
 	        // Open all initial windows.
-	        //desktop.openInitialWindows();
+	        //desktop.openInitialWindows(); // why it does not work in macosx ?
 	        
 	    }
 	    else {
@@ -242,8 +241,8 @@ public class MarsProjectFX extends Application  {
                         SimulationConfig.instance());
 
          		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
-    			editor.setIconImage(img);
-                editor.setVisible(true);
+    			//editor.setIconImage(img); // does not work in macosx
+                //editor.setVisible(true); // does not work in macosx
             }
             Simulation.createNewSimulation();
         } catch (Exception e) {

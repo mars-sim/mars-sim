@@ -364,8 +364,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { settlementWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(settlementWindow);
-		openToolWindow(SettlementWindow.NAME);
-		closeToolWindow(SettlementWindow.NAME);
+		//openToolWindow(SettlementWindow.NAME);
+		//closeToolWindow(SettlementWindow.NAME);
 		setSettlementWindow(settlementWindow);
 
 		// Prepare science tool window
@@ -473,12 +473,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void openToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
-				//System.out.println("MainDesktopPane : window is not null ");
 			if (window.isClosed()) {
 				if (!window.wasOpened()) {
 					UIConfig config = UIConfig.INSTANCE;
 					if (config.useUIDefault()) {
-						window.setLocation(getCenterLocation(window));
+							window.setLocation(getCenterLocation(window));
 					} else {
 						if (config.isInternalWindowConfigured(toolName)) {
 							window.setLocation(config.getInternalWindowLocation(toolName));
@@ -910,7 +909,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void openInitialWindows() {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-
 			// Open default windows on desktop.
 
 			// Open user guide tool.
