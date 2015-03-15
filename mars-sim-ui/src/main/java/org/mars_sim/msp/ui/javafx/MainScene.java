@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2015-02-25
+ * @version 3.08 2015-03-15
  * @author Lars Næsbye Christensen
  */
 
@@ -237,7 +237,7 @@ public class MainScene {
 	    StackPane rootStackPane = new StackPane(borderPane);	    
 		
 	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
-	    scene.getStylesheets().addAll("/fxui/css/mainskin.css");
+	    scene.getStylesheets().add("/fxui/css/mainskin.css");
 	    
 	    borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());    
@@ -263,7 +263,10 @@ public class MainScene {
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 		Iterator<Settlement> i = settlementList.iterator();
 		while(i.hasNext()) {	
-			 vb.getChildren().addAll(new Label(""), createButton(i.next()));
+			Settlement settlement = i.next();
+			String sname = settlement.getName();
+			Label label = new Label(" ");
+			vb.getChildren().addAll(label, createButton(settlement));
 		}
 		
 		pane.getChildren().add(vb);
@@ -273,8 +276,9 @@ public class MainScene {
 	  
 	public Button createButton(Settlement settlement) {
 		Button b = new Button(settlement.getName());
-		b.setPadding(new Insets(10));
-		
+		b.setPadding(new Insets(20));
+		b.setId("settlement-node");
+		b.getStylesheets().add("/fxui/css/settlementnode.css");
         b.setOnMouseClicked(new EventHandler<MouseEvent>() {
         	PopOver popOver = null;
             @Override
@@ -363,11 +367,14 @@ public class MainScene {
 	      */ 
         HBox root = new HBox();
         
+		String sname = settlement.getName();
+		Label label = new Label("       ");
+		
         VBox yesaccordion = new VBox();       
         Accordion acc = new Accordion();
         acc.getPanes().addAll(this.createPanes(settlement));
         yesaccordion.getChildren().add(acc);
-        root.getChildren().addAll(yesaccordion);	 
+        root.getChildren().addAll(label, yesaccordion);	 
         
         // Fade In
         Node skinNode = popover.getSkin().getNode();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssociatedPeopleTabPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.08 2015-03-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,6 +53,8 @@ implements MouseListener, ActionListener {
 	private JList<Person> populationList;
 	private JScrollPane populationScrollPanel;
 
+	private JLabel populationNumLabel;
+	private int populationNumCache;
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -68,16 +71,23 @@ implements MouseListener, ActionListener {
 
 		Settlement settlement = (Settlement) unit;
 
-		// Create label
-		JPanel associatedLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(associatedLabelPanel);
-
 		// Create associated people label
 		JLabel label = new JLabel(Msg.getString("TabPanelAssociatedPeople.label"), JLabel.CENTER); //$NON-NLS-1$
 		label.setFont(new Font("Serif", Font.BOLD, 16));
 		label.setForeground(new Color(102, 51, 0)); // dark brown
-		associatedLabelPanel.add(label);
+		topContentPanel.add(label);
+		
+		// Create label
+		JPanel associatedLabelPanel = new JPanel(new GridLayout(1, 2, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
+		associatedLabelPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(associatedLabelPanel);
 
+		// Create population num label
+		populationNumCache = settlement.getAllAssociatedPeople().size();
+		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population", 
+		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
+		associatedLabelPanel.add(populationNumLabel);
+		
 		// Create population display panel
 		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		populationDisplayPanel.setBorder(new MarsPanelBorder());
@@ -109,6 +119,16 @@ implements MouseListener, ActionListener {
 	 */
 	public void update() {
 
+		Settlement settlement = (Settlement) unit;
+		
+		int num = settlement.getAllAssociatedPeople().size();
+		// Update population num
+		if (populationNumCache != num) {
+			populationNumCache = num;
+			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population", 
+			        populationNumCache)); //$NON-NLS-1$
+		}
+				
 		// Update population list
 		populationListModel.update();
 		populationScrollPanel.validate();
