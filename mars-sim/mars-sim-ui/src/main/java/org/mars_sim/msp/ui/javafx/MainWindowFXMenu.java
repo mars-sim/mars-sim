@@ -301,32 +301,23 @@ public class MainWindowFXMenu extends MenuBar  {
             }
         });
         
-        marsNetItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
-    			if (marsNetItem.isSelected()) {
-    				mainScene.openMarsNet();
-    			}
+        marsNetItem.setOnAction(e ->  {
+    			if (marsNetItem.isSelected())
+    				mainScene.openMarsNet();	
     			else 
     				mainScene.closeMarsNet();
-            }
         });
         
-        webToolItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
+        webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {
     				webStage = startWebTool();
     				webStage.show();
     			}
     			else 
     				webStage.close() ;
-            }
         });
         
-        showFullScreenItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
+        showFullScreenItem.setOnAction(e -> {
             	boolean isFullScreen =  mainScene.getStage().isFullScreen();
             	if (!isFullScreen) {
 	            	//mainScene.getStage().sizeToScene();
@@ -337,11 +328,9 @@ public class MainWindowFXMenu extends MenuBar  {
             		showFullScreenItem.setSelected(false);
 	            	mainScene.getStage().setFullScreen(false);
             	}
-            }
         });
 
-		showHideNewsPane.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent arg0) {
+		showHideNewsPane.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowing()) {
                 	mainScene.getNotificationPane().show(); // setNotificationPane(true);
                 	showHideNewsPane.setSelected(false);
@@ -349,11 +338,9 @@ public class MainWindowFXMenu extends MenuBar  {
                 	mainScene.getNotificationPane().hide(); // setNotificationPane(false);
                 	showHideNewsPane.setSelected(false);
                 }
-            }
         });
  
-		slideFromTop.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent arg0) {
+		slideFromTop.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowFromTop()) {
                 	mainScene.getNotificationPane().setShowFromTop(true);
                 	slideFromTop.setText("Slide from Top");
@@ -363,7 +350,6 @@ public class MainWindowFXMenu extends MenuBar  {
                 	slideFromTop.setText("Slide from Bottom");
                 	slideFromTop.setSelected(true);
                 }
-            }
         });		      
 	        
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {

@@ -11,65 +11,23 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MarsViewer extends Application {
+public class MarsViewer  {
 
-  private static final double EARTH_RADIUS  = 400;
-  private static final double VIEWPORT_SIZE = 800;
-  private static final double ROTATE_SECS   = 30;
+	  private static final double MARS_RADIUS  = 300;
+	  private static final double VIEWPORT_SIZE = 600;
+	  private static final double ROTATE_SECS   = 30;
 
-  private static final double MAP_WIDTH  = 8192 / 2d;
-  private static final double MAP_HEIGHT = 4096 / 2d;
+	  private static final double MAP_WIDTH  = 2048 / 2d;
+	  private static final double MAP_HEIGHT = 1024 / 2d;
 
   private static final String DIFFUSE_MAP =
-      "/maps/mars_mola_hypsometric_8192x4096.jpg";
-  private static final String NORMAL_MAP =
-      "/maps/mars_mola_bumpmap_8192x4096.jpg";
-  private static final String SPECULAR_MAP =
-      "/maps/mars_mola_specularmap_8192x4096.jpg";
-  
-  private Group buildScene() {
-    Sphere earth = new Sphere(EARTH_RADIUS);
-    earth.setTranslateX(VIEWPORT_SIZE / 2d);
-    earth.setTranslateY(VIEWPORT_SIZE / 2d);
+	      "/maps/MarsV3-Shaded-2k.jpg";
+	  private static final String NORMAL_MAP =
+	      "/maps/MarsNormal2048x1024.png";
+	  private static final String SPECULAR_MAP =
+	      "/maps/rgbmars-spec-2k.jpg";
 
-    PhongMaterial earthMaterial = new PhongMaterial();
-    earthMaterial.setDiffuseMap(
-      new Image(
-    		  Simple3DSphereApp.class.getResource(DIFFUSE_MAP).toExternalForm(),
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        true,
-        true
-      )
-    );
-    earthMaterial.setBumpMap(
-      new Image(
-    		  Simple3DSphereApp.class.getResource(NORMAL_MAP).toExternalForm(),
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        true,
-        true
-      )
-    );
-    earthMaterial.setSpecularMap(
-      new Image(
-    		  Simple3DSphereApp.class.getResource(SPECULAR_MAP).toExternalForm(),
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        true,
-        true
-      )
-    );
-
-    earth.setMaterial(
-        earthMaterial
-    );
-
-    return new Group(earth);
-  }
-
-  @Override
-  public void start(Stage stage) {
+  public void MarsViewer(Stage stage) {
     Group group = buildScene();
 
     Scene scene = new Scene(
@@ -104,8 +62,45 @@ public class MarsViewer extends Application {
 
     return rotate;
   }
+  
+  
+  private Group buildScene() {
+    Sphere mars = new Sphere(MARS_RADIUS);
+    mars.setTranslateX(VIEWPORT_SIZE / 2d);
+    mars.setTranslateY(VIEWPORT_SIZE / 2d);
 
-  public static void main(String[] args) {
-    launch(args);
+    PhongMaterial earthMaterial = new PhongMaterial();
+    earthMaterial.setDiffuseMap(
+      new Image(this.getClass().getResource(DIFFUSE_MAP).toExternalForm(),
+        MAP_WIDTH,
+        MAP_HEIGHT,
+        true,
+        true
+      )
+    );
+    earthMaterial.setBumpMap(
+      new Image(this.getClass().getResource(NORMAL_MAP).toExternalForm(),
+        MAP_WIDTH,
+        MAP_HEIGHT,
+        true,
+        true
+      )
+    );
+    earthMaterial.setSpecularMap(
+      new Image(this.getClass().getResource(SPECULAR_MAP).toExternalForm(),
+        MAP_WIDTH,
+        MAP_HEIGHT,
+        true,
+        true
+      )
+    );
+
+    mars.setMaterial(
+        earthMaterial
+    );
+
+    return new Group(mars);
   }
+
+  
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -208,7 +209,8 @@ extends UnitTableModel {
 				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
 		    	        for(String n : availableDesserts) {
 		    	        	if (AmountResource.findAmountResource(n).equals(ar)) {
-		    	        		sum += resourceMap.get(ar);
+		    	    			//System.out.println(n + " : "+resourceMap.get(ar));
+		    	        		sum += (double) resourceMap.get(ar);
 		    	        	}
 		    			}
 		    		}
