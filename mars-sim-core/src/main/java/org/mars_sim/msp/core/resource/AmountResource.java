@@ -115,7 +115,7 @@ implements Serializable {
 		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.getName().toLowerCase().equalsIgnoreCase(name)) result = resource;
+			if (resource.getName().equals(name.toLowerCase())) result = resource;
 		}
 		if (result != null) return result;
 		else throw new IllegalStateException("Resource: " + name + " could not be found.");
