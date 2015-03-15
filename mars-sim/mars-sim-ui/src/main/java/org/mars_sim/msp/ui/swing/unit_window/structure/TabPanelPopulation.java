@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 3.07 2014-12-03
+ * @version 3.08 2015-03-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -79,7 +79,7 @@ implements MouseListener, ActionListener {
  
 		
 		// Create population count panel
-		JPanel populationCountPanel = new JPanel(new GridLayout(3, 2, 0, 0));
+		JPanel populationCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		populationCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationCountPanel);
 
@@ -128,16 +128,18 @@ implements MouseListener, ActionListener {
 	public void update() {
 		Settlement settlement = (Settlement) unit;
 
+		int num = settlement.getCurrentPopulationNum();
 		// Update population num
-		if (populationNumCache != settlement.getCurrentPopulationNum()) {
-			populationNumCache = settlement.getCurrentPopulationNum();
+		if (populationNumCache != num) {
+			populationNumCache = num;
 			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population", 
 			        populationNumCache)); //$NON-NLS-1$
 		}
 
+		int cap = settlement.getPopulationCapacity(); 
 		// Update population capacity
-		if (populationCapacityCache != settlement.getPopulationCapacity()) {
-			populationCapacityCache = settlement.getPopulationCapacity();
+		if (populationCapacityCache != cap) {
+			populationCapacityCache = cap;
 			populationCapLabel.setText(Msg.getString("TabPanelPopulation.populationCapacity", 
 			        populationCapacityCache)); //$NON-NLS-1$
 		}
