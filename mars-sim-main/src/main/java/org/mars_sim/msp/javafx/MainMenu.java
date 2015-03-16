@@ -71,6 +71,7 @@ public class MainMenu {
     private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
     private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
+    //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
     
     //private double anchorX;
     //private double anchorY;
@@ -121,7 +122,8 @@ public class MainMenu {
        primaryStage.setResizable(false);            
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
-       primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       //primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
                          
 	   stage = new Stage();
@@ -140,7 +142,8 @@ public class MainMenu {
 	   mpFX.startSimulation();
 	   Scene scene = mainScene.createMainScene();
 
-       stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       //stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
 	   stage.setResizable(true);
 	   stage.setFullScreen(true);
 	   stage.setScene(scene);
@@ -187,16 +190,15 @@ public class MainMenu {
 	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
        Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
        Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal2048x1024.png").toExternalForm()); //.toString());
+       //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.jpg").toExternalForm()); //.toString());
           
        material = new PhongMaterial();
        material.setDiffuseColor(Color.WHITE);
        material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
        material.setSpecularColor(Color.TRANSPARENT);
        material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
-       material.bumpMapProperty().bind(
-               Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-       //material.selfIlluminationMapProperty().bind(
-        //       Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
+       material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
+       //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
        
        mars = new Sphere(4);
        mars.setMaterial(material);

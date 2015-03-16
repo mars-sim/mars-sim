@@ -1016,48 +1016,51 @@ implements Serializable, Comparable<Task> {
     protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
     	if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     		Building currentBuilding = BuildingManager.getBuilding(robot);
-    		String type = robot.getRobotType().getName();
-    		//List<Building> buildingList;
-    		BuildingFunction fct = null;
     		
-    		if (type.equals("CHEFBOT"))
-    			fct = BuildingFunction.COOKING;
-    		else if (type.equals("CONSTRUCTIONBOT"))
-    			fct = BuildingFunction.ROBOTIC_STATION;
-    		else if (type.equals("DELIVERYBOT"))
-    			fct = BuildingFunction.ROBOTIC_STATION;
-    		else if (type.equals("GARDENBOT"))
-    			fct = BuildingFunction.FARMING;
-    		else if (type.equals("MAKERBOT"))
-    			fct = BuildingFunction.MANUFACTURE;
-    		else if (type.equals("MEDICBOT"))
-    			fct = BuildingFunction.MEDICAL_CARE;
-    		else if (type.equals("REPAIRBOT"))
-    			fct = BuildingFunction.ROBOTIC_STATION;
-
-    		if (fct == null) 
-    			fct = BuildingFunction.LIVING_ACCOMODATIONS;
-    		
-       		if (fct == null) 
-    			fct = BuildingFunction.LIFE_SUPPORT;
-			
-       		// Added debugging statement below
-       		if (currentBuilding == null)
-                throw new IllegalStateException("currentBuilding is null");
-            if (currentBuilding.getBuildingManager() == null)
-                throw new IllegalStateException("currentBuilding.getBuildingManager() is null");
-            if (currentBuilding.getBuildingManager().getBuildings(fct) == null)
-                throw new IllegalStateException("currentBuilding.getBuildingManager().getBuildings(fct) is null");
-                                
+       		//if (currentBuilding == null)
+             //   throw new IllegalStateException("currentBuilding is null");
        		
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
-            
-            if (buildingList.size() > 0) {
-                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-                Building building = buildingList.get(buildingIndex);
-                walkToActivitySpotInBuilding(building, fct, true);
-            }
-            
+    		if (currentBuilding != null) {
+	    		String type = robot.getRobotType().getName();
+	    		//List<Building> buildingList;
+	    		BuildingFunction fct = null;
+	    		
+	    		if (type.equals("CHEFBOT"))
+	    			fct = BuildingFunction.COOKING;
+	    		else if (type.equals("CONSTRUCTIONBOT"))
+	    			fct = BuildingFunction.ROBOTIC_STATION;
+	    		else if (type.equals("DELIVERYBOT"))
+	    			fct = BuildingFunction.ROBOTIC_STATION;
+	    		else if (type.equals("GARDENBOT"))
+	    			fct = BuildingFunction.FARMING;
+	    		else if (type.equals("MAKERBOT"))
+	    			fct = BuildingFunction.MANUFACTURE;
+	    		else if (type.equals("MEDICBOT"))
+	    			fct = BuildingFunction.MEDICAL_CARE;
+	    		else if (type.equals("REPAIRBOT"))
+	    			fct = BuildingFunction.ROBOTIC_STATION;
+	
+	    		if (fct == null) 
+	    			fct = BuildingFunction.LIVING_ACCOMODATIONS;
+	    		
+	       		if (fct == null) 
+	    			fct = BuildingFunction.LIFE_SUPPORT;
+				
+	       		// Added debugging statement below
+	            if (currentBuilding.getBuildingManager() == null)
+	                throw new IllegalStateException("currentBuilding.getBuildingManager() is null");
+	            if (currentBuilding.getBuildingManager().getBuildings(fct) == null)
+	                throw new IllegalStateException("currentBuilding.getBuildingManager().getBuildings(fct) is null");
+	                                
+	       		
+	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
+	            
+	            if (buildingList.size() > 0) {
+	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+	                Building building = buildingList.get(buildingIndex);
+	                walkToActivitySpotInBuilding(building, fct, true);
+	            }            
+    		}            
     	}
     }
     
