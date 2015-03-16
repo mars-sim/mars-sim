@@ -899,10 +899,14 @@ implements Serializable {
      * @param vehicleCrewNum the number of people in the vehicle crew.
      * @param tripTime the estimated time for the trip (millisols).
      * @return true if enough supplies
-     */
+     */ 
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources, 
             Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) {
 
+    	 return LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle,  resources, 
+    	    		 equipment, vehicleCrewNum, tripTime);	    		
+    }
+    /*
         // Check input parameters.
         if (settlement == null) {
             throw new IllegalArgumentException("settlement is null");
@@ -979,55 +983,22 @@ implements Serializable {
 
         return enoughSupplies;
     }
-
+*/
     /**
      * Gets the amount of an amount resource that should remain at the settlement.
      * @param settlement the settlement
      * @param vehicleCrewNum the number of crew leaving on the vehicle.
      * @param resource the amount resource
      * @param double tripTime the estimated trip time (millisols).
-     * @return remaining amount (kg)
+     * @return remaining amount (kg)     
      */
     private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
-            AmountResource resource, double tripTime) {
-        int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
-        double amountPersonPerSol = 0D;
-        double tripTimeSols = tripTime / 1000D;
+    		AmountResource resource, double tripTime) {
 
-        // Only life support resources are required at settlement at this time.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-        //AmountResource dessert = AmountResource.findAmountResource("dessert");
-        
-        if (resource.equals(oxygen)) {
-            amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
-        }
-        else if (resource.equals(water)) {
-            amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-        }
-        else if (resource.equals(food)) {
-            amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() ;
-        }
-        //else if (resource.equals(dessert)) {
-        //    amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() ;
-        //}
-/*        
-        else {
-    		// 2015-03-09 Added all desserts to the matching test
-    		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
-    	  	// Put together a list of available dessert 
-            for(String n : availableDesserts) {
-            	AmountResource dessert = AmountResource.findAmountResource(n);
-            	if (resource.equals(dessert)) 
-            		amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate(); 	  
-            }  		
-    	}
-    	
-*/
-        return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
+    	return LoadVehicleGarage.getRemainingSettlementAmount(settlement, vehicleCrewNum,
+        		resource, tripTime);
     }
-
+    
     /**
      * Gets the number of an item resource that should remain at the settlement.
      * @param settlement the settlement

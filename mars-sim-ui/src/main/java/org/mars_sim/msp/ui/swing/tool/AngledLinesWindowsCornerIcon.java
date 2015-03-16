@@ -5,7 +5,7 @@
  * Modified by Manny Kung
  */
 
-package org.mars_sim.msp.ui.swing.sound;
+package org.mars_sim.msp.ui.swing.tool;
 
 import javax.swing.*;
 import java.awt.*;

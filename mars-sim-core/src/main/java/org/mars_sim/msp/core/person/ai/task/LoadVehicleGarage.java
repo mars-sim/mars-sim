@@ -961,7 +961,7 @@ implements Serializable {
      * @return remaining amount (kg)
      * @throws Exception if error getting the remaining amount.
      */
-    private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
+    static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
     		AmountResource resource, double tripTime) {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	double amountPersonPerSol = 0D;
@@ -988,7 +988,7 @@ implements Serializable {
 		
 	    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
 	    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-	    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();			    	
+	    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
         }
         
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);

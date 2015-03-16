@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-import org.mars_sim.msp.ui.swing.sound.AngledLinesWindowsCornerIcon;
+import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 

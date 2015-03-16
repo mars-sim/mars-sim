@@ -455,9 +455,12 @@ implements Serializable {
                 Iterator<AmountResource> j = resourceMap.keySet().iterator();
                 while (j.hasNext()) {
                     AmountResource resource = j.next();
+        			//System.out.println("createInitialResources() : resource : " + resource.getName()); 
                     double amount = resourceMap.get(resource);
+        			//System.out.println("createInitialResources() : amount : " + amount);
                     Inventory inv = settlement.getInventory();
                     double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+        			//System.out.println("createInitialResources() : capacity is "+capacity); 
                     if (amount > capacity) {
                         amount = capacity;
                     }
@@ -467,7 +470,7 @@ implements Serializable {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Equipment could not be created: " + e.getMessage(), e);
+            throw new IllegalStateException("Resource could not be created: " + e.getMessage(), e);
         }
     }
 
@@ -870,17 +873,17 @@ implements Serializable {
     	
     	int num = RandomUtil.getRandomInt(15); // 0 to 15
 
-    	if (numChefbot < 5 && num < 2 ) // 0, 1
+    	if (numChefbot < 4 && num < 2 ) // 0, 1
 			robotType = RobotType.CHEFBOT;
-    	else if (numConstructionbot < 5 && num < 4 ) //  2, 3
+    	else if (numConstructionbot < 1 && num < 4 ) //  2, 3
 			robotType = RobotType.CONSTRUCTIONBOT;
-    	else if (numDeliverybot < 2 && num < 5 ) //  4
+    	else if (numDeliverybot < 1 && num < 5 ) //  4
 			robotType = RobotType.DELIVERYBOT;  
     	else if (numGardenbot < 5 && num < 8 ) //  5, 6, 7
     		robotType = RobotType.GARDENBOT;
        	else if (numMakerbot < 6 && num < 11 ) //  8, 9, 10 
     		robotType = RobotType.MAKERBOT;    	
-    	else if (numMedicbot < 2 && num < 12 ) //  11,
+    	else if (numMedicbot < 1 && num < 12 ) //  11,
 			robotType = RobotType.MEDICBOT;
     	else if (numRepairbot < 5 && num < 15) // 12, 13, 14,
     		robotType = RobotType.REPAIRBOT;
