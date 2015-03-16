@@ -57,7 +57,7 @@ implements Serializable {
     // 2015-01-12 Dynamically adjusted the rate of generating desserts
     //public double dessertsReplenishmentRate;
     public static double UP = 0.01;
-    public static double DOWN = 0.005;
+    public static double DOWN = 0.007;
     
     //  SERVING_FRACTION also used in GoodsManager
     public static final int NUM_OF_DESSERT_PER_SOL = 4;

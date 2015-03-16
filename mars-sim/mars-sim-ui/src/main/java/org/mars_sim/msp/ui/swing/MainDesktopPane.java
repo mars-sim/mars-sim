@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.embed.swing.SwingNode;
-
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -76,33 +74,27 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
-
+	
 	// Data members
+	private boolean isTransportingBuilding = false;	
+	/** True if this MainDesktopPane hasn't been displayed yet. */
+	private boolean firstDisplay;	
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
 	private Collection<ToolWindow> toolWindows;
-	/** The main window frame. */
-	private MainWindow mainWindow;
-	//private MainWindowFX mainWindowFX;
-	private MainScene mainScene;
-	
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
-	/** True if this MainDesktopPane hasn't been displayed yet. */
-	private boolean firstDisplay;
 	/* The desktop update thread. */
 	private UpdateThread updateThread;
 	/** The sound player. */
 	private AudioPlayer soundPlayer;
 	/** The desktop popup announcement window. */
-	private AnnouncementWindow announcementWindow;
-	
+	private AnnouncementWindow announcementWindow;	
 	// 2014-12-19 Added settlementWindow
 	private SettlementWindow settlementWindow;
 	private Building building;
@@ -110,8 +102,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2014-12-23 Added transportWizard
 	private TransportWizard transportWizard;
 	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-	private boolean isTransportingBuilding = false;
-	private MarqueeBanner marqueeBanner;
+	private MarqueeBanner marqueeBanner;	
+	/** The main window frame. */
+	private MainWindow mainWindow;
+	private MainScene mainScene;
 	
 	/** 
 	 * Constructor.
@@ -124,7 +118,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
 
 		this.mainWindow = mainWindow;
-
+		
 		init();
 	}
 	
@@ -136,8 +130,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		soundPlayer = new AudioPlayer();
 		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
 
-		//this.mainWindowFX = mainWindowFX;
-		
 		this.mainScene = mainScene;
 
 		init();
@@ -190,15 +182,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//openMarqueeBanner("");
 		
 	}
-
-	/*
-	private void createSwingNode1(final SwingNode swingNode) {
-		//desktop = new MainDesktopPane(this);
-        SwingUtilities.invokeLater(() -> {
-            swingNode.setContent(desktop);           
-        });
-    }
-	*/
 	
 	/**
 	 * Opens a popup announcement window on the desktop.
@@ -872,14 +855,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 	/**
 	 * Removes the marquee banner from the desktop.
-	 */
+	 
 	// 2014-12-30 Added disposeMarqueeBanner()
 	public void disposeMarqueeBanner() {
 		try { marqueeBanner.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
 		marqueeBanner.dispose();
 	}
-	
+	*/
 	/**
 	 * Updates the look & feel of the Transport Wizard.
 	 */

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
@@ -828,15 +829,28 @@ implements UnitListener {
 		while (iR.hasNext() && result) {
 			Resource resource = iR.next();
 			if (resource instanceof AmountResource) {
-				double amount = (Double) neededResources.get(resource);
-				double amountStored = inv
-						.getAmountResourceStored((AmountResource) resource, false);
-				if (amountStored < amount) {
-					logger.severe(vehicle.getName() + " does not have enough " + resource + 
-							" to continue with " + getName() + " (required: " + amount + 
-							" kg, stored: " + amountStored + " kg)");
-					result = false;
-				}
+				boolean isDessert = false;
+				// 2015-03-15 Skipped calculating the remaining amount of desserts since desserts are non-essential	
+				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+                for(String n : availableDesserts) {
+                	AmountResource dessert = AmountResource.findAmountResource(n);        		
+                	if (resource.equals(dessert))
+    	        		isDessert = true;     	
+                }
+	        	
+                if (!isDessert) {
+
+					double amount = (Double) neededResources.get(resource);
+					double amountStored = inv
+							.getAmountResourceStored((AmountResource) resource, false);
+					if (amountStored < amount) {
+						logger.severe(vehicle.getName() + " does not have enough " + resource + 
+								" to continue with " + getName() + " (required: " + amount + 
+								" kg, stored: " + amountStored + " kg)");
+						result = false;
+					}
+                }	
+				
 			} else if (resource instanceof ItemResource) {
 				int num = (Integer) neededResources.get(resource);
 				int numStored = inv.getItemResourceNum((ItemResource) resource);

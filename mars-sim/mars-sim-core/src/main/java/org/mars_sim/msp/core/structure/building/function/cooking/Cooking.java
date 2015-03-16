@@ -62,7 +62,7 @@ implements Serializable {
     // 2015-01-12 Dynamically adjusted the rate of generating meals 
     //public double mealsReplenishmentRate;
     public static double UP = 0.01;
-    public static double DOWN = 0.005;
+    public static double DOWN = 0.007;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
     
     public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
