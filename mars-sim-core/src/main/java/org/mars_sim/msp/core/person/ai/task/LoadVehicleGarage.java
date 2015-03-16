@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2015-03-01
+ * @version 3.07 2015-03-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -846,7 +846,7 @@ implements Serializable {
      * @return true if enough supplies
      * @throws Exception if error checking supplies.
      */
-    public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources, 
+    public static synchronized boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources, 
     		Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) {
     	
     	// Check input parameters.
@@ -867,18 +867,54 @@ implements Serializable {
         while (iR.hasNext()) {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
-        		double amountNeeded = (Double) resources.get(resource);
-        		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, 
-        		        (AmountResource) resource, tripTime);
-        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
-        		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
-        		if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
-        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
-        			if (logger.isLoggable(Level.INFO)) 
-        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
-        			enoughSupplies = false;
-        		}
+        		
+        		// 2015-03-09 Added all desserts to the matching test    		
+        	 	boolean isDessert = false;
+            	double amountDessertLoaded = 0;
+            	double totalAmountDessertStored = 0;
+        		double remainingSettlementDessertAmount = 0;
+        		double amountDessertNeeded = (Double) resources.get(resource);
+           	  	// Put together a list of available dessert 
+        		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+                for(String n : availableDesserts) {
+                	AmountResource dessert = AmountResource.findAmountResource(n);
+	        		
+                	if (resource.equals(dessert)) {
+    	        		// 2015-03-15 Added the amount of all six desserts together
+    	        		amountDessertLoaded += vInv.getAmountResourceStored((AmountResource) resource, false);	
+    	        		totalAmountDessertStored += inv.getAmountResourceStored((AmountResource) resource, false);
+    	        		remainingSettlementDessertAmount += getRemainingSettlementAmount(settlement, vehicleCrewNum, 
+    	        		        (AmountResource) resource, tripTime);
+    	        		isDessert = true;
+                	}        	
+                }
+	        	
+                if (isDessert) {
+                	
+	                double totalDessertNeeded = amountDessertNeeded + remainingSettlementDessertAmount - amountDessertLoaded;        		
+		        		
+	        		if ( totalAmountDessertStored < totalDessertNeeded) {       			
+	        			if (logger.isLoggable(Level.INFO)) 
+	        				logger.info("desserts needed: " + totalDessertNeeded + " total stored: " + totalAmountDessertStored );
+	        			enoughSupplies = false;
+	        		}
+                }
+
+        		else  {    				
+	        		double amountNeeded = (Double) resources.get(resource);
+	        		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, 
+	        		        (AmountResource) resource, tripTime);
+	        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
+	        		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
+	        		if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
+	        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
+	        			if (logger.isLoggable(Level.INFO)) 
+	        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+	        			enoughSupplies = false;
+	        		}      		
+                }	
         	}
+        	
         	else if (resource instanceof ItemResource) {
         		int numNeeded = (Integer) resources.get(resource);
         		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, 
@@ -929,38 +965,32 @@ implements Serializable {
     		AmountResource resource, double tripTime) {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	double amountPersonPerSol = 0D;
-    	double tripTimeSols = tripTime / 1000D;
-    	
-    	// Only life support resources are required at settlement at this time.
-    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-    	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-    	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-    	//AmountResource soymilk = AmountResource.findAmountResource("Soymilk"); 
+    	double tripTimeSols = tripTime / 1000D;	
+    	boolean isDessert = false;
+		// 2015-03-09 Added all desserts to the matching test
+		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
+	  	// Put together a list of available dessert 
+        for(String n : availableDesserts) {
+        	AmountResource dessert = AmountResource.findAmountResource(n);
+        	if (resource.equals(dessert)) {
+        		//System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
+        		amountPersonPerSol = PreparingDessert.getDessertMassPerServing(); 
+        		isDessert = true;
+        		break;
+        	}
+        }
 
-    	//String dessertName = vehicle.getTypeOfDessertLoaded();
-    	//AmountResource dessert = AmountResource.findAmountResource(dessertName);
-    	
-    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
-    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
-    	//else if (resource.equals(dessert)) amountPersonPerSol = PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION;
-    	
-    	else {
-    		// 2015-03-09 Added all desserts to the matching test
-    		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
-    	  	// Put together a list of available dessert 
-            for(String n : availableDesserts) {
-            	AmountResource dessert = AmountResource.findAmountResource(n);
-            	if (resource.equals(dessert)) {
-            		//System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
-            		amountPersonPerSol = PreparingDessert.getDessertMassPerServing(); 
-            		// not using PhysicalCondition.getDessertConsumptionRate() * PreparingDessert.DESSERT_SERVING_FRACTION; 
- 
-            	}
-            }  		
-    	}
+        if (!isDessert) {
+	    	// Only life support resources are required at settlement at this time.
+	    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+	    	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+	    	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		
-    	
+	    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
+	    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
+	    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();			    	
+        }
+        
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }
     

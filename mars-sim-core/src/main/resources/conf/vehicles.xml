@@ -49,8 +49,8 @@
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
-			<!-- Default: 100.0 -->
-			<capacity resource="dessert" value="100.0" /> 
+			<!-- Default: 50.0 -->
+			<capacity resource="dessert" value="50.0" /> 
 			
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
@@ -116,7 +116,7 @@
 			<capacity resource="oxygen" value="350.0" />
 			<capacity resource="water" value="1400.0" />
 			<capacity resource="food" value="525.0" />
-			<capacity resource="dessert" value="100.0" />	
+			<capacity resource="dessert" value="50.0" />	
 			
 <!--			
 			<capacity resource="solid waste" value="100.0" />					
