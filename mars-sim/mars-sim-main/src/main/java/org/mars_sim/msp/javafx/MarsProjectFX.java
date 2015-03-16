@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 /**
@@ -52,6 +53,8 @@ public class MarsProjectFX extends Application  {
 
 	public void start(Stage primaryStage) {
 
+		SvgImageLoaderFactory.install();
+		
         primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
         
         logger.info("Starting " + Simulation.WINDOW_TITLE);
