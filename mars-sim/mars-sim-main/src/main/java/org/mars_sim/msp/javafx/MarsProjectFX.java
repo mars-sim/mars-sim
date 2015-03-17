@@ -72,13 +72,15 @@ public class MarsProjectFX extends Application  {
             //SplashWindow splashWindow = new SplashWindow();           
             //showSplashScreen(splashWindow);
             
+	        // Initialize the simulation.
+            //boolean newSim = initializeSimulation(args); 
+            
 	        // 2015-01-26 Added mwFX
 	        MainMenu mmFX = new MainMenu(this, args, primaryStage, true);
 	        // Dispose the splash window.
 	        //splashWindow.remove();
 
-	        // Initialize the simulation.
-	        //initializeSimulation(args);        
+      
 	        // Start the simulation.
 	        //startSimulation();
 	        
@@ -245,7 +247,7 @@ public class MarsProjectFX extends Application  {
 
          		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
     			//editor.setIconImage(img); // does not work in macosx
-                //editor.setVisible(true); // does not work in macosx
+                editor.setVisible(true); 
             }
             Simulation.createNewSimulation();
         } catch (Exception e) {
