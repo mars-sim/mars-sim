@@ -85,6 +85,7 @@ extends UnitTableModel {
 	/** Names of Columns. */
 	private static Class<?> columnTypes[];
 
+	private int mapSizeCache = 0;
 	/**
 	 * Class initialiser creates the static names and classes.
 	 */
@@ -201,21 +202,30 @@ extends UnitTableModel {
 
 				case DESSERT : {
 					double sum = 0;
+					int mapSize = resourceMap.size();
+					if (mapSizeCache != mapSize) {
+						//System.out.println("resourceMap has "+ resourceMap.size());
+						mapSizeCache = mapSize ;		
+					}
 					// get a list of dessert loaded
 					// get the amount of each and sum them up					
+					//int i = 0;
 			   		Iterator<AmountResource> j = resourceMap.keySet().iterator();
 		    		while (j.hasNext()) {
 		    			AmountResource ar = j.next(); 
 				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
 		    	        for(String n : availableDesserts) {
 		    	        	if (AmountResource.findAmountResource(n).equals(ar)) {
-		    	    			//System.out.println(n + " : "+resourceMap.get(ar));
-		    	        		sum += (double) resourceMap.get(ar);
+				    			double amount = resourceMap.get(ar);
+				    			//System.out.println("i = " + i + "   " + n + " : " + amount);
+		    	        		sum += amount;
+		    	    			break;
 		    	        	}
 		    			}
+		    	        //i++;
 		    		}
-		    		
-				    result = (Double) sum;    				        
+					//System.out.println(vehicle.getName() + "    Sum : " + sum);
+				    result = new Double(sum);    				        
 				    
 				} break;
 				
@@ -247,7 +257,7 @@ extends UnitTableModel {
 					}
 				} break;
 
-				// Status is a combination of Mechical failure and maintenance
+				// Status is a combination of Mechanical failure and maintenance
 				case STATUS : {
 					result = vehicle.getStatus();
 				} break;
@@ -365,8 +375,6 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.FOOD))) 
 					tempColumnNum = FOOD;
-				//else if (target.equals(AmountResource.findAmountResource("Soymilk"))) ?
-				//		tempColumnNum = DESSERT;
 				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
@@ -385,9 +393,10 @@ extends UnitTableModel {
 				
 				if (tempColumnNum > -1) {
 					// 2015-03-10 Converted resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
-					double currentValue =  (double) getValueAt(unitIndex, tempColumnNum) ;
+					double currentValue =  Math.round ( (Double) getValueAt(unitIndex, tempColumnNum) * 10.0 ) / 10.0;
 					double newValue = Math.round ( getResourceStored(unit, (AmountResource) target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
+						//System.out.println("Column : " + tempColumnNum + "  currentValue : " + currentValue + "   newValue : " + newValue);
 						columnNum = tempColumnNum;
 						Map<AmountResource, Double> resourceMap = resourceCache.get(unit);
 						resourceMap.put((AmountResource) target, newValue);
@@ -422,9 +431,7 @@ extends UnitTableModel {
 			try {
 				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 				AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-				resourceMap.put(food, getResourceStored(newUnit, food));			
-				//AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-				//resourceMap.put(dessert, getResourceStored(newUnit, dessert));			
+				resourceMap.put(food, getResourceStored(newUnit, food));						
 				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
 				AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
@@ -475,11 +482,7 @@ extends UnitTableModel {
 	 * @return  amount of resource.
 	 */
 	private double getResourceStored(Unit unit, AmountResource resource) {
-		double result = 0; //null;	
-		Inventory inv = unit.getInventory();
-		result = inv.getAmountResourceStored(resource, true);
-
-		return result;
+		return unit.getInventory().getAmountResourceStored(resource, false);
 	}
 
 	/**
