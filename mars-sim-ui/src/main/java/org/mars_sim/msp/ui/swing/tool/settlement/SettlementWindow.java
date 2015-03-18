@@ -85,7 +85,7 @@ extends ToolWindow {
 	// 2015-02-04 Added init()
 	public void init() {
 
-		setMaximizable(true);
+		//setMaximizable(true); // not compatible with day night map layer
 		
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		
