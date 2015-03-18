@@ -19,6 +19,8 @@ import java.util.Set;
 
 
 
+
+
 import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -792,8 +794,10 @@ public class BuildingConfig implements Serializable {
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
 		for (Element resourceInitialElement : resourceInitialNodes) {
 			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+			//System.out.println("getInitialStorage() : resourceName : " + resourceName); 
             AmountResource resource = AmountResource.findAmountResource(resourceName);
 			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
+			//System.out.println("getInitialStorage() : amount : " + amount);
 			resourceMap.put(resource, amount);
 		}
 		return resourceMap;

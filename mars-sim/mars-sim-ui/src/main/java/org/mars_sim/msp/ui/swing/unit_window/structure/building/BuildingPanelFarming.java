@@ -41,7 +41,9 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
@@ -72,27 +74,36 @@ implements Serializable, MouseListener {
 	private JLabel farmersLabel;
 	/** The number of crops label. */
 	private JLabel cropsLabel;
-	/** Table model for crop info. */
-	private CropTableModel cropTableModel;
+	/** The label for the amount solar irradiance. */
+	private JLabel radLabel;
 
 	// Data cache
 	/** The number of farmers cache. */
 	private int farmersCache;
 	/** The number of crops cache. */
 	private int cropsCache;
-
+	/** The cache for the amount of solar irradiance. */
+	private int radCache;
+	
+	private int deletingCropIndex;
+	
+	//private String deletingCrop = "";
+	
 	// 2014-12-09 Added comboBox for crop queue
 	private DefaultComboBoxModel<CropType> comboBoxModel;
 	private JComboBoxMW<CropType> comboBox;
 	private List<CropType> cropCache;
-	private CropType cropType;
+	private JList<CropType> list;
+	
 	//private String cropInQueue;
 	private ListModel listModel;
-	private JList<CropType> list;
+	/** Table model for crop info. */
+	private CropTableModel cropTableModel;
+
 	private JScrollPane listScrollPanel;
-	private String deletingCrop = "";
-	private int deletingCropIndex;
+	private CropType cropType;
 	private CropType deletingCropType;
+	
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
@@ -110,8 +121,13 @@ implements Serializable, MouseListener {
 		// Set panel layout
 		setLayout(new BorderLayout());
 
+		init();
+	}
+	
+	public void init() {
+		
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -123,7 +139,7 @@ implements Serializable, MouseListener {
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(farmingLabel);
-
+		
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
 		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
@@ -134,6 +150,11 @@ implements Serializable, MouseListener {
 		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops", cropsCache), JLabel.CENTER);
 		labelPanel.add(cropsLabel);
 
+		// Prepare solar irradiance label
+		radCache = farm.getFarmerNum();
+		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache, " W/m2"),  JLabel.CENTER);
+		labelPanel.add(radLabel);
+		
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
 		// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
@@ -189,16 +210,12 @@ implements Serializable, MouseListener {
     			result.append("</html>");
     			return result.toString();
             }
-        }; // end of JTable
-		
-    	
+        }; // end of JTable	   	
         //final JTable ctable = cropTable;
 	    //SwingUtilities.invokeLater(new Runnable(){
 	    //    public void run()  {
 	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
-	    //     } });
-		
-		
+	    //     } });		
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false);
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -456,6 +473,15 @@ implements Serializable, MouseListener {
 			cropsLabel.setText("Number of Crops: " + cropsCache);
 		}
 
+		
+		// Update solar irradiance label if necessary.
+		Coordinates location = farm.getBuilding().getCoordinates();
+		int rad = (int) Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(location);
+		if (radCache != rad) {
+			radCache = rad;
+			radLabel.setText("Solar Irradiance: " + radCache);
+		}
+		
 		// Update crop table.
 		cropTableModel.update();
 		

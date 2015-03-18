@@ -55,7 +55,9 @@ implements Serializable {
 		//System.out.println("Storage.java : for " + count + " times for " + building );
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		Inventory inventory = building.getInventory();	
+
+		//Inventory inventory = building.getInventory();	
+		Inventory inv = building.getBuildingManager().getSettlement().getInventory();
 		
 		// 2015-03-07 Added stockCapacity
 	    stockCapacity = config.getStockCapacity(building.getBuildingType());
@@ -66,22 +68,26 @@ implements Serializable {
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
 			//System.out.println("resource : " + resource.getName()); 
-			double currentCapacity = inventory.getAmountResourceCapacity(resource, false);
+			double currentCapacity = inv.getAmountResourceCapacity(resource, false);
 			//System.out.println("currentCapacity is "+currentCapacity);
-			double buildingCapacity = (Double) storageCapacity.get(resource);
+			double buildingCapacity = storageCapacity.get(resource);
 			//System.out.println("buildingCapacity is "+buildingCapacity);
-			inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
+			inv.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
 		}
 
 		// Get initial resources in building.
+		//Inventory inv = building.getBuildingManager().getSettlement().getInventory();
 		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
 			AmountResource resource = i2.next();
-			double initialResource = (Double) initialResources.get(resource);
-			double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource, true, false);
+			//System.out.println("Storage.java : resource : " + resource.getName()); 
+			double initialResource = initialResources.get(resource);
+			//System.out.println("Storage.java : initialResource : " + initialResource);
+			double resourceCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+			//System.out.println("Storage.java : resourceCapacity is "+resourceCapacity);
 			if (initialResource > resourceCapacity) initialResource = resourceCapacity;
-			inventory.storeAmountResource(resource, initialResource, true);
+			inv.storeAmountResource(resource, initialResource, true);
 		}
 	}
 

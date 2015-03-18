@@ -38,6 +38,9 @@ public class MarsClock implements Serializable {
     public static final int SOUTHERN_HEMISPHERE = 2;
     
     // Note: the summer solstice marks the longest day of the calendar year and the beginning of summer in the "Northern Hemisphere". 
+    // The solar longitude Ls is the Mars-Sun angle, measured from the Northern Hemisphere spring equinox where Ls=0.
+    // Ls=90 corresponds to summer solstice, just as Ls=180 marks the autumn equinox and Ls=270 the winter solstice (all relative to the northern hemisphere).
+    // see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
     private static final int SUMMER_SOLSTICE = 168;
 	private static final int AUTUMN_EQUINOX = 346;
 	private static final int WINTER_SOLSTICE = 489;
@@ -147,15 +150,6 @@ public class MarsClock implements Serializable {
         return Arrays.copyOf(WEEK_SOL_NAMES, WEEK_SOL_NAMES.length);
     }
     
-    /** Returns the total millisols in the Mars clock from orbit 0.
-     *  @param time Mars clock instance
-     *  @return total millisols
-     */
-    
-    public double getMillisols() {
-    	return millisol;
-    }
-
     
     public static double getTotalMillisols(MarsClock time) {
         double result = 0D;

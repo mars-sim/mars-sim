@@ -314,7 +314,7 @@ implements Serializable {
 	public void adjustThermalControl() {
 		
 			MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		    int oneTenthmillisols =  (int) (clock.getMillisols() * 10);
+		    int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
 			
 			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 1) {	
 

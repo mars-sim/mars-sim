@@ -202,8 +202,7 @@ LocalBoundedObject, InsidePathLocation {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
 
-		baseLevel = config.getBaseLevel(buildingType);
-		
+		baseLevel = config.getBaseLevel(buildingType);		
 		description = config.getDescription(buildingType);
 		
 		// Get the building's functions
