@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 3.07 2015-03-06
+ * @version 3.07 2015-03-17
  * @author Scott Davis
  */
 
@@ -70,6 +70,7 @@ implements ActionListener {
 	private JButton centerMapButton;
 
 	DecimalFormat fmt = new DecimalFormat("##0"); 
+	DecimalFormat fmt2 = new DecimalFormat("#0.00"); 
     /**
      * Constructor.
      * @param unit the unit to display.
@@ -151,14 +152,14 @@ implements ActionListener {
         //tpPanel.setBorder(BorderFactory.createEtchedBorder());
         
         // Prepare air pressure label
-        airPressureLabel = new JLabel(getAirPressureString());
+        airPressureLabel = new JLabel(getAirPressureString(getAirPressure()));
         airPressureLabel.setOpaque(false);
         airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 13));
         airPressureLabel.setHorizontalAlignment(SwingConstants.CENTER);
         tpPanel.add(airPressureLabel, BorderLayout.CENTER); 
         
         // Prepare temperature label
-        temperatureLabel = new JLabel(getTemperatureString());
+        temperatureLabel = new JLabel(getTemperatureString(getTemperature()));
         temperatureLabel.setOpaque(false);
         temperatureLabel.setFont(new Font("Serif", Font.PLAIN, 13));
         temperatureLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -183,28 +184,25 @@ implements ActionListener {
     }
     
     // 2014-11-11 Modified temperature and pressure panel
-    public String getTemperatureString() {
-    	String result;
+    public String getTemperatureString(double value) {
     	// 2015-01-16 Used Msg.getString for the degree sign
-    	result = fmt.format(getTemperature()) + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     	// 2014-11-20 Changed from " °C" to " �C" for English Locale
-		//return fmt.format(getTemperature()) + " °C"; //2 b localized?
-    	return result;
+    	return fmt.format(value) + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     }
+    
     public int getTemperature() {
-    	int outsideTemp = (int) Simulation.instance().getMars().getWeather()
+		return (int) Simulation.instance().getMars().getWeather()
     			.getTemperature(unit.getCoordinates());
-		return outsideTemp;
     }
     
     // 2014-11-07 Added temperature and pressure panel    
-    public String getAirPressureString() {
-    	return fmt.format(getAirPressure()) + " kPa"; //2 b localized?
+    public String getAirPressureString(double value) {
+    	return fmt2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$ 
     }
+    
     public double getAirPressure() {
-    	double outsideAirPressure = Simulation.instance().getMars().getWeather()
-	            .getAirPressure(unit.getCoordinates());
-    	return outsideAirPressure;
+    	return Math.round(Simulation.instance().getMars().getWeather()
+	            .getAirPressure(unit.getCoordinates()) *100.0) / 100.0;
     }
 	
 	private String getLatitudeString() {
@@ -225,15 +223,17 @@ implements ActionListener {
     // 2014-11-11 Overhauled checkOutsideReading()
 	public void checkOutsideReading() {   
 		
-	       // 2014-11-11 Added temperature and pressure panel
-        if (airPressureCache != getAirPressure()) {
-        	airPressureCache = getAirPressure();
-            airPressureLabel.setText(getAirPressureString());
-        }
-        
-        if (temperatureCache != getTemperature()) {
-        	temperatureCache = getTemperature();
-        	temperatureLabel.setText(getTemperatureString());
+	    // 2014-11-11 Added temperature and pressure panel
+		double p = getAirPressure();
+        if (airPressureCache != p) {
+        	airPressureCache = p;
+            airPressureLabel.setText(getAirPressureString(airPressureCache));
+        }        
+
+        int t = getTemperature();
+        if (temperatureCache != t) {
+        	temperatureCache = t;
+        	temperatureLabel.setText(getTemperatureString(temperatureCache));
         }
         
 		//outsideReadingPanel.add(tpPanel);
@@ -314,10 +314,18 @@ implements ActionListener {
             longitudeLabel.setText(getLongitudeString());
         }
  
-        if (temperatureCache != getTemperature()) {
-        	temperatureCache = getTemperature();
-        	temperatureLabel.setText(getTemperatureString());
+		double p = getAirPressure();
+        if (airPressureCache != p) {
+        	airPressureCache = p;
+            airPressureLabel.setText(getAirPressureString(airPressureCache));
         }
+        
+        int t = getTemperature();
+        if (temperatureCache != t) {
+        	temperatureCache = t;
+        	temperatureLabel.setText(getTemperatureString(temperatureCache));
+        }
+        
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
         //if (!containerCache.equals(container)) {

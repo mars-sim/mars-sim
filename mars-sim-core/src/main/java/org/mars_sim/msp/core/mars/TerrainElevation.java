@@ -12,6 +12,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 
 import java.awt.Color;
+import java.io.Serializable;
+
 import org.mars_sim.msp.mapdata.MapDataUtil;
 
 /** 
@@ -19,7 +21,9 @@ import org.mars_sim.msp.mapdata.MapDataUtil;
  * virtual Mars. It can provide information about elevation and
  * terrain ruggedness at any location on the surface of virtual Mars.
  */
-public class TerrainElevation {
+public class TerrainElevation implements Serializable {
+
+	private static final long serialVersionUID = 1L;	
 	
 	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.246165D;
 	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.944444D;

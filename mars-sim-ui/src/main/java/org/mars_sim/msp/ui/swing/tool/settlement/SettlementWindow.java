@@ -59,7 +59,7 @@ extends ToolWindow {
     private String statusText;
     private String populationText;
 	private String marsTimeString;
-	
+	private boolean isFX = false;
     
 	/**
 	 * Constructor.
@@ -69,6 +69,8 @@ extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;	
+		if (desktop.getMainWindow() != null)
+			this.isFX = true;
 		
 		//SwingUtilities.invokeLater(new Runnable() {
         //    @Override
@@ -126,7 +128,9 @@ extends ToolWindow {
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			    	marsTimeString = marsClock.getTimeStamp();
-					timeLabel.setText("Martian Time : " + marsTimeString);
+			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0 
+			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
+					timeLabel.setText("Martian Time : " + marsTimeString + " UMST");
 				    statusText = "" + MarsClock.getTotalSol(marsClock);
 				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + " of " + mapPanel.getSettlement().getPopulationCapacity();
 				    // 2015-02-09 Added leftLabel

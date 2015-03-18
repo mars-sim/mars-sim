@@ -400,6 +400,25 @@ implements Serializable {
 		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
 	}
 
+	/** 
+	 * Converts phi to latitude 
+	 * @param phi in radians
+	 * @return latitude in degrees
+	 */
+	public double getPhi2Lat(double phi) {
+		
+		double piHalf = Math.PI / 2.0;
+		double lat_degree = 0; 	
+		if (phi < piHalf) {
+		    lat_degree = ((piHalf - phi) / piHalf) * 90;
+		    //hemisphere = 1;
+		} else if (phi > piHalf){
+			lat_degree = ((phi - piHalf) / piHalf) * 90; 
+			//hemisphere = 2;
+		}			
+		return lat_degree;	
+	}
+	
 	/** Converts spherical coordinates to rectangular coordinates.
 	 *  Returns integer x and y display coordinates for spherical
 	 *  location.

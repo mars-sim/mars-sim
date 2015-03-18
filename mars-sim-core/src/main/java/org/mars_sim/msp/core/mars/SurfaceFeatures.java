@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.mars;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -26,13 +27,16 @@ import java.util.Map;
  */
 public class SurfaceFeatures implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	// Data members 
-    private transient TerrainElevation surfaceTerrain;
+	private static final long serialVersionUID = 1L;	
+	private static double MEAN_SOLAR_IRRADIANCE =  590D; // in W/m2  = 1371 / (1.52*1.52) in contrast with the Earth’s solar constant (1350 Wm-2)-- about 44% .
+	// Data members     
     private List<Landmark> landmarks;
     private MineralMap mineralMap;
     private List<ExploredLocation> exploredLocations;
+    
+    private transient TerrainElevation surfaceTerrain;
     private AreothermalMap areothermalMap;
+    private Mars mars;
 
     /** 
      * Constructor 
@@ -44,7 +48,7 @@ public class SurfaceFeatures implements Serializable {
         mineralMap = new RandomMineralMap();
         exploredLocations = new ArrayList<ExploredLocation>();
         areothermalMap = new AreothermalMap();
-
+        
         try {
             landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
         } catch (Exception e) {
@@ -79,8 +83,7 @@ public class SurfaceFeatures implements Serializable {
      * Values in between 0.0 and 1.0 represent twilight conditions. 
      */
     public double getSurfaceSunlight(Coordinates location) {
-
-        Mars mars = Simulation.instance().getMars();
+        mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
 
@@ -96,6 +99,60 @@ public class SurfaceFeatures implements Serializable {
         }
 
         return result;
+    }
+    
+    /** 
+     * Calculate the solar irradiance at a particular location on Mars
+     * @param location
+     * @return solar irradiance.
+     */
+	// 2015-03-17 Added getSolarIrradiance()
+    public double getSolarIrradiance(Coordinates location) {	   
+    	// The solar irradiance value below is the value on top of the atmosphere only    	    	
+    	
+    	//double lat = location.getPhi2Lat(location.getPhi()); 
+    	//System.out.println("lat is " + lat);
+        Mars mars = Simulation.instance().getMars();       
+/*
+// Approach 1  (more cumbersome)  
+		double s1 = 0;  
+        double L_s = mars.getOrbitInfo().getL_s();
+        double e = OrbitInfo.ECCENTRICITY;       
+    	double z = mars.getOrbitInfo().getSolarZenithAngle(phi);
+    	double num =  1 + e * Math.cos( (L_s - 248) /180D * Math.PI);
+    	double den = 1 - e * e;
+    	s1 = MEAN_SOLAR_IRRADIANCE * Math.cos(z) * num / den * num / den  ;
+    	System.out.println("solar irradiance s1 is " + s1);
+*/
+    	
+// Approach 2    	
+    	double s2 = 0;
+    	double part2 =  mars.getOrbitInfo().getCosineSolarZenithAngle(location);
+    	//System.out.println("part2 is " + part2);
+    	if (part2 <= 0) // the sun is set. no need of calculation.
+    		s2 = 0;
+    	else {
+	    	double part1 =  MEAN_SOLAR_IRRADIANCE;
+	    	double r =  mars.getOrbitInfo().getRadius();
+	    	double part3 =  OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS / r / r;
+	    	//System.out.println("part3 is " + part3);
+	    	s2 = part1 * part2 * part3;
+	    	
+			// Added randomness
+			double up = RandomUtil.getRandomDouble(10);
+			double down = RandomUtil.getRandomDouble(10);
+			
+			s2 = s2 +  up - down;
+			
+			if (s2 <= 0)
+				s2 = 0;
+    	}
+    	//System.out.println("solar irradiance s2 is " + s2);
+    	
+    	// TODO: calculate the solar irradiance components on horizontal surface on Mars :
+    	// G_h = G_direct + G_diffuse
+
+    	return s2;
     }
 
     /** Returns true if location is in a dark polar region.

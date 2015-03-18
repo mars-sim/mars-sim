@@ -437,7 +437,7 @@ public class MainScene {
 	
 	public StatusBar createStatusBar() {
 		StatusBar statusBar = new StatusBar();
-		statusBar.setText("");
+		statusBar.setText(""); // needed for deleting the default text "OK"
 	    //statusBar.setAlignment(Pos.BASELINE_RIGHT);
 	    //statusBar.setStyle("-fx-background-color: gainsboro;");
         //statusBar.setAlignment(Pos.CENTER);
@@ -445,24 +445,21 @@ public class MainScene {
 	    //statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() + 10);
 	    //statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth()  + 10);
 	    
-        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	    Text memMaxText = new Text(" Total Designated : " + memMax +  " MB ");
-	    //memMaxText.setTextAlignment(TextAlignment.RIGHT);
-	    //statusBar.getChildren().add(memMaxText);
+
 	    Button button1 = new Button(" [Memory] ");
         button1.setBackground(new Background(new BackgroundFill(Color.ORANGE,
                 new CornerRadii(2), new Insets(4))));
+        statusBar.getRightItems().add(new Separator(VERTICAL));
 	    statusBar.getRightItems().add(button1);
-	    statusBar.getRightItems().add(memMaxText);
-	    statusBar.getRightItems().add(new Separator(VERTICAL));
 	    
+        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+	    Text memMaxText = new Text(" Total Designated : " + memMax +  " MB ");
+	    statusBar.getRightItems().add(memMaxText);
+    
 	    memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 	    memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	    memUsed = memTotal - memFree;	       
 	    memUsedText = new Text(" Currently Used : " + memUsed +  " MB ");
-	    //memUsedText.setTextAlignment(TextAlignment.RIGHT);
-	    //memUsedText.textProperty().bind(valueProperty);
-	    //statusBar.getChildren().add(memUsedText);
 	    statusBar.getRightItems().add(memUsedText);
 	    statusBar.getRightItems().add(new Separator(VERTICAL));
 	    
@@ -475,22 +472,14 @@ public class MainScene {
             throw new IllegalStateException("earthclock is null"); 
         }
 
-        //String t = earthclock.getTimeStamp();
-        //timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
 	    timeText =  new Text(" Earth Side : " + timeStamp + "  ");
-	    //timeText.setTextAlignment(TextAlignment.RIGHT);
-	    //timeText.textProperty().bind(timeStamp);
 	    Button button2 = new Button(" [Time] ");
         button2.setBackground(new Background(new BackgroundFill(Color.ORANGE,
                 new CornerRadii(2), new Insets(4))));
-	    statusBar.getRightItems().add(button2);
-	    //statusBar.getChildren().add(timeText);	    
+	    statusBar.getRightItems().add(button2);	    
 	    statusBar.getRightItems().add(timeText); 
 	    statusBar.getRightItems().add(new Separator(VERTICAL));
 	    
-	    //TextFlow textFlow = new TextFlow(memMaxText, memUsedText, timeText);
-	    //statusBar.getChildren().add(textFlow);
-		
 		return statusBar;
 	}
 	
@@ -517,9 +506,6 @@ public class MainScene {
 	        return "Notification Pane";
 	    }
 
-	    //public String getJavaDocURL() {
-	    //    return Utils.JAVADOC_BASE + "org/controlsfx/control/NotificationPane.html";
-	    //}
 
 	    public String getControlStylesheetURL() {
 	        return "/org/controlsfx/control/notificationpane.css";

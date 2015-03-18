@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.07 2015-01-19
+ * @version 3.07 2015-03-17
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /** Weather represents the weather on Mars */
 public class Weather
@@ -26,20 +27,21 @@ implements Serializable {
 	// Static data
 	/** Sea level air pressure in kPa. */
 	//2014-11-22 Set the unit of air pressure to kPa
-	private static final double SEA_LEVEL_AIR_PRESSURE = .8D;
+	//private static final double SEA_LEVEL_AIR_PRESSURE = .8D;
 	/** Sea level air density in kg/m^3. */
-	private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
+	//private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
 	/** Mars' gravitational acceleration at sea level in m/sec^2. */
-	private static final double SEA_LEVEL_GRAVITY = 3.0D;
+	//private static final double SEA_LEVEL_GRAVITY = 3.0D;
 	/** extreme cold temperatures at Mars. */
 	private static final double EXTREME_COLD = -120D;
+	/** Viking 1's longitude (49.97 W) in millisols  */
+	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
+
 	
-	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 
-	// Calculation : 49.97W/180 deg * 500 millisols;
 	private static final double VIKING_LATITUDE = 22.48D; 
 	
 	private static final int TEMPERATURE = 0;
-	private static final int AIR_PRESSURE = 1;
+	private static final int AIR_PRESSURE = 0;
 	
 	//private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
 	
@@ -56,8 +58,11 @@ implements Serializable {
 	
 	//private int count = 0;
 	
+	private Mars mars;
+	private MasterClock masterClock;
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
+	private TerrainElevation terrainElevation;
 	
 	private static Map<Coordinates, Double> temperatureCacheMap = new HashMap<Coordinates, Double>();
 	private static Map<Coordinates, Double> airPressureCacheMap = new HashMap<Coordinates, Double>();
@@ -65,6 +70,7 @@ implements Serializable {
 
 	/** Constructs a Weather object */
 	public Weather() {
+	
 		//count++;
 		//System.out.print(" calling Weather.java " + count + " times");
 		
@@ -87,14 +93,28 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the air density at a given location.
+	 * @return air density in kg/m3.
+	 */
+	// 2015-03-17 Added getAirDensity()
+	public double getAirDensity(Coordinates location) {
+		double result = 0;	
+		//The air density is derived from the equation of state.
+		result = getAirPressure(location) / (.1921 * (getTemperature(location) + 273.1));	
+	 	return result;
+	}
+	
+			
+	/**
 	 * Gets the air pressure at a given location.
 	 * @return air pressure in Pa.
 	 */
 	// 2015-03-06 Added getAirPressure()
 	public double getAirPressure(Coordinates location) {
-
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();		
-	    millisols =  (int) marsClock.getMillisols() ;
+		
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();		
+	    millisols =  (int) marsClock.getMillisol() ;
 		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
 		
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {	
@@ -114,17 +134,34 @@ implements Serializable {
 	 */
 	public double updateAirPressure(Coordinates location) {
 		// Get local elevation in meters.
-		Mars mars = Simulation.instance().getMars();
-		TerrainElevation terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
-		double elevation = terrainElevation.getElevation(location);
+		mars = Simulation.instance().getMars();
+		terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
+		double elevation = terrainElevation.getElevation(location) ; // in km since getElevation() return the value in km
 
+		
 		// p = pressure0 * e(-((density0 * gravitation) / pressure0) * h)
-		// P = 0.009 * e(-(0.0155 * 3.0 / 0.009) * elevation)
-		double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
-				SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE * 1000)
-				* elevation);
-
-		return pressure;
+		//  Q: What are these enclosed values ==>  P = 0.009 * e(-(0.0155 * 3.0 / 0.009) * elevation)
+		//double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
+		//		SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE * 1000)* elevation);
+		
+		// why * 1000 ?
+		
+		// elevation is in km. it should probably read
+		// double pressure = SEA_LEVEL_AIR_PRESSURE * Math.exp(-1D *
+		//		SEA_LEVEL_AIR_DENSITY * SEA_LEVEL_GRAVITY / (SEA_LEVEL_AIR_PRESSURE)* elevation * 1000);
+		
+		// If using the precalculated values at http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars ,		
+		// p = .699 * exp(-0.00009 * h) in kilo-pascal or kPa
+		double pressure2 = .699 * Math.exp(-0.00009 * elevation * 1000);			
+		//System.out.println("elevation is " + elevation  + "   pressure2 is " + pressure2); 
+		
+		// Added randomness
+		double up = RandomUtil.getRandomDouble(.05);
+		double down = RandomUtil.getRandomDouble(.05);
+		
+		pressure2 = pressure2 + up - down;
+		
+		return pressure2;
 	}
 
 	/**
@@ -134,7 +171,7 @@ implements Serializable {
 	public double getTemperature(Coordinates location) {
 		
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();	
-	    millisols =  (int) marsClock.getMillisols() ;
+	    millisols =  (int) marsClock.getMillisol() ;
 		
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {	
 			double temperatureCache = updateTemperature(location);
@@ -222,14 +259,12 @@ implements Serializable {
 			// 4. Seasonal variation (dependent upon latitude)
 			// 5. Randomness
 			
-			// 1. Time of day and longitude
-			double theta = location.getTheta(); // theta is the longitude in radian
-			theta = theta /Math.PI * 500D; // in millisols;
+			// (1). Time of day and longitude
+			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
 			//System.out.println(" theta: " + theta);			
 	        double time  = marsClock.getMillisol();
-			//double time = (double) oneTenthmillisols * 10D;
-	        double x_offset = time - 360 - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS + theta;     
-	        double equatorial_temperature = 27.5 * Math.sin  ( 2*Math.PI/1000D * x_offset ) -58.5 ;  			
+	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;     
+	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;  			
 			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0; 
 			//System.out.print("Time: " + Math.round (time) + "  T: " + standard_temperature);
 
@@ -240,31 +275,35 @@ implements Serializable {
 		    temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 80D;
 		*/
 			
-			// 2. Terrain Elevation 
-			// Not correct but guess: - (elevation * 5)
+			// (2). Terrain Elevation 
+			// use http://www.grc.nasa.gov/WWW/k-12/airplane/atmosmrm.html for modeling Mars with precalculated values 
+			// The lower atmosphere runs from the surface of Mars to 7,000 meters. 
+			// 	T = -31 - 0.000998 * h		
+			// The upper stratosphere model is used for altitudes above 7,000 meters. 
+			// T = -23.4 - 0.00222 * h		
 			TerrainElevation terrainElevation = surfaceFeatures.getSurfaceTerrain();
-			double terrain_dt =  Math.abs(terrainElevation.getElevation(location) * 5D);
+			double elevation =  terrainElevation.getElevation(location); // in km from getElevation(location)
+			double terrain_dt;
+			
+			// assume a typical temperature of -31 deg celsiu
+			if (elevation < 7)
+				terrain_dt = - 0.000998 * elevation * 1000;
+			else // delta = -31 + 23.4 = 7.6 
+				terrain_dt = 7.6 - 0.00222 * elevation * 1000;
+					
 			terrain_dt = Math.round (terrain_dt * 100.0)/ 100.0;
-			//System.out.print("  terrain_dt: " + terrain_dt );			
+			//System.out.print("  terrain_dt: " + terrain_dt );		
+			
 						
-			// 3. Latitude 
-			double piHalf = Math.PI / 2.0;
-			double lat_degree = 0; 
-			//int hemisphere = 0;
-			double phi = location.getPhi();	
-			if (phi < piHalf) {
-			    lat_degree = ((piHalf - phi) / piHalf) * 90;
-			    //hemisphere = 1;
-			} else if (phi > piHalf){
-				lat_degree = ((phi - piHalf) / piHalf) * 90; 
-				//hemisphere = 2;
-			}			
+			// (3). Latitude 
+			double lat_degree = location.getPhi2Lat(location.getPhi()); 
+			
 			//System.out.print("  degree: " + Math.round (degree * 10.0)/10.0 ); 
 			double lat_dt = -15D - 15D * Math.sin( 2D * lat_degree * Math.PI/180D + Math.PI/2D) ;
 			lat_dt = Math.round (lat_dt * 100.0)/ 100.0;
 			//System.out.println("  lat_dt: " + lat_dt );
 
-			// 4. Seasonal variation 
+			// (4). Seasonal variation 
 			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess			
 	        int solElapsed = MarsClock.getSolOfYear(marsClock);
 			double seasonal_dt = lat_adjustment * Math.sin( 2 * Math.PI/1000D * ( solElapsed - 142));
@@ -272,9 +311,9 @@ implements Serializable {
 			//System.out.println("  seasonal_dt: " + seasonal_dt ); 
 			 
 			
-			// 5. Add randomness
-			double up = RandomUtil.getRandomDouble(3);
-			double down = RandomUtil.getRandomDouble(3);
+			// (5). Add randomness
+			double up = RandomUtil.getRandomDouble(2);
+			double down = RandomUtil.getRandomDouble(2);
 			
 			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
 			final_temperature = Math.round (final_temperature * 100.0)/100.0;
