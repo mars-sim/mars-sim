@@ -650,7 +650,6 @@ implements Serializable {
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
-                endMission("Construction attachment part " + part.getName() + " could not be stored.");
             }
         }
     }

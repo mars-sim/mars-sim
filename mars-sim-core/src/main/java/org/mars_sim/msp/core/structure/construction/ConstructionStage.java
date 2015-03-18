@@ -27,6 +27,7 @@ public class ConstructionStage implements Serializable {
     // Construction site events.
     public static final String ADD_CONSTRUCTION_WORK_EVENT = "adding construction work";
     public static final String ADD_SALVAGE_WORK_EVENT = "adding salvage work";
+    public static final String ADD_CONSTRUCTION_MATERIALS_EVENT = "adding construction materials";
 
     /** Work time modifier for salvaging a construction stage. */
     private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
@@ -181,6 +182,9 @@ public class ConstructionStage implements Serializable {
 
                 // Update the remaining completable work time.
                 updateCompletableWorkTime();
+                
+                // Fire construction event
+                site.fireConstructionUpdate(ADD_CONSTRUCTION_MATERIALS_EVENT, this);
             }
             else {
                 throw new IllegalStateException("Trying to add " + number + " " + part + 
@@ -214,6 +218,9 @@ public class ConstructionStage implements Serializable {
 
                 // Update the remaining completable work time.
                 updateCompletableWorkTime();
+                
+                // Fire construction event
+                site.fireConstructionUpdate(ADD_CONSTRUCTION_MATERIALS_EVENT, this);
             }
             else {
                 throw new IllegalStateException("Trying to add " + amount + " " + resource + 
