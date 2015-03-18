@@ -557,6 +557,18 @@ public class SettlementTransparentPanel extends JComponent {
         UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
         UIManager.put("PopupMenu.border", res);
         result.setLightWeightPopupEnabled(false); 
+
+		// Create Day Night Layer menu item.
+		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.dayNightLayer"), mapPanel.isShowDayNightLayer()); //$NON-NLS-1$
+		dayNightLabelMenuItem.setForeground(new Color(139,69,19));
+		dayNightLabelMenuItem.setContentAreaFilled(false);
+		dayNightLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mapPanel.setShowDayNightLayer(!mapPanel.isShowDayNightLayer());
+			}
+		});
+		result.add(dayNightLabelMenuItem);
 		
 		// Create building label menu item.
 		JCustomCheckBoxMenuItem buildingLabelMenuItem = new JCustomCheckBoxMenuItem(

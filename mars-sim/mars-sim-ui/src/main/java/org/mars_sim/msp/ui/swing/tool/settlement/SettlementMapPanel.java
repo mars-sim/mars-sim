@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.07 2014-12-26
+ * @version 3.08 2015-03-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -71,6 +71,7 @@ implements ClockListener {
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
 	private boolean showRobotLabels;
+	private boolean showDayNightLayer = false;
 	
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
@@ -95,12 +96,12 @@ implements ClockListener {
 		yPos = 0D;
 		rotation = 0D;
 		scale = DEFAULT_SCALE;
-		//settlement = null;
 		showBuildingLabels = false;
 		showConstructionLabels = false;
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		showRobotLabels = false;
+		showDayNightLayer = false;
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 		
@@ -128,13 +129,14 @@ implements ClockListener {
 	public void init(MainDesktopPane desktop) {
 
 		// Create map layers.
-		mapLayers = new ArrayList<SettlementMapLayer>(5);
+		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
+		mapLayers.add(new DayNightMapLayer(this));
 		
         new SettlementTransparentPanel(desktop, this);
 
@@ -376,7 +378,7 @@ implements ClockListener {
 	}
 	
 	/**
-	 * Selects a robot if any person is at the given x and y pixel position.
+	 * Selects the robot if any robot is at the given x and y pixel position.
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedRobot;
@@ -418,8 +420,6 @@ implements ClockListener {
 		// Note: 20D is an arbitrary number (by experiment) that 
 		// gives an reasonable click detection area
 		//double range2 = 3D / scale;
-		//logger.info("scale is "+ scale);
-		//logger.info("range2 is "+ range2);
 
 		Building selectedBuilding = null;
 
@@ -442,15 +442,7 @@ implements ClockListener {
 			double distanceX = x - settlementPosition.getX();
 			double distanceY = y - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= newRange) {	
-				//logger.info(i +", width is "+ width );
-				//logger.info(i +", length is "+ length);
-				//logger.info(i +", distanceX is "+ distanceX);
-				//logger.info(i +", distanceY is "+ distanceY);
-				//logger.info(i +", x is "+ x);
-				//logger.info(i +", y is "+ y);				
-				//logger.info(i +", distance is "+ distance);
-				//logger.info(i +", newRange is "+ newRange);				
+			if (distance <= newRange) {				
 				selectedBuilding = building;
 			}
 			//i++;
@@ -463,7 +455,6 @@ implements ClockListener {
 
 		List<Building> result = new ArrayList<Building>();
 		if (settlement != null) {
-			//Iterator<Building> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		    Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
@@ -502,15 +493,7 @@ implements ClockListener {
 			double distanceX = x - settlementPosition.getX();
 			double distanceY = y - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= newRange) {	
-				//logger.info(i +", width is "+ width );
-				//logger.info(i +", length is "+ length);
-				//logger.info(i +", distanceX is "+ distanceX);
-				//logger.info(i +", distanceY is "+ distanceY);
-				//logger.info(i +", x is "+ x);
-				//logger.info(i +", y is "+ y);				
-				//logger.info(i +", distance is "+ distance);
-				//logger.info(i +", newRange is "+ newRange);				
+			if (distance <= newRange) {					
 				selectedVehicle = vehicle;
 			}
 			//i++;
@@ -586,36 +569,6 @@ implements ClockListener {
 		return result;
 	}
 
-	/**
-	 * Selects a building on the map.
-	 * @param building the selected building.
-
-	public void selectBuilding(Building building) {
-		logger.info("selectBuilding() : building is " + building.getNickName());
-		if ((settlement != null) && (building != null)) {
-			Building currentlySelected = selectedBuilding.get(settlement);
-			// Toggle on/off the selected building
-			//if (building.equals(currentlySelected)) {
-			//	selectedBuilding.put(settlement, null);
-			//} else {
-				selectedBuilding.put(settlement, building);
-			//}
-		}
-	}
-	 */
-	/**
-	 * Get the selected building for the current settlement.
-	 * @return the selected building.
-	
-	public Building getSelectedBuilding() {
-		Building result = null;
-		if (settlement != null) {
-			result = selectedBuilding.get(settlement);
-		}
-		logger.info("getSelectedBuilding() : Selected Building is " + building.getNickName());
-		return result;
-	}
-	 */
 	/**
 	 * Convert a pixel X,Y position to a X,Y (meter) position local to the settlement in view.
 	 * @param xPixel the pixel X position.
@@ -728,6 +681,24 @@ implements ClockListener {
 		repaint();
 	}
 	
+
+	/**
+	 * Checks if DayNightLayer should be displayed.
+	 * @return true if DayNightLayer should be displayed.
+	 */
+	public boolean isShowDayNightLayer() {
+		return showDayNightLayer;
+	}
+
+	/**
+	 * Sets if DayNightLayershould be displayed.
+	 * @param showDayNightLayer true if DayNightLayer should be displayed.
+	 */
+	public void setShowDayNightLayer(boolean showDayNightLayer) {
+		this.showDayNightLayer = showDayNightLayer;
+		repaint();
+	}
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -746,10 +717,6 @@ implements ClockListener {
 		while (i.hasNext()) {
 			// 2014-11-04 Added building parameter
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
-				//System.out.println("xPos is " + xPos);
-				//System.out.println("yPos is " + yPos);
-				//System.out.println("rotation is " +rotation);
-				//System.out.println("scale is " + rotation);
 		}
 
 //		long endTime = System.nanoTime();
@@ -767,11 +734,8 @@ implements ClockListener {
 		menu = null;
 		settlement = null;
 		selectedPerson = null;
-		//selectedBuilding = null;
 		building = null;
-		//desktop = null;
 		settlementWindow = null;
-		//transparentPanel = null;
 		// Destroy all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {

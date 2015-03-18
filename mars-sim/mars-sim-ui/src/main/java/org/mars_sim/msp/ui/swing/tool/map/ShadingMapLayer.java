@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class ShadingMapLayer implements MapLayer {
     
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.map.ShadingMapLayer";
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
 	
     private static Logger logger = Logger.getLogger(CLASS_NAME);
     
