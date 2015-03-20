@@ -60,9 +60,7 @@ extends TabPanel {
 			Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-
-		Person person = (Person) unit;
-
+	
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -81,7 +79,10 @@ extends TabPanel {
 		infoPanel.add(scheduleLabel);
 
 		// Create schedule table model
-		scheduleTableModel = new ScheduleTableModel(person);
+		if (unit instanceof Person)
+			scheduleTableModel = new ScheduleTableModel((Person) unit);    	
+		else if (unit instanceof Robot)
+			scheduleTableModel = new ScheduleTableModel((Robot) unit);
 
 		// Create attribute scroll panel
 		JScrollPane scrollPanel = new JScrollPane();
@@ -137,7 +138,7 @@ extends TabPanel {
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-	        	//taskSchedule = robot.getTaskSchedule();
+	        	taskSchedule = robot.getTaskSchedule();
 	        }
 			
 	        // Obtain all schedules

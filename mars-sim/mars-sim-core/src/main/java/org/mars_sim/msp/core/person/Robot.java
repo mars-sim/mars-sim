@@ -85,6 +85,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     private boolean isBuried;
 	private boolean isSalvaged;
 	
+    /** The robot's achievement in scientific fields. */
+    //private Map<ScienceType, Double> scientificAchievement;
 	
     /** Manager for robot's natural attributes. */
     private NaturalAttributeManager attributes;
@@ -103,8 +105,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     private EarthClock birthTimeStamp;
     /** The settlement the robot is currently associated with. */
     private Settlement associatedSettlement;
-    /** The robot's achievement in scientific fields. */
-    private Map<ScienceType, Double> scientificAchievement;
+    private TaskSchedule taskSchedule;
 
     private RobotType robotType;
 
@@ -147,8 +148,11 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         attributes = new NaturalAttributeManager(this);
         botMind = new BotMind(this);
         health = new PhysicalCondition(this);
-        scientificAchievement = new HashMap<ScienceType, Double>(0);
+        //scientificAchievement = new HashMap<ScienceType, Double>(0);
+        // 2015-03-19 Added TaskSchedule class
+        taskSchedule = new TaskSchedule(this);
 
+        
         setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
         height = 156 + RandomUtil.getRandomInt(22);
         
@@ -162,6 +166,14 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         
     }
 
+    
+    /**
+     * Gets the instance of the task schedule for a person.
+     */    
+    public TaskSchedule getTaskSchedule() {
+    	return taskSchedule;
+    }
+    
     /**
      * Create a string representing the birth time of the robot.
      * @return birth time string.
@@ -654,8 +666,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         health = null;
         birthTimeStamp = null;
         associatedSettlement = null;
-        scientificAchievement.clear();
-        scientificAchievement = null;
+        //scientificAchievement.clear();
+        //scientificAchievement = null;
     }
 
 

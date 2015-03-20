@@ -41,7 +41,7 @@ implements Serializable {
 	  	
 	private List<DailyTask> currentSchedule;	
 
-	private Person person;
+	//private Person person;
 	private MarsClock time;
 
 	/**
@@ -52,13 +52,21 @@ implements Serializable {
 	 * @param startTime
 	 */
 	public TaskSchedule(Person person) {	
-		this.person = person;
-		this.actorName = person.getName();
+		//this.person = person;
+		actorName = person.getName();
 		this.solCache = 0;
 		this.schedules = new HashMap <Integer, List<DailyTask>>();
 		this.currentSchedule = new ArrayList<DailyTask>();
 	}
-
+	
+	public TaskSchedule(Robot robot) {	
+		//this.robot = robot;
+		actorName = robot.getName();
+		this.solCache = 0;
+		this.schedules = new HashMap <Integer, List<DailyTask>>();
+		this.currentSchedule = new ArrayList<DailyTask>();
+	}
+	
 	public void addTask(String taskName, String doAction) {
 		this.taskName = taskName;
 		this.doAction = doAction;
@@ -108,12 +116,6 @@ implements Serializable {
 	public Map <Integer, List<DailyTask>> getSchedules() {
 		return schedules;
 	}
-	
-	//public int getTaskNum() {
-	//	int result = 0;
-	//	result = schedules.get(solCache).size();
-	//	return result;
-	//}
 	
 	public int getSolCache() {
 		return solCache;
