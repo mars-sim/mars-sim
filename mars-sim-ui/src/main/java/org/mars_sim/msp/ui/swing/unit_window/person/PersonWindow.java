@@ -46,6 +46,9 @@ extends UnitWindow {
 		addTabPanel(new TabPanelScience(person, desktop));
 		// 2015-02-27  Added TabPanelFavorite
 		addTabPanel(new TabPanelFavorite(person, desktop));
+		// 2015-03-20  Added TabPanelSchedule
+		addTabPanel(new TabPanelSchedule(person, desktop));
+		
 
 		// Add death tab panel if person is dead.
 		if (person.getPhysicalCondition().isDead()) {

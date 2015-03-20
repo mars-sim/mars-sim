@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
@@ -123,7 +124,9 @@ implements Serializable {
 	 */
 	public String getTaskDescription() {
 		if (currentTask != null) {
-			return currentTask.getDescription();
+			String doAction = currentTask.getDescription();
+			person.getTaskSchedule().addTask(getTaskName(), doAction);
+			return doAction;			
 		} else {
 			return "";
 		}

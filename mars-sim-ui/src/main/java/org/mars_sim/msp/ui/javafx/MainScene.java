@@ -368,7 +368,7 @@ public class MainScene {
         HBox root = new HBox();
         
 		String sname = settlement.getName();
-		Label label = new Label("       ");
+		Label label = new Label("                   ");
 		
         VBox yesaccordion = new VBox();       
         Accordion acc = new Accordion();

@@ -351,6 +351,33 @@ public class MarsClock implements Serializable {
         return b.toString();
     }
 
+    /** Return the current time string.
+     *  ex. "056"
+     */
+    
+    public String getMillisolString() {
+        StringBuilder b = new StringBuilder();
+        int tb = (int) millisol;
+        /*
+//        String result = "" + tb;
+        b.append(tb);
+        
+        if (millisol < 100) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+        if (millisol < 10) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+        while (b.length() < 4){
+            b.append("0");
+//            result += "0";
+        }
+*/
+        return b.toString();
+    }
+    
     /** Returns the name of the current month.
      *  @return name of the current month
      */

@@ -14,11 +14,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import javax.lang.model.SourceVersion;
 import javax.swing.JOptionPane;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -54,7 +58,19 @@ public class MarsProjectFX extends Application  {
 	public void start(Stage primaryStage) {
 
 		SvgImageLoaderFactory.install();
-		
+		/*
+		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+        System.out.println(javaCompiler.toString());
+         
+        Set<SourceVersion> sourceVersion;
+        sourceVersion = javaCompiler.getSourceVersions();
+         
+        for (SourceVersion version : sourceVersion) {
+            System.out.print(version.name() + "\n");
+        }
+        
+        System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
+        */
         primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
         
         logger.info("Starting " + Simulation.WINDOW_TITLE);
