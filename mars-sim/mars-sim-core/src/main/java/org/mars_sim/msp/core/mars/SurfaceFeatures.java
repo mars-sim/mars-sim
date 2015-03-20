@@ -28,7 +28,7 @@ import java.util.Map;
 public class SurfaceFeatures implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
-	private static double MEAN_SOLAR_IRRADIANCE =  590D; // in W/m2  = 1371 / (1.52*1.52) in contrast with the Earth’s solar constant (1350 Wm-2)-- about 44% .
+	private static double MEAN_SOLAR_IRRADIANCE =  590D; // in W/m2  = 1371 / (1.52*1.52) in contrast with the Earth's solar constant (1350 Wm-2)-- about 44% .
 	// Data members     
     private List<Landmark> landmarks;
     private MineralMap mineralMap;
