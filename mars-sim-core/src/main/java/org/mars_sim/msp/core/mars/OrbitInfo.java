@@ -45,7 +45,7 @@ implements Serializable {
 	private double radius;
 	
 	/** The areocentric longitude (or the orbital position of Mars).
-	 *  0° corresponding to Mars' Northern Spring Equinox.
+	 *  0 corresponding to Mars' Northern Spring Equinox.
 	 */
 	private double L_s; 
 	
