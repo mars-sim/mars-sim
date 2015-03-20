@@ -269,7 +269,7 @@ extends TabPanel {
 			else if (columnIndex == 1) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
 			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
 			else if (columnIndex == 3) return Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
 			else return null;
 		}
 
