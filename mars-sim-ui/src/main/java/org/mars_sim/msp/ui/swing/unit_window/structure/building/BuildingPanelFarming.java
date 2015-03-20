@@ -152,7 +152,7 @@ implements Serializable, MouseListener {
 
 		// Prepare solar irradiance label
 		radCache = farm.getFarmerNum();
-		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache, " W/m2"),  JLabel.CENTER);
+		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
 		labelPanel.add(radLabel);
 		
 		// Create scroll panel for crop table
@@ -479,7 +479,7 @@ implements Serializable, MouseListener {
 		int rad = (int) Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(location);
 		if (radCache != rad) {
 			radCache = rad;
-			radLabel.setText("Solar Irradiance: " + radCache);
+			radLabel.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
 		}
 		
 		// Update crop table.

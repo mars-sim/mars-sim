@@ -187,7 +187,7 @@ implements ActionListener {
     public String getTemperatureString(double value) {
     	// 2015-01-16 Used Msg.getString for the degree sign
     	// 2014-11-20 Changed from " °C" to " �C" for English Locale
-    	return fmt.format(value) + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
+    	return fmt.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
     }
     
     public int getTemperature() {
