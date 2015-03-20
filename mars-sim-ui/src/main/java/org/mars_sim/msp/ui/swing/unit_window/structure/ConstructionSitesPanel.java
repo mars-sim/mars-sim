@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSitesPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-03-19
 
  * @author Scott Davis
  */
@@ -23,6 +23,9 @@ import java.util.List;
  */
 public class ConstructionSitesPanel extends JPanel {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     // Data members
     private ConstructionManager manager;
     private List<ConstructionSite> sitesCache;
@@ -133,6 +136,9 @@ public class ConstructionSitesPanel extends JPanel {
      * A panel displaying information about a particular construction site.
      */
     private static class ConstructionSitePanel extends JPanel {
+        
+        /** default serial id. */
+        private static final long serialVersionUID = 1L;
         
         // Data members
         private ConstructionSite site;
@@ -258,21 +264,31 @@ public class ConstructionSitesPanel extends JPanel {
                 result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
                 result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
                 
-                // Add construction resources.
-                if ((info.getResources().size() > 0) && !stage.isSalvaging()) {
-                    result.append("<br>Construction Resources:<br>");
-                    Iterator<AmountResource> i = info.getResources().keySet().iterator();
+                // Add remaining construction resources.
+                if ((stage.getRemainingResources().size() > 0) && !stage.isSalvaging()) {
+                    result.append("<br>Remaining Construction Resources:<br>");
+                    Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
                     while (i.hasNext()) {
                         AmountResource resource = i.next();
-                        double amount = info.getResources().get(resource);
+                        double amount = stage.getRemainingResources().get(resource);
                         result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(amount).append(" kg<br>");
                     }
                 }
                 
-                // Add construction parts.
-                if (info.getParts().size() > 0) {
-                    if (stage.isSalvaging()) result.append("<br>Salvagable Parts:<br>");
-                    else result.append("<br>Construction Parts:<br>");
+                // Add remaining construction parts.
+                if (stage.getRemainingParts().size() > 0) {
+                    result.append("<br>Remaining Construction Parts:<br>");
+                    Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+                    while (j.hasNext()) {
+                        Part part = j.next();
+                        int number = stage.getRemainingParts().get(part);
+                        result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
+                    }
+                }
+                
+                // Add salvage parts.
+                if (!stage.isSalvaging() && (info.getParts().size() > 0)) {
+                    result.append("<br>Salvagable Parts:<br>");
                     Iterator<Part> j = info.getParts().keySet().iterator();
                     while (j.hasNext()) {
                         Part part = j.next();

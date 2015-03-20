@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionMissionCustomInfoPanel.java
- * @version 3.08 2015-03-17
+ * @version 3.08 2015-03-19
 
  * @author Scott Davis
  */
@@ -258,12 +258,7 @@ implements ConstructionListener {
             ConstructionStageInfo info = stage.getInfo();
             result.append("Status: building ").append(info.getName()).append(Msg.BR);
             result.append("Stage Type: ").append(info.getType()).append(Msg.BR);
-            if (stage.isSalvaging()) {
-                result.append("Work Type: salvage").append(Msg.BR);
-            }
-            else {
-                result.append("Work Type: Construction").append(Msg.BR);
-            }
+            result.append("Work Type: Construction").append(Msg.BR);
             DecimalFormat formatter = new DecimalFormat("0.0");
             String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
             result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols").append(Msg.BR);
@@ -271,24 +266,24 @@ implements ConstructionListener {
             result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols").append(Msg.BR);
             result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append(Msg.BR);
 
-            // Add construction resources.
-            if (info.getResources().size() > 0) {
-                result.append(Msg.BR).append("Construction Resources:").append(Msg.BR);
-                Iterator<AmountResource> i = info.getResources().keySet().iterator();
+            // Add remaining construction resources.
+            if (stage.getRemainingResources().size() > 0) {
+                result.append(Msg.BR).append("Remaining Construction Resources:").append(Msg.BR);
+                Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
                 while (i.hasNext()) {
                     AmountResource resource = i.next();
-                    double amount = info.getResources().get(resource);
+                    double amount = stage.getRemainingResources().get(resource);
                     result.append(Msg.NBSP).append(Msg.NBSP).append(resource.getName()).append(": ").append(amount).append(" kg").append(Msg.BR);
                 }
             }
 
-            // Add construction parts.
-            if (info.getParts().size() > 0) {
-                result.append(Msg.BR).append("Construction Parts:").append(Msg.BR);
-                Iterator<Part> j = info.getParts().keySet().iterator();
+            // Add remaining construction parts.
+            if (stage.getRemainingParts().size() > 0) {
+                result.append(Msg.BR).append("Remaining Construction Parts:").append(Msg.BR);
+                Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
                 while (j.hasNext()) {
                     Part part = j.next();
-                    int number = info.getParts().get(part);
+                    int number = stage.getRemainingParts().get(part);
                     result.append(Msg.NBSP).append(Msg.NBSP).append(part.getName()).append(": ").append(number).append(Msg.BR);
                 }
             }
