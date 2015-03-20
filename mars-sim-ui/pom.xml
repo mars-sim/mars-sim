@@ -73,9 +73,9 @@
    		<version>8.20.8</version>
 	</dependency>
 	<dependency>
--		<groupId>org.apache.xmlgraphics</groupId>
--		<artifactId>batik-transcoder</artifactId>
--		<version>1.7</version>
--	</dependency>
+ 		<groupId>org.apache.xmlgraphics</groupId>
+ 		<artifactId>batik-transcoder</artifactId>
+ 		<version>1.7</version>
+ 	</dependency>
   </dependencies>
 </project>
