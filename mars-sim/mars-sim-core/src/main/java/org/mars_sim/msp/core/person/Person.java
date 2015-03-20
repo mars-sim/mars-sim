@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.07 2015-02-27
+ * @version 3.08 2015-03-19
  * @author Scott Davis
  */
 
@@ -86,9 +86,8 @@ implements VehicleOperator, Serializable {
     private PreparingDessert kitchenWithDessert;
     private PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     private org.mars_sim.msp.core.LifeSupport support;
-    
-    // 2015-02-27 Added Favorite class
     private Favorite favorite;
+    private TaskSchedule taskSchedule;    
     
     /**
      * Constructs a Person object at a given settlement.
@@ -120,6 +119,9 @@ implements VehicleOperator, Serializable {
         
         // 2015-02-27 Added Favorite class
         favorite = new Favorite(this);
+        
+        // 2015-03-19 Added TaskSchedule class
+        taskSchedule = new TaskSchedule(this);
 
         // Set base mass of person from 58 to 76, peaking at 67.
         setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
@@ -146,6 +148,13 @@ implements VehicleOperator, Serializable {
      */
     public Favorite getFavorite() {
     	return favorite;
+    }
+ 
+    /**
+     * Gets the instance of the task schedule for a person.
+     */    
+    public TaskSchedule getTaskSchedule() {
+    	return taskSchedule;
     }
     
     /**

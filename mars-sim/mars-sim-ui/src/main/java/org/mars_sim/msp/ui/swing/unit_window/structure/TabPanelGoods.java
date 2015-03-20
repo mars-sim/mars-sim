@@ -85,7 +85,7 @@ extends TabPanel {
 		JTable goodsTable = new JTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setCellSelectionEnabled(false);
-		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(4));
+		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
 		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
