@@ -33,12 +33,17 @@ extends ToolWindow {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	
 	// default logger.
 	//private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 	
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
+	public static final int HORIZONTAL = 800;
+	public static final int VERTICAL = 600;
+	
+	
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	/** Map panel. */
@@ -86,11 +91,13 @@ extends ToolWindow {
 	public void init() {
 
 		//setMaximizable(true); // not compatible with day night map layer
+		setResizable(true);
 		
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		
 		// 2014-12-27 Added preferred size and initial location
 		setPreferredSize(new Dimension(800, 600));
+		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
 		setLocation(600,600);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
