@@ -93,10 +93,10 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-
 
 public class MainScene {
 
@@ -125,8 +125,10 @@ public class MainScene {
     private int memFree;  
 
     private boolean cleanUI = true;
+	boolean useDefault;
     
-    private MainDesktopPane desktop = null;
+    private MainDesktopPane desktop;
+    private MainWindow mainWindow;
     private Stage stage;   
     private MainWindowFXMenu menuBar;
     private NotificationPane notificationPane;
@@ -137,7 +139,17 @@ public class MainScene {
     
     public Scene createMainScene() {
 
-        Scene scene = init();        
+        Scene scene = init();   
+        
+		// Load UI configuration.
+		if (!cleanUI) {
+			UIConfig.INSTANCE.parseFile();
+		}
+
+		// Set look and feel of UI.
+		useDefault = UIConfig.INSTANCE.useUIDefault();
+		//setLookAndFeel(false);	
+	
 		startAutosaveTimer();        		
         //desktop.openInitialWindows(); // doesn't work here
 		
@@ -153,6 +165,7 @@ public class MainScene {
                 }
               }
           });
+        
         return scene;
     }
 	
@@ -160,14 +173,6 @@ public class MainScene {
 	public Scene init() {
 		//TODO: refresh the pull down menu and statusBar when clicking the maximize/iconify/restore button on top-right.		
 
-		// Load UI configuration.
-		if (!cleanUI) {
-			UIConfig.INSTANCE.parseFile();
-		}
-
-		// Set look and feel of UI.
-		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
-		setLookAndFeel(false);	
 
 		// Detect if a user hits the top-right close button
 		//stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -175,8 +180,7 @@ public class MainScene {
 		//    public void handle(WindowEvent event) {
 		    	// Exit not just the stage but the simulation entirely
 		//    	exitSimulation();
-		//    }
-		//});
+		//    }});
 		
 		// Exit not just the stage but the simulation entirely
 		stage.setOnCloseRequest(e -> exitSimulation());
@@ -199,7 +203,7 @@ public class MainScene {
 		bottomBox.getChildren().addAll(statusBar);
 		
 		// Create menuBar
-        menuBar = new MainWindowFXMenu(this, desktop);
+        menuBar = new MainWindowFXMenu(this, getDesktop());
         menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");	
         
 	    // Create BorderPane
@@ -237,13 +241,11 @@ public class MainScene {
 	    //layout.getChildren().addAll(tabPane);
 	    //VBox.setVgrow(tabPane, Priority.ALWAYS);
 	    //layout.setStyle("-fx-padding: 10;");	    
-
-
 	    
 	    tp = new TabPane();
 	    tp.setSide(Side.RIGHT);
-	    swingTab.setClosable(false);
 	    swingTab = new Tab();
+	    swingTab.setClosable(false);
 	    swingTab.setText("Swing");
 	    swingTab.setContent(swingPane);
 	    
@@ -801,6 +803,7 @@ public class MainScene {
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
+		//return mainWindow.getDesktop();
 		return desktop;
 	}
 
@@ -852,8 +855,8 @@ public class MainScene {
 		JFileChooser chooser= new JFileChooser(dir);
 		chooser.setDialogTitle(title); //$NON-NLS-1$
 		if (chooser.showOpenDialog(new Frame()) == JFileChooser.APPROVE_OPTION) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
-			desktop.clearDesktop();
+			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
+			getDesktop().clearDesktop();
 			MasterClock clock = Simulation.instance().getMasterClock();
 			clock.loadSimulation(chooser.getSelectedFile());
 			while (clock.isLoadingSimulation()) {
@@ -865,7 +868,7 @@ public class MainScene {
 			}
 			
 			try {
-                desktop.resetDesktop();
+				getDesktop().resetDesktop();
                 //logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
             }
             catch (Exception e) {
@@ -874,7 +877,7 @@ public class MainScene {
                 e.printStackTrace(System.err);
             }
 			
-			desktop.disposeAnnouncementWindow();
+			getDesktop().disposeAnnouncementWindow();
 			
 		}
 	}
@@ -974,19 +977,19 @@ public class MainScene {
 	private void newSimulationProcess() {
 		if (
 			JOptionPane.showConfirmDialog(
-				desktop,
+					getDesktop(),
 				Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
 				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
 				JOptionPane.YES_NO_OPTION
 			) == JOptionPane.YES_OPTION
 		) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
+			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
 
 			// Break up the creation of the new simulation, to allow interfering with the single steps.
 			Simulation.stopSimulation();
 
 			try {
-			    desktop.clearDesktop();
+				getDesktop().clearDesktop();
 			    //if (earthTimer != null) {
                 //    earthTimer.stop();
 			    //}
@@ -1014,7 +1017,7 @@ public class MainScene {
 			Simulation.instance().start();
 			
 			try {
-                desktop.resetDesktop();
+				getDesktop().resetDesktop();
             }
             catch (Exception e) {
                 // New simulation process should continue even if there's an exception in the UI.
@@ -1023,12 +1026,11 @@ public class MainScene {
             }
 			
 			//startEarthTimer();
-
-			desktop.disposeAnnouncementWindow();
+			getDesktop().disposeAnnouncementWindow();
 			
 			// Open user guide tool.
-            desktop.openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+			getDesktop().openToolWindow(GuideWindow.NAME);
+            GuideWindow ourGuide = (GuideWindow) getDesktop().getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
@@ -1072,11 +1074,11 @@ public class MainScene {
 		MasterClock clock = Simulation.instance().getMasterClock();
 		
 		if (isAutosave) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
+			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation(fileLocn);			
 		}
 		else {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
+			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
 		
@@ -1087,14 +1089,14 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
 			}
 		}
-		desktop.disposeAnnouncementWindow();
+		getDesktop().disposeAnnouncementWindow();
 	}
 
 	/**
 	 * Pauses the simulation and opens an announcement window.
 	 */
 	public void pauseSimulation() {
-		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+		getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 		Simulation.instance().getMasterClock().setPaused(true);
 	}
 
@@ -1103,7 +1105,7 @@ public class MainScene {
 	 */
 	public void unpauseSimulation() {
 		Simulation.instance().getMasterClock().setPaused(false);
-		desktop.disposeAnnouncementWindow();
+		getDesktop().disposeAnnouncementWindow();
 	}
 
 	/**
@@ -1166,14 +1168,14 @@ public class MainScene {
 			}
 		}
 
-		//if (changed) {
+		if (changed) {
 		//	SwingUtilities.updateComponentTreeUI(frame);
-		//	if (desktop != null) {
-		//		desktop.updateToolWindowLF();
-		//	}
-		//	desktop.updateAnnouncementWindowLF();
-		//	desktop.updateTransportWizardLF();
-		//}
+			if (desktop != null) {
+				desktop.updateToolWindowLF();
+				desktop.updateAnnouncementWindowLF();
+				desktop.updateTransportWizardLF();
+			}
+		}
 	}
 
 	public MainWindowFXMenu getMainWindowFXMenu() {
@@ -1185,11 +1187,17 @@ public class MainScene {
 		return stage;
 	}
 	
+	public MainWindow getMainWindow() {
+		return mainWindow;	
+	}
     
 	private void createSwingNode(final SwingNode swingNode) {
 		desktop = new MainDesktopPane(this);
+		//mainWindow = new MainWindow(true, true);
         SwingUtilities.invokeLater(() -> {
-            swingNode.setContent(desktop);           
+            swingNode.setContent(desktop);
+    		setLookAndFeel(false);
+            //swingNode.setContent(mainWindow);
         });
     }
 
