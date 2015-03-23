@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.07 2015-01-17
-
+ * @version 3.08 2015-03-23
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing;

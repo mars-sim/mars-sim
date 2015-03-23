@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -65,7 +66,9 @@ extends JPanel {
 	
 	// Data members.
 	protected Mission mission;
-	protected Dialog parent;
+	protected JInternalFrame parent;
+	protected MainDesktopPane desktop;	
+	
 	protected JTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
 	protected DefaultListModel<Person> memberListModel;
@@ -78,11 +81,12 @@ extends JPanel {
 	 * @param mission {@link Mission} the mission to edit.
 	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	public InfoPanel(Mission mission, Dialog parent) {
+	public InfoPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
 		
 		// Data members
 		this.mission = mission;
 		this.parent = parent;
+		this.desktop = desktop;
 		
 		// Sets the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -182,6 +186,7 @@ extends JPanel {
         			}
         		});
         memberButtonPane.add(removeMembersButton);
+        
 	}
 	
 	/**
@@ -198,7 +203,7 @@ extends JPanel {
 	 * Open the add members dialog.
 	 */
 	private void addMembers() {
-		new AddMembersDialog(parent, mission, memberListModel, getAvailablePeople());
+		new AddMembersDialog(parent, desktop, mission, memberListModel, getAvailablePeople());
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	

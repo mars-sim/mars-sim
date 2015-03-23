@@ -1,16 +1,17 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +22,7 @@ import java.util.List;
  * A dialog wizard for creating new missions.
  */
 public class CreateMissionWizard
-extends JDialog
+extends JInternalFrame
 implements ActionListener {
 	
 	/** default serial id. */
@@ -39,16 +40,20 @@ implements ActionListener {
 	 * Constructor.
 	 * @param owner The owner frame.
 	 */
-	public CreateMissionWizard(Frame owner) {
-		// Use JDialog constructor
-		super(owner, "Create Mission Wizard", true);
-		
+	public CreateMissionWizard(MainDesktopPane desktop) {
+	
+		// Use JInternalFrame constructor
+        super("Create Mission Wizard", false, true, false, true);
+	
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
-		
+				
 		// Create info panel.
 		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
+		
+		//setContentPane(infoPane);
+
 		add(infoPane, BorderLayout.CENTER);
 		
 		// Create wizard panels list.
@@ -96,11 +101,22 @@ implements ActionListener {
 		bottomButtonPane.add(cancelButton);
 		
 		// Finish and display wizard.
-		pack();
+		//pack();
         setSize(new Dimension(700, 550));
-		setLocationRelativeTo(owner);
-		setResizable(false);
-		setVisible(true);
+		//setLocationRelativeTo(owner);
+		//setResizable(false);
+		//setVisible(true);
+
+	    desktop.add(this);	    
+	    
+		Dimension desktopSize = desktop.getParent().getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+	    setVisible(true);
+	    
+		
 	}
 	
 	/**

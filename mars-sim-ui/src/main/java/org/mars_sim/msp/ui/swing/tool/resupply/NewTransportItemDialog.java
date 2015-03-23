@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * NewTransportItemDialog.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
