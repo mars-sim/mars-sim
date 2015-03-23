@@ -269,7 +269,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param g2d the graphics context.
      * @param settlement the settlement.
      */
-    private void drawBuildingConnectors(Graphics2D g2d, Settlement settlement) {
+    private synchronized void drawBuildingConnectors(Graphics2D g2d, Settlement settlement) {
 
         if (settlement != null) {
             Iterator<BuildingConnector> i = settlement

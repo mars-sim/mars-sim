@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,19 +17,19 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A dialog for creating a new transport item.
  * TODO externalize strings
  */
-public class NewTransportItemDialog
-extends JDialog {
+//2015-03-21 Switched from extending JDialog to JinternalFrame
+public class NewTransportItemDialog extends JInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,16 +50,21 @@ extends JDialog {
 
 	/**
 	 * Constructor.
-	 * @param owner the owner of this dialog.
+	 * @param MainDesktopPane desktop
 	 * @param transportItem the transport item to modify.
 	 */
-	public NewTransportItemDialog(JFrame owner) {
-		// Use JDialog constructor.
-		super(owner, "New Transport Item", true);
+	//2015-03-21 Switched from using JFrame to using desktop in param
+	public NewTransportItemDialog(MainDesktopPane desktop) {
+	
+		// Use JInternalFrame constructor
+        super("New Transport Item", false, true, false, true);
 
-		// Set the layout.
-		setLayout(new BorderLayout(0, 0));
-
+		this.setSize(500,500);
+		
+		 // Create main panel
+        JPanel mainPane = new JPanel(new BorderLayout());
+        setContentPane(mainPane);
+	
 		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
@@ -124,11 +130,14 @@ extends JDialog {
 		});
 		buttonPane.add(cancelButton);
 
-		// Finish and display dialog.
-		pack();
-		setLocationRelativeTo(owner);
-		setResizable(false);
-		setVisible(true);
+	    desktop.add(this);	    
+	    
+		Dimension desktopSize = desktop.getParent().getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    this.setLocation(width, height);
+	    this.setVisible(true);
 	}
 
 	/**

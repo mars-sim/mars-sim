@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -21,17 +22,20 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /** 
@@ -61,8 +65,11 @@ extends JInternalFrame {
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
 	private Resupply resupply;
-	//private Building building;
 	
+	//private MainWindow mainWindow;	
+	//private MainScene mainScene;
+	//private JFrame j = new JFrame();
+	//private Building building;
 
 
 	/** 
@@ -71,9 +78,11 @@ extends JInternalFrame {
 	 */
 	public TransportWizard(final MainDesktopPane desktop) {
 		super("Transport Wizard", false, false, false, false); //$NON-NLS-1$
-		this.desktop = desktop;		
-		//Simulation.instance().getMasterClock().setPaused(false);
-		//createGUI();
+		this.desktop = desktop;	
+		
+		//mainWindow = desktop.getMainWindow();	
+		//mainScene = desktop.getMainScene();
+	
 	}
 
 	public void createGUI(Building newBuilding) {
@@ -130,6 +139,14 @@ extends JInternalFrame {
 		});
 		btnPane.add(b3);
 		
+	    //desktop.add(this);	    
+	    
+		Dimension desktopSize = desktop.getParent().getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    this.setLocation(width, height);
+	    this.setVisible(true);
 	}
 	
 	
@@ -259,13 +276,32 @@ extends JInternalFrame {
 		mapPanel.reCenter();
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
 		mapPanel.setShowBuildingLabels(true);
-		repaint();
+
 		//desktop.getMainWindow().pauseSimulation();
 
 		//String name = newBuilding.getNickName();
         String message = "Do you like to place " + buildingNickName + " at this location on the map?";
         String title = "Transport Wizard";
+		
+        //JOptionPane optionPane = new JOptionPane();
+        //JDialog dialog = optionPane.createDialog("Title");
+        //dialog.setAlwaysOnTop(true);
+        //dialog.setVisible(true);
+        //AnnouncementWindow a = desktop.getAnnouncementWindow();
+        //a.setAlwaysOnTop(true);
+        /*
+        j.setAlwaysOnTop(true);
+        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        j.setVisible(true);	 // this will help the JFrame to set the location
+        j.setLocation(desktop.getAnnouncementWindow().getLocation());
+        j.setVisible(false); // this will hide the JFrame immediately after the location is set
+        */
+        
+        // TODO: should push all UnitWindow and ToolWindow behind the Settlement Map Tool
+        
+		//if (mainWindow != null) {			
 		int reply = JOptionPane.showConfirmDialog(desktop.getAnnouncementWindow(), message, title, JOptionPane.YES_NO_OPTION);
+		repaint();
 		if (reply == JOptionPane.YES_OPTION) {
             logger.info("Building in Placed : " + newBuilding.toString());
 		}
@@ -273,9 +309,11 @@ extends JInternalFrame {
 			settlement.getBuildingManager().removeBuilding(newBuilding);
 			confirmBuildingLocation(template, false);
 			//try {Thread.sleep(1000);} catch (InterruptedException e1) {}
-		}
-		
+		}		
+		//}
 		//SwingUtilities.invokeLater(new TransportWizardLauncher(newBuilding, template));
+		
+
 	}
 
 	/**

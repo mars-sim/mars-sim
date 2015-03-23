@@ -828,14 +828,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//transportWizard.setAnnouncement(announcement);
 		transportWizard.initialize(buildingManager);//, building);
 		transportWizard.deliverBuildings();
-		transportWizard.pack();
+		//transportWizard.pack();
 		//add(transportWizard, 0);
 		//int Xloc = (getWidth() - transportWizard.getWidth()) / 2;
 		//int Yloc = (getHeight() - transportWizard.getHeight()) / 2;
 		//transportWizard.setLocation(Xloc, Yloc);		
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
-		transportWizard.pack();
+		//transportWizard.pack();
 		transportWizard.setVisible(true);
 	}
 	/**
@@ -1004,13 +1004,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);	
-			if (mainWindow !=null) mainWindow.pauseSimulation();
-			if (mainScene !=null) mainScene.pauseSimulation();
+			if (mainWindow != null) mainWindow.pauseSimulation();
+			if (mainScene != null) mainScene.pauseSimulation();
 			openTransportWizard(mgr);//, building); 
 			isTransportingBuilding = false;
 		}
-		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
-			getMainWindow().unpauseSimulation();
+		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {		
+			if (mainWindow != null) mainWindow.unpauseSimulation();
+			if (mainScene != null) mainScene.unpauseSimulation();			
 			disposeTransportWizard();
 			isTransportingBuilding = false;
             //mgr.getResupply().deliverOthers();
