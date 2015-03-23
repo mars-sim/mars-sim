@@ -173,76 +173,51 @@ implements Serializable {
      */
     private double eatingPhase(double time) {
         
-        PhysicalCondition condition = person.getPhysicalCondition();      
- 
-        // If person consumes a cooked meal, stress and fatigue is reduced.
-        if (meal != null) {
-            setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
-            
-            double stress = condition.getStress();
-            condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
-            
-            double fatigue = condition.getFatigue();
-            if (fatigue > 300)
-            	condition.setFatigue(fatigue - 300);
-        }
+        PhysicalCondition condition = person.getPhysicalCondition();
 
         if (getDuration() <= (getTimeCompleted() + time)) {
         	
-            if (meal != null) {
+            if (meal != null) { // meaning that he/she is in the settlement
+                setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$               
                 // Person consumes the cooked meal.
                 //String nameMeal = meal.getName();
                 //System.out.println(person + " has just eaten " + nameMeal);
                 // System.out.println("EatMeal : meal.getDryMass() "+ Math.round(meal.getDryMass()*10.0)/10.0);
+                // If person consumes a cooked meal, stress and fatigue is reduced.
+                double stress = condition.getStress();
+                condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
+                
+                double fatigue = condition.getFatigue();
+                if (fatigue > 300)
+                	condition.setFatigue(fatigue - 300);
+                
             	Storage.retrieveAnResource(.0025D, "napkin", inv, true);
             	Storage.storeAnResource(.0025D,"solid waste", inv);
                 condition.setHunger(0D);
                 condition.addEnergy(meal.getDryMass());
             }
             else {
-              	if (person.getLocationSituation() != LocationSituation.IN_VEHICLE || person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+              	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE)
               		setDescription(Msg.getString("Task.description.eatPreservedFood")); //$NON-NLS-1$
                 
-	                eatPreservedFood();
+              	else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+                  	setDescription(Msg.getString("Task.description.eatPreservedFood.vehicle")); //$NON-NLS-1$
+              		
+              	else 	    			
+              		//System.out.println(namePerson + " not in a vehicle. can't obtain food from container, end the task.");
+              		endTask();
+              		
+	            eatPreservedFood();
 	                //System.out.println(person + " has just eaten preserved food");
 	                //System.out.println("EatMeal : condition.getMassPerServing() "+ Math.round(condition.getMassPerServing()*10.0)/10.0);  
-	                condition.setHunger(0D);
-	                condition.addEnergy(condition.getMassPerServing());
+	            condition.setHunger(0D);
+	            condition.addEnergy(condition.getMassPerServing());
+	            
 	            }
-	    		else {
-	    			//System.out.println(namePerson + " not in a vehicle. can't obtain food from container, end the task.");
-	                endTask();
-	    		}
-              	/*
-                // Person consumes preserved food.
-                try {                	
-//                	// In a settlement, the person will choose to eat
-//                	// dessert first instead of preserved food
-//                	LocationSituation location = person.getLocationSituation();
-//                	if (location == LocationSituation.IN_SETTLEMENT) {
-//                		//can I instantiate new EatDessert(person); ?
-//                       	//logger.info(person + " has just eaten desserts");
-//                	}
-//                	else {
-                    	setDescription(Msg.getString("Task.description.eatPreservedFood")); //$NON-NLS-1$
-                    
-	                    eatPreservedFood();
-	                    //System.out.println(person + " has just eaten preserved food");
-	                    //System.out.println("EatMeal : condition.getMassPerServing() "+ Math.round(condition.getMassPerServing()*10.0)/10.0);  
-	                    condition.setHunger(0D);
-	                    condition.addEnergy(condition.getMassPerServing());
-//                	}
-                }
-                catch (Exception e) {
-                    // If person can't obtain food from container, end the task.
-                    endTask();
-                }
             }
-            */
-            }
-        }
         return 0D; 
     }
+
     
     /**
      * Eat a meal of preserved food.

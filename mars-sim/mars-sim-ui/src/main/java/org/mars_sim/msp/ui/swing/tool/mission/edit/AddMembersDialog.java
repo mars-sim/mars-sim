@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * AddMembersDialog.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 
@@ -21,6 +20,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -30,17 +30,20 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A dialog window for adding members to the mission for the mission tool.
  */
-class AddMembersDialog extends JDialog {
+class AddMembersDialog extends JInternalFrame {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// Data members.
 	private Mission mission;
+	protected MainDesktopPane desktop;
+	
 	private DefaultListModel<Person> memberListModel;
 	private DefaultListModel<Person> availableListModel;
 	private JList<Person> availableList;
@@ -53,14 +56,17 @@ class AddMembersDialog extends JDialog {
 	 * @param memberListModel {@link DefaultListModel}<{@link Person}> the member list model in the edit mission dialog.
 	 * @param availablePeople {@link Collection}<{@link People}> the available people to add.
 	 */
-	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel<Person> memberListModel, 
+	public AddMembersDialog(JInternalFrame owner, MainDesktopPane desktop, Mission mission, DefaultListModel<Person> memberListModel, 
 			Collection<Person> availablePeople) {
 		// Use JDialog constructor
-		super(owner, "Add Members", true);
-		
+		//super(owner, "Add Members", true);
+		// Use JInternalFrame constructor
+        super("Add Members", false, true, false, true);
+       		
 		// Initialize data members.
 		this.mission = mission;
 		this.memberListModel = memberListModel;
+		this.desktop = desktop;
 		
 		// Set the layout.
 		setLayout(new BorderLayout(5, 5));
@@ -127,10 +133,22 @@ class AddMembersDialog extends JDialog {
 		buttonPane.add(cancelButton);
 		
 		// Finish and display dialog.
-		pack();
-		setLocationRelativeTo(owner);
-		setResizable(false);
-		setVisible(true);
+		//pack();
+		//setLocationRelativeTo(owner);
+		//setResizable(false);
+		//setVisible(true);
+		
+	    desktop.add(this);	    
+	    
+        setSize(new Dimension(700, 550));
+		Dimension desktopSize = desktop.getParent().getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+	    setVisible(true);
+	    
+		
 	}
 	
 	/**

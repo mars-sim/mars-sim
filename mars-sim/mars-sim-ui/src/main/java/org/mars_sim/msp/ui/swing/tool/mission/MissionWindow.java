@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -164,11 +164,9 @@ extends ToolWindow {
 
 		if (mw !=null )  {
 			// Pause simulation.
-			mw.pauseSimulation();
-	
+			mw.pauseSimulation();	
 			// Create new mission wizard.
-			new CreateMissionWizard(mw.getFrame());
-	
+			new CreateMissionWizard(desktop);	
 			// Unpause simulation.
 			mw.unpauseSimulation();
 		}
@@ -179,10 +177,8 @@ extends ToolWindow {
 		if (ms !=null )  {
 			// Pause simulation.
 			ms.pauseSimulation();
-	
 			// Create new mission wizard.
-			//new CreateMissionWizard(ms.getFrame());
-	
+			new CreateMissionWizard(desktop);
 			// Unpause simulation.
 			ms.unpauseSimulation();
 		}
@@ -203,7 +199,7 @@ extends ToolWindow {
 			mw.pauseSimulation();
 	
 			// Create new mission wizard.
-			new EditMissionDialog(mw.getFrame(), mission);
+			new EditMissionDialog(desktop, mission);
 	
 			// Unpause simulation.
 			mw.unpauseSimulation();
@@ -216,8 +212,7 @@ extends ToolWindow {
 			ms.pauseSimulation();
 	
 			// Create new mission wizard.
-			//new CreateMissionWizard(ms.getFrame());
-	
+			new EditMissionDialog(desktop, mission);
 			// Unpause simulation.
 			ms.unpauseSimulation();
 		}

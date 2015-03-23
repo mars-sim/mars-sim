@@ -375,17 +375,7 @@ public class GoodsManager implements Serializable {
             
             // Add construction site demand.
             projectedDemand += getResourceConstructionSiteDemand(resource);
-
-            // 2015-03-02 Added REGOLITH_INPUT_FACTOR adjustment
-            if (r.equals("regolith")) {
-            	if (projectedDemand < 100D)
-            		projectedDemand =  projectedDemand + (projectedDemand + 1) * REGOLITH_INPUT_FACTOR;
-            	else if (projectedDemand < 1000D)
-            		projectedDemand =  projectedDemand + (projectedDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
-            	else if (projectedDemand < 10000D)
-            		projectedDemand =  projectedDemand + (projectedDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
-            }
-
+            
             // Revert back to projectedDemand per sol for calculating totalDemand
             // This demand never gets changed back to per orbit, so I'm commenting 
             // this out for now. - Scott
@@ -395,6 +385,19 @@ public class GoodsManager implements Serializable {
 
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
+            // 2015-03-02 Added REGOLITH_INPUT_FACTOR adjustment
+            if (r.equals("regolith")) {
+            	//System.out.println("regolith's unadjusted totalDemand was " + totalDemand);
+            	if (totalDemand < 10D)
+            		totalDemand =  totalDemand + (totalDemand + 1) * REGOLITH_INPUT_FACTOR * 10D;
+            	else if (totalDemand < 100D)
+            		totalDemand =  totalDemand + (totalDemand + 1) * REGOLITH_INPUT_FACTOR;
+            	else if (totalDemand < 1000D)
+            		totalDemand =  totalDemand + (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
+            	else if (totalDemand < 10000D)
+            		totalDemand =  totalDemand + (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
+            }
+
             
             // 2015-02-13 Added MINIMUM_TOTAL_DEMAND
             // Shouldn't minimum total demand be zero? - Scott
@@ -403,7 +406,7 @@ public class GoodsManager implements Serializable {
             
             // Add trade value.
             tradeDemand = determineTradeDemand(resourceGood, useCache);
-            tradeDemand = Math.round(tradeDemand* 1000000.0) / 1000000.0;
+            //tradeDemand = Math.round(tradeDemand* 1000000.0) / 1000000.0;
  
             if (tradeDemand > totalDemand) {
             	totalDemand = tradeDemand;

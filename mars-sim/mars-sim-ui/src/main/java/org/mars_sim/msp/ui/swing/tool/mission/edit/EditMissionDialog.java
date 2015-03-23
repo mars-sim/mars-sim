@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * EditMissionDialog.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 
@@ -11,9 +10,11 @@ package org.mars_sim.msp.ui.swing.tool.mission.edit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,23 +23,25 @@ import java.util.Iterator;
 /**
  * The edit mission dialog for the mission tool.
  */
-public class EditMissionDialog extends JDialog {
+public class EditMissionDialog extends JInternalFrame {
 
 	// Private members
 	private Mission mission;
 	private InfoPanel infoPane;
+	protected MainDesktopPane desktop;
 	
 	/**
 	 * Constructor
 	 * @param owner the owner frame.
 	 * @param mission the mission to edit.
 	 */
-	public EditMissionDialog(Frame owner, Mission mission) {
-		// Use JDialog constructor
-		super(owner, "Edit Mission", true);
-	
+	public EditMissionDialog(MainDesktopPane desktop, Mission mission) {
+		// Use JInternalFrame constructor
+        super("Edit Mission", false, true, false, true);
+        
 		// Initialize data members.
 		this.mission = mission;
+		this.desktop = desktop;
 		
 		// Set the layout.
 		setLayout(new BorderLayout(0, 0));
@@ -47,7 +50,7 @@ public class EditMissionDialog extends JDialog {
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
         
 		// Create the info panel.
-        infoPane = new InfoPanel(mission, this);
+        infoPane = new InfoPanel(mission, desktop, this);
         add(infoPane, BorderLayout.CENTER);
         
         // Create the button panel.
@@ -78,10 +81,21 @@ public class EditMissionDialog extends JDialog {
         buttonPane.add(cancelButton);
 		
 		// Finish and display dialog.
-		pack();
-		setLocationRelativeTo(owner);
-		setResizable(false);
-		setVisible(true);
+		//pack();
+		//setLocationRelativeTo(owner);
+		//setResizable(false);
+		//setVisible(true);
+		
+	    desktop.add(this);	    
+	    
+        setSize(new Dimension(700, 550));
+		Dimension desktopSize = desktop.getParent().getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+	    setVisible(true);
+	    		
 	}
 	
 	/**
