@@ -102,34 +102,26 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2014-12-23 Added transportWizard
 	private TransportWizard transportWizard;
 	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-	private MarqueeBanner marqueeBanner;	
+	//private MarqueeBanner marqueeBanner;	
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	private MainScene mainScene;
 	
 	/** 
-	 * Constructor.
+	 * Constructor 1.
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
-
-		// Initialize data members
-		soundPlayer = new AudioPlayer();
-		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
-
 		this.mainWindow = mainWindow;
 		
 		init();
 	}
 	
-	
-	//public MainDesktopPane(MainWindowFX mainWindowFX) {
-	public MainDesktopPane(MainScene mainScene) {	
-		
-		// Initialize data members
-		soundPlayer = new AudioPlayer();
-		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
-
+	/** 
+	 * Constructor 2.
+	 * @param mainScene the main scene
+	 */	
+	public MainDesktopPane(MainScene mainScene) {		
 		this.mainScene = mainScene;
 
 		init();
@@ -138,12 +130,16 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2015-02-04 Added init()
 	public void init() {
 		
+		// Initialize data members
+		soundPlayer = new AudioPlayer();
+		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
+		
 		unitWindows = new ArrayList<UnitWindow>();
 		toolWindows = new ArrayList<ToolWindow>();
 		
 		// Set background color to black
 		setBackground(Color.black);
-
+		
 		// set desktop manager
 		setDesktopManager(new MainDesktopManager());
 
@@ -159,12 +155,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-
+/*
 		if (mainWindow != null) {
 		}
 		else if (mainScene !=null ) {
 		}
-		
+*/
 		// Prepare tool windows.
 		prepareToolWindows();
 		
@@ -817,7 +813,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Updates the look & feel of the announcement window.
 	 */
-	void updateAnnouncementWindowLF() {
+	public void updateAnnouncementWindowLF() {
 	    if (announcementWindow != null) {
 	        SwingUtilities.updateComponentTreeUI(announcementWindow);
 	    }
@@ -867,7 +863,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Updates the look & feel of the Transport Wizard.
 	 */
 	// 2014-12-23 Added updateTransportWizardLF()
-	void updateTransportWizardLF() {
+	public void updateTransportWizardLF() {
 	    if (transportWizard != null) {
 	        SwingUtilities.updateComponentTreeUI(transportWizard);
 	    }
@@ -876,7 +872,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Updates the look & feel for all tool windows.
 	 */
-	void updateToolWindowLF() {
+	public void updateToolWindowLF() {
 		Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();

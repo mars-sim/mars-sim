@@ -86,7 +86,7 @@ public class MarsProject {
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
-            MainWindow mw = new MainWindow(newSim);
+            MainWindow mw = new MainWindow(newSim, false);
             mw.getFrame().setVisible(true);  
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
 			mw.getFrame().setIconImage(img);			
