@@ -377,8 +377,14 @@ public class GoodsManager implements Serializable {
             projectedDemand += getResourceConstructionSiteDemand(resource);
 
             // 2015-03-02 Added REGOLITH_INPUT_FACTOR adjustment
-            if (r.equals("regolith"))
-            	projectedDemand *=  REGOLITH_INPUT_FACTOR;
+            if (r.equals("regolith")) {
+            	if (projectedDemand < 100D)
+            		projectedDemand =  projectedDemand + (projectedDemand + 1) * REGOLITH_INPUT_FACTOR;
+            	else if (projectedDemand < 1000D)
+            		projectedDemand =  projectedDemand + (projectedDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
+            	else if (projectedDemand < 10000D)
+            		projectedDemand =  projectedDemand + (projectedDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
+            }
 
             // Revert back to projectedDemand per sol for calculating totalDemand
             // This demand never gets changed back to per orbit, so I'm commenting 

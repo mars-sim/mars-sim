@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-03-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -49,6 +49,8 @@ implements ListSelectionListener {
 	private TransportDetailPanel detailPane;
 	private JButton modifyButton;
 	private JButton cancelButton;
+	
+	private MainDesktopPane desktop;
 
 	/**
 	 * Constructor.
@@ -59,6 +61,8 @@ implements ListSelectionListener {
 		// Use the ToolWindow constructor.
 		super(NAME, desktop);
 
+		this.desktop = desktop;
+		
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -92,7 +96,7 @@ implements ListSelectionListener {
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create new button.
-		// 9/29/2014 modified by mk: Changed button text from "New"  to "New Mission"
+		// 9/29/2014 Changed button text from "New"  to "New Mission"
 		JButton newButton = new JButton("New Mission");
 		newButton.addActionListener(new ActionListener() {
 			@Override
@@ -103,7 +107,7 @@ implements ListSelectionListener {
 		buttonPane.add(newButton);
 
 		// Create modify button.
-		// 9/29/2014 modified by mkung: Changed button text from "Modify"  to "Modify Mission"
+		// 9/29/2014 Changed button text from "Modify"  to "Modify Mission"
 		modifyButton = new JButton("Modify Mission");
 		modifyButton.setEnabled(false);
 		modifyButton.addActionListener(new ActionListener() {
@@ -115,7 +119,7 @@ implements ListSelectionListener {
 		buttonPane.add(modifyButton);
 
 		// Create cancel button.
-		// 9/29/2014 modified by mkung: Changed button text from "Discard"  to "Discard Mission"
+		// 9/29/2014 Changed button text from "Discard"  to "Discard Mission"
 		cancelButton = new JButton("Discard Mission");
 		cancelButton.setEnabled(false);
 		cancelButton.addActionListener(new ActionListener() {
@@ -134,92 +138,76 @@ implements ListSelectionListener {
 	 */
 	private void createNewTransportItem() {
 		
-		MainWindow mw = desktop.getMainWindow();
+		MainWindow mw = desktop.getMainWindow();	
+		MainScene ms = desktop.getMainScene();
 
-		if (mw !=null )  {
+		if (mw != null )  {
 			// Pause simulation.
 			mw.pauseSimulation();	
 			// Create new transportItem dialog.
-			new NewTransportItemDialog(mw.getFrame());	
+			new NewTransportItemDialog(desktop);	
 			// Unpause simulation.
 			mw.unpauseSimulation();
 		}
 		
-		MainScene ms = desktop.getMainScene();
-		/*
-		if (ms !=null )  {
+		else if (ms != null )  {
 			// Pause simulation.
 			ms.pauseSimulation();	
 			// Create new transportItem dialog.
-			new NewTransportItemStage(ms.getStage());	
+			new NewTransportItemDialog(desktop);	
 			// Unpause simulation.
 			ms.unpauseSimulation();
 		}
-		*/
+		
 	}
 
 	/**
-	 * Opens a modify dialog for the currently selected transport item.
+	 * Determines if swing or javaFX is in used when loading the modify dialog
 	 */
 	private void modifyTransportItem() {
 		
 		MainWindow mw = desktop.getMainWindow();
 		MainScene ms = desktop.getMainScene();
 		
-		if (mw !=null )  {
-			// Pause simulation.
-			mw.pauseSimulation();
-				
-			// Get currently selected incoming transport item.
-			Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
-	
-			if ((transportItem != null)) {
-				if (transportItem instanceof Resupply) {
-					// Create modify resupply mission dialog.
-					Resupply resupply = (Resupply) transportItem;
-					String title = "Modify Resupply Mission";
-					new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
-				}
-				else if (transportItem instanceof ArrivingSettlement) {
-					// Create modify arriving settlement dialog.
-					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
-					String title = "Modify Arriving Settlement";
-					new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
-				}
-			}
-
-			// Unpause simulation.
+		if (mw != null )  {
+			mw.pauseSimulation();				
+			modifyTransport();
 			mw.unpauseSimulation();
 		}
 		
-
-		if (ms !=null )  {
-			// Pause simulation.
-			ms.pauseSimulation();
-				
-			// Get currently selected incoming transport item.
-			Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
-	
-			if ((transportItem != null)) {
-				if (transportItem instanceof Resupply) {
-					// Create modify resupply mission dialog.
-					Resupply resupply = (Resupply) transportItem;
-					String title = "Modify Resupply Mission";
-					new ModifyTransportItemDialog(ms.getStage(), title, resupply);
-				}
-				else if (transportItem instanceof ArrivingSettlement) {
-					// Create modify arriving settlement dialog.
-					ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
-					String title = "Modify Arriving Settlement";
-					new ModifyTransportItemDialog(ms.getStage(), title, settlement);
-				}
-			}
-
-			// Unpause simulation.
+		else if (ms != null )  {
+			ms.pauseSimulation();				
+			modifyTransport();
 			ms.unpauseSimulation();
 		}
 	}
 
+	/**
+	 * Loads modify dialog for the currently selected transport item.
+	 */
+	// 2015-03-23 Added modifyTransport()
+	private void modifyTransport() {		
+		// Get currently selected incoming transport item.
+		Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+
+		if ((transportItem != null)) {
+			if (transportItem instanceof Resupply) {
+				// Create modify resupply mission dialog.
+				Resupply resupply = (Resupply) transportItem;
+				String title = "Modify Resupply Mission";
+				//new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
+				new ModifyTransportItemDialog(desktop, title, resupply);
+			}
+			else if (transportItem instanceof ArrivingSettlement) {
+				// Create modify arriving settlement dialog.
+				ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+				String title = "Modify Arriving Settlement";
+				//new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
+				new ModifyTransportItemDialog(desktop, title, settlement);
+			}
+		}
+	}
+	
 	/**
 	 * Cancels the currently selected transport item.
 	 */
