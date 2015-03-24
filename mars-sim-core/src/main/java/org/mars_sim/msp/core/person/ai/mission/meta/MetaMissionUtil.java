@@ -51,6 +51,7 @@ public class MetaMissionUtil {
         //robotMetaMissions.add(new TradeMeta());
         //robotMetaMissions.add(new TravelToSettlementMeta());
         robotMetaMissions.add(new BuildingConstructionMissionMeta());
+        robotMetaMissions.add(new BuildingSalvageMissionMeta());
     }    
     
     /**

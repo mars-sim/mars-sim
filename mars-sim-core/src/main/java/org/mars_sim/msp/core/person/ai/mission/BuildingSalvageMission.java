@@ -22,10 +22,12 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -193,7 +195,109 @@ implements Serializable {
 				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$ 
 				,settlement.getName()));
 	}
+	public BuildingSalvageMission(Robot startingRobot) {
+		// Use Mission constructor.
+		super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
 
+		// Set wear condition to 100% by default.
+		wearCondition = 100D;
+
+		if (!isDone()) {
+			// Sets the settlement.
+			settlement = startingRobot.getSettlement();
+
+			// Sets the mission capacity.
+			setMissionCapacity(MAX_PEOPLE);
+			int availableSuitNum = Mission
+					.getNumberAvailableEVASuitsAtSettlement(settlement);
+			if (availableSuitNum < getMissionCapacity()) {
+				setMissionCapacity(availableSuitNum);
+			}
+
+			// Recruit additional Robots to mission.
+			recruitRobotsForMission(startingRobot);
+
+			// Determine construction site and stage.
+			int constructionSkill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+			ConstructionManager manager = settlement.getConstructionManager();
+			SalvageValues values = manager.getSalvageValues();
+			double existingSitesProfit = values
+					.getAllSalvageSitesProfit(constructionSkill);
+			double newSiteProfit = values
+					.getNewSalvageSiteProfit(constructionSkill);
+
+			if (existingSitesProfit > newSiteProfit) {
+				// Determine which existing construction site to work on.
+				constructionSite = determineMostProfitableSalvageConstructionSite(
+						settlement, constructionSkill);
+			} else {
+				// Determine existing building to salvage.
+				Building salvageBuilding = determineBuildingToSalvage(
+						settlement, constructionSkill);
+
+				if (salvageBuilding != null) {
+					// Create new salvage construction site.
+					constructionSite = manager
+							.createNewSalvageConstructionSite(salvageBuilding);
+
+					// Set wear condition to salvaged building's wear condition.
+					wearCondition = salvageBuilding.getMalfunctionManager()
+							.getWearCondition();
+				} else {
+					logger.log(Level.WARNING,
+							Msg.getString("BuildingSalvageMission.log.noBuildingFound")); //$NON-NLS-1$
+				}
+			}
+
+			// Prepare salvage construction site.
+			if (constructionSite != null) {
+
+				// Determine new stage to work on.
+				if (constructionSite.hasUnfinishedStage()) {
+					constructionStage = constructionSite
+							.getCurrentConstructionStage();
+					finishingExistingStage = true;
+					logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
+							,settlement.getName()));
+				} else {
+					constructionStage = constructionSite
+							.getCurrentConstructionStage();
+					if (constructionStage != null) {
+						constructionStage.setCompletedWorkTime(0D);
+						constructionStage.setSalvaging(true);
+						logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
+								,constructionStage.toString()));
+					} else {
+						endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
+					}
+				}
+
+				// Mark construction site as undergoing salvage.
+				if (constructionStage != null) {
+					constructionSite.setUndergoingSalvage(true);
+				}
+			} else {
+				endMission(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
+			}
+
+			// Reserve construction vehicles.
+			reserveConstructionVehicles();
+
+			// Retrieve construction LUV attachment parts.
+			retrieveConstructionLUVParts();
+		}
+
+		// Add phases.
+		addPhase(PREPARE_SITE_PHASE);
+		addPhase(SALVAGE_PHASE);
+
+		// Set initial mission phase.
+		setPhase(PREPARE_SITE_PHASE);
+		setPhaseDescription(Msg.getString(
+				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$ 
+				,settlement.getName()));
+	}
+	
 	/**
 	 * Constructor
 	 * @param members the mission members.
@@ -203,15 +307,18 @@ implements Serializable {
 	 * @param vehicles the construction vehicles.
 	 * @throws MissionException if error creating mission.
 	 */
-	public BuildingSalvageMission(Collection<Person> members,
+	public BuildingSalvageMission(Collection<Unit> members,
 			Settlement settlement, Building building, ConstructionSite site,
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, (Person) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);
 
 		this.settlement = settlement;
 
+     	Person person = null;
+    	Robot robot = null;
+    	
 		ConstructionManager manager = settlement.getConstructionManager();
 
 		if (building != null) {
@@ -262,10 +369,25 @@ implements Serializable {
 			constructionSite.setUndergoingSalvage(true);
 
 		// Add mission members.
-		Iterator<Person> i = members.iterator();
-		while (i.hasNext())
-			i.next().getMind().setMission(this);
+		//Iterator<Person> i = members.iterator();
+		//while (i.hasNext())
+		//	i.next().getMind().setMission(this);
 
+		Iterator<Unit> i = members.iterator();
+
+        while (i.hasNext()) {
+         	                    	
+	        Unit unit = i.next();
+	        if (unit instanceof Person) {
+	        	person = (Person) unit;
+	        	person.getMind().setMission(this);
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	robot.getBotMind().setMission(this);
+	        }     
+        }
+		
 		// Reserve construction vehicles and retrieve from inventory.
 		constructionVehicles = vehicles;
 		Iterator<GroundVehicle> j = vehicles.iterator();
@@ -378,7 +500,15 @@ implements Serializable {
 		else if (SALVAGE_PHASE.equals(getPhase()))
 			salvagePhase(person);
 	}
-
+	@Override
+	protected void performPhase(Robot robot) {
+		super.performPhase(robot);
+		if (PREPARE_SITE_PHASE.equals(getPhase()))
+			prepareSitePhase(robot);
+		else if (SALVAGE_PHASE.equals(getPhase()))
+			salvagePhase(robot);
+	}
+	
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return settlement;
@@ -407,7 +537,14 @@ implements Serializable {
 	 * @throws MissionException if error performing the phase.
 	 */
 	private void prepareSitePhase(Person person) {
+		prepareSitePhase();
+	}
 
+	private void prepareSitePhase(Robot robot) {
+		prepareSitePhase();
+	}
+	
+	private void prepareSitePhase() {		
 		if (finishingExistingStage) {
 			// If finishing uncompleted existing construction stage, skip resource loading.
 			setPhaseEnded(true);
@@ -477,7 +614,58 @@ implements Serializable {
 			}
 		}
 	}
+	private void salvagePhase(Robot robot) {
 
+		// Anyone in the crew or a single person at the home settlement has a
+		// dangerous illness, end phase.
+		if (hasEmergency())
+			setPhaseEnded(true);
+
+		if (!getPhaseEnded()) {
+
+			// 75% chance of assigning task, otherwise allow break.
+			if (RandomUtil.lessThanRandPercent(75D)) {
+
+				// Assign salvage building task to robot.
+				if (SalvageBuilding.canSalvage(robot)) {
+					assignTask(robot, new SalvageBuilding(robot,
+							constructionStage, constructionSite, 
+							constructionVehicles));
+				}
+			}
+		}
+
+		if (constructionStage.isComplete()) {
+			setPhaseEnded(true);
+			settlement.getConstructionManager().getConstructionValues()
+			.clearCache();
+
+			// Remove salvaged construction stage from site.
+			constructionSite.removeSalvagedStage(constructionStage);
+
+			// Salvage construction parts from the stage.
+			salvageConstructionParts();
+
+			// Mark construction site as not undergoing salvage.
+			constructionSite.setUndergoingSalvage(false);
+
+			// Remove construction site if all salvaging complete.
+			if (constructionStage.getInfo().getType().equals(
+					ConstructionStageInfo.FOUNDATION)) {
+				settlement.getConstructionManager().removeConstructionSite(
+						constructionSite);
+				settlement.fireUnitUpdate(
+						UnitEventType.FINISH_SALVAGE_EVENT,
+						constructionSite);
+				logger.log(Level.INFO,
+						Msg.getString(
+								"BuildingSalvageMission.salvagedAt" //$NON-NLS-1$
+								,settlement.getName()));
+			}
+		}
+	}
+
+	
 	@Override
 	public void endMission(String reason) {
 		super.endMission(reason);
@@ -500,7 +688,17 @@ implements Serializable {
 		}
 		return false;
 	}
-
+	@Override
+	protected boolean isCapableOfMission(Robot robot) {
+		if (super.isCapableOfMission(robot)) {
+			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+				if (robot.getSettlement() == settlement)
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Checks if a light utility vehicle (LUV) is available for the mission.
 	 * @param settlement the settlement to check.

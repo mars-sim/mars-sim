@@ -268,11 +268,11 @@ implements Serializable {
                 else if (vehicle instanceof Rover) {
                     
                     // Check if robot has a good EVA suit available if in a rover.
-                    boolean goodEVASuit = true;
-                    boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
-                    boolean wearingSuit = robot.getInventory().containsUnitClass(EVASuit.class);
-                    goodEVASuit = roverSuit || wearingSuit;
-                    if (goodEVASuit) {
+                    //boolean goodEVASuit = true;
+                   // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
+                    //boolean wearingSuit = robot.getInventory().containsUnitClass(EVASuit.class);
+                    //goodEVASuit = roverSuit || wearingSuit;
+                    //if (goodEVASuit) {
                         
                         // Walk to nearest emergency airlock in settlement.
                         Airlock airlock = settlement.getClosestAvailableAirlock(robot);
@@ -285,7 +285,7 @@ implements Serializable {
                                     adjustedInteriorPos.getY(), entity);
                             walkToSettlement = true;
                         }
-                    }
+                    //}
                     
                 }
                 else {
