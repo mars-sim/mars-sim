@@ -108,7 +108,6 @@ public class ConstructBuildingMeta implements MetaTask {
 	public double getProbability(Robot robot) {
 	       
         double result = 0D;
-
         
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
 

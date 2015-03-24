@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -81,21 +82,16 @@ public class TradeMeta implements MetaMission {
 	       
         double missionProbability = 0D;
 
-        // Check if person is in a settlement.
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check if mission is possible for robot based on their circumstance.
-            Settlement settlement = robot.getSettlement();
-
-            missionProbability = checkMission(settlement);
-        }
-
-        // Job modifier.
-        //RobotJob robotJob = robot.getBotMind().getRobotJob();
-        //if (robotJob != null) {
-        //    missionProbability *= robotJob.getStartMissionProbabilityModifier(Trade.class);
-        //}
-        
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
+	        // Check if robot is in a settlement.
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	
+	            // Check if mission is possible for robot based on their circumstance.
+	            Settlement settlement = robot.getSettlement();
+	
+	            missionProbability = checkMission(settlement);
+	        }
+   
         return missionProbability;
 	}
 	

@@ -49,7 +49,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
-	private Collection<Unit> mixPeopleRobots;
+	private Collection<Unit> mixedMemebers;
 	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
@@ -83,7 +83,7 @@ class MissionDataBean {
 
 	    Mission mission = null;
 	    if (TRAVEL_MISSION.equals(type)) {
-	        mission = new TravelToSettlement(mixPeopleRobots, startingSettlement, destinationSettlement, rover, 
+	        mission = new TravelToSettlement(mixedMemebers, startingSettlement, destinationSettlement, rover, 
 	                description);
 	    }
 	    else if (RESCUE_MISSION.equals(type)) {
@@ -105,14 +105,14 @@ class MissionDataBean {
 	        mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (TRADE_MISSION.equals(type)) {
-	        mission = new Trade(mixPeopleRobots, startingSettlement, destinationSettlement, rover, description, 
+	        mission = new Trade(mixedMemebers, startingSettlement, destinationSettlement, rover, description, 
 	                sellGoods, buyGoods);
 	    }
 	    else if (MINING_MISSION.equals(type)) {
 	        mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
 	    }
 	    else if (CONSTRUCTION_MISSION.equals(type)) {
-	        mission = new BuildingConstructionMission(members, constructionSettlement, constructionSite, 
+	        mission = new BuildingConstructionMission(mixedMemebers, constructionSettlement, constructionSite, 
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing, 
 	                constructionVehicles);
 	    }

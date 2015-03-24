@@ -98,7 +98,8 @@ public class MetaTaskUtil {
         robotMetaTasks.add(new RepairMalfunctionMeta());  
         robotMetaTasks.add(new PrepareDessertMeta());
         robotMetaTasks.add(new PrescribeMedicationMeta());         
-        robotMetaTasks.add(new ProduceFoodMeta());        
+        robotMetaTasks.add(new ProduceFoodMeta());   
+        robotMetaTasks.add(new SalvageBuildingMeta());
         robotMetaTasks.add(new SleepMeta());
         robotMetaTasks.add(new TendGreenhouseMeta());
         robotMetaTasks.add(new UnloadVehicleEVAMeta());

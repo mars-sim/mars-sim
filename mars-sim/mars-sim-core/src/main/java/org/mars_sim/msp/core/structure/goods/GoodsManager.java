@@ -389,13 +389,13 @@ public class GoodsManager implements Serializable {
             if (r.equals("regolith")) {
             	//System.out.println("regolith's unadjusted totalDemand was " + totalDemand);
             	if (totalDemand < 10D)
-            		totalDemand =  totalDemand + (totalDemand + 1) * REGOLITH_INPUT_FACTOR * 10D;
+            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR * 10D;
             	else if (totalDemand < 100D)
-            		totalDemand =  totalDemand + (totalDemand + 1) * REGOLITH_INPUT_FACTOR;
+            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR;
             	else if (totalDemand < 1000D)
-            		totalDemand =  totalDemand + (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
+            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
             	else if (totalDemand < 10000D)
-            		totalDemand =  totalDemand + (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
+            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
             }
 
             
@@ -473,8 +473,7 @@ public class GoodsManager implements Serializable {
 
     
     // 2015-01-10 Created getTotalDemandAmount()
-    public double getTotalDemandAmount(AmountResource resource, double demand, int solElapsed) {
-    	double projectedDemand = demand;
+    public double getTotalDemandAmount(AmountResource resource, double projectedDemand, int solElapsed) {
     	String r = resource.getName().toLowerCase();
     	
     	// sDemand is the amount of successful demand
