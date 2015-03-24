@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -93,7 +94,31 @@ implements Serializable {
             endTask();
         }
     }
-	
+    public SalvageBuilding(Robot robot) {
+        // Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+        
+        BuildingSalvageMission mission = getMissionNeedingAssistance();
+        if ((mission != null) && canSalvage(robot)) {
+            
+            // Initialize data members.
+            this.stage = mission.getConstructionStage();
+            this.site = mission.getConstructionSite();
+            this.vehicles = mission.getConstructionVehicles();
+            
+            // Determine location for salvage site.
+            Point2D salvageSiteLoc = determineSalvageLocation();
+            setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
+            
+            // Add task phase
+            addPhase(SALVAGE);
+            
+            logger.fine(robot.getName() + " has started the SalvageBuilding task.");
+        }
+        else {
+            endTask();
+        }
+    }	
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -110,16 +135,35 @@ implements Serializable {
         this.site = site;
         this.vehicles = vehicles;
         
+        init();
+        
+        logger.fine(person.getName() + " has started the SalvageBuilding task.");
+    }
+	public SalvageBuilding(Robot robot, ConstructionStage stage, 
+			ConstructionSite site, List<GroundVehicle> vehicles) {
+		// Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+        
+	    // Initialize data members.
+	    this.stage = stage;
+	    this.site = site;
+	    this.vehicles = vehicles;
+	     
+        init();
+        
+        logger.fine(robot.getName() + " has started the SalvageBuilding task.");
+    }
+    
+	public void init() {
+
         // Determine location for salvage site.
         Point2D salvageSiteLoc = determineSalvageLocation();
         setOutsideSiteLocation(salvageSiteLoc.getX(), salvageSiteLoc.getY());
         
         // Add task phase
         addPhase(SALVAGE);
-        
-        logger.fine(person.getName() + " has started the SalvageBuilding task.");
-    }
-    
+	}
+	
     /**
      * Checks if a given person can work on salvaging a building at this time.
      * @param person the person.
@@ -143,10 +187,33 @@ implements Serializable {
         boolean darkRegion = surface.inDarkPolarRegion(person.getCoordinates());
 
         // Check if person's medical condition will not allow task.
-        boolean medical = person.getPerformanceRating() < .5D;
+        boolean performance = person.getPerformanceRating() < .5D;
     
-        return (exitable && (sunlight || darkRegion) && !medical);
+        return (exitable && (sunlight || darkRegion) && !performance);
     }
+    
+    public static boolean canSalvage(Robot robot) {
+        
+        // Check if robot can exit the settlement airlock.
+        boolean exitable = false;
+        Airlock airlock = getWalkableAvailableAirlock(robot);
+        if (airlock != null) {
+            exitable = ExitAirlock.canExitAirlock(robot, airlock);
+        }
+
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        // Check if it is night time outside.
+        boolean sunlight = surface.getSurfaceSunlight(robot.getCoordinates()) > 0;
+        
+        // Check if in dark polar region.
+        boolean darkRegion = surface.inDarkPolarRegion(robot.getCoordinates());
+
+        // Check if robot's medical condition will not allow task.
+        boolean performance = robot.getPerformanceRating() < .5D;
+    
+        return (exitable && (sunlight || darkRegion) && !performance);
+    } 
     
     /**
      * Gets a random building salvage mission that needs assistance.
@@ -204,14 +271,23 @@ implements Serializable {
     
     @Override
     protected void addExperience(double time) {
-        SkillManager manager = person.getMind().getSkillManager();
+    	SkillManager manager = null;
+    	if (person != null) 
+    		manager = person.getMind().getSkillManager();		
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
         
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
         
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = null;
+    	if (person != null) 
+    		nManager = person.getNaturalAttributeManager();		
+		else if (robot != null)
+        	 nManager = robot.getNaturalAttributeManager();
+        
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
@@ -247,7 +323,14 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+    	
+        SkillManager manager = null;
+        if (person != null) 
+        	manager = person.getMind().getSkillManager();			
+		else if (robot != null)
+			manager = robot.getBotMind().getSkillManager();
+   
+        
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
         return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D);
@@ -323,9 +406,14 @@ implements Serializable {
         
         if (shouldEndEVAOperation() || stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
-            if ((luv != null) && luv.getInventory().containsUnit(person)) {
-                returnVehicle();
-            }
+            if (person != null) {
+            	if ((luv != null) && luv.getInventory().containsUnit(person))
+                    returnVehicle();
+            }   			
+			else if (robot != null) {
+				if ((luv != null) && luv.getInventory().containsUnit(robot))
+					returnVehicle();
+			}
             
             setPhase(WALK_BACK_INSIDE);
             return time;
@@ -368,9 +456,18 @@ implements Serializable {
             if (!vehicle.getMalfunctionManager().hasMalfunction()) {
                 if (vehicle instanceof LightUtilityVehicle) {
                     LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
-                    if (tempLuv.getOperator() == null) {
-                        tempLuv.getInventory().storeUnit(person);
-                        tempLuv.setOperator(person);
+                    if (tempLuv.getOperator() == null) {                    	
+
+	                   	 if (person != null) {                   		 
+	                		 tempLuv.getInventory().storeUnit(person);
+	                         tempLuv.setOperator(person);
+	                	 }
+	                     	
+	                     else if (robot != null) {
+	                        tempLuv.getInventory().storeUnit(robot);
+	                        tempLuv.setOperator(robot);
+	                     }
+	                   	 
                         luv = tempLuv;
                         operatingLUV = true;
                         
@@ -392,7 +489,11 @@ implements Serializable {
      * Returns the construction vehicle used to the settlement.
      */
     private void returnVehicle() {
-        luv.getInventory().retrieveUnit(person);
+    	if (person != null) 
+            luv.getInventory().retrieveUnit(person);			
+		else if (robot != null)
+	        luv.getInventory().retrieveUnit(robot);
+        
         luv.setOperator(null);
         operatingLUV = false;
     }

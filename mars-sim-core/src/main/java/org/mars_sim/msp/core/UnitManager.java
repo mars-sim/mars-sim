@@ -875,7 +875,7 @@ implements Serializable {
 
     	if (numChefbot < 4 && num < 2 ) // 0, 1
 			robotType = RobotType.CHEFBOT;
-    	else if (numConstructionbot < 1 && num < 4 ) //  2, 3
+    	else if (numConstructionbot < 3 && num < 4 ) //  2, 3
 			robotType = RobotType.CONSTRUCTIONBOT;
     	else if (numDeliverybot < 1 && num < 5 ) //  4
 			robotType = RobotType.DELIVERYBOT;  

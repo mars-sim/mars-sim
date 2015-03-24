@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.job.Constructionbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -97,13 +98,52 @@ public class SalvageBuildingMeta implements MetaTask {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new SalvageBuilding(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	       
+        double result = 0D;
+
+        if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            
+	            // Check all building salvage missions occurring at the settlement.
+	            try {
+	                List<BuildingSalvageMission> missions = SalvageBuilding.
+	                        getAllMissionsNeedingAssistance(robot.getSettlement());
+	                result = 50D * missions.size();
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
+	            }
+	        }
+	
+	        // Check if an airlock is available
+	        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+	            result = 0D;
+	        }
+	
+	        // Check if it is night time.
+	        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+	            if (!surface.inDarkPolarRegion(robot.getCoordinates()))
+	                result = 0D;
+	        } 
+	        
+	        // Crowded settlement modifier
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = robot.getSettlement();
+	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+	                result *= 2D;
+	            }
+	        }
+	        
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+        }
+        
+        return result;
+    }
 }

@@ -50,6 +50,7 @@ public class MetaMissionUtil {
         // Populate robotMetaMissions list with all meta missions.
         //robotMetaMissions.add(new TradeMeta());
         //robotMetaMissions.add(new TravelToSettlementMeta());
+        robotMetaMissions.add(new BuildingConstructionMissionMeta());
     }    
     
     /**

@@ -25,10 +25,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -128,116 +130,157 @@ implements Serializable {
             // Determine construction site and stage.
             int constructionSkill = startingPerson.getMind().getSkillManager().
                     getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-            ConstructionManager manager = settlement.getConstructionManager();
-            ConstructionValues values = manager.getConstructionValues();
-            double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
-            double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);    
-            ConstructionStageInfo stageInfo = null;
-            
-            if (existingSitesProfit > newSiteProfit) {
-                
-                // Determine which existing construction site to work on.
-                double topSiteProfit = 0D;
-                Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
-                while (i.hasNext()) {
-                    ConstructionSite site = i.next();
-                    double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
-                    if (siteProfit > topSiteProfit) {
-                        constructionSite = site;
-                        topSiteProfit = siteProfit;
-                    }
-                }
-            }
-            else {
-                
-                // Create new site.
-                constructionSite = manager.createNewConstructionSite();
-                    
-                // Determine construction site location and facing.
-                stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
-                if (stageInfo != null) {
-                    
-                    
-                    // Set construction site size.
-                    if (stageInfo.getWidth() > 0D) {
-                        constructionSite.setWidth(stageInfo.getWidth());
-                    }
-                    else {
-                        // Set initial width value that may be modified later.
-                        constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
-                    }
-                    
-                    if (stageInfo.getLength() > 0D) {
-                        constructionSite.setLength(stageInfo.getLength());
-                    }
-                    else {
-                        // Set initial length value that may be modified later.
-                        constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-                    }
-                    
-                    positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
-                       
-                    logger.log(Level.INFO, "New construction site added at " + settlement.getName());
-                }
-                else {
-                    endMission("New construction stage could not be determined.");
-                }
-            }
-                
-            if (constructionSite != null) {
-                    
-                // Determine new stage to work on.
-                if (constructionSite.hasUnfinishedStage()) {
-                    constructionStage = constructionSite.getCurrentConstructionStage(); 
-                    logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
-                }
-                else {
-                    if (stageInfo == null) {
-                        stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
-                    }
-                       
-                    if (stageInfo != null) {
-                        constructionStage = new ConstructionStage(stageInfo, constructionSite);
-                        constructionSite.addNewStage(constructionStage);
-                        values.clearCache();
-                        logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
-                    }
-                    else {
-                        endMission("New construction stage could not be determined.");
-                    }
-                }
-                    
-                // Mark site as undergoing construction.
-                if (constructionStage != null) {
-                    constructionSite.setUndergoingConstruction(true);
-                }
-            }
-            else {
-                endMission("Construction site could not be found or created.");
-            }
-            
-            if (!isDone()) {
-                // Reserve construction vehicles.
-                reserveConstructionVehicles();
-            }
-             
-            if (!isDone()) {
-                // Retrieve construction LUV attachment parts.
-                retrieveConstructionLUVParts();
-            }
+
+            init(constructionSkill);
         }
         
-        // Add phases.
-        addPhase(PREPARE_SITE_PHASE);
-        addPhase(CONSTRUCTION_PHASE);
+        init2();
         
-        // Set initial mission phase.
-        setPhase(PREPARE_SITE_PHASE);
         setPhaseDescription(Msg.getString(
         		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
                 , settlement.getName()));
     }
-    
+	public BuildingConstructionMission(Robot startingRobot) {
+        // Use Mission constructor.
+        super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
+        
+        if (!isDone()) {
+            // Sets the settlement.
+            settlement = startingRobot.getSettlement();
+            
+            // Sets the mission capacity.
+            setMissionCapacity(MAX_PEOPLE);
+            int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
+            if (availableSuitNum < getMissionCapacity()) {
+                setMissionCapacity(availableSuitNum);
+            }
+            
+            // Recruit additional people to mission.
+            recruitRobotsForMission(startingRobot);
+            
+            // Determine construction site and stage.
+            int constructionSkill = startingRobot.getBotMind().getSkillManager().
+                    getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+
+            init(constructionSkill);
+        }
+        
+        init2();
+        
+        setPhaseDescription(Msg.getString(
+        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+                , settlement.getName()));
+    }  
+	
+	public void init2() {
+        // Add phases.
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);        
+        // Set initial mission phase.
+        setPhase(PREPARE_SITE_PHASE);
+	}
+	
+	public void init(int constructionSkill) {
+			
+        ConstructionManager manager = settlement.getConstructionManager();
+        ConstructionValues values = manager.getConstructionValues();
+        double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
+        double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);    
+        ConstructionStageInfo stageInfo = null;
+        
+		if (existingSitesProfit > newSiteProfit) {
+		    
+		    // Determine which existing construction site to work on.
+		    double topSiteProfit = 0D;
+		    Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
+		    while (i.hasNext()) {
+		        ConstructionSite site = i.next();
+		        double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
+		        if (siteProfit > topSiteProfit) {
+		            constructionSite = site;
+		            topSiteProfit = siteProfit;
+		        }
+		    }
+		}
+		else {
+		    
+		    // Create new site.
+		    constructionSite = manager.createNewConstructionSite();
+		        
+		    // Determine construction site location and facing.
+		    stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+		    if (stageInfo != null) {
+		        
+		        
+		        // Set construction site size.
+		        if (stageInfo.getWidth() > 0D) {
+		            constructionSite.setWidth(stageInfo.getWidth());
+		        }
+		        else {
+		            // Set initial width value that may be modified later.
+		            constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+		        }
+		        
+		        if (stageInfo.getLength() > 0D) {
+		            constructionSite.setLength(stageInfo.getLength());
+		        }
+		        else {
+		            // Set initial length value that may be modified later.
+		            constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+		        }
+		        
+		        positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+		           
+		        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+		    }
+		    else {
+		        endMission("New construction stage could not be determined.");
+		    }
+		}
+		    
+		if (constructionSite != null) {
+		        
+		    // Determine new stage to work on.
+		    if (constructionSite.hasUnfinishedStage()) {
+		        constructionStage = constructionSite.getCurrentConstructionStage(); 
+		        logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
+		    }
+		    else {
+		        if (stageInfo == null) {
+		            stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+		        }
+		           
+		        if (stageInfo != null) {
+		            constructionStage = new ConstructionStage(stageInfo, constructionSite);
+		            constructionSite.addNewStage(constructionStage);
+		            values.clearCache();
+		            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
+		        }
+		        else {
+		            endMission("New construction stage could not be determined.");
+		        }
+		    }
+		        
+		    // Mark site as undergoing construction.
+		    if (constructionStage != null) {
+		        constructionSite.setUndergoingConstruction(true);
+		    }
+		}
+		else {
+		    endMission("Construction site could not be found or created.");
+		}
+		
+		if (!isDone()) {
+		    // Reserve construction vehicles.
+		    reserveConstructionVehicles();
+		}
+		 
+		if (!isDone()) {
+		    // Retrieve construction LUV attachment parts.
+		    retrieveConstructionLUVParts();
+		}
+	}
+	
     /**
      * Constructor
      * @param members the mission members.
@@ -249,7 +292,7 @@ implements Serializable {
      * @param facing the facing of the new construction site (ignored if existing site).
      * @param vehicles the construction vehicles.
      */
-    public BuildingConstructionMission(Collection<Person> members, Settlement settlement, 
+/* public BuildingConstructionMission(Collection<Person> members, Settlement settlement, 
             ConstructionSite site, ConstructionStageInfo stageInfo, double xLoc, double yLoc,
             double facing, List<GroundVehicle> vehicles) {
         
@@ -363,7 +406,157 @@ implements Serializable {
         		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$ 
                 , settlement.getName()));
     }
-    
+    */
+    public BuildingConstructionMission(Collection<Unit> members, Settlement settlement, 
+            ConstructionSite site, ConstructionStageInfo stageInfo, double xLoc, double yLoc,
+            double facing, List<GroundVehicle> vehicles) {
+        
+        // Use Mission constructor.
+        super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);
+        
+        this.settlement = settlement;
+        
+        ConstructionManager manager = settlement.getConstructionManager();
+        if (site != null) {
+            constructionSite = site;
+        }
+        else {
+            logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+            constructionSite = manager.createNewConstructionSite();
+            
+            if (constructionSite != null) {
+                
+                // Set construction site size.
+                if (stageInfo.getWidth() > 0D) {
+                    constructionSite.setWidth(stageInfo.getWidth());
+                }
+                else {
+                    // Set initial width value that may be modified later.
+                    constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+                }
+                
+                if (stageInfo.getLength() > 0D) {
+                    constructionSite.setLength(stageInfo.getLength());
+                }
+                else {
+                    // Set initial length value that may be modified later.
+                    constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+                }
+                
+                int bestConstructionSkill = 0;
+                
+                Iterator<Unit> i = members.iterator();
+                
+             	Person person = null;
+            	Robot robot = null;
+            	
+                while (i.hasNext()) {
+                 	                    	
+        	        Unit unit = i.next();
+        	        if (unit instanceof Person) {
+        	        	person = (Person) unit;
+        	        	person.getMind().setMission(this);
+        	        }
+        	        else if (unit instanceof Robot) {
+        	        	robot = (Robot) unit;
+        	        	robot.getBotMind().setMission(this);
+        	        }      
+                	
+                    int constructionSkill = 0;
+                    
+                	if (person != null)
+                    	constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
+                            SkillType.CONSTRUCTION);
+                	else if (robot != null)
+                		constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
+                				SkillType.CONSTRUCTION);
+                	
+                    if (constructionSkill > bestConstructionSkill) {
+                        bestConstructionSkill = constructionSkill;
+                    }
+                }
+                
+                // Set new construction site location, length and facing.
+                // TODO: Replace auto-positioning with set position/facing from parameters
+                // when mission creation wizard supports this.
+                positionNewConstructionSite(constructionSite, stageInfo, bestConstructionSkill);
+            }
+            else {
+                endMission("Construction site could not be created.");
+            }
+        }
+        
+        if (constructionSite.hasUnfinishedStage()) {
+            constructionStage = constructionSite.getCurrentConstructionStage();
+            logger.log(Level.INFO, "Using existing construction stage: " + constructionStage);
+        }
+        else {
+            constructionStage = new ConstructionStage(stageInfo, constructionSite);
+            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
+            try {
+                constructionSite.addNewStage(constructionStage);
+            }
+            catch (Exception e) {
+                endMission("Construction stage could not be created.");
+            }
+        }
+        
+        // Mark site as undergoing construction.
+        if (constructionStage != null) {
+            constructionSite.setUndergoingConstruction(true);
+        }
+        
+        // Add mission members.
+        Iterator<Unit> i = members.iterator();
+
+     	Person person = null;
+    	Robot robot = null;
+    	
+        while (i.hasNext()) {
+         	                    	
+	        Unit unit = i.next();
+	        if (unit instanceof Person) {
+	        	person = (Person) unit;
+	        	person.getMind().setMission(this);
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	robot.getBotMind().setMission(this);
+	        }      
+        }
+        
+        // Reserve construction vehicles.
+        constructionVehicles = vehicles;
+        Iterator<GroundVehicle> j = vehicles.iterator();
+        while (j.hasNext()) {
+            GroundVehicle vehicle = j.next();
+            vehicle.setReservedForMission(true);
+            if (settlement.getInventory().containsUnit(vehicle)) {
+                settlement.getInventory().retrieveUnit(vehicle);
+            }
+            else {
+                logger.severe("Unable to retrieve " + vehicle.getName() + 
+                        " cannot be retrieved from " + settlement.getName() + 
+                        " inventory.");
+                endMission("Construction vehicle " + vehicle.getName() + 
+                        " could not be retrieved from settlement inventory.");
+            }
+        }
+        
+        // Retrieve construction LUV attachment parts.
+        retrieveConstructionLUVParts();
+        
+        // Add phases.
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);
+        
+        // Set initial mission phase.
+        setPhase(PREPARE_SITE_PHASE);
+        setPhaseDescription(Msg.getString(
+        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$ 
+                , settlement.getName()));
+    }
+        
     /**
      * Reserve construction vehicles for the mission.
      */
@@ -453,6 +646,18 @@ implements Serializable {
         return false;
     }
     
+    @Override
+    protected boolean isCapableOfMission(Robot robot) {
+        if (super.isCapableOfMission(robot)) {
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (robot.getSettlement() == settlement) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }    
+    
     /**
      * Checks if a light utility vehicle (LUV) is available for the mission.
      * @param settlement the settlement to check.
@@ -508,14 +713,30 @@ implements Serializable {
             constructionPhase(person);
         }
     }
-    
+    @Override
+    protected void performPhase(Robot robot) {
+        super.performPhase(robot);
+        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+            prepareSitePhase(robot);
+        }
+        else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+            constructionPhase(robot);
+        }
+    }    
     /**
      * Performs the prepare site phase.
      * @param person the person performing the phase.
      * @throws MissionException if error performing the phase.
      */
     private void prepareSitePhase(Person person) {
-
+    	prepareSitePhase();
+    }
+    
+    private void prepareSitePhase(Robot robot) {
+    	prepareSitePhase();
+    }    
+    
+    private void prepareSitePhase() {
         // Load all available materials needed for construction.
         loadAvailableConstructionMaterials();
         
@@ -528,7 +749,7 @@ implements Serializable {
         if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
             setPhaseEnded(true);
         }
-    }
+    }  
     
     /**
      * Load remaining required construction materials into site that are available at settlement inventory.
@@ -615,20 +836,57 @@ implements Serializable {
             }
         }
         
-        if (constructionStage.isComplete()) {
-            setPhaseEnded(true);
-            settlement.getConstructionManager().getConstructionValues().clearCache();
-            
-            // Construct building if all site construction complete.
-            if (constructionSite.isAllConstructionComplete()) {
+        constructionStageComplete();
+    }
+    
+    private void constructionPhase(Robot robot) {
 
-                Building building = constructionSite.createBuilding(settlement.getBuildingManager());
-                settlement.getConstructionManager().removeConstructionSite(constructionSite);
-                settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_EVENT, building);
-                logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
-                        " building constructed at " + settlement.getName());
+        // Anyone in the crew or a single person at the home settlement has a 
+        // dangerous illness, end phase.
+        if (hasEmergency()) {
+            setPhaseEnded(true);
+        }
+        
+        // Load available construction materials into construction site.
+        loadAvailableConstructionMaterials();
+        
+        // Check if further work can be done on construction stage.
+        if (constructionStage.getCompletableWorkTime() <= constructionStage.getCompletedWorkTime()) {
+            setPhaseEnded(true);
+        }
+        
+        if (!getPhaseEnded()) {
+            
+            // 75% chance of assigning task, otherwise allow break.
+            if (RandomUtil.lessThanRandPercent(75D)) {
+
+                // Assign construction task to robot.
+                if (ConstructBuilding.canConstruct(robot, constructionSite)) {
+                    assignTask(robot, new ConstructBuilding(robot, constructionStage, 
+                            constructionSite, constructionVehicles));
+                }
             }
         }
+        
+        constructionStageComplete();
+  
+    }   
+    
+    public void constructionStageComplete() { 
+	    if (constructionStage.isComplete()) {
+	        setPhaseEnded(true);
+	        settlement.getConstructionManager().getConstructionValues().clearCache();
+	        
+	        // Construct building if all site construction complete.
+	        if (constructionSite.isAllConstructionComplete()) {
+	
+	            Building building = constructionSite.createBuilding(settlement.getBuildingManager());
+	            settlement.getConstructionManager().removeConstructionSite(constructionSite);
+	            settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_EVENT, building);
+	            logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
+	                    " building constructed at " + settlement.getName());
+	        }
+	    }
     }
     
     @Override

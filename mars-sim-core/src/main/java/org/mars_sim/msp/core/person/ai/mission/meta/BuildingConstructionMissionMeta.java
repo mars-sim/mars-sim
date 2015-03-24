@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Constructionbot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -124,13 +125,79 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
 	@Override
 	public Mission constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+        return new BuildingConstructionMission(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+        
+        double result = 0D;
+        
+        if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
+	        // Check if robot is in a settlement.
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = robot.getSettlement();
+	        
+	            // Check if available light utility vehicles.
+	            boolean reservableLUV = BuildingConstructionMission.isLUVAvailable(settlement);
+	            
+	            // Check if enough available people at settlement for mission.
+	/*
+	            int availablePeopleNum = 0;
+	            Iterator<Robot> i = settlement.getRobots().iterator();
+	            while (i.hasNext()) {
+	                Robot member = i.next();
+	                boolean noMission = !member.getBotMind().hasActiveMission();
+	                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+	                if (noMission && isFit) availablePeopleNum++;
+	            }
+	            boolean enoughPeople = (availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE);
+	*/            
+	            // Check if settlement has construction override flag set.
+	            boolean constructionOverride = settlement.getConstructionOverride();
+	            
+	            // No construction until after the first ten sols of the simulation.
+	            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+	            double totalTimeSols = totalTimeMillisols / 1000D;
+	            boolean firstTenSols = (totalTimeSols < 10D);
+	            
+	            if (reservableLUV  && !constructionOverride && !firstTenSols) {
+	                
+	                try {
+	                    int constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+	                    ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+	                    
+	                    // Add construction profit for existing or new construction sites.
+	                    double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+	                    if (constructionProfit > 0D) {
+	                        result = 10D;
+	                        
+	                        double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
+	                        double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
+	                        
+	                        if (newSiteProfit > existingSiteProfit) {
+	                            // Divide profit by 10 to the power of the number of existing construction sites.
+	                            ConstructionManager manager = settlement.getConstructionManager();
+	                            int numSites = manager.getConstructionSites().size();
+	                            result/= Math.pow(10, numSites);
+	                        }
+	                    }
+	                }
+	                catch (Exception e) {
+	                    logger.log(Level.SEVERE, "Error getting construction site.", e);
+	                }
+	            }       
+	            
+	            // Check if min number of EVA suits at settlement.
+	            if (Mission.getNumberAvailableEVASuitsAtSettlement(robot.getSettlement()) < 
+	                    BuildingConstructionMission.MIN_PEOPLE) {
+	                result = 0D;
+	            }
+	            
+	        }
+        
+        return result;
+    }
 }

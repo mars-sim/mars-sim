@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.08 2015-03-02
+ * @version 3.08 2015-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -224,9 +224,16 @@ implements Serializable {
 
         BuildingConstructionMission result = null;
 
-        List<BuildingConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(
+        List<BuildingConstructionMission> constructionMissions = null;
+        
+        if (person != null)
+        	constructionMissions = getAllMissionsNeedingAssistance(
                 person.getSettlement());
 
+        else if (robot != null)
+        	constructionMissions = getAllMissionsNeedingAssistance(
+                person.getSettlement());
+        
         if (constructionMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
             result = (BuildingConstructionMission) constructionMissions.get(index);
@@ -356,8 +363,17 @@ implements Serializable {
                 if (vehicle instanceof LightUtilityVehicle) {
                     LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
                     if (tempLuv.getOperator() == null) {
-                        tempLuv.getInventory().storeUnit(person);
-                        tempLuv.setOperator(person);
+                    	
+                    	 if (person != null) {                   		 
+                    		 tempLuv.getInventory().storeUnit(person);
+                             tempLuv.setOperator(person);
+                    	 }
+                         	
+                         else if (robot != null) {
+	                        tempLuv.getInventory().storeUnit(robot);
+	                        tempLuv.setOperator(robot);
+	                     }
+                        
                         luv = tempLuv;
                         operatingLUV = true;
 

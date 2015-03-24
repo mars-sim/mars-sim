@@ -758,7 +758,62 @@ implements Serializable {
 
 		if (getPeopleNumber() < minPeople) endMission("Not enough members");
 	}
+	
+	protected void recruitRobotsForMission(Robot startingRobot) {
 
+		int count = 0;
+		while (count < 4) {
+			count++;
+
+			// Get all people qualified for the mission.
+			Collection<Robot> qualifiedRobots = new ConcurrentLinkedQueue<Robot>();
+			Iterator <Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
+			while (i.hasNext()) {
+				Robot robot = i.next();
+				if (isCapableOfMission(robot)) {
+					qualifiedRobots.add(robot);
+				}
+			}
+
+			// Recruit the most qualified and most liked people first.
+			try {
+				while (qualifiedRobots.size() > 0) {
+					double bestRobotValue = 0D;
+					Robot bestRobot = null;
+					Iterator<Robot> j = qualifiedRobots.iterator();
+					while (j.hasNext() && (getRobotsNumber() < missionCapacity)) {
+						Robot robot = j.next();
+						// Determine the person's mission qualification.
+						double qualification = getMissionQualification(robot) * 100D;
+
+						// Determine how much the recruiter likes the person.
+						//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+						//double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
+
+						// Check if robot is the best recruit.
+						double robotValue = qualification ;
+						if (robotValue > bestRobotValue) {
+							bestRobot = robot;
+							bestRobotValue = robotValue;
+					}
+					}
+
+					// Try to recruit best person available to the mission.
+					if (bestRobot != null) {
+						recruitRobot(startingRobot, bestRobot);
+						qualifiedRobots.remove(bestRobot);
+					}
+					else break;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+
+		if (getRobotsNumber() < minRobots) endMission("Not enough members");
+	}
+	
 	/**
 	 * Attempt to recruit a new person into the mission.
 	 * @param recruiter the person doing the recruiting.
@@ -791,7 +846,32 @@ implements Serializable {
 			}
 		}
 	}
+	private void recruitRobot(Robot recruiter, Robot recruitee) {
+		if (isCapableOfMission(recruitee)) {
+			// Get mission qualification modifier.
+			double qualification = getMissionQualification(recruitee) * 100D;
 
+			//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+			// Get the recruitee's social opinion of the recruiter.
+			//double recruiterLikability = relationshipManager.getOpinionOfRobot(recruitee, recruiter);
+
+			// Get the recruitee's average opinion of all the current mission members.
+			//double groupLikability = relationshipManager.getAverageOpinionOfRobot(recruitee, people);
+
+			double recruitmentChance = qualification;
+			if (recruitmentChance > 100D) {
+				recruitmentChance = 100D;
+			}
+			else if (recruitmentChance < 0D) {
+				recruitmentChance = 0D;
+			}
+
+			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
+				recruitee.getBotMind().setMission(this);
+			}
+		}
+	}
 	/**
 	 * Checks to see if a person is capable of joining a mission.
 	 * @param person the person to check.
@@ -816,8 +896,8 @@ implements Serializable {
 		// Make sure robot isn't already on a mission.
 		if (robot.getBotMind().getMission() == null) {
 			// Make sure robot doesn't have any serious health problems.
-			//if (!person.getPhysicalCondition().hasSeriousMedicalProblems())
-			//	return true;			
+			if (!robot.getPhysicalCondition().hasSeriousMedicalProblems())
+				return true;			
 		}
 		return false;
 	}
