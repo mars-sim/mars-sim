@@ -198,7 +198,7 @@ implements Serializable {
         	vehicle.setReservedForMaintenance(false);
         	if (vehicle instanceof Crewable) {
         	    Crewable crewableVehicle = (Crewable) vehicle;
-        	    if (crewableVehicle.getCrewNum() == 0) {
+        	    if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
         	        garage.removeVehicle(vehicle);
         	    }
         	}

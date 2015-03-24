@@ -297,7 +297,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         // Record current object-relative crew positions if vehicle is crewable.
         if (this instanceof Crewable) {
             Crewable crewable = (Crewable) this;
-            result = new HashMap<Robot, Point2D>(crewable.getCrewNum());
+            result = new HashMap<Robot, Point2D>(crewable.getRobotCrewNum());
             Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
             while (i.hasNext()) {
                 Robot robotCrewmember = i.next();

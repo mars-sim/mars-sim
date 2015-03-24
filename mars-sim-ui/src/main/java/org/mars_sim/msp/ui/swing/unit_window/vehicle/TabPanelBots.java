@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
- * CrewTabPanel.java
- * @version 3.07 2014-12-06
-
- * @author Scott Davis
+ * TabPanelBots.java
+ * @version 3.08 2015-03-24
+ * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
@@ -27,20 +26,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
+import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /** 
- * The CrewTabPanel is a tab panel for a vehicle's crew information.
+ * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
-public class TabPanelCrew
+public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {
 
@@ -49,11 +47,11 @@ implements MouseListener, ActionListener {
 
 	private JLabel crewNumLabel;
 	private JLabel crewCapLabel;
-	private DefaultListModel<Person> crewListModel;
+	private DefaultListModel<Robot> crewListModel;
 	//private DefaultListModel<Unit> crewListModel;
-	private JList<Person> crewList;
+	private JList<Robot> crewList;
 	//private JList<Unit> crewList;
-	private Collection<Person> crewCache;
+	private Collection<Robot> crewCache;
 	//private Collection<Unit> crewCache;
 
 	private int crewNumCache;
@@ -64,12 +62,12 @@ implements MouseListener, ActionListener {
 	 * @param vehicle the vehicle.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelCrew(Vehicle vehicle, MainDesktopPane desktop) { 
+	public TabPanelBots(Vehicle vehicle, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelCrew.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelCrew.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
 			vehicle, desktop
 		);
 
@@ -81,13 +79,13 @@ implements MouseListener, ActionListener {
 		topContentPanel.add(crewCountPanel);
 
 		// Create crew num label
-		crewNumCache = crewable.getCrewNum();
-		crewNumLabel = new JLabel(Msg.getString("TabPanelCrew.crew", crewNumCache), JLabel.CENTER); //$NON-NLS-1$
+		crewNumCache = crewable.getRobotCrewNum();
+		crewNumLabel = new JLabel(Msg.getString("TabPanelBots.crew", crewNumCache), JLabel.CENTER); //$NON-NLS-1$
 		crewCountPanel.add(crewNumLabel);
 
 		// Create crew capacity label
-		crewCapacityCache = crewable.getCrewCapacity();
-		crewCapLabel = new JLabel(Msg.getString("TabPanelCrew.crewCapacity", crewCapacityCache), JLabel.CENTER); //$NON-NLS-1$
+		crewCapacityCache = crewable.getRobotCrewCapacity();
+		crewCapLabel = new JLabel(Msg.getString("TabPanelBots.crewCapacity", crewCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		crewCountPanel.add(crewCapLabel);
 
 		// Create crew display panel
@@ -101,16 +99,16 @@ implements MouseListener, ActionListener {
 		crewDisplayPanel.add(crewScrollPanel);
 
 		// Create crew list model
-		crewListModel = new DefaultListModel<Person>();
+		crewListModel = new DefaultListModel<Robot>();
 		//crewListModel = new DefaultListModel<Unit>();
-		crewCache = crewable.getCrew();
+		crewCache = crewable.getRobotCrew();
 		//crewCache = crewable.getUnitCrew();
-		Iterator<Person> i = crewCache.iterator();
+		Iterator<Robot> i = crewCache.iterator();
 		//Iterator<Unit> i = crewCache.iterator();
 		while (i.hasNext()) crewListModel.addElement(i.next());
 
 		// Create crew list
-		crewList = new JList<Person>(crewListModel);
+		crewList = new JList<Robot>(crewListModel);
 		//crewList = new JList<Unit>(crewListModel);
 		crewList.addMouseListener(this);
 		crewScrollPanel.setViewportView(crewList);
@@ -119,7 +117,7 @@ implements MouseListener, ActionListener {
 		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
-		monitorButton.setToolTipText(Msg.getString("TabPanelCrew.tooltip.monitor")); //$NON-NLS-1$
+		monitorButton.setToolTipText(Msg.getString("TabPanelBots.tooltip.monitor")); //$NON-NLS-1$
 		crewDisplayPanel.add(monitorButton);
 	}
 
@@ -131,24 +129,24 @@ implements MouseListener, ActionListener {
 		Crewable crewable = (Crewable) vehicle;
 
 		// Update crew num
-		if (crewNumCache != crewable.getCrewNum() ) {
-			crewNumCache = crewable.getCrewNum() ;
-			crewNumLabel.setText(Msg.getString("TabPanelCrew.crew", crewNumCache)); //$NON-NLS-1$
+		if (crewNumCache !=  crewable.getRobotCrewNum()) {
+			crewNumCache = crewable.getRobotCrewNum();
+			crewNumLabel.setText(Msg.getString("TabPanelBots.crew", crewNumCache)); //$NON-NLS-1$
 		}
 
 		// Update crew capacity
-		if (crewCapacityCache != crewable.getCrewCapacity()) {
-			crewCapacityCache = crewable.getCrewCapacity();
-			crewCapLabel.setText(Msg.getString("TabPanelCrew.crewCapacity", crewCapacityCache)); //$NON-NLS-1$
+		if (crewCapacityCache != crewable.getRobotCrewCapacity()) {
+			crewCapacityCache =  crewable.getRobotCrewCapacity();
+			crewCapLabel.setText(Msg.getString("TabPanelBots.crewCapacity", crewCapacityCache)); //$NON-NLS-1$
 		}
 
 		// Update crew list
 		//if (!Arrays.equals(crewCache.toArray(), crewable.getUnitCrew().toArray())) {
-		if (!Arrays.equals(crewCache.toArray(), crewable.getCrew().toArray())) {
+		if (!Arrays.equals(crewCache.toArray(), crewable.getRobotCrew().toArray())) {
 			//crewCache = crewable.getUnitCrew();
-			crewCache = crewable.getCrew();
+			crewCache = crewable.getRobotCrew();
 			crewListModel.clear();
-			Iterator<Person> i = crewCache.iterator();
+			Iterator<Robot> i = crewCache.iterator();
 			//Iterator<Unit> i = crewCache.iterator();
 			while (i.hasNext()) crewListModel.addElement(i.next());
 		}
@@ -163,7 +161,7 @@ implements MouseListener, ActionListener {
 		// If the crew monitor button was pressed, create tab in monitor tool.
 		Vehicle vehicle = (Vehicle) unit;
 		Crewable crewable = (Crewable) vehicle;
-		desktop.addModel(new PersonTableModel(crewable));
+		desktop.addModel(new RobotTableModel(crewable));
 	}
 
 	/** 
@@ -173,8 +171,8 @@ implements MouseListener, ActionListener {
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open person window.
 		if (event.getClickCount() >= 2) {
-			Person person = (Person) crewList.getSelectedValue();
-			if (person != null) desktop.openUnitWindow(person, false);
+			Robot robot= (Robot) crewList.getSelectedValue();
+			if (robot != null) desktop.openUnitWindow(robot, false);
 		}
 	}
 
