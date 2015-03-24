@@ -49,8 +49,8 @@ implements Serializable {
 		// Add architect-related missions.
 		jobMissionStarts.add(BuildingConstructionMission.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
-		//jobMissionStarts.add(BuildingSalvageMission.class);
-		//jobMissionJoins.add(BuildingSalvageMission.class);
+		jobMissionStarts.add(BuildingSalvageMission.class);
+		jobMissionJoins.add(BuildingSalvageMission.class);
 
 	}
 

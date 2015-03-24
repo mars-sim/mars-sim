@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -265,10 +266,11 @@ implements ActionListener {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		//Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		Collection<Unit> units = new ConcurrentLinkedQueue<Unit>();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) 
-			people.add((Person) membersTableModel.getUnit(x));
-		getWizard().getMissionData().setMembers(people);
+			units.add((Unit) membersTableModel.getUnit(x));
+		getWizard().getMissionData().setMixedMembers(units);
 		return true;
 	}
 

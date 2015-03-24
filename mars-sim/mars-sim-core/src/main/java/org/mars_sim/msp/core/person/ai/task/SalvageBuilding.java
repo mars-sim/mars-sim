@@ -222,9 +222,15 @@ implements Serializable {
     private BuildingSalvageMission getMissionNeedingAssistance() {
         
         BuildingSalvageMission result = null;
+           
+        List<BuildingSalvageMission> salvageMissions = null;
         
-        List<BuildingSalvageMission> salvageMissions = getAllMissionsNeedingAssistance(
+        if (person != null)
+        	salvageMissions = getAllMissionsNeedingAssistance(
                 person.getSettlement());
+        else if (robot != null)
+        	salvageMissions = getAllMissionsNeedingAssistance(
+                robot.getSettlement());
         
         if (salvageMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(salvageMissions.size() - 1);
@@ -328,8 +334,7 @@ implements Serializable {
         if (person != null) 
         	manager = person.getMind().getSkillManager();			
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
-   
+			manager = robot.getBotMind().getSkillManager(); 
         
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -366,7 +371,12 @@ implements Serializable {
             double chance = BASE_LUV_ACCIDENT_CHANCE;
             
             // Driving skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            int skill = 0;
+            if (person != null) 
+            	skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);	
+    		else if (robot != null)
+    			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            
             if (skill <= 3) {
                 chance *= (4 - skill);
             }

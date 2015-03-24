@@ -56,7 +56,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the type info label.
-		JLabel typeInfoLabel = new JLabel("Select mission type.");
+		JLabel typeInfoLabel = new JLabel("Select Mission Type");
 		typeInfoLabel.setFont(typeInfoLabel.getFont().deriveFont(Font.BOLD));
 		typeInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(typeInfoLabel);
@@ -72,6 +72,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		
 		// Create the mission types.
 		String[] missionTypes = MissionDataBean.getMissionTypes();
+		sortStringBubble(missionTypes);
 		String[] displayMissionTypes = new String[missionTypes.length + 1];
 		displayMissionTypes[0] = "";
         System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
@@ -85,7 +86,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the description info label.
-		descriptionInfoLabel = new JLabel("Edit mission description (optional).");
+		descriptionInfoLabel = new JLabel("Edit Mission Description (Optional)");
 		descriptionInfoLabel.setFont(descriptionInfoLabel.getFont().deriveFont(Font.BOLD));
 		descriptionInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionInfoLabel.setEnabled(false);
@@ -110,6 +111,28 @@ class TypePanel extends WizardPanel implements ItemListener {
 		// Add a vertical glue.
 		add(Box.createVerticalGlue());
 	}
+	
+	public static void sortStringBubble( String  x [ ] )
+    {
+          int j;
+          boolean flag = true;  // will determine when the sort is finished
+          String temp;
+
+          while ( flag )
+          {
+                flag = false;
+                for ( j = 0;  j < x.length - 1;  j++ )
+                {
+                        if ( x [ j ].compareToIgnoreCase( x [ j+1 ] ) > 0 )
+                        {                                             // ascending sort
+                                    temp = x [ j ];
+                                    x [ j ] = x [ j+1];     // swapping
+                                    x [ j+1] = temp; 
+                                    flag = true;
+                         } 
+                 } 
+          } 
+    } 
 	
 	/**
 	 * Invoked when an item has been selected or deselected by the user.

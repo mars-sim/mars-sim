@@ -134,12 +134,17 @@ implements Serializable {
             init(constructionSkill);
         }
         
-        init2();
+        // Add phases.
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);        
+        // Set initial mission phase.
+        setPhase(PREPARE_SITE_PHASE);
         
         setPhaseDescription(Msg.getString(
         		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
                 , settlement.getName()));
     }
+	
 	public BuildingConstructionMission(Robot startingRobot) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
@@ -165,20 +170,17 @@ implements Serializable {
             init(constructionSkill);
         }
         
-        init2();
+        // Add phases.
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);        
+        // Set initial mission phase.
+        setPhase(PREPARE_SITE_PHASE);
         
         setPhaseDescription(Msg.getString(
         		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
                 , settlement.getName()));
     }  
 	
-	public void init2() {
-        // Add phases.
-        addPhase(PREPARE_SITE_PHASE);
-        addPhase(CONSTRUCTION_PHASE);        
-        // Set initial mission phase.
-        setPhase(PREPARE_SITE_PHASE);
-	}
 	
 	public void init(int constructionSkill) {
 			
@@ -412,10 +414,14 @@ implements Serializable {
             double facing, List<GroundVehicle> vehicles) {
         
         // Use Mission constructor.
+        //super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);       
         super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);
         
         this.settlement = settlement;
         
+     	Person person = null;
+    	Robot robot = null;
+    	
         ConstructionManager manager = settlement.getConstructionManager();
         if (site != null) {
             constructionSite = site;
@@ -446,10 +452,7 @@ implements Serializable {
                 int bestConstructionSkill = 0;
                 
                 Iterator<Unit> i = members.iterator();
-                
-             	Person person = null;
-            	Robot robot = null;
-            	
+
                 while (i.hasNext()) {
                  	                    	
         	        Unit unit = i.next();
@@ -508,9 +511,6 @@ implements Serializable {
         
         // Add mission members.
         Iterator<Unit> i = members.iterator();
-
-     	Person person = null;
-    	Robot robot = null;
     	
         while (i.hasNext()) {
          	                    	

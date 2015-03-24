@@ -49,7 +49,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
-	private Collection<Unit> mixedMemebers;
+	private Collection<Unit> mixedMembers;
 	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
@@ -75,7 +75,7 @@ class MissionDataBean {
     private Person leadResearcher;
     private ScientificStudy study;
     private Map<Good, Integer> emergencyGoods;
-	
+
 	/**
 	 * Creates a mission from the mission data.
 	 */
@@ -83,7 +83,7 @@ class MissionDataBean {
 
 	    Mission mission = null;
 	    if (TRAVEL_MISSION.equals(type)) {
-	        mission = new TravelToSettlement(mixedMemebers, startingSettlement, destinationSettlement, rover, 
+	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover, 
 	                description);
 	    }
 	    else if (RESCUE_MISSION.equals(type)) {
@@ -105,14 +105,14 @@ class MissionDataBean {
 	        mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (TRADE_MISSION.equals(type)) {
-	        mission = new Trade(mixedMemebers, startingSettlement, destinationSettlement, rover, description, 
+	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description, 
 	                sellGoods, buyGoods);
 	    }
 	    else if (MINING_MISSION.equals(type)) {
 	        mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
 	    }
 	    else if (CONSTRUCTION_MISSION.equals(type)) {
-	        mission = new BuildingConstructionMission(mixedMemebers, constructionSettlement, constructionSite, 
+	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite, 
 	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing, 
 	                constructionVehicles);
 	    }
@@ -125,7 +125,7 @@ class MissionDataBean {
 	                rover, fieldSite, description);
 	    }
 	    else if (SALVAGE_MISSION.equals(type)) {
-	        mission = new BuildingSalvageMission(members, salvageSettlement, salvageBuilding, salvageSite, 
+	        mission = new BuildingSalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite, 
 	                salvageVehicles);
 	    }
 	    else if (EMERGENCY_SUPPLY_MISSION.equals(type)) {
@@ -266,7 +266,9 @@ class MissionDataBean {
 	Collection<Person> getMembers() {
 		return members;
 	}
-	
+	Collection<Unit> getMixedMembers() {
+		return mixedMembers;
+	}	
 	/**
 	 * Sets the mission members.
 	 * @param members the members.
@@ -275,6 +277,9 @@ class MissionDataBean {
 		this.members = members;
 	}
 	
+	void setMixedMembers(Collection<Unit> mixedMembers) {
+		this.mixedMembers = mixedMembers;
+	}
 	/**
 	 * Gets the destination settlement.
 	 * @return destination settlement.
