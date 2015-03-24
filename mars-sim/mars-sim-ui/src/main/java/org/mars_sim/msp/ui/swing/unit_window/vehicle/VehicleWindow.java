@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-03-24
  * @author Scott Davis
  */
 
@@ -41,7 +40,13 @@ public class VehicleWindow extends UnitWindow {
         
         // Add tab panels
         addTabPanel(new NavigationTabPanel(vehicle, desktop));
-        if (vehicle instanceof Crewable) addTabPanel(new TabPanelCrew(vehicle, desktop));
+        if (vehicle instanceof Crewable) {
+        	Crewable crewableVehicle = (Crewable) vehicle;
+            if (crewableVehicle.getCrewNum() > 0) 
+            	addTabPanel(new TabPanelCrew(vehicle, desktop));
+            else if (crewableVehicle.getRobotCrewNum() > 0)
+            	addTabPanel(new TabPanelBots(vehicle, desktop));            	       
+        }
         addTopPanel(new LocationTabPanel(vehicle, desktop));
         addTabPanel(new InventoryTabPanel(vehicle, desktop));
         addTabPanel(new MaintenanceTabPanel(vehicle, desktop));

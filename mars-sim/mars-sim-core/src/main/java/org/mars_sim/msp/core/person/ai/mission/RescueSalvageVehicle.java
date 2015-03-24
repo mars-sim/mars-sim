@@ -469,7 +469,7 @@ implements Serializable {
                 emergencyBeaconVehicles.add(vehicle);
 
                 if (vehicle instanceof Crewable) {
-                    if (((Crewable) vehicle).getCrewNum() > 0) {
+                    if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) {
                         vehiclesNeedingRescue.add(vehicle);
                     }
                 }
@@ -553,10 +553,16 @@ implements Serializable {
     public static int getRescuePeopleNum(Vehicle vehicle) {
         int result = 0;
 
-        if (vehicle instanceof Crewable) {
-            result = ((Crewable) vehicle).getCrewNum();
-        }
+        if (vehicle instanceof Crewable)
+            result = ((Crewable) vehicle).getCrewNum();     
+        return result;
+    }
+    
+    public static int getRescueRobotsNum(Vehicle vehicle) {
+        int result = 0;
 
+        if (vehicle instanceof Crewable)
+            result = ((Crewable) vehicle).getRobotCrewNum();     
         return result;
     }
 

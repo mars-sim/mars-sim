@@ -75,7 +75,12 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
     @Override
     public boolean isAppropriateOperator(VehicleOperator operator) {
-        return (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
+    	boolean result = false;
+    	if (operator instanceof Person)
+        	result = (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
+    	else if (operator instanceof Robot)
+        	result = (operator instanceof Robot) && (getInventory().containsUnit((Unit) operator));   	
+    	return result ;
     }
 
     /**
@@ -150,9 +155,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     @Override
     public void timePassing(double time) {
         super.timePassing(time);
-
         // Add active time if crewed.
-        if (getCrewNum() > 0) malfunctionManager.activeTimePassing(time);
+        if (getCrewNum() > 0 || getRobotCrewNum() > 0 ) malfunctionManager.activeTimePassing(time);      
     }
 
     @Override

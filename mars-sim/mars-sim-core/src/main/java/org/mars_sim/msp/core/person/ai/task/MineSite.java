@@ -189,7 +189,7 @@ implements Serializable {
         }
 
         // Operate light utility vehicle if no one else is operating it.
-        if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)) {
+        if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)  && (luv.getRobotCrewNum() == 0)) {
             if (luv.getInventory().canStoreUnit(person, false)) {
                 luv.getInventory().storeUnit(person);
 

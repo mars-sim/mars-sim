@@ -105,12 +105,15 @@ public class SleepMeta implements MetaTask {
         
         // Crowding modifier.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	result = result + 2;
+        	result += 2;
+        	
+        	
+        	// TODO: stay at the work location 
+        	// TODO: go to that building to recharge if battery is low
         	
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-            	
-            	// TODO: go to that building to recharge if battery is low
+            	result += 2;
             	
                 //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
                 //result *= TaskProbabilityUtil.getRelationshipModifier(robot, building);

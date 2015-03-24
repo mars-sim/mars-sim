@@ -63,7 +63,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
     	String status = luv.getStatus();
     	if (Vehicle.MAINTENANCE.equals(status)) return SoundConstants.SND_ROVER_MAINTENANCE;
     	else if (Vehicle.MALFUNCTION.equals(status)) return SoundConstants.SND_ROVER_MALFUNCTION;
-    	else if (luv.getCrewNum() > 0) return SoundConstants.SND_ROVER_MOVING;
+    	else if (luv.getCrewNum() > 0 || luv.getRobotCrewNum() > 0) return SoundConstants.SND_ROVER_MOVING;
     	else return "";
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.07 2014-11-05
+ * @version 3.08 2015-03-24
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -29,6 +28,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -65,21 +65,22 @@ extends UnitTableModel {
 	private final static int DESTDIST = 4;
 	private final static int MISSION = 5;
 	private final static int CREW = 6;
-	private final static int DRIVER = 7;
-	private final static int STATUS = 8;
-	private final static int BEACON = 9;
-	private final static int RESERVED = 10;
-	private final static int SPEED = 11;
-	private final static int MALFUNCTION = 12;
-	private final static int OXYGEN = 13;
-	private final static int METHANE = 14;
-	private final static int WATER = 15;
-	private final static int FOOD = 16;
-	private final static int DESSERT = 17;
-	private final static int ROCK_SAMPLES = 18;
-	private final static int ICE = 19;
+	private final static int BOTS = 7;
+	private final static int DRIVER = 8;
+	private final static int STATUS = 9;
+	private final static int BEACON = 10;
+	private final static int RESERVED = 11;
+	private final static int SPEED = 12;
+	private final static int MALFUNCTION = 13;
+	private final static int OXYGEN = 14;
+	private final static int METHANE = 15;
+	private final static int WATER = 16;
+	private final static int FOOD = 17;
+	private final static int DESSERT = 18;
+	private final static int ROCK_SAMPLES = 19;
+	private final static int ICE = 20;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 20;
+	private final static int COLUMNCOUNT = 21;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Names of Columns. */
@@ -112,6 +113,8 @@ extends UnitTableModel {
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[CREW] = "Crew";
 		columnTypes[CREW] = Integer.class;
+		columnNames[BOTS] = "Bots";
+		columnTypes[BOTS] = Integer.class;				
 		columnNames[DESTINATION] = "Destination";
 		columnTypes[DESTINATION] = Coordinates.class;
 		columnNames[DESTDIST] = "Dest. Dist.";
@@ -190,6 +193,12 @@ extends UnitTableModel {
 					else result = 0;
 				} break;
 
+				case BOTS : {
+					if (vehicle instanceof Crewable)
+						result = ((Crewable) vehicle).getRobotCrewNum();
+					else result = 0;
+				} break;
+				
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
 					result = resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER));
@@ -358,6 +367,7 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
 				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 			if (target instanceof Person) columnNum = CREW;
+			else if (target instanceof Robot) columnNum = BOTS;
 		}
 		else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
 		else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;
