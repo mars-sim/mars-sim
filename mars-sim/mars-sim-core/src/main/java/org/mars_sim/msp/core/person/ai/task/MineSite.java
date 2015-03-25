@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -91,7 +92,25 @@ implements Serializable {
         // Add task phase
         addPhase(MINING);
     }
+    public MineSite(Robot robot, Coordinates site, Rover rover, 
+            LightUtilityVehicle luv) {
 
+        // Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+
+        // Initialize data members.
+        this.site = site;
+        this.rover = rover;
+        this.luv = luv;
+        operatingLUV = false;
+
+        // Determine location for mining site.
+        Point2D miningSiteLoc = determineMiningSiteLocation();
+        setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
+
+        // Add task phase
+        addPhase(MINING);
+    }
     /**
      * Determine location for the mining site.
      * @return site X and Y location outside rover.
@@ -111,9 +130,13 @@ implements Serializable {
 
                 newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                         boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
-            }
+                if (person != null)
+                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                            person.getCoordinates());
+                else if (robot != null)
+	                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+	                        robot.getCoordinates());
+	          }
         }
 
         return newLocation;
@@ -142,7 +165,24 @@ implements Serializable {
 
         return (exitable && (sunlight || darkRegion) && !medical);
     }
+    public static boolean canMineSite(Robot robot, Rover rover) {
+        // Check if robot can exit the rover.
+        boolean exitable = ExitAirlock.canExitAirlock(robot, rover.getAirlock());
 
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        // Check if it is night time outside.
+        boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
+
+        // Check if in dark polar region.
+        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+
+        // Check if robot's medical condition will not allow task.
+        boolean medical = robot.getPerformanceRating() < .5D;
+
+        return (exitable && (sunlight || darkRegion) && !medical);
+    }
+    
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return MINING;
@@ -179,34 +219,69 @@ implements Serializable {
         // to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
-            if (luv.getInventory().containsUnit(person)) { 
-                luv.getInventory().retrieveUnit(person);
-                luv.setOperator(null);
-                operatingLUV = false;
+        	if (person != null) {
+        		if (luv.getInventory().containsUnit(person)) { 
+	                luv.getInventory().retrieveUnit(person);
+	                luv.setOperator(null);
+	                operatingLUV = false;
+	            }
+        	}
+            else if (robot != null) {
+	        	if (luv.getInventory().containsUnit(robot)) { 
+	                luv.getInventory().retrieveUnit(robot);
+	                luv.setOperator(null);
+	                operatingLUV = false;
+	            }
             }
+
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
 
         // Operate light utility vehicle if no one else is operating it.
-        if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)  && (luv.getRobotCrewNum() == 0)) {
-            if (luv.getInventory().canStoreUnit(person, false)) {
-                luv.getInventory().storeUnit(person);
+        if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0))
+        	if (person != null) {
+              	
+            	if (luv.getInventory().canStoreUnit(person, false)) {
+                    luv.getInventory().storeUnit(person);
 
-                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                        vehicleLoc.getY(), luv);
-                person.setXLocation(settlementLoc.getX());
-                person.setYLocation(settlementLoc.getY());
-
-                luv.setOperator(person);
-                operatingLUV = true;
-                setDescription(Msg.getString("Task.description.mineSite.detail", 
-                        luv.getName())); //$NON-NLS-1$
-            }
-            else {
-                logger.info(person.getName() + " could not operate " + luv.getName());
-            }
+                    Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
+                    Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                            vehicleLoc.getY(), luv);
+                   
+    	                person.setXLocation(settlementLoc.getX());
+    	                person.setYLocation(settlementLoc.getY());
+    	                luv.setOperator(person);
+                    
+                    operatingLUV = true;
+                    setDescription(Msg.getString("Task.description.mineSite.detail", 
+                            luv.getName())); //$NON-NLS-1$
+                }
+                else {
+                    logger.info(person.getName() + " could not operate " + luv.getName());
+                }
+        		
+        	}
+            else if (robot != null) {
+            	
+	        	if (luv.getInventory().canStoreUnit(robot, false)) {
+	                luv.getInventory().storeUnit(robot);
+	
+	                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
+	                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+	                        vehicleLoc.getY(), luv);
+	                
+		                robot.setXLocation(settlementLoc.getX());
+		                robot.setYLocation(settlementLoc.getY());
+		                luv.setOperator(robot);
+	                
+	                operatingLUV = true;
+	                setDescription(Msg.getString("Task.description.mineSite.detail", 
+	                        luv.getName())); //$NON-NLS-1$
+	            }
+	            else {
+	                logger.info(person.getName() + " could not operate " + luv.getName());
+	            }
         }
 
         // Excavate minerals.
@@ -242,21 +317,34 @@ implements Serializable {
             amountExcavated *= getEffectiveSkillLevel();
 
             AmountResource mineralResource = AmountResource.findAmountResource(mineralName);
-            Mining mission = (Mining) person.getMind().getMission();
+            Mining mission = null;
+            if (person != null)
+                mission = (Mining) person.getMind().getMission();
+            else if (robot != null)
+            	mission = (Mining) robot.getBotMind().getMission();
+            
             mission.excavateMineral(mineralResource, amountExcavated);
         }
     }
 
     @Override
     protected void addExperience(double time) {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+        if (person != null)
+            manager = person.getMind().getSkillManager();
+        else if (robot != null)
+        	manager = robot.getBotMind().getSkillManager();
 
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = null;
+        if (person != null)
+        	nManager = person.getNaturalAttributeManager();
+        else if (robot != null)
+        	nManager = robot.getNaturalAttributeManager();
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
@@ -297,7 +385,11 @@ implements Serializable {
     public int getEffectiveSkillLevel() {
         int result = 0;
 
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null; 
+        if (person != null)
+        	manager = person.getMind().getSkillManager();
+        else if (robot != null)
+        	manager = robot.getBotMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         if (operatingLUV) {
@@ -320,7 +412,11 @@ implements Serializable {
             double chance = BASE_LUV_ACCIDENT_CHANCE;
 
             // Driving skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            int skill = 0;
+            if (person != null)
+                skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            else if (robot != null)
+            	skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
             if (skill <= 3) {
                 chance *= (4 - skill);
             }

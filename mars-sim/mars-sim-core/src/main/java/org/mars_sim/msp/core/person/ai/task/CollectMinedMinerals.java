@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -93,7 +94,33 @@ implements Serializable {
         // Add task phases
         addPhase(COLLECT_MINERALS);
     }
-    
+    public CollectMinedMinerals(Robot robot, Rover rover, AmountResource mineralType) {
+
+        // Use EVAOperation parent constructor.
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+
+        // Initialize data members.
+        this.rover = rover;
+        this.mineralType = mineralType;
+
+        // Determine location for collection site.
+        Point2D collectionSiteLoc = determineCollectionSiteLocation();
+        setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
+        
+        // Take bags for collecting mined minerals.
+        if (!hasBags()) {
+            takeBag();
+            
+            // If bags are not available, end task.
+            if (!hasBags()) {
+                logger.fine(robot.getName() + " not able to find bag to collect mined minerals.");
+                endTask();
+            }
+        }
+        
+        // Add task phases
+        addPhase(COLLECT_MINERALS);
+    } 
     /**
      * Determine location for the collection site.
      * @return site X and Y location outside rover.
@@ -113,8 +140,13 @@ implements Serializable {
 
                 newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                         boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                if (person != null)
+                	goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
                         person.getCoordinates());
+                else if (robot != null)
+                	goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        robot.getCoordinates());
+                
             }
         }
 
@@ -126,7 +158,12 @@ implements Serializable {
      * @return true if carrying bags.
      */
     private boolean hasBags() {
-        return person.getInventory().containsUnitClass(Bag.class);
+    	boolean result = false;
+    	if (person != null)
+    		result = person.getInventory().containsUnitClass(Bag.class);
+        else if (robot != null)
+        	result = robot.getInventory().containsUnitClass(Bag.class);   
+    	return result;
     }
 
     /**
@@ -135,10 +172,18 @@ implements Serializable {
      */
     private void takeBag() {
         Bag bag = findMostFullBag(rover.getInventory(), mineralType);
-        if (bag != null) {
-            if (person.getInventory().canStoreUnit(bag, false)) {
-                rover.getInventory().retrieveUnit(bag);
-                person.getInventory().storeUnit(bag);
+        if (bag != null) {       	
+        	if (person != null) {
+                if (person.getInventory().canStoreUnit(bag, false)) {
+                    rover.getInventory().retrieveUnit(bag);
+                    person.getInventory().storeUnit(bag);
+                }        		
+        	}
+            else if (robot != null) {           	
+	            if (robot.getInventory().canStoreUnit(bag, false)) {
+	                rover.getInventory().retrieveUnit(bag);
+	                robot.getInventory().storeUnit(bag);
+	            }
             }
         }
     }
@@ -207,16 +252,28 @@ implements Serializable {
             return time;
         }
 
-        Mining mission = (Mining) person.getMind().getMission();
-
+        Mining mission = null;
+        if (person != null)
+        	mission = (Mining) person.getMind().getMission();
+        else if (robot != null)
+        	mission = (Mining) robot.getBotMind().getMission();
+        
         double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
-        double remainingPersonCapacity = 
-            person.getInventory().getAmountResourceRemainingCapacity(mineralType, true, false);
+        double remainingPersonCapacity = 0;
+        
+        if (person != null)
+        	remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(mineralType, true, false);
+        else if (robot != null)
+        	remainingPersonCapacity = robot.getInventory().getAmountResourceRemainingCapacity(mineralType, true, false);
 
         double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
         // Modify collection rate by "Areology" skill.
-        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+        int areologySkill = 0;
+        if (person != null)
+          	areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+        else if (robot != null)
+        	areologySkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
         if (areologySkill == 0) mineralsCollected /= 2D;
         if (areologySkill > 1) mineralsCollected += mineralsCollected * (.2D * areologySkill);
 
@@ -227,7 +284,10 @@ implements Serializable {
         addExperience(time);
 
         // Collect minerals.
-        person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+        if (person != null)
+            person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
+        else if (robot != null)
+        	robot.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
 		// 2015-01-15 Add addSupplyAmount()
         // not calling person.getInventory().addSupplyAmount(mineralType, mineralsCollected);
         mission.collectMineral(mineralType, mineralsCollected);
@@ -243,7 +303,11 @@ implements Serializable {
     public void endTask() {
         
         // Unload bag to rover's inventory.
-        Inventory pInv = person.getInventory();
+        Inventory pInv = null;
+        if (person != null)
+        	pInv = person.getInventory();
+        else if (robot != null)
+        	pInv = robot.getInventory();
         if (pInv.containsUnitClass(Bag.class)) {
             // Load bags in rover.
             Iterator<Unit> i = pInv.findAllUnitsOfClass(Bag.class).iterator();
@@ -302,7 +366,47 @@ implements Serializable {
         
         return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
     }
+    public static boolean canCollectMinerals(Robot robot, Rover rover, AmountResource mineralType) {
 
+        // Check if robot can exit the rover.
+        boolean exitable = ExitAirlock.canExitAirlock(robot, rover.getAirlock());
+
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        // Check if it is night time outside.
+        boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
+
+        // Check if in dark polar region.
+        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+
+        // Check if robot's medical condition will not allow task.
+        boolean medical = robot.getPerformanceRating() < .5D;
+
+        // Checks if available bags with remaining capacity for resource.
+        Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+        boolean bagAvailable = (bag != null);
+
+        // Check if bag and full EVA suit can be carried by person or is too heavy.
+        double carryMass = 0D;
+        if (bag != null) {
+            carryMass += bag.getMass();
+        }
+        /*
+        EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+        if (suit != null) {
+            carryMass += suit.getMass();
+            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
+            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
+        }
+        */
+        double carryCapacity = robot.getInventory().getGeneralCapacity();
+        boolean canCarryEquipment = (carryCapacity >= carryMass);
+        
+        return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
+    }
+    
     @Override
     protected void addExperience(double time) {
         // Add experience to "EVA Operations" skill.
@@ -310,12 +414,20 @@ implements Serializable {
         double evaExperience = time / 100D;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = null;
+        if (person != null)
+            nManager = person.getNaturalAttributeManager();
+        else if (robot != null)
+        	nManager = robot.getNaturalAttributeManager();
+        
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        if (person != null)
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        else if (robot != null)
+        	robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
         // If phase is collect minerals, add experience to areology skill.
         if (COLLECT_MINERALS.equals(getPhase())) {
@@ -323,7 +435,10 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
+            if (person != null)
+            	person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
+            else if (robot != null)
+            	robot.getBotMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
     }
 
@@ -337,7 +452,11 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = null;
+        if (person != null)
+        	manager = person.getMind().getSkillManager();
+        else if (robot != null)
+        	manager = robot.getBotMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
