@@ -40,6 +40,10 @@ public class WorkoutMeta implements MetaTask {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	
+            if (person.getFavorite().getFavoriteActivity().equals("Workout"))
+            	result += 50D;
+            
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             result = condition.getStress() - (condition.getFatigue() / 10D)

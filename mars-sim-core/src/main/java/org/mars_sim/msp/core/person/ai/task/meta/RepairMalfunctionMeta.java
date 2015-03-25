@@ -57,6 +57,8 @@ public class RepairMalfunctionMeta implements MetaTask {
                         if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
                             result += 100D;
                         }
+                        if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                        	result += 25D;
                     }
                     catch (Exception e) {
                         e.printStackTrace(System.err);

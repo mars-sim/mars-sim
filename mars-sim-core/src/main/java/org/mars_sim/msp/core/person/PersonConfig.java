@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.07 2015-03-01
+ * @version 3.07 2015-03-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -30,7 +30,9 @@ implements Serializable {
 	private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
 	private List<String> alphaCrewJob; //  = new ArrayList<String>();
 	private List<String> alphaCrewFavoriteMainDish;
-	private List<String> alphaCrewFavoriteSideDish;	
+	private List<String> alphaCrewFavoriteSideDish;
+	private List<String> alphaCrewFavoriteDessert;
+	private List<String> alphaCrewFavoriteActivity;
 	
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
@@ -75,7 +77,10 @@ implements Serializable {
 	// 2015-02-27 Added MAIN_DISH and SIDE_DISH
 	private static final String MAIN_DISH = "favorite-main-dish";
 	private static final String SIDE_DISH = "favorite-side-dish";
-
+	// 2015-03-24 Added DESSERT
+	private static final String DESSERT = "favorite-dessert";
+	private static final String ACTIVITY = "favorite-activity";
+	
 	private Document personDoc;
 	private List<String> nameList;
 
@@ -523,8 +528,33 @@ implements Serializable {
 		else
 			return getValueAsString(index,SIDE_DISH);
 	}
+
+	/**
+	 * Gets the configured person's favorite dessert.
+	 * @param index the person's index.
+	 * @return the name of the favorite dessert name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getFavoriteDessert(int index) {
+		if (alphaCrewFavoriteDessert != null)
+			return alphaCrewFavoriteDessert.get(index) ;
+		else
+			return getValueAsString(index,DESSERT);
+	}
+  
+	/**
+	 * Gets the configured person's favorite activity.
+	 * @param index the person's index.
+	 * @return the name of the favorite activity name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getFavoriteActivity(int index) {
+		if (alphaCrewFavoriteActivity != null)
+			return alphaCrewFavoriteActivity.get(index) ;
+		else
+			return getValueAsString(index,ACTIVITY);
+	}
 	
-    
     /**
      * Prepare object for garbage collection.
      */

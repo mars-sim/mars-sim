@@ -356,7 +356,8 @@
 		<!--   configured in settlements.xml.  (optional) -->
 		<!-- job: the person's permanent job. (optional) -->
 		<person name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist" 
-			favorite-main-dish="Bean Sprout Garlic Stir Fry" favorite-side-dish="Roasted Carrot Soup">
+			favorite-main-dish="Bean Sprout Garlic Stir Fry" favorite-side-dish="Roasted Carrot Soup" favorite-dessert="strawberry"
+			favorite-activity="Field Work">
 
 			<!-- List of configured natural attributes. (optional) -->
 			<natural-attribute-list>
@@ -402,7 +403,8 @@
 
 		</person>
 		<person name="Rik Declercq" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef" 
-			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup">
+			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
+			favorite-activity="Workout">
 			<skill-list>
                 <skill name="Driving" level="1"/>
                 <skill name="Physics" level="1"/>
@@ -414,7 +416,8 @@
        </person>
 
         <person name="Leonardo DaVinci" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
-			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots">
+			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
+			favorite-activity="Research">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
@@ -429,7 +432,8 @@
 
         </person>
         <person name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
-			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions">
+			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
+			favorite-activity="Do Lab Experiment">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->

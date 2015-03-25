@@ -48,7 +48,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
+  
         // Add probability for researcher's primary study (if any).
         ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
@@ -64,6 +64,9 @@ public class CompileScientificStudyResultsMeta implements MetaTask {
                         if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
                     }
                     
+                    if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                    	result += 25D;
+             
                     result += primaryResult;
                 }
                 catch (Exception e) {
@@ -90,6 +93,9 @@ public class CompileScientificStudyResultsMeta implements MetaTask {
                             if (!collabScience.equals(jobScience)) collabResult /= 2D;
                         }
                         
+                        if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                        	result += 25D;
+                 
                         result += collabResult;
                     }
                     catch (Exception e) {

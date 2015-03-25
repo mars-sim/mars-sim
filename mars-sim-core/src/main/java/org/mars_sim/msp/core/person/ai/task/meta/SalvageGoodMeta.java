@@ -43,58 +43,60 @@ public class SalvageGoodMeta implements MetaTask {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        // If settlement has manufacturing override, no new
+        // salvage processes can be created.
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT && !person.getSettlement().getManufactureOverride()) {
+        	
+	        // No salvaging goods until after the first month of the simulation.
+	        MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+	        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	        double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+	        if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG)
+	            result = 0D;       
+	        
+	        if (result != 0) {
+	            // See if there is an available manufacturing building.
+	            Building manufacturingBuilding = SalvageGood.getAvailableManufacturingBuilding(person);
+	            if (manufacturingBuilding != null) {
+	                result = 1D;
+	
+	                // Crowding modifier.
+	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+	                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+	
+	                // Salvaging good value modifier.
+	                result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
+	
+	                if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+	                	result += 50D;
+	                
+	                if (result > 100D) {
+	                    result = 100D;
+	                }
+	
+	                // If manufacturing building has salvage process requiring work, add
+	                // modifier.
+	                SkillManager skillManager = person.getMind().getSkillManager();
+	                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+	                if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
+	                    result += 10D;
+	                }
+	
+	             // Effort-driven task modifier.
+			        result *= person.getPerformanceRating();
+			
+			        // Job modifier.
+			        Job job = person.getMind().getJob();
+			        if (job != null) {
+			            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
+			        }
+			        
+	            }
+            
+	        }	
 
-            // See if there is an available manufacturing building.
-            Building manufacturingBuilding = SalvageGood.getAvailableManufacturingBuilding(person);
-            if (manufacturingBuilding != null) {
-                result = 1D;
-
-                // No salvaging goods until after the first month of the simulation.
-                MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-                MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-                double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-                double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-                if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
-                    result = 0D;
-                }
-
-                // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
-
-                // Salvaging good value modifier.
-                result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
-
-                if (result > 100D) {
-                    result = 100D;
-                }
-
-                // If manufacturing building has salvage process requiring work, add
-                // modifier.
-                SkillManager skillManager = person.getMind().getSkillManager();
-                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
-                    result += 10D;
-                }
-
-                // If settlement has manufacturing override, no new
-                // salvage processes can be created.
-                else if (person.getSettlement().getManufactureOverride()) {
-                    result = 0;
-                }
-            }
         }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
-        }
-
         return result;
     }
 

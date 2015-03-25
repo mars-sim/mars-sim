@@ -41,7 +41,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
+  
         // Find potential researchers.
         Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
         if (potentialResearchers.size() > 0) {
@@ -55,17 +55,21 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
                 if (building != null) {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                    
+                    if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                    	result += 50D;
+                    
+                    // Job modifier.
+                    Job job = person.getMind().getJob();
+                    if (job != null)
+                        result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);                   
+                    
                 }
+                
                 else result = 0D;
             }
         }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
-        }
-        
+         
         return result;
     }
 

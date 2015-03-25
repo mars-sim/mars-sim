@@ -44,49 +44,48 @@ public class InviteStudyCollaboratorMeta implements MetaTask {
         
         double result = 0D;
         
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
-        if (study != null) {
-            
-            // Check if study is in invitation phase.
-            if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
-                
-                // Check that there isn't a full set of open invitations already sent out.
-                int collabNum = study.getCollaborativeResearchers().size();
-                int openInvites = study.getNumOpenResearchInvitations();
-                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
-                    
-                    // Check that there's scientists available for invitation.
-                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
-                        
-                        result = 25D;
-                        
-                        // Increase probability if person's current job is related to study's science.
-                        Job job = person.getMind().getJob();
-                        ScienceType science = study.getScience();
-                        if (science == ScienceType.getJobScience(job)) {
-                            result*= 2D;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
-            }
+	        	
+	        
+	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
+	        if (study != null) {
+	            
+	            // Check if study is in invitation phase.
+	            if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+	                
+	                // Check that there isn't a full set of open invitations already sent out.
+	                int collabNum = study.getCollaborativeResearchers().size();
+	                int openInvites = study.getNumOpenResearchInvitations();
+	                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
+	                    
+	                    // Check that there's scientists available for invitation.
+	                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
+	                        
+	                        result = 25D;
+	                        
+	                        // Crowding modifier
+	                        
+	                        Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
+	                        if (adminBuilding != null) {
+	                            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
+	                            result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
+	                        }
+	                        
+	                        // Increase probability if person's current job is related to study's science.
+	                        Job job = person.getMind().getJob();
+	                        ScienceType science = study.getScience();	                        
+	                        if (science == ScienceType.getJobScience(job))
+	                            result*= 2D;
+	                        if (job != null)
+	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class);
+		                                            
+		                }
+		            }
+		        }            
+	        }
         }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class);
-        }
-        
+       
         return result;
     }
 

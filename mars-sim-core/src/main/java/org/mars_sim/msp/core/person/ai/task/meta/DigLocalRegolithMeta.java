@@ -57,23 +57,23 @@ public class DigLocalRegolithMeta implements MetaTask {
         
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                result = 0D;
+            }
+        } 
+
+        if (result != 0 && person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
-            
-            try {
-                // Factor the value of regolith at the settlement.
-                GoodsManager manager = settlement.getGoodsManager();
-                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-                result = value * REGOLITH_VALUE_MODIFIER;
-                if (result > 100D) {
-                    result = 100D;
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error checking good value of regolith.");
-            }
             
             // Check at least one EVA suit at settlement.
             int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
@@ -87,32 +87,41 @@ public class DigLocalRegolithMeta implements MetaTask {
                 result = 0D;
             }
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                    result = 0D;
-                }
-            } 
-            
-            // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-            
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
-            }
+            if (result != 0) {
+            		            
+	            try {
+	                // Factor the value of regolith at the settlement.
+	                GoodsManager manager = settlement.getGoodsManager();
+	                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+	                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+	                result = value * REGOLITH_VALUE_MODIFIER;
+	                
+    		        if (person.getFavorite().getFavoriteActivity().equals("Field Work"))
+    		        	result += 50D;
+    		        
+	                if (result > 150D)
+	                    result = 150D;    	
+	                
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error checking good value of regolith.");
+	            }
+	                                    
+	            // Crowded settlement modifier
+	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+	                result *= 2D;
+	            }
+	
+	            // Effort-driven task modifier.
+	            result *= person.getPerformanceRating();
+	            
+	            // Job modifier.
+	            Job job = person.getMind().getJob();
+	            if (job != null) {
+	                result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
+	            }
+	            
+	        }
         }
     
         return result;

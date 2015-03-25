@@ -62,6 +62,9 @@ public class ManufactureGoodMeta implements MetaTask {
 	                // Manufacturing good value modifier.
 	                result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
 	
+                    if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                    	result += 50D;
+                    
 	                if (result > 100D) {
 	                    result = 100D;
 	                }

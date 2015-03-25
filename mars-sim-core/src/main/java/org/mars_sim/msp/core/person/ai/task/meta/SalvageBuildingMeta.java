@@ -50,19 +50,7 @@ public class SalvageBuildingMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all building salvage missions occurring at the settlement.
-            try {
-                List<BuildingSalvageMission> missions = SalvageBuilding.
-                        getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
-            }
-        }
+        
 
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
@@ -75,23 +63,39 @@ public class SalvageBuildingMeta implements MetaTask {
             if (!surface.inDarkPolarRegion(person.getCoordinates()))
                 result = 0D;
         } 
-        
-        // Crowded settlement modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+
+        if (result != 0 && person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            // Check all building salvage missions occurring at the settlement.
+            try {
+                List<BuildingSalvageMission> missions = SalvageBuilding.
+                        getAllMissionsNeedingAssistance(person.getSettlement());
+                result = 50D * missions.size();
+                
+                if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                	result += 50D;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
+            }
+            
+            // Crowded settlement modifier
             Settlement settlement = person.getSettlement();
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(SalvageBuilding.class);        
-        }
+                      
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+            
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(SalvageBuilding.class);        
+            }
+            
+        }  
     
         return result;
     }

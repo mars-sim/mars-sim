@@ -27,7 +27,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.ColorUIResource;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -71,6 +73,14 @@ public abstract class UnitWindow extends JInternalFrame {
         // Use JInternalFrame constructor
         super(unit.getName(), true, true, false, true);
 
+        //UIManager.put("InternalFrame.activeTitleBackground", new ColorUIResource(new Color(248,250,175)));
+        //UIManager.put("InternalFrame.inactiveTitleBackground", new ColorUIResource(new Color(248,250,175)));
+        //UIManager.put("InternalFrame.titleFont", new Font("Dialog", Font.PLAIN, 11));
+        //javax.swing.plaf.basic.BasicInternalFrameUI ui = 
+        //    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
+        //this.setUI(ui); 
+        //updateUI();
+        
         // Initialize data members
         this.desktop = desktop;
         this.unit = unit;
@@ -124,35 +134,7 @@ public abstract class UnitWindow extends JInternalFrame {
   		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
     }
     
-    /*
-	public void setStyle() {
-        Container contentPane = desktop.getRootPane();
-          
-          image = GraphicsUtilities.createCompatibleTranslucentImage(contentPane.getWidth() +
-                  2 * (int) BLUR_SIZE,
-                  contentPane.getHeight() +
-                  2 * (int) BLUR_SIZE);
-  		Graphics2D g2 = image.createGraphics();
-  		g2.translate(BLUR_SIZE, BLUR_SIZE);
-  		contentPane.paint(g2);
-  		g2.translate(-BLUR_SIZE, -BLUR_SIZE);
-  		g2.dispose();
-  		
-  		// 1.5 second vs 0.3 second
-  		//long start = System.currentTimeMillis();
-  		image = changeImageWidth(image, image.getWidth() / 2);
-  		ConvolveOp gaussianFilter = getGaussianBlurFilter(BLUR_SIZE, true);
-  		image = gaussianFilter.filter(image, null);
-  		gaussianFilter = getGaussianBlurFilter(BLUR_SIZE, false);
-  		image = gaussianFilter.filter(image, null);
-  		ColorTintFilter colorMixFilter = new ColorTintFilter(Color.ORANGE, 0.1f);
-  		image = colorMixFilter.filter(image, null);
-  		image = changeImageWidth(image, image.getWidth() * 2);
-  		//System.out.println("time = " +
-  		//((System.currentTimeMillis() - start) / 1000.0f));
-    }
-    
-    */
+
     /**
      * Adds a tab panel to the center panel.
      *
