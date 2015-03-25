@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -32,6 +33,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -145,7 +147,58 @@ implements Serializable {
         setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
                 getStartingSettlement().getName())); //$NON-NLS-1$
     }
+    public Exploration(Robot startingRobot) {
 
+        // Use RoverMission constructor.
+        super(DEFAULT_DESCRIPTION, startingRobot, RoverMission.MIN_PEOPLE);
+
+        if (!isDone()) {
+
+            // Set mission capacity.
+            if (hasVehicle())
+                setMissionCapacity(getRover().getCrewCapacity());
+            int availableSuitNum = Mission
+                    .getNumberAvailableEVASuitsAtSettlement(startingRobot
+                            .getSettlement());
+            if (availableSuitNum < getMissionCapacity())
+                setMissionCapacity(availableSuitNum);
+
+            // Initialize data members.
+            setStartingSettlement(startingRobot.getSettlement());
+            exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
+            explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
+
+            // Recruit additional people to mission.
+            recruitRobotsForMission(startingRobot);
+
+            // Determine exploration sites
+            try {
+                if (hasVehicle()) {
+                    int skill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(),
+                            getPeopleNumber(), true), NUM_SITES, skill);
+                }
+            } catch (Exception e) {
+                endMission("Exploration sites could not be determined.");
+            }
+
+            // Add home settlement
+            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
+                    getStartingSettlement(), getStartingSettlement().getName()));
+
+            // Check if vehicle can carry enough supplies for the mission.
+            if (hasVehicle() && !isVehicleLoadable())
+                endMission("Vehicle is not loadable. (Exploration)");
+        }
+
+        // Add exploring site phase.
+        addPhase(EXPLORE_SITE);
+
+        // Set initial mission phase.
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
+    }
     /**
      * Constructor with explicit data.
      * @param members collection of mission members.
@@ -155,12 +208,12 @@ implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public Exploration(Collection<Person> members,
+    public Exploration(Collection<Unit> members,
             Settlement startingSettlement, List<Coordinates> explorationSites,
             Rover rover, String description) {
 
         // Use RoverMission constructor.
-        super(description, (Person) members.toArray()[0], 1, rover);
+        super(description, (Unit) members.toArray()[0], 1, rover);
 
         setStartingSettlement(startingSettlement);
 
@@ -185,12 +238,25 @@ implements Serializable {
         // Add home navpoint.
         addNavpoint(new NavPoint(startingSettlement.getCoordinates(),
                 startingSettlement, startingSettlement.getName()));
-
+ 
+        Person person = null;
+    	Robot robot = null;
+    	
         // Add mission members.
-        Iterator<Person> i = members.iterator();
-        while (i.hasNext())
-            i.next().getMind().setMission(this);
-
+        Iterator<Unit> i = members.iterator();
+        while (i.hasNext()) {
+         	                    	
+	        Unit unit = i.next();
+	        if (unit instanceof Person) {
+	        	person = (Person) unit;
+	        	person.getMind().setMission(this);
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	robot.getBotMind().setMission(this);
+	        }    
+        }
+        
         // Add exploring site phase.
         addPhase(EXPLORE_SITE);
 
@@ -452,7 +518,22 @@ implements Serializable {
             }
         }
     }
+    @Override
+    protected void recruitRobotsForMission(Robot startingRobot) {
+        super.recruitRobotsForMission(startingRobot);
 
+        // Make sure there is at least one person left at the starting settlement.
+        //if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
+         //       startingRobot)) {
+            // Remove last person added to the mission.
+        	Robot lastRobot = (Robot) getRobots().toArray()[getRobotsNumber() - 1];
+            if (lastRobot != null) {
+                lastRobot.getBotMind().setMission(null);
+                if (getRobotsNumber() < getMinRobots())
+                    endMission("Not enough bot members.");
+            }
+        //}
+    }
     @Override
     public double getEstimatedRemainingMissionTime(boolean useBuffer) {
         double result = super.getEstimatedRemainingMissionTime(useBuffer);

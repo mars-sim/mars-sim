@@ -29,7 +29,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -292,13 +294,30 @@ extends WizardPanel {
                 try {
                     // Get average construction skill of mission members.
                     double totalSkill = 0D;
-                    Iterator<Person> i = getWizard().getMissionData().getMembers().iterator();
+                    double averageSkill = 0;
+                    
+                	Person person = null;
+                	Robot robot = null;
+                	
+                    int memberNum = getWizard().getMissionData().getMixedMembers().size();
+                    // Add mission members.
+                    Iterator<Unit> i = getWizard().getMissionData().getMixedMembers().iterator();
                     while (i.hasNext()) {
-                        int constructionSkill = i.next().getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
-                        totalSkill += constructionSkill;
+                     	                    	
+            	        Unit unit = i.next();
+            	        if (unit instanceof Person) {
+            	        	person = (Person) unit;
+            	        	int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+                            totalSkill += constructionSkill;
+            	        }
+            	        else if (unit instanceof Robot) {
+            	        	robot = (Robot) unit;
+            	        	int constructionSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+                            totalSkill += constructionSkill;
+            	        }    
                     }
-                    int memberNum = getWizard().getMissionData().getMembers().size();
-                    double averageSkill = totalSkill / memberNum;
+                    
+                    averageSkill = totalSkill / memberNum;
                     
                     // Get chance of salvage.
                     double salvageChance = 50D + (averageSkill * 5D);

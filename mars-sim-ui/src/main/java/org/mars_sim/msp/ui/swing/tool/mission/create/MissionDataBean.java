@@ -87,29 +87,29 @@ class MissionDataBean {
 	                description);
 	    }
 	    else if (RESCUE_MISSION.equals(type)) {
-	        mission = new RescueSalvageVehicle(members, startingSettlement, rescueRover, rover, description);
+	        mission = new RescueSalvageVehicle(mixedMembers, startingSettlement, rescueRover, rover, description);
 	    }
 	    else if (ICE_MISSION.equals(type)) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(iceCollectionSite);
-	        mission = new CollectIce(members, startingSettlement, collectionSites, rover, description);
+	        mission = new CollectIce(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (REGOLITH_MISSION.equals(type)) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 	        collectionSites.add(regolithCollectionSite);
-	        mission = new CollectRegolith(members, startingSettlement, collectionSites, rover, description);
+	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (EXPLORATION_MISSION.equals(type)) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
 	        collectionSites.addAll(Arrays.asList(explorationSites));
-	        mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
+	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
 	    else if (TRADE_MISSION.equals(type)) {
 	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description, 
 	                sellGoods, buyGoods);
 	    }
 	    else if (MINING_MISSION.equals(type)) {
-	        mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
+	        mission = new Mining(mixedMembers, startingSettlement, miningSite, rover, luv, description);
 	    }
 	    else if (CONSTRUCTION_MISSION.equals(type)) {
 	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite, 
@@ -265,7 +265,9 @@ class MissionDataBean {
 	 */
 	Collection<Person> getMembers() {
 		return members;
+		
 	}
+	
 	Collection<Unit> getMixedMembers() {
 		return mixedMembers;
 	}	

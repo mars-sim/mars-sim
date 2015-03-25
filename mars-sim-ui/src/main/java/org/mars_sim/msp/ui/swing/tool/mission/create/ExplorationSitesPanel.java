@@ -283,7 +283,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private double getMissionTimeLimit() {
 		Rover rover = getWizard().getMissionData().getRover();
-		int memberNum = getWizard().getMissionData().getMembers().size();
+		int memberNum = getWizard().getMissionData().getMixedMembers().size();
 		try {
 			return CollectResourcesMission.getTotalTripTimeLimit(rover, memberNum, true);
 		}

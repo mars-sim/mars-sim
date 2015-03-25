@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.07 2014-12-06
-
- * @author Scott Davis
+ * @version 3.08 2015-03-24
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -35,15 +34,15 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
- * A wizard panel to select mission members.
+ * A wizard panel to select mission bot members.
  */
-class MembersPanel
+class BotMembersPanel
 extends WizardPanel
 implements ActionListener {
 
@@ -54,11 +53,11 @@ implements ActionListener {
 	private final static String NAME = "Members";
 
 	// Data members.
-	private PeopleTableModel peopleTableModel;
-	private JTable peopleTable;
-	private MembersTableModel membersTableModel;
+	private BotsTableModel botsTableModel;
+	private JTable botsTable;
+	private BotMembersTableModel botMembersTableModel;
 
-	private JTable membersTable;
+	private JTable botMembersTable;
 	private JLabel errorMessageLabel;
 	private JButton addButton;
 	private JButton removeButton;
@@ -68,7 +67,7 @@ implements ActionListener {
 	 * Constructor
 	 * @param wizard the create mission wizard.
 	 */
-	MembersPanel(CreateMissionWizard wizard) {
+	BotMembersPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -79,51 +78,51 @@ implements ActionListener {
 		setBorder(new MarsPanelBorder());
 
 		// Create the select members label.
-		JLabel selectMembersLabel = new JLabel("Select members for the mission.", JLabel.CENTER);
+		JLabel selectMembersLabel = new JLabel("Select Bots for the Mission", JLabel.CENTER);
 		selectMembersLabel.setFont(selectMembersLabel.getFont().deriveFont(Font.BOLD));
 		selectMembersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectMembersLabel);
 
-		// Create the available people label.
-		JLabel availablePeopleLabel = new JLabel("Available People", JLabel.CENTER);
-		availablePeopleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(availablePeopleLabel);
+		// Create the available bots label.
+		JLabel availableBotsLabel = new JLabel("Available Bots", JLabel.CENTER);
+		availableBotsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(availableBotsLabel);
 
-		// Create the people panel.
-		JPanel peoplePane = new JPanel(new BorderLayout(0, 0));
-		peoplePane.setPreferredSize(new Dimension(300, 150));
-		peoplePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(peoplePane);
+		// Create the bots panel.
+		JPanel botsPane = new JPanel(new BorderLayout(0, 0));
+		botsPane.setPreferredSize(new Dimension(300, 150));
+		botsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(botsPane);
 
-		// Create scroll panel for available people list.
-		JScrollPane peopleScrollPane = new JScrollPane();
-		peoplePane.add(peopleScrollPane, BorderLayout.CENTER);
+		// Create scroll panel for available bots list.
+		JScrollPane botsScrollPane = new JScrollPane();
+		botsPane.add(botsScrollPane, BorderLayout.CENTER);
 
-		// Create the people table model.
-		peopleTableModel = new PeopleTableModel();
+		// Create the bots table model.
+		botsTableModel = new BotsTableModel();
 
-		// Create the people table.
-		peopleTable = new JTable(peopleTableModel);
-		peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
-		peopleTable.setRowSelectionAllowed(true);
-		peopleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		peopleTable.getSelectionModel().addListSelectionListener(
+		// Create the bots table.
+		botsTable = new JTable(botsTableModel);
+		botsTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(botsTableModel));
+		botsTable.setRowSelectionAllowed(true);
+		botsTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		botsTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
 						// Get the selected rows.
-						int[] selectedRows = peopleTable.getSelectedRows();
+						int[] selectedRows = botsTable.getSelectedRows();
 						if (selectedRows.length > 0) {
 							if (e.getValueIsAdjusting()) {
-								membersTable.clearSelection();
+								botMembersTable.clearSelection();
 
 								// Check if any of the rows failed.
 								boolean failedRow = false;
 								for (int selectedRow : selectedRows)
-									if (peopleTableModel.isFailureRow(selectedRow)) failedRow = true;
+									if (botsTableModel.isFailureRow(selectedRow)) failedRow = true;
 
 								if (failedRow) {
 									// Display failed row message and disable add button.
-									errorMessageLabel.setText("One or more selected people cannot be used on the mission " +
+									errorMessageLabel.setText("One or more selected bots cannot be used on the mission " +
 											"(see red cells).");
 									addButton.setEnabled(false);
 								}
@@ -131,7 +130,7 @@ implements ActionListener {
 									// Check if number of rows exceed rover remaining capacity.
 									if (selectedRows.length > getRemainingRoverCapacity()) {
 										// Display over capacity message and disable add button.
-										errorMessageLabel.setText("Not enough rover capacity to hold selected people.");
+										errorMessageLabel.setText("Not enough rover capacity to hold selected bots.");
 										addButton.setEnabled(false);
 									}
 									else {
@@ -151,7 +150,7 @@ implements ActionListener {
 				}
 				);
 		// call it a click to add button when user double clicks the table
-		peopleTable.addMouseListener(
+		botsTable.addMouseListener(
 				new MouseListener() {
 					public void mouseReleased(MouseEvent e) {}
 					public void mousePressed(MouseEvent e) {}
@@ -164,7 +163,7 @@ implements ActionListener {
 					}
 				}
 				);
-		peopleScrollPane.setViewportView(peopleTable);
+		botsScrollPane.setViewportView(botsTable);
 
 		// Create the message label.
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
@@ -181,24 +180,24 @@ implements ActionListener {
 		add(buttonPane);
 
 		// Create the add button.
-		addButton = new JButton("Add Members");
+		addButton = new JButton("Add Bots");
 		addButton.setEnabled(false);
 		addButton.addActionListener(this);
 		buttonPane.add(addButton);
 
 		// Create the remove button.
-		removeButton = new JButton("Remove Members");
+		removeButton = new JButton("Remove Bots");
 		removeButton.setEnabled(false);
 		removeButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						// Remove the selected rows in the members table to the people table.
-						int[] selectedRows = membersTable.getSelectedRows();
-						Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+						// Remove the selected rows in the members table to the bots table.
+						int[] selectedRows = botMembersTable.getSelectedRows();
+						Collection<Robot> bots = new ConcurrentLinkedQueue<Robot>();
 						for (int selectedRow : selectedRows)
-							people.add((Person) membersTableModel.getUnit(selectedRow));
-						peopleTableModel.addPeople(people);
-						membersTableModel.removePeople(people);
+							bots.add((Robot) botMembersTableModel.getUnit(selectedRow));
+						botsTableModel.addRobots(bots);
+						botMembersTableModel.removeRobots(bots);
 						updateRoverCapacityLabel();
 					}
 				});
@@ -208,7 +207,7 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the rover capacity label.
-		roverCapacityLabel = new JLabel("Remaining rover capacity: ");
+		roverCapacityLabel = new JLabel("Remaining Rover Capacity: ");
 		roverCapacityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(roverCapacityLabel);
 
@@ -216,7 +215,7 @@ implements ActionListener {
 		add(Box.createVerticalStrut(10));
 
 		// Create the members label.
-		JLabel membersLabel = new JLabel("Mission Members");
+		JLabel membersLabel = new JLabel("Mission Bots");
 		membersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(membersLabel);
 
@@ -231,27 +230,27 @@ implements ActionListener {
 		membersPane.add(membersScrollPane, BorderLayout.CENTER);
 
 		// Create the members table model.
-		membersTableModel = new MembersTableModel();
+		botMembersTableModel = new BotMembersTableModel();
 
 		// Create the members table.
-		membersTable = new JTable(membersTableModel);
-		membersTable.setRowSelectionAllowed(true);
-		membersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		membersTable.getSelectionModel().addListSelectionListener(
+		botMembersTable = new JTable(botMembersTableModel);
+		botMembersTable.setRowSelectionAllowed(true);
+		botMembersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		botMembersTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						int[] selectedRows = membersTable.getSelectedRows();
+						int[] selectedRows = botMembersTable.getSelectedRows();
 						if (selectedRows.length > 0) {
 							if (e.getValueIsAdjusting()) {
 								// Enable the remove button.
-								peopleTable.clearSelection();
+								botsTable.clearSelection();
 								removeButton.setEnabled(true);
 							}
 						}
 						else removeButton.setEnabled(false);
 					}
 				});
-		membersScrollPane.setViewportView(membersTable);
+		membersScrollPane.setViewportView(botMembersTable);
 	}
 
 	/**
@@ -267,16 +266,10 @@ implements ActionListener {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		//Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		//for (int x = 0; x < membersTableModel.getRowCount(); x++) 
-		//	people.add((Person) membersTableModel.getUnit(x));
-		//getWizard().getMissionData().setMembers(people);
-		
 		Collection<Unit> units = new ConcurrentLinkedQueue<Unit>();
-		for (int x = 0; x < membersTableModel.getRowCount(); x++) 
-			units.add((Unit) membersTableModel.getUnit(x));
-		getWizard().getMissionData().setMixedMembers(units);		
-		
+		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) 
+			units.add((Unit) botMembersTableModel.getUnit(x));
+		getWizard().getMissionData().setMixedMembers(units);
 		return true;
 	}
 
@@ -284,8 +277,8 @@ implements ActionListener {
 	 * Clear information on the wizard panel.
 	 */
 	void clearInfo() {
-		peopleTable.clearSelection();
-		membersTable.clearSelection();
+		botsTable.clearSelection();
+		botMembersTable.clearSelection();
 		errorMessageLabel.setText(" ");
 	}
 
@@ -293,8 +286,8 @@ implements ActionListener {
 	 * Updates the wizard panel information.
 	 */
 	void updatePanel() {
-		peopleTableModel.updateTable();
-		membersTableModel.updateTable();
+		botsTableModel.updateTable();
+		botMembersTableModel.updateTable();
 		updateRoverCapacityLabel();
 	}
 
@@ -310,7 +303,7 @@ implements ActionListener {
 			roverCapacityLabel.setText(" ");
 		}
 		else {
-			roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
+			roverCapacityLabel.setText("Remaining Rover Capacity: " + getRemainingRoverCapacity());
 		}
 	}
 
@@ -324,22 +317,22 @@ implements ActionListener {
 		else if (MissionDataBean.SALVAGE_MISSION.equals(type)) return Integer.MAX_VALUE;
 		else {
 			int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
-			int memberNum = membersTableModel.getRowCount();
+			int memberNum = botMembersTableModel.getRowCount();
 			return roverCapacity - memberNum;
 		}
 	}
 
 	/**
-	 * Table model for people.
+	 * Table model for bots.
 	 */
-	private class PeopleTableModel
+	private class BotsTableModel
 	extends UnitTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		/** Constructor. */
-		private PeopleTableModel() {
+		private BotsTableModel() {
 			// Use UnitTableModel constructor.
 			super();
 
@@ -361,22 +354,22 @@ implements ActionListener {
 			Object result = null;
 
 			if (row < units.size()) {
-				Person person = (Person) getUnit(row);
+				Robot robot = (Robot) getUnit(row);
 
 				try {
 					if (column == 0) 
-						result = person.getName();
+						result = robot.getName();
 					else if (column == 1) 
-						result = person.getMind().getJob().getName(person.getGender());
+						result = robot.getBotMind().getRobotJob().toString();
 					else if (column == 2) {
-						Mission mission = person.getMind().getMission();
+						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
 						else result = "none";
 					}
 					else if (column == 3) 
-						result = (int) (person.getPerformanceRating() * 100D) + "%";
+						result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					else if (column == 4)
-						result = person.getPhysicalCondition().getHealthSituation();
+						result = robot.getPhysicalCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
 			}
@@ -395,8 +388,8 @@ implements ActionListener {
 				settlement = missionData.getConstructionSettlement();
 			else if (MissionDataBean.SALVAGE_MISSION.equals(missionData.getType()))
 				settlement = missionData.getSalvageSettlement();
-			Collection<Person> people = CollectionUtils.sortByName(settlement.getInhabitants());
-			Iterator<Person> i = people.iterator();
+			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots());
+			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) units.add(i.next());
 			fireTableDataChanged();
 		}
@@ -411,10 +404,10 @@ implements ActionListener {
 			boolean result = false;
 
 			if (row < units.size()) {
-				Person person = (Person) getUnit(row);
+				Robot robot = (Robot) getUnit(row);
 
 				if (column == 2) {
-					if (person.getMind().getMission() != null) return true;
+					if (robot.getBotMind().getMission() != null) return true;
 				}
 			}
 
@@ -422,28 +415,28 @@ implements ActionListener {
 		}
 
 		/**
-		 * Adds people to the table.
-		 * @param people the collection of people to add.
+		 * Adds robots to the table.
+		 * @param robots the collection of robots to add.
 		 */
-		void addPeople(Collection<Person> people) {
-			Iterator<Person> i = people.iterator();
+		void addRobots(Collection<Robot> robots) {
+			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (!units.contains(person)) units.add(person);
+				Robot robot = i.next();
+				if (!units.contains(robot)) units.add(robot);
 			}
 			units = CollectionUtils.sortByName(units);
 			fireTableDataChanged();
 		}
 
 		/**
-		 * Removes people from the table.
-		 * @param people the collection of people to remove.
+		 * Removes robots from the table.
+		 * @param robots the collection of robots to remove.
 		 */
-		void removePeople(Collection<Person> people) {
-			Iterator<Person> i = people.iterator();
+		void removeRobots(Collection<Robot> robots) {
+			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (units.contains(person)) units.remove(person);
+				Robot robot = i.next();
+				if (units.contains(robot)) units.remove(robot);
 			}
 			fireTableDataChanged();
 		}
@@ -452,14 +445,14 @@ implements ActionListener {
 	/**
 	 * A table model for mission members.
 	 */
-	private class MembersTableModel
+	private class BotMembersTableModel
 	extends UnitTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		/** * Constructor. */
-		private MembersTableModel() {
+		private BotMembersTableModel() {
 			// Use UnitTableModel constructor.
 			super();
 
@@ -481,22 +474,22 @@ implements ActionListener {
 			Object result = null;
 
 			if (row < units.size()) {
-				Person person = (Person) getUnit(row);
+				Robot robot = (Robot) getUnit(row);
 
 				try {
 					if (column == 0) 
-						result = person.getName();
+						result = robot.getName();
 					else if (column == 1) 
-						result = person.getMind().getJob().getName(person.getGender());
+						result = robot.getBotMind().getRobotJob().toString();
 					else if (column == 2) {
-						Mission mission = person.getMind().getMission();
+						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
 						else result = "none";
 					}
 					else if (column == 3) 
-						result = (int) (person.getPerformanceRating() * 100D) + "%";
+						result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					else if (column == 4)
-						result = person.getPhysicalCondition().getHealthSituation();
+						result = robot.getPhysicalCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
 			}
@@ -523,14 +516,14 @@ implements ActionListener {
 		}
 
 		/**
-		 * Adds people to the table.
-		 * @param people the collection of people to add.
+		 * Adds robots to the table.
+		 * @param robots the collection of robots to add.
 		 */
-		void addPeople(Collection<Person> people) {
-			Iterator<Person> i = people.iterator();
+		void addRobots(Collection<Robot> robots) {
+			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (!units.contains(person)) units.add(person);
+				Robot robot = i.next();
+				if (!units.contains(robot)) units.add(robot);
 			}
 			units = CollectionUtils.sortByName(units);
 			fireTableDataChanged();
@@ -539,20 +532,21 @@ implements ActionListener {
 		}
 
 		/**
-		 * Removes people from the list.
-		 * @param people the collection of people to remove.
+		 * Removes robots from the list.
+		 * @param robots the collection of robots to remove.
 		 */
-		void removePeople(Collection<Person> people) {
-			Iterator<Person> i = people.iterator();
+		void removeRobots(Collection<Robot> robots) {
+			Iterator<Robot> i = robots.iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (units.contains(person)) units.remove(person);
+				Robot robot = i.next();
+				if (units.contains(robot)) units.remove(robot);
 			}
 			fireTableDataChanged();
 
 			getWizard().setButtons(units.size() > 0);
 		}
 	}
+
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -562,13 +556,13 @@ implements ActionListener {
 	}
 
 	private final void addButtonClicked() {
-		// Add the selected rows in the people table to the members table.
-		int[] selectedRows = peopleTable.getSelectedRows();
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
-		peopleTableModel.removePeople(people);
-		membersTableModel.addPeople(people);
+		// Add the selected rows in the robots table to the members table.
+		int[] selectedRows = botsTable.getSelectedRows();
+		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+		for (int selectedRow : selectedRows) robots.add((Robot) botsTableModel.getUnit(selectedRow));
+		botsTableModel.removeRobots(robots);
+		botMembersTableModel.addRobots(robots);
 		updateRoverCapacityLabel();
 	}
-	
+
 }

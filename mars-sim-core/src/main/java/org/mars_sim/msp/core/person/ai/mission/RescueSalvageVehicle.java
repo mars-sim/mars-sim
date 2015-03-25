@@ -20,11 +20,13 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
@@ -145,11 +147,11 @@ implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public RescueSalvageVehicle(Collection<Person> members, Settlement startingSettlement, 
+    public RescueSalvageVehicle(Collection<Unit> members, Settlement startingSettlement, 
             Vehicle vehicleTarget, Rover rover, String description) {
 
         // Use RoverMission constructor.
-        super(description, (Person) members.toArray()[0], 1, rover);
+        super(description, (Unit) members.toArray()[0], 1, rover);
 
         setStartingSettlement(startingSettlement);
         this.vehicleTarget = vehicleTarget;
@@ -163,12 +165,24 @@ implements Serializable {
         addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
         addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
+     	Person person = null;
+    	Robot robot = null;
+    	
         // Add mission members.
-        Iterator<Person> i = members.iterator();
+        Iterator<Unit> i = members.iterator();
         while (i.hasNext()) {
-            i.next().getMind().setMission(this);
+         	                    	
+	        Unit unit = i.next();
+	        if (unit instanceof Person) {
+	        	person = (Person) unit;
+	        	person.getMind().setMission(this);
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	robot.getBotMind().setMission(this);
+	        }    
         }
-
+        
         // Add rendezvous phase.
         addPhase(RENDEZVOUS);
 

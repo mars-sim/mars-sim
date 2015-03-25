@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
@@ -31,6 +32,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -155,7 +157,62 @@ implements Serializable {
         // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
         // logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
     }
+    CollectResourcesMission(String missionName, Robot startingRobot,
+            AmountResource resourceType, double siteResourceGoal,
+            double resourceCollectionRate, Class containerType,
+            int containerNum, int numSites, int minPeople) {
 
+        // Use RoverMission constructor
+        super(missionName, startingRobot, minPeople);
+
+        if (!isDone()) {
+
+            // Set mission capacity.
+            if (hasVehicle())
+                setMissionCapacity(getRover().getCrewCapacity());
+            int availableSuitNum = Mission
+                    .getNumberAvailableEVASuitsAtSettlement(startingRobot
+                    .getSettlement());
+            if (availableSuitNum < getMissionCapacity())
+                setMissionCapacity(availableSuitNum);
+
+            // Initialize data members.
+            setStartingSettlement(startingRobot.getSettlement());
+            this.resourceType = resourceType;
+            this.siteResourceGoal = siteResourceGoal;
+            this.resourceCollectionRate = resourceCollectionRate;
+            this.containerType = containerType;
+            this.containerNum = containerNum;
+
+            // Recruit additional people to mission.
+            recruitRobotsForMission(startingRobot);
+
+            // Determine collection sites
+            if (hasVehicle()) determineCollectionSites(getVehicle().getRange(),
+                    getTotalTripTimeLimit(getRover(), getRobotsNumber(),
+                    true), numSites);
+
+            // Add home settlement
+            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
+                    getStartingSettlement(), getStartingSettlement().getName()));
+
+            // Check if vehicle can carry enough supplies for the mission.
+            if (hasVehicle() && !isVehicleLoadable()) {
+                endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+            }
+        }
+
+        // Add collecting phase.
+        addPhase(COLLECT_RESOURCES);
+
+        // Set initial mission phase.
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
+
+        // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
+        // logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
+    }
     /**
      * Constructor with explicit data
      * @param missionName The name of the mission.
@@ -172,14 +229,14 @@ implements Serializable {
      * @param iceCollectionSites the sites to collect ice.
      * @throws MissionException if problem constructing mission.
      */
-    CollectResourcesMission(String missionName, Collection<Person> members,
+    CollectResourcesMission(String missionName, Collection<Unit> members,
             Settlement startingSettlement, AmountResource resourceType,
             double siteResourceGoal, double resourceCollectionRate,
             Class containerType, int containerNum, int numSites, int minPeople,
             Rover rover, List<Coordinates> collectionSites) {
 
         // Use RoverMission constructor
-        super(missionName, (Person) members.toArray()[0], minPeople, rover);
+        super(missionName, (Unit) members.toArray()[0], minPeople, rover);
 
         setStartingSettlement(startingSettlement);
 
@@ -205,11 +262,24 @@ implements Serializable {
         addNavpoint(new NavPoint(startingSettlement.getCoordinates(),
                 startingSettlement, startingSettlement.getName()));
 
+     	Person person = null;
+    	Robot robot = null;
+    	
         // Add mission members.
-        Iterator<Person> i = members.iterator();
-        while (i.hasNext())
-            i.next().getMind().setMission(this);
-
+        Iterator<Unit> i = members.iterator();
+        while (i.hasNext()) {
+         	                    	
+	        Unit unit = i.next();
+	        if (unit instanceof Person) {
+	        	person = (Person) unit;
+	        	person.getMind().setMission(this);
+	        }
+	        else if (unit instanceof Robot) {
+	        	robot = (Robot) unit;
+	        	robot.getBotMind().setMission(this);
+	        }    
+        }
+        
         // Add collecting phase.
         addPhase(COLLECT_RESOURCES);
 
@@ -581,7 +651,28 @@ implements Serializable {
             }
         }
     }
+    protected void recruitRobotsForMission(Robot startingRobot) {
+        super.recruitRobotsForMission(startingRobot);
 
+        // Make sure there is at least one person left at the starting settlement.
+        //if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
+        //        startingPerson)) {
+            // Remove last person added to the mission.
+            Object[] array = getRobots().toArray();
+            int amount = getRobotsNumber() - 1;
+            Robot lastRobot = null;
+
+            if (amount >= 0 && amount < array.length) {
+                lastRobot = (Robot) array[amount];
+            }
+
+            if (lastRobot != null) {
+                lastRobot.getBotMind().setMission(null);
+                if (getRobotsNumber() < getMinRobots())
+                    endMission("Not enough bot members.");
+            }
+        //}
+    }
     /**
      * Gets the number of empty containers of given type at the settlement.
      * @param settlement the settlement

@@ -11,8 +11,10 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -62,7 +64,14 @@ extends CollectResourcesMission {
 				Bag.class, REQUIRED_BAGS, 
 				NUM_SITES, MIN_PEOPLE);
 	}
-
+	public CollectRegolith (Robot startingRobot) {
+		// Use CollectResourcesMission constructor.
+		super(DEFAULT_DESCRIPTION, startingRobot, 
+				getRegolithResource(), SITE_GOAL, 
+				COLLECTION_RATE, 
+				Bag.class, REQUIRED_BAGS, 
+				NUM_SITES, MIN_PEOPLE);
+	}
 	/**
 	 * Constructor with explicit data.
 	 * @param members collection of mission members.
@@ -72,7 +81,7 @@ extends CollectResourcesMission {
 	 * @param description the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith (Collection<Person> members, Settlement startingSettlement, 
+	public CollectRegolith (Collection<Unit> members, Settlement startingSettlement, 
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
