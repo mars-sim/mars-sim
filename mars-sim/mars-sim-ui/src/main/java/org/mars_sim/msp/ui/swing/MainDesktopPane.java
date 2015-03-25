@@ -54,6 +54,7 @@ import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -830,13 +831,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		transportWizard.deliverBuildings();
 		//transportWizard.pack();
 		//add(transportWizard, 0);
-		//int Xloc = (getWidth() - transportWizard.getWidth()) / 2;
-		//int Yloc = (getHeight() - transportWizard.getHeight()) / 2;
+		//int Xloc = (getWidth() - transportWizard.getWidth()) / 4;
+		//int Yloc = (getHeight() - transportWizard.getHeight()) / 4;
 		//transportWizard.setLocation(Xloc, Yloc);		
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
 		//transportWizard.pack();
-		transportWizard.setVisible(true);
+		//transportWizard.setVisible(true);
 	}
 	/**
 	 * Removes the transport wizard from the desktop.
@@ -1004,14 +1005,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);	
-			if (mainWindow != null) mainWindow.pauseSimulation();
-			if (mainScene != null) mainScene.pauseSimulation();
-			openTransportWizard(mgr);//, building); 
+			openTransportWizard(mgr);
+			//if (mainWindow != null) mainWindow.pauseSimulation();
+			//else if (mainScene != null) mainScene.pauseSimulation();
 			isTransportingBuilding = false;
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {		
-			if (mainWindow != null) mainWindow.unpauseSimulation();
-			if (mainScene != null) mainScene.unpauseSimulation();			
+			//if (mainWindow != null) mainWindow.unpauseSimulation();
+			//else if (mainScene != null) mainScene.unpauseSimulation();			
 			disposeTransportWizard();
 			isTransportingBuilding = false;
             //mgr.getResupply().deliverOthers();
