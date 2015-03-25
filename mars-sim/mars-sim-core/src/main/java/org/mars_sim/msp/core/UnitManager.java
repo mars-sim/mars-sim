@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.07 2015-03-02
+ * @version 3.08 2015-03-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -589,12 +589,17 @@ implements Serializable {
                 }
             }
 
-            // 2015-02-27 Added Favorite class
+            // 2015-02-27 and 2015-03-24 Added Favorite class           
             String mainDish = personConfig.getFavoriteMainDish(x);
-            String sideDish = personConfig.getFavoriteSideDish(x);
+            String sideDish = personConfig.getFavoriteSideDish(x);            
+            String dessert = personConfig.getFavoriteDessert(x);
+            String activity = personConfig.getFavoriteActivity(x);
+            
             person.getFavorite().setFavoriteMainDish(mainDish);
             person.getFavorite().setFavoriteSideDish(sideDish);
-       
+            person.getFavorite().setFavoriteDessert(dessert);
+            person.getFavorite().setFavoriteActivity(activity);
+                  
             
             // Set person's configured natural attributes (if any).
             Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
@@ -661,12 +666,18 @@ implements Serializable {
                     addUnit(person);
                     relationshipManager.addInitialSettler(person, settlement);
                     
-                    // 2015-02-27 Added Favorite class
+                    // 2015-02-27 and 2015-03-24 Added Favorite class                  
                     String mainDish = person.getFavorite().getRandomMainDish();
                     String sideDish = person.getFavorite().getRandomSideDish();
+                    String dessert = person.getFavorite().getRandomDessert();
+                    String activity = person.getFavorite().getRandomActivity();
+                    
                     person.getFavorite().setFavoriteMainDish(mainDish);
                     person.getFavorite().setFavoriteSideDish(sideDish);
-               
+                    person.getFavorite().setFavoriteDessert(dessert); 
+                    person.getFavorite().setFavoriteActivity(activity); 
+                                       
+                 
                 }
             }
         } catch (Exception e) {

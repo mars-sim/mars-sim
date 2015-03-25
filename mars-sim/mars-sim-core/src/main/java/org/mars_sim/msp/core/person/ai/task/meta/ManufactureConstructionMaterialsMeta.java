@@ -64,6 +64,9 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
                     result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
                             manufacturingBuilding);
 
+                    if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                    	result += 50D;
+                    
                     if (result > 100D) {
                         result = 100D;
                     }

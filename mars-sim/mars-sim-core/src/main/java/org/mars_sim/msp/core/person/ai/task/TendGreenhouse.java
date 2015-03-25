@@ -290,7 +290,7 @@ implements Serializable {
                 List<Building> buildings = manager.getBuildings(BuildingFunction.FARMING);
                 buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
                 buildings = getFarmsNeedingWork(buildings);
-                buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
+                //buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
 
                 // TODO: add person's good/bad feeling toward robots
                 int size = buildings.size();

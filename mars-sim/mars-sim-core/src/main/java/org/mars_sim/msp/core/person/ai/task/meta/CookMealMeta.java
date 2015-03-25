@@ -65,28 +65,14 @@ public class CookMealMeta implements MetaTask {
 	                Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 	                
                     int population = person.getSettlement().getCurrentPopulationNum();
-                    if (population < 2)
-                    	result = 0;
+                    if (population < 2) {
+                    	result = 0;                    
+                    }
                     
                     else {
+                    	                        
+	                    // TODO: check if someone else is hungry
                     	
-	                	if (kitchen.hasCookedMeal() == false)
-	                		result += 100D;
-	                    
-	                	// TODO: cache the meal ingredients so that it doesn't have to do it again in CookMeal.java and Cooking.java
-	                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-	                    int size = kitchen.getHotMealCacheSize();
-
-	                    // if more meals (thus more ingredients) are available at kitchen.
-	                    // to Chef's delight, he/she is more motivated to cook 
-	                    result += size * 50D;
-	              	  
-	  
-	                    // TODO: if the person likes cooking 
-	                    // result = result + 200D;
-	                    //if (size == 0) result = 0D;
-	                   
-	                    // TODO: the cook should check if he himself or someone else is hungry, 
 	                    // he's more eager to cook except when he's tired
 	                    double hunger = person.getPhysicalCondition().getHunger();
 	                    if ((hunger > 300D) && (result > 0D)) {
@@ -97,14 +83,38 @@ public class CookMealMeta implements MetaTask {
 	                        result -= .4D * (fatigue - 700D);
 	                    }
 	                    
-	                    if (result < 0D) {
+	                    if (result < 0D)
 	                        result = 0D;
+	                                    	
+	                    if (result != 0) {
+	                    	
+		                	if (!kitchen.hasCookedMeal())
+		                		result += 50D;
+		                    
+		                	// TODO: cache the meal ingredients so that it doesn't have to do it again in CookMeal.java and Cooking.java
+		                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+		                    int size = kitchen.getHotMealCacheSize();
+	
+		                    // if more meals (thus more ingredients) are available at kitchen.
+		                    // to Chef's delight, he/she is more motivated to cook 
+		                    result += size * 50D;		              	  
+		  
+		                    // if the person likes cooking 
+			                if (person.getFavorite().getFavoriteActivity().equals("Cooking"))
+			                	result += 50D;
+		                    
+		                    // Crowding modifier.
+		                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
+		                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);                    
+	
+		                    // Effort-driven task modifier.
+		                    result *= person.getPerformanceRating();
+	
+		                    // Job modifier.
+		                    Job job = person.getMind().getJob();
+		                    if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);                
+
 	                    }
-	                    
-	                    // Crowding modifier.
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-	                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
-	                    
                     }
                 }
             }
@@ -112,16 +122,7 @@ public class CookMealMeta implements MetaTask {
                 //logger.log(Level.INFO,"getProbability() : No room/no kitchen available for cooking meal or outside settlement" ,e);
             }
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);
-        
-
-            //System.out.println(" cookMealMeta : getProbability " + result);
-      	}
+         }
 
         return result;
     }
@@ -151,8 +152,8 @@ public class CookMealMeta implements MetaTask {
 		                    int population = robot.getSettlement().getCurrentPopulationNum();
 		                    if (population > 1) {                    	
 			                    
-			                	if (kitchen.hasCookedMeal() == false)
-			                		result += 100D;
+			                	if (!kitchen.hasCookedMeal())
+			                		result += 50D;
 			
 			                    //double size = kitchen.getMealRecipesWithAvailableIngredients().size();
 			                    int size = kitchen.getHotMealCacheSize();

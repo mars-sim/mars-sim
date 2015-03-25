@@ -48,7 +48,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
+              
         // Add probability for researcher's primary study (if any).
         ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
@@ -59,6 +59,9 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                     if (lab != null) {
                         double primaryResult = 50D;
                     
+                        if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                        	result += 50D;
+                  
                         // Get lab building crowding modifier.
                         primaryResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
                     

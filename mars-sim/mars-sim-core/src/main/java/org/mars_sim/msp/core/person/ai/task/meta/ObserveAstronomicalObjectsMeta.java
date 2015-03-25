@@ -57,9 +57,9 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
             double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
             if (sunlight == 0D) {
-
+                
                 ScienceType astronomy = ScienceType.ASTRONOMY;
-
+                
                 // Add probability for researcher's primary study (if any).
                 ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                 ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
@@ -69,7 +69,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                             astronomy == primaryStudy.getScience()) {
                         try {
                             double primaryResult = 100D;
-
+           
                             // Get observatory building crowding modifier.
                             primaryResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
@@ -82,6 +82,9 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                 }
                             }
 
+                            if (person.getFavorite().getFavoriteActivity().equals("Astronomy"))
+                            	result += 25D;
+                            
                             result += primaryResult;
                         }
                         catch (Exception e) {
@@ -100,6 +103,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                 try {
                                     double collabResult = 50D;
 
+                                    
                                     // Get observatory building crowding modifier.
                                     collabResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
@@ -112,6 +116,9 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                         }
                                     }
 
+                                    if (person.getFavorite().getFavoriteActivity().equals("Astronomy"))
+                                    	result += 25D;
+                                    
                                     result += collabResult;
                                 }
                                 catch (Exception e) {

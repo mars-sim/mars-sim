@@ -43,26 +43,33 @@ public class RespondToStudyInvitationMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
-        if (invitedStudies.size() > 0) {
-            result = 50D;
-        }
-        
-        // Crowding modifier
+  
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        	
+	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
+	        if (invitedStudies.size() > 0) {
+	            result = 50D;
+	            
+	            if (person.getFavorite().getFavoriteActivity().equals("Research"))
+	            	result += 50D;
+	     
+	        }
+	        
+	        // Crowding modifier
             Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
             if (adminBuilding != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
             }
-        }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
+	        
+	        
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
+	        }
+	        
         }
         
         return result;

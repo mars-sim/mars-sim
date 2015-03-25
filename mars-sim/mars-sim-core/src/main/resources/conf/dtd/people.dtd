@@ -50,6 +50,8 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ATTLIST person job CDATA #IMPLIED>
 <!ATTLIST person favorite-main-dish CDATA #IMPLIED>
 <!ATTLIST person favorite-side-dish CDATA #IMPLIED>
+<!ATTLIST person favorite-dessert CDATA #IMPLIED>
+<!ATTLIST person favorite-activity CDATA #IMPLIED>
 <!ELEMENT natural-attribute-list (natural-attribute*)>
 <!ELEMENT natural-attribute EMPTY>
 <!ATTLIST natural-attribute name CDATA #REQUIRED>

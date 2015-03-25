@@ -41,6 +41,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -185,7 +186,7 @@ implements Serializable, MouseListener {
                         double mass0, mass1;
                         double water;
                         String cropName, cat;
-                        cropName = crop.getCropType().getName();
+                        cropName = WordUtils.capitalize(crop.getCropType().getName());
                         cat = crop.getCropType().getCropCategory();
                     	mass0 = crop.getCropType().getEdibleBiomass();
                     	water = 100 * crop.getCropType().getEdibleWaterContent();
@@ -614,7 +615,7 @@ implements Serializable, MouseListener {
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Health";
-			else if (columnIndex == 1) return "Crop";
+			else if (columnIndex == 1) return "Name";
 			else if (columnIndex == 2) return "Phase";
 			else if (columnIndex == 3) return "Growth";
 			// 2014-10-10 mkung: added column 4 showing the crop's category
@@ -635,7 +636,7 @@ implements Serializable, MouseListener {
 				else if (condition > ((double) 1 / (double) 3)) return yellowDot;
 				else return redDot;
 			}
-			else if (column == 1) return crop.getCropType().getName();
+			else if (column == 1) return WordUtils.capitalize(crop.getCropType().getName());
 			else if (column == 2) return phase;
 			else if (column == 3) {
 				int growth = 0;

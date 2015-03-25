@@ -63,28 +63,29 @@ public class ConstructBuildingMeta implements MetaTask {
                 result = 0D;
         } 
         
-        if (result != 0 )  {// if task penalty is not zero
+        if (result != 0 )  { // if task penalty is not zero
 	            
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            
-	            // Check all building construction missions occurring at the settlement.
+	            	            
 	            try {
+	            	// Check all building construction missions occurring at the settlement.
 	                List<BuildingConstructionMission> missions = ConstructBuilding.
 	                        getAllMissionsNeedingAssistance(person.getSettlement());
 	                result = 50D * missions.size();
+	                
+	    	        // Crowded settlement modifier
+		            Settlement settlement = person.getSettlement();
+		            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+		                result *= 2D;
+		            }
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
 	            }
 	        }
 	        
-	        // Crowded settlement modifier
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = person.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-	                result *= 2D;
-	            }
-	        }
+            if (person.getFavorite().getFavoriteActivity().equals("Construct Building"))
+            	result += 50D;
 	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();

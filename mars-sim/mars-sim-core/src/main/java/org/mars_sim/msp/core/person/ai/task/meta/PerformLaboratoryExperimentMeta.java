@@ -48,7 +48,8 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
+     
+
         // Create list of experimental sciences.
         List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
         
@@ -63,6 +64,9 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
                         if (lab != null) {
                             double primaryResult = 50D;
                     
+                            if (person.getFavorite().getFavoriteActivity().equals("Lab Experiment"))
+                            	result += 50D;
+                            
                             // Get lab building crowding modifier.
                             primaryResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
                     

@@ -51,28 +51,33 @@ public class TendGreenhouseMeta implements MetaTask {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
-                    result += 100D;
 
+                    if (person.getFavorite().getFavoriteActivity().equals("Tend Plants"))
+                    	result += 50D;
+                    
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());
-                    result += needyCropsNum * 30D;
+                    result += needyCropsNum * 20D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
+                    
+
+                    // Effort-driven task modifier.
+                    result *= person.getPerformanceRating();
+
+                    // Job modifier.
+                    Job job = person.getMind().getJob();
+                    if (job != null) {
+                        result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+                    }
+                    
                 }
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+            }         
+            
         }
 
         return result;
@@ -96,14 +101,14 @@ public class TendGreenhouseMeta implements MetaTask {
 	                // See if there is an available greenhouse.
 	                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
 	                if (farmingBuilding != null) {
-	                    result += 100D;
+	                    result += 10D;
 	
 	                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
 	                    //System.out.println("needyCropsNum is "+needyCropsNum);
 	                    result += needyCropsNum * 100D;
 	
 	                    // Crowding modifier.
-	                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
+	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
 	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
 	                }
 	            }

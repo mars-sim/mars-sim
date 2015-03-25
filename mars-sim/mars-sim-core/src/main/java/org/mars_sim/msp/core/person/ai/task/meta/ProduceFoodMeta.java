@@ -52,12 +52,6 @@ public class ProduceFoodMeta implements MetaTask {
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.	        
 	        if (!person.getSettlement().getFoodProductionOverride()) {
 	        	
-		        // TODO: the cook should check if he himself or someone else is hungry, 
-		        // he's more eager to cook except when he's tired
-		        result += person.getPhysicalCondition().getHunger() - 400D;
-		        result -= 0.4 * (person.getPhysicalCondition().getFatigue() - 700D);
-		        
-		        if (result < 0D) result = 0D;
 	
 	            // See if there is an available foodProduction building.
 	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
@@ -70,8 +64,7 @@ public class ProduceFoodMeta implements MetaTask {
 	
 	                // FoodProduction good value modifier.
 	                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
-	
-	
+		
 	                // If foodProduction building has process requiring work, add
 	                // modifier.
 	                SkillManager skillManager = person.getMind().getSkillManager();
@@ -129,12 +122,12 @@ public class ProduceFoodMeta implements MetaTask {
 		                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
 		                    result += 100D;
 		                }
+		                
+			            // Effort-driven task modifier.
+			            result *= robot.getPerformanceRating();		
 		
 		            }
 		            
-		            // Effort-driven task modifier.
-		            result *= robot.getPerformanceRating();
-	
 		        }
 
         return result;

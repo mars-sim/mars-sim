@@ -50,6 +50,9 @@ public class ProposeScientificStudyMeta implements MetaTask {
             // Check if study is in proposal phase.
             if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
                 
+                if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                	result += 50D;
+          
                 // Increase probability if person's current job is related to study's science.
                 Job job = person.getMind().getJob();
                 ScienceType science = study.getScience();

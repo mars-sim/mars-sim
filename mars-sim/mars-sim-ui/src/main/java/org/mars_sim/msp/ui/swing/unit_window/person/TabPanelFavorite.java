@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -55,7 +56,7 @@ extends TabPanel {
 		favoriteLabelPanel.add(favoriteLabel);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
@@ -77,6 +78,23 @@ extends TabPanel {
 		JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
 		infoPanel.add(sideDishLabel);
 
+		// Prepare dessert name label
+		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.LEFT); //$NON-NLS-1$
+		infoPanel.add(dessertNameLabel);
+
+		// Prepare dessert label
+		String dessert = person.getFavorite().getFavoriteDessert();
+		JLabel dessertLabel = new JLabel(WordUtils.capitalize(dessert), JLabel.RIGHT);
+		infoPanel.add(dessertLabel);
+		
+		// Prepare activity name label
+		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.LEFT); //$NON-NLS-1$
+		infoPanel.add(activityNameLabel);
+
+		// Prepare activity label
+		String activity = person.getFavorite().getFavoriteActivity();
+		JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
+		infoPanel.add(activityLabel);
 	}
 
 	/**

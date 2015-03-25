@@ -74,6 +74,10 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
 	                            malfunction)) {
 	                        result += 100D;
+	                        
+	                        if (person.getFavorite().getFavoriteActivity().equals("Repair"))
+	                        	result += 25D;
+	                  
 	                    }
 	                }
 	                catch (Exception e) {
@@ -89,6 +93,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
 	                            result += 100D;
+	                            
+		                        if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+		                        	result += 25D;
 	                        }
 	                    }
 	                    catch (Exception e) {
