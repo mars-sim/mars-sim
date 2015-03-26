@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskSchedule.java
- * @version 3.08 2015-03-19
+ * @version 3.08 2015-03-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JCheckBox;
 
 /**
  * This class represents the task schedule of a person.
@@ -74,7 +72,7 @@ implements Serializable {
         int solElapsed = MarsClock.getSolOfYear(time);         
         if ( solElapsed != solCache) {       	       	        	     
         	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
-        	// save yesterday's schedule (except on the very first day when there's nothing to save
+        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
         	if (solCache != 0) 
         		schedules.put(solCache, currentSchedule);   
         	// create a new schedule for the new day
@@ -82,39 +80,32 @@ implements Serializable {
     		this.currentSchedule = newSchedule;    		
         	solCache = solElapsed; 
         }
-		
-       // int size = currentSchedule.size();
-        
-        // Check if this is the first task of the day
-        if (currentSchedule.isEmpty()) {
-        	DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);			
-        	currentSchedule.add(dailyTask);  	
-        }
-        
-        else {    
+        //if (currentSchedule.isEmpty()) {
+        DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);			
+        currentSchedule.add(dailyTask);  	
 
-            //boolean isSame = false;
-	        //DailyTask lastTask = currentSchedule.get(size-1);
-	        //int lastTime = lastTask.getStartTime();
-	        //String lastDoAction = lastTask.getDoAction();   
-	        
-	        // check if the last task is the same as the current task
-	        //if (lastTime == startTime)
-	        //	if (lastDoAction.equals(doAction))
-	        //		isSame = true;
-
-	        //if (!isSame) {
-		        // if the last task at the same millisol is different from the current task, then add
-	        	DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);			
-	        	currentSchedule.add(dailyTask);
-	        //}
-        }
 	}
 	
+	/**
+	 * Gets all schedules of a person.
+	 * @return schedules
+	 */
 	public Map <Integer, List<DailyTask>> getSchedules() {
 		return schedules;
 	}
 	
+	/**
+	 * Gets the today's schedule.
+	 * @return currentSchedule
+	 */
+	public List<DailyTask> getCurrentSchedule() {
+		return currentSchedule;
+	}
+	
+	/**
+	 * Gets the current sol.
+	 * @return solCache
+	 */
 	public int getSolCache() {
 		return solCache;
 	}
