@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JCheckBox;
+
 /**
  * This class represents the task schedule of a person.
  */
@@ -26,19 +28,14 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private int solCache;
-	
-	private String actorName;
-
-	private String taskName;
-
-	private String doAction;
-	
-	//private String startTime;
+	private int solCache;	
 	private int startTime;
+	private String actorName;
+	private String taskName;
+	private String doAction;	
+	//private String startTime;
 	
-	private Map <Integer, List<DailyTask>> schedules;
-	  	
+	private Map <Integer, List<DailyTask>> schedules;	  	
 	private List<DailyTask> currentSchedule;	
 
 	//private Person person;
@@ -78,14 +75,15 @@ implements Serializable {
         if ( solElapsed != solCache) {       	       	        	     
         	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
         	// save yesterday's schedule (except on the very first day when there's nothing to save
-        	if (solCache != 1) schedules.put(solCache, currentSchedule);   
+        	if (solCache != 0) 
+        		schedules.put(solCache, currentSchedule);   
         	// create a new schedule for the new day
         	List<DailyTask> newSchedule =  new ArrayList<DailyTask>();
     		this.currentSchedule = newSchedule;    		
         	solCache = solElapsed; 
         }
 		
-        int size = currentSchedule.size();
+       // int size = currentSchedule.size();
         
         // Check if this is the first task of the day
         if (currentSchedule.isEmpty()) {
@@ -95,21 +93,21 @@ implements Serializable {
         
         else {    
 
-            boolean isSame = false;
-	        DailyTask lastTask = currentSchedule.get(size-1);
-	        int lastTime = lastTask.getStartTime();
-	        String lastDoAction = lastTask.getDoAction();   
+            //boolean isSame = false;
+	        //DailyTask lastTask = currentSchedule.get(size-1);
+	        //int lastTime = lastTask.getStartTime();
+	        //String lastDoAction = lastTask.getDoAction();   
 	        
 	        // check if the last task is the same as the current task
-	        if (lastTime == startTime)
-	        	if (lastDoAction.equals(doAction))
-	        		isSame = true;
+	        //if (lastTime == startTime)
+	        //	if (lastDoAction.equals(doAction))
+	        //		isSame = true;
 
-	        if (!isSame) {
+	        //if (!isSame) {
 		        // if the last task at the same millisol is different from the current task, then add
 	        	DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);			
 	        	currentSchedule.add(dailyTask);
-	        }
+	        //}
         }
 	}
 	

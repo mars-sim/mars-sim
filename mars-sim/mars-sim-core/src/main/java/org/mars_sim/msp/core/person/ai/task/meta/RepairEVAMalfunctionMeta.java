@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -46,9 +47,10 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
         double result = 0D;
         
         // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+	        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+	            result = 0D;
+	        }
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -131,64 +133,64 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
         double result = 0D;
         
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-	        
-	        // Check if an airlock is available
-	        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) 
-	            result = 0D;
-	           	
+	                 	
 	        // Check if it is night time.
 	        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
-	            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0)
+	            if (!surface.inDarkPolarRegion(robot.getCoordinates()))
 	                result = 0D;
-	            }
-	        } 
 	        
-	        if (result != 0 )  {// if task penalty is not zero
-	        	
-		        // Add probability for all malfunctionable entities in person's local.
-		        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-		        while (i.hasNext()) {
-		            Malfunctionable entity = i.next();
-		            MalfunctionManager manager = entity.getMalfunctionManager();
-		            
-		            // Check if entity has any EVA malfunctions.
-		            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-		            while (j.hasNext()) {
-		                Malfunction malfunction = j.next();
-		                try {
-		                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(robot, robot.getTopContainerUnit(), 
-		                            malfunction)) {
-		                        result += 100D;
-		                    }
-		                }
-		                catch (Exception e) {
-		                    e.printStackTrace(System.err);
-		                }
-		            }
-		            
-		            // Check if entity requires an EVA and has any normal malfunctions.
-		            if (RepairEVAMalfunction.requiresEVA(robot, entity)) {
-		                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
-		                while (k.hasNext()) {
-		                    Malfunction malfunction = k.next();
-		                    try {
-		                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-		                            result += 100D;
-		                        }
-		                    }
-		                    catch (Exception e) {
-		                        e.printStackTrace(System.err);
-		                    }
-		                }
-		            }
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {             
+		        // Check if an airlock is available
+		        if (EVAOperation.getWalkableAvailableAirlock(robot) == null)
+		            result = 0D;
+
+		        if (result != 0)  {// if task penalty is not zero
+		        	
+			        // Add probability for all malfunctionable entities in person's local.
+			        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+			        while (i.hasNext()) {
+			            Malfunctionable entity = i.next();
+			            MalfunctionManager manager = entity.getMalfunctionManager();
+			            
+			            // Check if entity has any EVA malfunctions.
+			            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+			            while (j.hasNext()) {
+			                Malfunction malfunction = j.next();
+			                try {
+			                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(robot, robot.getTopContainerUnit(), 
+			                            malfunction)) {
+			                        result += 100D;
+			                    }
+			                }
+			                catch (Exception e) {
+			                    e.printStackTrace(System.err);
+			                }
+			            }
+			            
+			            // Check if entity requires an EVA and has any normal malfunctions.
+			            if (RepairEVAMalfunction.requiresEVA(robot, entity)) {
+			                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+			                while (k.hasNext()) {
+			                    Malfunction malfunction = k.next();
+			                    try {
+			                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
+			                            result += 100D;
+			                        }
+			                    }
+			                    catch (Exception e) {
+			                        e.printStackTrace(System.err);
+			                    }
+			                }
+			            }
+			        }
+			
+			        // Effort-driven task modifier.
+			        result *= robot.getPerformanceRating();
+			
 		        }
-		
-		        // Effort-driven task modifier.
-		        result *= robot.getPerformanceRating();
-		
-	        }
 	        
+	        }
         }
         return result;
 	}

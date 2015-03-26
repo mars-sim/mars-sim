@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.08 2015-03-19 
+ * @version 3.08 2015-03-25
 
  * @author Manny Kung
  */
@@ -11,28 +11,29 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Map.Entry;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.DailyTask;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -46,6 +47,13 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private int sol;
+	
+	boolean hideRepeatedTasks;
+	
+	private JCheckBox hideRepeatedTasksCheckBox;
+	private JLabel solLabel;
+	
 	private ScheduleTableModel scheduleTableModel;
 	/**
 	 * Constructor.
@@ -70,14 +78,30 @@ extends TabPanel {
 		labelPanel.add(label);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
 		//infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare main dish name label
-		JLabel scheduleLabel = new JLabel(Msg.getString("TabPanelSchedule.yesterday"), JLabel.LEFT); //$NON-NLS-1$
-		infoPanel.add(scheduleLabel);
+		sol = 1;
+		solLabel = new JLabel(Msg.getString("TabPanelSchedule.yesterday", sol), JLabel.CENTER); //$NON-NLS-1$
+		infoPanel.add(solLabel);
 
+		// Create showRepeatedTaskBox.
+		hideRepeatedTasksCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
+		hideRepeatedTasksCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
+		hideRepeatedTasksCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$
+		hideRepeatedTasksCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (hideRepeatedTasksCheckBox.isSelected()) 
+					hideRepeatedTasks = true;
+				else 
+					hideRepeatedTasks = false;
+			}
+		});
+		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
+		infoPanel.add(hideRepeatedTasksCheckBox);
+		
 		// Create schedule table model
 		if (unit instanceof Person)
 			scheduleTableModel = new ScheduleTableModel((Person) unit);    	
@@ -91,10 +115,10 @@ extends TabPanel {
 
 		// Create schedule table
 		JTable table = new JTable(scheduleTableModel);
+		//scheduleTableModel.update(hideRepeatedTasks);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(30);
-		table.getColumnModel().getColumn(1).setPreferredWidth(70);
-		table.getColumnModel().getColumn(1).setPreferredWidth(70);
+		table.getColumnModel().getColumn(0).setPreferredWidth(15);
+		table.getColumnModel().getColumn(1).setPreferredWidth(80);
 		table.setCellSelectionEnabled(false);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		scrollPanel.setViewportView(table);
@@ -104,11 +128,15 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
-	@Override
 	public void update() {
-		scheduleTableModel.update();
+		scheduleTableModel.update(hideRepeatedTasks);
+		sol = scheduleTableModel.getSol();
+		if (sol > 1) solLabel.setText(Msg.getString("TabPanelSchedule.yesterday", sol));
 	}
 	
+	//public boolean getHideRepeatedTasks() {
+	//	return hideRepeatedTasks;
+	//}
 
 	/** 
 	 * Internal class used as model for the attribute table.
@@ -120,8 +148,12 @@ extends TabPanel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
+		
+		private int scheduleSol;
+		
 		private TaskSchedule taskSchedule;
 		private List<DailyTask> tasks;
+
 		
 		DecimalFormat fmt = new DecimalFormat("0000"); 
 
@@ -147,17 +179,18 @@ extends TabPanel {
 	        // TODO: show weekly schedule?
 	        
 	        int sol = taskSchedule.getSolCache();
-	        if (sol > 1)
+	        if (sol > 1) {
 		        // For now, pick only yesterday's schedule
-	        	tasks = schedules.get(sol-1);
+	        	scheduleSol = sol-1;		 
+				tasks = schedules.get(scheduleSol);
+	        }
 	        else 
-	        	tasks = null;
-			
+	        	tasks = null;			
 		}
 
 		@Override
 		public int getRowCount() {
-			if (tasks != null)
+			if (tasks != null)			
 				return tasks.size();
 			else 
 				return 0;
@@ -193,17 +226,52 @@ extends TabPanel {
 			else return null;
 		}
 		
-		public void update() {
+		public int getSol() {
+			return scheduleSol;
+		}
+		
+		public void update(boolean hideRepeatedTasks) {
 	        int sol = taskSchedule.getSolCache();			
 			if (sol > 1) {
 				Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
 		        // Obtain yesterday's schedule
-				tasks = schedules.get(sol-1);
-	        	fireTableDataChanged();
-			}
-		}
-		 
+				scheduleSol = sol-1;
+				 //for (Object o : schedules.keySet())
+				  //    if (schedules.get(o).equals(value))			 
+				tasks = schedules.get(scheduleSol);
+				//System.out.println("scheduleSol : " + scheduleSol);
+				//System.out.println("tasks.size() : " + tasks.size());
+				List<DailyTask> thisSchedule = new ArrayList<DailyTask>(tasks);
 
+				if (hideRepeatedTasks) {
+
+			        int i = thisSchedule.size() - 1;
+			        //for (int i = size - 1; i > 0; i--) {
+			        while (i != 0 ) {
+			        	
+			        	DailyTask currentTask = thisSchedule.get(i);
+			        	DailyTask lastTask = null;
+			        	if ( i - 1 > -1 )
+			        		lastTask = thisSchedule.get(i - 1);
+
+			        	String lastActivity = lastTask.getDoAction();   
+			        	String currentActivity = currentTask.getDoAction();
+			        	// check if the last task is the same as the current task
+			        	if (lastActivity.equals(currentActivity)) {
+			        		thisSchedule.remove(i);
+			        	}
+			        	
+			        	i--;
+			        }
+			        
+			        tasks = thisSchedule;
+				}
+				
+	        	fireTableDataChanged();
+			} // if (sol > 1)
+			
+		}		 
+		
 	}
 	
 }

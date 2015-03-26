@@ -288,22 +288,38 @@ implements Serializable {
      * Gets a dessert from this facility.
      * @return PreparedDessert
      */
-    public PreparedDessert eatADessert() {
+    public PreparedDessert chooseADessert(Person person) {
         PreparedDessert bestDessert = null;
+        PreparedDessert bestFavDessert = null;
         int bestQuality = -1;
+      	String favoriteDessert = person.getFavorite().getFavoriteDessert();
+      	
         Iterator<PreparedDessert> i = servingsOfDessertList.iterator();
         while (i.hasNext()) {
             PreparedDessert freshDessert = i.next();
-            if (freshDessert.getQuality() > bestQuality) {
+            if (freshDessert.getName().equals(favoriteDessert)) {
+	            if (freshDessert.getQuality() > bestQuality) {
+	                bestQuality = freshDessert.getQuality();
+	                bestFavDessert = freshDessert;
+	            }
+            }
+            
+            else if (freshDessert.getQuality() > bestQuality) {
                 bestQuality = freshDessert.getQuality();
                 bestDessert = freshDessert;
             }
         }
 
-        if (bestDessert != null) {
+        if (bestFavDessert != null) {
+        	servingsOfDessertList.remove(bestFavDessert);
+         }
+        
+        else if (bestDessert != null) {
         	servingsOfDessertList.remove(bestDessert);
          }
+        
         return bestDessert;
+        
     }
     
     /**

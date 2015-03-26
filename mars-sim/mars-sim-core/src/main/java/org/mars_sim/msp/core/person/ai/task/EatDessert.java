@@ -85,8 +85,9 @@ implements Serializable {
     public EatDessert(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
                 RandomUtil.getRandomDouble(30D));
-        //logger.info("just called EatDessert's constructor");
 
+        this.person = person;
+        
         boolean walkSite = false;
 
         LocationSituation location = person.getLocationSituation();
@@ -114,7 +115,7 @@ implements Serializable {
            	else {  // If a fresh dessert in a local kitchen available
     			dessertLocation = kitchen.getBuilding().getNickName();
            		// grab this fresh dessert and tag it for this person
-             	dessert = kitchen.eatADessert();
+             	dessert = kitchen.chooseADessert(person);
                	if (dessert != null) {
                		//2015-01-12 Added setConsumerName()
                		dessert.setConsumerName(person.getName());

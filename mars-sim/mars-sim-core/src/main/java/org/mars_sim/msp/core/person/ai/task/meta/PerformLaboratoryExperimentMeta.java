@@ -64,7 +64,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
                         if (lab != null) {
                             double primaryResult = 50D;
                     
-                            if (person.getFavorite().getFavoriteActivity().equals("Lab Experiment"))
+                            if (person.getFavorite().getFavoriteActivity().equals("Lab Experimentation"))
                             	result += 50D;
                             
                             // Get lab building crowding modifier.
