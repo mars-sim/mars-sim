@@ -370,7 +370,7 @@ implements Serializable {
     // 2015-02-27 Renamed to chooseAMeal(). A person will select the favorite main/side dish if available
     public CookedMeal chooseAMeal(Person person) {    	
     	CookedMeal result = null; 
-    	CookedMeal bestDish = null;
+    	CookedMeal bestFavDish = null;
         CookedMeal bestMeal = null;
         int bestQuality = -1;
       	String mainDish = person.getFavorite().getFavoriteMainDish();
@@ -380,10 +380,11 @@ implements Serializable {
         while (i.hasNext()) {
             CookedMeal meal = i.next();
             
+            // TODO: currently a person will eat either a main dish or side dish but NOT both.
             if (meal.getName().equals(mainDish) || meal.getName().equals(sideDish) ) {          
 	            if (meal.getQuality() > bestQuality) {
 	                bestQuality = meal.getQuality();
-	                bestDish = meal;
+	                bestFavDish = meal;
 	            }	            
 	        }
             
@@ -394,13 +395,13 @@ implements Serializable {
             
         }
         
-        if (bestDish != null) {
-        	cookedMeals.remove(bestDish);
+        if (bestFavDish != null) {
+        	cookedMeals.remove(bestFavDish);
         	// 2015-01-06 Added dailyMealList
         	//dailyMealList.add(bestMainDish);
-        	result = bestDish; 	
+        	result = bestFavDish; 	
         }
-        
+        // if a peron's favorite dish is not found
         else if (bestMeal != null) {
         	cookedMeals.remove(bestMeal);
         	// 2015-01-06 Added dailyMealList

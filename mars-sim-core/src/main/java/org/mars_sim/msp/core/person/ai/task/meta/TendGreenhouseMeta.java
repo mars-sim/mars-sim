@@ -52,7 +52,7 @@ public class TendGreenhouseMeta implements MetaTask {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
 
-                    if (person.getFavorite().getFavoriteActivity().equals("Tend Plants"))
+                    if (person.getFavorite().getFavoriteActivity().equals("Tending Plants"))
                     	result += 50D;
                     
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());

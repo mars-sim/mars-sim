@@ -114,25 +114,25 @@ public class LoadVehicleEVAMeta implements MetaTask {
 	       
         double result = 0D;
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                result = 0D;
-            }
-        } 
-        
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
+	
+	        // Check if it is night time.
+	        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+	            if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+	                result = 0D;
+	            }
+	        } 
+	        
         	
-        	if (result !=0 )
+        	if (result != 0)
 	        	
 		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 		            
+			        // Check if an airlock is available
+			        if (EVAOperation.getWalkableAvailableAirlock(robot) == null)
+			            result = 0D;			        
+			        
 		            // Check all vehicle missions occurring at the settlement.
 		            try {
 		                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
@@ -158,6 +158,8 @@ public class LoadVehicleEVAMeta implements MetaTask {
 		            result *= robot.getPerformanceRating();
 		        }
 
+        }
+        
         return result;
     }
 

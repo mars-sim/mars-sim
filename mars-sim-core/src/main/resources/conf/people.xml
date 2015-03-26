@@ -433,7 +433,7 @@
         </person>
         <person name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
-			favorite-activity="Do Lab Experiment">
+			favorite-activity="Lab Experimentation">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
