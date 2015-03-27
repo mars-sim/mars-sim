@@ -1,17 +1,15 @@
 /**
  * Mars Simulation Project
- * CrewEditor.java
- * @version 3.07 2014-12-16
+ * CrewEditorFX.java
+ * @version 3.08 2015-03-26
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.configeditor;
+package org.mars_sim.msp.javafx;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,12 +19,12 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
@@ -35,14 +33,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 
 /**
- * Window for the resupply tool.
- * TODO externalize strings
+ * CrewEditorFX allows users to design the crew manifest for an initial settlement
  */
-public class CrewEditor
-extends JDialog {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class CrewEditorFX {
 
 	/** Tool name. */
 	public static final String NAME = "Resupply Tool";
@@ -52,6 +45,7 @@ extends JDialog {
 	// Data members
 	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
 	
+	private JFrame f;
 	private JPanel mainPane;
 	private JPanel listPane ;
 	private SimulationConfig config; // needed in the constructor
@@ -69,22 +63,24 @@ extends JDialog {
 
 	/**
 	 * Constructor.
-	 * @param owner Window
 	 * @param config SimulationConfig
 	 */
-	public CrewEditor(Window owner, SimulationConfig config) {
-		super(owner, Msg.getString("CrewEditor.title"), ModalityType.APPLICATION_MODAL); //$NON-NLS-1$
+	public CrewEditorFX(SimulationConfig config) {
+     
 		this.config = config;
 		pc = config.getPersonConfiguration();		
-		
-		// Set the location of the dialog at the center of the screen.
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);
-		
+	
+		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
+	    catch(Exception ex){}
+	    f = new JFrame();
+	    f.setSize(600, 300);
+	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    f.setVisible(true);
+	    
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
-		setContentPane(mainPane);
+		f.setContentPane(mainPane);
 		
 		// Create list panel.
 		listPane = new JPanel(new GridLayout(6, 5));
@@ -163,13 +159,23 @@ extends JDialog {
 					pc.setPersonJob(i, jobStr);
 				}
 					
-				dispose();
-				setVisible(false);
+				f.dispose();
+				f.setVisible(false);
 			}
 		});
 		buttonPane.add(commitButton);
 
-		pack();
+		f.pack();
+		
+		f.setLocationRelativeTo(null);
+		
+		// Set the location of the dialog at the center of the screen.
+		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		//f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
+	    
+        f.setSize(new Dimension(600, 300));
+
+        f.setVisible(true);
 	}
 
 

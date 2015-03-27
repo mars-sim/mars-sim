@@ -46,13 +46,6 @@ public class MainMenu {
     private static Logger logger = Logger.getLogger(MainMenu.class.getName());
     
 	// Data members
-	private Stage primaryStage;
-	
-	private Stage stage;
-	
-	//public MenuScene menuScene;
-	public MainScene mainScene;
-	//public ModtoolScene modtoolScene;
 	
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/Main.fxml";
@@ -63,23 +56,27 @@ public class MainMenu {
     
     public String[] args;
     
-    private Sphere mars;
-    private PhongMaterial material;
-    private PointLight sun;
+    //private double anchorX;
+    //private double anchorY;
+    //private double anchorAngle;
+    //private boolean cleanUI = true;
+    
     private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
     private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
     private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
     private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
+      
+    private Sphere mars;
+    private PhongMaterial material;
+    private PointLight sun;
     
-    //private double anchorX;
-    //private double anchorY;
-    //private double anchorAngle;
-    //private boolean cleanUI = true;
-    
-	/** The main desktop. */
-	//private MainDesktopPane desktop;
+	private Stage primaryStage;
+	private Stage stage;
+	//public MenuScene menuScene;
+	public MainScene mainScene;
+	//public ModtoolScene modtoolScene;
 	private MarsProjectFX mpFX;
 
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
@@ -136,14 +133,19 @@ public class MainMenu {
 
 
    public void runOne() {
-	   primaryStage.setIconified(true);
 	   
+	   primaryStage.hide();
+	   //primaryStage.setIconified(true);	 
+	   //primaryStage.close();
 	   mpFX.handleNewSimulation();
-	   mpFX.startSimulation();
-	   Scene scene = mainScene.createMainScene();
 
+   }
+   
+   public void runMainScene() {
+	   
+	   Scene scene = mainScene.createMainScene();
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       //stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
 	   stage.setResizable(true);
 	   stage.setFullScreen(true);
 	   stage.setScene(scene);

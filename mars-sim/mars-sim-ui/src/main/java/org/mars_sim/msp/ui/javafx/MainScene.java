@@ -67,7 +67,6 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -88,7 +87,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.UIConfig;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
 public class MainScene {
@@ -165,7 +163,6 @@ public class MainScene {
 	@SuppressWarnings("unchecked")
 	public Scene init() {
 		//TODO: refresh the pull down menu and statusBar when clicking the maximize/iconify/restore button on top-right.		
-
 
 		// Detect if a user hits the top-right close button
 		//stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -995,19 +992,15 @@ public class MainScene {
 			}
 			
 			SimulationConfig.loadConfig();
-
-			JFrame frame = new JFrame();
 			
-			SimulationConfigEditor editor = new SimulationConfigEditor(
-				frame.getOwner(), 
-				SimulationConfig.instance()
-			);
-			editor.setVisible(true);
+			//SimulationConfigEditor editor = new SimulationConfigEditor(mainMenu, 
+			//	SimulationConfig.instance());
+			//editor.setVisible(true);
 
-			Simulation.createNewSimulation();
+			//Simulation.createNewSimulation();
 
 			// Start the simulation.
-			Simulation.instance().start();
+			//Simulation.instance().start();
 			
 			try {
 				getDesktop().resetDesktop();
