@@ -1,10 +1,10 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.07 2015-01-21
+ * @version 3.08 2015-03-26
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.configeditor;
+package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,14 +24,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
@@ -40,20 +47,22 @@ import javax.swing.table.TableColumn;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainWindow;
 /**
  * A temporary simulation configuration editor dialog.
  * Will be replaced by SimulationConfigEditor later when it is finished.
  */
-public class SimulationConfigEditor
-extends JDialog {
+public class SimulationConfigEditor {
+//extends JInternalFrame {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
@@ -65,36 +74,48 @@ extends JDialog {
 	private boolean hasError;
 	private JLabel errorLabel;
 	private JButton createButton;
-	private Window window;
+	
+	private Button createFXButton;
+	private JFrame f;
 
 	/**
 	 * Constructor
 	 * @param owner the owner window.
 	 * @param config the simulation configuration.
 	 */
-	public SimulationConfigEditor(Window owner, SimulationConfig config) {
+	public SimulationConfigEditor(SimulationConfig config) {
 		// Use JDialog constructor.
-		super(owner, Msg.getString("SimulationConfigEditor.title"), ModalityType.APPLICATION_MODAL); //$NON-NLS-1$
-
+		//super(owner, Msg.getString("SimulationConfigEditor.title"), ModalityType.APPLICATION_MODAL); //$NON-NLS-1$
+        //super(Msg.getString("SimulationConfigEditor.title"), false, false, false, false);
+            
 		// Initialize data members.
 		this.config = config;
-		this.window = owner;
+			
 		hasError = false;
 
+		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
+	    catch(Exception ex){}
 		
+	    f = new JFrame();
+	    
+	    //f.setContentPane(this);
+	    f.setSize(600, 300);
+	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    //f.setVisible(true);
+	    
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		setContentPane(contentPanel);
+		f.setContentPane(contentPanel);
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.CENTER); //$NON-NLS-1$
-		add(titleLabel, BorderLayout.NORTH);
+		f.add(titleLabel, BorderLayout.NORTH);
 
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementScrollPane.setPreferredSize(new Dimension(585, 200));
-		add(settlementScrollPane, BorderLayout.CENTER);
+		f.add(settlementScrollPane, BorderLayout.CENTER);
 
 		// Create settlement table.
 		settlementTableModel = new SettlementTableModel();
@@ -121,7 +142,7 @@ extends JDialog {
 
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
-		add(configurationButtonOuterPanel, BorderLayout.EAST);
+		f.add(configurationButtonOuterPanel, BorderLayout.EAST);
 
 		// Create configuration button inner top panel.
 		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
@@ -163,7 +184,7 @@ extends JDialog {
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
-		add(bottomPanel, BorderLayout.SOUTH);
+		f.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create error label.
 		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
@@ -174,6 +195,7 @@ extends JDialog {
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
 
+			
 		// Create the create button.
 		createButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
@@ -187,10 +209,22 @@ extends JDialog {
 				if (!hasError) {
 					setConfiguration();
 					closeWindow();
+					
+					Simulation.createNewSimulation();
+					
+					// Create the main desktop window.
+		            MainWindow mw = new MainWindow(true, false);
+		            mw.getFrame().setVisible(true);  
+		            
+		       		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
+					//mw.getFrame().setIconImage(img);		
+					
+					Simulation.instance().start();
 				}
 			}
 		});
 		bottomButtonPanel.add(createButton);
+
 
 		// 2014-12-15 Added Edit Alpha Crew button.
 		JButton alphaButton = new JButton(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
@@ -202,11 +236,15 @@ extends JDialog {
 		});
 		bottomButtonPanel.add(alphaButton);
 
-		pack();
+		f.pack();
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);
+		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
+	    
+        //setSize(new Dimension(800, 400));
+
+        f.setVisible(true);
 	}
 	
 	/**
@@ -229,8 +267,8 @@ extends JDialog {
 	 * Edits team profile.
 	 */
 	private void editCrewProile(String crew) {
-		CrewEditor c = new CrewEditor(this, config);
-
+		CrewEditor c = new CrewEditor(config);
+		/*
 		Image img;
 	   	String IMAGE_DIR = "/images/";
         String fullImageName = "LanderHab.png";
@@ -243,7 +281,7 @@ extends JDialog {
 		c.setIconImage(img);
         c.setVisible(true);
 
-		/*
+		
 		java.awt.EventQueue.invokeLater(new Runnable() {
 		    @Override
 		    public void run() {
@@ -292,7 +330,8 @@ extends JDialog {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		dispose();
+		//dispose();
+		f.dispose();	
 	}
 
 	/**

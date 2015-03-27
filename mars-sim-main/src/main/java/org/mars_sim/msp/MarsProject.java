@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.07 2015-02-04
+ * @version 3.08 2015-03-26
 
  * @author Scott Davis
  */
@@ -10,10 +10,9 @@ package org.mars_sim.msp;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.swing.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 import javax.swing.*;
 
@@ -43,8 +42,7 @@ public class MarsProject {
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
-    private boolean isLoadingFX;
-    
+
 	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
     private Image img;
     private final static String IMAGE_DIR = "/images/";
@@ -59,16 +57,6 @@ public class MarsProject {
         
         init(args);
 
-    }
-    
-    /**
-     * Constructor 2.
-     * @param args command line arguments.
-     * @param isLoadingFX true if MarsProjectFX class is in use.
-     */
-    public MarsProject(boolean isLoadingFX) {
-    	this.isLoadingFX = isLoadingFX;
-    	
     }
 
     public void init(String args[]) {
@@ -86,15 +74,15 @@ public class MarsProject {
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
-            MainWindow mw = new MainWindow(newSim, false);
-            mw.getFrame().setVisible(true);  
+            //MainWindow mw = new MainWindow(true, false);
+            //mw.getFrame().setVisible(true);  
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
-			mw.getFrame().setIconImage(img);			
+			//mw.getFrame().setIconImage(img);
             
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 	          
             // Start simulation
-            startSimulation();
+            //startSimulation();
         
             // Dispose the splash window.
             splashWindow.remove();
@@ -239,14 +227,14 @@ public class MarsProject {
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
-                SimulationConfigEditor editor = new SimulationConfigEditor(null, 
+                SimulationConfigEditor editor = new SimulationConfigEditor( 
                         SimulationConfig.instance());
 
          		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
-    			editor.setIconImage(img);
-                editor.setVisible(true);
+    			//editor.setIconImage(img);
+                //editor.setVisible(true);
             }
-            Simulation.createNewSimulation();
+            //Simulation.createNewSimulation();
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Could not create a new simulation, startup cannot continue", e);

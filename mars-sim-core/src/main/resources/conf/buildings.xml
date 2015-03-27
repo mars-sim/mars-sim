@@ -216,6 +216,8 @@
 				<resource-storage resource="Carbon Monoxide" capacity="500.0" />
 				
 				<resource-storage resource="Ice" capacity="500.0" />
+
+				<resource-storage resource="regolith" capacity="1000.0" />
 	
 									
 				<!-- The initial resources in the building. -->
@@ -228,6 +230,8 @@
 				<resource-initial resource="Oxygen" amount="500.0" />
 				
 				<resource-initial resource="Food" amount="300.0" />	
+
+				<resource-initial resource="regolith" amount="500.0" />	
 																				
 			</storage>
 			

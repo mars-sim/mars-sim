@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProjectFX.java
- * @version 3.08 2015-02-05
+ * @version 3.08 2015-03-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
@@ -14,21 +14,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.lang.model.SourceVersion;
 import javax.swing.JOptionPane;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
@@ -46,10 +41,9 @@ public class MarsProjectFX extends Application  {
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
 
-	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
-    private Image img;
-    //private final static String IMAGE_DIR = "/images/";
-    
+    private MainMenu mainMenu;
+
+    private Stage primaryStage;
     /**
      * Constructor
      * @param args command line arguments.
@@ -57,6 +51,8 @@ public class MarsProjectFX extends Application  {
 
 	public void start(Stage primaryStage) {
 
+		this.primaryStage = primaryStage;
+		
 		SvgImageLoaderFactory.install();
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -71,7 +67,6 @@ public class MarsProjectFX extends Application  {
         
         System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
         */
-        primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
         
         logger.info("Starting " + Simulation.WINDOW_TITLE);
     
@@ -84,25 +79,8 @@ public class MarsProjectFX extends Application  {
         
         if (useGUI) {
     
-            // Create a splash window
-            //SplashWindow splashWindow = new SplashWindow();           
-            //showSplashScreen(splashWindow);
-            
-	        // Initialize the simulation.
-            //boolean newSim = initializeSimulation(args); 
-            
-	        // 2015-01-26 Added mwFX
-	        MainMenu mmFX = new MainMenu(this, args, primaryStage, true);
-	        // Dispose the splash window.
-	        //splashWindow.remove();
-
-      
-	        // Start the simulation.
-	        //startSimulation();
-	        
-	        // Open all initial windows.
-	        //desktop.openInitialWindows(); // why it does not work in macosx ?
-	        
+	        mainMenu = new MainMenu(this, args, primaryStage, true);
+ 
 	    }
 	    else {
 	        // Initialize the simulation.
@@ -258,14 +236,11 @@ public class MarsProjectFX extends Application  {
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
-                SimulationConfigEditor editor = new SimulationConfigEditor(null, 
+            	// note: cannot load editor in macosx if it was a JDialog
+                ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, 
                         SimulationConfig.instance());
-
-         		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
-    			//editor.setIconImage(img); // does not work in macosx
-                editor.setVisible(true); 
+               
             }
-            Simulation.createNewSimulation();
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Could not create a new simulation, startup cannot continue", e);

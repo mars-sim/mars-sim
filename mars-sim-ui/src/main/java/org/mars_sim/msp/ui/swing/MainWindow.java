@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -529,10 +528,8 @@ public class MainWindow extends JComponent {
 			SimulationConfig.loadConfig();
 
 			SimulationConfigEditor editor = new SimulationConfigEditor(
-				frame.getOwner(), 
-				SimulationConfig.instance()
-			);
-			editor.setVisible(true);
+				SimulationConfig.instance()); // frame.getOwner()
+			//editor.setVisible(true);
 
 			Simulation.createNewSimulation();
 
