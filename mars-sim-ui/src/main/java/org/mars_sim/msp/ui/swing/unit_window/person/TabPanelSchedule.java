@@ -143,8 +143,11 @@ extends TabPanel {
 			
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	Integer selected = (Integer) comboBox.getSelectedItem();
-            	scheduleTableModel.update(hideRepeatedTasks, (int) selected);	
+            	Integer selectedSol = (Integer) comboBox.getSelectedItem();
+            	if ( selectedSol != null ) // e.g. when first loading up
+            		scheduleTableModel.update(hideRepeatedTasks, (int) selectedSol);	
+            	else
+            		scheduleTableModel.update(hideRepeatedTasks, (int) today);
             }
 		});				
 		
@@ -238,9 +241,14 @@ extends TabPanel {
 			todayCache = today;
     	}
 
-    	selectedSolCache = (Integer) comboBox.getSelectedItem();
+    	selectedSolCache = (Integer) comboBox.getSelectedItem();    	
+    	//Integer selectedSol = (Integer) comboBox.getSelectedItem();
     	
-		scheduleTableModel.update(hideRepeatedTasks, (int) comboBox.getSelectedItem());
+    	if ( selectedSolCache != null ) // e.g. when first loading up
+    		scheduleTableModel.update(hideRepeatedTasks, (int) selectedSolCache);	
+    	else
+    		scheduleTableModel.update(hideRepeatedTasks, (int) today);
+    	
 	}
 	
 

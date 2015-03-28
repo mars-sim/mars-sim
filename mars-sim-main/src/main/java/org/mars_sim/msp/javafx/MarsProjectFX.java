@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,7 +44,8 @@ public class MarsProjectFX extends Application  {
 
     private MainMenu mainMenu;
 
-    private Stage primaryStage;
+    private List<String> argList;
+    //private Stage primaryStage;
     /**
      * Constructor
      * @param args command line arguments.
@@ -51,9 +53,11 @@ public class MarsProjectFX extends Application  {
 
 	public void start(Stage primaryStage) {
 
-		this.primaryStage = primaryStage;
+		//this.primaryStage = primaryStage;
 		
+		// Enable capability of loading of svg image using regular method 
 		SvgImageLoaderFactory.install();
+		
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
         System.out.println(javaCompiler.toString());
@@ -73,15 +77,14 @@ public class MarsProjectFX extends Application  {
         setLogging();  
         setDirectory(); 
            	
-        List<String> argList = Arrays.asList(args);
+        argList = Arrays.asList(args);
         useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
         
         if (useGUI) {
-    
 	        mainMenu = new MainMenu(this, args, primaryStage, true);
- 
 	    }
+        
 	    else {
 	        // Initialize the simulation.
 	        initializeSimulation(args);        
@@ -96,23 +99,10 @@ public class MarsProjectFX extends Application  {
 	    
 	}
     
-    /*
-    public void showSplashScreen(SplashWindow splashWindow) {
-
-   		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
-        String fullImageName = "LanderHab.png";
-        String fileName = fullImageName.startsWith("/") ?
-            	fullImageName :
-            	IMAGE_DIR + fullImageName;
-        URL resource = ImageLoader.class.getResource(fileName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		img = kit.createImage(resource);
-		splashWindow.getJFrame().setIconImage(img);			
-        splashWindow.display();
-        splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
-    }
-    */
-    
+	public List<String> getArgList() {
+		return argList; 
+	}
+	
     /**
      * Initialize the simulation.
      * @param args the command arguments.
@@ -197,7 +187,7 @@ public class MarsProjectFX extends Application  {
      * Loads the simulation from the default save file.
      * @throws Exception if error loading the default saved simulation.
      */
-    private void handleLoadDefaultSimulation() throws Exception {
+    void handleLoadDefaultSimulation() throws Exception {
         try {
             // Load a the default simulation
             Simulation.instance().loadSimulation(null);
@@ -208,17 +198,34 @@ public class MarsProjectFX extends Application  {
     }
 
     /**
+     * Calls handleLoadSimulation(argList). Used by MainMenu to load th default save sim.
+     * @throws Exception if error loading the default saved simulation.
+     */
+    void handleLoadDefaultSavedSimulation() {
+    	try {   		
+    		List<String> argList = new ArrayList<String>(1);
+    		argList.add("-load");
+			handleLoadSimulation(argList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    /**
      * Loads the simulation from a save file.
      * @param argList the command argument list.
      * @throws Exception if error loading the saved simulation.
      */
-    private void handleLoadSimulation(List<String> argList) throws Exception {
+    void handleLoadSimulation(List<String> argList) throws Exception {
         try {
             int index = argList.indexOf("-load");
             // Get the next argument as the filename.
             File loadFile = new File(argList.get(index + 1));
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
+                
+                
             } else {
                 exitWithError("Problem loading simulation. " + argList.get(index + 1) + 
                         " not found.", null); 

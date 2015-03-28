@@ -4,7 +4,7 @@
  * @version 3.08 2015-03-26
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

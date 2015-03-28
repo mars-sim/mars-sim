@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-02-25
+ * @version 3.08 2015-03-28
  * @author Lars Næsbye Christensen
  */
 
@@ -13,10 +13,7 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -28,7 +25,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -46,7 +42,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 
-public class MainWindowFXMenu extends MenuBar  {
+public class MainSceneMenu extends MenuBar  {
 
     //private MainDesktopPane desktop;
 	private CheckMenuItem showFullScreenItem ;
@@ -59,7 +55,7 @@ public class MainWindowFXMenu extends MenuBar  {
 	 * @param mainWindow the main window pane
 	 * @param desktop our main frame
 	 */
-	public MainWindowFXMenu(MainScene mainScene, MainDesktopPane desktop) {	
+	public MainSceneMenu(MainScene mainScene, MainDesktopPane desktop) {	
 		super();
 
 		this.stage = mainScene.getStage();
@@ -203,36 +199,37 @@ public class MainWindowFXMenu extends MenuBar  {
         openItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override 
      	   public void handle(ActionEvent e) {
-     		   mainScene.loadSimulation(false);
+     		   mainScene.loadSimulation(MainScene.OTHER);
      	   }
      	});
         
         openAutoSaveItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override 
      	   public void handle(ActionEvent e) {
-     		   mainScene.loadSimulation(true);
+     		   mainScene.loadSimulation(MainScene.AUTOSAVE);
      	   }
      	});
         
         exitItem.setOnAction(new EventHandler<ActionEvent>() {
         	   @Override 
         	   public void handle(ActionEvent e) {
-        		   mainScene.exitSimulation();
-        		   mainScene.getStage().close();
+        		   //mainScene.exitSimulation();
+        		   //mainScene.getStage().close();
+        		   mainScene.alertOnExit();
         	   }
         	});
         
         saveItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override 
      	   public void handle(ActionEvent e) {
-     		   mainScene.saveSimulation(true, false);
+     		   mainScene.saveSimulation(MainScene.DEFAULT);
      	   }
      	});
         
         saveAsItem.setOnAction(new EventHandler<ActionEvent>() {
       	   @Override 
       	   public void handle(ActionEvent e) {
-      		   mainScene.saveSimulation(false, false);
+      		   mainScene.saveSimulation(MainScene.SAVE_AS);
       	   }
       	});        
         

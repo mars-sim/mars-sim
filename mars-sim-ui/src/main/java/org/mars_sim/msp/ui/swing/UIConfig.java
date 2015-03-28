@@ -113,7 +113,7 @@ public class UIConfig {
 
     /**
      * Creates an XML document for the UI configuration and saves it to a file.
-     * @param mainScene the main window.
+     * @param mainWindow the main window.
      */
     public void saveFile(MainWindow mainWindow) {
         FileOutputStream stream = null;
@@ -205,7 +205,11 @@ public class UIConfig {
             IOUtils.closeQuietly(stream);
         }
     }
-
+    
+    /**
+     * Creates an XML document for the UI configuration and saves it to a file.
+     * @param mainScene the Main Scene.
+     */
     public void saveFile(MainScene mainScene) {
         FileOutputStream stream = null;
         

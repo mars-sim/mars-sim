@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2015-03-21
+ * @version 3.08 2015-03-28
  * @author Lars Næsbye Christensen
  */
 
@@ -14,7 +14,6 @@ import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 
-import java.awt.Frame;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,12 +25,14 @@ import java.util.logging.Logger;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
@@ -39,7 +40,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.Side;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -66,8 +71,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -75,7 +78,6 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -89,46 +91,69 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
+/**
+ * The MainScene class is the primary Stage for MSP. It is the container for housing 
+ * desktop swing node, javaFX UI, pull-down menu and icons for tools.
+ */
 public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
 	private static final int TIME_DELAY = 940;
-	
-	private Thread newSimThread;
-	private Thread loadSimThread;
-	private Thread saveSimThread;
-	
-    private Text timeText;    
-    private Text memUsedText;
-    //private SplitPane splitPane;
 
+	// Categories of loading and saving simulation
+	public static final int DEFAULT = 1;
+	public static final int AUTOSAVE = 2;
+	public static final int OTHER = 3; // load other file
+	public static final int SAVE_AS = 3; // save as other file
+	
     private StringProperty timeStamp;
-    
-    private Tab swingTab;
-    private Tab settlementTab; 
-    private TabPane tp;
-    
+      
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
     private int memFree;  
 
     private boolean cleanUI = true;
-	boolean useDefault;
+	//private boolean useDefault;   
+
+	private Thread newSimThread;
+	private Thread loadSimThread;
+	private Thread saveSimThread;
+	
+    private Text timeText;    
+    private Text memUsedText;
+   
+    private Stage stage; 
     
+    private Tab swingTab;
+    private Tab settlementTab; 
+    private TabPane tp;
+    private Timeline timeline;  
+    private NotificationPane notificationPane;
+ 
     private MainDesktopPane desktop;
     private MainWindow mainWindow;
-    private Stage stage;   
-    private MainWindowFXMenu menuBar;
-    private NotificationPane notificationPane;
+
+    private MainSceneMenu menuBar;
+
     
+	/**
+	 * Constructor for MainScene
+	 *@param stage
+	 */
     public MainScene(Stage stage) {
          	this.stage = stage;
     }
-    
+  
+	/**
+	 * Creates the Main Scene
+	 *@return Scene
+	 */
     public Scene createMainScene() {
+
+		// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?	
 
         Scene scene = init();   
         
@@ -138,12 +163,9 @@ public class MainScene {
 		}
 
 		// Set look and feel of UI.
-		useDefault = UIConfig.INSTANCE.useUIDefault();
+		UIConfig.INSTANCE.useUIDefault();
 		//setLookAndFeel(false);	
 	
-		startAutosaveTimer();        		
-        //desktop.openInitialWindows(); // doesn't work here
-		
         // Detect if a user hits ESC
         scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
               @Override
@@ -157,23 +179,77 @@ public class MainScene {
               }
           });
         
+		startAutosaveTimer();        		
+        //desktop.openInitialWindows(); // doesn't work here
+        startEarthTimer();
+        
+		// Detect if a user hits the top-right close button
+		// TODO: determine if it is necessary to exit both the simulation stage and the Main Menu
+		// Exit not just the stage but the simulation entirely
+		stage.setOnCloseRequest(e -> {	
+			alertOnExit();
+		});
         return scene;
     }
 	
+	/**
+	 * Creates an Alert Dialog to confirm ending or exiting the simulation or MSP
+	 */
+    public void alertOnExit() {
+     	
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirm on Exit");
+		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
+		alert.setContentText(Msg.getString("MainScene.exit.content"));
+		ButtonType buttonTypeOne = new ButtonType("Save and End");
+		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
+		ButtonType buttonTypeThree = new ButtonType("Exit the MSP");
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);	
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if (result.get() == buttonTypeOne)	{
+			saveOnExit();
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			Simulation.stopSimulation();
+			getDesktop().clearDesktop();
+			stage.close();
+		}
+		else if (result.get() == buttonTypeTwo)		{
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			Simulation.stopSimulation();
+			getDesktop().clearDesktop();
+			stage.close();	
+		}
+		else if (result.get() == buttonTypeThree)	
+			exitSimulation();
+    }
+    
+	/**
+	 * Initiates the process of saving a simulation.
+	 */
+    public void saveOnExit() {
+		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
+		// Save the UI configuration.
+		UIConfig.INSTANCE.saveFile(this);
+	
+		// Save the simulation.
+		Simulation sim = Simulation.instance();
+		try {
+			sim.getMasterClock().saveSimulation(null);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+			e.printStackTrace(System.err);
+		}
+    }
+    
+    
+	/**
+	 * Sets up the Main Scene
+	 *@return Scene
+	 */
 	@SuppressWarnings("unchecked")
 	public Scene init() {
-		//TODO: refresh the pull down menu and statusBar when clicking the maximize/iconify/restore button on top-right.		
-
-		// Detect if a user hits the top-right close button
-		//stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-		//    @Override
-		//    public void handle(WindowEvent event) {
-		    	// Exit not just the stage but the simulation entirely
-		//    	exitSimulation();
-		//    }});
-		
-		// Exit not just the stage but the simulation entirely
-		stage.setOnCloseRequest(e -> exitSimulation());
 		
         //ImageView bg1 = new ImageView();
         //bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map      
@@ -193,7 +269,7 @@ public class MainScene {
 		bottomBox.getChildren().addAll(statusBar);
 		
 		// Create menuBar
-        menuBar = new MainWindowFXMenu(this, getDesktop());
+        menuBar = new MainSceneMenu(this, getDesktop());
         menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");	
         
 	    // Create BorderPane
@@ -208,7 +284,7 @@ public class MainScene {
 	    settlementTab = new Tab();
 	    settlementTab.setClosable(false);
 	    //tpFX.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
-	    settlementTab.setText("MarsNet");
+	    settlementTab.setText("Mars Nodes");
 	    //settlementTab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
 	    settlementTab.setContent(createPane("black"));
 	    //tpFX.getTabs().add(settlementTab);
@@ -236,7 +312,7 @@ public class MainScene {
 	    tp.setSide(Side.RIGHT);
 	    swingTab = new Tab();
 	    swingTab.setClosable(false);
-	    swingTab.setText("Swing");
+	    swingTab.setText("Classic");
 	    swingTab.setContent(swingPane);
 	    
 	    tp.getSelectionModel().select(swingTab);
@@ -264,14 +340,23 @@ public class MainScene {
 	    borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());    
 	    
+        return scene;
+	}
+	
+	/**
+	 * Creates and starts the earth timer 
+	 *@return Scene
+	 */
+	public void startEarthTimer() {
 	    // Set up earth time text update
-	    Timeline timeline = new Timeline(new KeyFrame(
+	    timeline = new Timeline(new KeyFrame(
 	            Duration.millis(TIME_DELAY),
 	            ae -> updateTimeText()));
 	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 	    timeline.play();
-        return scene;
+			
 	}
+	
 	
 	  // create a pane of a given color to hold tab content.
 	  private Pane createPane(String color) {
@@ -763,25 +848,12 @@ public class MainScene {
 
 	}
 
-
 	// 2015-01-07 Added startAutosaveTimer()	
 	public void startAutosaveTimer() {
-		/*
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                autosaveTimer.cancel();
-    			saveSimulation(true,true);
-    			startAutosaveTimer();
-            }
-        };
-        autosaveTimer = new Timer();
-        autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
-*/
         
 	    Timeline timeline = new Timeline(new KeyFrame(
 	            Duration.millis(1000*60*AUTOSAVE_EVERY_X_MINUTE),
-	            ae -> saveSimulation(true,true)));
+	            ae -> saveSimulation(AUTOSAVE)));
 	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 	    timeline.play();
 	    
@@ -801,16 +873,20 @@ public class MainScene {
 	 * Load a previously saved simulation.
 	 */
 	// 2015-01-25 Added autosave
-	public void loadSimulation(boolean autosave) {	
-		final boolean ans = autosave;
+	public void loadSimulation(int type) {
         //if (earthTimer != null) 
         //    earthTimer.stop();
         //earthTimer = null;
+		
+		//timeline.stop(); // Note: no need to stop and restart at all
+		
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
-				public void run() {
-					loadSimulationProcess(ans);
+				public void run() {					
+					Platform.runLater(() -> {						
+						loadSimulationProcess(type);
+					});									
 				}
 			};
 			loadSimThread.start();
@@ -818,124 +894,95 @@ public class MainScene {
 			loadSimThread.interrupt();
 		}
 		
-		//if (earthTimer == null) {
-		//	delayLaunchTimer = new Timer();
-		//	int seconds = 1;
-		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
-		//}
-		
 	}
 
-
-	/**
-	 * Performs the process of loading a simulation.
-	 */
-	private void loadSimulationProcess(boolean autosave) {
-		String dir = null;
-		String title = null;
-		// 2015-01-25 Added autosave
-		if (autosave) {			
-			dir = Simulation.AUTOSAVE_DIR;
-			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
-		}
-		else {
-			dir = Simulation.DEFAULT_DIR;
-			title = Msg.getString("MainWindow.dialogLoadSavedSim");
-		}
-		JFileChooser chooser= new JFileChooser(dir);
-		chooser.setDialogTitle(title); //$NON-NLS-1$
-		if (chooser.showOpenDialog(new Frame()) == JFileChooser.APPROVE_OPTION) {
-			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
-			getDesktop().clearDesktop();
-			MasterClock clock = Simulation.instance().getMasterClock();
-			clock.loadSimulation(chooser.getSelectedFile());
-			while (clock.isLoadingSimulation()) {
-				try {
-					Thread.sleep(100L);
-				} catch (InterruptedException e) {
-					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
-				}
-			}
-			
-			try {
-				getDesktop().resetDesktop();
-                //logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
-            }
-            catch (Exception e) {
-                // New simulation process should continue even if there's an exception in the UI.
-                logger.severe(e.getMessage());
-                e.printStackTrace(System.err);
-            }
-			
-			getDesktop().disposeAnnouncementWindow();
-			
-		}
-	}
 	
 	/**
 	 * Performs the process of loading a simulation.
-	 // (NOT finished) USE JAVAFX's FileChooser instead of swing's JFileChooser
-	   
-	private void loadSimulationProcess(boolean autosave) {
+	 * @param autosave, true if loading the autosave sim file
+	 */ 
+	public void loadSimulationProcess(int type) {
 		String dir = null;
 		String title = null;
-		// 2015-01-25 Added autosave
-		if (autosave) {			
+		File fileLocn = null;
+		
+		if (type == DEFAULT) {
+			dir = Simulation.DEFAULT_DIR;
+		}
+		
+		else if (type == AUTOSAVE) {			
 			dir = Simulation.AUTOSAVE_DIR;
 			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
 		}
-		else {
+
+		else if (type == OTHER) {
 			dir = Simulation.DEFAULT_DIR;
 			title = Msg.getString("MainWindow.dialogLoadSavedSim");
 		}
-		//JFileChooser chooser= new JFileChooser(dir);
-		FileChooser chooser = new FileChooser();
-		//chooser.setInitialFileName(dir);
-		//Set to user directory or go to default if cannot access
-		//String userDirectoryString = System.getProperty("user.home");
-		File userDirectory = new File(dir);
-		chooser.setInitialDirectory(userDirectory);	
-		chooser.setTitle(title); //$NON-NLS-1$
-		chooser.getExtensionFilters().addAll(
-		         new ExtensionFilter("Text Files", "*.txt"),
-		         new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
-		         new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
-		         new ExtensionFilter("All Files", "*.*"));
-		 
-		File selectedFile = chooser.showOpenDialog(stage);
-		//if (selectedFile != null) stage.display(selectedFile);
-		 
 
-		if (chooser.showOpenDialog(stage) == FileChooser.APPROVE_OPTION) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
-			desktop.clearDesktop();
-			MasterClock clock = Simulation.instance().getMasterClock();
-			clock.loadSimulation(selectedFile);
-			while (clock.isLoadingSimulation()) {
-				try {
-					Thread.sleep(100L);
-				} catch (InterruptedException e) {
-					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
-				}
-			}
+		if (type == AUTOSAVE || type == OTHER) {
+			FileChooser chooser = new FileChooser();
+			//chooser.setInitialFileName(dir);
+			//Set to user directory or go to default if cannot access
+			//String userDirectoryString = System.getProperty("user.home");
+			File userDirectory = new File(dir);
+			chooser.setInitialDirectory(userDirectory);	
+			chooser.setTitle(title); //$NON-NLS-1$
+	
+			 // Set extension filter
+	        FileChooser.ExtensionFilter simFilter = 
+	                new FileChooser.ExtensionFilter("Simulation files (*.sim)", "*.sim");
+			FileChooser.ExtensionFilter allFilter = 
+	                new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+	
+	        chooser.getExtensionFilters().addAll(simFilter, allFilter);
+	
+	        // Show open file dialog
+			File selectedFile = chooser.showOpenDialog(stage);
 			
-			try {
-                desktop.resetDesktop();
-                //logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
-            }
-            catch (Exception e) {
-                // New simulation process should continue even if there's an exception in the UI.
-                logger.severe(e.getMessage());
-                e.printStackTrace(System.err);
-            }
-			
-			desktop.disposeAnnouncementWindow();
-			
-			// Open navigator tool after loading.
-//			desktop.openToolWindow(NavigatorWindow.NAME);
+			if (selectedFile != null) 
+				fileLocn = selectedFile;
+			else 
+				return;		
 		}
+		
+		else if (type == DEFAULT) {
+		
+			fileLocn = null;
+		}
+		
+		//fileLabel.setText(file.getPath());
+		desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
+		desktop.clearDesktop();
+		
+		MasterClock clock = Simulation.instance().getMasterClock();
+		clock.loadSimulation(fileLocn);
+		
+		while (clock.isLoadingSimulation()) {
+			try {
+				Thread.sleep(100L);
+			} catch (InterruptedException e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
+			}
+		}
+		
+		try {
+            desktop.resetDesktop();
+            logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
+        }
+        catch (Exception e) {
+            // New simulation process should continue even if there's an exception in the UI.
+            logger.severe(e.getMessage());
+            e.printStackTrace(System.err);
+        }
+		
+		desktop.disposeAnnouncementWindow();
+		
+		// Open Guide tool after loading.
+		desktop.openToolWindow(GuideWindow.NAME);
+	
 	}
-*/
+
 	/**
 	 * Create a new simulation.
 	 */
@@ -943,8 +990,10 @@ public class MainScene {
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
 				@Override
-				public void run() {
-					newSimulationProcess();
+				public void run() {					
+					Platform.runLater(() -> {						
+						newSimulationProcess();
+					});	
 				}
 			};
 			newSimThread.start();
@@ -965,42 +1014,66 @@ public class MainScene {
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
-		if (
-			JOptionPane.showConfirmDialog(
-					getDesktop(),
-				Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
-				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
-				JOptionPane.YES_NO_OPTION
-			) == JOptionPane.YES_OPTION
-		) {
-			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
 
-			// Break up the creation of the new simulation, to allow interfering with the single steps.
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirm on New");
+		alert.setHeaderText(Msg.getString("MainScene.new.header"));
+		alert.setContentText(Msg.getString("MainScene.new.content"));
+		ButtonType buttonTypeOne = new ButtonType("Save and End the Sim");
+		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);	
+		Optional<ButtonType> result = alert.showAndWait();
+
+		if (result.get() == buttonTypeOne)	{
+			saveOnExit();
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			Simulation.stopSimulation();			
+			getDesktop().clearDesktop();
+			//getDesktop().resetDesktop();
+			stage.close();
+		}
+		else if (result.get() == buttonTypeTwo)	{
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			Simulation.stopSimulation();
-
+			getDesktop().clearDesktop();
+			stage.close();
+		}
+/*		   					
+			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
 			try {
+				Simulation.stopSimulation();			
 				getDesktop().clearDesktop();
 			    //if (earthTimer != null) {
                 //    earthTimer.stop();
 			    //}
                 //earthTimer = null;
+				//timeline.stop();
+				
+				Simulation.createNewSimulation();
+
+				// Start the simulation.
+				Simulation.instance().start();
+				
 			}
 			catch (Exception e) {
 			    // New simulation process should continue even if there's an exception in the UI.
 			    logger.severe(e.getMessage());
 			    e.printStackTrace(System.err);
 			}
-			
+
 			SimulationConfig.loadConfig();
 			
-			//SimulationConfigEditor editor = new SimulationConfigEditor(mainMenu, 
-			//	SimulationConfig.instance());
-			//editor.setVisible(true);
+			// NOTE: cyclic dependency does not allow an instance of mainMenu to be referenced in MainScene
+			// Therefore, ScenarioConfigEditorFX cannot be loaded from here
+			//ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
 
-			//Simulation.createNewSimulation();
-
-			// Start the simulation.
-			//Simulation.instance().start();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			try {
 				getDesktop().resetDesktop();
@@ -1018,7 +1091,9 @@ public class MainScene {
 			getDesktop().openToolWindow(GuideWindow.NAME);
             GuideWindow ourGuide = (GuideWindow) getDesktop().getToolWindow(GuideWindow.NAME);
             ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-		}
+			}
+*/
+	
 	}
 
 	/**
@@ -1026,12 +1101,14 @@ public class MainScene {
 	 * location to save the simulation if the default is not to be used.
 	 * @param useDefault Should the user be allowed to override location?
 	 */
-	public void saveSimulation(final boolean useDefault, final boolean isAutosave) {
+	public void saveSimulation(int type) {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {		
-					saveSimulationProcess(useDefault, isAutosave);
+					Platform.runLater(() -> {
+						saveSimulationProcess(type);
+					});		
 				}
 			};
 			saveSimThread.start();
@@ -1044,26 +1121,45 @@ public class MainScene {
 	 * Performs the process of saving a simulation.
 	 */
     // 2015-01-08 Added autosave
-	private void saveSimulationProcess(boolean useDefault, boolean isAutosave) {
+	private void saveSimulationProcess(int type) {
 		File fileLocn = null;
-
-		if (!useDefault) {
-			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
-			if (chooser.showSaveDialog(new Frame()) == JFileChooser.APPROVE_OPTION) {
-				fileLocn = chooser.getSelectedFile();
-			} else {
-				return;
-			}
+		String dir = null;
+		String title = null;
+		// 2015-01-25 Added autosave
+		if (type == AUTOSAVE) {			
+			dir = Simulation.AUTOSAVE_DIR;
+			//title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
+		}
+		else if (type == DEFAULT || (type == SAVE_AS)) {
+			dir = Simulation.DEFAULT_DIR;
+			title = Msg.getString("MainScene.dialogSaveSim");
+		}
+		
+		if (type == SAVE_AS) {
+			FileChooser chooser = new FileChooser();
+			File userDirectory = new File(dir);
+			chooser.setTitle(title); //$NON-NLS-1$
+			chooser.setInitialDirectory(userDirectory);
+			 // Set extension filter
+	        FileChooser.ExtensionFilter simFilter = 
+	                new FileChooser.ExtensionFilter("Simulation files (*.sim)", "*.sim");
+			FileChooser.ExtensionFilter allFilter = 
+	                new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+	        chooser.getExtensionFilters().addAll(simFilter, allFilter);
+			File selectedFile = chooser.showSaveDialog(stage);
+			if (selectedFile != null) 
+				fileLocn = selectedFile;
+			else 
+				return;		
 		}
 
 		MasterClock clock = Simulation.instance().getMasterClock();
 		
-		if (isAutosave) {
+		if (type == AUTOSAVE) {
 			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation(fileLocn);			
 		}
-		else {
+		else if (type == SAVE_AS || type == DEFAULT) {
 			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
@@ -1098,23 +1194,28 @@ public class MainScene {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		//logger.info("Exiting simulation");
 
+		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
+
+		logger.info("Exiting simulation");
+		
+		Simulation sim = Simulation.instance();
+/*
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
 
 		// Save the simulation.
-		Simulation sim = Simulation.instance();
+		
 		try {
 			sim.getMasterClock().saveSimulation(null);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 			e.printStackTrace(System.err);
 		}
-
+*/
+		
 		sim.getMasterClock().exitProgram();
 		
-		//earthTimer = null;
 	}
 
 	/**
@@ -1164,7 +1265,7 @@ public class MainScene {
 		}
 	}
 
-	public MainWindowFXMenu getMainWindowFXMenu() {
+	public MainSceneMenu getMainWindowFXMenu() {
 		return menuBar;
 	}
 	
@@ -1196,4 +1297,9 @@ public class MainScene {
 		//splitPane.setDividerPositions(0.8f);
 	    tp.getSelectionModel().select(settlementTab);
 	}
+	
+	//public void setMainMenu(MainMenu mainMenu) {
+	//	this.mainMenu = mainMenu;
+	//}
+	
 }

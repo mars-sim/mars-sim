@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.08 2015-02-16
+ * @version 3.08 2015-03-27
 
  * @author Scott Davis
  */
@@ -16,6 +16,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -47,10 +49,13 @@ implements ClockListener, Serializable {
 	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 
 	/** Build string. */
-	public final static String BUILD = Msg.getString("Simulation.version.build"); //$NON-NLS-1$
+	public final static String BUILD_VERSION = Msg.getString("Simulation.version.build"); //$NON-NLS-1$
 
-	/** Default save file. */
+	/** Default save filename. */
 	public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
+
+	/** Default save filename extension. */
+	public final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
 
 	/** Save directory. */
 	public final static String DEFAULT_DIR =
@@ -72,7 +77,7 @@ implements ClockListener, Serializable {
 	@SuppressWarnings("restriction")
 	public final static String WINDOW_TITLE = Msg.getString(
 			"Simulation.title", Simulation.VERSION +
-			" Build " + Simulation.BUILD + 
+			" Build " + Simulation.BUILD_VERSION + 
 			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
 		); //$NON-NLS-1$
 	
@@ -293,7 +298,7 @@ implements ClockListener, Serializable {
 		// Use default file path if file is null.
 		if (f == null) {
 			/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
-			f = new File(DEFAULT_DIR, DEFAULT_FILE);
+			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 			simulation.defaultLoad = true;
 		} 
 		else {
@@ -325,27 +330,30 @@ implements ClockListener, Serializable {
 	 */
 	private void readFromFile(File file) throws ClassNotFoundException, IOException {
 
-		ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
-
+		//ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
+		FileInputStream fin = new FileInputStream(file);
+		GZIPInputStream gis = new GZIPInputStream(fin);
+		ObjectInputStream ois = new ObjectInputStream(gis);
+	
 		// Destroy old simulation.
 		if (instance().initialSimulationCreated) {
 			destroyOldSimulation();
 		}
 
 		// Load intransient objects.
-		SimulationConfig.setInstance((SimulationConfig) p.readObject());
-		malfunctionFactory = (MalfunctionFactory) p.readObject();
-		mars = (Mars) p.readObject();
+		SimulationConfig.setInstance((SimulationConfig) ois.readObject());
+		malfunctionFactory = (MalfunctionFactory) ois.readObject();
+		mars = (Mars) ois.readObject();
 		mars.initializeTransientData();
-		missionManager = (MissionManager) p.readObject();
-		relationshipManager = (RelationshipManager) p.readObject();
-		medicalManager = (MedicalManager) p.readObject();
-		scientificStudyManager = (ScientificStudyManager) p.readObject();
-		transportManager = (TransportManager) p.readObject();
-		creditManager = (CreditManager) p.readObject();
-		unitManager = (UnitManager) p.readObject();
-		masterClock = (MasterClock) p.readObject();
-		p.close();
+		missionManager = (MissionManager) ois.readObject();
+		relationshipManager = (RelationshipManager) ois.readObject();
+		medicalManager = (MedicalManager) ois.readObject();
+		scientificStudyManager = (ScientificStudyManager) ois.readObject();
+		transportManager = (TransportManager) ois.readObject();
+		creditManager = (CreditManager) ois.readObject();
+		unitManager = (UnitManager) ois.readObject();
+		masterClock = (MasterClock) ois.readObject();
+		ois.close();
 
 		// Initialize transient data.
 		initializeTransientData();
@@ -370,42 +378,50 @@ implements ClockListener, Serializable {
 		if (file == null) {
 			// 2015-01-08 Added isAutosave
 			if (isAutosave) {
-				String autosaveFilename = new SystemDateTime().getDateTimeStr() + " build " + BUILD;
+				String autosaveFilename = new SystemDateTime().getDateTimeStr() + "_Build_" + BUILD_VERSION + DEFAULT_EXTENSION;
 				file = new File(AUTOSAVE_DIR, autosaveFilename);
 				logger.info("Autosaving into " + autosaveFilename);
 			}
 			else
-				file = new File(DEFAULT_DIR, DEFAULT_FILE);
+				file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
 		}
-		ObjectOutputStream p = null;
-		try {
-			p = new ObjectOutputStream(new FileOutputStream(file));
-			// Store the intransient objects.
-			p.writeObject(SimulationConfig.instance());
-			p.writeObject(malfunctionFactory);
-			p.writeObject(mars);
-			p.writeObject(missionManager);
-			p.writeObject(relationshipManager);
-			p.writeObject(medicalManager);
-			p.writeObject(scientificStudyManager);
-			p.writeObject(transportManager);
-			p.writeObject(creditManager);
-			p.writeObject(unitManager);
-			p.writeObject(masterClock);
+	
+		
+		//ObjectOutputStream p = null;
+		ObjectOutputStream oos = null;
 
-			p.flush();
-			p.close();
-			p = null;
+		try {
+			//oos = new ObjectOutputStream(new FileOutputStream(file));
+			FileOutputStream fos = new FileOutputStream(file);
+			GZIPOutputStream gz = new GZIPOutputStream(fos);
+			oos = new ObjectOutputStream(gz);
+			
+			// Store the intransient objects.
+			oos.writeObject(SimulationConfig.instance());
+			oos.writeObject(malfunctionFactory);
+			oos.writeObject(mars);
+			oos.writeObject(missionManager);
+			oos.writeObject(relationshipManager);
+			oos.writeObject(medicalManager);
+			oos.writeObject(scientificStudyManager);
+			oos.writeObject(transportManager);
+			oos.writeObject(creditManager);
+			oos.writeObject(unitManager);
+			oos.writeObject(masterClock);
+
+			oos.flush();
+			oos.close();
+			oos = null;
 		} catch (IOException e){
 			logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
 			throw e;
 		} finally {
-			if (p != null) {
-				p.close();
+			if (oos != null) {
+				oos.close();
 			}
 		}
 

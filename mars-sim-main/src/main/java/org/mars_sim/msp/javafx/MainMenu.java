@@ -134,8 +134,8 @@ public class MainMenu {
 
    public void runOne() {
 	   
-	   primaryStage.hide();
-	   //primaryStage.setIconified(true);	 
+	   primaryStage.setIconified(true);
+	   //primaryStage.hide();	 
 	   //primaryStage.close();
 	   mpFX.handleNewSimulation();
 
@@ -154,6 +154,26 @@ public class MainMenu {
    }
    
    public void runTwo() {
+	   
+	   primaryStage.setIconified(true);
+	   
+	   try {		   
+		   
+			Simulation.createNewSimulation();				
+			runMainScene();					
+			Simulation.instance().start();
+						
+		    //Simulation.instance().start();
+			//mpFX.handleLoadDefaultSimulation();
+			//runMainScene();
+			//handleLoadDefaultSavedSimulation();	
+			mainScene.loadSimulation(MainScene.DEFAULT);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   
 /*       menuScene = new MenuScene().createMenuScene();
 	   stage.setScene(menuScene);
        stage.show();
