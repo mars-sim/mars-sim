@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -100,7 +101,7 @@ public class ScenarioConfigEditorFX {
 		titlePane.setHgap(3.0);
 		titlePane.setVgap(3.0);
 		titlePane.getChildren().add(titleLabel);
-		titlePane.setAlignment(Pos.CENTER);
+		//titlePane.setAlignment(Pos.CENTER);
 		
 		borderAll.setTop(titlePane);
 
@@ -201,11 +202,13 @@ public class ScenarioConfigEditorFX {
 				editor.stopCellEditing();
 			}
 			if (!hasError) {
+				
 				setConfiguration();				
 				Simulation.createNewSimulation();				
 				mainMenu.runMainScene();					
 				Simulation.instance().start();
 				closeWindow();
+				
 			}
 			
 		});		
@@ -232,6 +235,9 @@ public class ScenarioConfigEditorFX {
 		
         root.getChildren().add(borderAll);      
         Scene scene = new Scene(root, Region.USE_COMPUTED_SIZE, 300);
+        
+        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+        
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.setResizable(true);
@@ -261,8 +267,7 @@ public class ScenarioConfigEditorFX {
 			settlementTable.getColumnModel().getColumn(3).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(4).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(5).setPreferredWidth(15);
-			settlementScrollPane.setViewportView(settlementTable);
-			
+			settlementScrollPane.setViewportView(settlementTable);			
 	
 			// Create combo box for editing template column in settlement table.
 			TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
@@ -342,6 +347,7 @@ public class ScenarioConfigEditorFX {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
+		stage.setIconified(true);
 		stage.hide();	
 	}
 
@@ -350,37 +356,26 @@ public class ScenarioConfigEditorFX {
 	 * @param errorString the error description.
 	 */
 	private void setError(String errorString) {
-		Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                
-        		if (!hasError) {
-        			hasError = true;
-        			errorLabel.setText(errorString);
-        			createButton.setDisable(true);
-        		}
-            	
-            }
-        });
-				
+		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread		
+		Platform.runLater(() -> {
+			if (!hasError) {
+    			hasError = true;
+    			errorLabel.setText(errorString);
+    			createButton.setDisable(true);
+    		}   
+		});				
 	}
 
 	/**
 	 * Clears all edit-check errors.
 	 */
 	private void clearError() {
-		
-		Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                      		
+		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread
+		Platform.runLater(() -> {                    		
         		hasError = false;
         		errorLabel.setText(""); //$NON-NLS-1$
-        		createButton.setDisable(false);	
-            	
-            }
+        		createButton.setDisable(false);
         });
-
 	}
 
 	/**

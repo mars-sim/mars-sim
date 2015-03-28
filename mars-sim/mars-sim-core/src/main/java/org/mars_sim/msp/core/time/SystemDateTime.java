@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SystemDateTime.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-03-28
  * @author Manny Kung
  */
 
@@ -18,7 +18,7 @@ public class SystemDateTime {
                new SimpleDateFormat("MM-dd-yyyy");
        
        protected SimpleDateFormat timeFormat =
-               new SimpleDateFormat("HHmmss");
+               new SimpleDateFormat("hhmmssaa");
 
        private String dateStr;
        private String timeStr;
@@ -37,7 +37,7 @@ public class SystemDateTime {
                    .format(currentTime);
                timeStr = timeFormat
                    .format(currentTime);
-               dateTimeStr = dateStr + " T" + timeStr;
+               dateTimeStr = dateStr + "_" + timeStr;
                //System.out.println("dateTimeStr : " + dateTimeStr);
     	   return dateTimeStr;
        }

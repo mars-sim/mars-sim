@@ -35,7 +35,7 @@ public class MarsProjectStarter {
 
         command.append(" -Xms256m");
         //command.append(" -Xmx1024m");
-        command.append(" -Xmx2048m");
+        command.append(" -Xmx1536m");
         command.append(" -Djava.util.logging.config.file=logging.properties");
         command.append(" -cp .").append(File.pathSeparator);
         command.append("*").append(File.pathSeparator);
