@@ -55,8 +55,6 @@ public class MarsProjectFX extends Application  {
 
 		//this.primaryStage = primaryStage;
 		
-		// Enable capability of loading of svg image using regular method 
-		SvgImageLoaderFactory.install();
 		
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -82,6 +80,8 @@ public class MarsProjectFX extends Application  {
         generateHelp = argList.contains("-generateHelp");
         
         if (useGUI) {
+        	// Enable capability of loading of svg image using regular method 
+    		SvgImageLoaderFactory.install();
 	        mainMenu = new MainMenu(this, args, primaryStage, true);
 	    }
         

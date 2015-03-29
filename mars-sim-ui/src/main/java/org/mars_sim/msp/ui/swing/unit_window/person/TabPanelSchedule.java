@@ -141,6 +141,7 @@ extends TabPanel {
 	    solPanel.add(solLabel);
 		solPanel.add(comboBox);
 			
+		comboBox.setSelectedItem(today);
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	Integer selectedSol = (Integer) comboBox.getSelectedItem();

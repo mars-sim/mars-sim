@@ -60,7 +60,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                         double primaryResult = 50D;
                     
                         if (person.getFavorite().getFavoriteActivity().equals("Research"))
-                        	result += 50D;
+                        	result += 25D;
                   
                         // Get lab building crowding modifier.
                         primaryResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
@@ -96,6 +96,9 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                         if (lab != null) {
                             double collabResult = 25D;
                         
+                            if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                            	result += 25D;
+                            
                             // Get lab building crowding modifier.
                             collabResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
                         
@@ -118,6 +121,8 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
             }
         }
         
+        
+        // TODO: should allow a person to perform mobile research/study
         // Check if person is in a moving rover.
         if (PerformLaboratoryExperiment.inMovingRover(person)) {
             result = 0D;
