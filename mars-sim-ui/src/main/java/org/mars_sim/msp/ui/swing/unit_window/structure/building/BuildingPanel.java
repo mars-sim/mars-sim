@@ -1,26 +1,28 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-03-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
+
+import javafx.application.Platform;
+import javafx.scene.control.TextInputDialog;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -168,9 +170,11 @@ extends JPanel {
 		renameBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				// if rename is done successfully, then update the building name
-				boolean isRenamed = renameBuilding();
-				if (isRenamed)
-					buildingNameLabel.setText(newName);
+				//boolean isRenamed = 
+				renameBuilding();
+				//if (isRenamed)
+				//if (newName != null)
+				buildingNameLabel.setText(newName);
 			}
 		});
 		btnPanel.add(renameBtn);		
@@ -454,8 +458,8 @@ extends JPanel {
 	}
 	
 	/**
-	 * Ask for a new building name
-	 * @return pop up jDialog
+	 * Ask for a new building name using JOptionPane
+	 * @return new name
 	 */
 	// 2014-11-27 Moved askNameDialog() from TabPanelBuilding.java to here
 	public String askNameDialog() {
@@ -467,27 +471,85 @@ extends JPanel {
 	}
 	
 	/**
+	 * Ask for a new building name using TextInputDialog in JavaFX/8
+	 * @return new name
+	 */
+	public String askNameFX(String oldName) {
+		String newName = null;
+		TextInputDialog dialog = new TextInputDialog(oldName);
+		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
+		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
+		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
+
+		Optional<String> result = dialog.showAndWait();
+		//result.ifPresent(name -> {});
+		
+		if (result.isPresent()){
+		    logger.info("The old building name has been changed to: " + result.get());
+			newName = result.get();
+		}	
+		
+		return newName;
+	}
+	
+	/**
 	 * Change and validate the new name of a Building
 	 * @return call Dialog popup
 	 */
 	// 2014-11-27 Moved renameBuilding() from TabPanelBuilding.java to here
-	private boolean renameBuilding() {
-		boolean isRenamed = false;
-		JDialog.setDefaultLookAndFeelDecorated(true);
+	private void renameBuilding() {
+
+		//boolean isRenamed;
+		
 		String oldName = building.getNickName();
-			logger.info("Old name was " + oldName);
-		newName = askNameDialog();
+		newName = oldName;
+		logger.info("Old name was " + oldName);
+		
+		//boolean isFX = Platform.isFxApplicationThread();
+		
+		if (desktop.getMainScene() != null) {
+
+			Platform.runLater(() -> {	
 				
-		// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-		if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
-			newName = askNameDialog();
+				String n = askNameFX(oldName);
+				//newName = name1;		
+				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+				if (n == null || n.trim() == "" || (n.trim().length() == 0)) {
+					//System.out.println("newName is " + newName);					
+					n = askNameFX(oldName);
+					if (n == null || n.trim() == "" || (n.trim().length() == 0)) 
+						return;
+					else {
+						building.setNickName(n);
+						logger.info("New name is now " + n);
+					}
+				}
+				
+				else {					
+					building.setNickName(n);
+					logger.info("New name is now " + n);
+				}
+			
+			});				
+			
 		}
-		else {
-			building.setNickName(newName);
-			logger.info("New name is now " + newName);
-			isRenamed = true;
+		
+		else { 				
+			
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			newName = askNameDialog();				
+			// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+			if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
+				newName = askNameDialog();
+			}
+			else {
+				building.setNickName(newName);
+				logger.info("New name is now " + newName);
+				//isRenamed = true;
+			}
 		}
-		return isRenamed;
+		
+		//return isRenamed;
 	}
 
     /**

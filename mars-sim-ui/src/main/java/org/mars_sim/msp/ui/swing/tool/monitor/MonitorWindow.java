@@ -79,7 +79,7 @@ implements TableModelListener, ActionListener {
 		// Use TableWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
-		//this.setOpaque(true);
+		this.setOpaque(true);
 		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
 		//this.setBackground(new Color(0, 0, 0, 0));
 		

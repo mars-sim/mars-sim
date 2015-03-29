@@ -93,28 +93,22 @@ public class MainWindow extends JComponent {
     private int memUsed, memUsedCache;
     private int memFree;
     
-    private String statusText;
     String earthTimeString;
  
-    private boolean cleanUI;
+    //private boolean cleanUI;
     private boolean useDefault;
-    private boolean isLoadingFX;
-    
+
    	/**
 	 * Constructor 1.
 	 * @param cleanUI true if window should display a clean UI.
 	 */
-	public MainWindow(boolean cleanUI, boolean isLoadingFX) {
-		this.cleanUI = cleanUI;
-		this.isLoadingFX = isLoadingFX;
-		
+	public MainWindow(boolean cleanUI) {
+		//this.cleanUI = cleanUI;
+	
 		desktop = new MainDesktopPane(this);
 		
-		//if (!isLoadingFX) {
-			// use JFrame constructor
-			frame = new JFrame();
-		//}
-		
+		frame = new JFrame();
+
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -124,46 +118,21 @@ public class MainWindow extends JComponent {
 		useDefault = UIConfig.INSTANCE.useUIDefault();	
 
 		setLookAndFeel(false);
-		
-		if (isLoadingFX) {
-			// Prepare content frame
-			//mainPane = new JPanel(new BorderLayout());
-			//frame.setContentPane(mainPane);		
-			// Add main pane
-			//mainPane.add(desktop, BorderLayout.CENTER);
-			
-			frame.setContentPane(desktop);
-		}
-		
-		else if (!isLoadingFX) {
-	
-	        init();
-	        
-			showStatusBar();		
-			// 2015-01-07 Added startAutosaveTimer()
-			startAutosaveTimer();
-			
-			// Open all initial windows.
-			desktop.openInitialWindows();	
-		}	
-		
+				
+        init();
+        
+		showStatusBar();		
+		// 2015-01-07 Added startAutosaveTimer()
+		startAutosaveTimer();	
+		// Open all initial windows.
+		desktop.openInitialWindows();	
 		
 	}
+	
+	private String statusText;
 
-  	/**
-	 * Constructor 2.
-	 * @param isLoadingFX true if MarsProjectFX is in use.
-	 
-	public MainWindow(boolean isLoadingFX) {
-		this.isLoadingFX = isLoadingFX;	
-        init();	
-	}
-	*/
-	
 	// 2015-02-04 Added init()
 	public void init() {
-				
-		if (!isLoadingFX) {					
 
 			frame.setTitle(Simulation.WINDOW_TITLE);
 			frame.addWindowListener(new WindowAdapter() {
@@ -255,7 +224,6 @@ public class MainWindow extends JComponent {
 			//int seconds = 1;
 			//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
 
-		}
 		
 		// Set frame size
 		final Dimension frame_size;
@@ -467,8 +435,9 @@ public class MainWindow extends JComponent {
 			
 			desktop.disposeAnnouncementWindow();
 			
-			// Open navigator tool after loading.
-//			desktop.openToolWindow(NavigatorWindow.NAME);
+	        desktop.openToolWindow(GuideWindow.NAME);
+	        GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+	        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
 
@@ -489,11 +458,11 @@ public class MainWindow extends JComponent {
 		}
 	
 		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
-		if (earthTimer == null) {
-			delayLaunchTimer = new Timer();
-			int seconds = 1;
-			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
-		}
+		//if (earthTimer == null) {
+		//	delayLaunchTimer = new Timer();
+		//	int seconds = 1;
+		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		//}
 	}
 
 	/**
@@ -515,10 +484,13 @@ public class MainWindow extends JComponent {
 
 			try {
 			    desktop.clearDesktop();
+			    
 			    if (earthTimer != null) {
                     earthTimer.stop();
 			    }
                 earthTimer = null;
+                
+                //desktop.resetDesktop(); causing issues
 			}
 			catch (Exception e) {
 			    // New simulation process should continue even if there's an exception in the UI.
@@ -529,45 +501,36 @@ public class MainWindow extends JComponent {
 			SimulationConfig.loadConfig();
 
 			SimulationConfigEditor editor = new SimulationConfigEditor(
-				SimulationConfig.instance()); // frame.getOwner()
+				SimulationConfig.instance(), this); // frame.getOwner()
 			//editor.setVisible(true);
 
-			Simulation.createNewSimulation();
+			//Simulation.createNewSimulation();
 
 			// Start the simulation.
-			Simulation.instance().start();
+			//Simulation.instance().start();
 			
-			try {
-                desktop.resetDesktop();
-            }
-            catch (Exception e) {
-                // New simulation process should continue even if there's an exception in the UI.
-                logger.severe(e.getMessage());
-                e.printStackTrace(System.err);
-            }
-			
-			startEarthTimer();
+			//startEarthTimer();
 
-			desktop.disposeAnnouncementWindow();
+			//desktop.disposeAnnouncementWindow();
 			
 			// Open user guide tool.
-            desktop.openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+            //desktop.openToolWindow(GuideWindow.NAME);
+            //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+            //ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
 	}
 
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
-	 * @param useDefault Should the user be allowed to override location?
+	 * @param loadingDefault Should the user be allowed to override location?
 	 */
-	public void saveSimulation(final boolean useDefault, final boolean isAutosave) {
+	public void saveSimulation(boolean loadingDefault, final boolean isAutosave) {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {		
-					saveSimulationProcess(useDefault, isAutosave);
+					saveSimulationProcess(loadingDefault, isAutosave);
 				}
 			};
 			saveSimThread.start();
@@ -580,10 +543,10 @@ public class MainWindow extends JComponent {
 	 * Performs the process of saving a simulation.
 	 */
     // 2015-01-08 Added autosave
-	private void saveSimulationProcess(boolean useDefault, boolean isAutosave) {
+	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {
 		File fileLocn = null;
 
-		if (!useDefault) {
+		if (!loadingDefault) {
 			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
 			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -706,14 +669,14 @@ public class MainWindow extends JComponent {
 
 		if (changed) {
 
-			if (!isLoadingFX) {
-				SwingUtilities.updateComponentTreeUI(frame);
-			}
+			SwingUtilities.updateComponentTreeUI(frame);
+			
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
+				desktop.updateAnnouncementWindowLF();
+				desktop.updateTransportWizardLF();
 			}
-			desktop.updateAnnouncementWindowLF();
-			desktop.updateTransportWizardLF();
+			
 		}
 	}
 

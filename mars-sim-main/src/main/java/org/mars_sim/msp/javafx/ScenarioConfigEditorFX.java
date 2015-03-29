@@ -202,13 +202,12 @@ public class ScenarioConfigEditorFX {
 				editor.stopCellEditing();
 			}
 			if (!hasError) {
-				
+				stage.hide();
 				setConfiguration();				
 				Simulation.createNewSimulation();				
 				mainMenu.runMainScene();					
 				Simulation.instance().start();
-				closeWindow();
-				
+				closeWindow();			
 			}
 			
 		});		
