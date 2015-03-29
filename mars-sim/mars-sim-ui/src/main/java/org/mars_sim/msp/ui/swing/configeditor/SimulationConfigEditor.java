@@ -11,12 +11,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,15 +21,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,7 +44,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;
 /**
@@ -59,10 +51,6 @@ import org.mars_sim.msp.ui.swing.MainWindow;
  * Will be replaced by SimulationConfigEditor later when it is finished.
  */
 public class SimulationConfigEditor {
-//extends JInternalFrame {
-
-	/** default serial id. */
-	//private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
@@ -74,8 +62,7 @@ public class SimulationConfigEditor {
 	private boolean hasError;
 	private JLabel errorLabel;
 	private JButton createButton;
-	
-	private Button createFXButton;
+
 	private JFrame f;
 
 	/**
@@ -83,26 +70,19 @@ public class SimulationConfigEditor {
 	 * @param owner the owner window.
 	 * @param config the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config) {
-		// Use JDialog constructor.
-		//super(owner, Msg.getString("SimulationConfigEditor.title"), ModalityType.APPLICATION_MODAL); //$NON-NLS-1$
-        //super(Msg.getString("SimulationConfigEditor.title"), false, false, false, false);
-            
+	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
 		// Initialize data members.
 		this.config = config;
 			
 		hasError = false;
 
-		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-	    catch(Exception ex){}
+		//try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
+	    //catch(Exception ex){}
 		
 	    f = new JFrame();
 	    
-	    //f.setContentPane(this);
 	    f.setSize(600, 300);
-	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    //f.setVisible(true);
-	    
+    
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -206,20 +186,24 @@ public class SimulationConfigEditor {
 				if (editor != null) {
 					editor.stopCellEditing();
 				}
-				if (!hasError) {
-					setConfiguration();
+				if (!hasError) {										
+					if (mainWindow == null) {					
+					}	
+					else {
+						mainWindow.getFrame().dispose();										
+					}
+					f.hide();
+					setConfiguration();									
+		            // Correct order:
+					// 1. Simulation.createNewSimulation();
+					// 2. MainWindow mw = new MainWindow(true);
+					// 3. Simulation.instance().start();					
+					Simulation.createNewSimulation();					
+					Simulation.instance().start();				
+		            MainWindow mw = new MainWindow(true);
+		            //mw.getFrame().setVisible(true);  	
+					//mw.getFrame().setIconImage(img);
 					closeWindow();
-					
-					Simulation.createNewSimulation();
-					
-					// Create the main desktop window.
-		            MainWindow mw = new MainWindow(true, false);
-		            mw.getFrame().setVisible(true);  
-		            
-		       		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
-					//mw.getFrame().setIconImage(img);		
-					
-					Simulation.instance().start();
 				}
 			}
 		});
@@ -242,8 +226,6 @@ public class SimulationConfigEditor {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
 	    
-        //setSize(new Dimension(800, 400));
-
         f.setVisible(true);
 	}
 	

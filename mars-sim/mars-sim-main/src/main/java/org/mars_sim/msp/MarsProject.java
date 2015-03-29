@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
@@ -74,7 +75,7 @@ public class MarsProject {
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
-            //MainWindow mw = new MainWindow(true, false);
+            //MainWindow mw = new MainWindow(true);
             //mw.getFrame().setVisible(true);  
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
 			//mw.getFrame().setIconImage(img);
@@ -228,7 +229,7 @@ public class MarsProject {
             SimulationConfig.loadConfig();
             if (useGUI) {
                 SimulationConfigEditor editor = new SimulationConfigEditor( 
-                        SimulationConfig.instance());
+                        SimulationConfig.instance(), null);
 
          		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
     			//editor.setIconImage(img);

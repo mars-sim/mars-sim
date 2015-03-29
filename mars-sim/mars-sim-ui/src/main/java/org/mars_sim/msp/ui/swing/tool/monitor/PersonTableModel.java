@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

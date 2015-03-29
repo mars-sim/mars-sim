@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.07 2015-01-17
+ * @version 3.08 2015-03-28
  * @author Manny Kung
  */
 
@@ -28,6 +28,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+
+import javafx.application.Platform;
+import javafx.scene.control.TextInputDialog;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -76,11 +80,7 @@ public class SettlementTransparentPanel extends JComponent {
 	/** Zoom change. */
 	private static final double ZOOM_CHANGE = 1D;
 
-	private SettlementMapPanel mapPanel;
-	private MainDesktopPane desktop;
-	//private Settlement settlement;
-	
-	//private JSliderMW zoomSlider;
+
 	private JSlider zoomSlider;
 	private JPanel rightPane, borderPane, nameBtnPane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ; 
 	private JButton renameBtn, infoButton;
@@ -90,6 +90,10 @@ public class SettlementTransparentPanel extends JComponent {
 	private JComboBoxMW<?> settlementListBox;
 	/** Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
+	
+	private SettlementMapPanel mapPanel;
+	private MainDesktopPane desktop;
+	//private Settlement settlement;
 	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
     	
@@ -674,23 +678,85 @@ public class SettlementTransparentPanel extends JComponent {
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
 			        JOptionPane.QUESTION_MESSAGE);
 	}
+	
+	/**
+	 * Ask for a new building name using TextInputDialog in JavaFX/8
+	 * @return new name
+	 */
+	public String askNameFX(String oldName) {
+		String newName = null;
+		TextInputDialog dialog = new TextInputDialog(oldName);
+		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
+		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
+		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
+
+		Optional<String> result = dialog.showAndWait();
+		//result.ifPresent(name -> {});
+		
+		if (result.isPresent()){
+		    //logger.info("The settlement name has been changed to : " + result.get());
+			newName = result.get();
+		}	
+		
+		return newName;
+	}
 	/**
 	 * Change and validate the new name of the Settlement
 	 * @return call Dialog popup
 	 */
 	// 2014-10-26 Modified renameSettlement()
 	public void renameSettlement() {
-		JDialog.setDefaultLookAndFeelDecorated(true);
-		//String nameCache = settlement.getType();
-		String settlementNewName = askNameDialog();
+			
+		String oldName = mapPanel.getSettlement().getName();
+
+		//logger.info("Old name was " + oldName);		
+		//boolean isFX = Platform.isFxApplicationThread();
+		
+		if (desktop.getMainScene() != null) {
+
+			Platform.runLater(() -> {	
 				
-		if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
-			settlementNewName = askNameDialog();
-		else {
-			mapPanel.getSettlement().changeName(settlementNewName);
+				String newName = askNameFX(oldName);
+		
+				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
+					//System.out.println("newName is " + newName);
+					newName = askNameFX(oldName);
+					
+					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
+						return;
+					else
+						mapPanel.getSettlement().changeName(newName);
+
+				}
+				
+				else {
+					
+					mapPanel.getSettlement().changeName(newName);
+					//logger.info("New name is now " + newName);
+				}
+			
+			});				
+			
 		}
+		
+		else { 		
+		
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			//String nameCache = settlement.getType();
+			String settlementNewName = askNameDialog();
+					
+			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
+				settlementNewName = askNameDialog();
+			else {
+				mapPanel.getSettlement().changeName(settlementNewName);
+			}
+		
+		}
+		
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		desktop.openToolWindow(SettlementWindow.NAME);	
+		
 	}
 
 	/**

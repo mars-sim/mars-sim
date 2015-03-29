@@ -48,7 +48,7 @@ public class CrewEditorFX {
 	private JFrame f;
 	private JPanel mainPane;
 	private JPanel listPane ;
-	private SimulationConfig config; // needed in the constructor
+	//private SimulationConfig config; // needed in the constructor
 	
 	private List<JTextField> nameTF  = new ArrayList<JTextField>();
 
@@ -67,15 +67,17 @@ public class CrewEditorFX {
 	 */
 	public CrewEditorFX(SimulationConfig config) {
      
-		this.config = config;
+		//this.config = config;
 		pc = config.getPersonConfiguration();		
 	
 		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 	    catch(Exception ex){}
 	    f = new JFrame();
-	    f.setSize(600, 300);
+        f.setSize(new Dimension(600, 300));
+
+	    //f.setSize(600, 300);
 	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    f.setVisible(true);
+	    //f.setVisible(true);
 	    
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
@@ -173,8 +175,6 @@ public class CrewEditorFX {
 		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		//f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
 	    
-        f.setSize(new Dimension(600, 300));
-
         f.setVisible(true);
 	}
 
@@ -449,7 +449,7 @@ public class CrewEditorFX {
 	 */
 	public void destroy() {
 		pc = null;
-		config = null;
+		//config = null;
 	}
 
 
