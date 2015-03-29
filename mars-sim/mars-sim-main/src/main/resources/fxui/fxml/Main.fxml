@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.paint.*?>
 <?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
   <children>
       <BorderPane layoutX="-1.0" prefHeight="480.0" prefWidth="600.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="230.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="250.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
                <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="New Simulation" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Simulation" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Load Default Simulation" textFill="#f75d0c">
+          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Load Default" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Run Mod Tool" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Run Mod Tool" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
@@ -41,21 +38,21 @@
                         <SepiaTone />
                      </effect></Button>
 
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Config" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Config" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Credits" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Credits" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Exit" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>

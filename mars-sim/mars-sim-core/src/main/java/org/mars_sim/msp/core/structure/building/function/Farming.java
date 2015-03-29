@@ -108,8 +108,8 @@ implements Serializable {
  
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
-        	CropType cropType = getNewCrop("0", false);   	
-        	Crop crop = plantACrop(cropType, false, 0);     	
+        	CropType cropType = getNewCrop("0", false);
+        	Crop crop = plantACrop(cropType, false, 0);
             crops.add(crop);                   
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
         }  
