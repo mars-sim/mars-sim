@@ -19,21 +19,21 @@
               <Insets />
             </padding>
                <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="New Sim" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="New Simulation" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Load Sim" textFill="#f75d0c">
+          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Load Default Simulation" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Mod Tool" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: black;" text="Run Mod Tool" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
