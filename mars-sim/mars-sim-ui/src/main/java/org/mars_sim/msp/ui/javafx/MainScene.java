@@ -966,6 +966,7 @@ public class MainScene {
 			}
 		}
 		
+
 		try {
             desktop.resetDesktop();
             logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
@@ -980,7 +981,7 @@ public class MainScene {
 		
 		// Open Guide tool after loading.
 		desktop.openToolWindow(GuideWindow.NAME);
-	
+
 	}
 
 	/**

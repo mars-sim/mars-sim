@@ -247,7 +247,7 @@ public class UIConfig {
             uiElement.addContent(internalWindowsElement);
 
             // Add all internal windows.
-            MainDesktopPane desktop = mainScene.getDesktop();
+            MainDesktopPane desktop = mainScene.getDesktop();          
             JInternalFrame[] windows = desktop.getAllFrames();
             for (JInternalFrame window1 : windows) {
                 Element windowElement = new Element(WINDOW);

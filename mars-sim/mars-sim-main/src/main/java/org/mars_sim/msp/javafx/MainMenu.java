@@ -158,25 +158,25 @@ public class MainMenu {
 	   primaryStage.setIconified(true);
 	   
 	   try {		   
+		   // Correct sequence:
+		   // 1.  mainScene = new MainScene(stage);	   
+		   // 2. Simulation.instance().loadSimulation(null);
+		   // 3. Simulation.instance().start();		
+		   // 4. runMainScene();		
 		   
-			Simulation.createNewSimulation();				
-			runMainScene();					
-			Simulation.instance().start();
-						
-		    //Simulation.instance().start();
-			//mpFX.handleLoadDefaultSimulation();
-			//runMainScene();
-			//handleLoadDefaultSavedSimulation();	
-			mainScene.loadSimulation(MainScene.DEFAULT);
+		   mainScene = new MainScene(stage);	   
+		   Simulation.instance().loadSimulation(null);
+		   Simulation.instance().start();		
+		   runMainScene();					
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	   
-/*       menuScene = new MenuScene().createMenuScene();
-	   stage.setScene(menuScene);
-       stage.show();
+/*      menuScene = new MenuScene().createMenuScene();
+	    stage.setScene(menuScene);
+        stage.show();
 */
    }
    
