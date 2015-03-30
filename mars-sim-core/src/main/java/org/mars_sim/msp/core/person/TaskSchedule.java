@@ -49,7 +49,7 @@ implements Serializable {
 	public TaskSchedule(Person person) {	
 		//this.person = person;
 		actorName = person.getName();
-		this.solCache = 0;
+		this.solCache = 1;
 		this.schedules = new HashMap <Integer, List<DailyTask>>();
 		this.currentSchedule = new ArrayList<DailyTask>();
 	}
@@ -57,7 +57,7 @@ implements Serializable {
 	public TaskSchedule(Robot robot) {	
 		//this.robot = robot;
 		actorName = robot.getName();
-		this.solCache = 0;
+		this.solCache = 1;
 		this.schedules = new HashMap <Integer, List<DailyTask>>();
 		this.currentSchedule = new ArrayList<DailyTask>();
 	}
@@ -73,8 +73,8 @@ implements Serializable {
         if ( solElapsed != solCache) {       	       	        	     
         	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
         	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
-        	if (solCache != 0) 
-        		schedules.put(solCache, currentSchedule);   
+        	//if (solCache != 0) 
+        	schedules.put(solCache, currentSchedule);   
         	// create a new schedule for the new day
         	List<DailyTask> newSchedule =  new ArrayList<DailyTask>();
     		this.currentSchedule = newSchedule;    		
