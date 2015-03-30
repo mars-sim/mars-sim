@@ -16,7 +16,7 @@
               <Insets />
             </padding>
                <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Simulation" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Sim" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
@@ -30,7 +30,7 @@
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Run Mod Tool" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="ModTool" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
