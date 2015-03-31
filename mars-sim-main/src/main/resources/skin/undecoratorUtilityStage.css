@@ -1,0 +1,81 @@
+/* 
+    Document   : Undecorator
+    Created on : Dec 19, 2014
+    Author     : In-SideFX
+    Description:
+        Demo app purpose
+*/
+
+/*
+    The Stage background.
+    Currently a Rectangle node
+*/
+
+.decoration-background{
+    -fx-fill: rgba(255,255,255,0.9);
+    -fx-stroke-width: 0;
+    -fx-arc-width:20px;
+    -fx-arc-height:20px;
+}
+
+.decoration-shadow{
+    -fx-fill: black;
+    -fx-stroke-width: 0;
+    -fx-arc-width:20px;
+    -fx-arc-height:20px;
+}
+
+.decoration-resize{
+    -fx-fill:null;  /* avoid mouse events in the middle*/
+    -fx-border-color: transparent;
+    -fx-border-width: 7;
+    -fx-border-insets: 0;
+}
+/*
+    The title bar label
+*/
+.undecorator-label-titlebar{
+    -fx-text-fill: #000000;
+}
+/*
+*	Menu button
+*/
+.decoration-button-menu{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-color: null;
+    -fx-background-image:url("./menu-hover.png");
+    -fx-background-size: stretch;
+}
+
+.decoration-button-menu:hover{
+    -fx-background-color: null;
+    -fx-background-image:url("./menu.png");
+    -fx-background-size: stretch;
+}
+
+/*
+*	Close button
+*/
+.decoration-button-close{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-color: null;
+    -fx-background-image:url("./close.png");
+    -fx-background-size: stretch;
+}
+.decoration-button-close:hover{
+    -fx-background-color: null;
+    -fx-background-image:url("./close-hover.png");
+    -fx-background-size: stretch;
+}
+
+/*
+*	Resize button
+*/
+.decoration-button-resize{
+    -fx-background-radius: 0;
+    -fx-border-style: null;
+    -fx-background-color: null;
+    -fx-background-image:url("./resizeSE.png");
+}

@@ -7,10 +7,37 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller">
   <children>
       <BorderPane layoutX="-1.0" prefHeight="480.0" prefWidth="600.0">
-         <center>
+         <bottom>
+            <HBox prefHeight="0.0" prefWidth="382.0" BorderPane.alignment="CENTER" />
+         </bottom>
+         <top>
+            <VBox>
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="508.0" text="Mars Simulation Project" textFill="#eb810f" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="Aharoni Bold" size="36.0" />
+                     </font>
+                     <BorderPane.margin>
+                        <Insets top="20.0" />
+                     </BorderPane.margin>
+                     <effect>
+                        <Lighting>
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant />
+                           </light>
+                        </Lighting>
+                     </effect>
+                  </Label>
+               </children>
+            </VBox>
+         </top>
+         <right>
           <VBox alignment="CENTER" prefHeight="480.0" prefWidth="250.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
@@ -64,34 +91,7 @@
                   <Insets bottom="35.0" left="370.0" />
                </BorderPane.margin>
           </VBox>
-         </center>
-         <bottom>
-            <HBox prefHeight="0.0" prefWidth="382.0" BorderPane.alignment="CENTER" />
-         </bottom>
-         <top>
-            <VBox>
-               <children>
-                  <Label alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="508.0" text="Mars Simulation Project" textFill="#eb810f" BorderPane.alignment="CENTER">
-                     <font>
-                        <Font name="Aharoni Bold" size="36.0" />
-                     </font>
-                     <BorderPane.margin>
-                        <Insets top="20.0" />
-                     </BorderPane.margin>
-                     <effect>
-                        <Lighting>
-                           <bumpInput>
-                              <Shadow />
-                           </bumpInput>
-                           <light>
-                              <Light.Distant />
-                           </light>
-                        </Lighting>
-                     </effect>
-                  </Label>
-               </children>
-            </VBox>
-         </top>
+         </right>
       </BorderPane>
   </children>
 </AnchorPane>

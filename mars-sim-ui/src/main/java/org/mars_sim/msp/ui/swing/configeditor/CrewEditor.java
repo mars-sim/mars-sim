@@ -37,8 +37,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  */
 public class CrewEditor {
 
-	/** Tool name. */
-	public static final String NAME = "Resupply Tool";
+	public static final String TITLE = "Alpha Crew Editor";
 
 	public static final int SIZE_OF_CREW = 4;
 	
@@ -70,15 +69,10 @@ public class CrewEditor {
 		//this.config = config;
 		pc = config.getPersonConfiguration();		
 	
-		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-	    catch(Exception ex){}
-	    f = new JFrame();
+	    f = new JFrame(TITLE);
 	    //f.setSize(600, 300);
         f.setSize(new Dimension(600, 300));
-
-	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    //f.setVisible(true);
-	    
+   
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
