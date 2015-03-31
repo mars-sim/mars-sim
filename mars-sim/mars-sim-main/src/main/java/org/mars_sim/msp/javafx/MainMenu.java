@@ -48,7 +48,7 @@ public class MainMenu {
 	// Data members
 	
     public static String screen1ID = "main";
-    public static String screen1File = "/fxui/fxml/Main.fxml";
+    public static String screen1File = "/fxui/fxml/MainMenu.fxml";
     public static String screen2ID = "configuration";
     public static String screen2File = "/fxui/fxml/Configuration.fxml";
     public static String screen3ID = "credits";

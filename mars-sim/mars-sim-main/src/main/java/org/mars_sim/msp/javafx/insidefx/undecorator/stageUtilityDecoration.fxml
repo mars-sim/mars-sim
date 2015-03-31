@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="decorationRoot" fx:id="decorationRoot" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" snapToPixel="true" styleClass="decoration-resize" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <Label fx:id="title" layoutY="7.0" mouseTransparent="true" prefHeight="21.0" prefWidth="546.0" styleClass="undecorator-label-titlebar" text="title bar" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="26.0">
+      <effect>
+        <Glow />
+      </effect>
+    </Label>
+    <Button fx:id="close" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" scaleX="1.0" scaleY="1.0" style="" styleClass="decoration-button-close" text="" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor></Button>
+    <Button fx:id="resize" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" mouseTransparent="true" prefHeight="10.0" prefWidth="10.0" styleClass="decoration-button-resize" text="" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="2.0" />
+    <Button id="close" fx:id="menu" layoutX="0.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="32.0" scaleX="1.0" scaleY="1.0" style="" styleClass="decoration-button-menu" text="" AnchorPane.topAnchor="-7.0">
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor>
+         <contextMenu>
+            <ContextMenu fx:id="contextMenu" />
+         </contextMenu></Button>
+  </children>
+</AnchorPane>

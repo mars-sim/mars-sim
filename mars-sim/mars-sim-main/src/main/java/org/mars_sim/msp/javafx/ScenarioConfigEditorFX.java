@@ -1,12 +1,16 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.08 2015-03-26
+ * @version 3.08 2015-03-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
 
+import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
+import org.mars_sim.msp.javafx.insidefx.undecorator.UndecoratorController;
+
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,21 +20,29 @@ import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JScrollPane;
@@ -70,8 +82,13 @@ public class ScenarioConfigEditorFX {
 	private Stage stage;
 	
 	private SimulationConfig config;
+	private MainMenu mainMenu;
+	private CrewEditorFX crewEditorFX;
+	
 	private TableCellEditor editor;
 	
+    double orgSceneX, orgSceneY;
+    double orgTranslateX, orgTranslateY;
 
 	/**
 	 * Constructor
@@ -81,14 +98,96 @@ public class ScenarioConfigEditorFX {
 	public ScenarioConfigEditorFX(MainMenu mainMenu, SimulationConfig config) {    
 		// Initialize data members.
 		this.config = config;
-
+		this.mainMenu = mainMenu;
 		hasError = false;		
 	
 		stage = new Stage();
-		
-		Group root = new Group();
 	    
+		
+    	Parent parent = null; 
+		FXMLLoader fxmlLoader = null;
+		
+	
+		try {
+			fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/Editor2.fxml"));//ClientArea.fxml"));
+            fxmlLoader.setController(this);
+			parent = (Parent) fxmlLoader.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Undecorator undecorator = new Undecorator(stage, (Region) parent);
+		undecorator.getStylesheets().add("skin/undecorator.css");
+
+		
+		Group group = new Group();
+		group.getChildren().add(undecorator);	
+		
+		Parent borderParent = createEditor();
+		group.getChildren().add(borderParent);
+		
+		Scene scene = new Scene(group);
+		
+		// Fade transition on window closing request
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			 @Override
+			 public void handle(WindowEvent we) {
+				 we.consume(); // Do not hide
+				 undecorator.setFadeOutTransition();
+				 if (crewEditorFX != null)
+					 crewEditorFX.getStage().close();
+			}
+		});
+		
+		//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
+		
+		// Transparent scene and stage
+		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+		stage.initStyle(StageStyle.TRANSPARENT);
+		//stage.setMinWidth(undecorator.getMinWidth());
+		//stage.setMinHeight(undecorator.getMinHeight());
+		
+		stage.setScene(scene);		
+		stage.sizeToScene();
+		stage.toFront();
+
+        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));        
+
+        stage.centerOnScreen();
+        stage.setResizable(true);
+ 	   	stage.setFullScreen(false);
+        //stage.setTitle(TITLE);
+        stage.show();
+
+	}
+	
+/*
+	  EventHandler<MouseEvent> buttonOnMousePressedEventHandler = 
+		        new EventHandler<MouseEvent>() {
+		 
+		        @Override
+		        public void handle(MouseEvent t) {
+		            orgSceneX = t.getSceneX();
+		            orgSceneY = t.getSceneY();
+		            orgTranslateX = ((Button)(t.getSource())).getTranslateX();
+		            orgTranslateY = ((Button)(t.getSource())).getTranslateY();
+		             
+		            ((Button)(t.getSource())).toFront();
+		        }
+		    };
+*/
+		    
+	private Parent createEditor() {
+		
+		AnchorPane pane = new AnchorPane();
+
 		BorderPane borderAll = new BorderPane();
+		AnchorPane.setTopAnchor(borderAll, 50.0);
+	    AnchorPane.setLeftAnchor(borderAll, 50.0);
+	    AnchorPane.setRightAnchor(borderAll, 50.0);
+	    
 		borderAll.setPadding(new Insets(10, 10, 10, 10));
 		
 		// Create the title label.
@@ -111,8 +210,8 @@ public class ScenarioConfigEditorFX {
 
 		// Create settlement scroll panel.
 		settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(650, 200));
-		settlementScrollPane.setSize(new Dimension(650, 200));
+		settlementScrollPane.setPreferredSize(new Dimension(500, 200));
+		settlementScrollPane.setSize(new Dimension(500, 200));
 		//.add(settlementScrollPane, BorderLayout.CENTER);
 				
 		//TableView table = new TableView();
@@ -129,7 +228,7 @@ public class ScenarioConfigEditorFX {
 		swingPane.getChildren().add(swingNode);
 		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-		swingPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+		//swingPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 		borderAll.setCenter(swingPane);
 				
 		// Create configuration button outer panel.
@@ -232,24 +331,10 @@ public class ScenarioConfigEditorFX {
 		tileButtons.setAlignment(Pos.CENTER);
 		bottomPanel.setBottom(tileButtons);
 		
-        root.getChildren().add(borderAll);      
-        Scene scene = new Scene(root, Region.USE_COMPUTED_SIZE, 300);
-        
-        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-        
-        stage.setScene(scene);
-        stage.centerOnScreen();
-        stage.setResizable(true);
- 	   	stage.setFullScreen(false);
-        stage.setTitle(TITLE);
-        stage.show();
-
-		// Set the location of the dialog at the center of the screen.
-		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		//setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);    	    
-
+		pane.getChildren().add(borderAll);
+		return new Group(pane);
+		
 	}
-	
 	
 	private void createSwingNode(final SwingNode swingNode) {
 
@@ -305,7 +390,7 @@ public class ScenarioConfigEditorFX {
 	 * Edits team profile.
 	 */
 	private void editCrewProile(String crew) {
-		CrewEditorFX c = new CrewEditorFX(config);
+		crewEditorFX = new CrewEditorFX(config);
 	}
 
 	

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -31,7 +30,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
@@ -121,7 +119,7 @@ extends TabPanel {
 		// Create hideRepeatedTaskBox.
 		hideRepeatedTasksCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
 		//hideRepeatedTasksCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
-		hideRepeatedTasksCheckBox.setFont(new Font("Serif", Font.PLAIN, 9));
+		hideRepeatedTasksCheckBox.setFont(new Font("Serif", Font.PLAIN, 10));
 		hideRepeatedTasksCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$
 		hideRepeatedTasksCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -141,13 +139,13 @@ extends TabPanel {
 		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
 		repeatPanel.add(hideRepeatedTasksCheckBox);
 		
-		JLabel emptylabel = new JLabel("                       ");
+		JLabel emptylabel = new JLabel("                               ");
 		repeatPanel.add(emptylabel);
 		
 		// Create realTimeUpdateCheckBox.
 		realTimeUpdateCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
 		//realTimeUpdateCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
-		realTimeUpdateCheckBox.setFont(new Font("Serif", Font.PLAIN, 9));
+		realTimeUpdateCheckBox.setFont(new Font("Serif", Font.PLAIN, 10));
 		realTimeUpdateCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
 		realTimeUpdateCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

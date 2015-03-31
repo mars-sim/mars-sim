@@ -1,35 +1,35 @@
 /**
  * Mars Simulation Project
  * CrewEditorFX.java
- * @version 3.08 2015-03-26
+ * @version 3.08 2015-03-30
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 
 /**
@@ -38,28 +38,29 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 public class CrewEditorFX {
 
 	/** Tool name. */
-	public static final String NAME = "Resupply Tool";
-
+	public static final String TITLE = "Alpha Crew Editor";
+	
 	public static final int SIZE_OF_CREW = 4;
 	
 	// Data members
 	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
 	
-	private JFrame f;
-	private JPanel mainPane;
-	private JPanel listPane ;
+	private GridPane gridPane;
+	
 	//private SimulationConfig config; // needed in the constructor
 	
-	private List<JTextField> nameTF  = new ArrayList<JTextField>();
+	private List<TextField> nameTF  = new ArrayList<TextField>();
 
-	private DefaultComboBoxModel<String> personalityComboBoxModel;
-	private List<JComboBoxMW<String>> personalityComboBoxList = new ArrayList<JComboBoxMW<String>>(16);
+	private ComboBox<String> personalityOListComboBox;
+	private ComboBox<String> jobsOListComboBox;
+	private ComboBox<String> genderOListComboBox;
 
-	private DefaultComboBoxModel<String> jobsComboBoxModel;
-	private List<JComboBoxMW<String>> jobsComboBoxList = new ArrayList<JComboBoxMW<String>>(15);
-
-	private DefaultComboBoxModel<String> genderComboBoxModel;
-	private List<JComboBoxMW<String>> genderComboBoxList = new ArrayList<JComboBoxMW<String>>(2);
+	private List<ComboBox<String>> genderList = new ArrayList<ComboBox<String>>();
+	private List<ComboBox<String>> jobsList = new ArrayList<ComboBox<String>>();
+	private List<ComboBox<String>> personalityList = new ArrayList<ComboBox<String>>();
+	
+	
+	private Stage stage;
 
 	/**
 	 * Constructor.
@@ -68,165 +69,172 @@ public class CrewEditorFX {
 	public CrewEditorFX(SimulationConfig config) {
      
 		//this.config = config;
-		pc = config.getPersonConfiguration();		
+		pc = config.getPersonConfiguration();			
+
+		stage = new Stage();
+
+		Group root = new Group();	
+		
+		BorderPane borderAll = new BorderPane();
+		borderAll.setPadding(new Insets(5, 5, 5, 5));
+
+		borderAll.setCenter(gridPane);
+		root.getChildren().add(borderAll);
+
+		Label titleLabel = new Label("Alpha Crew Manifest");
+		titleLabel.setAlignment(Pos.CENTER);
 	
-		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-	    catch(Exception ex){}
-	    f = new JFrame();
-        f.setSize(new Dimension(600, 300));
-
-	    //f.setSize(600, 300);
-	    //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    //f.setVisible(true);
-	    
-		// Create main panel.
-		mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
-		f.setContentPane(mainPane);
-		
+		HBox hTop = new HBox();
+		hTop.setAlignment(Pos.CENTER);
+		hTop.getChildren().add(titleLabel);
+	
+		borderAll.setTop(hTop);
+				
 		// Create list panel.
-		listPane = new JPanel(new GridLayout(6, 5));
-		mainPane.add(listPane, BorderLayout.CENTER);
-
-		JLabel titleLabel = new JLabel("Alpha Crew Manifest", JLabel.CENTER);
-		mainPane.add(titleLabel, BorderLayout.NORTH);
+		gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5, 5, 5, 5));
+		gridPane.setHgap(3.0);
+		gridPane.setVgap(3.0);
+		borderAll.setCenter(gridPane);
 		
-		JLabel empty = new JLabel("");
-		listPane.add(empty);
+		Label empty = new Label("");	
+		Label slotOne = new Label("Slot 1");	
+		Label slotTwo = new Label("Slot 2");
+		Label slotThree = new Label("Slot 3");
+		Label slotFour = new Label("Slot 4");
+				
+	    GridPane.setConstraints(empty, 0, 0); // column=2 row=0
+	    GridPane.setConstraints(slotOne, 1, 0);
+	    GridPane.setConstraints(slotTwo, 2, 0);
+	    GridPane.setConstraints(slotThree, 3, 0);
+	    GridPane.setConstraints(slotFour, 4, 0);
+	    
+	    // don't forget to add children to gridpane
+	    gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
 		
-		JLabel slotOne = new JLabel("Slot 1");
-		listPane.add(slotOne);
-
-		JLabel slotTwo = new JLabel("Slot 2");
-		listPane.add(slotTwo);
-
-		JLabel slotThree = new JLabel("Slot 3");
-		listPane.add(slotThree);
-
-		JLabel slotFour = new JLabel("Slot 4");
-		listPane.add(slotFour);
-
-		JLabel name = new JLabel("Name :");
-		listPane.add(name);
-
+		Label name = new Label("Name :");
+		Label gender = new Label("Gender :");
+		Label personality = new Label("Personality :");		
+		Label job = new Label("Job :");	
+		
+	    GridPane.setConstraints(name, 0, 1);
+	    GridPane.setConstraints(gender, 0, 2);
+	    GridPane.setConstraints(personality, 0, 3);
+	    GridPane.setConstraints(job, 0, 4);
+	    
+	    gridPane.getChildren().addAll(name, gender, personality, job);
+		
 		setUpCrewName();
-
-		
-		JLabel gender = new JLabel("Gender :");
-		listPane.add(gender);
-
-		setUpCrewGender();
-		
-		JLabel personality = new JLabel("Personality :");
-		listPane.add(personality);
-
+		setUpCrewGender();	
 		setUpCrewPersonality();	
-		
-		JLabel job = new JLabel("Job :");
-		listPane.add(job);
-
 		setUpCrewJob();
-		
-		// Create button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
+		// Create button pane.
+		HBox hBottom = new HBox();
+		hBottom.setAlignment(Pos.CENTER);
 		
 		// Create commit button.
-		JButton commitButton = new JButton("Commit Changes");
-		commitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-
-				for (int i = 0; i< SIZE_OF_CREW; i++) {
-					String nameStr = nameTF.get(i).getText();
-					//System.out.println(" name is " + nameStr);
-					pc.setPersonName(i, nameStr);
-					
-					String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
-					if ( genderStr.equals("M")  )
-						genderStr = "MALE";
-					else if ( genderStr.equals("F") )
-						genderStr = "FEMALE";
-					//System.out.println(" gender is " + genderStr);
-					pc.setPersonGender(i, genderStr);
-					
-					String personalityStr = (String) personalityComboBoxList.get(i).getSelectedItem();
-					//System.out.println(" personality is " + personalityStr);
-					pc.setPersonPersonality(i, personalityStr);
-					
-					//String jobStr = jobTF.get(i).getText();
-					String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-					//System.out.println(" job is " + jobStr);
-					pc.setPersonJob(i, jobStr);
-				}
-					
-				f.dispose();
-				f.setVisible(false);
+		Button commitButton = new Button("Commit Changes");
+		commitButton.setAlignment(Pos.CENTER);
+		commitButton.setOnAction((event) -> {
+			
+			for (int i = 0; i< SIZE_OF_CREW; i++) {
+				String nameStr = nameTF.get(i).getText();
+				//System.out.println(" name is " + nameStr);
+				// update PersonConfig with the new name
+				pc.setPersonName(i, nameStr);
+				//System.out.println(" i is " + i);
+				String genderStr = genderList.get(i).getValue();
+				if ( genderStr.equals("M")  )
+					genderStr = "MALE";
+				else if ( genderStr.equals("F") )
+					genderStr = "FEMALE";
+				//System.out.println(" gender is " + genderStr);
+				// update PersonConfig with the new gender
+				pc.setPersonGender(i, genderStr);
+				
+				String personalityStr = (String) personalityList.get(i).getValue();
+				//System.out.println(" personality is " + personalityStr);
+				// update PersonConfig with the new personality
+				pc.setPersonPersonality(i, personalityStr);
+				
+				//String jobStr = jobTF.get(i).getText();
+				String jobStr = (String) jobsList.get(i).getValue();
+				//System.out.println(" job is " + jobStr);
+				// update PersonConfig with the new job
+				pc.setPersonJob(i, jobStr);
 			}
+				
+			stage.close();
 		});
-		buttonPane.add(commitButton);
+		
+		hBottom.getChildren().add(commitButton);
+		borderAll.setBottom(hBottom);
 
-		f.pack();
+		Scene scene = new Scene(root);
+			
+		//scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+		//stage.initStyle(StageStyle.TRANSPARENT);
 		
-		f.setLocationRelativeTo(null);
-		
-		// Set the location of the dialog at the center of the screen.
-		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		//f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
-	    
-        f.setVisible(true);
+		stage.setScene(scene);		
+		stage.sizeToScene();
+		stage.toFront();
+
+        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));        
+
+        stage.centerOnScreen();
+        //stage.setResizable(true);
+ 	   	stage.setFullScreen(false);
+        stage.setTitle(TITLE);
+        stage.show();
 	}
 
-
+	public Stage getStage() {
+		return stage;
+	}
 	
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			String n = pc.getConfiguredPersonName(i);
 			//System.out.println(" name is "+ n);
-				JTextField tf = new JTextField();
+				TextField tf = new TextField();
 				nameTF.add(tf);
-				listPane.add(tf);
+				gridPane.add(tf, i+1, 1);
 				tf.setText(n);
 		}
 	}
 
-	public DefaultComboBoxModel<String> setUpGenderCBModel() {
+	public ComboBox<String> setUpGenderCB() {
 		
 		List<String> genderList = new ArrayList<String>(2);
 		genderList.add("M");
 		genderList.add("F");
-		genderComboBoxModel = new DefaultComboBoxModel<String>();
 		
-		Iterator<String> i = genderList.iterator();
-		while (i.hasNext()) {
-			String s = i.next();
-			genderComboBoxModel.addElement(s);
-		}
-		
-		return genderComboBoxModel;
+		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
+		genderOListComboBox = new ComboBox<String>(genderOList);	   
+
+		return genderOListComboBox;
 	}
 	
 	
-	public JComboBoxMW<String> setUpCB(int choice) {
-		DefaultComboBoxModel<String> m = null;
+	public ComboBox<String> setUpCB(int choice) {
+		ComboBox<String> m = null;
 		if (choice == 0) 
-			 m = setUpGenderCBModel() ;
+			 m = setUpGenderCB() ;
 		else if (choice == 1)
-			 m = setUpPersonalityCBModel();
+			 m = setUpPersonalityCB();
 		else if (choice == 2)
-			 m = setUpJobCBModel();
+			 m = setUpJobCB();
 
-		final JComboBoxMW<String> g = new JComboBoxMW<String>(m);
-		g.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e1) {
-				String s = (String) g.getSelectedItem();
-				//System.out.println(" selectedItem is " + s);
-	           	g.setSelectedItem(s);
-	        }});  
+		final ComboBox<String> g = m;
+		g.setOnAction((event) -> {
+			String s = (String) g.getValue(); 
+           	g.setValue(s);
+		});		
 	
 		return g;
 	}
+	
 	
 	public void setUpCrewGender() {
 
@@ -238,79 +246,18 @@ public class CrewEditorFX {
 			if (s[j].equals("MALE")) s[j] = "M";
 			else s[j] = "F";
 
-			JComboBoxMW<String> g = setUpCB(0); // 0 = Gender
-			g.setMaximumRowCount(2);
-			listPane.add(g);
-			genderComboBoxList.add(g);
-			g.setSelectedItem(s[j]);
-			
+			ComboBox<String> g = setUpCB(0); // 0 = Gender
+			//g.setMaximumRowCount(2);
+			gridPane.add(g, j+1, 2);
+			//genderOListComboBox.add(g);
+			g.setValue(s[j]);
+			genderList.add(g);
 		}
 	}
 
-/*
-		DefaultComboBoxModel<String> m2 = setGenderCBModel() ;
-
-		final JComboBoxMW<String> g2 = new JComboBoxMW<String>(m2);
-		g2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e2) {
-	         	String s2 = (String) g2.getSelectedItem();
-	           	g2.setSelectedItem(s2);
-	        }});  
-		g2.setMaximumRowCount(2);
-		g2.getModel().setSelectedItem(s[1]);		
-		listPane.add(g2);
-		genderComboBoxList.add(g2);			
-
-		DefaultComboBoxModel<String> m3 = setGenderCBModel() ;
-
-		final JComboBoxMW<String> g3 = new JComboBoxMW<String>(m3);
-		g3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e3) {
-	         	String s3 = (String) g3.getSelectedItem();
-	           	g3.setSelectedItem(s3);
-	        }});  
-		g3.setMaximumRowCount(2);
-		g3.getModel().setSelectedItem(s[2]);		
-		listPane.add(g3);
-		genderComboBoxList.add(g3);	
-		
-		DefaultComboBoxModel<String> m4 = setGenderCBModel() ;
-
-			
-		final JComboBoxMW<String> g4 = new JComboBoxMW<String>(m4);
-		g4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e4) {
-	         	String s4 = (String) g4.getSelectedItem();
-	           	g4.setSelectedItem(s4);
-	        }});  
-		g4.setMaximumRowCount(2);
-		g4.getModel().setSelectedItem(s[3]);		
-		listPane.add(g4);
-		genderComboBoxList.add(g4);	
-				
-	}
-
 	
-	public JComboBoxMW<String> setUpPersonalityCB() {
-		
-		DefaultComboBoxModel<String> m = setUpPersonalityCBModel() ;
+	public ComboBox<String> setUpPersonalityCB() {
 
-		final JComboBoxMW<String> g = new JComboBoxMW<String>(m);
-		g.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e1) {
-				//JComboBoxMW<String> c1 = (JComboBoxMW<String>)e1.getSource();
-				String s = (String) g.getSelectedItem();
-				//System.out.println(" s is " + s);
-				//String s1 = (String) g1.getSelectedItem();
-	           	g.setSelectedItem(s);
-	        }});  	
-		return g;
-		
-	}
-	*/
-	
-	public DefaultComboBoxModel<String> setUpPersonalityCBModel() {
-		//String[] items = { "item1", "item2" };
 		List<String> personalityTypes = new ArrayList<String>(16);
 		personalityTypes.add("ISTP");
 		personalityTypes.add("ISTJ");
@@ -329,74 +276,44 @@ public class CrewEditorFX {
 		personalityTypes.add("ENFP");
 		personalityTypes.add("ENFJ");
 		Collections.sort(personalityTypes);
-		personalityComboBoxModel = new DefaultComboBoxModel<String>();
-		Iterator<String> i = personalityTypes.iterator();
-	
-		while (i.hasNext()) {
-			String s = i.next();
-	    	personalityComboBoxModel.addElement(s);
-	    	
-		}
 		
-		return personalityComboBoxModel;
+		ObservableList<String> personalityOList = FXCollections.observableArrayList(personalityTypes);
+		personalityOListComboBox = new ComboBox<String>(personalityOList);	   
+
+		return personalityOListComboBox;
 		
 	}
 
+	
+	
 	public void setUpCrewPersonality() {		
 
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
 			String n[] = new String[16]; 
 			n[j] = pc.getConfiguredPersonPersonalityType(j);
 			
-			JComboBoxMW<String> g = setUpCB(1);		 // 1 = Personality
-		    g.setMaximumRowCount(8);
-			listPane.add(g);
-			g.getModel().setSelectedItem(n[j]);
+			ComboBox<String> g = setUpCB(1);		 // 1 = Personality		
+			//g.setMaximumRowCount(8);
+		    gridPane.add(g, j+1, 3);
+			//g.getModel().setSelectedItem(n[j]);
+			g.setValue(n[j]);
 			//g.setSelectedItem(n[j]);
-			personalityComboBoxList.add(g);
+			personalityList.add(g);
 		}
 		
 	}
-/*
-	class MyActionListener implements ActionListener {
-		  //Object oldItem;
-		  String oldItem;
-		  public void actionPerformed(ActionEvent evt) {
-				JComboBoxMW<String> pCB  = (JComboBoxMW<String>) evt.getSource();
-		    String newItem = (String) pCB.getSelectedItem();
-			//System.out.println(" Personality is "+ newItem);
 
-		    pCB.setSelectedItem(newItem);
-		    
-		    boolean same = newItem.equals(oldItem);
-		    oldItem = newItem;
-
-		  }
-	}
-		  
-	public void makeComboBox(int j) {
-		String n = pc.getConfiguredPersonPersonalityType(j);
-		System.out.println(" Personality is "+ n);
-		//JTextField tf = new JTextField();
-		//personalityTF.add(tf);
-		final JComboBoxMW<String> pCB = new JComboBoxMW<String>(personalityComboBoxModel);
-
-		pCB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	String s = (String) pCB.getSelectedItem();
-            	//sList.add(s);
-            	pCB.setSelectedItem(s);
-            }
-            });  
-		pCB.setMaximumRowCount(8);
-		listPane.add(pCB);
-		pCB.getModel().setSelectedItem(n);
-		personalityComboBoxList.add(pCB);
-	}
-	
-	*/
-	public DefaultComboBoxModel<String> setUpJobCBModel() {
-	
+	public ComboBox<String> setUpJobCB() {
+	/*
+		ObservableList<String> options = 
+			    FXCollections.observableArrayList(
+			        "Option 1",
+			        "Option 2",
+			        "Option 3"
+			    );
+		final ComboBox comboBox = new ComboBox(options);	    
+	*/			
+					
 		List<String> jobs = new ArrayList<String>(15);
 		jobs.add("Botanist");
 		jobs.add("Areologist");
@@ -414,35 +331,28 @@ public class CrewEditorFX {
 		jobs.add("Mathematician");
 		jobs.add("Meteorologist");
 		Collections.sort(jobs);
-		jobsComboBoxModel = new DefaultComboBoxModel<String>();
-		Iterator<String> j = jobs.iterator();
-
-		while (j.hasNext()) {
-			String s = j.next();
-			jobsComboBoxModel.addElement(s);
-		}
-		return jobsComboBoxModel;
+		
+		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
+		jobsOListComboBox = new ComboBox<String>(jobsOList);	   
+		
+		return jobsOListComboBox;
 	}
 	
-	public void setUpCrewJob() {
-		
-		
+	
+	
+	
+	public void setUpCrewJob() {		
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-
-			String n[] = new String[15]; 
-			
-			n[i] = pc.getConfiguredPersonJob(i);
-			
-			JComboBoxMW<String> g = setUpCB(2);		// 2 = Job
-		    g.setMaximumRowCount(8);
-			listPane.add(g);
-			g.getModel().setSelectedItem(n[i]);
-			//g.setSelectedItem(n[j]);
-			jobsComboBoxList.add(g);
-
+			String n[] = new String[15]; 		
+			n[i] = pc.getConfiguredPersonJob(i);			
+			ComboBox<String> g = setUpCB(2);		// 2 = Job
+		    //g.setMaximumRowCount(8);
+		    gridPane.add(g, i+1, 4);
+			g.setValue(n[i]);
+			jobsList.add(g);
 		}
 	}
-
+	
 	
 	/**
 	 * Prepare this window for deletion.
