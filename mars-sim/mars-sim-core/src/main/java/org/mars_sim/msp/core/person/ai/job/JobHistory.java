@@ -68,7 +68,7 @@ public class JobHistory implements Serializable  {
 	    		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator));
     		}
     	}
-    	System.out.println("JobHistory : saveJob(). " + person.getName() + "'s size of jobAssignmentList is " + jobAssignmentList.size());
+    	//System.out.println("JobHistory : saveJob(). " + person.getName() + "'s size of jobAssignmentList is " + jobAssignmentList.size());
     }
     
 }

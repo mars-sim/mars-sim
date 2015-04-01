@@ -53,7 +53,7 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-padding: 4px 4px 4px 4px;
     }
 
- .button {
+.button {
     -fx-background-color: transparent, transparent, transparent, transparent;
      -fx-padding: 0 0 0 0;
     }

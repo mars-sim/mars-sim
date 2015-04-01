@@ -64,10 +64,10 @@ implements Serializable {
     public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
     
     /** Performance modifier for hunger. */
-    private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
+    private static final double HUNGER_PERFORMANCE_MODIFIER = .005D;
     
     /** Performance modifier for fatigue. */
-    private static final double FATIGUE_PERFORMANCE_MODIFIER = .0003D;
+    private static final double FATIGUE_PERFORMANCE_MODIFIER = .01D;
     
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
