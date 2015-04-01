@@ -585,7 +585,7 @@ implements Serializable {
             if (jobName != null) {
                 Job job = JobManager.getJob(jobName);
                 if (job != null) {
-                    person.getMind().setJob(job, true);
+                    person.getMind().setJob(job, true, JobManager.MISSION_CONTROL);
                 }
             }
 

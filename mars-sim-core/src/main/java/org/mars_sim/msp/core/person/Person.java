@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
@@ -23,6 +24,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -32,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -47,47 +51,49 @@ implements VehicleOperator, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
-    /* default logger.
-	private static transient Logger logger = Logger.getLogger(Person.class.getName());
-     */
-
+    /* default logger. */
+	private static transient Logger logger = Logger.getLogger(Person.class.getName());   
     /** The base carrying capacity (kg) of a person. */
     private final static double BASE_CAPACITY = 60D;
 
     // Data members
+    /** True if person is dead and buried. */
+    private boolean isBuried;
+    /** The height of the person (in cm). */
+    private int height;
+    /** Settlement X location (meters) from settlement center. */
+    private double xLoc;
+    /** Settlement Y location (meters) from settlement center. */
+    private double yLoc;
+    /** The birthplace of the person. */
+    private String birthplace;
+    /** The person's name. */
+    private String name;
+    
+    /** The person's achievement in scientific fields. */
+    private Map<ScienceType, Double> scientificAchievement;
+    
+    private org.mars_sim.msp.core.LifeSupport support;
+    
+    /** The gender of the person (male or female). */
+    private PersonGender gender;   
+    /** The birth time of the person. */
+    private EarthClock birthTimeStamp;
+    /** The settlement the person is currently associated with. */
+    private Settlement associatedSettlement;
     /** Manager for Person's natural attributes. */
     private NaturalAttributeManager attributes;
     /** Person's mind. */
     private Mind mind;
     /** Person's physical condition. */
     private PhysicalCondition health;
-    /** True if person is dead and buried. */
-    private boolean isBuried;
-    /** The gender of the person (male or female). */
-    private PersonGender gender;
-    /** The height of the person (in cm). */
-    private int height;
-    /** The birthplace of the person. */
-    private String birthplace;
-    /** The birth time of the person. */
-    private EarthClock birthTimeStamp;
-    /** The settlement the person is currently associated with. */
-    private Settlement associatedSettlement;
-    /** The person's achievement in scientific fields. */
-    private Map<ScienceType, Double> scientificAchievement;
-    /** Settlement X location (meters) from settlement center. */
-    private double xLoc;
-    /** Settlement Y location (meters) from settlement center. */
-    private double yLoc;
-
     private Building diningBuilding;
     private Cooking kitchenWithMeal;
     private PreparingDessert kitchenWithDessert;
     private PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-    private org.mars_sim.msp.core.LifeSupport support;
     private Favorite favorite;
-    private TaskSchedule taskSchedule;    
+    private TaskSchedule taskSchedule;   
+    private JobHistory jobHistory;
     
     /**
      * Constructs a Person object at a given settlement.
@@ -102,6 +108,7 @@ implements VehicleOperator, Serializable {
         super(name, settlement.getCoordinates());
 
         // Initialize data members
+        this.name = name;
         xLoc = 0D;
         yLoc = 0D;
         this.gender = gender;
@@ -112,11 +119,15 @@ implements VehicleOperator, Serializable {
         
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
+        
+        // 2015-02-27 Added JobHistory
+        jobHistory = new JobHistory(this); 
+        
         mind = new Mind(this);
         isBuried = false;
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<ScienceType, Double>(0);
-        
+         
         // 2015-02-27 Added Favorite class
         favorite = new Favorite(this);
         
@@ -143,6 +154,11 @@ implements VehicleOperator, Serializable {
 
     }
 
+    // 2015-02-27 Added getJobHistory()
+    public JobHistory getJobHistory() {
+    	return jobHistory;
+    }
+    
     /**
      * Gets the instance of Favorite for a person.
      */
@@ -180,7 +196,12 @@ implements VehicleOperator, Serializable {
                 day = RandomUtil.getRandomInt(29) + 1;
             }
         }
-
+        // TODO: find out why sometimes day = 0 as seen on 
+        if (day == 0) {
+        	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
+        	day = 1;
+        }
+        	
         int hour = RandomUtil.getRandomInt(23);
         int minute = RandomUtil.getRandomInt(59);
         int second = RandomUtil.getRandomInt(59);

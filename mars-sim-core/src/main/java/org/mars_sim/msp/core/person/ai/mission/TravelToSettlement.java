@@ -483,6 +483,7 @@ implements Serializable {
         double currentJobProspect = JobManager.getJobProspect(person,
                 currentJob, startingSettlement, true);
         double destinationJobProspect = 0D;
+        // TODO: evaluate if getJobLock() or something else will need to be considered. 
         if (person.getMind().getJobLock())
             destinationJobProspect = JobManager.getJobProspect(person,
                     currentJob, destinationSettlement, false);

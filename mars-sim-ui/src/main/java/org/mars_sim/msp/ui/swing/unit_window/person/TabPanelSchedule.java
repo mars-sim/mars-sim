@@ -114,7 +114,7 @@ extends TabPanel {
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
-		JPanel repeatPanel = new JPanel(new FlowLayout(GridLayout(3,1)));
+		JPanel repeatPanel = new JPanel(new FlowLayout(GridLayout(4,1)));
 		
 		// Create hideRepeatedTaskBox.
 		hideRepeatedTasksCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
@@ -139,8 +139,9 @@ extends TabPanel {
 		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
 		repeatPanel.add(hideRepeatedTasksCheckBox);
 		
-		JLabel emptylabel = new JLabel("                               ");
-		repeatPanel.add(emptylabel);
+		// Add two empty JLabel
+		repeatPanel.add(new JLabel("            "));
+		repeatPanel.add(new JLabel("            "));
 		
 		// Create realTimeUpdateCheckBox.
 		realTimeUpdateCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
@@ -432,10 +433,6 @@ extends TabPanel {
 			else if (column == 1) return tasks.get(row).getDoAction();
 			else return null;
 		}
-		
-		//public int getOnDisplaySol() {
-		//	return onDisplaySol;
-		//}
 		
 		/**
 		 * Prepares a list of activities done on the selected day

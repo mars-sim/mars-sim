@@ -48,6 +48,8 @@ extends UnitWindow {
 		addTabPanel(new TabPanelFavorite(person, desktop));
 		// 2015-03-20  Added TabPanelSchedule
 		addTabPanel(new TabPanelSchedule(person, desktop));
+		// 2015-03-31  Added TabPanelCareer
+		addTabPanel(new TabPanelCareer(person, desktop));
 		
 
 		// Add death tab panel if person is dead.
