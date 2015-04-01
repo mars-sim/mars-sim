@@ -24,7 +24,8 @@ import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
 @SuppressWarnings("serial")
-public class UnitInfoPanel extends JPanel {// JDialog {
+public class UnitInfoPanel extends JPanel {
+// JDialog {
 
 
     public UnitInfoPanel(MainDesktopPane desktop) {

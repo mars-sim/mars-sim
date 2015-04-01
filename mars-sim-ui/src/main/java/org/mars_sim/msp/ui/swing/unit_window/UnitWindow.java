@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.07 2015-01-14
-
+ * @version 3.08 2015-04-01
  * @author Scott Davis
  */
 
@@ -27,9 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -80,6 +79,11 @@ public abstract class UnitWindow extends JInternalFrame {
         //    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
         //this.setUI(ui); 
         //updateUI();
+        
+        // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
+        BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
+        titlePane.setOpaque(true);
+        titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
         
         // Initialize data members
         this.desktop = desktop;
@@ -232,6 +236,16 @@ public abstract class UnitWindow extends JInternalFrame {
 	 }
 	 */
 	
+	 /*
+	 public float getAlpha() {
+	     return alpha;
+	 }
+	
+	 public void setAlpha(float alpha) {
+	     this.alpha = alpha;
+	     repaint();
+	 }
+	*/
     
 	 @Override
 	 protected void paintComponent(Graphics g) {
@@ -249,17 +263,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	     g.drawImage(image, location.x, location.y, null);
 	     g.setClip(oldClip);
 	 }
-	
-	 /*
-	 public float getAlpha() {
-	     return alpha;
-	 }
-	
-	 public void setAlpha(float alpha) {
-	     this.alpha = alpha;
-	     repaint();
-	 }
-	*/
+
 	
 	 private static void setupGraphics(Graphics2D g2) {
 	     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

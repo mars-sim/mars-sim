@@ -196,5 +196,11 @@ public enum ScienceType {
 	 */
 	public static List<ScienceType> valuesList() {
 		return Arrays.asList(ScienceType.values());
+		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
+		// It is not an java.util.ArrayList class.
+		// Could possibly reconfigure this method as follows: 
+		// public ArrayList<ScienceType> valuesList() {
+		// 	return new ArrayList<ScienceType>(Arrays.asList(ScienceType.values())); }
+
 	}
 }

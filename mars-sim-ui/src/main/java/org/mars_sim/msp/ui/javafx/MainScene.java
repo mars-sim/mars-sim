@@ -42,6 +42,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -86,6 +88,7 @@ public class MainScene {
 	
     private StringProperty timeStamp;
       
+    private int theme;
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
@@ -156,6 +159,32 @@ public class MainScene {
               }
           });
         
+        theme = 1;
+        scene.getStylesheets().add("/fxui/css/mainskin.css");   
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {  
+            @Override  
+            public void handle(KeyEvent keyEvent) {  
+                if (keyEvent.getCode().equals(KeyCode.F11)) {  
+                	if (theme == 1) {
+                		scene.getStylesheets().clear();  
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/themeskin.css").toExternalForm());  
+                		theme = 2;
+                	}
+                	else if (theme == 2) {  
+                		scene.getStylesheets().clear();  
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/settlementskin.css").toExternalForm());
+                		theme = 3;
+                	}  
+                	else if (theme == 3) {  
+                		scene.getStylesheets().clear();  
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+                		theme = 1;
+                	}  
+                }
+            }
+        });  
+        
+        
 		startAutosaveTimer();        		
         //desktop.openInitialWindows(); // doesn't work here
         startEarthTimer();
@@ -169,58 +198,7 @@ public class MainScene {
         return scene;
     }
 	
-	/**
-	 * Creates an Alert Dialog to confirm ending or exiting the simulation or MSP
-	 */
-    public void alertOnExit() {
-     	
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirm on Exit");
-		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
-		alert.setContentText(Msg.getString("MainScene.exit.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save and End");
-		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
-		ButtonType buttonTypeThree = new ButtonType("Exit the MSP");
-		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);	
-		Optional<ButtonType> result = alert.showAndWait();
-		
-		if (result.get() == buttonTypeOne)	{
-			saveOnExit();
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			stage.close();
-		}
-		else if (result.get() == buttonTypeTwo)		{
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			stage.close();	
-		}
-		else if (result.get() == buttonTypeThree)	
-			exitSimulation();
-    }
-    
-	/**
-	 * Initiates the process of saving a simulation.
-	 */
-    public void saveOnExit() {
-		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
-		// Save the UI configuration.
-		UIConfig.INSTANCE.saveFile(this);
-	
-		// Save the simulation.
-		Simulation sim = Simulation.instance();
-		try {
-			sim.getMasterClock().saveSimulation(null);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
-			e.printStackTrace(System.err);
-		}
-    }
-    
-    
+ 
 	/**
 	 * Sets up the Main Scene
 	 *@return Scene
@@ -261,7 +239,7 @@ public class MainScene {
 	    settlementTab = new Tab();
 	    settlementTab.setClosable(false);
 	    //tpFX.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
-	    settlementTab.setText("Mars Nodes");
+	    settlementTab.setText("Nodes");
 	    //settlementTab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
 	    settlementTab.setContent(marsNode.createPane("black"));
 	    //tpFX.getTabs().add(settlementTab);
@@ -311,8 +289,7 @@ public class MainScene {
 	    borderPane.setCenter(notificationNode);
 	    StackPane rootStackPane = new StackPane(borderPane);	    
 		
-	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
-	    scene.getStylesheets().add("/fxui/css/mainskin.css");
+	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);    
 	    
 	    borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());    
@@ -908,6 +885,60 @@ public class MainScene {
 		//splitPane.setDividerPositions(0.8f);
 	    tp.getSelectionModel().select(settlementTab);
 	}
+	
+   
+	/**
+	 * Creates an Alert Dialog to confirm ending or exiting the simulation or MSP
+	 */
+    public void alertOnExit() {
+     	
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirm on Exit");
+		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
+		alert.setContentText(Msg.getString("MainScene.exit.content"));
+		ButtonType buttonTypeOne = new ButtonType("Save and End");
+		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
+		ButtonType buttonTypeThree = new ButtonType("Exit the MSP");
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);	
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if (result.get() == buttonTypeOne)	{
+			saveOnExit();
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			Simulation.stopSimulation();
+			getDesktop().clearDesktop();
+			stage.close();
+		}
+		else if (result.get() == buttonTypeTwo)		{
+			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			Simulation.stopSimulation();
+			getDesktop().clearDesktop();
+			stage.close();	
+		}
+		else if (result.get() == buttonTypeThree)	
+			exitSimulation();
+    }
+    
+	/**
+	 * Initiates the process of saving a simulation.
+	 */
+    public void saveOnExit() {
+		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
+		// Save the UI configuration.
+		UIConfig.INSTANCE.saveFile(this);
+	
+		// Save the simulation.
+		Simulation sim = Simulation.instance();
+		try {
+			sim.getMasterClock().saveSimulation(null);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+			e.printStackTrace(System.err);
+		}
+    }
+    
+    
 	
 	//public void setMainMenu(MainMenu mainMenu) {
 	//	this.mainMenu = mainMenu;

@@ -20,11 +20,15 @@ import java.awt.event.WindowFocusListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
+
+
 
 
 
@@ -121,6 +125,71 @@ public class PopUpUnitMenu extends JPopupMenu {
        	 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
+            	JFrame d = new JFrame();
+            	//JInternalFrame d = new JInternalFrame();
+            	//final JDialog d = new JDialog();
+                d.setForeground(Color.YELLOW); // orange font
+                d.setFont( new Font("Arial", Font.BOLD, 14 ) );
+                
+                String description;
+                String type;
+                String name;
+                
+                if (unit instanceof Vehicle) {
+                	Vehicle vehicle = (Vehicle) unit;
+                	description = vehicle.getDescription(vehicle.getVehicleType());
+                	type = WordUtils.capitalize(vehicle.getVehicleType());
+                	name = WordUtils.capitalize(vehicle.getName());
+                }
+                else {
+                	Building building = (Building) unit;
+                	description = building.getDescription();
+                	type = building.getBuildingType();
+                	name = building.getNickName();
+                }
+                
+                double num = description.length() * 1.3D + 130D;
+			    if (num > 450)
+			    	num = 450;
+                int frameHeight = (int) num;
+			    
+			    d.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
+		        d.setResizable(false);
+		        d.setUndecorated(true);
+		        d.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
+		        
+			    UnitInfoPanel b = new UnitInfoPanel(desktop);
+			    b.init(name, type, description);		
+			    
+			    d.add(b);
+            	
+            	// Make the buildingPanel to appear at the mouse cursor
+                Point location = MouseInfo.getPointerInfo().getLocation();
+                d.setLocation(location); 
+                
+                d.setVisible(true); 
+				d.addWindowFocusListener(new WindowFocusListener() {            
+				    public void windowLostFocus(WindowEvent e) {
+				    	d.dispose();
+				    }            
+				    public void windowGainedFocus(WindowEvent e) {
+				    }
+				});	
+				
+			    //2014-11-27 Added ComponentMover Class
+			    ComponentMover mover = new ComponentMover(d,b);
+			    mover.registerComponent(b);	
+	
+             }
+        });
+    }
+/* BACKUP     
+   public void buildItemOne(final Unit unit) {
+    	
+        itemOne.addActionListener(new ActionListener() {
+       	 
+            public void actionPerformed(ActionEvent e) {
+            	setOpaque(false);	
             	final JDialog d = new JDialog();
                 d.setForeground(Color.YELLOW); // orange font
                 d.setFont( new Font("Arial", Font.BOLD, 14 ) );
@@ -173,7 +242,7 @@ public class PopUpUnitMenu extends JPopupMenu {
              }
         });
     }
-     
+   */
     
     public void buildItemTwo(final Unit unit) {
         itemTwo.addActionListener(new ActionListener() {

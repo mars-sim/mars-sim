@@ -219,8 +219,8 @@ implements ClockListener {
 		    	// if NO building is selected, do NOT call popup menu
 		    	if (building != null || vehicle != null || person != null) {
 		    		
-		    	    SwingUtilities.invokeLater(new Runnable(){
-		    	        public void run()  {
+		    	    //SwingUtilities.invokeLater(new Runnable(){
+		    	        //public void run()  {
 	    	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below 
 		    	        	// when one or more are detected
 		    	        	if (person != null)
@@ -233,7 +233,7 @@ implements ClockListener {
 		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
 	
 		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
-		    	        } });
+		    	        //} });
 		        }	
 		    }
 		}
