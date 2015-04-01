@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
  */
 public class MarsClock implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	// The Mars tropical year is 686.9726 day or 668.5921 sol.
 	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, and is customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth. 	
 	// The Mars sidereal day, as measured with respect to the fixed stars, is 24h 37m 22.663s, as compared with 23h 56m 04.0905s for Earth.
@@ -149,35 +150,10 @@ public class MarsClock implements Serializable {
     public static String[] getWeekSolNames() {
         return Arrays.copyOf(WEEK_SOL_NAMES, WEEK_SOL_NAMES.length);
     }
-    
-    
-    public static double getTotalMillisols(MarsClock time) {
-        double result = 0D;
-        
-        // Add millisols up to current orbit
-        for (int x=1; x < time.orbit; x++) {
-            if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR * 1000D;
-            else result += SOLS_IN_ORBIT_NON_LEAPYEAR * 1000D;
-        }
-        
-        // Add millisols up to current month
-        for (int x=1; x < time.month; x++)
-            result += MarsClock.getSolsInMonth(x, time.orbit) * 1000D;
-            
-        // Add millisols up to current sol
-        result += (time.sol - 1) * 1000D;
-   
-        // Add millisols in current sol
-        result += time.millisol;
-        
-		//System.out.println("MarsClock : result : " + result);
-		
-        return result;
-    }
 
 
-    /** Returns the sol in a Martian year
-     *  @return the sol of year as an integer
+    /** Returns the number of sols of that given year
+     *  @return the number of sol as an integer
      */
     // 2015-01-28 Added getSolOfYear()
     public static int getSolOfYear(MarsClock time) {
@@ -194,7 +170,7 @@ public class MarsClock implements Serializable {
         return result;
     }
 
-    /** Returns the total number of sol since the start of the simulation
+    /** Returns the total number of sols since the start of the simulation
      *  @return the total number of sol as an integer
      */
     // 2015-02-09 Added getTotalSol
@@ -220,8 +196,7 @@ public class MarsClock implements Serializable {
         return result;
     }
     
-    /** Returns the number of sols in a month for
-     *  a given month and orbit.
+    /** Returns the number of sols for a given month and orbit.
      *  @param month the month number
      *  @param orbit the orbit number
      */
@@ -304,6 +279,13 @@ public class MarsClock implements Serializable {
         return new StringBuilder(getDateString()).append("  ").append(getTimeString()).toString();
     }
 
+    /** Returns formatted time stamp string such as "13-Adir-05 0056"
+     *  @return formatted String
+     */
+    public static String getDateTimeStamp(MarsClock time) {
+        return new StringBuilder(getDateString(time)).append(" ").append(getMillisolString(time)).toString();
+    }
+
     /** 
      * Gets the current date string.
      * ex. "13-Adir-05"
@@ -327,7 +309,29 @@ public class MarsClock implements Serializable {
         return result.toString();
     }
 
-    /** Return the current time string.
+    /** 
+     * Gets the date string of a given time.
+     * ex. "13-Adir-05"
+     * @return date string
+     */
+    public static String getDateString(MarsClock time) {
+        StringBuilder result = new StringBuilder();
+        int orbit = time.getOrbit();
+        int sol = time.getSolOfMonth();
+        String month = time.getMonthName();
+        
+        // Append orbit
+        result.append(orbit).append("-").append(month).append("-");
+
+        if(sol < 10){
+            result.append("0");
+        }
+        result.append(sol);
+
+        return result.toString();
+    }
+    
+    /** Returns the current time string.
      *  ex. "05:056.349"
      */
     public String getTimeString() {
@@ -351,31 +355,57 @@ public class MarsClock implements Serializable {
         return b.toString();
     }
 
-    /** Return the current time string.
+    /** Returns the time string of a given time.
      *  ex. "056"
-     */
+     */ 
+    public static String getMillisolString(MarsClock time) {
+    	   StringBuilder b = new StringBuilder();    	   
+    	   int millisol = (int) time.getMillisol();
+           
+//           String result = "" + tb;
+           b.append(millisol);
+           if (millisol < 100D) {
+               b.insert(0,"0");
+//               result = "0" + result;
+           }
+           if (millisol < 10D) {
+               b.insert(0,"0");
+//               result = "0" + result;
+           }
+           while (b.length() < 3){
+               b.append("0");
+//               result += "0";
+           }
+
+           return b.toString();
+    }
     
-    public String getMillisolString() {
-        StringBuilder b = new StringBuilder();
-        int tb = (int) millisol;
-        /*
-//        String result = "" + tb;
-        b.append(tb);
+    
+    /** Returns the total number of millisols of a given time.
+     *  @param time
+     */ 
+    public static double getTotalMillisols(MarsClock time) {
+        double result = 0D;
         
-        if (millisol < 100) {
-            b.insert(0,"0");
-//            result = "0" + result;
+        // Add millisols up to current orbit
+        for (int x=1; x < time.orbit; x++) {
+            if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR * 1000D;
+            else result += SOLS_IN_ORBIT_NON_LEAPYEAR * 1000D;
         }
-        if (millisol < 10) {
-            b.insert(0,"0");
-//            result = "0" + result;
-        }
-        while (b.length() < 4){
-            b.append("0");
-//            result += "0";
-        }
-*/
-        return b.toString();
+        
+        // Add millisols up to current month
+        for (int x=1; x < time.month; x++)
+            result += MarsClock.getSolsInMonth(x, time.orbit) * 1000D;
+            
+        // Add millisols up to current sol
+        result += (time.sol - 1) * 1000D;
+   
+        // Add millisols in current sol
+        result += time.millisol;
+        
+		//System.out.println("MarsClock : result : " + result);
+		
+        return result;
     }
     
     /** Returns the name of the current month.

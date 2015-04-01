@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-03-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;
@@ -17,11 +17,11 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and 
@@ -37,6 +37,7 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(Mind.class.getName());
 
     // Data members
+	private int solCache = 1;
     /** The person owning this mind. */
     private Person person = null;
     /** The person's task manager. */
@@ -45,7 +46,6 @@ implements Serializable {
     private Mission mission;
     /** The person's job. */
     private Job job;
-    private RobotJob robotJob;
     /** The person's personality. */
     private PersonalityType personality;
     /** The person's skill manager. */
@@ -85,11 +85,34 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
+    	// The new job will be Locked in until the beginning of the next day 
+    	if (jobLock) {
+	        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();     
+	        // check for the passing of each day
+	        int solElapsed = MarsClock.getSolOfYear(clock);
+	        if ( solElapsed != solCache) { 
+	        	solCache = solElapsed;    	
+	        	jobLock = false;
+	        }
+    	}
+        
         if (person != null) { 
-	
 	        // Check if this person needs to get a new job or change jobs.
-	        if (!jobLock) {
-	            setJob(JobManager.getNewJob(person), false);
+	        if (!jobLock || job == null) { 
+	        	// getNewJob() is checking if existing job is "good enough"
+	        	Job newJob = JobManager.getNewJob(person);
+	        	String newJobStr = newJob.getName(person.getGender());
+	        	String jobStr = null;
+	        	if (job == null)
+	        		jobStr = null;
+	        	else
+	        		jobStr = job.getName(person.getGender());
+	        	if (newJob != null) //System.out.println("timePassing() : newJob is null");
+		           	if (!newJobStr.equals(jobStr)) {
+			            //job = newJob;
+		           		setJob(newJob, false, JobManager.SETTLEMENT);
+		           	}
+	        	//System.out.println(person.getName() + "'s jobLock is false.");
 	        }
 	
 	        // Take action as necessary.
@@ -201,20 +224,29 @@ implements Serializable {
     /**
      * Sets the person's job.
      * @param newJob the new job
-     * @param locked is the job locked so another can't be chosen?
+     * @param bypassingJobLock
      */
-    public void setJob(Job newJob, boolean locked) {
-
-        jobLock = locked;
-        if (!newJob.equals(job)) {
-            job = newJob;
-
-        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
-
-        }
+    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy) {
+    	// if (newJob == null) System.out.println("setJob() : newJob is null");
+    	// TODO : if jobLock is true, will it allow the job to be changed?
+    	String newJobStr = newJob.getName(person.getGender());
+    	String jobStr = null;
+    	if (job == null)
+    		jobStr = null;
+    	else
+    		jobStr = job.getName(person.getGender());
+    	// TODO : check if the initiator's role allows the job to be changed
+    	if (!newJobStr.equals(jobStr)) 
+    	    if (bypassingJobLock || !jobLock) {
+	            job = newJob;
+		        // 2015-03-30 Added saveJob()
+		        person.getJobHistory().saveJob(newJob, assignedBy);
+		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+		    	// the new job will be Locked in until the beginning of the next day
+		        jobLock = true;
+    	    }
     }
 
-    
     
     /**
      * Returns true if person has an active mission.

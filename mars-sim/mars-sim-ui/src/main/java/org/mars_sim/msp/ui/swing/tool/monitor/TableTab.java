@@ -316,10 +316,11 @@ extends MonitorTab {
         
         // 2014-12-29 Added ColumnResizer
         final JTable ctable = table;
-	    //SwingUtilities.invokeLater(new Runnable(){
-	    //    public void run()  {
-	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
-	     //    } });
+        
+	    SwingUtilities.invokeLater(new Runnable(){
+	        public void run()  {
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	         } });
     }
 
 	// 2014-12-30 Added setTableStyle()

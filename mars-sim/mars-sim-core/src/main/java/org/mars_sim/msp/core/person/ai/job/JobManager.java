@@ -30,6 +30,10 @@ public final class JobManager implements Serializable {
 
 	private static Logger logger = Logger.getLogger(JobManager.class.getName());
 
+	public static final String SETTLEMENT = "Settlement";
+	public static final String MISSION_CONTROL = "Mission Control";
+	public static final String USER = "User";
+	
 	// Data members
 	/** List of the jobs in the simulation. */
 	private static List<Job> jobs; 
@@ -128,22 +132,23 @@ public final class JobManager implements Serializable {
 	 * @return settlement need minus total job capability of inhabitants with job.
 	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, Job job) {
+		if (job == null) System.out.println("JobManager : job is null");
 		double result = job.getSettlementNeed(settlement);
 
-
-			// Check all people associated with the settlement.
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-				if (person.getMind().getJob() == job) result-= job.getCapability(person);
-			}
-		
-			result = result/2D;
+		// Check all people associated with the settlement.
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (person.getMind().getJob() == job) 
+				result-= job.getCapability(person);
+		}
+	
+		result = result / 2D;
 
 		return result;
 	}
 	
-	// For robots
+	// TODO: determine the need for this method since it promotes robotJob switching For robots	
 	public static double getRemainingSettlementNeed(Settlement settlement, RobotJob robotJob) {
 		double result = robotJob.getSettlementNeed(settlement);
 
@@ -237,8 +242,8 @@ public final class JobManager implements Serializable {
 	
 				if(logger.isLoggable(Level.FINEST)) {
 					if ((newJob != null) && (newJob != originalJob)) 
-						logger.info(robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType())); // logger.finest(
-					else logger.info(robot.getName() + " keeping old job of " + originalJob.getName(robot.getRobotType()));
+						logger.info("Notes: " + robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType())); // logger.finest(
+					else logger.info("Notes: " + robot.getName() + " keeping old job of " + originalJob.getName(robot.getRobotType()));
 				}	
 			}
 			else newJob = originalJob;
@@ -257,13 +262,18 @@ public final class JobManager implements Serializable {
 	 */
 	public static double getJobProspect(Unit unit, Job job, Settlement settlement, boolean isHomeSettlement) {
         Person person = null;
+    	person = (Person) unit;
+    	
 		double jobCapability = 0D;
 		double remainingNeed = 0D;
-	
-         	person = (Person) unit;
-        	if (job != null) jobCapability = job.getCapability(person);   		
-    		remainingNeed = getRemainingSettlementNeed(settlement, job);   		
-    		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;     
+  	
+    	if (job != null) 
+    		jobCapability = job.getCapability(person);   	
+    	
+		remainingNeed = getRemainingSettlementNeed(settlement, job);   
+		
+		if ((job == person.getMind().getJob()) && isHomeSettlement) 
+			remainingNeed += jobCapability;     
   
 		return (jobCapability + 1D) * remainingNeed;
 	}
