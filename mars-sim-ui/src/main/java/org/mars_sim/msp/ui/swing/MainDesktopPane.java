@@ -732,6 +732,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//long SLEEP_TIME = 1;
 		ToolWindow toolWindow;
 
+		protected ToolWindow getToolWindow() {
+			return toolWindow;
+		}
+
 		private ToolWindowTask(ToolWindow toolWindow) {
 			//logger.info(Msg.getString("MainDesktopPane.toolWindow.thread.running")); //$NON-NLS-1$
 			this.toolWindow = toolWindow;
@@ -749,7 +753,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	private void setupToolWindowTasks() {
+		// set up toolWindowExecutor even though it is not used right now inside this method
 		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
+
 		toolWindowTaskList = new ArrayList<>();
 		toolWindows.forEach(t -> {
 
@@ -766,20 +772,30 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// run all tool window Tasks
 		toolWindowTaskList.forEach(t -> {
-			if ( !toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown() )
-				toolWindowExecutor.execute(t);
+			boolean isOpen = isToolWindowOpen(t.getToolWindow().getToolName());
+			if (isOpen)
+				if ( !toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown() )
+					toolWindowExecutor.execute(t);
 		});
 	}
 
 	private void runUnitWindowExecutor() {
+		// set up unitWindowExecutor
+		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4);
+
 		// Update all unit windows.
-		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
-		Iterator<UnitWindow> i1 = unitWindows.iterator();
-		while (i1.hasNext()) {
-			unitWindowTask = new UnitWindowTask(i1.next());
+		//Iterator<UnitWindow> i1 = unitWindows.iterator();
+		//while (i1.hasNext()) {
+		//	unitWindowTask = new UnitWindowTask(i1.next());
+		//	if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
+		//		unitWindowExecutor.execute(unitWindowTask);
+        //}
+
+		unitWindows.forEach(u -> {
 			if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
-				unitWindowExecutor.execute(unitWindowTask);
-        }
+				unitWindowExecutor.execute(new UnitWindowTask(u));
+		});
+
 		if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 	}
 

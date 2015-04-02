@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project 
+ * Mars Simulation Project
  * MainMenu.java
  * @version 3.08 2015-03-15
  * @author Manny Kung
@@ -44,34 +44,34 @@ public class MainMenu {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(MainMenu.class.getName());
-    
+
 	// Data members
-	
+
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/MainMenu.fxml";
     public static String screen2ID = "configuration";
     public static String screen2File = "/fxui/fxml/Configuration.fxml";
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
-    
+
     public String[] args;
-    
+
     //private double anchorX;
     //private double anchorY;
     //private double anchorAngle;
     //private boolean cleanUI = true;
-    
+
     private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
     private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
     private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
     private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
-      
+
     private Sphere mars;
     private PhongMaterial material;
     private PointLight sun;
-    
+
 	private Stage primaryStage;
 	private Stage stage;
 	//public MenuScene menuScene;
@@ -87,19 +87,19 @@ public class MainMenu {
 		 initAndShowGUI();
 	}
 
-   private void initAndShowGUI() {        
-       
+   private void initAndShowGUI() {
+
        ScreensSwitcher switcher = new ScreensSwitcher(this);
        switcher.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
        switcher.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
-       switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);      
+       switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        switcher.setScreen(MainMenu.screen1ID);
-       
+
        Group root = new Group();
        Parent parent = createMarsGlobe();
        root.getChildren().addAll(parent, switcher);
        Scene scene = new Scene(root);
-       
+
        /*
        scene.setOnMousePressed((event) -> {
 	        anchorX = event.getSceneX();
@@ -114,35 +114,35 @@ public class MainMenu {
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
        scene.setCursor(Cursor.HAND);
-       
+
        primaryStage.centerOnScreen();
-       primaryStage.setResizable(false);            
+       primaryStage.setResizable(false);
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
        //primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
        primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
-                         
+
 	   stage = new Stage();
 	   stage.setTitle(Simulation.WINDOW_TITLE);
-	   
+
 	   mainScene = new MainScene(stage);
 	   //menuScene = new MenuScene(stage);
 	   //modtoolScene = new ModtoolScene(stage);
-   }    
+   }
 
 
    public void runOne() {
-	   
+
 	   primaryStage.setIconified(true);
-	   //primaryStage.hide();	 
+	   //primaryStage.hide();
 	   //primaryStage.close();
 	   mpFX.handleNewSimulation();
 
    }
-   
+
    public void runMainScene() {
-	   
+
 	   Scene scene = mainScene.createMainScene();
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
@@ -150,70 +150,70 @@ public class MainMenu {
 	   stage.setFullScreen(true);
 	   stage.setScene(scene);
 	   stage.show();
-	   
+
    }
-   
+
    public void runTwo() {
-	   
+
 	   primaryStage.setIconified(true);
-	   
-	   try {		   
+
+	   try {
 		   // Correct sequence:
-		   // 1.  mainScene = new MainScene(stage);	   
+		   // 1.  mainScene = new MainScene(stage);
 		   // 2. Simulation.instance().loadSimulation(null);
-		   // 3. Simulation.instance().start();		
-		   // 4. runMainScene();		
-		   
-		   mainScene = new MainScene(stage);	   
+		   // 3. Simulation.instance().start();
+		   // 4. runMainScene();
+
+		   mainScene = new MainScene(stage);
 		   Simulation.instance().loadSimulation(null);
-		   Simulation.instance().start();		
-		   runMainScene();					
+		   Simulation.instance().start();
+		   runMainScene();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	   
+
 /*      menuScene = new MenuScene().createMenuScene();
 	    stage.setScene(menuScene);
         stage.show();
 */
    }
-   
+
    public void runThree() {
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();
    }
-   
-   public void changeScene(int toscene) {		   
-	   //switch (toscene) {	   	   
-		   	//case 1: 
+
+   public void changeScene(int toscene) {
+	   //switch (toscene) {
+		   	//case 1:
 		   		//scene = new MenuScene().createScene();
 		   	//	break;
-	   		//case 2: 
+	   		//case 2:
 	   			Scene scene = mainScene.createMainScene();
 	   			//break;
-	   		//case 3: 
+	   		//case 3:
 	   			//scene = modtoolScene.createScene(stage);
-	   		//	break;	   			
+	   		//	break;
 	   		stage.setScene(scene);
 	   //}
-   }   
-   
+   }
+
    //public Scene getMainScene() {
    //	return mainScene;
-   //}  
+   //}
 
    public Parent createMarsGlobe() {
-	   
-	   logger.info("3D supported? " + Platform.isSupported(ConditionalFeature.SCENE3D));
+
+	   logger.info("Is ConditionalFeature.SCENE3D supported on this platform? " + Platform.isSupported(ConditionalFeature.SCENE3D));
 
 	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
        Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
        Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal2048x1024.png").toExternalForm()); //.toString());
        //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.jpg").toExternalForm()); //.toString());
-          
+
        material = new PhongMaterial();
        material.setDiffuseColor(Color.WHITE);
        material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
@@ -221,33 +221,33 @@ public class MainMenu {
        material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
        material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
        //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
-       
+
        mars = new Sphere(4);
        mars.setMaterial(material);
-       mars.setRotationAxis(Rotate.Y_AXIS);     
-       
+       mars.setRotationAxis(Rotate.Y_AXIS);
+
        // Create and position camera
        PerspectiveCamera camera = new PerspectiveCamera(true);
        camera.getTransforms().addAll(
                new Rotate(-10, Rotate.Y_AXIS),
                new Rotate(-10, Rotate.X_AXIS),
                new Translate(0, 0, -10));
-       
+
        sun = new PointLight(Color.rgb(255, 243, 234));
        sun.translateXProperty().bind(sunDistance.multiply(-0.82));
        sun.translateYProperty().bind(sunDistance.multiply(-0.41));
        sun.translateZProperty().bind(sunDistance.multiply(-0.41));
        sun.lightOnProperty().bind(sunLight);
-       
+
        AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
-       
+
        // Build the Scene Graph
-       Group root = new Group();       
+       Group root = new Group();
        root.getChildren().add(camera);
        root.getChildren().add(mars);
        root.getChildren().add(sun);
        root.getChildren().add(ambient);
-   
+
        RotateTransition rt = new RotateTransition(Duration.seconds(24), mars);
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
@@ -257,14 +257,14 @@ public class MainMenu {
        rt.setToAngle(0);
        //rt.setCycleCount(RotateTransition.INDEFINITE);
        rt.play();
-       
-       // Use a SubScene       
+
+       // Use a SubScene
        SubScene subScene = new SubScene(root, 512, 512, true, SceneAntialiasing.BALANCED);
-       subScene.setFill(Color.TRANSPARENT);      
+       subScene.setFill(Color.TRANSPARENT);
        subScene.setCamera(camera);
-       
+
        return new Group(subScene);
    }
 
-   
+
 }

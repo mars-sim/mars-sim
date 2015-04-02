@@ -50,33 +50,33 @@ implements ClockListener {
 
 	// Static members.
 	//public static final double DEFAULT_SCALE = 5D;
-	public static final double DEFAULT_SCALE = 10D;	
+	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
-	// Data members.		
+	// Data members.
 	private double xPos;
 	private double yPos;
 	private double rotation;
 	private double scale;
-	
+
 	/** Last X mouse drag position. */
 	private int xLast;
 	/** Last Y mouse drag position. */
 	private int yLast;
-	
+
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
 	private boolean showRobotLabels;
-	private boolean showDayNightLayer = false;
-	
+	private boolean showDayNightLayer = true; // turn on by default
+
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
-	
+
 	private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
@@ -104,7 +104,7 @@ implements ClockListener {
 		showDayNightLayer = false;
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
-		
+
 		//SwingUtilities.invokeLater(new Runnable() {
         //    @Override
          //   public void run() {
@@ -118,13 +118,13 @@ implements ClockListener {
 		setForeground(Color.ORANGE);
 
 		Simulation.instance().getMasterClock().addClockListener(this);
-		
+
 		// 2015-01-16 Added detectMouseMovement() after refactoring
 		detectMouseMovement();
 
         setVisible(true);
 	}
-	
+
 	// 2015-02-09 Added init()
 	public void init(MainDesktopPane desktop) {
 
@@ -137,11 +137,11 @@ implements ClockListener {
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 		mapLayers.add(new DayNightMapLayer(this));
-		
+
         new SettlementTransparentPanel(desktop, this);
 
 	}
-	
+
 	/** Constructor 2
 	 *  A panel for initializing the display of a building svg image.
 	 */
@@ -157,9 +157,9 @@ implements ClockListener {
 		scale = DEFAULT_SCALE;
 		this.settlement = settlement;
 		this.building = building;
-	
+
 		mapLayers = new ArrayList<SettlementMapLayer>(1);
-		StructureMapLayer layer = new StructureMapLayer(this);		 
+		StructureMapLayer layer = new StructureMapLayer(this);
 		mapLayers.add(layer);
 
 		// Set preferred size.
@@ -171,12 +171,12 @@ implements ClockListener {
 		setForeground(Color.WHITE);
 
 		Simulation.instance().getMasterClock().addClockListener(this);
-		
-		repaint();	
+
+		repaint();
 	}
 
-	public void detectMouseMovement() {		
-		
+	public void detectMouseMovement() {
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
@@ -184,16 +184,16 @@ implements ClockListener {
 				xLast = evt.getX();
 				yLast = evt.getY();
 			}
-	
+
 			@Override
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
 				selectPersonAt(evt.getX(), evt.getY());
 				selectRobotAt(evt.getX(), evt.getY());
 			}
-	
+
 		});
-	
+
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
 		    public void mousePressed(MouseEvent evt){
@@ -201,7 +201,7 @@ implements ClockListener {
 					 doPop(evt);
 				 }
 		    }
-	
+
 		    public void mouseReleased(MouseEvent evt){
 				 if (evt.isPopupTrigger()) {
 					 doPop(evt);
@@ -215,13 +215,13 @@ implements ClockListener {
 		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
 		    	final Person person = selectPersonAt(evt.getX(), evt.getY());
 		    	final Robot robot = selectRobotAt(evt.getX(), evt.getY());
-		    	
+
 		    	// if NO building is selected, do NOT call popup menu
 		    	if (building != null || vehicle != null || person != null) {
-		    		
+
 		    	    //SwingUtilities.invokeLater(new Runnable(){
 		    	        //public void run()  {
-	    	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below 
+	    	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below
 		    	        	// when one or more are detected
 		    	        	if (person != null)
 		    	        		menu = new PopUpUnitMenu(settlementWindow, person);
@@ -231,15 +231,15 @@ implements ClockListener {
 		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
 		    	        	else if (building != null)
 		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
-	
+
 		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		    	        //} });
-		        }	
+		        }
 		    }
 		}
 		addMouseListener(new PopClickListener());
-		
-		
+
+
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
@@ -253,7 +253,7 @@ implements ClockListener {
 		});
 
 	}
-		
+
 	/**
 	 * Gets the settlement currently displayed.
 	 * @return settlement or null if none.
@@ -268,7 +268,7 @@ implements ClockListener {
 	 */
 	public SettlementWindow getSettlementWindow() {
 		return settlementWindow;
-	}	
+	}
 
 	/**
 	 * Sets the settlement to display.
@@ -376,7 +376,7 @@ implements ClockListener {
 		}
 		return selectedPerson;
 	}
-	
+
 	/**
 	 * Selects the robot if any robot is at the given x and y pixel position.
 	 * @param xPixel the x pixel position on the displayed map.
@@ -406,10 +406,10 @@ implements ClockListener {
 		}
 		return selectedRobot;
 	}
-	
+
 
 	/**
-	 * Selects a building 
+	 * Selects a building
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedBuilding
@@ -417,7 +417,7 @@ implements ClockListener {
 	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		// Note: 20D is an arbitrary number (by experiment) that 
+		// Note: 20D is an arbitrary number (by experiment) that
 		// gives an reasonable click detection area
 		//double range2 = 3D / scale;
 
@@ -435,21 +435,21 @@ implements ClockListener {
 			if (width < length)
 				newRange =  width/2.0;
 			else newRange = length/2.0;
-				
+
 			double x = building.getXLocation();
 			double y = building.getYLocation();
-			
+
 			double distanceX = x - settlementPosition.getX();
 			double distanceY = y - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= newRange) {				
+			if (distance <= newRange) {
 				selectedBuilding = building;
 			}
 			//i++;
 		}
 		return selectedBuilding;
 	}
-	
+
 	// 2014-11-22 Added returnBuildingList
 	public static List<Building> returnBuildingList(Settlement settlement) {
 
@@ -466,7 +466,7 @@ implements ClockListener {
 
 
 	/**
-	 * Selects a vehicle 
+	 * Selects a vehicle
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedVehicle
@@ -486,21 +486,21 @@ implements ClockListener {
 			if (width < length)
 				newRange =  width/2.0;
 			else newRange = length/2.0;
-				
+
 			double x = vehicle.getXLocation();
 			double y = vehicle.getYLocation();
-			
+
 			double distanceX = x - settlementPosition.getX();
 			double distanceY = y - settlementPosition.getY();
 			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= newRange) {					
+			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 			}
 			//i++;
 		}
 		return selectedVehicle;
 	}
-	
+
 	// // 2015-01-14 Added returnVehicleList()
 	public static List<Vehicle> returnVehicleList(Settlement settlement) {
 
@@ -514,7 +514,7 @@ implements ClockListener {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Selects a person on the map.
 	 * @param person the selected person.
@@ -680,7 +680,7 @@ implements ClockListener {
 		this.showVehicleLabels = showLabels;
 		repaint();
 	}
-	
+
 
 	/**
 	 * Checks if DayNightLayer should be displayed.
@@ -723,7 +723,7 @@ implements ClockListener {
 //		double timeDiff = (endTime - startTime) / 1000000D;
 //		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 	}
-	
+
 	/**
 	 * Cleans up the map panel for disposal.
 	 */

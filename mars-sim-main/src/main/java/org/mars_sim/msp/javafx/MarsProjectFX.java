@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project 
+ * Mars Simulation Project
  * MarsProjectFX.java
  * @version 3.08 2015-03-26
  * @author Manny Kung
@@ -35,7 +35,7 @@ public class MarsProjectFX extends Application  {
     private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
     static String[] args;
-    
+
     /** true if displaying graphic user interface. */
     private boolean useGUI = true;
 
@@ -49,60 +49,61 @@ public class MarsProjectFX extends Application  {
     /**
      * Constructor
      * @param args command line arguments.
-     */ 
+     */
 
 	public void start(Stage primaryStage) {
 
 		//this.primaryStage = primaryStage;
-		
-		
+
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
         System.out.println(javaCompiler.toString());
-         
+
         Set<SourceVersion> sourceVersion;
         sourceVersion = javaCompiler.getSourceVersions();
-         
+
         for (SourceVersion version : sourceVersion) {
             System.out.print(version.name() + "\n");
         }
-        
+
         System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
         */
-        
+
         logger.info("Starting " + Simulation.WINDOW_TITLE);
-    
-        setLogging();  
-        setDirectory(); 
-           	
+
+        setLogging();
+        setDirectory();
+
         argList = Arrays.asList(args);
         useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
-        
+
         if (useGUI) {
-        	// Enable capability of loading of svg image using regular method 
+    		System.setProperty("sun.java2d.opengl", "true");
+    		System.setProperty("sun.java2d.ddforcevram", "true");
+        	// Enable capability of loading of svg image using regular method
     		SvgImageLoaderFactory.install();
 	        mainMenu = new MainMenu(this, args, primaryStage, true);
 	    }
-        
+
 	    else {
 	        // Initialize the simulation.
-	        initializeSimulation(args);        
+	        initializeSimulation(args);
 	        // Start the simulation.
 	        startSimulation();
 	    }
-	    
+
 	    // this will generate html files for in-game help based on config xml files
 	    if (generateHelp) {
 	    	HelpGenerator.generateHtmlHelpFiles();
 	    }
-	    
+
 	}
-    
+
 	public List<String> getArgList() {
-		return argList; 
+		return argList;
 	}
-	
+
     /**
      * Initialize the simulation.
      * @param args the command arguments.
@@ -110,7 +111,7 @@ public class MarsProjectFX extends Application  {
      */
     boolean initializeSimulation(String[] args) {
         boolean result = false;
-        
+
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
@@ -137,7 +138,7 @@ public class MarsProjectFX extends Application  {
                 result = true;
             }
         }
-        
+
         return result;
     }
 
@@ -148,13 +149,13 @@ public class MarsProjectFX extends Application  {
      */
     boolean initializeNewSimulation() {
         boolean result = false;
-        
+
             handleNewSimulation(); // if this fails we always exit, continuing is useless
             result = true;
-        
+
         return result;
     }
-    
+
     /**
      * Exit the simulation with an error message.
      * @param message the error message.
@@ -177,7 +178,7 @@ public class MarsProjectFX extends Application  {
         else {
             logger.log(Level.SEVERE, message);
         }
-        
+
         if (useGUI) {
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -202,7 +203,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the default saved simulation.
      */
     void handleLoadDefaultSavedSimulation() {
-    	try {   		
+    	try {
     		List<String> argList = new ArrayList<String>(1);
     		argList.add("-load");
 			handleLoadSimulation(argList);
@@ -211,7 +212,7 @@ public class MarsProjectFX extends Application  {
 			e.printStackTrace();
 		}
     }
-    
+
     /**
      * Loads the simulation from a save file.
      * @param argList the command argument list.
@@ -224,11 +225,11 @@ public class MarsProjectFX extends Application  {
             File loadFile = new File(argList.get(index + 1));
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
-                
-                
+
+
             } else {
-                exitWithError("Problem loading simulation. " + argList.get(index + 1) + 
-                        " not found.", null); 
+                exitWithError("Problem loading simulation. " + argList.get(index + 1) +
+                        " not found.", null);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -244,9 +245,9 @@ public class MarsProjectFX extends Application  {
             SimulationConfig.loadConfig();
             if (useGUI) {
             	// note: cannot load editor in macosx if it was a JDialog
-                ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, 
+                ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu,
                         SimulationConfig.instance());
-               
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,12 +262,12 @@ public class MarsProjectFX extends Application  {
         // Start the simulation.
         Simulation.instance().start();
     }
-    
+
     public void setDirectory() {
         new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
     }
-    
-    
+
+
     public void setLogging() {
 
         try {
@@ -280,8 +281,8 @@ public class MarsProjectFX extends Application  {
             }
         }
     }
-    
-    public static void main(String[] args) {    	
+
+    public static void main(String[] args) {
     	MarsProjectFX.args = args;
         launch(args);
     }

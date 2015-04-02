@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project 
+ * Mars Simulation Project
  * MarsProject.java
  * @version 3.08 2015-03-26
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
@@ -37,72 +38,76 @@ public class MarsProject {
 
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProject.class.getName());
-    
+
     /** true if displaying graphic user interface. */
     private boolean useGUI = true;
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
 
-	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon 
+	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon
     private Image img;
     private final static String IMAGE_DIR = "/images/";
-    
+
     /**
      * Constructor 1.
      * @param args command line arguments.
      */
     public MarsProject(String args[]) {
 
-        logger.info("Starting Mars Simulation");
-        
+        logger.info("Starting " + Simulation.WINDOW_TITLE);
+
         init(args);
 
     }
 
     public void init(String args[]) {
-    	
+
         List<String> argList = Arrays.asList(args);
         useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
-        
+
         if (useGUI) {
+    		System.setProperty("sun.java2d.opengl", "true");
+    		System.setProperty("sun.java2d.ddforcevram", "true");
+        	// Enable capability of loading of svg image using regular method
+    		SvgImageLoaderFactory.install();
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
-            
+
             showSplashScreen(splashWindow);
-            
+
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
             //MainWindow mw = new MainWindow(true);
-            //mw.getFrame().setVisible(true);  
+            //mw.getFrame().setVisible(true);
        		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
 			//mw.getFrame().setIconImage(img);
-            
+
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-	          
+
             // Start simulation
             //startSimulation();
-        
+
             // Dispose the splash window.
             splashWindow.remove();
         }
         else {
             // Initialize the simulation.
             initializeSimulation(args);
-            
+
             // Start the simulation.
             startSimulation();
         }
-        
+
         // this will generate html files for in-game help based on config xml files
         if (generateHelp) {
         	HelpGenerator.generateHtmlHelpFiles();
         }
-        
+
     }
-    
+
     public void showSplashScreen(SplashWindow splashWindow) {
 
    		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
@@ -113,12 +118,12 @@ public class MarsProject {
         URL resource = ImageLoader.class.getResource(fileName);
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		img = kit.createImage(resource);
-		splashWindow.getJFrame().setIconImage(img);			
+		splashWindow.getJFrame().setIconImage(img);
         splashWindow.display();
         splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
     }
-    
-    
+
+
     /**
      * Initialize the simulation.
      * @param args the command arguments.
@@ -126,7 +131,7 @@ public class MarsProject {
      */
     boolean initializeSimulation(String[] args) {
         boolean result = false;
-        
+
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
@@ -153,7 +158,7 @@ public class MarsProject {
                 result = true;
             }
         }
-        
+
         return result;
     }
 
@@ -179,7 +184,7 @@ public class MarsProject {
         else {
             logger.log(Level.SEVERE, message);
         }
-        
+
         if (useGUI) {
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -212,8 +217,8 @@ public class MarsProject {
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
             } else {
-                exitWithError("Problem loading simulation. " + argList.get(index + 1) + 
-                        " not found.", null); 
+                exitWithError("Problem loading simulation. " + argList.get(index + 1) +
+                        " not found.", null);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -228,7 +233,7 @@ public class MarsProject {
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
-                SimulationConfigEditor editor = new SimulationConfigEditor( 
+                SimulationConfigEditor editor = new SimulationConfigEditor(
                         SimulationConfig.instance(), null);
 
          		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
@@ -270,9 +275,9 @@ public class MarsProject {
                 logger.log(Level.WARNING, "Could read logging default config", e);
             }
         }
-        
+
         // general text antialiasing
-        System.setProperty("swing.aatext", "true"); 
+        System.setProperty("swing.aatext", "true");
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
         // starting the simulation
