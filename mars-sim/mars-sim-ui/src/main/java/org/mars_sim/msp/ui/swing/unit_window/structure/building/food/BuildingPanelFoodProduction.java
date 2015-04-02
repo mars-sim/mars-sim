@@ -87,33 +87,33 @@ extends BuildingFunctionPanel {
 
 		// Initialize data model.
 		this.foodFactory = foodFactory;
-		
+
         // Set panel layout
         setLayout(new BorderLayout());
-        
+
         // Prepare label panel
         //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		        
+
         add(labelPanel, BorderLayout.NORTH);
-        
+
         // Prepare manufacturing label
         JLabel foodProductionLabel = new JLabel("Food Production", JLabel.CENTER);
         foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
         foodProductionLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPanel.add(foodProductionLabel);
-        
+
         // Prepare tech level label
         JLabel techLabel = new JLabel("Tech Level: " + foodFactory.getTechLevel(), JLabel.CENTER);
         labelPanel.add(techLabel);
-        
+
         // Prepare processCapacity label
         JLabel processCapacityLabel = new JLabel("Process Capacity: " + foodFactory.getConcurrentProcesses(), JLabel.CENTER);
         labelPanel.add(processCapacityLabel);
-        
+
         // Create scroll pane for food production processes
         scrollPanel = new JScrollPane();
         scrollPanel.setPreferredSize(new Dimension(170, 90));
@@ -124,36 +124,36 @@ extends BuildingFunctionPanel {
         scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
         scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
-		
+
         // Create process list main panel
         JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
         scrollPanel.setViewportView(processListMainPane);
         processListMainPane.setOpaque(false);
         processListMainPane.setBackground(new Color(0,0,0,128));
-		
+
         // Create process list panel
         processListPane = new JPanel();
         processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
         processListMainPane.add(processListPane, BorderLayout.NORTH);
         processListPane.setOpaque(false);
         processListPane.setBackground(new Color(0,0,0,128));
-		
+
         // Create process panels
         processCache = new ArrayList<FoodProductionProcess>(foodFactory.getProcesses());
         Iterator<FoodProductionProcess> i = processCache.iterator();
         while (i.hasNext()) processListPane.add(new FoodProductionPanel(i.next(), false, 23));
-        
+
         // Create salvage panels.
         //salvageCache = new ArrayList<SalvageProcess>(foodFactory.getSalvageProcesses());
         //Iterator<SalvageProcess> j = salvageCache.iterator();
         //while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, 23));
-        
+
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
         interactionPanel.setOpaque(false);
         interactionPanel.setBackground(new Color(0,0,0,128));
-		
+
         // Create new foodProduction process selection.
         processComboBoxCache = getAvailableProcesses();
         processComboBox = new JComboBoxMW(processComboBoxCache);
@@ -164,12 +164,12 @@ extends BuildingFunctionPanel {
         processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
         processComboBox.setToolTipText("Select An Available Food Production Process");
         interactionPanel.add(processComboBox);
-        
+
         // Add available salvage processes.
         //salvageSelectionCache = getAvailableSalvageProcesses();
         //Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
         //while (k.hasNext()) processComboBox.addItem(k.next());
-        
+
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setOpaque(false);
@@ -193,9 +193,9 @@ extends BuildingFunctionPanel {
         		        else if (selectedItem instanceof SalvageProcessInfo) {
         		            SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
         		            if (FoodProductionUtil.canSalvageProcessBeStarted(selectedSalvage, getFoodFactory())) {
-        		                Unit salvagedUnit = FoodProductionUtil.findUnitForSalvage(selectedSalvage, 
+        		                Unit salvagedUnit = FoodProductionUtil.findUnitForSalvage(selectedSalvage,
         		                        getFoodFactory().getBuilding().getBuildingManager().getSettlement());
-                                getFoodFactory().addSalvageProcess(new SalvageProcess(selectedSalvage, 
+                                getFoodFactory().addSalvageProcess(new SalvageProcess(selectedSalvage,
                                         getFoodFactory(), salvagedUnit));
                                 update();
                             }
@@ -210,22 +210,22 @@ extends BuildingFunctionPanel {
         });
         interactionPanel.add(newProcessButton);
 	}
-	
-	
+
+
 	@Override
 	public void update() {
-		
+
 		// Update processes and salvage processes if necessary.
 		List<FoodProductionProcess> processes = foodFactory.getProcesses();
 		//List<SalvageProcess> salvages = foodFactory.getSalvageProcesses();
 		//if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 		if (!processCache.equals(processes)) {
-			
+
 			// Add process panels for new processes.
 			Iterator<FoodProductionProcess> i = processes.iterator();
 			while (i.hasNext()) {
 				FoodProductionProcess process = i.next();
-				if (!processCache.contains(process)) 
+				if (!processCache.contains(process))
 					processListPane.add(new FoodProductionPanel(process, false, 23));
 					processListPane.setOpaque(false);
 					processListPane.setBackground(new Color(0,0,0,128));
@@ -262,14 +262,14 @@ extends BuildingFunctionPanel {
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
-			
+
 			// Update salvageCache
 			//salvageCache.clear();
 			//salvageCache.addAll(salvages);
-			
+
 			scrollPanel.validate();
 		}
-		
+
 		// Update all process panels.
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
@@ -289,7 +289,7 @@ extends BuildingFunctionPanel {
 		// Update process selection list.
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses();
 		//Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
-		//if (!newProcesses.equals(processComboBoxCache) || 
+		//if (!newProcesses.equals(processComboBoxCache) ||
 		 //       !newSalvages.equals(salvageSelectionCache)) {
 			if (!newProcesses.equals(processComboBoxCache)) {
 
@@ -297,23 +297,25 @@ extends BuildingFunctionPanel {
 			//salvageSelectionCache = newSalvages;
 			Object currentSelection = processComboBox.getSelectedItem();
 			processComboBox.removeAllItems();
-			
+
 			Iterator<FoodProductionProcessInfo> k = processComboBoxCache.iterator();
 			while (k.hasNext()) processComboBox.addItem(k.next());
-			
+			//processComboBoxCache.forEach(k -> processComboBox.addItem(k));
+
+
 			//Iterator<SalvageProcessInfo> l = salvageSelectionCache.iterator();
             //while (l.hasNext()) processComboBox.addItem(l.next());
-			
+
 			if (currentSelection != null) {
-				if (processComboBoxCache.contains(currentSelection)) 
+				if (processComboBoxCache.contains(currentSelection))
 					processComboBox.setSelectedItem(currentSelection);
 			}
 		}
-		
+
 		// Update new process button.
 		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
 	}
-	
+
 	/**
 	 * Gets the panel for a foodProduction process.
 	 * @param process the foodProduction process.
@@ -321,7 +323,7 @@ extends BuildingFunctionPanel {
 	 */
 	private FoodProductionPanel getFoodProductionPanel(FoodProductionProcess process) {
 		FoodProductionPanel result = null;
-		
+
 		for (int x = 0; x < processListPane.getComponentCount(); x++) {
 			Component component = processListPane.getComponent(x);
 			if (component instanceof FoodProductionPanel) {
@@ -331,18 +333,18 @@ extends BuildingFunctionPanel {
 				panel.setBackground(new Color(0,0,0,128));
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets the panel for a salvage process.
 	 * @param process the salvage process.
 	 * @return the salvage panel or null if none.
-	
+
 	private SalvagePanel getSalvagePanel(SalvageProcess process) {
 	    SalvagePanel result = null;
-        
+
         for (int x = 0; x < processListPane.getComponentCount(); x++) {
             Component component = processListPane.getComponent(x);
             if (component instanceof SalvagePanel) {
@@ -350,7 +352,7 @@ extends BuildingFunctionPanel {
                 if (panel.getSalvageProcess().equals(process)) result = panel;
             }
         }
-        
+
         return result;
 	}
 	 */
@@ -360,9 +362,9 @@ extends BuildingFunctionPanel {
 	 */
 	private Vector<FoodProductionProcessInfo> getAvailableProcesses() {
 		Vector<FoodProductionProcessInfo> result = new Vector<FoodProductionProcessInfo>();
-		
+
 		if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
-		    
+
 		    // Determine highest materials science skill level at settlement.
 		    Settlement settlement = foodFactory.getBuilding().getBuildingManager().getSettlement();
 		    int highestSkillLevel = 0;
@@ -375,30 +377,30 @@ extends BuildingFunctionPanel {
                     highestSkillLevel = skill;
                 }
             }
-		    
+
 			try {
 				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(
 				        FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
 				        foodFactory.getTechLevel(), highestSkillLevel)).iterator();
 				while (j.hasNext()) {
 					FoodProductionProcessInfo process = j.next();
-					if (FoodProductionUtil.canProcessBeStarted(process, foodFactory)) 
+					if (FoodProductionUtil.canProcessBeStarted(process, foodFactory))
 						result.add(process);
 				}
 			}
 			catch (Exception e) {}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets all salvage processes available at the foodFactory.
 	 * @return vector of salvage processes.
-	 
+
 	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
 	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
-	    
+
 	    if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
             try {
                 Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
@@ -412,7 +414,7 @@ extends BuildingFunctionPanel {
             }
             catch (Exception e) {}
 	    }
-	    
+
 	    return result;
 	}
 	*/
@@ -423,16 +425,16 @@ extends BuildingFunctionPanel {
 	private FoodProduction getFoodFactory() {
 		return foodFactory;
 	}
-	
+
 	/**
 	 * Inner class for the foodProduction selection list cell renderer.
 	 */
 	private static class FoodProductionSelectionListCellRenderer extends DefaultListCellRenderer {
-		
+
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, 
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index,
 				boolean isSelected, boolean cellHasFocus) {
-			Component result = super.getListCellRendererComponent(list, value, index, isSelected, 
+			Component result = super.getListCellRendererComponent(list, value, index, isSelected,
 					cellHasFocus);
 			if (value instanceof FoodProductionProcessInfo) {
 			    FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;

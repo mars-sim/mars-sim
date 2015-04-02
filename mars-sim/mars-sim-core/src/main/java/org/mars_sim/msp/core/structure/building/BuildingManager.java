@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-04-02
  * @author Scott Davis
  */
 
@@ -82,21 +82,20 @@ public class BuildingManager implements Serializable {
 
     // Data members
     private Settlement settlement; // The manager's settlement.
-    private List<Building> buildings; 
+    private List<Building> buildings;
     // 2014-10-29 Added buildingsNickNames
     // A list of the settlement's buildings with their nicknames.
-    private List<Building> buildingsNickNames; 
-    
+    private List<Building> buildingsNickNames;
+
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private MarsClock lastBuildingValuesUpdateTime;
-    
+
     // 2014-12-23 Added resupply
     private Resupply resupply;
-    
-    //Person person = null;
-    //Robot robot = null;
-    
+
+    //private BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
 
     /**
      * Constructor to construct buildings from settlement config template.
@@ -130,7 +129,7 @@ public class BuildingManager implements Serializable {
         // Initialize building value caches.
         buildingValuesNewCache = new HashMap<String, Double>();
         buildingValuesOldCache = new HashMap<String, Double>();
-        
+
         // 2014-12-19 Added listeners
     	//listeners = Collections.synchronizedList(new ArrayList<BuildingListener>());
     }
@@ -144,7 +143,7 @@ public class BuildingManager implements Serializable {
         return settlement;
     }
 
- 
+
     /**
      * Adds a new building to the settlement.
      * @param newBuilding the building to add.
@@ -190,10 +189,10 @@ public class BuildingManager implements Serializable {
      * @param createBuildingConnections true if automatically create building connections.
      */
     public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-        Building newBuilding = new Building(template, this); 
+        Building newBuilding = new Building(template, this);
         addBuilding(newBuilding, createBuildingConnections);
     }
-    
+
     /**
      * Adds a building with a template to the settlement.
      * @param template the building template.
@@ -205,23 +204,22 @@ public class BuildingManager implements Serializable {
         this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
 		//System.out.println("BuildingManager.java : addBuilding() : isBuildingArrived is " + isBuildingArrived);
-        //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);            
+        //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);
     	//logger.info("addBuilding() : just fired PLACE_BUILDING_EVENT");
         addBuilding(newBuilding, createBuildingConnections);
         return newBuilding;
     }
-    
+
     // 2014-12-23 Added getResupply()
     public Resupply getResupply() {
     	return resupply;
     }
     // 2014-12-23 Added setResupply()
     public void setResupply(Resupply resupply) {
-    	this.resupply= resupply; 
+    	this.resupply= resupply;
     }
     /**
      * Gets the settlement's collection of buildings.
-     *
      * @return collection of buildings
      */
     public List<Building> getBuildings() {
@@ -230,14 +228,43 @@ public class BuildingManager implements Serializable {
 
     /**
      * Gets the settlement's collection of buildings (in their nicknames)
-     *
      * @return collection of buildings (in their nicknames)
      */
     public List<Building> getBuildingsNickNames() {
         return new ArrayList<Building>(buildingsNickNames);
     }
 
-  
+    /**
+     * Gets a list of settlement's buildings with thermal function
+     * @return list of buildings
+     */
+	//2015-04-02 Added getBuildingsWithThermal()
+    public List<Building> getBuildingsWithThermal() {
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+    	List<Building> buildings = getBuildings();
+    	List<Building> buildingsWithThermal = new ArrayList<Building>();
+
+/*    	Iterator<Building> i = buildings.iterator();
+		while (i.hasNext()) {
+			Building b = i.next();
+			String buildingType = b.getBuildingType();
+			//if (config.hasThermalGeneration(buildingType) && !buildingType.equals("Hallway") && !buildingType.equals("Tunnel") ) {
+			if (config.hasThermalGeneration(buildingType)) {
+				buildingsWithThermal.add(b);
+			}
+		}
+*/
+		// Using internal iterator in lambda expression
+    	buildings.forEach(b -> {
+			String buildingType = b.getBuildingType();
+			if (config.hasThermalGeneration(buildingType)) {
+				buildingsWithThermal.add(b);
+			}
+		});
+
+    	return buildingsWithThermal;
+    }
+
     /**
      * Checks if the settlement contains a given building.
      * @param building the building.
@@ -283,14 +310,14 @@ public class BuildingManager implements Serializable {
         }
         return functionBuildings;
     }
-    
+
     /**
      * Gets the buildings in a settlement have have all of a given array of functions.
      * @param functions the array of required functions {@link BuildingFunctions}.
      * @return list of buildings.
      */
     public List<Building> getBuildings(BuildingFunction[] functions) {
-        
+
         List<Building> functionBuildings = new ArrayList<Building>();
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
@@ -324,7 +351,7 @@ public class BuildingManager implements Serializable {
             // WARNING: do NOT change getName() below to getNickName()
             // It is for comparing buildingType
             if (building.getName().equalsIgnoreCase(buildingType)){
-            	typeOfBuildings.add(building);  
+            	typeOfBuildings.add(building);
                 	//System.out.println("BuildingManager.java : getBuildingsOfSameType() : buildingType is " +buildingType);
             }
         }
@@ -369,21 +396,21 @@ public class BuildingManager implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Gets a random building with an airlock.
      * @return random building.
      */
     public Building getRandomAirlockBuilding() {
-        
+
         Building result = null;
-        
+
         List<Building> evaBuildings = getBuildings(BuildingFunction.EVA);
         if (evaBuildings.size() > 0) {
             int buildingIndex = RandomUtil.getRandomInt(evaBuildings.size() - 1);
             result = evaBuildings.get(buildingIndex);
         }
-        
+
         return result;
     }
 
@@ -399,16 +426,16 @@ public class BuildingManager implements Serializable {
         Person person = null;
         Robot robot = null;
         if (unit instanceof Person) {
-         	person = (Person) unit;    	
+         	person = (Person) unit;
         }
 		else if (unit instanceof Robot) {
         	robot = (Robot) unit;
-			} 
+			}
         */
-        
+
         List<Building> habs = settlement.getBuildingManager().getBuildings(
                 new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
- 
+
         List<Building> goodHabs = getLeastCrowdedBuildings(habs);
 
         Building building = null;
@@ -433,13 +460,13 @@ public class BuildingManager implements Serializable {
         	//if (unit instanceof Person)
         		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
             //else if (unit instanceof Robot)
-          		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);           
+          		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
         }
         else {
             throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
         }
     }
-    
+
     /**
      * Adds a ground vehicle to a random ground vehicle maintenance building within a settlement.
      * @param vehicle the ground vehicle to add.
@@ -498,9 +525,9 @@ public class BuildingManager implements Serializable {
         Building result = null;
         Person person = null;
         Robot robot = null;
-        
+
         if (unit instanceof Person) {
-         	person = (Person) unit;    	
+         	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = person.getSettlement();
 	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
@@ -509,11 +536,11 @@ public class BuildingManager implements Serializable {
 	                try {
 	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 	                    if (lifeSupport.containsOccupant(person)) {
-	                        if (result == null) { 
+	                        if (result == null) {
 	                            result = building;
 	                        }
 	                        else {
-	                            throw new IllegalStateException(person + " is located in more than one building: " + result + 
+	                            throw new IllegalStateException(person + " is located in more than one building: " + result +
 	                                    " and " + building);
 	                        }
 	                    }
@@ -534,11 +561,11 @@ public class BuildingManager implements Serializable {
 	                try {
 	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 	                    if (lifeSupport.containsRobotOccupant(robot)) {
-	                        if (result == null) { 
+	                        if (result == null) {
 	                            result = building;
 	                        }
 	                        else {
-	                            throw new IllegalStateException(robot + " is located in more than one building: " + result + 
+	                            throw new IllegalStateException(robot + " is located in more than one building: " + result +
 	                                    " and " + building);
 	                        }
 	                    }
@@ -551,12 +578,12 @@ public class BuildingManager implements Serializable {
         }
         return result;
     }
-    
+
     /**
      * Check what building a given local settlement position is within.
      * @param xLoc the local X position.
      * @param yLoc the local Y position.
-     * @return building the position is within, or null if the position is not 
+     * @return building the position is within, or null if the position is not
      * within any building.
      */
     public Building getBuildingAtPosition(double xLoc, double yLoc) {
@@ -629,7 +656,7 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets a map of buildings and their probabilities for being chosen based on the best relationships 
+     * Gets a map of buildings and their probabilities for being chosen based on the best relationships
      * for a given person from a list of buildings.
      * @param person the person to check for.
      * @param buildingList the list of buildings to filter.
@@ -637,7 +664,7 @@ public class BuildingManager implements Serializable {
      */
     public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
         Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();	
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
         // Determine probabilities based on relationships in buildings.
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
@@ -694,7 +721,7 @@ public class BuildingManager implements Serializable {
         List<Building> result = new ArrayList<Building>();
         Person person = null;
         Robot robot = null;
-        
+
         if (unit instanceof Person) {
          	person = (Person) unit;
             Building currentBuilding = BuildingManager.getBuilding(person);
@@ -705,8 +732,8 @@ public class BuildingManager implements Serializable {
                 while (i.hasNext()) {
                     Building building = i.next();
 
-                    InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding, 
-                            currentBuilding.getXLocation(), currentBuilding.getYLocation(), building, 
+                    InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
+                            currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
                             building.getXLocation(), building.getYLocation());
 
                     if (validPath != null) {
@@ -716,19 +743,19 @@ public class BuildingManager implements Serializable {
             }
         }
         else if (unit instanceof Robot) {
-        	robot = (Robot) unit; 
+        	robot = (Robot) unit;
 	        Building currentBuilding = BuildingManager.getBuilding(robot);
 	        if (currentBuilding != null) {
 	            BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
-	
+
 	            Iterator<Building> i = buildingList.iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
-	
-	                InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding, 
-	                        currentBuilding.getXLocation(), currentBuilding.getYLocation(), building, 
+
+	                InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
+	                        currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
 	                        building.getXLocation(), building.getYLocation());
-	
+
 	                if (validPath != null) {
 	                    result.add(building);
 	                }
@@ -747,22 +774,22 @@ public class BuildingManager implements Serializable {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                
+
                 if (unit instanceof Person) {
                  	Person person = (Person) unit;
-                 	
+
 	                if (!lifeSupport.containsOccupant(person)) {
-	                    lifeSupport.addPerson(person); 
+	                    lifeSupport.addPerson(person);
 	                }
                 }
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                 	
+
 	                if (!lifeSupport.containsRobotOccupant(robot)) {
-	                    lifeSupport.addRobot(robot); 
+	                    lifeSupport.addRobot(robot);
 	                }
                 }
-                
+
             }
             catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
@@ -780,7 +807,7 @@ public class BuildingManager implements Serializable {
         if (building != null) {
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
-                throw new IllegalArgumentException(building.getNickName() + " does not contain location x: " + 
+                throw new IllegalArgumentException(building.getNickName() + " does not contain location x: " +
                         xLocation + ", y: " + yLocation);
             }
             LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -788,26 +815,26 @@ public class BuildingManager implements Serializable {
             try {
             	 if (unit instanceof Person) {
                  	Person person = (Person) unit;
-	            	
+
 	                if (!lifeSupport.containsOccupant(person)) {
-	                    lifeSupport.addPerson(person); 
+	                    lifeSupport.addPerson(person);
 	                }
-	
+
 	                person.setXLocation(xLocation);
 	                person.setYLocation(yLocation);
             	 }
             	 else if (unit instanceof Robot) {
                  	Robot robot = (Robot) unit;
-                 	
+
                  	if (lifeSupport.containsRobotOccupant(robot)) {
- 	                    lifeSupport.addRobot(robot); 
+ 	                    lifeSupport.addRobot(robot);
  	                }
                  	robot.setXLocation(xLocation);
                  	robot.setYLocation(yLocation);
-         		
+
                  }
-            	 
-            	 
+
+
 	        }	catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
             }
@@ -826,32 +853,32 @@ public class BuildingManager implements Serializable {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
- 
+
                 // Add person to random location within building.
                 // TODO: Modify this when implementing active locations in buildings.
                 Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
                         buildingLoc.getY(), building);
-                
+
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
                 	if (!lifeSupport.containsOccupant(person)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(person) is true");
-                		lifeSupport.addPerson(person); 
+                		lifeSupport.addPerson(person);
                 	}
                 	person.setXLocation(settlementLoc.getX());
                 	person.setYLocation(settlementLoc.getY());
                 }
-                
+
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
                 	if (!lifeSupport.containsRobotOccupant(robot)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(robot) is true");
-	                    lifeSupport.addRobot(robot); 
+	                    lifeSupport.addRobot(robot);
 	                }
                 	robot.setXLocation(settlementLoc.getX());
                 	robot.setYLocation(settlementLoc.getY());
-        		
+
                 }
             }
             catch (Exception e) {
@@ -872,23 +899,23 @@ public class BuildingManager implements Serializable {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                
+
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
-                	
+
 	                if (lifeSupport.containsOccupant(person)) {
-	                    lifeSupport.removePerson(person); 
+	                    lifeSupport.removePerson(person);
 	                }
                 }
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
                 	if (lifeSupport.containsRobotOccupant(robot)) {
-	                    lifeSupport.removeRobot(robot); 
+	                    lifeSupport.removeRobot(robot);
 	                }
-        		
+
                 }
-                
-                
+
+
             }
             catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.removePersonOrRobotFromBuilding(): " + e.getMessage());
@@ -912,7 +939,7 @@ public class BuildingManager implements Serializable {
 
         // Update building values cache once per Sol.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        if ((lastBuildingValuesUpdateTime == null) || 
+        if ((lastBuildingValuesUpdateTime == null) ||
                 (MarsClock.getTimeDiff(currentTime, lastBuildingValuesUpdateTime) > 1000D)) {
             buildingValuesNewCache.clear();
             buildingValuesOldCache.clear();
@@ -935,7 +962,7 @@ public class BuildingManager implements Serializable {
             if (config.hasCooking(buildingType)) {
                 result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
                 // 2014-11-06 Added MakingSoy
-                result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);                
+                result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
             }
             if (config.hasDining(buildingType))
                 result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
@@ -946,12 +973,12 @@ public class BuildingManager implements Serializable {
             if (config.hasFarming(buildingType))
                 result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
           //2014-11-24 Added FoodProduction
-            if (config.hasFoodProduction(buildingType)) 
+            if (config.hasFoodProduction(buildingType))
                 result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasGroundVehicleMaintenance(buildingType))
                 result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
             //2014-10-17 Added the effect of heating requirement
-            if (config.hasThermalGeneration(buildingType)) 
+            if (config.hasThermalGeneration(buildingType))
                 result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
             //if (config.hasThermalStorage(buildingType))
             //    result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
@@ -963,7 +990,7 @@ public class BuildingManager implements Serializable {
                 result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasMedicalCare(buildingType))
                 result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasPowerGeneration(buildingType)) 
+            if (config.hasPowerGeneration(buildingType))
                 result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasPowerStorage(buildingType))
                 result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
@@ -985,12 +1012,12 @@ public class BuildingManager implements Serializable {
                 result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
             if (config.hasAdministration(buildingType))
                 result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
-    		if (config.hasRoboticStation(buildingType)) 
+    		if (config.hasRoboticStation(buildingType))
                 result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
-            
+
             // Multiply value.
             result *= 1000D;
-    
+
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingType);
             double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
@@ -1000,7 +1027,7 @@ public class BuildingManager implements Serializable {
 
             if (result < 0D) result = 0D;
 
-            // Check if a new non-constructable building has a frame that already exists at the settlement. 
+            // Check if a new non-constructable building has a frame that already exists at the settlement.
             if (newBuilding) {
                 ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingType);
                 if (buildingConstInfo != null) {
@@ -1038,7 +1065,7 @@ public class BuildingManager implements Serializable {
         double result = 0D;
         // 2014-10-29 TODO: Should we change getName() to getNickName()?
         result = getBuildingValue(building.getBuildingType(), false);
-        
+
         // Modify building value by its wear condition.
         double wearCondition = building.getMalfunctionManager().getWearCondition();
         result *= (wearCondition / 100D) * .75D + .25D;
@@ -1049,7 +1076,7 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Checks if a new building's proposed location is open or intersects with existing 
+     * Checks if a new building's proposed location is open or intersects with existing
      * buildings or construction sites.
      * @param xLoc the new building's X location.
      * @param yLoc the new building's Y location.
@@ -1058,13 +1085,13 @@ public class BuildingManager implements Serializable {
      * @param facing the new building's facing (degrees clockwise from North).
      * @return true if new building location is open.
      */
-    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc, 
+    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc,
             double width, double length, double facing) {
         return checkIfNewBuildingLocationOpen(xLoc, yLoc, width, length, facing, null);
     }
 
     /**
-     * Checks if a new building's proposed location is open or intersects with existing 
+     * Checks if a new building's proposed location is open or intersects with existing
      * buildings or construction sites.
      * @param xLoc the new building's X location.
      * @param yLoc the new building's Y location.
@@ -1074,11 +1101,11 @@ public class BuildingManager implements Serializable {
      * @param site the new construction site or null if none.
      * @return true if new building location is open.
      */
-    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc, 
+    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc,
             double width, double length, double facing, ConstructionSite site) {
         boolean goodLocation = true;
 
-        goodLocation = LocalAreaUtil.checkObjectCollision(site, width, length, 
+        goodLocation = LocalAreaUtil.checkObjectCollision(site, width, length,
                 xLoc, yLoc, facing, settlement.getCoordinates());
 
         return goodLocation;
@@ -1150,24 +1177,24 @@ public class BuildingManager implements Serializable {
     }
     /**
      * Gets a unique nick name for a new building
-     * @return a unique nick name 
+     * @return a unique nick name
      */
     // 2014-10-29 Added getBuildingNickName()
     public String getBuildingNickName(String buildingType) {
       	int bid = getUniqueBuildingIDNumber();
-    	int sid = getSettlement().getID();    	
+    	int sid = getSettlement().getID();
     	String settlementID = getCharForNumber(sid + 1);
-		String buildingID = bid + "";		
+		String buildingID = bid + "";
 		String buildingNickName = buildingType + " " + settlementID + buildingID;
     	return buildingNickName;
     }
-    
+
 	// 2014-10-29 Added getCharForNumber()
 	private String getCharForNumber(int i) {
 		// NOTE: i must be > 1, if i = 0, return null
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
-	
+
 
     /**
      * Prepare object for garbage collection.

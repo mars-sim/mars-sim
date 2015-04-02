@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @version 3.07 2014-12-01
+ * @version 3.08 2015-04-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -40,7 +40,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * This is a tab panel for settlement's Thermal System .
  */
 public class TabPanelThermalSystem
@@ -84,7 +84,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelThermalSystem(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelThermalSystem(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
 		super(
@@ -116,7 +116,7 @@ extends TabPanel {
 		heatGenCapacityCache = thermalSystem.getGeneratedHeat();
 		heatGenCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGenCapacity", formatter.format(heatGenCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
 		heatInfoPanel.add(heatGenCapacityLabel);
-		
+
 		// Prepare heat storage capacity label.
 		//thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
 		//thermalStorageCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.heatStorageCapacity", formatter.format(thermalStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
@@ -137,7 +137,7 @@ extends TabPanel {
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
 		// Prepare thermal control table.
-		JTable heatTable = new JTable(heatTableModel);	
+		JTable heatTable = new JTable(heatTableModel);
 		heatScrollPane.setViewportView(heatTable);
 		heatTable.setCellSelectionEnabled(false);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
@@ -150,7 +150,7 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
+
 
 	}
 
@@ -159,10 +159,10 @@ extends TabPanel {
 	 */
 	public void update() {
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();		
+		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
 		// Check if the old heatGenCapacityCache is different from the latest .
 		if (heatGenCapacityCache != thermalSystem.getGeneratedHeat()) {
-				heatGenCapacityCache = thermalSystem.getGeneratedHeat();		
+				heatGenCapacityCache = thermalSystem.getGeneratedHeat();
 			heatGenCapacityLabel.setText(
 				Msg.getString(
 					"TabPanelThermalSystem.totalHeatGenCapacity", //$NON-NLS-1$
@@ -170,8 +170,8 @@ extends TabPanel {
 				)
 			);
 		}
-				
-		// CANNOT USE thermalSystem class to compute the individual building heat usage 
+
+		// CANNOT USE thermalSystem class to compute the individual building heat usage
 		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
 		// Update heat Gen label.
 
@@ -198,7 +198,7 @@ extends TabPanel {
 		heatTableModel.update();
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the thermal control table.
 	 */
 	private static class HeatTableModel extends AbstractTableModel {
@@ -208,7 +208,7 @@ extends TabPanel {
 
 		private Settlement settlement;
 		// Make sure it's from java.util.List, not java.awt.List
-		private List<Building> buildings; // java.util.List, not java.awt.List
+		//private List<Building> buildings; // java.util.List, not java.awt.List
 		private List<Building> buildingsWithThermal = new ArrayList<Building>();;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
@@ -217,33 +217,25 @@ extends TabPanel {
 
 		private HeatTableModel(Settlement settlement) {
 			this.settlement = settlement;
-			
+
 			//2014-11-02 Included only buildings having Thermal control system
-			selectBuildings();
-			
+			selectBuildingsWithThermal();
+
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
 		}
-		
-		//2014-11-02 Created selectBuildings(). Included only buildings having Thermal control system
-		public void selectBuildings() {
-				BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			buildings = settlement.getBuildingManager().getBuildings();
-			Iterator<Building> i = buildings.iterator();
-			buildingsWithThermal.removeAll(buildingsWithThermal);
 
-			//n = 0;
-			while (i.hasNext()) {
-				Building b = i.next();
-				String buildingType = b.getBuildingType();
-				if (config.hasThermalGeneration(buildingType) && !buildingType.equals("Hallway") && !buildingType.equals("Tunnel") ) {
-					buildingsWithThermal.add(b);
-				}
-			}
-	
+		//2015-04-02 Revised selectBuildingsWithThermal()
+		public void selectBuildingsWithThermal() {
+			List<Building> buildings = settlement.getBuildingManager().getBuildingsWithThermal();
+			// use of arraylist.removeAll(arraylist) vs. arraylist.clear()
+			//buildingsWithThermal.removeAll(buildingsWithThermal);
+
+			//buildingsWithThermal.clear();
+			buildingsWithThermal = buildings;
 		}
-		
+
 		//2014-11-02 Included only buildings having Thermal control system
 		public int getRowCount() {
 			return buildingsWithThermal.size();
@@ -277,12 +269,12 @@ extends TabPanel {
 
 			Building building = buildingsWithThermal.get(row);
 			HeatMode heatMode = building.getHeatMode();
-			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			
+			//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
 			// if the building has thermal control system, display columns
-			if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {	
+			if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 				if (column == 0) {
-					if (heatMode == HeatMode.FULL_POWER) { 
+					if (heatMode == HeatMode.FULL_POWER) {
 						return dotGreen;
 					}
 					else if (heatMode == HeatMode.POWER_DOWN) {
@@ -306,40 +298,41 @@ extends TabPanel {
 					}
 					return generatedCapacity;
 				}
-				
+
 				else if (column == 3) {
 					double generated = 0D;
 					if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
-						
-						if (heatMode == HeatMode.FULL_POWER) { 
+
+						if (heatMode == HeatMode.FULL_POWER) {
 							try {
 								ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 								generated = heater.getGeneratedHeat();
 							}
-							catch (Exception e) {}	
+							catch (Exception e) {}
 								return generated;
-							
-						} 
+
+						}
 						else if (heatMode == HeatMode.POWER_DOWN) {
 							return generated;
 						}
 					}
-	
-				} 
-				else if (column == 2) 
+
+				}
+				else if (column == 2)
 					// return temperature of the building;
-					return building.getTemperature();		
+					return building.getTemperature();
 			}
 			return null;
 		}
 
 		public void update() {
 			//2014-11-02 Included only buildings having Thermal control system
-			List<Building> cache = buildingsWithThermal;
-			selectBuildings();
-			//buildingsWithThermal just got updated
-			if (!buildingsWithThermal.equals(cache)) 
-				buildingsWithThermal = cache;
+			//List<Building> buildingsCache = new ArrayList<>(buildingsWithThermal);
+			// update the list of buildings with thermal
+			selectBuildingsWithThermal();
+			// Note: buildingsWithThermal just got updated with a new list of buildings with thermal
+			//if (!buildingsWithThermal.equals(buildingsCache))
+			//	buildingsCache = buildingsWithThermal;
 			fireTableDataChanged();
 		}
 	}
