@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -52,7 +50,7 @@ implements VehicleOperator, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     /* default logger. */
-	private static transient Logger logger = Logger.getLogger(Person.class.getName());   
+	private static transient Logger logger = Logger.getLogger(Person.class.getName());
     /** The base carrying capacity (kg) of a person. */
     private final static double BASE_CAPACITY = 60D;
 
@@ -69,14 +67,14 @@ implements VehicleOperator, Serializable {
     private String birthplace;
     /** The person's name. */
     private String name;
-    
+
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
-    
+
     private org.mars_sim.msp.core.LifeSupport support;
-    
+
     /** The gender of the person (male or female). */
-    private PersonGender gender;   
+    private PersonGender gender;
     /** The birth time of the person. */
     private EarthClock birthTimeStamp;
     /** The settlement the person is currently associated with. */
@@ -92,9 +90,9 @@ implements VehicleOperator, Serializable {
     private PreparingDessert kitchenWithDessert;
     private PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     private Favorite favorite;
-    private TaskSchedule taskSchedule;   
+    private TaskSchedule taskSchedule;
     private JobHistory jobHistory;
-    
+
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -114,23 +112,23 @@ implements VehicleOperator, Serializable {
         this.gender = gender;
         this.birthplace = birthplace;
         this.associatedSettlement = settlement;
-        
+
         String timeString = createTimeString();
-        
+
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
-        
+
         // 2015-02-27 Added JobHistory
-        jobHistory = new JobHistory(this); 
-        
+        jobHistory = new JobHistory(this);
+
         mind = new Mind(this);
         isBuried = false;
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<ScienceType, Double>(0);
-         
+
         // 2015-02-27 Added Favorite class
         favorite = new Favorite(this);
-        
+
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
 
@@ -149,7 +147,7 @@ implements VehicleOperator, Serializable {
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-        
+
         support = getLifeSupport();
 
     }
@@ -158,21 +156,21 @@ implements VehicleOperator, Serializable {
     public JobHistory getJobHistory() {
     	return jobHistory;
     }
-    
+
     /**
      * Gets the instance of Favorite for a person.
      */
     public Favorite getFavorite() {
     	return favorite;
     }
- 
+
     /**
      * Gets the instance of the task schedule for a person.
-     */    
+     */
     public TaskSchedule getTaskSchedule() {
     	return taskSchedule;
     }
-    
+
     /**
      * Create a string representing the birth time of the person.
      * @return birth time string.
@@ -196,12 +194,12 @@ implements VehicleOperator, Serializable {
                 day = RandomUtil.getRandomInt(29) + 1;
             }
         }
-        // TODO: find out why sometimes day = 0 as seen on 
+        // TODO: find out why sometimes day = 0 as seen on
         if (day == 0) {
         	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
         	day = 1;
         }
-        	
+
         int hour = RandomUtil.getRandomInt(23);
         int minute = RandomUtil.getRandomInt(59);
         int second = RandomUtil.getRandomInt(59);
@@ -273,7 +271,7 @@ implements VehicleOperator, Serializable {
 
     /**
      * Get vehicle person is in, null if person is not in vehicle
-     * 
+     *
      * @return the person's vehicle
      */
     public Vehicle getVehicle() {
@@ -331,7 +329,7 @@ implements VehicleOperator, Serializable {
 
                 // Mental changes with time passing.
                 mind.timePassing(time);
-            } 
+            }
             else {
                 // Person has died as a result of physical condition
                 setDead();
@@ -448,7 +446,7 @@ implements VehicleOperator, Serializable {
         else {
             Vehicle vehicle = getVehicle();
             if ((vehicle != null) && (vehicle instanceof LifeSupport)) {
-                
+
                 if (BuildingManager.getBuilding(vehicle) != null) {
                     lifeSupportUnits.add(vehicle.getSettlement());
                 }
@@ -495,8 +493,8 @@ implements VehicleOperator, Serializable {
             //System.out.println(this.getName() + " is calling consumeFood() in Person.java");
         	health.consumeFood(amount, getContainerUnit());
         }
-        else { 	// The person is in a settlement, a cookedMeal has been eaten 
-        		// no need to call health.consumeFood()   
+        else { 	// The person is in a settlement, a cookedMeal has been eaten
+        		// no need to call health.consumeFood()
             //health.consumeFood(amount);
         }
     }
@@ -504,7 +502,7 @@ implements VehicleOperator, Serializable {
     /**
      * Person consumes given amount of food.
      * @param amount the amount of food to consume (in kg)
-     * @param takeFromInv 
+     * @param takeFromInv
       */
     // 2014-11-28 Added consumeDessert()
     public void consumeDessert(double amount, boolean takeFromInv) {
@@ -514,12 +512,12 @@ implements VehicleOperator, Serializable {
             health.consumeDessert(amount, getContainerUnit());
         }
     }
-   
+
     /**
      * Person consumes given amount of water.
      * @param amount the amount of water to consume (in kg)
      * @param takeFromInv is water taken from local inventory?
-     
+
     //2014-11-06 ****NOT USED **** Added consumeWater()
     public void consumeLiquid(double amount, boolean takeFromInv) {
         if (takeFromInv) {
@@ -559,8 +557,8 @@ implements VehicleOperator, Serializable {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
                 if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport = 
-                            (org.mars_sim.msp.core.structure.building.function.LifeSupport) 
+                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport =
+                            (org.mars_sim.msp.core.structure.building.function.LifeSupport)
                             building.getFunction(BuildingFunction.LIFE_SUPPORT);
                     localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
                 }
@@ -654,8 +652,8 @@ implements VehicleOperator, Serializable {
         }
         scientificAchievement.put(science, achievementCredit);
     }
-    
-    
+
+
     public void setDiningBuilding(Building diningBuilding) {
     	this.diningBuilding = diningBuilding;
     }
@@ -663,7 +661,7 @@ implements VehicleOperator, Serializable {
     public Building getDiningBuilding() {
     	return diningBuilding;
     }
-    
+
     public void setKitchenWithMeal(Cooking kitchen) {
     	this.kitchenWithMeal = kitchen;
     }
@@ -671,9 +669,9 @@ implements VehicleOperator, Serializable {
     public Cooking getKitchenWithMeal() {
     	return kitchenWithMeal;
     }
-    
-    
-    
+
+
+
     public void setKitchenWithDessert(PreparingDessert kitchen) {
     	this.kitchenWithDessert = kitchen;
     }
@@ -681,7 +679,7 @@ implements VehicleOperator, Serializable {
     public PreparingDessert getKitchenWithDessert() {
     	return kitchenWithDessert;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();

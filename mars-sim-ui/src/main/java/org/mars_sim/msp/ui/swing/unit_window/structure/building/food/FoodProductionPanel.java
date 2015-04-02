@@ -32,12 +32,12 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * A panel showing information about a foodProduction process.
  */
 public class FoodProductionPanel extends JPanel {
-	
+
 	// Data members
 	private FoodProductionProcess process;
 	private BoundedRangeModel workBarModel;
 	private BoundedRangeModel timeBarModel;
-	
+
 	/**
 	 * Constructor
 	 * @param process the foodProduction process.
@@ -47,21 +47,21 @@ public class FoodProductionPanel extends JPanel {
 	public FoodProductionPanel(FoodProductionProcess process, boolean showBuilding, int processStringWidth) {
 		// Call JPanel constructor
 		super();
-		
+
 		// Initialize data members.
 		this.process = process;
-		
+
         // Set layout
 		if (showBuilding) setLayout(new GridLayout(4, 1, 0, 0));
 		else setLayout(new GridLayout(3, 1, 0, 0));
 
         // Set border
         setBorder(new MarsPanelBorder());
-        
+
         // Prepare name panel.
         JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
         add(namePane);
-        
+
         // Prepare cancel button.
         JButton cancelButton = new JButton(ImageLoader.getIcon("CancelSmall"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
@@ -73,9 +73,9 @@ public class FoodProductionPanel extends JPanel {
 //        		catch (BuildingException e) {}
 	        }
         });
-        cancelButton.setToolTipText("Cancel Food Production Process");
+        cancelButton.setToolTipText("Cancel his Food Production Process");
         namePane.add(cancelButton);
-        
+
         // Prepare name label.
         String name = process.getInfo().getName();
         if (name.length() > 0) {
@@ -94,42 +94,42 @@ public class FoodProductionPanel extends JPanel {
         	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
         	add(buildingNameLabel);
         }
-        
+
         // Prepare work panel.
         JPanel workPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(workPane);
-        
+
         // Prepare work label.
         JLabel workLabel = new JLabel("Work: ", JLabel.LEFT);
         workPane.add(workLabel);
-        
+
         // Prepare work progress bar.
         JProgressBar workBar = new JProgressBar();
         workBarModel = workBar.getModel();
         workBar.setStringPainted(true);
         workPane.add(workBar);
-        
+
         // Prepare time panel.
         JPanel timePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         add(timePane);
-        
+
         // Prepare time label.
         JLabel timeLabel = new JLabel("Time: ", JLabel.LEFT);
         timePane.add(timeLabel);
-        
+
         // Prepare time progress bar.
         JProgressBar timeBar = new JProgressBar();
         timeBarModel = timeBar.getModel();
         timeBar.setStringPainted(true);
         timePane.add(timeBar);
-        
+
         // Update progress bars.
         update();
-        
+
         // Add tooltip.
         setToolTipText(getToolTipString(process.getInfo(), process.getKitchen().getBuilding()));
 	}
-	
+
     /**
      * Updates the panel's information.
      */
@@ -140,7 +140,7 @@ public class FoodProductionPanel extends JPanel {
         int workProgress = 100;
         if (workTimeRequired > 0D) workProgress = (int) (100D * (workTimeRequired - workTimeRemaining) / workTimeRequired);
         workBarModel.setValue(workProgress);
-        
+
         // Update time progress bar.
         double timeRequired = process.getInfo().getProcessTimeRequired();
         double timeRemaining = process.getProcessTimeRemaining();
@@ -148,7 +148,7 @@ public class FoodProductionPanel extends JPanel {
         if (timeRequired > 0D) timeProgress = (int) (100D * (timeRequired - timeRemaining) / timeRequired);
         timeBarModel.setValue(timeProgress);
     }
-    
+
     /**
      * Gets the foodProduction process.
      * @return process
@@ -156,13 +156,13 @@ public class FoodProductionPanel extends JPanel {
     public FoodProductionProcess getFoodProductionProcess() {
     	return process;
     }
-    
+
     /**
      * Gets a tool tip string for a foodProduction process.
      * @param info the foodProduction process info.
      * @param building the foodProduction building (or null if none).
      */
-    // 2014-12-03 Updated tooltip formatting 
+    // 2014-12-03 Updated tooltip formatting
     public static String getToolTipString(FoodProductionProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
@@ -174,7 +174,7 @@ public class FoodProductionPanel extends JPanel {
         result.append("&emsp;&emsp;&emsp;Power Req : ").append(info.getPowerRequired()).append(" kW<br>");
         result.append("&emsp;&nbsp;Bldg Tech Req :&nbsp;Level ").append(info.getTechLevelRequired()).append("<br>");
         result.append("Cooking Skill Req :&nbsp;Level ").append(info.getSkillLevelRequired()).append("<br>");
-    	
+
     	// Add process inputs.
     	result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Inputs : ");
     	Iterator<FoodProductionProcessItem> i = info.getInputList().iterator();
@@ -186,7 +186,7 @@ public class FoodProductionPanel extends JPanel {
     		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
     		ii++;
     	}
-    	
+
     	// Add process outputs.
     	result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Outputs : ");
     	Iterator<FoodProductionProcessItem> j = info.getOutputList().iterator();
@@ -198,19 +198,19 @@ public class FoodProductionPanel extends JPanel {
     		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
     		jj++;
     	}
-    	
+
     	result.append("</html>");
-    	
+
     	return result.toString();
     }
-    
+
     /**
      * Gets a string representing an foodProduction process item amount.
      * @param item the foodProduction process item.
      * @return amount string.
      */
     private static String getItemAmountString(FoodProductionProcessItem item) {
-    	if (Type.AMOUNT_RESOURCE.equals(item.getType())) { 
+    	if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
 			return item.getAmount() + " kg";
     	}
 		else return Integer.toString((int) item.getAmount());

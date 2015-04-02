@@ -177,11 +177,13 @@ extends TabPanel {
     	// Create comboBoxModel
     	Collections.sort(solList, Collections.reverseOrder());
     	comboBoxModel = new DefaultComboBoxModel<Object>();
-		Iterator<Object> j = solList.iterator();
-		while (j.hasNext()) {
-			Object ii = j.next();
-	    	comboBoxModel.addElement(ii);
-		}
+		//Iterator<Object> j = solList.iterator();
+		//while (j.hasNext()) {
+		//	Object s = j.next();
+	    //	comboBoxModel.addElement(s);
+		//}
+    	// Using internal iterator in lambda expression
+		solList.forEach(s -> comboBoxModel.addElement(s));
 
 		// Create comboBox
 		comboBox = new JComboBoxMW<Object>(comboBoxModel);
@@ -273,11 +275,12 @@ extends TabPanel {
 	    	// Create comboBoxModel
 	    	Collections.sort(solList, Collections.reverseOrder());
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
-			Iterator<Object> j = solList.iterator();
-			while (j.hasNext()) {
-				Object ii = j.next();
-		    	newComboBoxModel.addElement(ii);
-			}
+			//Iterator<Object> j = solList.iterator();
+			//while (j.hasNext()) {
+			//	Object ii = j.next();
+		    //	newComboBoxModel.addElement(ii);
+			//}
+			solList.forEach(s -> newComboBoxModel.addElement(s));
 
 			// update comboBox.
 			comboBox.setModel(newComboBoxModel);

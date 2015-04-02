@@ -82,6 +82,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	// Data members
+	//private long waitTime;
+	//private long previousTime;
+	//private long currentTime;
+	//private long elapsedNanos;
+
 	private boolean isTransportingBuilding = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
@@ -95,13 +100,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private JLabel backgroundLabel;
 
 	/* The desktop update thread. */
+	private UpdateThread updateThread;
 	// 2015-04-01 Switched to using ThreadPoolExecutor
-	private UpdateThreadTask updateThreadTask;
+	//private UpdateThreadTask updateThreadTask;
 	private ToolWindowTask toolWindowTask;
 	private UnitWindowTask unitWindowTask;
-	private ThreadPoolExecutor threadPoolExecutor;
+	//private ThreadPoolExecutor threadPoolExecutor;
 	private ThreadPoolExecutor toolWindowExecutor;
 	private ThreadPoolExecutor unitWindowExecutor;
+	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
 	/** The sound player. */
 	private AudioPlayer soundPlayer;
@@ -148,12 +155,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
+
 		prepareToolWindows();
         //setupToolWindowExecutor();
+
 		// Prepare unit windows.
 		unitWindows = new ArrayList<UnitWindow>();
         //setupUnitWindowExecutor();
-
 
 		// Set background color to black
 		setBackground(Color.black);
@@ -180,18 +188,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 */
 
-
 		// Create update thread.
-/*
+
+		setupToolWindowTasks();
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
-*/
-		threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-        updateThreadTask = new UpdateThreadTask(this);
+		//threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        //updateThreadTask = new UpdateThreadTask(this);
         //System.out.println("Maximum threads inside pool " + executor.getMaximumPoolSize());
         //System.out.println("A new task has been added : " + updateThreadTask.getName());
-        threadPoolExecutor.execute(updateThreadTask);
+        //threadPoolExecutor.execute(updateThreadTask);
 
 		// 2014-12-26 Added prepareListeners
 		prepareListeners();
@@ -629,7 +636,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Have main window dispose of unit button
-		if (mainWindow !=null) mainWindow.disposeUnitButton(unit);
+		if (mainWindow != null) mainWindow.disposeUnitButton(unit);
 	}
 
 	/**
@@ -648,8 +655,61 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
+	/**
+	 * Internal class thread for update.
+	 */
+	private class UpdateThread extends Thread {
+
+		public static final long SLEEP_TIME = 1000; // 1 second.
+		MainDesktopPane desktop;
+		boolean run = false;
+
+		private UpdateThread(MainDesktopPane desktop) {
+			super(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+			this.desktop = desktop;
+		}
+
+		private void setRun(boolean run) {
+			this.run = run;
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				if (run) {
+					desktop.update();
+				}
+				try {
+					Thread.sleep(SLEEP_TIME);
+				} catch (InterruptedException e) {}
+			}
+		}
+	}
+/*
+	class UpdateThreadTask implements Runnable {
+		public static final long SLEEP_TIME = 1; // 1 second.
+		MainDesktopPane desktop;
+		private UpdateThreadTask(MainDesktopPane desktop) {
+			logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+			this.desktop = desktop;
+		}
+
+		@Override
+		public void run() {
+
+			while (!threadPoolExecutor.isTerminated()){
+				desktop.update();
+				repaint();
+			}
+
+			try {
+				TimeUnit.SECONDS.sleep(SLEEP_TIME);
+			} catch (InterruptedException e) {}
+		}
+	}
+*/
 	class UnitWindowTask implements Runnable {
-		//long SLEEP_TIME = 1;
+		//long SLEEP_TIME = 50;
 		UnitWindow unitWindow;
 
 		private UnitWindowTask(UnitWindow unitWindow) {
@@ -662,9 +722,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			try {
 				//while (!toolWindowExecutor.isTerminated()){
 					unitWindow.update();
-				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
+					//TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 				//}
-			} catch (ConcurrentModificationException e) {} //Exception e) {}
+			} catch (ConcurrentModificationException e) {} // Exception e) {} //
 		}
 	}
 
@@ -688,40 +748,65 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
-	private void setupToolWindowExecutor() {
-		// Update all tool windows.
+	private void setupToolWindowTasks() {
 		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
-		Iterator<ToolWindow> j = toolWindows.iterator();
-		while (j.hasNext()) {
-			toolWindowTask = new ToolWindowTask(j.next());
-            toolWindowExecutor.execute(toolWindowTask);
-        }
-        toolWindowExecutor.shutdown();
+		toolWindowTaskList = new ArrayList<>();
+		toolWindows.forEach(t -> {
+
+			toolWindowTask = new ToolWindowTask(t);
+			toolWindowTaskList.add(toolWindowTask);
+
+		});
 	}
 
-	private void setupUnitWindowExecutor() {
+	private void runToolWindowExecutor() {
+
+		if (toolWindowTaskList.isEmpty())
+			setupToolWindowTasks();
+
+		// run all tool window Tasks
+		toolWindowTaskList.forEach(t -> {
+			if ( !toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown() )
+				toolWindowExecutor.execute(t);
+		});
+	}
+
+	private void runUnitWindowExecutor() {
 		// Update all unit windows.
 		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
 		while (i1.hasNext()) {
 			unitWindowTask = new UnitWindowTask(i1.next());
-            unitWindowExecutor.execute(unitWindowTask);
+			if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
+				unitWindowExecutor.execute(unitWindowTask);
         }
-        unitWindowExecutor.shutdown();
+		if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 	}
 
 	/**
 	 * Update the desktop and all of its windows.
 	 */
 	private void update() {
-		// Update all unit windows.
-		setupUnitWindowExecutor();
-		// Update all tool windows.
-		setupToolWindowExecutor();
+		long SLEEP_TIME = 50;
 
 		// Update all unit windows.
+		runUnitWindowExecutor();
+
+
+		try {
+			TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Update all tool windows.
+		runToolWindowExecutor();
+
+
 
 /*
+        // Update all unit windows.
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
 		try {
 			while (i1.hasNext()) {
@@ -733,9 +818,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// unit windows are opened.
 		}
 
-
 		// Update all tool windows.
-
 		Iterator<ToolWindow> i2 = toolWindows.iterator();
 		try {
 			while (i2.hasNext()) {
@@ -746,17 +829,20 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Concurrent modifications exceptions may occur as
 			// unit windows are opened.
 		}
-		*/
+*/
 	}
 
 
 	public void clearDesktop() {
 		// Stop update thread.
-		//updateThread.setRun(false);
-        threadPoolExecutor.shutdown();
+		updateThread.setRun(false);
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+
+        //threadPoolExecutor.shutdown();
         if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+		toolWindowTaskList.clear();
 
 		// Give some time for the update thread to finish updating.
 		try {
@@ -791,16 +877,21 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Prepare tool windows
 		prepareToolWindows();
 
-		// Restart update thread.
-		//updateThread.setRun(true);
-        threadPoolExecutor.shutdown();
+		// Shut down update threads
+		updateThread.setRun(false);
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+        //threadPoolExecutor.shutdown();
         if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
-		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
-        threadPoolExecutor.execute(updateThreadTask);
+
+        // Restart update threads.
+        setupToolWindowTasks();
+		updateThread.setRun(true);
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+
+        //threadPoolExecutor.execute(updateThreadTask);
         //toolWindowExecutor.execute(toolWindowTask);
         //unitWindowExecutor.execute(unitWindowTask);
-		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 
 	}
 
@@ -852,60 +943,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return new Point(rX, rY);
 	}
 
-	/**
-	 * Internal class thread for update.
-
-	private class UpdateThread extends Thread {
-
-		public static final long SLEEP_TIME = 1000; // 1 second.
-		MainDesktopPane desktop;
-		boolean run = false;
-
-		private UpdateThread(MainDesktopPane desktop) {
-			super(Msg.getString("MainDesktopPane.thread.desktopUpdate")); //$NON-NLS-1$
-			this.desktop = desktop;
-		}
-
-		private void setRun(boolean run) {
-			this.run = run;
-		}
-
-		@Override
-		public void run() {
-			while (true) {
-				if (run) {
-					desktop.update();
-				}
-				try {
-					Thread.sleep(SLEEP_TIME);
-				} catch (InterruptedException e) {}
-			}
-		}
-	}
-	 */
-
-
-	class UpdateThreadTask implements Runnable {
-		public static final long SLEEP_TIME = 1; // 1 second.
-		MainDesktopPane desktop;
-
-		private UpdateThreadTask(MainDesktopPane desktop) {
-			logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
-			this.desktop = desktop;
-		}
-
-		@Override
-		public void run() {
-			try {
-				while (!threadPoolExecutor.isTerminated()){
-					desktop.update();
-					repaint();
-					//Thread.sleep(SLEEP_TIME);
-					TimeUnit.SECONDS.sleep(SLEEP_TIME);
-				}
-			} catch (InterruptedException e) {}
-		}
-	}
 
 	/**
 	 * Gets the sound player used by the desktop.
@@ -1173,6 +1210,23 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//repaint(); // raise some cpu util% but not too bad
 	}
 
-
+	public void destroy() {
+		updateThread = null;
+		//updateThreadTask = null;
+		toolWindowTask = null;
+		unitWindowTask = null;
+		//threadPoolExecutor = null;
+		toolWindowExecutor = null;
+		unitWindowExecutor = null;
+		soundPlayer = null;
+		announcementWindow = null;
+		settlementWindow = null;
+		building = null;
+		settlement = null;
+		transportWizard = null;
+		mgr = null;
+		mainWindow = null;
+		mainScene = null;
+	}
 
 }

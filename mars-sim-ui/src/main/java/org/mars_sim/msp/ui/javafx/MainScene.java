@@ -42,8 +42,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -113,7 +111,7 @@ public class MainScene {
     private NotificationPane notificationPane;
 
     private MainDesktopPane desktop;
-    private MainWindow mainWindow;
+    //private MainWindow mainWindow;
     private MainSceneMenu menuBar;
     private MarsNode marsNode;
 
@@ -862,10 +860,6 @@ public class MainScene {
 		return stage;
 	}
 
-	public MainWindow getMainWindow() {
-		return mainWindow;
-	}
-
 	private void createSwingNode(final SwingNode swingNode) {
 		desktop = new MainDesktopPane(this);
 		//mainWindow = new MainWindow(true, true);
@@ -943,5 +937,24 @@ public class MainScene {
 	//public void setMainMenu(MainMenu mainMenu) {
 	//	this.mainMenu = mainMenu;
 	//}
+
+
+	public void destroy() {
+		newSimThread = null;
+		loadSimThread = null;
+		saveSimThread = null;
+	    timeText = null;
+	    memUsedText = null;
+	    stage = null;
+	    swingTab = null;
+	    settlementTab = null;
+	    tp = null;
+	    timeline = null;
+	    notificationPane = null;
+	    desktop.destroy();
+	    desktop = null;
+	    menuBar = null;
+	    marsNode = null;
+	}
 
 }

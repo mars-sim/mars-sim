@@ -264,6 +264,7 @@ implements ActionListener {
 							// gets selectedJob by running through iterator to match it
 					        selectedJob = job;
 					}
+
 					person.getMind().setJob(selectedJob, true, JobManager.USER);
 					// updates the jobHistoryList in jobHistoryTableModel
 					jobHistoryTableModel.update();
