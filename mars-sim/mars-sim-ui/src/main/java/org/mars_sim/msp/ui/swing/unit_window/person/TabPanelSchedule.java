@@ -30,6 +30,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
@@ -110,16 +111,14 @@ extends TabPanel {
 		labelPanel.add(label);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
+		JPanel infoPanel = new JPanel(new GridLayout(1, 3, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
-
-		JPanel repeatPanel = new JPanel(new FlowLayout(GridLayout(4,1)));
 
 		// Create hideRepeatedTaskBox.
 		hideRepeatedTasksCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
 		//hideRepeatedTasksCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
-		hideRepeatedTasksCheckBox.setFont(new Font("Serif", Font.PLAIN, 10));
+		hideRepeatedTasksCheckBox.setFont(new Font("Serif", Font.PLAIN, 11));
 		hideRepeatedTasksCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$
 		hideRepeatedTasksCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -133,28 +132,7 @@ extends TabPanel {
 			}
 		});
 		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
-		repeatPanel.add(hideRepeatedTasksCheckBox);
-
-		// Add two empty JLabel
-		repeatPanel.add(new JLabel("            "));
-		repeatPanel.add(new JLabel("            "));
-
-		// Create realTimeUpdateCheckBox.
-		realTimeUpdateCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
-		//realTimeUpdateCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
-		realTimeUpdateCheckBox.setFont(new Font("Serif", Font.PLAIN, 10));
-		realTimeUpdateCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
-		realTimeUpdateCheckBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (realTimeUpdateCheckBox.isSelected())
-					isRealTimeUpdate = true;
-				else
-					isRealTimeUpdate = false;
-			}
-		});
-		realTimeUpdateCheckBox.setSelected(isRealTimeUpdate);
-		repeatPanel.add(realTimeUpdateCheckBox);
-
+		infoPanel.add(hideRepeatedTasksCheckBox);
 
 /*    	// add today into solList
      	solList.add(todayInteger);
@@ -197,14 +175,14 @@ extends TabPanel {
 		comboBox.setMaximumRowCount(7);
 		//comboBox.setBorder(null);
 
-	    JLabel solLabel = new JLabel("Select : ");
+	    //JLabel solLabel = new JLabel("Select:");
 		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-	    solPanel.add(solLabel);
+	    //solPanel.add(solLabel);
 		solPanel.add(comboBox);
 
+		//infoPanel.add(solLabel);
 		infoPanel.add(solPanel);
-		infoPanel.add(repeatPanel);
 
     	selectedSolCache = (Integer) comboBox.getSelectedItem();
 		if (selectedSolCache == null)
@@ -220,6 +198,22 @@ extends TabPanel {
             		//scheduleTableModel.update(hideRepeatedTasks, (int) today);
             }
 		});
+
+		// Create realTimeUpdateCheckBox.
+		realTimeUpdateCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
+		realTimeUpdateCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
+		realTimeUpdateCheckBox.setFont(new Font("Serif", Font.PLAIN, 11));
+		realTimeUpdateCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
+		realTimeUpdateCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (realTimeUpdateCheckBox.isSelected())
+					isRealTimeUpdate = true;
+				else
+					isRealTimeUpdate = false;
+			}
+		});
+		realTimeUpdateCheckBox.setSelected(isRealTimeUpdate);
+		infoPanel.add(realTimeUpdateCheckBox);
 
 		// Create schedule table model
 		if (unit instanceof Person)

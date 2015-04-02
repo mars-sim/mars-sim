@@ -30,11 +30,11 @@ import javax.swing.SwingUtilities;
 public class DayNightMapLayer implements SettlementMapLayer {
 
     private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.settlement.ShadingMapLayer";
-	
+
     private static Logger logger = Logger.getLogger(CLASS_NAME);
-     
+
     private int[] shadingArray;
-   
+
     private SurfaceFeatures surfaceFeatures;
 	private SettlementMapPanel mapPanel;
 
@@ -50,71 +50,90 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			Building building, double xPos, double yPos, int mapWidth,
 			int mapHeight, double rotation, double scale) {
 
-
 		if (mapPanel.isShowDayNightLayer()) {
 			int width = SettlementWindow.HORIZONTAL;
 			int height = SettlementWindow.VERTICAL;
 
 			// Get the map center point.
-	        int centerX =  width / 2;
-	        int centerY =  height / 2;
-			
-	        shadingArray = new int[width * height];
+	        //int centerX =  width / 2;
+	        //int centerY =  height / 2;
 
 	        // Coordinates sunDirection = orbitInfo.getSunDirection();
-	        double rho =  (double) height * 3 / Math.PI; // the arc needs to be at least 3 times the height to be rendered realistically
+	        //double rho =  (double) height * 3 / Math.PI; // the arc needs to be at least 3 times the height to be rendered realistically
 	        // TODO: should take into consideration the direction of the sun when rendering the direction of the "normal" vector of the shadow wavefront
-	        
-	        boolean nightTime = true;
-	        boolean dayTime = true;
-	        Coordinates location = new Coordinates(0D, 0D);
-	        
-	        // TODO: make the sahdingArray sensitive to the zooming in and out
-        
-	        for (int x = 0; x < width; x += 2) {
-	        	
-	            for (int y = 0; y < height; y += 2) {
-	            	
-	            	mapPanel.getSettlement().getCoordinates().convertRectToSpherical(x - centerX, y - centerY, rho, location);
-	                double sunlight = surfaceFeatures.getSurfaceSunlight(location);
-	                int sunlightInt = (int) (127 * sunlight);
-	                int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
-	               
-	                shadingArray[x + (y * width)] = shadeColor;
-	                shadingArray[x + 1 + (y * width)] = shadeColor;
-	                
-	                if (y < height - 1) {
-	                    shadingArray[x + ((y + 1) * width)] = shadeColor;
-	                    shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
-	                }
-	       
-	                if (sunlight > 0) nightTime = false;
-	                if (sunlight < 127) dayTime = false;
-	            }
-	        }
-	            
-	        if (nightTime) {
-	            g2d.setColor(new Color(0, 0, 0, 128));
+
+	        //boolean nightTime = true;
+	        //boolean dayTime = true;
+	        Coordinates location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
+	        //double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / 500D; // normalized to 500 W/m2
+        	//System.out.println(" sunlight is " + sunlight);
+
+	        //if (sunlight > 0)
+	        //	nightTime = false;
+            //if (sunlight < 127)
+            //	dayTime = false;
+
+	        if (sunlight <.03D) {
+	            //g2d.setColor(new Color(0, 0, 0, 128));
+	            g2d.setColor(new Color(0, 0, 0, 196));
 	            g2d.fillRect(0, 0, width, height);
 	        }
-	        else if (!dayTime) {
+
+	        else if (sunlight > .97D )
+	        	return;
+
+	        else if (sunlight >= 0.03D && sunlight <= .97D) {
+	        	shadingArray = new int[width * height];
+		        // TODO: how to make the shadingArray sensitive to the zooming in and out
+
+		        for (int x = 0; x < width; x += 2) {
+
+		            for (int y = 0; y < height; y += 2) {
+		            	//mapPanel.getSettlement().getCoordinates().convertRectToSpherical(x - centerX, y - centerY, rho, location);
+		                //sunlight = surfaceFeatures.getSurfaceSunlight(location);
+		                int sunlightInt = (int) (127 * sunlight);
+		                int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000; // 0xFF000000 is the alpha mask
+
+		                shadingArray[x + (y * width)] = shadeColor;
+		                shadingArray[x + 1 + (y * width)] = shadeColor;
+
+		                if (y < height - 1) {
+		                    shadingArray[x + ((y + 1) * width)] = shadeColor;
+		                    shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
+		                }
+
+		                //if (sunlight > 0) nightTime = false;
+		                //if (sunlight < 127) dayTime = false;
+		            }
+
+		        }
+	        // not working here, why was that?
+            //if (sunlight > 0) nightTime = false;
+            //if (sunlight < 127) dayTime = false;
+
+	        //if (nightTime) {
+	        //    g2d.setColor(new Color(0, 0, 0, 128));
+	        //    g2d.fillRect(0, 0, width, height);
+	        //}
+	        //else if (!dayTime) {
 	            // Create shading image for map
 	            Image shadingMap = mapPanel.createImage(
 	            	new MemoryImageSource(width, height, shadingArray, 0, width));
-	            // TODO : use BufferedImage instead of MemoryImageSource. which is faster ?            
+	            // TODO : use BufferedImage instead of MemoryImageSource. which is faster ?
 	            //BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
 
 	            MediaTracker mt = new MediaTracker(mapPanel);
 	            mt.addImage(shadingMap, 0);
-	            
-	            //Thread t = new Thread(this);            
+
+	            //Thread t = new Thread(this);
 	            //t.start();
 
 		        // TODO: what is causing the slowness? the for-loop algorithm ?
-	        	
+
 	            try {
 	                mt.waitForID(0);
-	    	        //System.out.println("mt.waitForID(0)");	     
+	    	        //System.out.println("mt.waitForID(0)");
 	                Thread.sleep(40);
 	            }
 	            catch (InterruptedException e) {
@@ -124,7 +143,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	            if (!mt.isErrorID(0) )
 	            	// Draw the shading image
 	            	g2d.drawImage(shadingMap, 0, 0, mapPanel);
-	            
+
 	        }
 
 		}
