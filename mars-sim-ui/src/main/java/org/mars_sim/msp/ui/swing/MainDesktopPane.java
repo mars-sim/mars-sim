@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,24 +67,24 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 
-/** 
+/**
  * The MainDesktopPane class is the desktop part of the project's UI.
  * It contains all tool and unit windows, and is itself contained,
  * along with the tool bars, by the main window.
  */
-public class MainDesktopPane  
+public class MainDesktopPane
 extends JDesktopPane
 implements ComponentListener, UnitListener, UnitManagerListener {
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
-	
+
 	// Data members
-	private boolean isTransportingBuilding = false;	
+	private boolean isTransportingBuilding = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
-	private boolean firstDisplay;	
+	private boolean firstDisplay;
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
@@ -90,12 +93,20 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
+
 	/* The desktop update thread. */
-	private UpdateThread updateThread;
+	// 2015-04-01 Switched to using ThreadPoolExecutor
+	private UpdateThreadTask updateThreadTask;
+	private ToolWindowTask toolWindowTask;
+	private UnitWindowTask unitWindowTask;
+	private ThreadPoolExecutor threadPoolExecutor;
+	private ThreadPoolExecutor toolWindowExecutor;
+	private ThreadPoolExecutor unitWindowExecutor;
+
 	/** The sound player. */
 	private AudioPlayer soundPlayer;
 	/** The desktop popup announcement window. */
-	private AnnouncementWindow announcementWindow;	
+	private AnnouncementWindow announcementWindow;
 	// 2014-12-19 Added settlementWindow
 	private SettlementWindow settlementWindow;
 	private Building building;
@@ -103,44 +114,50 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2014-12-23 Added transportWizard
 	private TransportWizard transportWizard;
 	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-	//private MarqueeBanner marqueeBanner;	
+	//private MarqueeBanner marqueeBanner;
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	private MainScene mainScene;
-	
-	/** 
+
+	/**
 	 * Constructor 1.
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-		
+
 		init();
 	}
-	
-	/** 
+
+	/**
 	 * Constructor 2.
 	 * @param mainScene the main scene
-	 */	
-	public MainDesktopPane(MainScene mainScene) {		
+	 */
+	public MainDesktopPane(MainScene mainScene) {
 		this.mainScene = mainScene;
 
 		init();
 	}
-	
+
 	// 2015-02-04 Added init()
 	public void init() {
-		
+
 		// Initialize data members
 		soundPlayer = new AudioPlayer();
 		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
-		
-		unitWindows = new ArrayList<UnitWindow>();
+
+		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
-		
+		prepareToolWindows();
+        //setupToolWindowExecutor();
+		// Prepare unit windows.
+		unitWindows = new ArrayList<UnitWindow>();
+        //setupUnitWindowExecutor();
+
+
 		// Set background color to black
 		setBackground(Color.black);
-		
+
 		// set desktop manager
 		setDesktopManager(new MainDesktopManager());
 
@@ -162,31 +179,34 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		else if (mainScene !=null ) {
 		}
 */
-		// Prepare tool windows.
-		prepareToolWindows();
-		
+
+
 		// Create update thread.
+/*
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
-		
+*/
+		threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        updateThreadTask = new UpdateThreadTask(this);
+        //System.out.println("Maximum threads inside pool " + executor.getMaximumPoolSize());
+        //System.out.println("A new task has been added : " + updateThreadTask.getName());
+        threadPoolExecutor.execute(updateThreadTask);
+
 		// 2014-12-26 Added prepareListeners
 		prepareListeners();
-				
 		// 2014-12-27 Added prepareWindows
 		prepareWindows();
-		
 		//openMarqueeBanner("");
-		
 	}
-	
+
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * @param announcement the announcement text to display.
-	 
+
 	// 2014-12-30 Added openMarqueeBanner()
 	public void openMarqueeBanner(String announcement) {
-		
+
 		final MainDesktopPane d = this;
 		final String text = announcement;
 		EventQueue.invokeLater(new Runnable() {
@@ -201,13 +221,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
         		marqueeBanner.display();
             }
         });
-		
+
   	  	//marqueeBanner.display();
   	  	//marqueeBanner.pack();
 		//add(announcementWindow, 0);
 		//int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
 		//int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
-		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop 
+		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop
 		//int Yloc = 0;
 		//marqueeBanner.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
@@ -216,17 +236,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//marqueeBanner.setVisible(true);
 	}
 	*/
-	
-	/** 
-	 * sets up this class with two listeners 
+
+	/**
+	 * sets up this class with two listeners
 	 */
 	// 2014-12-19 Added prepareListeners()
 	public void prepareListeners() {
-		
+
 		// Add addUnitManagerListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		unitManager.addUnitManagerListener(this);		
-				
+		unitManager.addUnitManagerListener(this);
+
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
@@ -236,24 +256,24 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//building.addUnitListener(this); // not working
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
-			i.next().addUnitListener(this);			
+			i.next().addUnitListener(this);
 		}
 	}
-	
+
 	/** Returns the MainWindow instance
 	 *  @return MainWindow instance
 	 */
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}
-	
+
 	/** Returns the MainScene instance
 	 *  @return MainScene instance
 	 */
 	public MainScene getMainScene() {
 		return mainScene;
 	}
-	
+
 
 	/**
 	 * Create background tile when MainDesktopPane is first
@@ -306,7 +326,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void componentHidden(ComponentEvent e) {}
 
 	/*
-	 * Creates tool windows 
+	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
 
@@ -336,7 +356,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { monitorWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(monitorWindow);
-		
+
 		// Prepare settlement tool window
 		SettlementWindow settlementWindow = new SettlementWindow(this);
 		//Thread sw = new Thread(settlementWindow);
@@ -353,7 +373,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { scienceWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(scienceWindow);
-		
+
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);
@@ -372,9 +392,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
-		
+
 	}
-	
+
 	/*
 	 * * Creates announcement windows & transportWizard
 	 */
@@ -383,17 +403,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow = new AnnouncementWindow(this);
 		try { announcementWindow.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
-		
+
 		// 2014-12-23 Added transportWizard
 		transportWizard = new TransportWizard(this);
 		try { transportWizard.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
-		
+
 		// 2014-12-30 Added marqueeBanner
 		//marqueeBanner = new MarqueeBanner(this);
       	//try { marqueeBanner.setClosed(true); }
       	//catch (java.beans.PropertyVetoException e) { }
-		
+
 	}
 
 	/** Returns a tool window for a given tool name
@@ -421,7 +441,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		openToolWindow(MonitorWindow.NAME);
 	}
 
-	/** 
+	/**
 	 * Centers the map and the globe on given coordinates.
 	 * Also opens the map tool if it's closed.
 	 * @param targetLocation the new center location
@@ -471,8 +491,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					window.setWasOpened(true);
 				}
 				add(window, 0);
-				try { 
-					window.setClosed(false); 
+				try {
+					window.setClosed(false);
 				}
 				catch (Exception e) { logger.log(Level.SEVERE,e.toString()); }
 			}
@@ -481,7 +501,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			try {
 				window.setSelected(true);
 			} catch (PropertyVetoException e) {
-				// ignore if setSelected is vetoed	
+				// ignore if setSelected is vetoed
 			}
 		}
 	}
@@ -499,7 +519,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	/**
-	 * Creates and opens a window for a unit if it isn't 
+	 * Creates and opens a window for a unit if it isn't
 	 * already in existence and open.
 	 * @param unit the unit the window is for.
 	 * @param initialWindow true if window is opened at UI startup.
@@ -585,7 +605,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Disposes a unit window and button.
 	 *
 	 * @param unit the unit the window is for.
@@ -612,28 +632,96 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (mainWindow !=null) mainWindow.disposeUnitButton(unit);
 	}
 
-	/** 
+	/**
 	 * Disposes a unit window and button.
 	 *
 	 * @param window the unit window to dispose.
 	 */
 	public void disposeUnitWindow(UnitWindow window) {
 
-		if (window != null) {    
+		if (window != null) {
 			unitWindows.remove(window);
 			window.dispose();
 
 			// Have main window dispose of unit button
-			if (mainWindow !=null) mainWindow.disposeUnitButton(window.getUnit());
+			if (mainWindow != null) mainWindow.disposeUnitButton(window.getUnit());
 		}
+	}
+
+	class UnitWindowTask implements Runnable {
+		//long SLEEP_TIME = 1;
+		UnitWindow unitWindow;
+
+		private UnitWindowTask(UnitWindow unitWindow) {
+			//logger.info(Msg.getString("MainDesktopPane.unitWindow.thread.running")); //$NON-NLS-1$
+			this.unitWindow = unitWindow;
+		}
+
+		@Override
+		public void run() {
+			try {
+				//while (!toolWindowExecutor.isTerminated()){
+					unitWindow.update();
+				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
+				//}
+			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		}
+	}
+
+	class ToolWindowTask implements Runnable {
+		//long SLEEP_TIME = 1;
+		ToolWindow toolWindow;
+
+		private ToolWindowTask(ToolWindow toolWindow) {
+			//logger.info(Msg.getString("MainDesktopPane.toolWindow.thread.running")); //$NON-NLS-1$
+			this.toolWindow = toolWindow;
+		}
+
+		@Override
+		public void run() {
+			try {
+				//while (!toolWindowExecutor.isTerminated()){
+					toolWindow.update();
+				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
+				//}
+			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		}
+	}
+
+	private void setupToolWindowExecutor() {
+		// Update all tool windows.
+		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
+		Iterator<ToolWindow> j = toolWindows.iterator();
+		while (j.hasNext()) {
+			toolWindowTask = new ToolWindowTask(j.next());
+            toolWindowExecutor.execute(toolWindowTask);
+        }
+        toolWindowExecutor.shutdown();
+	}
+
+	private void setupUnitWindowExecutor() {
+		// Update all unit windows.
+		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
+		Iterator<UnitWindow> i1 = unitWindows.iterator();
+		while (i1.hasNext()) {
+			unitWindowTask = new UnitWindowTask(i1.next());
+            unitWindowExecutor.execute(unitWindowTask);
+        }
+        unitWindowExecutor.shutdown();
 	}
 
 	/**
 	 * Update the desktop and all of its windows.
 	 */
 	private void update() {
+		// Update all unit windows.
+		setupUnitWindowExecutor();
+		// Update all tool windows.
+		setupToolWindowExecutor();
 
 		// Update all unit windows.
+
+/*
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
 		try {
 			while (i1.hasNext()) {
@@ -641,11 +729,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 		catch (ConcurrentModificationException e) {
-			// Concurrent modifications exceptions may occur as 
+			// Concurrent modifications exceptions may occur as
 			// unit windows are opened.
 		}
 
+
 		// Update all tool windows.
+
 		Iterator<ToolWindow> i2 = toolWindows.iterator();
 		try {
 			while (i2.hasNext()) {
@@ -656,18 +746,23 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Concurrent modifications exceptions may occur as
 			// unit windows are opened.
 		}
+		*/
 	}
 
 
 	public void clearDesktop() {
 		// Stop update thread.
-		updateThread.setRun(false);
+		//updateThread.setRun(false);
+        threadPoolExecutor.shutdown();
+        if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+        if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
 		// Give some time for the update thread to finish updating.
 		try {
 			Thread.sleep(100L);
 		} catch (InterruptedException e) {};
-		
+
 		// Dispose unit windows
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
 		while (i1.hasNext()) {
@@ -697,7 +792,16 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		prepareToolWindows();
 
 		// Restart update thread.
-		updateThread.setRun(true);
+		//updateThread.setRun(true);
+        threadPoolExecutor.shutdown();
+        if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+        if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+        threadPoolExecutor.execute(updateThreadTask);
+        //toolWindowExecutor.execute(toolWindowTask);
+        //unitWindowExecutor.execute(unitWindowTask);
+		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+
 	}
 
 	private Point getCenterLocation(JInternalFrame tempWindow) {
@@ -707,12 +811,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
 		int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
-		
+
 		// 2014-12-25 Added rX checking
 		if (rX < 0) {
 			rX = 0;
 		}
-		
+
 		// Make sure y position isn't < 0.
 		if (rY < 0) {
 			rY = 0;
@@ -720,8 +824,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		return new Point(rX, rY);
 	}
-	
-	/** 
+
+	/**
 	 * Gets a random location on the desktop for a given {@link JInternalFrame}.
 	 * @param tempWindow an internal window
 	 * @return random point on the desktop
@@ -750,7 +854,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	/**
 	 * Internal class thread for update.
-	 */
+
 	private class UpdateThread extends Thread {
 
 		public static final long SLEEP_TIME = 1000; // 1 second.
@@ -771,11 +875,35 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			while (true) {
 				if (run) {
 					desktop.update();
-				}   
+				}
 				try {
 					Thread.sleep(SLEEP_TIME);
 				} catch (InterruptedException e) {}
 			}
+		}
+	}
+	 */
+
+
+	class UpdateThreadTask implements Runnable {
+		public static final long SLEEP_TIME = 1; // 1 second.
+		MainDesktopPane desktop;
+
+		private UpdateThreadTask(MainDesktopPane desktop) {
+			logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+			this.desktop = desktop;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (!threadPoolExecutor.isTerminated()){
+					desktop.update();
+					repaint();
+					//Thread.sleep(SLEEP_TIME);
+					TimeUnit.SECONDS.sleep(SLEEP_TIME);
+				}
+			} catch (InterruptedException e) {}
 		}
 	}
 
@@ -810,7 +938,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow.dispose();
 	}
 
-	
+
 	/**
 	 * Updates the look & feel of the announcement window.
 	 */
@@ -833,7 +961,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//add(transportWizard, 0);
 		//int Xloc = (getWidth() - transportWizard.getWidth()) / 4;
 		//int Yloc = (getHeight() - transportWizard.getHeight()) / 4;
-		//transportWizard.setLocation(Xloc, Yloc);		
+		//transportWizard.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.
 		//transportWizard.pack();
@@ -852,7 +980,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 	/**
 	 * Removes the marquee banner from the desktop.
-	 
+
 	// 2014-12-30 Added disposeMarqueeBanner()
 	public void disposeMarqueeBanner() {
 		try { marqueeBanner.setClosed(true); }
@@ -869,7 +997,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	        SwingUtilities.updateComponentTreeUI(transportWizard);
 	    }
 	}
-	
+
 	/**
 	 * Updates the look & feel for all tool windows.
 	 */
@@ -965,27 +1093,27 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public TransportWizard getTransportWizard() {
 		return transportWizard;
 	}
-	
+
 	public AnnouncementWindow getAnnouncementWindow() {
 		return announcementWindow;
 	}
-	
-	
-	
+
+
+
 	public Settlement getSettlement() {
 		return settlement;
 	}
-	
+
 	public SettlementWindow getSettlementWindow() {
 		return settlementWindow;
 	}
-	
+
 	public boolean getIsTransportingBuilding() {
 		return isTransportingBuilding;
 	}
-	
-	
-	
+
+
+
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
@@ -1004,29 +1132,29 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Select the relevant settlement
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool
-			openToolWindow(SettlementWindow.NAME);	
+			openToolWindow(SettlementWindow.NAME);
 			openTransportWizard(mgr);
 			//if (mainWindow != null) mainWindow.pauseSimulation();
 			//else if (mainScene != null) mainScene.pauseSimulation();
 			isTransportingBuilding = false;
 		}
-		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {		
+		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
 			//if (mainWindow != null) mainWindow.unpauseSimulation();
-			//else if (mainScene != null) mainScene.unpauseSimulation();			
+			//else if (mainScene != null) mainScene.unpauseSimulation();
 			disposeTransportWizard();
 			isTransportingBuilding = false;
             //mgr.getResupply().deliverOthers();
             disposeAnnouncementWindow();
-            
-		}	
+
+		}
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
 
-	
+
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 		if (event.getUnit() instanceof Settlement) {
-			
+
 			//removeAllElements();
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
@@ -1034,17 +1162,17 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 			Iterator<Settlement> i = settlements.iterator();
 			while (i.hasNext()) {
-				i.next().removeUnitListener(this);			
+				i.next().removeUnitListener(this);
 			}
 			Iterator<Settlement> j = settlements.iterator();
 			while (j.hasNext()) {
 				j.next().addUnitListener(this);
 			}
 		}
-		
-		repaint(); // raise some cpu util% but not too bad
+
+		//repaint(); // raise some cpu util% but not too bad
 	}
 
 
-	 
+
 }

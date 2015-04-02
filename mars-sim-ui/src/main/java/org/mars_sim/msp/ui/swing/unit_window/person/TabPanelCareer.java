@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job history.
  */
 public class TabPanelCareer
@@ -50,22 +50,22 @@ implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** data cache */
 	private String jobCache = ""; //$NON-NLS-1$
 
 	private JLabel jobLabel;
-	
+
 	private JComboBoxMW<?> jobComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
-	
+
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public TabPanelCareer(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelCareer(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCareer.title"), //$NON-NLS-1$
@@ -73,16 +73,16 @@ implements ActionListener {
 			Msg.getString("TabPanelCareer.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
-		
+
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
 		boolean dead = false;
-		DeathInfo deathInfo = null;  
-	    
+		DeathInfo deathInfo = null;
+
 	    if (unit instanceof Person) {
-	    	person = (Person) unit;    	
+	    	person = (Person) unit;
 			mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
@@ -102,18 +102,18 @@ implements ActionListener {
 		JLabel label = new JLabel(Msg.getString("TabPanelCareer.title"), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(label);
 
-		if (unit instanceof Person) {			     		
-	    	person = (Person) unit;    		   
-	    	
+		if (unit instanceof Person) {
+	    	person = (Person) unit;
+
 			// Prepare job panel
 			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			jobPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(jobPanel);
-			
+
 			// Prepare job label
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
-			jobPanel.add(jobLabel);   
-			
+			jobPanel.add(jobLabel);
+
 			// Prepare job combo box
 			jobCache = mind.getJob().getName(person.getGender());
 			List<String> jobNames = new ArrayList<String>();
@@ -126,7 +126,7 @@ implements ActionListener {
 			jobComboBox.addActionListener(this);
 			jobPanel.add(jobComboBox);
 		}
-	    
+
 		else if (unit instanceof Robot) {
 			/*
 	        robot = (Robot) unit;
@@ -141,9 +141,9 @@ implements ActionListener {
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
-			jobPanel.add(jobComboBox);			
+			jobPanel.add(jobComboBox);
 			*/
-		}	
+		}
 
 		// Prepare job title panel
 		JPanel jobHistoryPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -155,10 +155,10 @@ implements ActionListener {
 
 		// Create schedule table model
 		if (unit instanceof Person)
-			jobHistoryTableModel = new JobHistoryTableModel((Person) unit);    	
+			jobHistoryTableModel = new JobHistoryTableModel((Person) unit);
 		else if (unit instanceof Robot)
 			jobHistoryTableModel = new JobHistoryTableModel((Robot) unit);
-		
+
 		// Create attribute scroll panel
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setBorder(new MarsPanelBorder());
@@ -175,9 +175,9 @@ implements ActionListener {
 		scrollPanel.setViewportView(table);
 
 		update();
-		
+
 		jobHistoryTableModel.update();
-		
+
 	}
 
 	/**
@@ -190,33 +190,33 @@ implements ActionListener {
 		Mind mind = null;
 		BotMind botMind = null;
 		boolean dead = false;
-		DeathInfo deathInfo = null;  
-	    
+		DeathInfo deathInfo = null;
+
 		String currentJob = null;
-		
+
 	    if (unit instanceof Person) {
-	    	person = (Person) unit;    	
+	    	person = (Person) unit;
 			mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-			
+
 			// Update job if necessary.
 			if (dead) {
 				jobCache = deathInfo.getJob();
 				jobComboBox.setEnabled(false);
-			} 
-/*			
+			}
+/*
 			else {
 				//jobCache = mind.getJob().getName(person.getGender());
 				//currentJob = mind.getJob().getName(person.getGender());
-				
+
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
-				
+
 				if (!jobCache.equals(selectedJobStr)) {
 				    jobComboBox.setSelectedItem(selectedJobStr);
-				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob 
-				    // as soon as the combobox selection is changed or wait for checking of "approval" ? 
-					jobHistoryTableModel.update();				
+				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
+				    // as soon as the combobox selection is changed or wait for checking of "approval" ?
+					jobHistoryTableModel.update();
 					jobCache = selectedJobStr;
 				}
 			}
@@ -227,13 +227,13 @@ implements ActionListener {
 			botMind = robot.getBotMind();
 			dead = robot.getPhysicalCondition().isDead();
 			deathInfo = robot.getPhysicalCondition().getDeathDetails();
-			
-			
-		}		
-	
+
+
+		}
+
 	}
 
-	/** 
+	/**
 	 * Action event occurs.
 	 * @param event {@link ActionEvent} the action event
 	 */
@@ -243,83 +243,83 @@ implements ActionListener {
 
 		if (source == jobComboBox) {
 			Person person = null;
-			Robot robot = null; 
-		    		
+			Robot robot = null;
+
 			if (unit instanceof Person) {
-				person = (Person) unit; 
-				
+				person = (Person) unit;
+
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
-				
+
 				if (!jobCache.equals(selectedJobStr)) {
 				    jobComboBox.setSelectedItem(selectedJobStr);
-				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob 
-				    // as soon as the combobox selection is changed or wait for checking of "approval" ? 
-				    // update to the new selected job 
-				    Job selectedJob = null;				
+				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
+				    // as soon as the combobox selection is changed or wait for checking of "approval" ?
+				    // update to the new selected job
+				    Job selectedJob = null;
 					Iterator<Job> i = JobManager.getJobs().iterator();
 					while (i.hasNext()) {
 					    Job job = i.next();
 					    String n = job.getName(person.getGender());
 						if (selectedJobStr.equals(n))
-							// gets selectedJob by running through iterator to match it 
+							// gets selectedJob by running through iterator to match it
 					        selectedJob = job;
-					}	
+					}
 					person.getMind().setJob(selectedJob, true, JobManager.USER);
 					// updates the jobHistoryList in jobHistoryTableModel
-					jobHistoryTableModel.update();			
-					System.out.println("Yes they are diff");				
+					jobHistoryTableModel.update();
+					System.out.println("Yes they are diff");
 					jobCache = selectedJobStr;
 				}
 /*
-				person = (Person) unit; 
-	
-				String jobStrCache = person.getMind().getJob().getName(person.getGender());					
-				
+				person = (Person) unit;
+
+				String jobStrCache = person.getMind().getJob().getName(person.getGender());
+
 				if (!selectedJobStr.equals(jobStrCache)) {
-					
-					Job selectedJob = null;				
+
+					Job selectedJob = null;
 					Iterator<Job> i = JobManager.getJobs().iterator();
 					while (i.hasNext()) {
 					    Job job = i.next();
 					    String n = job.getName(person.getGender());
 						if (selectedJobStr.equals(n))
-							// gets selectedJob by running through iterator to match it 
+							// gets selectedJob by running through iterator to match it
 					        selectedJob = job;
-					}			
-					
-					// update to the new selected job 
+					}
+
+					// update to the new selected job
 					person.getMind().setJob(selectedJob, true, JobManager.USER);
 					// updates the jobHistoryList in jobHistoryTableModel
-					jobHistoryTableModel.update();			
+					jobHistoryTableModel.update();
 					System.out.println("Yes they are diff");
-					
-				}			
+
+				}
 */
 			}
-			
+
 
 			else if (unit instanceof Robot) {
 				/*
 				robot = (Robot) unit;
-				
+
 				RobotJob selectedJob = null;
 				Iterator<RobotJob> i = JobManager.getRobotJobs().iterator();
 				while (i.hasNext() && (selectedJob == null)) {
-					RobotJob robotJob = i.next();				
+					RobotJob robotJob = i.next();
 					//System.out.println("job : " + job.);
 					if (jobName.equals(robotJob.getName(robot.getRobotType()))) {
 				        selectedJob = robotJob;
 				    }
 				}
-				
+
 				robot.getBotMind().setRobotJob(selectedJob, true);
 				*/
 			}
 		}
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * Internal class used as model for the attribute table.
 	 */
 	private static class JobHistoryTableModel
@@ -328,34 +328,34 @@ implements ActionListener {
 		private static final long serialVersionUID = 1L;
 
 		private JobHistory jobHistory;
-			
+
 		private List<JobAssignment> jobAssignmentList;
-		
+
 		/**
 		 * hidden constructor.
 		 * @param unit {@link Unit}
 		 */
 		private JobHistoryTableModel(Unit unit) {
 	        Person person = null;
-	        Robot robot = null;     
+	        Robot robot = null;
 	        if (unit instanceof Person) {
-	         	person = (Person) unit;  
+	         	person = (Person) unit;
 	         	jobHistory = person.getJobHistory();
 	        }
 	        else if (unit instanceof Robot) {
 	        	//robot = (Robot) unit;
 	        	//jobHistory = robot.getJobHistory();
 	        }
-			
-	        jobAssignmentList = jobHistory.getJobAssignmentList();        
-	        
+
+	        jobAssignmentList = jobHistory.getJobAssignmentList();
+
 		}
 
 		@Override
 		public int getRowCount() {
-			if (jobAssignmentList != null)			
+			if (jobAssignmentList != null)
 				return jobAssignmentList.size();
-			else 
+			else
 				return 0;
 		}
 
@@ -383,26 +383,26 @@ implements ActionListener {
 
 		public Object getValueAt(int row, int column) {
 			int r = jobAssignmentList.size() - row - 1;
-			System.out.println(" r is " + r);
-			if (column == 0) return MarsClock.getDateTimeStamp(jobAssignmentList.get(r).getTime());				
+			//System.out.println(" r is " + r);
+			if (column == 0) return MarsClock.getDateTimeStamp(jobAssignmentList.get(r).getTime());
 			else if (column == 1) return jobAssignmentList.get(r).getJobType();
 			else if (column == 2) return jobAssignmentList.get(r).getInitiator();
 			else return null;
 		}
-		
+
 		/**
 		 * Prepares the job history of the person
-		 * @param 
-		 * @param 
+		 * @param
+		 * @param
 		 */
 		private void update() {
 
-			jobAssignmentList = jobHistory.getJobAssignmentList();        
-	
+			jobAssignmentList = jobHistory.getJobAssignmentList();
+
         	fireTableDataChanged();
-		
+
 		}
-		
+
 	}
-	
-}       
+
+}
