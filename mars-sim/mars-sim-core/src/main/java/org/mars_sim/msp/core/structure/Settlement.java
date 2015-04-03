@@ -57,7 +57,7 @@ implements LifeSupport {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     /* default logger.*/
-	private static Logger logger = Logger.getLogger(Settlement.class.getName());   
+	private static Logger logger = Logger.getLogger(Settlement.class.getName());
     /** Normal air pressure (Pa) */
     private static final double NORMAL_AIR_PRESSURE = 101325D;
     /** Normal temperature (celsius) */
@@ -68,24 +68,24 @@ implements LifeSupport {
     private static final double MAX_TEMP = 48.0D;
 
     //private static int count;
-    public static final int SOL_PER_REFRESH = 5;  
-    
+    public static final int SOL_PER_REFRESH = 5;
+
     /* Amount of time (millisols) required for periodic maintenance.
     private static final double MAINTENANCE_TIME = 1000D;
      */
     /** The settlement template name. */
     private String template;
-    
+
     public double mealsReplenishmentRate = 0.6;
-    public double dessertsReplenishmentRate = 0.7;  
-    
+    public double dessertsReplenishmentRate = 0.7;
+
     /** The initial population of the settlement. */
     private int initialPopulation;
     private int initialNumOfRobots;
     private double zeroPopulationTime;
     private int scenarioID;
 	private int solCache = 1;
-	
+
     //2014-11-23 Added foodProductionOverride
     private boolean foodProductionOverride = false;
 	//private boolean reportSample = true;
@@ -97,7 +97,7 @@ implements LifeSupport {
     private boolean resourceProcessOverride = false;
     /** Override flag for construction/salvage mission creation at settlement. */
     private boolean constructionOverride = false;
-    
+
     /** The settlement's building manager. */
     protected BuildingManager buildingManager;
     /** The settlement's building connector manager. */
@@ -110,14 +110,14 @@ implements LifeSupport {
     protected PowerGrid powerGrid;
     //2014-10-17 Added heating system
     /** The settlement's heating system. */
-    protected ThermalSystem thermalSystem;  
-    
+    protected ThermalSystem thermalSystem;
+
     private Inventory inv;
 
     /** The settlement's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
     /** Amount of time (millisols) that the settlement has had zero population. */
- 
+
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
@@ -149,12 +149,12 @@ implements LifeSupport {
     public Settlement(String name, int id, String template, Coordinates location, int populationNumber, int initialNumOfRobots) {
         // Use Structure constructor
         super(name, location);
-        
+
         this.template = template;
         this.scenarioID = id;
         this.initialNumOfRobots = initialNumOfRobots;
         this.initialPopulation = populationNumber;
-       
+
         //count++;
         //logger.info("constructor 3 : count is " + count);
         inv = getInventory();
@@ -171,7 +171,7 @@ implements LifeSupport {
         // Initialize power grid
         powerGrid = new PowerGrid(this);
         //2014-10-17 Added thermal control system
-        thermalSystem = new ThermalSystem(this);       
+        thermalSystem = new ThermalSystem(this);
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
     }
@@ -193,7 +193,7 @@ implements LifeSupport {
 	public void setMealsReplenishmentRate(double rate) {
 		mealsReplenishmentRate = rate;
 	}
-    
+
 	/**
 	 * Gets the settlement's desserts replenishment rate.
 	 * @return DessertsReplenishmentRate
@@ -286,23 +286,23 @@ implements LifeSupport {
         int stations = 0;
         Iterator<Building> i = buildingManager.getBuildings().iterator();
         while (i.hasNext()) {
-            Building building = i.next(); 
+            Building building = i.next();
             result ++;
-        } 
+        }
         Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
         while (j.hasNext()) {
-            Building building = j.next(); 
+            Building building = j.next();
             RoboticStation roboticStations = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
             stations += roboticStations.getSlots();
             //stations++;
-        } 
-        //stations = stations * 2; 
-        
+        }
+        //stations = stations * 2;
+
         result = result + stations;
-        
+
         return result;
     }
-    
+
     /**
      * Gets the current number of robots in the settlement
      * @return the number of robots
@@ -373,8 +373,8 @@ implements LifeSupport {
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (getInventory().getAmountResourceStored(water, false) <= 0D)
                 result = false;
- 
-    
+
+
         // TODO: check against indoor air pressure
         //if (getAirPressure() != NORMAL_AIR_PRESSURE)
         //    result = false;
@@ -394,8 +394,8 @@ implements LifeSupport {
                 result = false;
             AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
             if (getInventory().getAmountResourceStored(water, false) <= 0D)
-                result = false;      
-    }  
+                result = false;
+    }
         // TODO: check against indoor air pressure
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
@@ -426,12 +426,12 @@ implements LifeSupport {
         double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
             oxygenTaken = oxygenLeft;
-        getInventory().retrieveAmountResource(oxygen, oxygenTaken);   
+        getInventory().retrieveAmountResource(oxygen, oxygenTaken);
     	// 2015-01-09 Added addDemandTotalRequest()
     	inv.addAmountDemandTotalRequest(oxygen);
     	// 2015-01-09 addDemandRealUsage()
     	inv.addAmountDemand(oxygen,oxygenTaken);
-    	
+
         AmountResource carbonDioxide = AmountResource
                 .findAmountResource("carbon dioxide");
         double carbonDioxideProvided = oxygenTaken;
@@ -465,7 +465,7 @@ implements LifeSupport {
         inv.addAmountDemandTotalRequest(water);
     	// 2015-01-09 addDemandRealUsage()
        	inv.addAmountDemand(water, waterTaken);
-        
+
         return waterTaken;
     }
 
@@ -477,7 +477,7 @@ implements LifeSupport {
         double result = NORMAL_AIR_PRESSURE;
         double ambient = Simulation.instance().getMars().getWeather()
                 .getAirPressure(getCoordinates());
-        
+
         if (result < ambient)
             return ambient;
         else
@@ -490,18 +490,18 @@ implements LifeSupport {
      */
     public double getTemperature() {
         double result = NORMAL_TEMP;
-        //double result = getLifeSupport().getTemperature();   
+        //double result = getLifeSupport().getTemperature();
         double ambient = Simulation.instance().getMars().getWeather()
                 .getTemperature(getCoordinates());
-        
+
         if (result < ambient)
             return ambient;
         else
             return result;
-        
+
         //return result;
     }
-     
+
     /**
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
@@ -534,15 +534,15 @@ implements LifeSupport {
             powerGrid.setPowerMode(PowerMode.POWER_UP);
             // TODO: check if POWER_UP is necessary
             // Question: is POWER_UP a prerequisite of FULL_POWER ?
-            //thermalSystem.setHeatMode(HeatMode.POWER_UP); 
+            //thermalSystem.setHeatMode(HeatMode.POWER_UP);
         }
 
         powerGrid.timePassing(time);
-        
+
         thermalSystem.timePassing(time);
 
         buildingManager.timePassing(time);
-    
+
         // 2015-01-09  Added makeDailyReport()
         makeDailyReport();
 
@@ -551,14 +551,14 @@ implements LifeSupport {
 
     /**
      * Provides the daily statistics on inhabitant's food energy intake
-     * 
+     *
      */
     // 2015-01-09  Added getFoodEnergyIntakeReport()
    	public synchronized void getFoodEnergyIntakeReport() {
-    	//System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy Intake Report at " + this.getName() + " >>>"); 
+    	//System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy Intake Report at " + this.getName() + " >>>");
     	//System.out.println("** An settler on Mars is estimated to consume about 10100 kJ per sol **");
         //Iterator<Person> i = getInhabitants().iterator();
-        Iterator<Person> i = getAllAssociatedPeople().iterator(); 
+        Iterator<Person> i = getAllAssociatedPeople().iterator();
         while (i.hasNext()) {
             Person p = i.next();
         	PhysicalCondition condition = p.getPhysicalCondition();
@@ -568,50 +568,52 @@ implements LifeSupport {
         }
    	}
 
-    
+
     /**
-     * Provides the daily reports for the settlement 
+     * Provides the daily reports for the settlement
      */
     // 2015-01-09  Added makeDailyReport()
     public synchronized void makeDailyReport() {
-    	
+
         MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        
+
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(clock);
-  
+
         if ( solElapsed != solCache) {
         	//reportSample = true;
         	solCache = solElapsed;
-        	
-        	//getFoodEnergyIntakeReport(); 	           	
-        	//getSupplyDemandReport(solElapsed);       	
+
+        	//getFoodEnergyIntakeReport();
+        	//getSupplyDemandReport(solElapsed);
         	refreshMapDaily(solElapsed);
+
+        	logger.info(" Current Tick Per Second (TPS) is at " + Simulation.instance().getMasterClock().getPulsesPerSecond());
         }
     }
-    
+
     /**
-     * Provides the daily demand statistics on sample amount resources 
+     * Provides the daily demand statistics on sample amount resources
      */
     // 2015-01-15  Added supply data
    	public void getSupplyDemandReport(int solElapsed) {
-   			   
+
    		logger.info("<<< Sol " + solElapsed
    			 + " at " + this.getName()
-   			 + " End of Day Report of Amount Resource Supply and Demand Statistics >>>"); 
-	    	 
+   			 + " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
+
         String sample1 = "polyethylene";
         String sample2 = "concrete";
-	
-        	
+
+
         // Sample supply and demand data on Potato and Water
-        	
+
         	double supplyAmount1 = inv.getAmountSupplyAmount(sample1);
         	double supplyAmount2 = inv.getAmountSupplyAmount(sample2);
 
         	int supplyRequest1 = inv.getAmountSupplyRequest(sample1);
         	int supplyRequest2 = inv.getAmountSupplyRequest(sample2);
-        	
+
         	double demandAmount1 = inv.getAmountDemandAmount(sample1);
         	double demandAmount2 = inv.getAmountDemandAmount(sample2);
 
@@ -622,39 +624,39 @@ implements LifeSupport {
         	int demandSuccessfulRequest2 = inv.getAmountDemandMetRequest(sample2);
 
         	//int numOfGoodsInDemandAmountMap = inv.getDemandAmountMapSize();
-        	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();	            	
-        	//int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();	            	
+        	//int numOfGoodsInDemandTotalRequestMap = inv.getDemandTotalRequestMapSize();
+        	//int numOfGoodsInDemandSuccessfulRequestMap = inv.getDemandSuccessfulRequestMapSize();
 
         	//logger.info(" numOfGoodsInDemandRequestMap : " + numOfGoodsInDemandTotalRequestMap);
         	//logger.info(" numOfGoodsInDemandSuccessfulRequestMap : " + numOfGoodsInDemandSuccessfulRequestMap);
         	//logger.info(" numOfGoodsInDemandAmountMap : " + numOfGoodsInDemandAmountMap);
 
            	logger.info(sample1 + " Supply Amount : " + Math.round(supplyAmount1*100.0)/100.0);
-        	logger.info(sample1 + " Supply Request : " + supplyRequest1);       	
-        	
+        	logger.info(sample1 + " Supply Request : " + supplyRequest1);
+
         	logger.info(sample1 + " Demand Amount : " + Math.round(demandAmount1*100.0)/100.0);
-        	//logger.info(sample1 + " Demand Total Request : " + totalRequest1);       	
+        	//logger.info(sample1 + " Demand Total Request : " + totalRequest1);
         	logger.info(sample1 + " Demand Successful Request : " + demandSuccessfulRequest1);
 
            	logger.info(sample2 + " Supply Amount : " + Math.round(supplyAmount2*100.0)/100.0);
-        	logger.info(sample2 + " Supply Request : " + supplyRequest2);       	
-        	
+        	logger.info(sample2 + " Supply Request : " + supplyRequest2);
+
          	logger.info(sample2 + " Demand Amount : " + Math.round(demandAmount2*100.0)/100.0);
         	//logger.info(sample2 + " Demand Total Request : " + totalRequest2);
         	logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
-      	
+
 
     }
-    
-    
+
+
     /**
-     * refreshes the supply and demand map data 
+     * refreshes the supply and demand map data
      */
     // 2015-02-13  Added refreshSupplyDemandMap()
    	public void refreshMapDaily(int solElapsed) {
 
         boolean clearNow ;
-    
+
         // clearNow = true if solElapsed is an exact multiple of x
         // Clear maps once every x number of days
         if (solElapsed % SOL_PER_REFRESH == 0)
@@ -667,20 +669,20 @@ implements LifeSupport {
         	// carry out the daily average of the previous 5 days
             inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
             inv.clearAmountSupplyRequestMap();
-            
+
             inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
         	inv.clearAmountDemandTotalRequestMap();
         	inv.clearAmountDemandMetRequestMap();
-        	
-        	// 2015-03-06 Added clearing of weather data map 
+
+        	// 2015-03-06 Added clearing of weather data map
         	Simulation.instance().getMars().getWeather().clearMap();
-        	
+
         	logger.info("Just compacted supply & demand data map and cleared weather data maps");
         }
-    	
-   		
+
+
    	}
-   	
+
     /**
      * Updates the GoodsManager
      * @param time
@@ -767,7 +769,7 @@ implements LifeSupport {
         while (i.hasNext()) {
             Building building = i.next();
 
-            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
                     person.getXLocation(), person.getYLocation());
             if (distance < leastDistance) {
                 EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
@@ -787,7 +789,7 @@ implements LifeSupport {
         while (i.hasNext()) {
             Building building = i.next();
 
-            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
             		robot.getXLocation(), robot.getYLocation());
             if (distance < leastDistance) {
                 EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
@@ -798,7 +800,7 @@ implements LifeSupport {
 
         return result;
     }
-    
+
     /**
      * Gets the closest available airlock at the settlement to the given location.
      * The airlock must have a valid walkable interior path from the person's current location.
@@ -810,32 +812,32 @@ implements LifeSupport {
     public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
         Airlock result = null;
         Building currentBuilding = BuildingManager.getBuilding(person);
-        
+
         if (currentBuilding == null) {
         	throw new IllegalStateException(person.getName() + " is not currently in a building.");
         }
 
         result = getAirlock(currentBuilding, xLocation, yLocation);
-            
+
         return result;
     }
 
     public Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
         Airlock result = null;
         Building currentBuilding = BuildingManager.getBuilding(robot);
-        
+
         if (currentBuilding == null) {
         	throw new IllegalStateException(robot.getName() + " is not currently in a building.");
         }
 
         result = getAirlock(currentBuilding, xLocation, yLocation);
-        
+
         return result;
     }
-    
+
     public Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
         Airlock result = null;
-        
+
         double leastDistance = Double.MAX_VALUE;
         BuildingManager manager = buildingManager;
         Iterator<Building> i = manager.getBuildings(BuildingFunction.EVA).iterator();
@@ -844,7 +846,7 @@ implements LifeSupport {
 
             if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
-                double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+                double distance = Point2D.distance(building.getXLocation(), building.getYLocation(),
                         xLocation, yLocation);
                 if (distance < leastDistance) {
                     EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
@@ -855,7 +857,7 @@ implements LifeSupport {
         }
         return result;
     }
-    
+
     /**
      * Gets the closest available airlock at the settlement to the given location.
      * The airlock must have a valid walkable interior path from the given building's current location.
@@ -875,7 +877,7 @@ implements LifeSupport {
 
             if (buildingConnectorManager.hasValidPath(building, nextBuilding)) {
 
-                double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(), 
+                double distance = Point2D.distance(nextBuilding.getXLocation(), nextBuilding.getYLocation(),
                         xLocation, yLocation);
                 if (distance < leastDistance) {
                     EVA eva = (EVA) nextBuilding.getFunction(BuildingFunction.EVA);
@@ -921,7 +923,7 @@ implements LifeSupport {
         return thermalSystem;
     }
 
-    
+
     /**
      * Gets the settlement template.
      * @return template as string.
@@ -963,7 +965,7 @@ implements LifeSupport {
 
         return result;
     }
-    
+
     /**
      * Gets all vehicles associated with this settlement, even if they are out on missions.
      * @return collection of associated vehicles.
@@ -1004,7 +1006,7 @@ implements LifeSupport {
 
     /**
      * Sets the construction override flag.
-     * @param constructionOverride override for settlement construction/salvage 
+     * @param constructionOverride override for settlement construction/salvage
      * mission creation.
      */
     public void setConstructionOverride(boolean constructionOverride) {
@@ -1130,7 +1132,7 @@ implements LifeSupport {
     public int getInitialNumOfRobots() {
         return initialNumOfRobots;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
@@ -1155,12 +1157,12 @@ implements LifeSupport {
             powerGrid.destroy();
         }
         powerGrid = null;
-        
+
         if (thermalSystem != null) {
         	thermalSystem.destroy();
         }
         thermalSystem = null;
-        
+
         template = null;
         if (scientificAchievement != null) {
             scientificAchievement.clear();
