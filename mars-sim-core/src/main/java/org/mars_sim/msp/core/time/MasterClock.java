@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.07 2015-01-08
+ * @version 3.08 2015-04-02
  * @author Scott Davis
  */
 
@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,14 +55,6 @@ public class MasterClock implements Runnable, Serializable {
 	private static long SLEEP_TIME = 40L;
 
 	// Data members
-	/** Martian Clock. */
-	private MarsClock marsTime;
-	/** Initial Martian time. */
-	private MarsClock initialMarsTime;
-	/** Earth Clock. */
-	private EarthClock earthTime;
-	/** Uptime Timer. */
-	private UpTimer uptimer;
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning;
 	/** Pausing clock. */
@@ -72,15 +67,31 @@ public class MasterClock implements Runnable, Serializable {
 	private transient volatile boolean saveSimulation;
 	/** Flag for auto-saving a simulation. */
 	private transient volatile boolean autosaveSimulation;
-	/** The file to save or load the simulation. */
-	private transient volatile File file;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
-	/** Clock listeners. */
-	private transient List<ClockListener> listeners;
+
 	private long totalPulses = 1;
 	private transient long elapsedlast;
 	private transient long elapsedMilliseconds;
+
+	/** Clock listeners. */
+	private transient List<ClockListener> listeners;
+	private transient List<ClockListenerTask> clockListenerTaskList =  new ArrayList<ClockListenerTask>();
+
+	/** Martian Clock. */
+	private MarsClock marsTime;
+	/** Initial Martian time. */
+	private MarsClock initialMarsTime;
+	/** Earth Clock. */
+	private EarthClock earthTime;
+	/** Uptime Timer. */
+	private UpTimer uptimer;
+	/** The file to save or load the simulation. */
+	private transient volatile File file;
+
+	//private ClockListenerTask clockListenerTask;
+
+	private transient ThreadPoolExecutor clockListenerExecutor;
 
     /**
      * Constructor
@@ -105,6 +116,12 @@ public class MasterClock implements Runnable, Serializable {
         listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
         elapsedlast = uptimer.getUptimeMillis();
         elapsedMilliseconds = 0L;
+
+        setupClockListenerTask();
+
+        // Allow one thread only at a time for now
+    	clockListenerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool(); //
+
     }
 
     /**
@@ -145,22 +162,73 @@ public class MasterClock implements Runnable, Serializable {
 
     /**
      * Adds a clock listener
-     *
      * @param newListener the listener to add.
      */
+    // 2015-04-02 Modified addClockListener()
     public final void addClockListener(ClockListener newListener) {
-        if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
-        if (!listeners.contains(newListener)) listeners.add(newListener);
-    }
+        // if listeners list does not exist, create one
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
+        // if the listeners list does not contain newListener, add it to the list
+    	if (!listeners.contains(newListener)) listeners.add(newListener);
+    	// will check if clockListenerTaskList already contain the newListener's task, if it doesn't, create one
+    	addClockListenerTask(newListener);
+      }
+
 
     /**
      * Removes a clock listener
-     *
      * @param oldListener the listener to remove.
      */
+    // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
         if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
         if (listeners.contains(oldListener)) listeners.remove(oldListener);
+       	// Check if clockListenerTaskList contain the newListener's task, if it does, delete it
+        ClockListenerTask task = retrieveClockListenerTask(oldListener);
+        if (task != null)
+        	clockListenerTaskList.remove(task);
+    }
+
+    /**
+     * Adds a clock listener task
+     *
+     * @param newListener the clock listener task to add.
+     */
+    // 2015-04-02 addClockListenerTask()
+    public void addClockListenerTask(ClockListener listener) {
+    	boolean hasIt = false;
+    	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
+    	while (i.hasNext()) {
+    		ClockListenerTask c = i.next();
+    		if (c.getClockListener().equals(listener))
+    			hasIt = true;
+    	}
+    	if (!hasIt) {
+	    	clockListenerTaskList.add(new ClockListenerTask(listener));
+    	}
+    }
+
+    /**
+     * Retrieve a clock listener task
+     * @param oldListener the clock listener task to remove.
+     */
+    // 2015-04-02 retrieveClockListenerTask()
+    public ClockListenerTask retrieveClockListenerTask(ClockListener oldListener) {
+/*     	ClockListenerTask c = null;
+    	clockListenerTaskList.forEach(t -> {
+    		ClockListenerTask l = c;
+    		if (t.getClockListener().equals(oldListener))
+    			l = t;
+    	});
+*/
+    	ClockListenerTask t = null;
+    	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
+    	while (i.hasNext()) {
+    		ClockListenerTask c = i.next();
+    		if (c.getClockListener().equals(oldListener))
+    		 t = c;
+    	}
+		return t;
     }
 
     /**
@@ -203,7 +271,7 @@ public class MasterClock implements Runnable, Serializable {
         autosaveSimulation = true;
         this.file = file;
     }
-    
+
     /**
      * Checks if in the process of saving a simulation.
      *
@@ -222,7 +290,7 @@ public class MasterClock implements Runnable, Serializable {
     public boolean isAutosavingSimulation() {
         return autosaveSimulation;
     }
-    
+
     /**
      * Sets the exit program flag.
      */
@@ -247,7 +315,7 @@ public class MasterClock implements Runnable, Serializable {
         if (timeRatio > 0D) {
             double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
-        } 
+        }
         else timePulse = 1D;
 
         return timePulse;
@@ -265,7 +333,7 @@ public class MasterClock implements Runnable, Serializable {
     public void setTimeRatio(double ratio) {
         if (ratio >= 0.0001D && ratio <= 500000D) {
             timeRatio = ratio;
-        } 
+        }
         else throw new IllegalArgumentException("Time ratio out of bounds ");
     }
 
@@ -286,7 +354,7 @@ public class MasterClock implements Runnable, Serializable {
         keepRunning = true;
         long lastTimeDiff;
         elapsedlast = uptimer.getUptimeMillis();
-        
+
         // Keep running until told not to
         while (keepRunning) {
 
@@ -294,22 +362,22 @@ public class MasterClock implements Runnable, Serializable {
             try {
                 Thread.yield();
                 Thread.sleep(SLEEP_TIME);
-            } 
+            }
             catch (Exception e) {
                 logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
             }
 
             if (!isPaused) {
-                
+
                 // Update elapsed milliseconds.
                 updateElapsedMilliseconds();
-                
+
                 // Get the time pulse length in millisols.
                 double timePulse = getTimePulse();
-                
+
                 // Incrementing total time pulse number.
                 totalPulses++;
-                
+
                 long startTime = System.nanoTime();
 
                 // Add time pulse length to Earth and Mars clocks.
@@ -319,45 +387,45 @@ public class MasterClock implements Runnable, Serializable {
 
                 // Fire clock pulse to all clock listeners.
                 fireClockPulse(timePulse);
-                
+
                 long endTime = System.nanoTime();
                 lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
 
                 logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
             }
-            
+
             if (saveSimulation) {
                 // Save the simulation to a file.
                 try {
                     Simulation.instance().saveSimulation(file, false);
                 } catch (IOException e) {
 
-                    logger.log(Level.SEVERE, "Could not save the simulation with file="
+                    logger.log(Level.SEVERE, "Could not save the simulation with file = "
                             + (file == null ? "null" : file.getPath()), e);
                     e.printStackTrace();
                 }
                 saveSimulation = false;
-            } 
-            
+            }
+
             else if (autosaveSimulation) {
                 // Autosave the simulation to a file.
                 try {
                     Simulation.instance().saveSimulation(file, true);
                 } catch (IOException e) {
 
-                    logger.log(Level.SEVERE, "Could not autosave the simulation with file="
+                    logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
                             + (file == null ? "null" : file.getPath()), e);
                     e.printStackTrace();
                 }
                 autosaveSimulation = false;
-            } 
-            
+            }
+
             else if (loadSimulation) {
                 // Load the simulation from a file.
                 if (file.exists() && file.canRead()) {
                     Simulation.instance().loadSimulation(file);
                     Simulation.instance().start();
-                } 
+                }
                 else {
                     logger.warning("Cannot access file " + file.getPath() + ", not reading");
                 }
@@ -371,13 +439,84 @@ public class MasterClock implements Runnable, Serializable {
             }
         }
     }
-    
+
     /**
-     * Send a clock pulse to all clock listeners.
-     * @param time the amount of time (millisols) in the pulse.
+     * Looks at the clock listener list and checks if each listener has already had a corresponding task in the clock listener task list.
      */
-    public void fireClockPulse(double time) {
-        
+    // 2015-04-02 setupClockListenerTask()
+    public void setupClockListenerTask() {
+		listeners.forEach(t -> {
+			// Check if it has a corresponding task or not, if it doesn't, create a task for t
+			addClockListenerTask(t);
+		});
+    }
+
+    /**
+     * Prepare clocklistener tasks for setting up threads.
+     */
+    // 2015-04-02 Added ClockListenerTask
+	class ClockListenerTask implements Runnable {
+
+		//long SLEEP_TIME = 1;
+		double time;
+		private ClockListener listener;
+
+		protected ClockListener getClockListener() {
+			return listener;
+		}
+
+		private ClockListenerTask(ClockListener listener) {
+			//logger.info(Msg.getString("MainDesktopPane.toolWindow.thread.running")); //$NON-NLS-1$
+			this.listener = listener;
+
+		}
+
+		public void addTime(double time) {
+			this.time = time;
+		}
+
+		@Override
+		public void run() {
+			try {
+				//while (!clockListenerExecutor.isTerminated()){
+				listener.clockPulse(time);
+				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
+				//}
+			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		}
+	}
+
+
+    /**
+     * Fires the clock pulse to each clock listener
+     */
+    // 2015-04-02 Modified fireClockPulse() to make use of ThreadPoolExecutor
+	public void fireClockPulse(double time) {
+
+	  //if (clockListenerTaskList.isEmpty())
+		setupClockListenerTask();
+
+		// run all clockListener Tasks
+	  	clockListenerTaskList.forEach(t -> {
+			// TODO: check if the thread for t is running
+			//if (running)
+	  			try {
+	  				if ( !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() ) {
+	  		  			t.addTime(time);
+	  					clockListenerExecutor.execute(t);
+	  				}
+                    //try {
+                    //    Thread.yield();
+                    //}
+                    //catch (Exception e) {
+                    //    logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
+                    //}
+                } catch (Exception e) {
+            		throw new IllegalStateException("Error while firing clock pulse", e);
+                }
+
+		});
+/*
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();
             while (i.hasNext()) {
@@ -386,7 +525,7 @@ public class MasterClock implements Runnable, Serializable {
                     cl.clockPulse(time);
                     try {
                         Thread.yield();
-                    } 
+                    }
                     catch (Exception e) {
                         logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
                     }
@@ -395,6 +534,7 @@ public class MasterClock implements Runnable, Serializable {
                 }
             }
         }
+ */
     }
 
     /**
@@ -425,12 +565,12 @@ public class MasterClock implements Runnable, Serializable {
     public boolean isPaused() {
         return isPaused;
     }
-    
+
     /**
      * Send a pulse change event to all clock listeners.
      */
     public void firePauseChange() {
-        
+
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();
             while (i.hasNext()) {
@@ -459,7 +599,7 @@ public class MasterClock implements Runnable, Serializable {
         elapsedlast = tnow;
         //System.out.println("getElapsedmilliseconds " + elapsedMilliseconds);
     }
-    
+
     private long getElapsedmillis() {
         return elapsedMilliseconds;
     }
@@ -508,7 +648,7 @@ public class MasterClock implements Runnable, Serializable {
 
         return b.toString();
     }
-    
+
     /**
      * Prepare object for garbage collection.
      */
