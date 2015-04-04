@@ -2,7 +2,6 @@
  * Mars Simulation Project
  * DayNightMapLayer.java
  * @version 3.08 2015-03-18
-
  * @author Manny Kung
  */
 
@@ -16,13 +15,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
 
 /**
  * The DayNightMapLayer is a graphics layer to display twilight and night time shading of the settlement
@@ -37,10 +32,11 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
     private SurfaceFeatures surfaceFeatures;
 	private SettlementMapPanel mapPanel;
+	private Coordinates location;
 
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
-        Mars mars = Simulation.instance().getMars();
-        surfaceFeatures = mars.getSurfaceFeatures();
+        surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+
 		// Initialize data members.
 		this.mapPanel = mapPanel;
     }
@@ -64,7 +60,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 	        //boolean nightTime = true;
 	        //boolean dayTime = true;
-	        Coordinates location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
+	        if (location == null)
+	        	location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
 	        //double sunlight = surfaceFeatures.getSurfaceSunlight(location);
 	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / 500D; // normalized to 500 W/m2
         	//System.out.println(" sunlight is " + sunlight);
@@ -74,7 +71,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
             //if (sunlight < 127)
             //	dayTime = false;
 
-	        if (sunlight <.03D) {
+	        if (sunlight <.01D) {
 	            //g2d.setColor(new Color(0, 0, 0, 128));
 	            g2d.setColor(new Color(0, 0, 0, 196));
 	            g2d.fillRect(0, 0, width, height);
@@ -83,7 +80,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	        else if (sunlight > .97D )
 	        	return;
 
-	        else if (sunlight >= 0.03D && sunlight <= .97D) {
+	        else if (sunlight >= 0.01D && sunlight <= .97D) {
 	        	shadingArray = new int[width * height];
 		        // TODO: how to make the shadingArray sensitive to the zooming in and out
 

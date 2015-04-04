@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2014-04-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -13,8 +12,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
-/** 
- * The OrbitInfo class keeps track of the orbital position of Mars 
+/**
+ * The OrbitInfo class keeps track of the orbital position of Mars
  */
 public class OrbitInfo
 implements Serializable {
@@ -38,34 +37,37 @@ implements Serializable {
 
 	// Data members
 	/** The total time in the current orbit (in seconds). */
-	private double orbitTime; 
+	private double orbitTime;
 	/** The angle of Mars's position to the Sun (in radians). */
 	private double theta;
 	/** The distance from the Sun to Mars (in au). */
 	private double radius;
-	
+
 	/** The areocentric longitude (or the orbital position of Mars).
 	 *  0 corresponding to Mars' Northern Spring Equinox.
 	 */
-	private double L_s; 
-	
+	private double L_s;
+
 	/** The solar zenith angle z */
 	private double z;
-	
+
 	/** The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
 
+	private MarsClock marsClock;
+
 	/** Constructs an {@link OrbitInfo} object */
-	public OrbitInfo() {   
+	public OrbitInfo() {
 		// Initialize data members
 		// Set orbit coordinates to start of orbit.
 		orbitTime = 0D;
 		theta = 0D;
 		radius = 1.665732D;
 		sunDirection = new Coordinates((Math.PI / 2D) + TILT, Math.PI);
+
 	}
 
-	/** 
+	/**
 	 * Adds time to the orbit.
 	 * @param millisols time added (millisols)
 	 */
@@ -91,7 +93,7 @@ implements Serializable {
 		// Determine new radius
 		radius = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
 		//System.out.println("radius is " + radius);
-		
+
 		// Determine Sun direction
 
 		// Determine Sun theta
@@ -99,42 +101,42 @@ implements Serializable {
 		sunTheta -= (2D * Math.PI) * (seconds / SOLAR_DAY);
 
 		while (sunTheta < 0D) sunTheta += 2D * Math.PI;
-		sunDirection.setTheta(sunTheta);        
+		sunDirection.setTheta(sunTheta);
 		//System.out.println("sunTheta is " + sunTheta);
-		
+
 		// Determine Sun phi
 		double sunPhi = (Math.PI / 2D) + (Math.sin(theta + (Math.PI / 2D)) * TILT);
 		sunDirection.setPhi(sunPhi);
 		//System.out.println("sunPhi is " + sunPhi);
 
-	} 
-	
+	}
+
 	/**
 	 * Returns the theta angle of Mars's orbit.
 	 * Angle is clockwise starting at aphelion.
 	 * @return the theta angle of Mars's orbit
 	 */
-	public double getTheta() { 
-		return theta; 
+	public double getTheta() {
+		return theta;
 	}
 
 	/**
 	 * Returns the radius of Mars's orbit in A.U.
 	 * @return the radius of Mars's orbit
 	 */
-	public double getRadius() { 
-		return radius; 
+	public double getRadius() {
+		return radius;
 	}
 
 	/**
 	 * Gets the current distance to the Sun.
 	 * @return distance in Astronomical Units (A.U.)
 	 */
-	public double getDistanceToSun() { 
+	public double getDistanceToSun() {
 		return radius;
 	}
 
-	/** 
+	/**
 	 * Gets the Sun's angle from a given phi (latitude).
 	 * @param phi location in radians (0 - PI).
 	 * @return angle in radians (0 - PI).
@@ -146,29 +148,38 @@ implements Serializable {
 		return a;
 	}
 
-	/** 
-	 * Gets the solar zenith angle from a given phi (latitude).
-	 * @param lat location in radians (0 - PI).
+	/**
+	 * Gets the solar zenith angle from a given coordinate
+	 * @param location
 	 * @return angle in radians (0 - PI).
 	 */
 	// 2015-03-17 Added getSolarZenithAngle()
 	public double getSolarZenithAngle(Coordinates location) {
-		// Determine the solar zenith angle		
+		// Determine the solar zenith angle
 		double z = Math.acos( getCosineSolarZenithAngle(location) );
 		//System.out.println("solar zenith angle is " + z);
 		return z;
 	}
-	
+
+	/**
+	 * Gets the cosine solar zenith angle from a given coordinate
+	 * @param location
+	 * @return angle in radians (0 - PI).
+	 */
+	// 2015-03-17 Added getCosineSolarZenithAngle()
 	public double getCosineSolarZenithAngle(Coordinates location) {
-		double theta = location.getTheta();
-		double theta_offset = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;	
-		//System.out.println(" theta_offset: " + theta_offset);	
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+		//double theta = location.getTheta();
+		double theta_offset = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
+		//System.out.println(" theta_offset: " + theta_offset);
 		double lat = location.getPhi2Lat(location.getPhi());
 		double L_s = getL_s();
 		double dec = getSolarDeclinationAngle(L_s);
-		//System.out.println("solar dec angle is " + dec);	
-		double solar_time = Simulation.instance().getMasterClock().getMarsClock().getMillisol() ;
-		//System.out.println("solar_time is " + (int) solar_time);		
+		//System.out.println("solar dec angle is " + dec);
+		double solar_time = marsClock.getMillisol() ;
+		//System.out.println("solar_time is " + (int) solar_time);
 		// TODO: figure out a more compact EOT using numerical model of the analemma. see http://www.giss.nasa.gov/research/briefs/allison_02/
 		double equation_of_time_offset = 0;
 		if (L_s <= 90 )
@@ -186,35 +197,35 @@ implements Serializable {
 		else if (L_s <= 270)
 			equation_of_time_offset = -10D + (L_s-260D) * .1;
 		else if (L_s <= 280)
-			equation_of_time_offset = -25D + (L_s-270D) * .1;		
+			equation_of_time_offset = -25D + (L_s-270D) * .1;
 		else if (L_s <= 290)
-			equation_of_time_offset = -42D + (L_s-280D) * .1;		
+			equation_of_time_offset = -42D + (L_s-280D) * .1;
 		else if (L_s <= 300)
-			equation_of_time_offset = -50D + (L_s-290D) * .1;		
+			equation_of_time_offset = -50D + (L_s-290D) * .1;
 		else if (L_s <= 310)
-			equation_of_time_offset = -50D + (L_s-300D) * .1;		
+			equation_of_time_offset = -50D + (L_s-300D) * .1;
 		else if (L_s <= 320)
-			equation_of_time_offset = -50D + (L_s-310D) * .1;		
+			equation_of_time_offset = -50D + (L_s-310D) * .1;
 		else if (L_s <= 330)
-			equation_of_time_offset = -50D + (L_s-320D) * .1;		
+			equation_of_time_offset = -50D + (L_s-320D) * .1;
 		else if (L_s <= 340)
 			equation_of_time_offset = -48D + (L_s-330D) * .1;
 		else if (L_s <= 350)
 			equation_of_time_offset = -46D + (L_s-340D) * .1;
 		else if (L_s <= 360)
-			equation_of_time_offset = -44D + (L_s-350D) * .1;		
-	
+			equation_of_time_offset = -44D + (L_s-350D) * .1;
+
 		double EOT_in_millisol = equation_of_time_offset * 60D /SOLAR_DAY * 1000D;
 		double modified_solar_time = solar_time + theta_offset + EOT_in_millisol ;
 		double h = Math.PI * Math.abs(modified_solar_time - 500D) / 500D ;
 		//System.out.println("h is " + h);
-		// Determine the solar zenith angle		
-		double cosine_z =  Math.sin (lat) * Math.sin (dec) +  Math.cos (lat)  *Math.cos (dec) * Math.cos (h) ;	
+		// Determine the solar zenith angle
+		double cosine_z =  Math.sin (lat) * Math.sin (dec) +  Math.cos (lat)  *Math.cos (dec) * Math.cos (h) ;
 		//System.out.println("Math.cos (h) is " + Math.cos (h));
 		//System.out.println("solar zenith angle is " + z);
 		return cosine_z;
 	}
-	
+
 
 	/**
 	 * Returns the instantaneous true anomaly or polar angle of Mars around the sun.
@@ -222,18 +233,18 @@ implements Serializable {
 	 * @return the true anomaly
 	 */
 	// 2015-03-17 Added getTrueAnomaly()
-	public double getTrueAnomaly() { 
+	public double getTrueAnomaly() {
 		// r = a (1 - e * e) / ( 1 + e * cos (ta) )
 		double part1 = SEMI_MAJOR_AXIS * (1 - ECCENTRICITY *  ECCENTRICITY) / radius;//   radius is in A.U.  no need of * 149597871000D
 		//System.out.println("part1 is " + part1);
 		double part2 = ( part1 - 1 ) / ECCENTRICITY ;
 		double v = Math.acos(part2);
-		//System.out.println("true anomally is " + v);		
-		return v; 
+		//System.out.println("true anomally is " + v);
+		return v;
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * Gets the instantaneous areocentric longitude
 	 * @return angle in radians (0 - 360).
 	 */
@@ -246,23 +257,23 @@ implements Serializable {
 		//System.out.println("L_s is " + L_s);
 		return L_s;
 	}
-	
-	/** 
+
+	/**
 	 * Gets the solar declination angle from a given areocentric longitude.
 	 * @param L_s areocentric longitude in degrees (0 -360).
 	 * @return angle in radians (0 - PI).
 	 */
 	// 2015-03-17 Added getSolarZenithAngle()
-	public double getSolarDeclinationAngle(double L_s) { 
+	public double getSolarDeclinationAngle(double L_s) {
 		return Math.asin ( Math.sin (TILT) * Math.sin (L_s * Math.PI / 180D) );
 	}
-	
+
 	/**
-	 * The point on the surface of Mars perpendicular to the Sun as Mars rotates. 
+	 * The point on the surface of Mars perpendicular to the Sun as Mars rotates.
 	 * @return the surface point on Mars perpendicular to the sun
 	 */
-	public Coordinates getSunDirection() { 
-		return sunDirection; 
+	public Coordinates getSunDirection() {
+		return sunDirection;
 	}
 
 	/**

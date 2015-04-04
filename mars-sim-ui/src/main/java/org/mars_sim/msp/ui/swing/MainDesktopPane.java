@@ -857,7 +857,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
         //threadPoolExecutor.shutdown();
         if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
-		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+		//logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 		toolWindowTaskList.clear();
 
 		// Give some time for the update thread to finish updating.

@@ -51,28 +51,31 @@ implements Serializable {
 
     /** Stress jump resulting from being in an accident. */
     public static final double ACCIDENT_STRESS = 40D;
-    
+
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String ANXIETY_ATTACK = "Anxiety Attack";
-    
+
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
     // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
     public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
-    
+    //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
+
+    public static double ENERGY_FACTOR = 0.8D;
+
     /** Performance modifier for hunger. */
     private static final double HUNGER_PERFORMANCE_MODIFIER = .005D;
-    
+
     /** Performance modifier for fatigue. */
     private static final double FATIGUE_PERFORMANCE_MODIFIER = .01D;
-    
+
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
-    
-    
+
+
     // Data members
 
     /** Person's fatigue level. */
@@ -83,28 +86,28 @@ implements Serializable {
     private double stress;
     /** Performance factor. */
     private double performance;
-    
+
     private double personStarvationTime;
-    
+
     // 2015-02-23 Added hygiene
     private double hygiene; /** Person's hygiene factor (0.0 - 100.0 */
 
-    // 2015-01-12 Person's energy level 
+    // 2015-01-12 Person's energy level
     private double kJoules;
     private double foodDryMassPerServing;
     private double robotBatteryDrainTime;
-   
-    
+
+
     /** True if person is alive. */
     private boolean alive;
     private boolean isStarving;
     private boolean isBatteryDepleting;
-    
+
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
-    
+
     /** Person owning this physical. */
     private Person person;
     private Robot robot;
@@ -114,7 +117,7 @@ implements Serializable {
     private HealthProblem serious;
 
 
-    
+
     /**
      * Constructor 1.
      * @param newPerson The person requiring a physical presence.
@@ -125,18 +128,18 @@ implements Serializable {
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         fatigue = RandomUtil.getRandomDouble(1000D);
-        
+
         stress = RandomUtil.getRandomDouble(100D);
 
         hunger = RandomUtil.getRandomDouble(400D);
         kJoules = 500D + RandomUtil.getRandomDouble(7500D);
-        
+
         // 2015-02-23 Added hygiene
         hygiene = RandomUtil.getRandomDouble(100D);
-        
+
         alive = true;
         medicationList = new ArrayList<Medication>();
-        
+
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         foodDryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
@@ -147,7 +150,7 @@ implements Serializable {
         catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        
+
 
     }
 
@@ -162,9 +165,9 @@ implements Serializable {
         performance = 1.0D;
         hunger = RandomUtil.getRandomDouble(400D);
         alive = true;
-        
+
         RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-        
+
         try {
         	robotBatteryDrainTime = robotConfig.getStarvationStartTime() * 1000D;
             //System.out.println("robotBatteryDrainTime : "+ Math.round(robotBatteryDrainTime*10.0)/10.0);
@@ -173,13 +176,13 @@ implements Serializable {
             e.printStackTrace(System.err);
         }
     }
-    
-    
-    
+
+
+
     public double getMassPerServing() {
         return foodDryMassPerServing;
     }
-    
+
     /**
      * Gets the medical manager.
      * @return medical manager.
@@ -267,12 +270,12 @@ implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
-        // normal bodily function consume a minute amount of energy 
+        // normal bodily function consume a minute amount of energy
         // even if a person does not perform any tasks
         reduceEnergy(time);
         checkStarvation(hunger);
         //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-        
+
         // Add time to all medications affecting the person.
         Iterator<Medication> i = medicationList.iterator();
         while (i.hasNext()) {
@@ -297,10 +300,10 @@ implements Serializable {
 
         return (!isDead());
     }
-    
+
     /**
      * This timePassing method 2 reflect a passing of time for robots.
-  
+
      * @param time amount of time passing (in millisols)
      * @param support life support system.
      * @param config robot configuration.
@@ -364,37 +367,37 @@ implements Serializable {
         setHunger(hunger + time);
         // Consume a minute amount of energy even if a robot does not perform any tasks
         reduceEnergy(time);
-        //checkStarvation(hunger);       
+        //checkStarvation(hunger);
         //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-        
+
         // Calculate performance
         recalculate();
 */
         return (!isDead());
     }
-    
-    
+
+
     /**
      * Check for any random ailments that a person comes down with over a period of time.
      * @param time the time period (millisols).
      * @return list of ailments occurring.  May be empty.
      */
     private List<Complaint> checkForRandomAilments(double time) {
-        
+
         List<Complaint> result = new ArrayList<Complaint>(0);
-        
+
         // Check each possible medical complaint.
         Iterator<Complaint> i = getMedicalManager().getAllMedicalComplaints().iterator();
         while (i.hasNext()) {
             Complaint complaint = i.next();
             double probability = complaint.getProbability();
-            
+
             // Check that medical complaint has a probability > zero.
             if (probability > 0D) {
-                
+
                 // Check that person does not already have a health problem with this complaint.
                 if (!problems.containsKey(complaint)) {
-                    
+
                     // Randomly determine if person suffers from ailment.
                     double chance = RandomUtil.getRandomDouble(100D);
                     double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
@@ -406,7 +409,7 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -420,24 +423,24 @@ implements Serializable {
             recalculate();
         }
     }
-    
+
     // 2014-11-28 Added consumeDessert()
     @SuppressWarnings("unused")
 	public void consumeDessert(double amount, Unit container) {
         Inventory inv = container.getInventory();
-        
+
     	if (container == null) throw new IllegalArgumentException("container is null");
 
 		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
-	
+
 		double foodEaten = amount;
 		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
-    	
+
 		// 2015-01-09 Added addDemandTotalRequest()
     	inv.addAmountDemandTotalRequest(soymilkAR);
-    	
+
 		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
-		
+
 		if (soymilkAvailable < 0.01D) {
 			throw new IllegalStateException( container.getName() + " has " + " very little soymilk remaining!");
 		}
@@ -445,17 +448,17 @@ implements Serializable {
 			// if container has less than enough food, finish up all food in the container
 			if (foodEaten > soymilkAvailable)
 				foodEaten = soymilkAvailable;
-	
+
 			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
 			// subtract food from container
-			inv.retrieveAmountResource(soymilkAR, foodEaten);	
-			
+			inv.retrieveAmountResource(soymilkAR, foodEaten);
+
 			// 2015-01-09 addDemandRealUsage()
 		   	inv.addAmountDemand(soymilkAR, foodEaten);
 		}
     }
-   
-    
+
+
     /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
@@ -465,9 +468,9 @@ implements Serializable {
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
 		consumePackedFood(amount, container, LifeSupport.FOOD);
- 
+
     }
-    
+
     /**
      * Robot consumes given amount of power
      * @param amount amount of power to consume (in kJ).
@@ -477,40 +480,40 @@ implements Serializable {
     public void consumePower(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
     }
-    
+
     /**
      * Person consumes given amount of packed food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
-     * @throws Exception if error consuming food.  
+     * @throws Exception if error consuming food.
      */
 	// 2014-11-07 Added consumePackedFood()
     @SuppressWarnings("unused")
-	public void consumePackedFood(double amount, Unit container, String foodType) {    
+	public void consumePackedFood(double amount, Unit container, String foodType) {
     	Inventory inv = container.getInventory();
- 
+
     	if (container == null) throw new IllegalArgumentException("container is null");
 
     	AmountResource foodAR = AmountResource.findAmountResource(foodType);
         double foodEaten = amount;
         double foodAvailable = inv.getAmountResourceStored(foodAR, false);
-        
+
         // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(foodAR);
-        	
+
         if (foodAvailable < 0.01D) {
-           throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");   
+           throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
         }
         // if container has less than enough food, finish up all food in the container
-        else { 
-            	
+        else {
+
             if (foodEaten > foodAvailable)
             	foodEaten = foodAvailable;
-            
+
             foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
             // subtract food from container
             inv.retrieveAmountResource(foodAR, foodEaten);
-            
+
     		// 2015-01-09 addDemandRealUsage()
     		inv.addAmountDemand(foodAR, foodEaten);
         }
@@ -519,7 +522,7 @@ implements Serializable {
     /**
      * Person consumes a given amount of food not taken from local container.
      * @param amount the amount of food to consume (in kg).
-     
+
     public void consumeFood(double amount) {
         //System.out.println("PhysicalCondition.java : just called consumeFood(double amount) : food NOT taken from local container. amount is " + amount);
         // if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation()))
@@ -630,7 +633,7 @@ implements Serializable {
         return fatigue;
     }
 
-    /** Gets the person's daily food intake 
+    /** Gets the person's daily food intake
      *  @return person's energy level in kilojoules
      *  Note: one large calorie is about 4.2 kilojoules
      */
@@ -638,54 +641,53 @@ implements Serializable {
         return kJoules;
     }
 
-    /** Reduces the person's energy level 
+    /** Reduces the person's energy level
      *  @param kilojoules
      */
     public void reduceEnergy(double time) {
     	// TODO: re-tune the experimental FACTOR to work in most situation
-    	double FACTOR = 10000D; 
-    	double xdelta =  time / FACTOR;  
+    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
         //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
         //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
-        kJoules = kJoules / exponential(xdelta); 
-        
+        kJoules = kJoules / exponential(xdelta);
+
         if (kJoules < 100)
-        	kJoules = 100; // 100 kJ is the lowest possible energy level 
-        
-        //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);  
+        	kJoules = 100; // 100 kJ is the lowest possible energy level
+
+        //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);
     }
- 
+
     public double exponential(double x) {
     	  x = 1d + x / 256d;
     	  x *= x; x *= x; x *= x; x *= x;
     	  x *= x; x *= x; x *= x; x *= x;
     	  return x;
     	}
-    
-    /** Sets the person's energy level 
+
+    /** Sets the person's energy level
      *  @param kilojoules
      */
     public void setEnergy(double kJ) {
         kJoules = kJ;
-        //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");  
+        //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
-    
+
     /** Adds to the person's energy intake by eating
      *  @param person's energy level in kilojoules
      */
     public void addEnergy(double foodAmount) {
     	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
-        int MAX_KJ = 16290; // arbitrary 16290 kJ = 1kg of food
-        double FACTOR = 0.6D;
-		// Each meal an average of 2525 kJ
+        // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
+        // double FACTOR = 0.8D;
+		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
         double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
-        kJoules = kJoules + foodAmount * xdelta * Math.log(MAX_KJ/kJoules) / FACTOR; 
-        		                     
-        if (kJoules > MAX_KJ)
-        	kJoules = MAX_KJ;
-        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");  
+        kJoules = kJoules + foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO/kJoules) / ENERGY_FACTOR;
+
+        if (kJoules > FOOD_COMPOSITION_ENERGY_RATIO)
+        	kJoules = FOOD_COMPOSITION_ENERGY_RATIO;
+        //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
-    
+
     /**
      * Get the performance factor that effect Person with the complaint.
      * @return The value is between 0 -> 1.
@@ -701,11 +703,11 @@ implements Serializable {
     private void setPerformanceFactor(double newPerformance) {
         if (newPerformance != performance) {
             performance = newPerformance;
-			if (person != null) 
+			if (person != null)
 	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
 			else if (robot != null)
 				robot.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-            
+
         }
     }
 
@@ -724,11 +726,11 @@ implements Serializable {
     public void setFatigue(double newFatigue) {
         if (fatigue != newFatigue) {
             fatigue = newFatigue;
-			if (person != null) 
+			if (person != null)
 	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 			else if (robot != null)
 				robot.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-            
+
         }
     }
 
@@ -738,21 +740,21 @@ implements Serializable {
     public double getHunger() {
         return hunger;
     }
-    
-    
+
+
     public void checkStarvation(double hunger) {
-    	
+
         // TODO: need a different method and different terminology to account for the drain on the robot's battery
         if (robot != null) {
-        	
+
                 Complaint starvation = getMedicalManager().getStarvation();
                 if (hunger > robotBatteryDrainTime
                 		|| ((hunger > 1000D) && (kJoules < 500D))) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
                         isStarving = true;
-                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
-                        //System.out.println("PhysicalCondition : checkStarvation() : kJ is  " + Math.round(kJoules*10.0)/10.0 + " ");  
+                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
+                        //System.out.println("PhysicalCondition : checkStarvation() : kJ is  " + Math.round(kJoules*10.0)/10.0 + " ");
                         robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
@@ -766,18 +768,18 @@ implements Serializable {
                     }
                 }
 
-                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
-        }	
-        
-        else if (person != null) {       	
-	
+                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+        }
+
+        else if (person != null) {
+
                 Complaint starvation = getMedicalManager().getStarvation();
                 if (hunger > personStarvationTime
                 		|| ((hunger > 1000D) && (kJoules < 500D))) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
                         isBatteryDepleting = true;
-                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " "); 
+                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
@@ -791,11 +793,11 @@ implements Serializable {
                     }
                 }
 
-                person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);    
+                person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
         	}
     }
-    	    
-    
+
+
     /**
      * Define the hunger setting for this person
      * @param newHunger New hunger.
@@ -803,10 +805,10 @@ implements Serializable {
     public void setHunger(double newHunger) {
         if (hunger != newHunger) {
             hunger = newHunger;
-        }      
+        }
     }
 
-    
+
     /**
      * Gets the person's stress level
      * @return stress (0.0 to 100.0)
@@ -948,7 +950,7 @@ implements Serializable {
     private void recalculate() {
 
         double tempPerformance = 1.0D;
-        
+
         if (person != null) {
 
             serious = null;
@@ -1057,7 +1059,7 @@ implements Serializable {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         return config.getDessertConsumptionRate();
     }
-    
+
     /**
      * Gets the power consumption rate per Sol.
      * @return power consumed (kJ/Sol)
@@ -1067,7 +1069,7 @@ implements Serializable {
         RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
         return config.getPowerConsumptionRate();
     }
-    
+
     /**
      * Gets a list of medication affecting the person.
      * @return list of medication.
