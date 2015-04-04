@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -60,7 +62,7 @@ implements ClockListener, Serializable {
 	/** Save directory. */
 	public final static String DEFAULT_DIR =
 			System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + 
+			File.separator +
 			Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
 			File.separator +
 			Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
@@ -69,26 +71,27 @@ implements ClockListener, Serializable {
 	/** Autosave directory. */
 	public final static String AUTOSAVE_DIR =
 			System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + 
+			File.separator +
 			Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
 			File.separator +
-			Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$	
-	
+			Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
+
 	@SuppressWarnings("restriction")
 	public final static String WINDOW_TITLE = Msg.getString(
 			"Simulation.title", Simulation.VERSION +
-			" Build " + Simulation.BUILD_VERSION + 
+			" Build " + Simulation.BUILD_VERSION +
 			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
 		); //$NON-NLS-1$
-	
-	
+
+
 	/** Singleton instance. */
 	private static final Simulation instance = new Simulation();
 
 	// Transient data members (aren't stored in save file)
 	/** All historical info. */
 	private transient HistoricalEventManager eventManager;
-	private transient Thread clockThread;
+	//private transient Thread clockThread;
+	private transient ThreadPoolExecutor executor;
 	private static final boolean debug = logger.isLoggable(Level.FINE);
 
 	// Intransient data members (stored in save file)
@@ -114,14 +117,14 @@ implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	private boolean defaultLoad = false;
 	private boolean initialSimulationCreated = false;
-	
+
 	/** Flag to indicate that a new simulation is being created or loaded. */
 	private static boolean isUpdating = false;
 
 	// 2014-12-26 Added useGUI
     /** true if displaying graphic user interface. */
     private static boolean useGUI = true;
-    
+
 	/** constructor. */
 	private Simulation() {
 		initializeTransientData();
@@ -136,23 +139,31 @@ implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Checks if the simulation is in a state of creating a new simulation or 
+	 * Checks if the simulation is in a state of creating a new simulation or
 	 * loading a saved simulation.
 	 * @return true is simulation is in updating state.
 	 */
 	public static boolean isUpdating() {
 	    return isUpdating;
 	}
-	
-	public static void stopSimulation() {
+
+
+	/**
+	 * Ends the current simulation
+	 */
+	public void endSimulation() {
 		Simulation simulation = instance();
 		simulation.defaultLoad = false;
 		simulation.stop();
-
+		executor.shutdown();
+		masterClock.endClockListenerExecutor();
 		// Wait until current time pulse runs its course
 		// we have no idea how long it will take it to
 		// run its course. But this might be enough.
 		Thread.yield();
+		//masterClock = null; // not an option
+		//createNewSimulation();
+		//start();
 	}
 
 	/**
@@ -162,7 +173,7 @@ implements ClockListener, Serializable {
 	public static void createNewSimulation() {
 
 	    isUpdating = true;
-	    
+
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
 
 		Simulation simulation = instance();
@@ -171,13 +182,13 @@ implements ClockListener, Serializable {
 		if (simulation.initialSimulationCreated) {
 			simulation.destroyOldSimulation();
 		}
-		
+
 		// Initialize intransient data members.
 		simulation.initializeIntransientData();
 
 		// Initialize transient data members.
 		simulation.initializeTransientData();
-		
+
 	    // Sleep current thread for a short time to make sure all simulation objects are initialized.
         try {
             Thread.sleep(50L);
@@ -185,9 +196,9 @@ implements ClockListener, Serializable {
         catch (InterruptedException e) {
             // Do nothing.
         }
-		
+
 		simulation.initialSimulationCreated = true;
-		
+
 		isUpdating = false;
 	}
 
@@ -232,44 +243,44 @@ implements ClockListener, Serializable {
 	 */
 	// 2015-02-04 Added threading
 	private void initializeIntransientData() {
-		
+
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		malfunctionFactory.start();
-		
+
 		mars = new Mars();
-		
+
 		missionManager = new MissionManager();
-		
+
 		relationshipManager = new RelationshipManager();
 		relationshipManager.start();
-		
+
 		medicalManager = new MedicalManager();
 		medicalManager.start();
-		
+
 		masterClock = new MasterClock();
-		
-		unitManager = new UnitManager();	
+
+		unitManager = new UnitManager();
 		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
-	
+
 		creditManager = new CreditManager();
 		creditManager.start();
-		
+
 		scientificStudyManager = new ScientificStudyManager();
 		scientificStudyManager.start();
-		
+
 		transportManager = new TransportManager();
 		transportManager.start();
-		
+
 		/*
 		try {
-			malfunctionFactory.join();		
-			missionManager.join();			
-			relationshipManager.join();			
-			medicalManager.join();			
-			creditManager.join();			
-			scientificStudyManager.join();			
+			malfunctionFactory.join();
+			missionManager.join();
+			relationshipManager.join();
+			medicalManager.join();
+			creditManager.join();
+			scientificStudyManager.join();
 			transportManager.join();
-			
+
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -277,7 +288,7 @@ implements ClockListener, Serializable {
 		*/
 
 	}
-	
+
 
 	/**
 	 * Loads a simulation instance from a save file.
@@ -285,9 +296,9 @@ implements ClockListener, Serializable {
 	 * @throws Exception if simulation could not be loaded.
 	 */
 	public void loadSimulation(final File file) {
-	    
+		//System.out.println("Simulation : entering loadSimulation()");
 	    isUpdating = true;
-	    
+
 		File f = file;
 
 		logger.config(Msg.getString("Simulation.log.loadSimFrom") + file); //$NON-NLS-1$
@@ -300,7 +311,7 @@ implements ClockListener, Serializable {
 			/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
 			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 			simulation.defaultLoad = true;
-		} 
+		}
 		else {
 			simulation.defaultLoad = false;
 		}
@@ -316,10 +327,11 @@ implements ClockListener, Serializable {
 		}
 		else{
 			throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
-			        f.getPath() + " is not accessible"); 
+			        f.getPath() + " is not accessible");
 		}
-		
+
 		isUpdating = false;
+		System.out.println("Simulation : exiting loadSimulation()");
 	}
 
 	/**
@@ -334,7 +346,7 @@ implements ClockListener, Serializable {
 		FileInputStream fin = new FileInputStream(file);
 		GZIPInputStream gis = new GZIPInputStream(fin);
 		ObjectInputStream ois = new ObjectInputStream(gis);
-	
+
 		// Destroy old simulation.
 		if (instance().initialSimulationCreated) {
 			destroyOldSimulation();
@@ -370,7 +382,7 @@ implements ClockListener, Serializable {
 		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
 		Simulation simulation = instance();
-		simulation.stop();
+		simulation.pause();
 
 		// Use default file path if file is null.
 		/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
@@ -389,8 +401,8 @@ implements ClockListener, Serializable {
 				file.getParentFile().mkdirs();
 			}
 		}
-	
-		
+
+
 		//ObjectOutputStream p = null;
 		ObjectOutputStream oos = null;
 
@@ -399,7 +411,7 @@ implements ClockListener, Serializable {
 			FileOutputStream fos = new FileOutputStream(file);
 			GZIPOutputStream gz = new GZIPOutputStream(fos);
 			oos = new ObjectOutputStream(gz);
-			
+
 			// Store the intransient objects.
 			oos.writeObject(SimulationConfig.instance());
 			oos.writeObject(malfunctionFactory);
@@ -425,29 +437,63 @@ implements ClockListener, Serializable {
 			}
 		}
 
-		simulation.start();
+		simulation.unpause();
+	}
+
+	public void pause() {
+		if (masterClock != null) {
+			masterClock.stop();
+			masterClock.setPaused(true);
+			masterClock.removeClockListener(this);
+		}
+	}
+
+	public void unpause() {
+		if (executor != null) {
+			masterClock.addClockListener(this);
+			masterClock.setPaused(false);
+			masterClock.restart();
+		}
 	}
 
 	/**
+	 *
 	 * Start the simulation.
 	 */
 	public void start() {
-		if (clockThread == null) {
+
+/*		if (clockThread == null) {
 			clockThread = new Thread(masterClock, Msg.getString("Simulation.thread.masterClock")); //$NON-NLS-1$
 			masterClock.addClockListener(this);
 			clockThread.start();
-		}
+		} */
+
+		masterClock.addClockListener(this);
+		masterClock.startClockListenerExecutor();
+		//System.out.println("Simulation : just started startClockListenerExecutor()");
+		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
+		//System.out.println("Simulation : just made executor");
+		executor.execute(masterClock.getClockThreadTask());
+
 	}
 
 	/**
 	 * Stop the simulation.
 	 */
+	// called when loading a sim
 	public void stop() {
-		if (masterClock != null) {
+/*		if (masterClock != null) {
 			masterClock.stop();
 			masterClock.removeClockListener(this);
 		}
 		clockThread = null;
+*/
+		if (masterClock != null) {
+			//executor.shutdown();
+			masterClock.stop();
+			masterClock.removeClockListener(this);
+		}
+		//executor = null;
 	}
 
 	/**
@@ -459,7 +505,7 @@ implements ClockListener, Serializable {
 		final UpTimer ut = masterClock.getUpTimer();
 
 		ut.updateTime();
-		
+
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -471,7 +517,7 @@ implements ClockListener, Serializable {
 		}
 		mars.timePassing(time);
 		ut.updateTime();
-		
+
 		if (debug) {
 			logger.fine (
 				Msg.getString(
@@ -483,7 +529,7 @@ implements ClockListener, Serializable {
 		}
 		missionManager.timePassing(time);
 		ut.updateTime();
-		
+
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -495,7 +541,7 @@ implements ClockListener, Serializable {
 		}
 		unitManager.timePassing(time);
 		ut.updateTime();
-		
+
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -507,7 +553,7 @@ implements ClockListener, Serializable {
 		}
 		scientificStudyManager.updateStudies();
 		ut.updateTime();
-		
+
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -596,7 +642,7 @@ implements ClockListener, Serializable {
     public ScientificStudyManager getScientificStudyManager() {
         return scientificStudyManager;
     }
-    
+
     /**
      * Get the transport manager.
      * @return transport manager.
@@ -629,7 +675,7 @@ implements ClockListener, Serializable {
     public static void setUseGUI(boolean value) {
     	useGUI = value;
     }
-    
+
     /**
      * Checks if simulation was loaded with GUI.
      * @return true if GUI is in use.
@@ -638,5 +684,5 @@ implements ClockListener, Serializable {
     public static boolean getUseGUI() {
     	return useGUI;
     }
-    
+
 }

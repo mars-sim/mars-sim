@@ -126,7 +126,6 @@ public class MainMenu {
 	   stage = new Stage();
 	   stage.setTitle(Simulation.WINDOW_TITLE);
 
-	   mainScene = new MainScene(stage);
 	   //menuScene = new MenuScene(stage);
 	   //modtoolScene = new ModtoolScene(stage);
    }
@@ -135,6 +134,9 @@ public class MainMenu {
    public void runOne() {
 
 	   primaryStage.setIconified(true);
+
+	   mainScene = new MainScene(stage);
+
 	   //primaryStage.hide();
 	   //primaryStage.close();
 	   mpFX.handleNewSimulation();
@@ -147,7 +149,7 @@ public class MainMenu {
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
 	   stage.setResizable(true);
-	   stage.setFullScreen(true);
+	   //stage.setFullScreen(true);
 	   stage.setScene(scene);
 	   stage.show();
 
@@ -165,9 +167,12 @@ public class MainMenu {
 		   // 4. runMainScene();
 
 		   mainScene = new MainScene(stage);
+		   //Simulation.createNewSimulation();
 		   Simulation.instance().loadSimulation(null);
 		   Simulation.instance().start();
+		   //System.out.println("MainMenu : done start()");
 		   runMainScene();
+		   //System.out.println("MainMenu : done runMainScene()");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

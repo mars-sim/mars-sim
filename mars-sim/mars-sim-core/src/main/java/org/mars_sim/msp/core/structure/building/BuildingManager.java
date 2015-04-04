@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -93,9 +94,7 @@ public class BuildingManager implements Serializable {
 
     // 2014-12-23 Added resupply
     private Resupply resupply;
-
-    //private BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
+    private BuildingConfig buildingConfig;
 
     /**
      * Constructor to construct buildings from settlement config template.
@@ -105,6 +104,8 @@ public class BuildingManager implements Serializable {
     public BuildingManager(Settlement settlement) {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration().
                 getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
+
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     }
 
     /**
@@ -240,11 +241,16 @@ public class BuildingManager implements Serializable {
      */
 	//2015-04-02 Added getBuildingsWithThermal()
     public List<Building> getBuildingsWithThermal() {
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-    	List<Building> buildings = getBuildings();
-    	List<Building> buildingsWithThermal = new ArrayList<Building>();
-
-/*    	Iterator<Building> i = buildings.iterator();
+    	// Using JavaFX/8 Stream
+		List<Building> buildings = getBuildings();
+    	List<Building> buildingsWithThermal =
+    		buildings.parallelStream()
+    	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()) == true)
+    	        .collect(Collectors.toList());
+/*
+    	//List<Building> buildings = getBuildings();
+    	//List<Building> buildingsWithThermal = new ArrayList<Building>();
+    	Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building b = i.next();
 			String buildingType = b.getBuildingType();
@@ -254,16 +260,17 @@ public class BuildingManager implements Serializable {
 			}
 		}
 */
-		// Using internal iterator in lambda expression
+/*		// Using internal iterator in lambda expression
     	buildings.forEach(b -> {
 			String buildingType = b.getBuildingType();
 			if (config.hasThermalGeneration(buildingType)) {
 				buildingsWithThermal.add(b);
 			}
 		});
-
+*/
     	return buildingsWithThermal;
     }
+
 
     /**
      * Checks if the settlement contains a given building.
@@ -956,70 +963,69 @@ public class BuildingManager implements Serializable {
             double result = 0D;
 
             // Determine value of all building functions.
-            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            if (config.hasCommunication(buildingType))
+            if (buildingConfig.hasCommunication(buildingType))
                 result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasCooking(buildingType)) {
+            if (buildingConfig.hasCooking(buildingType)) {
                 result += Cooking.getFunctionValue(buildingType, newBuilding, settlement);
                 // 2014-11-06 Added MakingSoy
                 result += PreparingDessert.getFunctionValue(buildingType, newBuilding, settlement);
             }
-            if (config.hasDining(buildingType))
+            if (buildingConfig.hasDining(buildingType))
                 result += Dining.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasEVA(buildingType))
+            if (buildingConfig.hasEVA(buildingType))
                 result += EVA.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasExercise(buildingType))
+            if (buildingConfig.hasExercise(buildingType))
                 result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasFarming(buildingType))
+            if (buildingConfig.hasFarming(buildingType))
                 result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
           //2014-11-24 Added FoodProduction
-            if (config.hasFoodProduction(buildingType))
+            if (buildingConfig.hasFoodProduction(buildingType))
                 result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasGroundVehicleMaintenance(buildingType))
+            if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
                 result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
             //2014-10-17 Added the effect of heating requirement
-            if (config.hasThermalGeneration(buildingType))
+            if (buildingConfig.hasThermalGeneration(buildingType))
                 result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
             //if (config.hasThermalStorage(buildingType))
             //    result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasLifeSupport(buildingType))
+            if (buildingConfig.hasLifeSupport(buildingType))
                 result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasLivingAccommodations(buildingType))
+            if (buildingConfig.hasLivingAccommodations(buildingType))
                 result += LivingAccommodations.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasManufacture(buildingType))
+            if (buildingConfig.hasManufacture(buildingType))
                 result += Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasMedicalCare(buildingType))
+            if (buildingConfig.hasMedicalCare(buildingType))
                 result += MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasPowerGeneration(buildingType))
+            if (buildingConfig.hasPowerGeneration(buildingType))
                 result += PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasPowerStorage(buildingType))
+            if (buildingConfig.hasPowerStorage(buildingType))
                 result += PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasRecreation(buildingType))
+            if (buildingConfig.hasRecreation(buildingType))
                 result += Recreation.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasResearchLab(buildingType))
+            if (buildingConfig.hasResearchLab(buildingType))
                 result += Research.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasResourceProcessing(buildingType))
+            if (buildingConfig.hasResourceProcessing(buildingType))
                 result += ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasStorage(buildingType))
+            if (buildingConfig.hasStorage(buildingType))
                 result += Storage.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasAstronomicalObservation(buildingType))
+            if (buildingConfig.hasAstronomicalObservation(buildingType))
                 result += AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasManagement(buildingType))
+            if (buildingConfig.hasManagement(buildingType))
                 result += Management.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasEarthReturn(buildingType))
+            if (buildingConfig.hasEarthReturn(buildingType))
                 result += EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasBuildingConnection(buildingType))
+            if (buildingConfig.hasBuildingConnection(buildingType))
                 result += BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
-            if (config.hasAdministration(buildingType))
+            if (buildingConfig.hasAdministration(buildingType))
                 result += Administration.getFunctionValue(buildingType, newBuilding, settlement);
-    		if (config.hasRoboticStation(buildingType))
+    		if (buildingConfig.hasRoboticStation(buildingType))
                 result += RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
 
             // Multiply value.
             result *= 1000D;
 
             // Subtract power costs per Sol.
-            double power = config.getBasePowerRequirement(buildingType);
+            double power = buildingConfig.getBasePowerRequirement(buildingType);
             double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
             double powerPerSol = power * hoursInSol;
             double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();

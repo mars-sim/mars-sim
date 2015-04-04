@@ -66,11 +66,11 @@ public class MainWindow extends JComponent {
 
 	// 2014-12-05 Added mainWindowMenu;
 	private MainWindowMenu mainWindowMenu;
-	
+
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
-	
+
 	// 2014-12-27 Added delay timer
 	private Timer delayLaunchTimer;
 	private Timer autosaveTimer;
@@ -87,14 +87,14 @@ public class MainWindow extends JComponent {
     private JLabel timeLabel;
     private JPanel bottomPane;
     private JPanel mainPane;
-    
+
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
     private int memFree;
-    
+
     String earthTimeString;
- 
+
     //private boolean cleanUI;
     private boolean useDefault;
 
@@ -104,9 +104,9 @@ public class MainWindow extends JComponent {
 	 */
 	public MainWindow(boolean cleanUI) {
 		//this.cleanUI = cleanUI;
-	
+
 		desktop = new MainDesktopPane(this);
-		
+
 		frame = new JFrame();
 
 		// Load UI configuration.
@@ -115,20 +115,20 @@ public class MainWindow extends JComponent {
 		}
 
 		// Set look and feel of UI.
-		useDefault = UIConfig.INSTANCE.useUIDefault();	
+		useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		setLookAndFeel(false);
-				
+
         init();
-        
-		showStatusBar();		
+
+		showStatusBar();
 		// 2015-01-07 Added startAutosaveTimer()
-		startAutosaveTimer();	
+		startAutosaveTimer();
 		// Open all initial windows.
-		desktop.openInitialWindows();	
-		
+		desktop.openInitialWindows();
+
 	}
-	
+
 	private String statusText;
 
 	// 2015-02-04 Added init()
@@ -142,30 +142,30 @@ public class MainWindow extends JComponent {
 					exitSimulation();
 				}
 			});
-	
+
 			mainPane = new JPanel(new BorderLayout());
 			frame.setContentPane(mainPane);
-			
+
 			// Add main pane
 			mainPane.add(desktop, BorderLayout.CENTER);
-			
+
 			// Prepare menu
 			// 2014-12-05 Added mainWindowMenu
 			mainWindowMenu = new MainWindowMenu(this, desktop);
-			frame.setJMenuBar(mainWindowMenu);	
-	
+			frame.setJMenuBar(mainWindowMenu);
+
 			// Prepare tool toolbar
 			toolToolbar = new ToolToolBar(this);
 			mainPane.add(toolToolbar, BorderLayout.NORTH);
-			
+
 			// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
 			bottomPane = new JPanel(new BorderLayout());
-			
+
 			// Prepare unit toolbar
 			unitToolbar = new UnitToolBar(this) {
-		  
+
 				private static final long serialVersionUID = 1L;
-	
+
 				@Override
 		        protected JButton createActionComponent(Action a) {
 		            JButton jb = super.createActionComponent(a);
@@ -173,58 +173,58 @@ public class MainWindow extends JComponent {
 		            return jb;
 		        }
 		    };
-		    
+
 	//	    BasicToolBarUI ui = new BasicToolBarUI();
 	//	    unitToolbar.setUI(ui);
 		    unitToolbar.setOpaque(false);
 		    unitToolbar.setBackground(new Color(0,0,0,0));
 		    // Remove the toolbar border, to blend into figure contents
 		    unitToolbar.setBorderPainted(false);
-		     	
-			mainPane.add(bottomPane, BorderLayout.SOUTH);		
+
+			mainPane.add(bottomPane, BorderLayout.SOUTH);
 			bottomPane.add(unitToolbar, BorderLayout.CENTER);
-	
+
 			// set the visibility of tool and unit bars from preferences
 			unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 			toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
-	
+
 			// 2015-01-07 Added statusBar
 	        statusBar = new JStatusBar();
 	        //statusText = "Mars-Sim 3.08 is running";
 	        leftLabel = new JLabel(statusText);
 			statusBar.setLeftComponent(leftLabel);
-	    
+
 	        memMaxLabel = new JLabel();
 	        memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
 	        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 	        memMaxLabel.setText("Total Designated Memory : " + memMax +  " MB");
 	        statusBar.addRightComponent(memMaxLabel, false);
-	
+
 	        memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-	        
+
 	        memUsedLabel = new JLabel();
 	        memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
 	        memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	        memUsed = memTotal - memFree;
 	        memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
-	        statusBar.addRightComponent(memUsedLabel, false);       
-	  
+	        statusBar.addRightComponent(memUsedLabel, false);
+
 	        timeLabel = new JLabel();
 	        timeLabel.setHorizontalAlignment(JLabel.CENTER);
 	        statusBar.addRightComponent(timeLabel, false);
-	
+
 	        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
-	   
-	        bottomPane.add(statusBar, BorderLayout.SOUTH);	        			
-		
+
+	        bottomPane.add(statusBar, BorderLayout.SOUTH);
+
 			// I'm commenting this out for now.  I would like the user guide tutorial
 			// to be the only initial tool window open for a new simulation. - Scott
 			// 2014-12-27 Added OpenSettlementWindow with delay timer
 			//delayLaunchTimer = new Timer();
 			//int seconds = 1;
-			//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);	
+			//delayLaunchTimer.schedule(new OpenSettlementWindow(), seconds * 1000);
 
-		
+
 		// Set frame size
 		final Dimension frame_size;
 		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -253,31 +253,31 @@ public class MainWindow extends JComponent {
 		} else {
 			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 		}
-		
+
 		// Show frame
 		frame.setVisible(true);
-		
+
 
 	}
-	
-	
+
+
 	// 2015-02-05 Added showEarthTime()
 	public void showStatusBar() {
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
-		if (earthTimer == null) {			
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
+		if (earthTimer == null) {
 			delayLaunchTimer = new Timer();
 			int millisec = 500;
 			// Note: this delayLaunchTimer is non-repeating
 			// thus period is N/A
-			delayLaunchTimer.schedule(new StatusBar(), millisec );	
+			delayLaunchTimer.schedule(new StatusBar(), millisec );
 		}
 	}
-	
+
 	public JPanel getBottomPane() {
 		return bottomPane;
 	}
-	
-	// 2015-01-07 Added startAutosaveTimer()	
+
+	// 2015-01-07 Added startAutosaveTimer()
 	public void startAutosaveTimer() {
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -290,13 +290,13 @@ public class MainWindow extends JComponent {
         autosaveTimer = new Timer();
         autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
     }
-	
-	
+
+
 	// 2015-01-13 Added startEarthTimer()
 	public void startEarthTimer() {
-	
-		earthTimer = new javax.swing.Timer(TIMEDELAY, 
-			new ActionListener() {		
+
+		earthTimer = new javax.swing.Timer(TIMEDELAY,
+			new ActionListener() {
 			String t = null;
 			    @SuppressWarnings("deprecation")
 				@Override
@@ -304,14 +304,14 @@ public class MainWindow extends JComponent {
 				    try {
 				        // Check if new simulation is being created or loaded from file.
 				        if (!Simulation.isUpdating()) {
-				             
+
 				            MasterClock master = Simulation.instance().getMasterClock();
 				            if (master == null) {
 				                throw new IllegalStateException("master clock is null");
 				            }
 				            EarthClock earthclock = master.getEarthClock();
 				            if (earthclock == null) {
-				                throw new IllegalStateException("earthclock is null"); 
+				                throw new IllegalStateException("earthclock is null");
 				            }
 				            t = earthclock.getTimeStamp();
 				        }
@@ -320,7 +320,7 @@ public class MainWindow extends JComponent {
 				        ee.printStackTrace(System.err);
 				    }
 					timeLabel.setText("Earth Time : " + t);
-					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;			        
+					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 					memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	                memUsed = memTotal - memFree;
 
@@ -329,13 +329,13 @@ public class MainWindow extends JComponent {
 	                memUsedCache = memUsed;
 			    }
 			});
-	
+
 		earthTimer.start();
 	}
-	
+
 	// 2015-01-19 Added StatusBar
 	class StatusBar extends TimerTask { // (final String t) {
-		public void run() {		
+		public void run() {
 			startEarthTimer();
 		}
 	}
@@ -369,9 +369,9 @@ public class MainWindow extends JComponent {
 	 * Load a previously saved simulation.
 	 */
 	// 2015-01-25 Added autosave
-	public void loadSimulation(boolean autosave) {	
+	public void loadSimulation(boolean autosave) {
 		final boolean ans = autosave;
-        if (earthTimer != null) 
+        if (earthTimer != null)
             earthTimer.stop();
         earthTimer = null;
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
@@ -385,12 +385,12 @@ public class MainWindow extends JComponent {
 		} else {
 			loadSimThread.interrupt();
 		}
-		
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
 		if (earthTimer == null) {
 			delayLaunchTimer = new Timer();
 			int seconds = 1;
-			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		}
 	}
 
@@ -401,7 +401,7 @@ public class MainWindow extends JComponent {
 		String dir = null;
 		String title = null;
 		// 2015-01-25 Added autosave
-		if (autosave) {			
+		if (autosave) {
 			dir = Simulation.AUTOSAVE_DIR;
 			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
 		}
@@ -423,7 +423,7 @@ public class MainWindow extends JComponent {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}
 			}
-			
+
 			try {
                 desktop.resetDesktop();
             }
@@ -432,9 +432,9 @@ public class MainWindow extends JComponent {
                 logger.severe(e.getMessage());
                 e.printStackTrace(System.err);
             }
-			
+
 			desktop.disposeAnnouncementWindow();
-			
+
 	        desktop.openToolWindow(GuideWindow.NAME);
 	        GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 	        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
@@ -456,12 +456,12 @@ public class MainWindow extends JComponent {
 		} else {
 			newSimThread.interrupt();
 		}
-	
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime 
+
+		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
 		//if (earthTimer == null) {
 		//	delayLaunchTimer = new Timer();
 		//	int seconds = 1;
-		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);	
+		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		//}
 	}
 
@@ -480,16 +480,16 @@ public class MainWindow extends JComponent {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
 
 			// Break up the creation of the new simulation, to allow interfering with the single steps.
-			Simulation.stopSimulation();
+			Simulation.instance().endSimulation();
 
 			try {
 			    desktop.clearDesktop();
-			    
+
 			    if (earthTimer != null) {
                     earthTimer.stop();
 			    }
                 earthTimer = null;
-                
+
                 //desktop.resetDesktop(); causing issues
 			}
 			catch (Exception e) {
@@ -497,7 +497,7 @@ public class MainWindow extends JComponent {
 			    logger.severe(e.getMessage());
 			    e.printStackTrace(System.err);
 			}
-			
+
 			SimulationConfig.loadConfig();
 
 			SimulationConfigEditor editor = new SimulationConfigEditor(
@@ -508,11 +508,11 @@ public class MainWindow extends JComponent {
 
 			// Start the simulation.
 			//Simulation.instance().start();
-			
+
 			//startEarthTimer();
 
 			//desktop.disposeAnnouncementWindow();
-			
+
 			// Open user guide tool.
             //desktop.openToolWindow(GuideWindow.NAME);
             //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
@@ -529,7 +529,7 @@ public class MainWindow extends JComponent {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
-				public void run() {		
+				public void run() {
 					saveSimulationProcess(loadingDefault, isAutosave);
 				}
 			};
@@ -557,16 +557,16 @@ public class MainWindow extends JComponent {
 		}
 
 		MasterClock clock = Simulation.instance().getMasterClock();
-		
+
 		if (isAutosave) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
-			clock.autosaveSimulation(fileLocn);			
+			clock.autosaveSimulation(fileLocn);
 		}
 		else {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
-		
+
 		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
 			try {
 				Thread.sleep(100L);
@@ -626,7 +626,7 @@ public class MainWindow extends JComponent {
 		}
 
 		sim.getMasterClock().exitProgram();
-		
+
 		earthTimer = null;
 	}
 
@@ -670,13 +670,13 @@ public class MainWindow extends JComponent {
 		if (changed) {
 
 			SwingUtilities.updateComponentTreeUI(frame);
-			
+
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();
 				desktop.updateTransportWizardLF();
 			}
-			
+
 		}
 	}
 
@@ -695,5 +695,5 @@ public class MainWindow extends JComponent {
 	public ToolToolBar getToolToolBar() {
 		return toolToolbar;
 	}
-	
+
 }

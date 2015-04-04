@@ -63,7 +63,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
@@ -136,9 +135,9 @@ public class MainScene {
         Scene scene = init();
 
 		// Load UI configuration.
-		if (!cleanUI) {
-			UIConfig.INSTANCE.parseFile();
-		}
+		//if (!cleanUI) {
+		//	UIConfig.INSTANCE.parseFile();
+		//}
 
 		// Set look and feel of UI.
 		UIConfig.INSTANCE.useUIDefault();
@@ -562,6 +561,9 @@ public class MainScene {
             e.printStackTrace(System.err);
         }
 
+		// load UI config
+		UIConfig.INSTANCE.parseFile();
+
 		desktop.disposeAnnouncementWindow();
 
 		// Open Guide tool after loading.
@@ -597,6 +599,16 @@ public class MainScene {
 	}
 
 	/**
+	 * Ends the current simulation and close the JavaFX stage of MainScene
+	 */
+	private void endSim() {
+		Simulation.instance().endSimulation();
+		getDesktop().clearDesktop();
+		//getDesktop().resetDesktop();
+		stage.close();
+	}
+
+	/**
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
@@ -614,16 +626,11 @@ public class MainScene {
 		if (result.get() == buttonTypeOne)	{
 			saveOnExit();
 			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			//getDesktop().resetDesktop();
-			stage.close();
+			endSim();
 		}
 		else if (result.get() == buttonTypeTwo)	{
 			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			stage.close();
+			endSim();
 		}
 /*
 			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
@@ -900,15 +907,11 @@ public class MainScene {
 		if (result.get() == buttonTypeOne)	{
 			saveOnExit();
 			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			stage.close();
+			endSim();
 		}
 		else if (result.get() == buttonTypeTwo)		{
 			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			Simulation.stopSimulation();
-			getDesktop().clearDesktop();
-			stage.close();
+			endSim();
 		}
 		else if (result.get() == buttonTypeThree)
 			exitSimulation();

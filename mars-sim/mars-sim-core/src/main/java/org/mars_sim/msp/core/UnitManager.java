@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -51,7 +52,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * There should be only one instance of this class and it should be
  * constructed and owned by the virtual Mars object.
  */
-public class UnitManager 
+public class UnitManager
 implements Serializable {
 
     /** default serial id. */
@@ -61,6 +62,7 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(UnitManager.class.getName());
 
     // Data members
+	private int solCache;
     /** Collection of all units. */
     private Collection<Unit> units;
     /** List of possible settlement names. */
@@ -71,9 +73,9 @@ implements Serializable {
     private List<String> personMaleNames;
     /** List of possible female person names. */
     private List<String> personFemaleNames;
-    
+
     private List<String> robotNameList;
-    
+
     /** List of unit manager listeners. */
     private transient List<UnitManagerListener> listeners;
     /** Map of equipment types and their numbers. */
@@ -81,10 +83,11 @@ implements Serializable {
     /** Map of vehicle types and their numbers. */
     private Map<String, Integer> vehicleNumberMap;
 
-    /** 
+    /**
      * Constructor.
      */
     public UnitManager() {
+    	solCache = 1;
         // Initialize unit collection
         units = new ConcurrentLinkedQueue<Unit>();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
@@ -111,7 +114,7 @@ implements Serializable {
         createInitialResources();
         createInitialParts();
         createInitialRobots();
-        createInitialPeople();       
+        createInitialPeople();
     }
 
     /**
@@ -145,17 +148,17 @@ implements Serializable {
      */
     private void initializeRobotNames() {
         try {
-            robotNameList = new ArrayList<String>();           
+            robotNameList = new ArrayList<String>();
             //robotNameList.add("ChefBot 001");
             //robotNameList.add("GardenBot 002");
             //robotNameList.add("RepairBot 003");
 
-            
+
         } catch (Exception e) {
             throw new IllegalStateException("robot names could not be loaded: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * Initializes the list of possible vehicle names.
      * @throws Exception if unable to load rover names.
@@ -264,18 +267,18 @@ implements Serializable {
                 usedNames.add(pi.next().getName());
             }
             unitName = "Person";
-        
+
         } else if (unitType == UnitType.ROBOT) {
-                       
+
         	initialNameList = robotNameList;
-        			
+
             Iterator<Robot> ri = getRobots().iterator();
             while (ri.hasNext()) {
                 usedNames.add(ri.next().getName());
             }
-            
+
             unitName = robotType.getDisplayName();
-         
+
         } else if (unitType == UnitType.EQUIPMENT) {
             if (baseName != null) {
                 int number = 1;
@@ -312,15 +315,15 @@ implements Serializable {
         	else if (num < 1000 )
         		numStr = "" + num;
             result = unitName + " " + numStr;
-            
+
             //System.out.println("Name : " +result + "   Type : " + robotType.getDisplayName());
         }
 
         return result;
     }
 
-    /** 
-     * Creates initial settlements 
+    /**
+     * Creates initial settlements
      */
     private void createInitialSettlements() {
 
@@ -455,12 +458,12 @@ implements Serializable {
                 Iterator<AmountResource> j = resourceMap.keySet().iterator();
                 while (j.hasNext()) {
                     AmountResource resource = j.next();
-        			//System.out.println("createInitialResources() : resource : " + resource.getName()); 
+        			//System.out.println("createInitialResources() : resource : " + resource.getName());
                     double amount = resourceMap.get(resource);
         			//System.out.println("createInitialResources() : amount : " + amount);
                     Inventory inv = settlement.getInventory();
                     double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-        			//System.out.println("createInitialResources() : capacity is "+capacity); 
+        			//System.out.println("createInitialResources() : capacity is "+capacity);
                     if (amount > capacity) {
                         amount = capacity;
                     }
@@ -589,18 +592,18 @@ implements Serializable {
                 }
             }
 
-            // 2015-02-27 and 2015-03-24 Added Favorite class           
+            // 2015-02-27 and 2015-03-24 Added Favorite class
             String mainDish = personConfig.getFavoriteMainDish(x);
-            String sideDish = personConfig.getFavoriteSideDish(x);            
+            String sideDish = personConfig.getFavoriteSideDish(x);
             String dessert = personConfig.getFavoriteDessert(x);
             String activity = personConfig.getFavoriteActivity(x);
-            
+
             person.getFavorite().setFavoriteMainDish(mainDish);
             person.getFavorite().setFavoriteSideDish(sideDish);
             person.getFavorite().setFavoriteDessert(dessert);
             person.getFavorite().setFavoriteActivity(activity);
-                  
-            
+
+
             // Set person's configured natural attributes (if any).
             Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
             if (naturalAttributeMap != null) {
@@ -638,7 +641,7 @@ implements Serializable {
         // Create all configured relationships.
         createConfiguredRelationships();
     }
-    
+
     /**
      * Creates initial people based on available capacity at settlements.
      * @throws Exception if people can not be constructed.
@@ -665,19 +668,19 @@ implements Serializable {
                     Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, "Earth",settlement); //TODO: read from file
                     addUnit(person);
                     relationshipManager.addInitialSettler(person, settlement);
-                    
-                    // 2015-02-27 and 2015-03-24 Added Favorite class                  
+
+                    // 2015-02-27 and 2015-03-24 Added Favorite class
                     String mainDish = person.getFavorite().getRandomMainDish();
                     String sideDish = person.getFavorite().getRandomSideDish();
                     String dessert = person.getFavorite().getRandomDessert();
                     String activity = person.getFavorite().getRandomActivity();
-                    
+
                     person.getFavorite().setFavoriteMainDish(mainDish);
                     person.getFavorite().setFavoriteSideDish(sideDish);
-                    person.getFavorite().setFavoriteDessert(dessert); 
-                    person.getFavorite().setFavoriteActivity(activity); 
-                                       
-                 
+                    person.getFavorite().setFavoriteDessert(dessert);
+                    person.getFavorite().setFavoriteActivity(activity);
+
+
                 }
             }
         } catch (Exception e) {
@@ -686,23 +689,23 @@ implements Serializable {
         }
     }
 
-    
+
     /**
      * Creates all configured Robots.
      * @throws Exception if error parsing XML.
      */
     private void createConfiguredRobots() {
     	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
- 
+
         // Create all configured robot.
         for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
         	//System.out.println("x is "+ x);
             // Get robot's name (required)
             String name = robotConfig.getConfiguredRobotName(x);
-            if (name == null) {         
+            if (name == null) {
             	throw new IllegalStateException("Robot name is null");
             }
-            
+
             //System.out.println("name is "+ name);
             // Get robotType
            	// RobotType robotType = getABot();
@@ -759,7 +762,7 @@ implements Serializable {
 	            addUnit(robot);
 	            //System.out.println("UnitManager : createConfiguredRobots() : a robot is added !");
 	        	//System.out.println("robotType is "+robotType.toString());
-	        	
+
 	            // Set robot's job (if any).
 	            String jobName = robotConfig.getConfiguredRobotJob(x);
 	            //System.out.println("jobName is "+jobName);
@@ -769,7 +772,7 @@ implements Serializable {
 	                	robot.getBotMind().setRobotJob(robotJob, true);
 	                }
 	            }
-	
+
 	            // Set robot's configured natural attributes (if any).
 	            Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
 	            if (naturalAttributeMap != null) {
@@ -782,7 +785,7 @@ implements Serializable {
 	                            value);
 	                }
 	            }
-	
+
 	            // Set robot's configured skills (if any).
 	            Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
 	            if (skillMap != null) {
@@ -824,13 +827,13 @@ implements Serializable {
 
                     // Get a robotType randomly
                 	RobotType robotType = getABot();
-                	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+
                 	//System.out.println("robotType is "+robotType.toString());
                     Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars", settlement, settlement.getCoordinates()); //TODO: read from file
                     addUnit(robot);
                     //System.out.println("UnitManager : createInitialRobots() : a robot is added in " + settlement);
-                   
-                    
+
+
                     String jobName = RobotJob.getName(robotType);
                     if (jobName != null) {
 //                        RobotJob robotJob = JobManager.getRobotJob(jobName);
@@ -847,7 +850,7 @@ implements Serializable {
             throw new IllegalStateException("Robots could not be created: " + e.getMessage(), e);
         }
     }
-    
+
     public RobotType getABot() {
     	RobotType robotType = null;
     	int numChefbot = 0;
@@ -858,17 +861,17 @@ implements Serializable {
     	int numMedicbot = 0;
     	int numRepairbot = 0;
     	Robot robot = null;
-    	
+
     	// check if the settlement has a medicbot yet
     	Iterator<Unit> i = units.iterator();
     	while (i.hasNext()) {
     		Unit unit = i.next();
-    		if (unit instanceof Robot) { 
-    			robot = (Robot) unit;			
+    		if (unit instanceof Robot) {
+    			robot = (Robot) unit;
     			if (robot.getRobotType().equals(RobotType.CHEFBOT))
     				numChefbot++;
     			else if (robot.getRobotType().equals(RobotType.CONSTRUCTIONBOT))
-        			numConstructionbot++;	
+        			numConstructionbot++;
     			else if (robot.getRobotType().equals(RobotType.DELIVERYBOT))
     				numDeliverybot++;
     			else if (robot.getRobotType().equals(RobotType.GARDENBOT))
@@ -880,8 +883,8 @@ implements Serializable {
     			else if (robot.getRobotType().equals(RobotType.REPAIRBOT))
         			numRepairbot++;
     		}
-    	}    	
-    	
+    	}
+
     	int num = RandomUtil.getRandomInt(15); // 0 to 15
 
     	if (numChefbot < 4 && num < 2 ) // 0, 1
@@ -889,21 +892,21 @@ implements Serializable {
     	else if (numConstructionbot < 3 && num < 4 ) //  2, 3
 			robotType = RobotType.CONSTRUCTIONBOT;
     	else if (numDeliverybot < 1 && num < 5 ) //  4
-			robotType = RobotType.DELIVERYBOT;  
+			robotType = RobotType.DELIVERYBOT;
     	else if (numGardenbot < 5 && num < 8 ) //  5, 6, 7
     		robotType = RobotType.GARDENBOT;
-       	else if (numMakerbot < 6 && num < 11 ) //  8, 9, 10 
-    		robotType = RobotType.MAKERBOT;    	
+       	else if (numMakerbot < 6 && num < 11 ) //  8, 9, 10
+    		robotType = RobotType.MAKERBOT;
     	else if (numMedicbot < 1 && num < 12 ) //  11,
 			robotType = RobotType.MEDICBOT;
     	else if (numRepairbot < 5 && num < 15) // 12, 13, 14,
     		robotType = RobotType.REPAIRBOT;
     	else // if a particular robottype already exceeded the limit
     		robotType = RobotType.MAKERBOT;
-    	
+
     	return robotType;
     }
- 
+
     /**
      * Creates all configured people relationships.
      * @throws Exception if error parsing XML.
@@ -975,7 +978,7 @@ implements Serializable {
     }
 
 
-    /** 
+    /**
      * Notify all the units that time has passed.
      * Times they are a changing.
      * @param time the amount time passing (in millisols)
@@ -986,6 +989,15 @@ implements Serializable {
         Iterator<Unit> i = units.iterator();
         while (i.hasNext()) {
             i.next().timePassing(time);
+        }
+
+        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        // check for the passing of each day
+        int solElapsed = MarsClock.getSolOfYear(clock);
+        if ( solElapsed != solCache) {
+        	//reportSample = true;
+        	solCache = solElapsed;
+        	logger.info(" Current Tick Per Second (TPS) : " + Simulation.instance().getMasterClock().getPulsesPerSecond());
         }
     }
 
@@ -1045,7 +1057,7 @@ implements Serializable {
     public Collection<Robot> getRobots() {
         return CollectionUtils.getRobot(units);
     }
-    
+
     /**
      * Get the number of equipment.
      * @return number

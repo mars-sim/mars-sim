@@ -40,8 +40,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
-/** 
- * The TimeWindow is a tool window that displays the current 
+/**
+ * The TimeWindow is a tool window that displays the current
  * Martian and Earth time.<br/>
  * The numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
  * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
@@ -104,18 +104,18 @@ implements ClockListener {
 	/** label for uptimer. */
 	private JLabel uptimeLabel;
 	/** label for pulses per second label. */
-	private JLabel pulsespersecondLabel; 
+	private JLabel pulsespersecondLabel;
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
-	
+
 	private JButton pauseButton;
 
 	private int sliderpos = 50;
-	
+
 	private int solElapsedCache = 0;
-	
+
 	/**
-	 * Constructs a TimeWindow object 
+	 * Constructs a TimeWindow object
 	 * @param desktop the desktop pane
 	 */
 	public TimeWindow(final MainDesktopPane desktop) {
@@ -130,7 +130,7 @@ implements ClockListener {
 		master.addClockListener(this);
 		marsTime = master.getMarsClock();
 		earthTime = master.getEarthClock();
-		uptimer = master.getUpTimer(); 
+		uptimer = master.getUpTimer();
 
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -168,7 +168,7 @@ implements ClockListener {
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		innerCalendarPane.add(calendarDisplay);
-		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);        
+		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
 		JPanel southPane = new JPanel(new BorderLayout());
 		mainPane.add(southPane, BorderLayout.SOUTH);
@@ -296,7 +296,7 @@ implements ClockListener {
 					setTimeRatioFromSlider(pulseSlider.getValue());
 					if (pulseCurRatioLabel.getText().contains(":") )  //$NON-NLS-1$
 					{pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));}
-					else 
+					else
 					{pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio() ) );} //$NON-NLS-1$
 				}
 				catch (Exception e2) {
@@ -320,7 +320,7 @@ implements ClockListener {
 	 * Sets the time ratio for the simulation based on the slider value.
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
-		double slope; 
+		double slope;
 		double offset;
 		double timeRatio;
 
@@ -344,7 +344,7 @@ implements ClockListener {
 				double T = midslider;
 				double expo = (sliderValue - minslider) / T;
 				timeRatio = a * Math.pow(b, expo);
-			} 
+			}
 			else {
 				// generates ratios < 1
 				offset = minfracratio;
@@ -361,7 +361,7 @@ implements ClockListener {
 	}
 
 	public void setTimeRatioSlider(int r) {
-		//moves the slider bar appropriately given the ratio 
+		//moves the slider bar appropriately given the ratio
 		if (r>=pulseSlider.getMinimum() && r <= pulseSlider.getMaximum()) {
 			pulseSlider.setValue(r);
 		}
@@ -372,8 +372,15 @@ implements ClockListener {
 		SwingUtilities.invokeLater(
 			new Runnable() {
 				public void run() {
+					// TODO: resolve the null below
+					if (master == null)  {
+						//System.out.println("TimeWindow : master is null");
+						master = Simulation.instance().getMasterClock();
+					}
+					//if (master.getMarsClock() == null) System.out.println(" master.getMarsClock() is null");
+					//if (master == null) return;
 
-			    	int solElapsed = MarsClock.getSolOfYear(Simulation.instance().getMasterClock().getMarsClock());
+			    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
 
 					if (marsTime != null) {
 						martianTimeLabel.setText(marsTime.getTimeStamp());
@@ -393,23 +400,23 @@ implements ClockListener {
 								)
 							);
 							solElapsedCache = solElapsed;
-						}	
+						}
 					}
-	
+
 					if (earthTime != null) {
 						earthTimeLabel.setText(earthTime.getTimeStamp());
 					}
-	
+
 					if (master != null) {
 						DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 						String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
 						pulsespersecondLabel.setText(pulsePerSecond);
 					}
-	
+
 					if (uptimer != null) {
 						uptimeLabel.setText(uptimer.getUptime());
 					}
-	
+
 					calendarDisplay.update();
 				}
 			}

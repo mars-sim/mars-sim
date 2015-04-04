@@ -12,73 +12,73 @@
 	<!-- life-support - Is the resource used for life support? -->
 	<!-- edible - Is the resource edible? -->
 
-	<resource name="Food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="Ice" phase="solid">Ice-rich permafrost soil</resource>
-	<resource name="Water" phase="liquid" life-support="true">potable water</resource>
+	<resource name="food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
+	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
+	<resource name="water" phase="liquid" life-support="true">potable water</resource>
 
-	<resource name="Soil" phase="solid" life-support="true">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
+	<resource name="soil" phase="solid" life-support="true">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 
 <!-- Wastes -->
-	<resource name="Compost" phase="solid" life-support="true">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="Crop Waste" phase="solid" life-support="true">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="compost" phase="solid" life-support="true">Organic waste consists of decaying food waste and crop remains. </resource>
+	<resource name="crop Waste" phase="solid" life-support="true">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
-	<resource name="E-Waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
-	<resource name="Food Waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
+	<resource name="electronic waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="food waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
 	<!-- <resource name="Manure" phase="solid" life-support="true">Human feces</resource> -->
 
-	<resource name="Solid Waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
-	<resource name="Toxic Waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+	<resource name="solid waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="toxic waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
-	<resource name="Grey Water" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
-	<resource name="Black Water" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens. 
+	<resource name="grey water" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
+	<resource name="black water" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.
 		Need special treatment to be useful.</resource>
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
 -->
 
 <!-- Gas Resources -->
-	<resource name="Carbon Dioxide" phase="gas" />
-	<resource name="Carbon Monoxide" phase="gas" />
-	<resource name="Ethylene" phase="gas" />
-	<resource name="Hydrogen" phase="gas" />
-	<resource name="Methane" phase="gas" />
-	<resource name="Nitrogen" phase="gas"> N2 is an odorless gas </resource>
-	<resource name="Oxygen" phase="gas" life-support="true" />	
+	<resource name="carbon dioxide" phase="gas" />
+	<resource name="carbon monoxide" phase="gas" />
+	<resource name="ethylene" phase="gas" />
+	<resource name="hydrogen" phase="gas" />
+	<resource name="methane" phase="gas" />
+	<resource name="nitrogen" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="oxygen" phase="gas" life-support="true" />
 	<resource name="chlorine" phase="gas"/>
 
 <!-- Cooking Condiment -->
-	<resource name="Baking Powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
-	<resource name="Epsom Salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="Table Salt" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="Yeast" phase="solid" edible="true">For making bread.</resource>
-	
-<!-- Soybean-derived food items -->
-	<resource name="Okara" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
-		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
-	<resource name="Soybean Ash" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
-	<resource name="Soybean Oil" phase="liquid" edible="true">Oil derived from Soybean.</resource>
-	<resource name="Soymilk" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
-	<resource name="Soy Fiber" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
-	<resource name="Soy Flour" phase="solid" edible="true">Flour made from ground Soybean.</resource>
-	<resource name="Soy Protein" phase="solid">Protein extract derived from Soybean.</resource>
-	<resource name="Soy Sprout" phase="solid" edible="true">Sprouted Soybean.</resource>
-	<resource name="Tofu" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
-	
-	
-<!-- Utility Items derived from crop harvest -->
-	<resource name="cane fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>	
-	<resource name="Fiber Cloth" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="baking powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="epsom salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
+	<resource name="table salt" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
+	<resource name="yeast" phase="solid" edible="true">For making bread.</resource>
 
-	
+<!-- Soybean-derived food items -->
+	<resource name="okara" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
+		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
+	<resource name="soybean ash" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
+	<resource name="soybean oil" phase="liquid" edible="true">Oil derived from Soybean.</resource>
+	<resource name="soymilk" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
+	<resource name="soy fiber" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
+	<resource name="soy flour" phase="solid" edible="true">Flour made from ground Soybean.</resource>
+	<resource name="soy protein" phase="solid">Protein extract derived from Soybean.</resource>
+	<resource name="soy sprout" phase="solid" edible="true">Sprouted Soybean.</resource>
+	<resource name="tofu" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
+
+
+<!-- Utility Items derived from crop harvest -->
+	<resource name="cane fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
+	<resource name="fiber cloth" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+
+
 <!-- Food items derived from crop harvest -->
-	<resource name="Blueberry Muffin" phase="solid" edible="true"></resource>	
+	<resource name="Blueberry Muffin" phase="solid" edible="true"></resource>
 	<resource name="Brown Rice" phase="solid" edible="true"></resource>
-	<resource name="Cranberry Juice" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>	
-	<resource name="Cranberry Sauce" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>	
+	<resource name="Cranberry Juice" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="Cranberry Sauce" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
 	<resource name="French Fries" phase="solid" edible="true">French fries made from potatoes.</resource>
 	<resource name="Garlic Oil" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
 	<resource name="Granola Bar" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
-	<resource name="Honey" phase="liquid" edible="true">Honey extracted from bee hives</resource>	
+	<resource name="Honey" phase="liquid" edible="true">Honey extracted from bee hives</resource>
 	<resource name="Peanut Butter" phase="solid" edible="true"></resource>
 	<resource name="Peanut Oil" phase="liquid" edible="true"></resource>
 	<resource name="Pizza Dough" phase="solid" edible="true"></resource>
@@ -97,7 +97,7 @@
 	<resource name="Wheat Bun" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
 	<resource name="Wheat Bread" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
 	<resource name="White Bread" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="White Bun" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>	
+	<resource name="White Bun" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
 	<resource name="White Rice" phase="solid" edible="true"></resource>
 
 <!-- Crop Produce -->
@@ -106,14 +106,14 @@
 	<resource name="Carrot" phase="solid" edible="true"></resource>
 	<resource name="Celery" phase="solid" edible="true"></resource>
 	<resource name="Cucumber" phase="solid" edible="true"></resource>
-	<resource name="Cranberry" phase="solid" edible="true"></resource>	
+	<resource name="Cranberry" phase="solid" edible="true"></resource>
 	<resource name="Garlic" phase="solid" edible="true"></resource>
 	<resource name="Ginger" phase="solid" edible="true"></resource>
-	<resource name="Green Bell Pepper" phase="solid" edible="true"></resource>	
+	<resource name="Green Bell Pepper" phase="solid" edible="true"></resource>
 	<resource name="Green Onion" phase="solid" edible="true"></resource>
 	<resource name="Kidney Bean" phase="solid" edible="true"></resource>
 	<resource name="Lettuce" phase="solid" edible="true"></resource>
-	<resource name="Morel Mushroom" phase="solid" edible="true"></resource>		
+	<resource name="Morel Mushroom" phase="solid" edible="true"></resource>
 	<resource name="Peas" phase="solid" edible="true"></resource>
 	<resource name="Peanut" phase="solid" edible="true"></resource>
 	<resource name="Potato" phase="solid" edible="true"></resource>
@@ -125,19 +125,19 @@
 	<resource name="Sugarcane" phase="solid" edible="true"></resource>
 	<resource name="Swiss Chard" phase="solid" edible="true"></resource>
 	<resource name="Tomato" phase="solid" edible="true"></resource>
-	<resource name="Wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop. 
+	<resource name="Wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
-	<resource name="White Onion" phase="solid" edible="true"></resource>	
-	
+	<resource name="White Onion" phase="solid" edible="true"></resource>
 
-<!-- Chemical or Mineral Compounds -->	
+
+<!-- Chemical or Mineral Compounds -->
 	<resource name="Aluminum Oxide" phase="solid" />
 	<resource name="Ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="Beeswax" phase="solid" />
 	<resource name="Calcium Carbonate" phase="solid" />
 	<resource name="Gypsum" phase="solid" />
-	<resource name="Honey" phase="liquid" />	
-	<resource name="Fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>	
+	<resource name="Honey" phase="liquid" />
+	<resource name="Fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
 	<resource name="Iron Oxide" phase="solid">also known as rust</resource>
 	<resource name="Iron Powder" phase="solid" />
 	<resource name="Lime" phase="solid" />
@@ -145,12 +145,12 @@
 	<resource name="Nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
 	<resource name="Potash Lye" phase="solid">Potassium Hydroxide</resource>
 	<resource name="Polyester Resin" phase="liquid" />
-	<resource name="Propolis" phase="solid"> Propolis or bee glue is a resinous mixture collected by honey bees from tree buds, 
+	<resource name="Propolis" phase="solid"> Propolis or bee glue is a resinous mixture collected by honey bees from tree buds,
 	sap flows, or other botanical sources. Used as a sealant for unwanted open spaces in the hive,
-	Propolis is the focus of a large number of research projects published in the biomedical literature  
-	as an oral hygiene product, emollient, antioxidant or an antimicrobial agent, as a treatment for allergies, 
+	Propolis is the focus of a large number of research projects published in the biomedical literature
+	as an oral hygiene product, emollient, antioxidant or an antimicrobial agent, as a treatment for allergies,
 	in cancer treatment and cancer prevention.	</resource>
-	
+
 	<resource name="Polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
 	<resource name="Regolith" phase="solid">Martian soil</resource>
 	<resource name="Rock Samples" phase="solid">Rock samples collected from explored sites.</resource>
@@ -161,13 +161,13 @@
 
 
 <!-- Paper related products. -->
- 
+
 	<resource name="pulp" phase="solid">Pulp is a mixture of cellulose fibers.</resource>
 	<resource name="paper" phase="solid" />
 	<resource name="napkin" phase="solid" />
 	<resource name="toilet tissue" phase="solid" />
 	<resource name="bleaching chemical" phase="solid">Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	
+
 
 <!-- Mineral concentrations. -->
 	<resource name="Chalcopyrite" phase="solid" />
@@ -176,7 +176,7 @@
 	<resource name="Kamacite" phase="solid" />
 	<resource name="Magnesite" phase="solid" />
 	<resource name="Magnetite" phase="solid" />
-	<resource name="Malachite" phase="solid" />	
+	<resource name="Malachite" phase="solid" />
 	<resource name="Olivine" phase="solid" />
 	<resource name="Taenite" phase="solid" />
 	<resource name="Sylvite" phase="solid" >Potassium Chloride </resource>
@@ -193,17 +193,17 @@
 	<resource name="Silicon" phase="solid" />
 	<resource name="Sulfur" phase="solid" />
 	<resource name="Zinc" phase="solid" />
-	
+
 <!-- Building Material -->
 	<resource name="Cement" phase="solid" />
 	<resource name="Concrete" phase="solid" />
 	<resource name="Mortar" phase="solid" />
-	
-<!-- Drugs and Supplements -->	
+
+<!-- Drugs and Supplements -->
 	<resource name="Immune Booster" phase="solid" />
 
 <!-- Bio-organisms -->
-	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>	
+	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>
 	<resource name="Nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
 	<resource name="Nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
 	<resource name="Rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
@@ -213,7 +213,5 @@
     http://en.wiki2.org/wiki/Sewage_treatment : Nitrification itself is a two-step aerobic process, each step facilitated by a different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though traditionally believed to be facilitated by Nitrobacter spp. (nitro referring the formation of a nitro functional group), is now known to be facilitated in the environment almost exclusively by Nitrospira spp.
 	http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
 	-->
-
-
 
 </resource-list>

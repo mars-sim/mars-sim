@@ -588,7 +588,6 @@ implements LifeSupport {
         	//getSupplyDemandReport(solElapsed);
         	refreshMapDaily(solElapsed);
 
-        	logger.info(" Current Tick Per Second (TPS) is at " + Simulation.instance().getMasterClock().getPulsesPerSecond());
         }
     }
 
