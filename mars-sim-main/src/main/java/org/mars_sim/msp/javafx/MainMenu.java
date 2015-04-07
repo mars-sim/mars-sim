@@ -7,10 +7,16 @@
 
 package org.mars_sim.msp.javafx;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.networking.MultiplayerMode;
+import org.mars_sim.networking.ThreadPoolServer;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -79,6 +85,8 @@ public class MainMenu {
 	//public ModtoolScene modtoolScene;
 	private MarsProjectFX mpFX;
 
+	//private transient ThreadPoolExecutor executor;
+
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
 		 //this.cleanUI =  cleanUI;
 		 this.primaryStage = primaryStage;
@@ -144,7 +152,6 @@ public class MainMenu {
    }
 
    public void runMainScene() {
-
 	   Scene scene = mainScene.createMainScene();
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
@@ -152,7 +159,6 @@ public class MainMenu {
 	   //stage.setFullScreen(true);
 	   stage.setScene(scene);
 	   stage.show();
-
    }
 
    public void runTwo() {
@@ -160,19 +166,11 @@ public class MainMenu {
 	   primaryStage.setIconified(true);
 
 	   try {
-		   // Correct sequence:
-		   // 1.  mainScene = new MainScene(stage);
-		   // 2. Simulation.instance().loadSimulation(null);
-		   // 3. Simulation.instance().start();
-		   // 4. runMainScene();
 
 		   mainScene = new MainScene(stage);
-		   //Simulation.createNewSimulation();
 		   Simulation.instance().loadSimulation(null);
 		   Simulation.instance().start();
-		   //System.out.println("MainMenu : done start()");
 		   runMainScene();
-		   //System.out.println("MainMenu : done runMainScene()");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -186,6 +184,35 @@ public class MainMenu {
    }
 
    public void runThree() {
+
+	   primaryStage.setIconified(true);
+
+	   //ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
+	   //executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+	   //int port = 9090;
+	   //ThreadPoolServer server = new ThreadPoolServer(port);
+	   //new Thread(server).start();
+
+	   //try {
+	   //    Thread.sleep(20 * 1000);
+	   //} catch (InterruptedException e) {
+	   //    e.printStackTrace();
+	   //}
+	   //System.out.println("Stopping Server");
+	   //server.stop();
+
+/*
+	   try {
+		   MultiplayerMode multiplayer = new MultiplayerMode();
+		   //executor.execute(multiplayer);
+		   //pool.shutdown();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+*/
+	   primaryStage.toFront();
+
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();

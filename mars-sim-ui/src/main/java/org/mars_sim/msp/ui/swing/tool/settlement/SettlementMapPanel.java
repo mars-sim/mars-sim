@@ -483,7 +483,9 @@ implements ClockListener {
 			double width =vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
 			double newRange;
-			if (width < length)
+
+			// Select whichever longer
+			if (width > length)
 				newRange =  width/2.0;
 			else newRange = length/2.0;
 
@@ -496,10 +498,49 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 			}
-			//i++;
 		}
 		return selectedVehicle;
 	}
+
+	/**
+	 * Selects a vehicle
+	 * @param xLoc the position of the template building on the displayed map.
+	 * @param yLoc the position of the template building on the displayed map.
+	 * @return selectedVehicle
+	 */
+	// 2015-04-07 Added selectVehicleAsObstacle(). Used by TransportWizard
+	public Vehicle selectVehicleAsObstacle(double xLoc, double yLoc) {
+
+		Vehicle selectedVehicle = null;
+
+		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
+		while (j.hasNext()) {
+			Vehicle vehicle = j.next();
+			double width =vehicle.getWidth(); // width is on y-axis ?
+			double length = vehicle.getLength(); // length is on x-axis ?
+			double buildingWidth = 9;
+			double buildingLength = 6;
+			double newRange;
+
+			// Select whichever longer
+			if (width > length)
+				newRange =  (width + buildingWidth)/2.0;
+			else newRange = (length + buildingLength)/2.0;
+
+			double x = vehicle.getXLocation();
+			double y = vehicle.getYLocation();
+
+			// distances between the center of the vehicle and the center of the building
+			double distanceX = x - xLoc;
+			double distanceY = y - yLoc;
+			double distance = Math.hypot(distanceX, distanceY);
+			if (distance <= newRange) {
+				selectedVehicle = vehicle;
+			}
+		}
+		return selectedVehicle;
+	}
+
 
 	// // 2015-01-14 Added returnVehicleList()
 	public static List<Vehicle> returnVehicleList(Settlement settlement) {

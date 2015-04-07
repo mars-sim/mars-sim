@@ -503,56 +503,58 @@ implements ClockListener, Serializable {
 	@Override
 	public void clockPulse(double time) {
 		final UpTimer ut = masterClock.getUpTimer();
+		if (!masterClock.isPaused()) {
 
-		ut.updateTime();
+			ut.updateTime();
 
-		if (debug) {
-			logger.fine(
-				Msg.getString(
-					"Simulation.log.clockPulseMars", //$NON-NLS-1$
-					ut.getUptime(),
-					mars.toString()
-				)
-			);
+			if (debug) {
+				logger.fine(
+					Msg.getString(
+						"Simulation.log.clockPulseMars", //$NON-NLS-1$
+						ut.getUptime(),
+						mars.toString()
+					)
+				);
+			}
+			mars.timePassing(time);
+			ut.updateTime();
+
+			if (debug) {
+				logger.fine (
+					Msg.getString(
+						"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+						masterClock.getUpTimer().getUptime(),
+						missionManager.toString()
+					)
+				);
+			}
+			missionManager.timePassing(time);
+			ut.updateTime();
+
+			if (debug) {
+				logger.fine(
+					Msg.getString(
+						"Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
+						masterClock.getUpTimer().getUptime(),
+						unitManager.toString()
+					)
+				);
+			}
+			unitManager.timePassing(time);
+			ut.updateTime();
+
+			if (debug) {
+				logger.fine(
+					Msg.getString(
+						"Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
+						masterClock.getUpTimer().getUptime(),
+						scientificStudyManager.toString()
+					)
+				);
+			}
+			scientificStudyManager.updateStudies();
+			ut.updateTime();
 		}
-		mars.timePassing(time);
-		ut.updateTime();
-
-		if (debug) {
-			logger.fine (
-				Msg.getString(
-					"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
-					masterClock.getUpTimer().getUptime(),
-					missionManager.toString()
-				)
-			);
-		}
-		missionManager.timePassing(time);
-		ut.updateTime();
-
-		if (debug) {
-			logger.fine(
-				Msg.getString(
-					"Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
-					masterClock.getUpTimer().getUptime(),
-					unitManager.toString()
-				)
-			);
-		}
-		unitManager.timePassing(time);
-		ut.updateTime();
-
-		if (debug) {
-			logger.fine(
-				Msg.getString(
-					"Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
-					masterClock.getUpTimer().getUptime(),
-					scientificStudyManager.toString()
-				)
-			);
-		}
-		scientificStudyManager.updateStudies();
-		ut.updateTime();
 
 		if (debug) {
 			logger.fine(
@@ -564,7 +566,8 @@ implements ClockListener, Serializable {
 			);
 		}
 		transportManager.timePassing(time);
-	}
+
+}
 
 	@Override
 	public void pauseChange(boolean isPaused) {

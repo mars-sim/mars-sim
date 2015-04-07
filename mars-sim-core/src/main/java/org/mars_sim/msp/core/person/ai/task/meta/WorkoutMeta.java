@@ -19,11 +19,11 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the Workout task.
  */
 public class WorkoutMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.workout"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -36,14 +36,14 @@ public class WorkoutMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	
-            if (person.getFavorite().getFavoriteActivity().equals("Workout"))
-            	result += 50D;
-            
+
+            //if (person.getFavorite().getFavoriteActivity().equals("Workout"))
+            //	result += 50D;
+
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             result = condition.getStress() - (condition.getFatigue() / 10D)
@@ -57,7 +57,7 @@ public class WorkoutMeta implements MetaTask {
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            } 
+            }
             else {
                 result = 0D;
             }

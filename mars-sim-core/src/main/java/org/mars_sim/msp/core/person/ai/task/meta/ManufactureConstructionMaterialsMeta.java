@@ -24,14 +24,14 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the ManufactureConstructionMaterials task.
  */
 public class ManufactureConstructionMaterialsMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -44,9 +44,9 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {
                 // See if there is an available manufacturing building.
@@ -63,10 +63,19 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
                     // Manufacturing good value modifier.
                     result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
                             manufacturingBuilding);
+/*
+                    if (person == null)
+                    	System.err.println("person == null");
+
+                    if (person.getFavorite() == null)
+                    	System.err.println("person.getFavorite() == null");
+
+                    if (person.getFavorite().getFavoriteActivity() == null)
+                    	System.err.println("person.getFavorite().getFavoriteActivity() == null");
 
                     if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
                     	result += 50D;
-                    
+*/
                     if (result > 100D) {
                         result = 100D;
                     }
@@ -78,7 +87,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
                     if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
                     }
-                    
+
                     // If settlement has manufacturing override, no new
                     // manufacturing processes can be created.
                     else if (person.getSettlement().getManufactureOverride()) {

@@ -24,11 +24,11 @@ import org.mars_sim.msp.core.person.ai.task.Task;
  * Meta task for the RepairMalfunction task.
  */
 public class RepairMalfunctionMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -41,7 +41,7 @@ public class RepairMalfunctionMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         // Add probability for all malfunctionable entities in person's local.
@@ -57,8 +57,8 @@ public class RepairMalfunctionMeta implements MetaTask {
                         if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
                             result += 100D;
                         }
-                        if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-                        	result += 25D;
+                        //if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                        //	result += 25D;
                     }
                     catch (Exception e) {
                         e.printStackTrace(System.err);
@@ -73,7 +73,7 @@ public class RepairMalfunctionMeta implements MetaTask {
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
+            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);
         }
 
         return result;
@@ -86,13 +86,13 @@ public class RepairMalfunctionMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-	    
+
         double result = 0D;
 
         if (robot.getBotMind().getRobotJob() instanceof Repairbot)
- 
+
 	        if (result != 0 )  { // if task penalty is not zero
-	
+
 		        // Add probability for all malfunctionable entities in robot's local.
 		        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 		        while (i.hasNext()) {
@@ -113,10 +113,10 @@ public class RepairMalfunctionMeta implements MetaTask {
 		                }
 		            }
 		        }
-		
+
 		        // Effort-driven task modifier.
 		        result *= robot.getPerformanceRating();
-		        
+
 	        }
 
         return result;
