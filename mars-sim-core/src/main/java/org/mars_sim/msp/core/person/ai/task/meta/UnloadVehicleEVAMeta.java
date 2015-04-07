@@ -14,12 +14,12 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**

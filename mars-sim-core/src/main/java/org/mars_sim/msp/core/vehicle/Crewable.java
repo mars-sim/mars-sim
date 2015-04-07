@@ -11,7 +11,7 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * The Crewable interface represents a vehicle that is capable

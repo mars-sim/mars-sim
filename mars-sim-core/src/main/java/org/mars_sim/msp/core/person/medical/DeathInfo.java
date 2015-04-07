@@ -20,14 +20,14 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.RobotType;
-import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 
 /**
  * This class represents the status of a Person when death occurs. It records

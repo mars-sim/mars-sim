@@ -33,8 +33,8 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     /* default logger.*/
-	private static Logger logger = Logger.getLogger(Storage.class.getName());   
- 	
+	private static Logger logger = Logger.getLogger(Storage.class.getName());
+
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 
 	private double stockCapacity = 0;
@@ -56,9 +56,9 @@ implements Serializable {
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		//Inventory inventory = building.getInventory();	
+		//Inventory inventory = building.getInventory();
 		Inventory inv = building.getBuildingManager().getSettlement().getInventory();
-		
+
 		// 2015-03-07 Added stockCapacity
 	    stockCapacity = config.getStockCapacity(building.getBuildingType());
 		//System.out.println("Storage.java : stockCapacity is " +stockCapacity);
@@ -67,7 +67,7 @@ implements Serializable {
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
-			//System.out.println("resource : " + resource.getName()); 
+			//System.out.println("resource : " + resource.getName());
 			double currentCapacity = inv.getAmountResourceCapacity(resource, false);
 			//System.out.println("currentCapacity is "+currentCapacity);
 			double buildingCapacity = storageCapacity.get(resource);
@@ -81,7 +81,7 @@ implements Serializable {
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
 			AmountResource resource = i2.next();
-			//System.out.println("Storage.java : resource : " + resource.getName()); 
+			//System.out.println("Storage.java : resource : " + resource.getName());
 			double initialResource = initialResources.get(resource);
 			//System.out.println("Storage.java : initialResource : " + initialResource);
 			double resourceCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
@@ -116,7 +116,7 @@ implements Serializable {
 			while (j.hasNext()) {
 				Building building = j.next();
 				Storage storageFunction = (Storage) building.getFunction(FUNCTION);
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * 
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) *
 						.75D + .25D;
 				if (storageFunction.storageCapacity.containsKey(resource))
 					existingStorage += storageFunction.storageCapacity.get(resource) * wearModifier;
@@ -145,7 +145,7 @@ implements Serializable {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Gets a map of the resources this building is capable of
 	 * storing and their amounts in kg.
 	 * @return Map of resource keys and amount Double values.
@@ -221,20 +221,20 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
     /**
      * Stores a resource
      * @param name
      * @param Amount
      * @param inv
-     */	
+     */
 	// 2015-03-09 Added storeAnResource()
 	public static boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
 		try {
-			AmountResource ar = AmountResource.findAmountResource(name);      
+			AmountResource ar = AmountResource.findAmountResource(name);
 			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-			
+
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
@@ -249,11 +249,11 @@ implements Serializable {
 		} catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 		}
-		
+
 		return result;
 	}
 
-	
+
     /**
      * Retrieves a resource or test if a resource is available
      * @param name
@@ -265,9 +265,9 @@ implements Serializable {
     public static boolean retrieveAnResource(double requestedAmount, String name, Inventory inv, boolean isRetrieving ) {
     	boolean result = false;
     	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);  
+	    	inv.addAmountDemandTotalRequest(nameAR);
 	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
 	    		//logger.warning("No more " + name);
 	    		result = false;
@@ -277,7 +277,7 @@ implements Serializable {
 	    		//logger.warning("Just ran out of " + name);
 	    		result = false;
 	    	}
-	    	else { 
+	    	else {
 	    		if (isRetrieving) {
 		    		inv.retrieveAmountResource(nameAR, requestedAmount);
 		    		inv.addAmountDemand(nameAR, requestedAmount);
@@ -287,10 +287,10 @@ implements Serializable {
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
-    	
+
     	return result;
     }
-    
+
 	@Override
 	public void destroy() {
 		super.destroy();

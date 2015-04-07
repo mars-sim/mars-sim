@@ -8,7 +8,7 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,37 +19,37 @@ import java.util.Set;
  * A factory for equipment units.
  */
 public final class EquipmentFactory {
-	
+
 	// Cache maps.
-	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(6);
-	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache = 
-	    new HashMap<Class<? extends Equipment>, Equipment>(6);
+	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(8);
+	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache =
+	    new HashMap<Class<? extends Equipment>, Equipment>(8);
 	private static Set<String> equipmentNamesCache;
-	
+
 	/**
 	 * Private constructor for static factory class.
 	 */
 	private EquipmentFactory() {}
-	
+
 	/**
 	 * Gets a set of all equipment names.
 	 * @return set of equipment name strings.
 	 */
 	public static Set<String> getEquipmentNames() {
 	    if (equipmentNamesCache == null) {
-	        equipmentNamesCache = new HashSet<String>(6);
+	        equipmentNamesCache = new HashSet<String>(8);
 	        equipmentNamesCache.add(Bag.TYPE);
 	        equipmentNamesCache.add(Barrel.TYPE);
 	        equipmentNamesCache.add(EVASuit.TYPE);
 	        equipmentNamesCache.add(GasCanister.TYPE);
 	        equipmentNamesCache.add(LargeBag.TYPE);
 	        equipmentNamesCache.add(SpecimenContainer.TYPE);
-	        equipmentNamesCache.add(BuildingKit.TYPE);	        
+	        equipmentNamesCache.add(BuildingKit.TYPE);
 	        equipmentNamesCache.add(Robot.TYPE);
 	    }
 	    return new HashSet<String>(equipmentNamesCache);
 	}
-	
+
 	/**
 	 * Gets an equipment instance from an equipment type string.
 	 * @param type the equipment type string.
@@ -88,7 +88,7 @@ public final class EquipmentFactory {
 	 */
 	public static Equipment getEquipment(
 		Class<? extends Equipment> equipmentClass,
-		Coordinates location, 
+		Coordinates location,
 		boolean temp
 	) {
 		if (temp) {
@@ -109,7 +109,7 @@ public final class EquipmentFactory {
 		else if (Robot.class.equals(equipmentClass)) return new Robot(null, null, null, null, location);
 		else throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
-	
+
 	/**
 	 * Gets the class of equipment.
 	 * @param type the equipment type string.
@@ -123,11 +123,11 @@ public final class EquipmentFactory {
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.class;
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.class;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
-		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.class;		
-		else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.class;		
+		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.class;
+		else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.class;
 		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
-    
+
     /**
      * Gets the empty mass of the equipment.
      * @param type the equipment type string.
@@ -142,7 +142,7 @@ public final class EquipmentFactory {
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.EMPTY_MASS;
         else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.EMPTY_MASS;
         else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.EMPTY_MASS;
-        else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.EMPTY_MASS;        
+        else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.EMPTY_MASS;
         else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
     }
 }

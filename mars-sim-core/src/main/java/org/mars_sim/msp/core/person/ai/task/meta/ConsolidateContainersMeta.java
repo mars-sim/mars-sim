@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
 /**
  * Meta task for the ConsolidateContainers task.

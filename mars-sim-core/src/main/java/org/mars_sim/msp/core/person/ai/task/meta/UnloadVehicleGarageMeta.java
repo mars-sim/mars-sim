@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.ai.job.Deliverybot;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 
 /**
  * Meta task for the UnloadVehicleGarage task.

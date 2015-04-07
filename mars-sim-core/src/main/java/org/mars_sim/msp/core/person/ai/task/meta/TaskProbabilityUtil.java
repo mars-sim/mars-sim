@@ -10,8 +10,8 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;

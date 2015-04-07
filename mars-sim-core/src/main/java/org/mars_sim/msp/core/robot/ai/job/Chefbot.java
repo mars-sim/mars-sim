@@ -4,7 +4,7 @@
  * @version 3.07 2015-02-17
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai.job;
+package org.mars_sim.msp.core.robot.ai.job;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -12,11 +12,11 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;

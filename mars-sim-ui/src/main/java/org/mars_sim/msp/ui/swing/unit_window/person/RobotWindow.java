@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;

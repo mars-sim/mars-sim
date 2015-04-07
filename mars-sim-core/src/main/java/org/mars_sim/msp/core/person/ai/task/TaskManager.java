@@ -18,12 +18,12 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.TaskSchedule;
-import org.mars_sim.msp.core.person.ai.BotMind;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /** 

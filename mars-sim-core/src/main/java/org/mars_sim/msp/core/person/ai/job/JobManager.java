@@ -17,7 +17,15 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.Chefbot;
+import org.mars_sim.msp.core.robot.ai.job.Constructionbot;
+import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
+import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
+import org.mars_sim.msp.core.robot.ai.job.Makerbot;
+import org.mars_sim.msp.core.robot.ai.job.Medicbot;
+import org.mars_sim.msp.core.robot.ai.job.Repairbot;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 

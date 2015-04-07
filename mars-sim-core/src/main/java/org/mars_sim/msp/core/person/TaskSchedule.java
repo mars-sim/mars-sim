@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
