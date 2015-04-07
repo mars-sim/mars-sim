@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,11 +30,17 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.person.ai.BotMind;
+import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -58,21 +64,21 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     private static final long serialVersionUID = 1L;
 
     /* default logger. */
-	private static transient Logger logger = Logger.getLogger(Robot.class.getName());    
+	private static transient Logger logger = Logger.getLogger(Robot.class.getName());
     /** The base carrying capacity (kg) of a robot. */
     private final static double BASE_CAPACITY = 60D;
-    
+
 	// Static members
 	public static final String TYPE = "Robot";
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
-	
+
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
-	
-	
+
+
     // Data members
     private String name;
     /** The height of the robot (in cm). */
@@ -80,21 +86,21 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     /** Settlement X location (meters) from settlement center. */
     private double xLoc;
     /** Settlement Y location (meters) from settlement center. */
-    private double yLoc; 
+    private double yLoc;
     /** True if robot is dead and buried. */
     private boolean isBuried;
 	private boolean isSalvaged;
-	
+
     /** The robot's achievement in scientific fields. */
     //private Map<ScienceType, Double> scientificAchievement;
-	
+
     /** Manager for robot's natural attributes. */
     private NaturalAttributeManager attributes;
     /** robot's mind. */
     private BotMind botMind;
     /** robot's physical condition. */
     private PhysicalCondition health;
-	
+
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
@@ -123,7 +129,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         super(name, location); // if extending equipment
     	//super(name, settlement.getCoordinates()); // if extending Unit
         //super(name, null, birthplace, settlement); // if extending Person
-         
+
 		// Initialize data members.
         this.name = name;
 		isSalvaged = false;
@@ -136,14 +142,14 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         xLoc = 0D;
         yLoc = 0D;
         isBuried = false;
-        
+
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
-		
+
         String timeString = createTimeString();
-        
+
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
         botMind = new BotMind(this);
@@ -152,10 +158,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
 
-        
+
         setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
         height = 156 + RandomUtil.getRandomInt(22);
-        
+
         // Set inventory total mass capacity based on the robot's strength.
         int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
@@ -163,17 +169,17 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         // Put robot in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-        
+
     }
 
-    
+
     /**
      * Gets the instance of the task schedule for a person.
-     */    
+     */
     public TaskSchedule getTaskSchedule() {
     	return taskSchedule;
     }
-    
+
     /**
      * Create a string representing the birth time of the robot.
      * @return birth time string.
@@ -269,7 +275,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
     /**
      * Get vehicle robot is in, null if robot is not in vehicle
-     * 
+     *
      * @return the robot's vehicle
      */
     public Vehicle getVehicle() {
@@ -285,7 +291,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
      *            the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
-        
+
         super.setContainerUnit(containerUnit);
     }
 
@@ -301,7 +307,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     }
 
 
-    // TODO: allow robot parts to be stowed in storage 
+    // TODO: allow robot parts to be stowed in storage
     void setDead() {
         botMind.setInactive();
         buryBody();
@@ -315,15 +321,15 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
 
 		Unit container = getContainerUnit();
-		if (container instanceof Building) {
-			Building building = (Building) container;
-			//if (!person.getPhysicalCondition().isDead()) {
-			//	malfunctionManager.activeTimePassing(time);
-			//}
+		if (container instanceof Person) {
+			Person person = (Person) container;
+			if (!person.getPhysicalCondition().isDead()) {
+				malfunctionManager.activeTimePassing(time);
+			}
 		}
-		
 		malfunctionManager.timePassing(time);
-		
+
+/*
         // If robot is dead, then skip
         if (health.getDeathDetails() == null) {
 
@@ -336,16 +342,16 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
                 // Mental changes with time passing.
                 botMind.timePassing(time);
-            } 
+            }
             else {
                 // robot has died as a result of physical condition
                 setDead();
             }
         }
-
+*/
     }
 
-	
+
     /**
      * Returns a reference to the robot's natural attribute manager
      * @return the robot's natural attribute manager
@@ -430,7 +436,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         else {
             Vehicle vehicle = getVehicle();
             if ((vehicle != null) && (vehicle instanceof LifeSupport)) {
-                
+
                 if (BuildingManager.getBuilding(vehicle) != null) {
                     lifeSupportUnits.add(vehicle.getSettlement());
                 }
@@ -468,14 +474,14 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     }
 
     //public void consumeFood(double amount, boolean takeFromInv) {}
-    
+
     //public void consumeDessert(double amount, boolean takeFromInv) {}
-    	 
+
     /**
      * robot consumes given amount of power.
      * @param amount the amount of power to consume (in kg)
      * @param takeFromInv is power taken from local inventory?
-     
+
     public void consumePower(double amount, boolean takeFromInv) {
         if (takeFromInv) {
             //System.out.println(this.getName() + " is calling consumeFood() in Robot.java");
@@ -483,9 +489,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         }
     }
 */
-    
+
     //public PersonGender getGender() {return null;}
-    
+
     /**
      * Gets the gender of the robot.
      * @return the gender
@@ -505,7 +511,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     }
 
     //public Collection<Person> getLocalGroup() {return null;}
-    
+
     /**
      * Gets the robot's local group (in building or rover)
      * @return collection of robots in robot's location.
@@ -517,8 +523,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
                 if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport = 
-                            (org.mars_sim.msp.core.structure.building.function.LifeSupport) 
+                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport =
+                            (org.mars_sim.msp.core.structure.building.function.LifeSupport)
                             building.getFunction(BuildingFunction.LIFE_SUPPORT);
                     localRobotGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobotOccupants());
                 }
@@ -577,11 +583,11 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
     }
 
     public double getScientificAchievement(ScienceType science) { return 0;}
-    
+
     public double getTotalScientificAchievement() {return 0;}
-    
+
     public void addScientificAchievement(double achievementCredit, ScienceType science) {}
-    
+
 
 	/**
 	 * Gets a collection of people affected by this entity.
@@ -591,7 +597,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -609,7 +615,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 					if (!people.contains(person)) people.add(person);
 				}
 			}
-		}	
+		}
 
 		return people;
 	}
@@ -625,7 +631,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Indicate the start of a salvage process on the item.
 	 * @param info the salvage process info.
@@ -652,7 +658,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
 	}
-    
+
     @Override
     public void destroy() {
         super.destroy();

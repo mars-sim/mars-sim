@@ -12,8 +12,9 @@ import java.io.Serializable;
 import java.util.Hashtable;
 
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.robot.Robot;
 
-/** 
+/**
  * The NaturalAttributeManager class manages a person's natural attributes.
  * There is only natural attribute manager for each person.
  */
@@ -24,7 +25,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** List of the person's natural attributes keyed by unique name. */
-	private Hashtable<NaturalAttribute, Integer> attributeList; 
+	private Hashtable<NaturalAttribute, Integer> attributeList;
 
 	/**
 	 * Constructor.
@@ -56,7 +57,7 @@ implements Serializable {
 		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 60);
 		addAttributeModifier(NaturalAttribute.BRAVERY, 60);
 		addAttributeModifier(NaturalAttribute.EMOTIONAL_STABILITY, 60);
-		
+
 		// Adjust certain attributes reflective of differences between the genders.
 		// TODO: Do more research on this and cite references if possible.
 		if (person.getGender() == PersonGender.MALE) {
@@ -72,7 +73,7 @@ implements Serializable {
 	 * Constructor.
 	 * @param person the person with the attributes.
 	 */
-	NaturalAttributeManager(Robot robot) {
+	public NaturalAttributeManager(Robot robot) {
 
 		attributeList = new Hashtable<NaturalAttribute, Integer>();
 
@@ -112,14 +113,14 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the number of natural attributes. 
+	 * Returns the number of natural attributes.
 	 * @return the number of natural attributes
 	 */
 	public int getAttributeNum() {
 		return attributeList.size();
 	}
 
-	/** 
+	/**
 	 * Gets the integer value of a named natural attribute if it exists.
 	 * Returns 0 otherwise.
 	 * @param attribute {@link NaturalAttribute} the attribute
@@ -131,7 +132,7 @@ implements Serializable {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Sets an attribute's level.
 	 * @param attrib {@link NaturalAttribute} the attribute
 	 * @param level the level the attribute is to be set

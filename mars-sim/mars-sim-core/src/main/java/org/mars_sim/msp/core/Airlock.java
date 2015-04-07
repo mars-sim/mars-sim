@@ -8,10 +8,10 @@
 package org.mars_sim.msp.core;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.robot.Robot;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;

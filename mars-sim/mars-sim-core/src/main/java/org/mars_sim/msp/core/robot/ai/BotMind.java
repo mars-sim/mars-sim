@@ -4,7 +4,7 @@
  * @version 3.07 2015-02-11
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai;
+package org.mars_sim.msp.core.robot.ai;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -14,14 +14,16 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
-import org.mars_sim.msp.core.person.ai.job.RobotJob;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and 

@@ -554,7 +554,7 @@ implements ClockListener, Serializable {
 			}
 			scientificStudyManager.updateStudies();
 			ut.updateTime();
-		}
+
 
 		if (debug) {
 			logger.fine(
@@ -567,6 +567,7 @@ implements ClockListener, Serializable {
 		}
 		transportManager.timePassing(time);
 
+		}
 }
 
 	@Override

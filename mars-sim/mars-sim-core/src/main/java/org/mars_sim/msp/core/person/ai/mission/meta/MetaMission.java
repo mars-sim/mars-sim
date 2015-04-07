@@ -7,8 +7,8 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability 

@@ -4,7 +4,7 @@
  * @version 3.07 2015-01-21
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
 import java.util.ArrayList;

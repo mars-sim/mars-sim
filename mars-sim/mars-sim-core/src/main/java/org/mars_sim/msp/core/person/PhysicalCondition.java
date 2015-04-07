@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
@@ -309,48 +311,12 @@ implements Serializable {
      * @param config robot configuration.
      * @return True still alive.
      */
-    boolean timePassing(double time, LifeSupport support,
+    public boolean timePassing(double time, LifeSupport support,
             RobotConfig config) {
 /*
-        boolean illnessEvent = false;
+    	//1. Check malfunction
 
-        // Check the existing problems
-        if (!problems.isEmpty()) {
-            // Throw illness event if any problems already exist.
-            illnessEvent = true;
-
-            List<Complaint> newProblems = new ArrayList<Complaint>();
-            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
-
-            Iterator<HealthProblem> iter = currentProblems.iterator();
-            while(!isDead() && iter.hasNext()) {
-                HealthProblem problem = iter.next();
-
-                // Advance each problem, they may change into a worse problem.
-                // If the current is completed or a new problem exists then
-                // remove this one.
-                Complaint next = problem.timePassing(time, this);
-
-                if (problem.getCured() || (next != null)) {
-                    problems.remove(problem.getIllness());
-                }
-
-                // If a new problem, check it doesn't exist already
-                if (next != null) {
-                    newProblems.add(next);
-                }
-            }
-
-            // Add the new problems
-            Iterator<Complaint> newIter = newProblems.iterator();
-            while(newIter.hasNext()) {
-                addMedicalComplaint(newIter.next());
-                illnessEvent = true;
-            }
-        }
-
-        // Has the robot non-functional ?
-        if (isDead()) return false;
+    	if (isDead()) return false;
 
         try {
             //if (consumePower(support, getPowerConsumptionRate() * (time / 1000D)))
@@ -746,7 +712,7 @@ implements Serializable {
 
         // TODO: need a different method and different terminology to account for the drain on the robot's battery
         if (robot != null) {
-
+/*
                 Complaint starvation = getMedicalManager().getStarvation();
                 if (hunger > robotBatteryDrainTime
                 		|| ((hunger > 1000D) && (kJoules < 500D))) {
@@ -769,6 +735,7 @@ implements Serializable {
                 }
 
                 robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+*/
         }
 
         else if (person != null) {
@@ -991,10 +958,8 @@ implements Serializable {
 
         else if (robot != null) {
 
-            // High hunger reduces performance.
-            //if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-            if (hunger > 2000D) {
-                tempPerformance -= (hunger - 2000D) * .01D;
+             if (kJoules < 200D) {
+                tempPerformance = kJoules / 200D;
             }
 
         }

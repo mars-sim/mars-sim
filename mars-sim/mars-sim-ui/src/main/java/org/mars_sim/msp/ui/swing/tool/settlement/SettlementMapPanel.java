@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -518,8 +518,8 @@ implements ClockListener {
 			Vehicle vehicle = j.next();
 			double width =vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
-			double buildingWidth = 9;
-			double buildingLength = 6;
+			double buildingWidth = 10;
+			double buildingLength = 10;
 			double newRange;
 
 			// Select whichever longer

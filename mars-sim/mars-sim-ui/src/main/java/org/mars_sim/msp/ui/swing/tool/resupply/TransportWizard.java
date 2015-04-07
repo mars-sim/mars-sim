@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JOptionPane;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -239,9 +237,6 @@ public class TransportWizard {
 		// Hold off 10 seconds
 		//int seconds = 10;
 
-        if (mainScene != null)
-        	mainScene.pauseSimulation();
-
          // Determine location and facing for the new building.
 		if (isAtPreDefinedLocation) {
 
@@ -258,7 +253,6 @@ public class TransportWizard {
 			// Define new position for this building
 			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, true);
 		}
-
 
 		//createGUI(newBuilding);
   		// set settlement based on where this building is located
@@ -280,7 +274,14 @@ public class TransportWizard {
         	Alert alert = new Alert(AlertType.CONFIRMATION);
    			//alert.initModality(Modality.APPLICATION_MODAL);
    			//alert.initModality(Modality.WINDOW_MODAL);
-   			//alert.initOwner(mainScene.getStage());
+
+   			alert.initOwner(mainScene.getStage());
+   			double x = mainScene.getStage().getWidth();
+   			double y = mainScene.getStage().getHeight();
+   			double xx = alert.getDialogPane().getWidth();
+   			double yy = alert.getDialogPane().getHeight();
+   			alert.setX((x - xx)/2);
+   			alert.setY((y - yy)*3/4);
    			alert.setTitle(TITLE);
 			alert.setHeaderText("Confirm building location");
 			alert.setContentText(message);
@@ -311,6 +312,9 @@ public class TransportWizard {
 			     }
 
 			});
+
+	        if (mainScene != null)
+	        	mainScene.pauseSimulation();
 
 			//Simulation.instance().getMasterClock().setPaused(true);
 /*

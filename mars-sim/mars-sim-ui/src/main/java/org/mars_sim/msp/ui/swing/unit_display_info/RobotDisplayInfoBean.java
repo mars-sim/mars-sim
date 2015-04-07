@@ -14,7 +14,7 @@ import java.awt.Font;
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Robot;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 

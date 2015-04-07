@@ -4,16 +4,15 @@
  * @version 3.07 2015-03-05
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai.job;
+package org.mars_sim.msp.core.robot.ai.job;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-
-import org.mars_sim.msp.core.person.Robot;
-import org.mars_sim.msp.core.person.RobotType;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
