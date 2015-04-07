@@ -67,6 +67,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 
+import javafx.application.Platform;
+
 /**
  * The MainDesktopPane class is the desktop part of the project's UI.
  * It contains all tool and unit windows, and is itself contained,
@@ -104,7 +106,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2015-04-01 Switched to using ThreadPoolExecutor
 	//private UpdateThreadTask updateThreadTask;
 	private ToolWindowTask toolWindowTask;
-	private UnitWindowTask unitWindowTask;
+	//private UnitWindowTask unitWindowTask;
 	//private ThreadPoolExecutor threadPoolExecutor;
 	private ThreadPoolExecutor toolWindowExecutor;
 	private ThreadPoolExecutor unitWindowExecutor;
@@ -413,8 +415,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// 2014-12-23 Added transportWizard
 		transportWizard = new TransportWizard(this);
-		try { transportWizard.setClosed(true); }
-		catch (java.beans.PropertyVetoException e) { }
+		//try { transportWizard.setClosed(true); }
+		//catch (java.beans.PropertyVetoException e) { }
 
 		// 2014-12-30 Added marqueeBanner
 		//marqueeBanner = new MarqueeBanner(this);
@@ -1024,13 +1026,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Removes the transport wizard from the desktop.
 	 */
 	// 2014-12-23 Added disposeTransportWizard()
-	public void disposeTransportWizard() {
+	//public void disposeTransportWizard() {
 		//System.out.println("MainDesktopPane : running disposeTransportWizard()");
 		//transportWizard.setVisible(false);
-		try { transportWizard.setClosed(true); }
-		catch (java.beans.PropertyVetoException e) { }
-		transportWizard.dispose();
-	}
+	//	try { transportWizard.setClosed(true); }
+	//	catch (java.beans.PropertyVetoException e) { }
+	//	transportWizard.dispose();
+	//}
 	/**
 	 * Removes the marquee banner from the desktop.
 
@@ -1045,11 +1047,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Updates the look & feel of the Transport Wizard.
 	 */
 	// 2014-12-23 Added updateTransportWizardLF()
-	public void updateTransportWizardLF() {
-	    if (transportWizard != null) {
-	        SwingUtilities.updateComponentTreeUI(transportWizard);
-	    }
-	}
+	//public void updateTransportWizardLF() {
+	//    if (transportWizard != null) {
+	//        SwingUtilities.updateComponentTreeUI(transportWizard);
+	//    }
+	//}
 
 	/**
 	 * Updates the look & feel for all tool windows.
@@ -1175,7 +1177,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
 			//	|| eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			isTransportingBuilding = true;
-			disposeTransportWizard();
+			//disposeTransportWizard();
 			closeToolWindow(SettlementWindow.NAME);
 			//System.out.println("MainDesktopPane : unitUpdate() START_BUILDING_PLACEMENT_EVENT is true");
 			//isTransportingBuilding = true; // does not get updated for the next building unless ADD_BUILDING_EVENT is used
@@ -1186,15 +1188,24 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			settlementWindow.getMapPanel().setSettlement(settlement);
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);
-			openTransportWizard(mgr);
-			//if (mainWindow != null) mainWindow.pauseSimulation();
-			//else if (mainScene != null) mainScene.pauseSimulation();
+			if (mainWindow != null)  {//mainWindow.pauseSimulation();
+				openTransportWizard(mgr);
+			}
+			else if (mainScene != null) {//mainScene.pauseSimulation();
+				Platform.runLater(new Runnable() {
+	                @Override
+	                public void run() {
+	                	mainScene.openTransportWizard(mgr);
+	                }
+				});
+			}
+
 			isTransportingBuilding = false;
 		}
 		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
 			//if (mainWindow != null) mainWindow.unpauseSimulation();
 			//else if (mainScene != null) mainScene.unpauseSimulation();
-			disposeTransportWizard();
+			//disposeTransportWizard();
 			isTransportingBuilding = false;
             //mgr.getResupply().deliverOthers();
             disposeAnnouncementWindow();
@@ -1230,7 +1241,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		updateThread = null;
 		//updateThreadTask = null;
 		toolWindowTask = null;
-		unitWindowTask = null;
+		//unitWindowTask = null;
 		//threadPoolExecutor = null;
 		toolWindowExecutor = null;
 		unitWindowExecutor = null;

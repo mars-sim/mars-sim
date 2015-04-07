@@ -60,11 +60,13 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 /**
  * The MainScene class is the primary Stage for MSP. It is the container for housing
@@ -113,6 +115,7 @@ public class MainScene {
     //private MainWindow mainWindow;
     private MainSceneMenu menuBar;
     private MarsNode marsNode;
+	private TransportWizard transportWizard;
 
 	/**
 	 * Constructor for MainScene
@@ -192,9 +195,20 @@ public class MainScene {
 		stage.setOnCloseRequest(e -> {
 			alertOnExit();
 		});
+
+		transportWizard = new TransportWizard(this);
+
         return scene;
     }
 
+	public void openTransportWizard(BuildingManager buildingManager) {
+		transportWizard.initialize(buildingManager);
+		transportWizard.deliverBuildings();
+	}
+
+	public TransportWizard getTransportWizard() {
+		return transportWizard;
+	}
 
 	/**
 	 * Sets up the Main Scene
@@ -853,7 +867,7 @@ public class MainScene {
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();
-				desktop.updateTransportWizardLF();
+				//desktop.updateTransportWizardLF();
 			}
 		}
 	}

@@ -22,11 +22,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * Meta task for the AssistScientificStudyResearcher task.
  */
 public class AssistScientificStudyResearcherMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.assistScientificStudyResearcher"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -39,14 +39,14 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
-  
+
         // Find potential researchers.
         Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
         if (potentialResearchers.size() > 0) {
-            result = 50D; 
-        
+            result = 50D;
+
             // If assistant is in a settlement, use crowding modifier.
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Person researcher = (Person) potentialResearchers.toArray()[0];
@@ -55,21 +55,21 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
                 if (building != null) {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                    
-                    if (person.getFavorite().getFavoriteActivity().equals("Research"))
-                    	result += 50D;
-                    
+
+                    //if (person.getFavorite().getFavoriteActivity().equals("Research"))
+                    //	result += 50D;
+
                     // Job modifier.
                     Job job = person.getMind().getJob();
                     if (job != null)
-                        result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);                   
-                    
+                        result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
+
                 }
-                
+
                 else result = 0D;
             }
         }
-         
+
         return result;
     }
 

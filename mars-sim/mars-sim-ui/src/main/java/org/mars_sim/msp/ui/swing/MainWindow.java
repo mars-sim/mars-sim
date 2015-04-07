@@ -674,7 +674,7 @@ public class MainWindow extends JComponent {
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();
-				desktop.updateTransportWizardLF();
+				//desktop.updateTransportWizardLF();
 			}
 
 		}

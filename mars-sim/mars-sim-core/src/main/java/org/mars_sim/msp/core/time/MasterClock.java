@@ -408,7 +408,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 	                marsTime.addTime(timePulse);
 
-	  		  		if (!clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() )
+	  		  		if (!isPaused || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() )
 	  		  			fireClockPulse(timePulse);
 
 	                long endTime = System.nanoTime();
@@ -598,7 +598,8 @@ public class MasterClock implements Serializable { // Runnable,
 		public void run() {
 			try {
 				//while (!clockListenerExecutor.isTerminated()){
-				listener.clockPulse(time);
+				//while (!isPaused)
+					listener.clockPulse(time);
 				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
 				//}
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
@@ -676,6 +677,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void setPaused(boolean isPaused) {
         uptimer.setPaused(isPaused);
+
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
