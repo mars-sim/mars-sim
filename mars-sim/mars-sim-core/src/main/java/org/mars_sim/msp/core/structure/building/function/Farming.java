@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.08 2015-03-02
+ * @version 3.08 2015-04-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -35,8 +35,8 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 // 2014-10-15 Fixed the crash by checking if there is any food available
 // 	Added new method checkAmountOfFood() for CookMeal.java
-// 2014-10-14 Implemented new way of calculating amount of crop harvest in kg, 
-// Crop Yield or Edible Biomass, based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 
+// 2014-10-14 Implemented new way of calculating amount of crop harvest in kg,
+// Crop Yield or Edible Biomass, based on NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941
 // 2014-11-06 Added if clause to account for soybean harvest
 // 2014-11-29 Added harvesting crops to turn into corresponding amount resource having the same name as the crop's name
 // 2014-12-09 Added crop queue
@@ -52,7 +52,7 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
-    
+
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
 
     private Inventory inv;
@@ -60,8 +60,8 @@ implements Serializable {
     private Building building;
     private BeeGrowing beeGrowing;
 	private GoodsManager goodsManager;
-	
-    
+
+
     private int cropNum;
 	private int solCache = 1;
     private double powerGrowingCrop;
@@ -70,14 +70,14 @@ implements Serializable {
     private double remainingGrowingArea;
     private double maxHarvestinKg;
     private List<Crop> crops = new ArrayList<Crop>();
-    
+
   	// 2014-12-09 Added cropInQueue, cropListInQueue
     private String cropInQueue;
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
     private List<CropType> cropTypeList = new ArrayList<CropType>();
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
 
-    
+
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -91,34 +91,34 @@ implements Serializable {
         this.inv = building.getInventory();
         this.settlement = building.getBuildingManager().getSettlement();
 		this.goodsManager = settlement.getGoodsManager();
-		
+
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
         powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
         maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
         remainingGrowingArea = maxGrowingArea;
-        
-        
+
+
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		cropTypeList = cropConfig.getCropList();	
+		cropTypeList = cropConfig.getCropList();
         cropNum = buildingConfig.getCropNum(building.getBuildingType());
-        
+
         // Load activity spots
         loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
- 
+
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = getNewCrop("0", false);
         	Crop crop = plantACrop(cropType, false, 0);
-            crops.add(crop);                   
-            building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);       
-        }  
-        
+            crops.add(crop);
+            building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+        }
+
         // 2015-02-18 Created BeeGrowing
         beeGrowing = new BeeGrowing(this);
     }
- 
-	
+
+
 	/**
 	 * Gets a random crop type.
 	 * @return crop type
@@ -134,19 +134,19 @@ implements Serializable {
 				int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
 				crop = cropTypes.get(r);
 			}
-			else 
-				crop = selectHighestDemandCropType();	
+			else
+				crop = selectHighestDemandCropType();
 		} else {
 			Iterator<CropType> i = cropTypes.iterator();
 			while (i.hasNext()) {
 				CropType c = i.next();
 				if (c.getName() == cropInQueue)
 					crop = c;
-			}	
+			}
 		}
 		return crop;
 	}
-	
+
     // 2015-03-02 Added selectHighestDemandCropType()
 	public CropType selectHighestDemandCropType() {
 		CropType highestDemandCropType = null;
@@ -165,17 +165,17 @@ implements Serializable {
 		}
 		return highestDemandCropType;
 	}
-	
+
 	// 2015-03-02 Added	getCropValue()
     public double getCropValue(AmountResource resource) {
-    	double cropValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));		
+    	double cropValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
     	return cropValue;
-    }   
-    
+    }
+
     // 2015-02-15 added plantACrop()
     public Crop plantACrop(CropType cropType, boolean isNewCrop, double designatedGrowingArea) {
     	Crop crop = null;
-    	// 2014-10-14 Implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop 
+    	// 2014-10-14 Implemented new way of calculating amount of food in kg, accounting for the Edible Biomass of a crop
     	// edibleBiomass is in  [ gram / m^2 / day ]
     	double edibleBiomass = cropType.getEdibleBiomass();
     	// growing-time is in millisol vs. growingDay is in sol
@@ -186,33 +186,33 @@ implements Serializable {
     	}
        	else if (designatedGrowingArea != 0) {
     		cropArea = designatedGrowingArea;
-    	}	
+    	}
     	else { //if (remainingGrowingArea > 1D)
     		cropArea = maxGrowingArea / (double) cropNum ;
     	}
-		remainingGrowingArea = remainingGrowingArea - cropArea;		
+		remainingGrowingArea = remainingGrowingArea - cropArea;
 		if (remainingGrowingArea < 0) remainingGrowingArea = 0;
-		//System.out.println("remainingGrowingArea : "+ remainingGrowingArea); 
+		//System.out.println("remainingGrowingArea : "+ remainingGrowingArea);
     	// maxHarvest is in kg ( note: 1 tonnes per hectare  = 0.1 kg per sq m )
 		//System.out.println("cropArea : "+ cropArea);
     	maxHarvestinKg = edibleBiomass * cropArea / 10D;
     	//logger.info(cropType.getName() + " : max possible harvest : " + Math.round(maxHarvestinKg*100.0)/100.0 + " kg");
         crop = new Crop(cropType, cropArea, maxHarvestinKg, this, settlement, isNewCrop);
-        
+
         // 2015-01-14 Added fertilizer to the soil for the new crop
-        provideFertilizer(cropArea, isNewCrop);   
-        // 2015-02-28 Replaced some amount of old soil with new soil  
+        provideFertilizer(cropArea, isNewCrop);
+        // 2015-02-28 Replaced some amount of old soil with new soil
         provideNewSoil(cropArea, isNewCrop);
 
     	return crop;
     }
-    
+
     /**
      * Retrieves new soil when planting new crop
      */
     // 2015-02-28 provideNewSoil()
     public void provideNewSoil(double cropArea, boolean isNewCrop) {
-        // 2015-02-28 Replaced some amount of old soil with new soil  
+        // 2015-02-28 Replaced some amount of old soil with new soil
         if (isNewCrop) {
         	double rand = RandomUtil.getRandomDouble(2);
         	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
@@ -220,11 +220,11 @@ implements Serializable {
         	storeAnResource(amount, "crop waste");
         }
     }
-    
+
     public Building getBuilding() {
     	return building;
     };
-    
+
     /**
      * Retrieves the fertilizer and add to the soil when planting the crop
      */
@@ -237,7 +237,7 @@ implements Serializable {
     		//System.out.println("fertilizer used in planting a new crop : " + amount);
         }
     }
-    
+
     /**
      * Retrieves the resource
      * @param name
@@ -246,9 +246,9 @@ implements Serializable {
     //2015-01-14 Added retrieveAnResource()
     public void retrieveAnResource(String name, double requestedAmount) {
     	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
+	    	AmountResource nameAR = AmountResource.findAmountResource(name);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);  
+	    	inv.addAmountDemandTotalRequest(nameAR);
 	        if (amountStored < requestedAmount) {
 	     		requestedAmount = amountStored;
 	    		logger.warning("Just used up all " + name);
@@ -263,17 +263,17 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
     }
-    
+
     //2014-12-09 Added setCropInQueue()
     public void setCropInQueue(String cropInQueue) {
     	this.cropInQueue = cropInQueue;
     }
-    
+
     //2014-12-09 Added getCropInQueue()
     public String getCropInQueue() {
     	return cropInQueue;
     }
-    
+
     /**
      * Gets a collection of the CropType.
      * @return Collection of CropType
@@ -283,7 +283,7 @@ implements Serializable {
         return cropListInQueue;
       //CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
-    
+
     /**
      * Adds a cropType to cropListInQueue.
      * @param cropType
@@ -294,7 +294,7 @@ implements Serializable {
     		cropListInQueue.add(cropType);
     	}
     }
-    
+
     /**
      * Deletes a cropType to cropListInQueue.
      * @param cropType
@@ -310,21 +310,21 @@ implements Serializable {
     		while (j.hasNext()) {
     			CropType c = j.next();
     			if ( i == index) {
-    		    	//System.out.println("Farming.java: deleteCropListInQueue() : i is at " + i);     	  
+    		    	//System.out.println("Farming.java: deleteCropListInQueue() : i is at " + i);
     				String name = c.getName();
-    		    	//System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);     	     		        
-    	 			if (cropType.getName() != name) 
+    		    	//System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);
+    	 			if (cropType.getName() != name)
     	 				logger.log(java.util.logging.Level.SEVERE, "The crop queue encounters a problem removing a crop");
     	 			else {
     	 				j.remove();
-    	 		       	//System.out.println("Farming.java: deleteCropListInQueue() : queue size is now " + cropListInQueue.size()); 
+    	 		       	//System.out.println("Farming.java: deleteCropListInQueue() : queue size is now " + cropListInQueue.size());
         				break; // remove the first entry only
     	 			}
     			}
     			i++;
     		}
     	}
-    	
+
     }
 
     /**
@@ -334,7 +334,7 @@ implements Serializable {
      * @param settlement the settlement.
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
-     * Called by BuildingManager.java getBUildingValue() 
+     * Called by BuildingManager.java getBUildingValue()
      */
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
@@ -362,7 +362,7 @@ implements Serializable {
         }
 
         // TODO: investigating if other food group besides food should be added as well
-        return  addSupply(supply, demand, settlement, buildingName);        
+        return  addSupply(supply, demand, settlement, buildingName);
     }
 
     public static double addSupply(double supply, double demand, Settlement settlement, String buildingName) {
@@ -372,14 +372,14 @@ implements Serializable {
         double growingAreaValue = demand / (supply + 1D);
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double growingArea = config.getCropGrowingArea(buildingName);       
+        double growingArea = config.getCropGrowingArea(buildingName);
         //logger.info("addSupply() : growingArea is " + growingArea);
         //logger.info("addSupply() : growingAreaValue is " + growingAreaValue);
-        
+
         return growingArea * growingAreaValue;
     }
 
-    
+
     /**
      * Gets the farm's current crops.
      * @return collection of crops
@@ -448,28 +448,28 @@ implements Serializable {
      * Adds the crop harvest to the farm.
      * @param harvest: harvested food to add (kg.)
      * @param cropCategory
-     
-     
+
+
     // Note: this method was called by Crop.java's addWork()
     // 2014-10-14 Added String cropCategory to the param list,
     // 2014-11-29 Used cropName instead of cropCategory when creating amount resource
     public void addHarvest(double harvestAmount, String cropName, String cropCategory) {
     	try {
-            AmountResource harvestCropAR = AmountResource.findAmountResource(cropName);      
+            AmountResource harvestCropAR = AmountResource.findAmountResource(cropName);
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(harvestCropAR, false, false);
 
             if (remainingCapacity < harvestAmount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	harvestAmount = remainingCapacity;
                  	//logger.info("addHarvest() : storage is full!");
-                }           
-            // TODO: consider the case when it is full          
+                }
+            // TODO: consider the case when it is full
             // add the harvest to the remaining capacity
             // 2014-11-06 changed the last param from false to true
             inv.storeAmountResource(harvestCropAR, harvestAmount, true);
             // 2015-01-15 Add addSupplyAmount()
             inv.addAmountSupplyAmount(harvestCropAR, harvestAmount);
-  
+
         }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
         }
@@ -504,20 +504,20 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-	public void timePassing(double time) {		
-	    MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();    
+	public void timePassing(double time) {
+	    MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
-	    int solElapsed = MarsClock.getSolOfYear(clock);	
+	    int solElapsed = MarsClock.getSolOfYear(clock);
 	    if ( solElapsed != solCache) {
 	    	solCache = solElapsed;
-	        produceDailyTendingCropWaste();	    	
+	        produceDailyTendingCropWaste();
 	    }
-	    
+
         // Determine resource processing production level.
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
-        
+
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
         int newCrops = 0;
@@ -533,7 +533,7 @@ implements Serializable {
                 //System.out.println("Farming timePassing() newCrops++ : remainingGrowingArea is "+ remainingGrowingArea);
             }
         }
-        
+
         // Add any new crops.
         //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         for (int x = 0; x < newCrops; x++) {
@@ -552,51 +552,51 @@ implements Serializable {
         			break; // remove the first entry only
         		}
           	} else
-        		cropType = getNewCrop("0", true); 
- 
+        		cropType = getNewCrop("0", true);
+
             //System.out.println("Farming timePassing() : calling plantACrop()");
-          	Crop crop = plantACrop(cropType, true, 0);          	
-            crops.add(crop);            
-            
+          	Crop crop = plantACrop(cropType, true, 0);
+            crops.add(crop);
+
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
-        
+
         // 2015-02-18 Added beeGrowing.timePassing()
         beeGrowing.timePassing(time);
 
     }
 
 	/**
-     * Creates crop waste from the daily tending of the greenhouse 
-     * 
+     * Creates crop waste from the daily tending of the greenhouse
+     *
      */
 	// 2015-02-26 Added produceDailyTendingCropWaste()
-	public void produceDailyTendingCropWaste() {		
-		double rand = RandomUtil.getRandomDouble(2);		
+	public void produceDailyTendingCropWaste() {
+		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		storeAnResource(amountCropWaste, "Crop Waste");	    
+		storeAnResource(amountCropWaste, "Crop Waste");
 	}
-	
+
 
    public void storeAnResource(double amount, String name) {
     	try {
-            AmountResource ar = AmountResource.findAmountResource(name);      
+            AmountResource ar = AmountResource.findAmountResource(name);
             double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
 
             if (remainingCapacity < amount) {
                 // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
             	amount = remainingCapacity;
                 logger.info(" storage is full!");
-            }	            
-            // TODO: consider the case when it is full  	            
+            }
+            // TODO: consider the case when it is full
             inv.storeAmountResource(ar, amount, true);
             inv.addAmountSupplyAmount(ar, amount);
         }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-	
+
     /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)
@@ -666,7 +666,7 @@ implements Serializable {
 
         inv = null;
         settlement = null;
-        
+
         Iterator<CropType> i = cropListInQueue.iterator();
         while (i.hasNext()) {
             i.next().destroy();

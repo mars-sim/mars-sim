@@ -47,6 +47,16 @@ implements Serializable {
 	 *  0 corresponding to Mars' Northern Spring Equinox.
 	 */
 	private double L_s;
+	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly measured in terms of the areocentric longitude L_s,
+	//as referred to the planet's vernal equinox (the ascending node of the apparent seasonal motion of the Sun on the planet's equator).
+	//
+	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
+	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
+	// The areocentric longitude at perihelion, L_s = 251°.000 + 0°.00645 * (yr - 2000),
+	// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
+	// as related to the occasional onset of global dust storms within the advance of this season.
+	// see http://www.giss.nasa.gov/tools/mars24/help/notes.html
+
 
 	/** The solar zenith angle z */
 	private double z;
@@ -175,12 +185,13 @@ implements Serializable {
 		double theta_offset = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
 		//System.out.println(" theta_offset: " + theta_offset);
 		double lat = location.getPhi2Lat(location.getPhi());
-		double L_s = getL_s();
-		double dec = getSolarDeclinationAngle(L_s);
+		double dec = getSolarDeclinationAngle(getL_s());
 		//System.out.println("solar dec angle is " + dec);
 		double solar_time = marsClock.getMillisol() ;
 		//System.out.println("solar_time is " + (int) solar_time);
-		// TODO: figure out a more compact EOT using numerical model of the analemma. see http://www.giss.nasa.gov/research/briefs/allison_02/
+		// TODO: figure out a more compact Equation of Time (EOT) using numerical model of the analemma.
+		// Mars has an EOT varying between -51.1min and +39.9min, with its more than five times larger orbital eccentricity than the Earth's,
+		// see http://www.giss.nasa.gov/research/briefs/allison_02/  http://www.giss.nasa.gov/tools/mars24/help/notes.html
 		double equation_of_time_offset = 0;
 		if (L_s <= 90 )
 			equation_of_time_offset = (43.4783 - dec / Math.PI *180D) * 23D / 25D ; // y = (-25/23 ) x + 25/23*40
@@ -245,16 +256,25 @@ implements Serializable {
 
 
 	/**
-	 * Gets the instantaneous areocentric longitude
-	 * @return angle in radians (0 - 360).
+	 * Computes the instantaneous areocentric longitude
 	 */
-	// 2015-03-17 Added getL_s()
-	public double getL_s() {
+	// 2015-03-17 Added computeL_s()
+	public void computeL_s() {
 		double v = getTrueAnomaly();
 		double L_s = v / Math.PI * 180D + 248D;
 		if (L_s >= 360)
 			L_s = L_s - 360;
 		//System.out.println("L_s is " + L_s);
+		//return L_s;
+	}
+
+	/**
+	 * Gets the instantaneous areocentric longitude
+	 * @return angle in radians (0 - 360).
+	 */
+	// 2015-04-08 Added getL_s()
+	public double getL_s() {
+		computeL_s();
 		return L_s;
 	}
 

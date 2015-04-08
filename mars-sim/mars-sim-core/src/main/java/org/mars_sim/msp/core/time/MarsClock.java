@@ -21,7 +21,7 @@ public class MarsClock implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	// The Mars tropical year is 686.9726 day or 668.5921 sol.
-	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, and is customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth. 	
+	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, and is customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth.
 	// The Mars sidereal day, as measured with respect to the fixed stars, is 24h 37m 22.663s, as compared with 23h 56m 04.0905s for Earth.
 
 	// Martian calendar static members
@@ -37,35 +37,35 @@ public class MarsClock implements Serializable {
     // private static final int MILLISOLS_IN_SOL = 1000;
     public static final int NORTHERN_HEMISPHERE = 1;
     public static final int SOUTHERN_HEMISPHERE = 2;
-    
-    // Note: the summer solstice marks the longest day of the calendar year and the beginning of summer in the "Northern Hemisphere". 
-    // The solar longitude Ls is the Mars-Sun angle, measured from the Northern Hemisphere spring equinox where Ls=0.
-    // Ls=90 corresponds to summer solstice, just as Ls=180 marks the autumn equinox and Ls=270 the winter solstice (all relative to the northern hemisphere).
+
+    // Note: the summer solstice marks the longest day of the calendar year and the beginning of summer in the "Northern Hemisphere".
+    // The solar longitude Ls is the Mars-Sun angle, measured from the Northern Hemisphere spring equinox where L_s=0.
+    // Ls=90 corresponds to summer solstice, just as L_s=180 marks the autumn equinox and L_s=270 the winter solstice (all relative to the northern hemisphere).
     // see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
     private static final int SUMMER_SOLSTICE = 168;
 	private static final int AUTUMN_EQUINOX = 346;
 	private static final int WINTER_SOLSTICE = 489;
-	private static final int SPRING_EQUINOX = 643; // or on the -25th sols 
-	
+	private static final int SPRING_EQUINOX = 643; // or on the -25th sols
+
     // Martian/Gregorian calendar conversion
-    private static final double SECONDS_IN_MILLISOL = 88.775244;
+    public static final double SECONDS_IN_MILLISOL = 88.775244;
 
     public static final int THE_FIRST_SOL = 9353;
-    
+
     // Martian calendar static strings
     private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri",
         "Edal", "Flo", "Geor", "Heliba", "Idanon", "Jowani", "Kireal", "Larno",
         "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo", "Tiunor",
         "Ulasja", "Vadeun", "Wakumi", "Xetual", "Zungo" };
 
-    private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol", 
+    private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol",
         "Terrasol", "Hermesol", "Venusol", "Jovisol" };
 
     // Data members
     private int orbit;
     private int month;
     private int sol;
-    private double millisol; 
+    private double millisol;
 
     /**
      * Constructor with date string parameter.
@@ -73,29 +73,29 @@ public class MarsClock implements Serializable {
      * @throws Exception if dateString is invalid.
      */
     public MarsClock(String dateString) {
-    
+
         // Set initial date to dateString. ex: "15-Adir-01:000.000"
         String orbitStr = dateString.substring(0, dateString.indexOf("-"));
         orbit = Integer.parseInt(orbitStr);
         if (orbit < 0) throw new IllegalStateException("Invalid orbit number: " + orbit);
-        	
+
         String monthStr = dateString.substring(dateString.indexOf("-") + 1, dateString.lastIndexOf("-"));
         month = 0;
         for (int x=0; x < MONTH_NAMES.length; x++) {
         	if (monthStr.equals(MONTH_NAMES[x])) month = x + 1;
         }
         if ((month < 1) || (month > MONTH_NAMES.length)) throw new IllegalStateException("Invalid month: " + monthStr);
-        	
+
         String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(":"));
         sol = Integer.parseInt(solStr);
         if (sol < 1) throw new IllegalStateException("Invalid sol number: " + sol);
-        	
+
         String millisolStr = dateString.substring(dateString.indexOf(":") + 1);
         millisol = Double.parseDouble(millisolStr);
         if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
-        
+
     }
-    
+
     /** Constructs a MarsClock object with a given time
      *  param orbit current orbit
      *  param month current month
@@ -118,14 +118,14 @@ public class MarsClock implements Serializable {
         return seconds / SECONDS_IN_MILLISOL;
     }
 
-    /** Converts millisols to seconds 
-     *  @param millisols decimal number of millisols 
-     *  @return equivalent number of seconds 
+    /** Converts millisols to seconds
+     *  @param millisols decimal number of millisols
+     *  @return equivalent number of seconds
      */
     public static double convertMillisolsToSeconds(double millisols) {
         return millisols * SECONDS_IN_MILLISOL;
     }
-    
+
     /** Returns the time difference between two Mars clock instances.
      *  @param firstTime first Mars clock instance
      *  @param secondTime second Mars clock instance
@@ -134,7 +134,7 @@ public class MarsClock implements Serializable {
     public static double getTimeDiff(MarsClock firstTime, MarsClock secondTime) {
         return getTotalMillisols(firstTime) - getTotalMillisols(secondTime);
     }
-    
+
     /**
      * Gets the names of the Martian months.
      * @return array of month names.
@@ -142,7 +142,7 @@ public class MarsClock implements Serializable {
     public static String[] getMonthNames() {
         return Arrays.copyOf(MONTH_NAMES, MONTH_NAMES.length);
     }
-    
+
     /**
      * Gets the names of the Martian sols of the week.
      * @return array of week sol names.
@@ -157,16 +157,16 @@ public class MarsClock implements Serializable {
      */
     // 2015-01-28 Added getSolOfYear()
     public static int getSolOfYear(MarsClock time) {
-    	
+
     	int result = 0;
 
         // Add sols up to current month
         for (int x=1; x < time.month; x++)
             result += MarsClock.getSolsInMonth(x, time.orbit) ;
-            
+
         // Add sols up to current sol
         result += time.sol  ;
-	
+
         return result;
     }
 
@@ -175,7 +175,7 @@ public class MarsClock implements Serializable {
      */
     // 2015-02-09 Added getTotalSol
     public static int getTotalSol(MarsClock time) {
-    	
+
     	int result = 0;
 
         // Add sols up to current orbit
@@ -183,19 +183,19 @@ public class MarsClock implements Serializable {
             if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR;
             else result += SOLS_IN_ORBIT_NON_LEAPYEAR;
         }
-        
+
         // Add sols up to current month
         for (int x=1; x < time.month; x++)
             result += MarsClock.getSolsInMonth(x, time.orbit) ;
-            
+
         // Add sols up to current sol
         result += time.sol  ;
-	
+
         result = result - THE_FIRST_SOL;
-        
+
         return result;
     }
-    
+
     /** Returns the number of sols for a given month and orbit.
      *  @param month the month number
      *  @param orbit the orbit number
@@ -205,10 +205,10 @@ public class MarsClock implements Serializable {
         // Standard month has 28 sols.
         int result = SOLS_IN_MONTH_LONG;
 
-        // If month number is divisible by 6, month has 27 sols 
+        // If month number is divisible by 6, month has 27 sols
         if ((month % 6) == 0) result = SOLS_IN_MONTH_SHORT;
 
-        // If leap orbit and month number is 24, month has 28 sols 
+        // If leap orbit and month number is 24, month has 28 sols
         if ((month == 24) && isLeapOrbit(orbit)) result = SOLS_IN_MONTH_LONG;
 
         return result;
@@ -219,28 +219,28 @@ public class MarsClock implements Serializable {
      */
     public static boolean isLeapOrbit(int orbit) {
         boolean result = false;
-        
+
         // If an orbit is divisable by 10 it is a leap orbit
         if ((orbit % 10) == 0) result = true;
-      
+
         // If an orbit is divisable by 100, it is not a leap orbit
         if ((orbit % 100) == 0) result = false;
-       
+
         // If an orbit is divisable by 500, it is a leap orbit
         if ((orbit % 500) == 0) result = true;
 
         return result;
     }
 
-    /** 
+    /**
      * Adds time to the calendar
      * Note: negative time should be used to subtract time.
      * @param addedMillisols millisols to be added to the calendar
-     */ 
+     */
     public void addTime(double addedMillisols) {
-        
+
         millisol += addedMillisols;
-        
+
         if (addedMillisols > 0D) {
             while (millisol >= 1000D) {
                 millisol -= 1000D;
@@ -286,7 +286,7 @@ public class MarsClock implements Serializable {
         return new StringBuilder(getDateString(time)).append(" ").append(getMillisolString(time)).toString();
     }
 
-    /** 
+    /**
      * Gets the current date string.
      * ex. "13-Adir-05"
      * @return current date string
@@ -309,7 +309,7 @@ public class MarsClock implements Serializable {
         return result.toString();
     }
 
-    /** 
+    /**
      * Gets the date string of a given time.
      * ex. "13-Adir-05"
      * @return date string
@@ -319,7 +319,7 @@ public class MarsClock implements Serializable {
         int orbit = time.getOrbit();
         int sol = time.getSolOfMonth();
         String month = time.getMonthName();
-        
+
         // Append orbit
         result.append(orbit).append("-").append(month).append("-");
 
@@ -330,7 +330,7 @@ public class MarsClock implements Serializable {
 
         return result.toString();
     }
-    
+
     /** Returns the current time string.
      *  ex. "05:056.349"
      */
@@ -357,11 +357,11 @@ public class MarsClock implements Serializable {
 
     /** Returns the time string of a given time.
      *  ex. "056"
-     */ 
+     */
     public static String getMillisolString(MarsClock time) {
-    	   StringBuilder b = new StringBuilder();    	   
+    	   StringBuilder b = new StringBuilder();
     	   int millisol = (int) time.getMillisol();
-           
+
 //           String result = "" + tb;
            b.append(millisol);
            if (millisol < 100D) {
@@ -379,35 +379,35 @@ public class MarsClock implements Serializable {
 
            return b.toString();
     }
-    
-    
+
+
     /** Returns the total number of millisols of a given time.
      *  @param time
-     */ 
+     */
     public static double getTotalMillisols(MarsClock time) {
         double result = 0D;
-        
+
         // Add millisols up to current orbit
         for (int x=1; x < time.orbit; x++) {
             if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR * 1000D;
             else result += SOLS_IN_ORBIT_NON_LEAPYEAR * 1000D;
         }
-        
+
         // Add millisols up to current month
         for (int x=1; x < time.month; x++)
             result += MarsClock.getSolsInMonth(x, time.orbit) * 1000D;
-            
+
         // Add millisols up to current sol
         result += (time.sol - 1) * 1000D;
-   
+
         // Add millisols in current sol
         result += time.millisol;
-        
+
 		//System.out.println("MarsClock : result : " + result);
-		
+
         return result;
     }
-    
+
     /** Returns the name of the current month.
      *  @return name of the current month
      */
@@ -430,9 +430,9 @@ public class MarsClock implements Serializable {
      */
     public int getSolOfMonth() { return sol; }
 
-    /** Returns the millisol 
+    /** Returns the millisol
      *  @return the millisol as a double
-     */ 
+     */
     public double getMillisol() { return millisol; }
 
     /** Returns the week of the month (1-4)
@@ -444,7 +444,7 @@ public class MarsClock implements Serializable {
 
     /** Returns the sol number of the week (1-7)
      *  @return the sol number of the week as an integer
-     */ 
+     */
     public int getSolOfWeek() {
         return sol - ((getWeekOfMonth() - 1) * 7);
     }
@@ -455,7 +455,7 @@ public class MarsClock implements Serializable {
     public String getSolOfWeekName() {
         return WEEK_SOL_NAMES[getSolOfWeek() - 1];
     }
-    
+
     /** Returns the number of sols in the current week
      *  @return the number of osls in the current week as an integer
      */
@@ -463,14 +463,14 @@ public class MarsClock implements Serializable {
         int result = SOLS_IN_WEEK_LONG;
 
         if (getSolsInMonth(month, orbit) == SOLS_IN_MONTH_SHORT) {
-            if (getWeekOfMonth() == 4) 
+            if (getWeekOfMonth() == 4)
                 result = SOLS_IN_WEEK_SHORT;
         }
         return result;
     }
 
     /** Returns the current season for the given hemisphere
-     *  @param hemisphere the hemisphere 
+     *  @param hemisphere the hemisphere
      *  NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE valid parameters
      *  @return season as String ("Spring", "Summer", "Autumn" or "Winter")
      */
@@ -480,17 +480,17 @@ public class MarsClock implements Serializable {
     	//System.out.println(" solElapsed :" +  solElapsed );
     	// 2015-02-24 Added modifier
     	String modifier = "";
-    	
+
 		if (solElapsed > SOLS_IN_ORBIT_LEAPYEAR)
-			solElapsed = solElapsed - SOLS_IN_ORBIT_NON_LEAPYEAR; 
-		
+			solElapsed = solElapsed - SOLS_IN_ORBIT_NON_LEAPYEAR;
+
 		if (solElapsed < SUMMER_SOLSTICE || solElapsed >= SPRING_EQUINOX){
 			if (solElapsed >= SPRING_EQUINOX || solElapsed < 64 - 25 ) //int paddingDay = SOLS_IN_ORBIT_NON_LEAPYEAR - SPRING_EQUINOX = 25
 				modifier = "Early ";
 			else if (solElapsed < 64 - 25 + 66)
 				modifier = "Mid ";
 			else //if (solElapsed < SUMMER_SOLSTICE)
-				modifier = "Late ";			
+				modifier = "Late ";
             if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Spring";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Autumn";
         }
@@ -500,7 +500,7 @@ public class MarsClock implements Serializable {
 			else if (solElapsed < SUMMER_SOLSTICE + 59 + 61)
 				modifier = "Mid ";
 			else //if (solElapsed < AUTUMN_EQUINOX)
-				modifier = "Late ";						
+				modifier = "Late ";
             if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Summer";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Winter";
         }
@@ -510,7 +510,7 @@ public class MarsClock implements Serializable {
 			else if (solElapsed < AUTUMN_EQUINOX + 47 + 49)
 				modifier = "Mid ";
 			else //if (solElapsed < WINTER_SOLSTICE)
-				modifier = "Late ";			
+				modifier = "Late ";
             if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Autumn";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Spring";
         }
@@ -520,22 +520,22 @@ public class MarsClock implements Serializable {
 			else if (solElapsed < WINTER_SOLSTICE + 51 + 53)
 				modifier = "Mid ";
 			else //if (solElapsed < SPRING_EQUINOX)
-				modifier = "Late ";				
+				modifier = "Late ";
             if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Winter";
             else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Summer";
         }
-		
+
 		return season;
     }
-    
-    /** 
+
+    /**
      * Creates a clone of this MarsClock object, with the time set the same.
      * @return clone of this MarsClock object
      */
     public Object clone() {
         return new MarsClock(orbit, month, sol, millisol);
     }
-    
+
     /**
      * Displays the string version of the clock.
      * @return time stamp string.
@@ -543,7 +543,7 @@ public class MarsClock implements Serializable {
     public String toString() {
     	return getTimeStamp();
     }
-    
+
     /**
      * Checks if another object is equal to this one.
      */
@@ -559,7 +559,7 @@ public class MarsClock implements Serializable {
     	else result = false;
     	return result;
     }
-    
+
     /**
      * Gets the hash code for this object.
      * @return hash code.

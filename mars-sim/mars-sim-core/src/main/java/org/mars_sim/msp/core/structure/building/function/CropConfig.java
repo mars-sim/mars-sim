@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropConfig.java
- * @version 3.07 2015-02-24
+ * @version 3.08 2015-04-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -16,7 +16,7 @@ import org.jdom.Element;
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.
  */
-//2014-10-14 mkung: added new attribute: edibleBiomass, inedibleBiomass, edibleWaterContent. 
+//2014-10-14 mkung: added new attribute: edibleBiomass, inedibleBiomass, edibleWaterContent.
 // commented out ppf and photoperiod
 public class CropConfig
 implements Serializable {
@@ -34,9 +34,9 @@ implements Serializable {
 	private static final String EDIBLE_BIOMASS = "edible-biomass";
 	private static final String EDIBLE_WATER_CONTENT = "edible-water-content";
 	private static final String INEDIBLE_BIOMASS = "inedible-biomass";
-
+	private static final String DAILY_PAR = "daily-PAR";
 	//private static final String HARVEST_INDEX = "harvest-index";
-	
+
 	private Document cropDoc;
 	private List<CropType> cropList;
 
@@ -91,19 +91,24 @@ implements Serializable {
 				// Get edible biomass water content [ from 0 to 1 ]
 				String edibleWaterContentStr = crop.getAttributeValue(EDIBLE_WATER_CONTENT);
 				double edibleWaterContent = Double.parseDouble(edibleWaterContentStr);
+
 				// Get inedibleBiomass
 				String inedibleBiomassStr = crop.getAttributeValue(INEDIBLE_BIOMASS);
 				double inedibleBiomass = Double.parseDouble(inedibleBiomassStr);
 
-				
+				// 2015-04-08 Added daily PAR
+				String dailyPARStr = crop.getAttributeValue(DAILY_PAR);
+				double dailyPAR = Double.parseDouble(dailyPARStr);
+
 				// Get harvestIndex
 				//String harvestIndexStr = crop.getAttributeValue(HARVEST_INDEX);
 				//double harvestIndex = Double.parseDouble(harvestIndexStr);
 
 				// Create crop type.
 				//CropType cropType = new CropType(name, growingTime * 1000D, cropCategory, ppf * 1D, photoperiod * 1D, harvestIndex);
-				CropType cropType = new CropType(name, growingTime * 1000D, cropCategory, 
-						edibleBiomass , edibleWaterContent, inedibleBiomass);
+
+				CropType cropType = new CropType(name, growingTime * 1000D, cropCategory,
+						edibleBiomass , edibleWaterContent, inedibleBiomass, dailyPAR);
 
 				cropList.add(cropType);
 			}

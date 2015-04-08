@@ -7,16 +7,10 @@
 
 package org.mars_sim.msp.javafx;
 
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.networking.MultiplayerMode;
-import org.mars_sim.networking.ThreadPoolServer;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;

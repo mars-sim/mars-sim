@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -83,6 +84,8 @@ implements Serializable {
     /** Map of vehicle types and their numbers. */
     private Map<String, Integer> vehicleNumberMap;
 
+    private MasterClock masterClock;
+
     /**
      * Constructor.
      */
@@ -93,6 +96,8 @@ implements Serializable {
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
         equipmentNumberMap = new HashMap<String, Integer>();
         vehicleNumberMap = new HashMap<String, Integer>();
+
+        masterClock = Simulation.instance().getMasterClock();
     }
 
     /**
@@ -991,7 +996,9 @@ implements Serializable {
             i.next().timePassing(time);
         }
 
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        if (masterClock == null)
+        	masterClock = Simulation.instance().getMasterClock();
+        MarsClock clock = masterClock.getMarsClock();
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(clock);
         if ( solElapsed != solCache) {

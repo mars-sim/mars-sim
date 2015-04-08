@@ -118,6 +118,8 @@
 	<resource name="Peanut" phase="solid" edible="true"></resource>
 	<resource name="Potato" phase="solid" edible="true"></resource>
 	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
+	<resource name="radish" phase="solid" edible="true"></resource>
+	<resource name="red beet" phase="solid" edible="true"></resource>
 	<resource name="Rice" phase="solid" edible="true"></resource>
 	<resource name="Sesame" phase="solid" edible="true">Seeds from sesame plant.</resource>
 	<resource name="Soybean" phase="solid" edible="true">Soybean seeds.</resource>
