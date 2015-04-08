@@ -27,17 +27,29 @@ import java.util.Map;
 public class SurfaceFeatures implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static double MEAN_SOLAR_IRRADIANCE =  590D; // in W/m2  = 1371 / (1.52*1.52) in contrast with the Earth's solar constant (1350 Wm-2)-- about 44% .
+	public static double MEAN_SOLAR_IRRADIANCE =  586D; // in flux or [W/m2]  = 1371 / (1.52*1.52)
+	// This is the so-called "solar constant" of Mars (not really a constant per se), which is the flux of solar radiation at the top of the atmosphere (TOA) at the mean distance a between Mars and the sun.
+	// Note: at the top of the Mars atmosphere
+	// The solar irradiance at Mars’ mean distance from the Sun (1.52 AU) is S0 = 590 Wm-2.
+	// This is about 44% of the Earth’s solar constant (1350 Wm-2).
+	// At perihelion (1.382 AU), the maximum available irradiance is S = 717 Wm-2, while at apohelion (1.666 AU) the maximum is S = 493 Wm-2.
+	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
+
+
 	// Data members
+	private double opticalDepth;
+
     private List<Landmark> landmarks;
-    private MineralMap mineralMap;
     private List<ExploredLocation> exploredLocations;
 
-    private transient TerrainElevation surfaceTerrain;
-    private AreothermalMap areothermalMap;
     private transient Mars mars;
+    private transient OrbitInfo orbitInfo;
+    private transient TerrainElevation surfaceTerrain;
+    private MineralMap mineralMap;
+    private AreothermalMap areothermalMap;
     private MissionManager missionManager;
     private Coordinates sunDirection;
+    private Weather weather;
 
     /**
      * Constructor
@@ -50,7 +62,10 @@ public class SurfaceFeatures implements Serializable {
         exploredLocations = new ArrayList<ExploredLocation>();
         areothermalMap = new AreothermalMap();
 
+        //weather = Simulation.instance().getMars().getWeather();
+
         mars = Simulation.instance().getMars();
+        //orbitInfo = mars.getOrbitInfo();
         missionManager = Simulation.instance().getMissionManager();
 
         try {
@@ -58,6 +73,7 @@ public class SurfaceFeatures implements Serializable {
         } catch (Exception e) {
             throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
         }
+
     }
 
     /**
@@ -131,33 +147,91 @@ public class SurfaceFeatures implements Serializable {
 */
 
 // Approach 2
-    	double s2 = 0;
-    	double part2 =  mars.getOrbitInfo().getCosineSolarZenithAngle(location);
+		// Part 1: get cosine solar zenith angle
+    	double G_0 = 0;
+    	double G_h = 0;
+    	double G_bh = 0;
+    	double G_dh = 0;
+    	//G_0: solar irradiance at the top of the atmosphere
+    	//G_h: global irradiance on a horizontal surface
+    	//G_b: direct beam irradiance on a horizontal surface
+    	//G_d: diffuse irradiance on a horizontal surface
+
+    	if (orbitInfo == null)
+    		orbitInfo = mars.getOrbitInfo();
+    	double part1 =  orbitInfo.getCosineSolarZenithAngle(location);
     	//System.out.println("part2 is " + part2);
-    	if (part2 <= 0) // the sun is set. no need of calculation.
-    		s2 = 0;
+    	if (part1 <= 0) // the sun is set behind the planet Mars, total darkness and  no need of calculation.
+    		G_0 = 0;
+
     	else {
-	    	double part1 =  MEAN_SOLAR_IRRADIANCE;
-	    	double r =  mars.getOrbitInfo().getRadius();
+
+    		// Part 2: get the new average solar irradiance as a result of the changing distance between Mars and Sun  with respect to the value of L_s.
+    		//double L_s = orbitInfo.getL_s();
+
+    		// Note a: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
+    		// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
+    		// The areocentric longitude at perihelion, L_s = 251°.000 + 0°.00645 * (year - 2000),
+    		// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
+
+    		// Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
+    		// Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5 )
+	    	double part2 =  MEAN_SOLAR_IRRADIANCE; // * 0.675 * (1 + Math.sin((L_s - 161.2774)/180D * Math.PI));
+	    	//System.out.println("part2 is "+ part2);
+
+	    	// Part 3: get the instantaneous radius and semi major axis
+	    	double r =  orbitInfo.getRadius();
 	    	double part3 =  OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS / r / r;
 	    	//System.out.println("part3 is " + part3);
-	    	s2 = part1 * part2 * part3;
+
+	    	// Part 4 : opacity of the Martian atmosphere due to local dust storm
+	    	// The extinction of radiation through the Martian atmosphere is caused mainly by suspended dust particles.
+	    	// Although dust particles are effective at scattering direct solar irradiance, a substantial amount of diffuse light is able to penetrate to the surface of the planet.
+	    	// The amount of PAR available on the Martian surface can then be calculated to be 42% of the total PAR to reach the surface.
+
+	    	// Based on Viking observation, it's estimated approximately 100 local dust storms (each last a few days) can occur in a given Martian year
+
+	    	G_0 = part1 * part2 * part3;
+
+			if (G_0 <= 0)
+				G_0 = 0;
+
+			// Part 4 :  absorption and scattering of solar radiation and solar optical depth
 
 			// Added randomness
-			double up = RandomUtil.getRandomDouble(5);
-			double down = RandomUtil.getRandomDouble(5);
+			double up = RandomUtil.getRandomDouble(.001);
+			double down = RandomUtil.getRandomDouble(.001);
 
-			s2 +=  up - down;
+			// limits the value to fluctuate between .32 and .52 (average is 42%)
+			if (opticalDepth > 6)
+				opticalDepth = 6;
+			if (opticalDepth < .18)
+				opticalDepth = .18;
+			// From Viking data, at no time did the optical depth fall below 0.18,
 
-			if (s2 <= 0)
-				s2 = 0;
+	    	// Note that it carries the memory of its past value
+	    	double tau = opticalDepth +  up - down;
+	    	if (weather == null)
+	    		weather = Simulation.instance().getMars().getWeather();
+	        opticalDepth = 0.2342 + 0.2237 * weather.getDailyVariationAirPressure(location) + RandomUtil.getRandomDouble(.1);
+	        // starting value between 0.2 and 0.5
+	    	// Note: during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
+	    	double cos_z =  orbitInfo.getCosineSolarZenithAngle(location);
+	    	G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
+
+			// TODO: Part 5 : diffuse solar irradiance
+	    	G_dh = G_bh/3; // assumming it's good enough
+
+	    	// Final:
+	    	G_h = G_bh + G_dh;
     	}
-    	//System.out.println("solar irradiance s2 is " + s2);
+
+    	//System.out.println("solar irradiance si is " + si);
 
     	// TODO: calculate the solar irradiance components on horizontal surface on Mars :
     	// G_h = G_direct + G_diffuse
 
-    	return s2;
+    	return G_h;
     }
 
     /** Returns true if location is in a dark polar region.
@@ -288,6 +362,10 @@ public class SurfaceFeatures implements Serializable {
      */
     public void destroy() {
         surfaceTerrain = null;
+        orbitInfo = null;
+        mars = null;
+        missionManager = null;;
+        sunDirection = null;
         landmarks.clear();
         landmarks = null;
         mineralMap.destroy();

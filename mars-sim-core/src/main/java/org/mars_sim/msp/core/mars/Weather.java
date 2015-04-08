@@ -1,20 +1,23 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.07 2015-03-17
+ * @version 3.07 2015-04-08
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /** Weather represents the weather on Mars */
 public class Weather
@@ -36,6 +39,10 @@ implements Serializable {
 	/** Viking 1's longitude (49.97 W) in millisols  */
 	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
 
+	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; 	// in kPa
+	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; 	// in kPa
+	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 	// in kPa. under Earth's atmosphere, at 25 C, 50% relative humidity
+
 
 	private static final double VIKING_LATITUDE = 22.48D;
 
@@ -47,22 +54,35 @@ implements Serializable {
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int MILLISOLS_PER_UPDATE = 5 ; // one update per x millisols
 
+	private int millisols;
+
+	/** Current sol since the start of sim. */
+	private int solCache = 1;
+
+	private double sum;
+
 	private double viking_dt;
 
 	private double final_temperature = EXTREME_COLD;
 
 	private double TEMPERATURE_DELTA_PER_DEG_LAT = 0D;
 
-	private int millisols;
+	private double dailyVariationAirPressure =  RandomUtil.getRandomDouble(.05); // tentatively only
+	//TODO: compute the true dailyVariationAirPressure by the end of the day
 
-	//private int count = 0;
+	private Map <Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new HashMap<>();
+	private Map <Integer, List<DailyWeather>> dailyRecordMap = new HashMap<>();
+
+	private List<DailyWeather> todayWeather = new ArrayList<>();
+	private List<Coordinates> coordinateList = new ArrayList<>();
+
+	private static Map<Coordinates, Double> temperatureCacheMap = new HashMap<Coordinates, Double>();
+	private static Map<Coordinates, Double> airPressureCacheMap = new HashMap<Coordinates, Double>();
 
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
 	private TerrainElevation terrainElevation;
-
-	private static Map<Coordinates, Double> temperatureCacheMap = new HashMap<Coordinates, Double>();
-	private static Map<Coordinates, Double> airPressureCacheMap = new HashMap<Coordinates, Double>();
+	private MasterClock masterClock;
 
 
 	/** Constructs a Weather object */
@@ -90,25 +110,53 @@ implements Serializable {
 	}
 
 	/**
+	 * Checks if a location with certain coordinates already exists and add any new location
+	 * @param location
+	 */
+	// 2015-03-17 Added computeAirDensity()
+	public void checkLocation(Coordinates location) {
+		if (!coordinateList.contains(location))
+			coordinateList.add(location);
+	}
+
+	/**
 	 * Gets the air density at a given location.
 	 * @return air density in kg/m3.
 	 */
-	// 2015-03-17 Added getAirDensity()
-	public double getAirDensity(Coordinates location) {
+	// 2015-03-17 Added computeAirDensity()
+	public double computeAirDensity(Coordinates location) {
 		double result = 0;
-		//The air density is derived from the equation of state.
+		checkLocation(location);
+		//The air density is derived from the equation of state : d = p / .1921 / (t + 273.1)
 		result = getAirPressure(location) / (.1921 * (getTemperature(location) + 273.1));
 	 	return result;
 	}
 
+	/**
+	 * Gets the air density at a given location.
+	 * @return air density in kg/m3.
+	 */
+	// 2015-04-08 Added getAirDensity()
+	public double getAirDensity(Coordinates location) {
+		return computeAirDensity(location);
+	}
+
+	/**
+	 * Computes the air pressure at a given location.
+	 * @return air pressure in Pa.
+	 */
+	// 2015-04-08 Added getAirPressure()
+	public double getAirPressure(Coordinates location) {
+		return computeAirPressure(location);
+	}
 
 	/**
 	 * Gets the air pressure at a given location.
 	 * @return air pressure in Pa.
 	 */
-	// 2015-03-06 Added getAirPressure()
-	public double getAirPressure(Coordinates location) {
-
+	// 2015-03-06 Added computeAirPressure()
+	public double computeAirPressure(Coordinates location) {
+		checkLocation(location);
 		//masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -168,6 +216,15 @@ implements Serializable {
 	 * @return temperature in Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
+		return computeTemperature(location);
+	}
+
+	/**
+	 * Computes the surface temperature at a given location.
+	 * @return temperature in Celsius.
+	 */
+	public double computeTemperature(Coordinates location) {
+		checkLocation(location);
 
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -184,42 +241,6 @@ implements Serializable {
 		else return getCacheValue(temperatureCacheMap, location, TEMPERATURE);
 
 	}
-
-	/**
-	 * Clears weather-related parameter cache map to prevent excessive build-up of key-value sets
-	 */
-	// 2015-03-06 Added clearMap()
-    public synchronized void clearMap() {
-    	temperatureCacheMap.clear();
-    	airPressureCacheMap.clear();
-    }
-
-	/**
-	 * Provides the surface temperature /air pressure at a given location from the temperatureCacheMap.
-	 * If calling the given location for the first time from the cache map, call update temperature/air pressure instead
-	 * @return temperature or pressure
-	 */
-	// 2015-03-06 Added getCacheValue()
-    public double getCacheValue(Map<Coordinates, Double> map, Coordinates location, int value) {
-    	double result;
-
-       	if (map.containsKey(location)) {
-       		result = map.get(location);
-    	}
-    	else {
-    		double cache = 0;
-    		if (value == TEMPERATURE )
-    			cache = updateTemperature(location);
-    		else if (value == AIR_PRESSURE )
-    			cache = updateAirPressure(location);
-
-			map.put(location, cache);
-
-    		result = cache;
-    	}
-		//System.out.println("air pressure cache : "+ result);
-    	return result;
-    }
 
 	/*
     public double getTemperatureCache(Coordinates location) {
@@ -327,6 +348,121 @@ implements Serializable {
 		return final_temperature;
 	}
 
+	/**
+	 * Clears weather-related parameter cache map to prevent excessive build-up of key-value sets
+	 */
+	// 2015-03-06 Added clearMap()
+    public synchronized void clearMap() {
+    	temperatureCacheMap.clear();
+    	airPressureCacheMap.clear();
+    }
+
+	/**
+	 * Provides the surface temperature /air pressure at a given location from the temperatureCacheMap.
+	 * If calling the given location for the first time from the cache map, call update temperature/air pressure instead
+	 * @return temperature or pressure
+	 */
+	// 2015-03-06 Added getCacheValue()
+    public double getCacheValue(Map<Coordinates, Double> map, Coordinates location, int value) {
+    	double result;
+
+       	if (map.containsKey(location)) {
+       		result = map.get(location);
+    	}
+    	else {
+    		double cache = 0;
+    		if (value == TEMPERATURE )
+    			cache = updateTemperature(location);
+    		else if (value == AIR_PRESSURE )
+    			cache = updateAirPressure(location);
+
+			map.put(location, cache);
+
+    		result = cache;
+    	}
+		//System.out.println("air pressure cache : "+ result);
+    	return result;
+    }
+
+	/**
+	 * Time passing in the simulation.
+	 * @param time time in millisols
+	 * @throws Exception if error during time.
+	 */
+	public void timePassing(double time) {
+
+		//computeTemperature();
+		//computeAirPressure();
+		//computeAirDensity();
+		//comuteSolarIrradiance();
+
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+	    // collect a number of sample data point throughout the date and also get an average
+	    double currentMillisols =  (int) marsClock.getMillisol();
+	    if (currentMillisols % 100 == 0) {
+	    	//List<DailyWeather> todayWeather = new ArrayList<>();
+	    	//Iterator<Coordinates> list = coordinateList.iterator();
+	    	coordinateList.forEach(location -> {
+	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location), getAirDensity(location), surfaceFeatures.getSolarIrradiance(location));
+		    	todayWeather.add(weather);
+	    	});
+	    }
+	    // check for the passing of each day
+	    int newSol = MarsClock.getSolOfYear(marsClock);
+		if (newSol != solCache) {
+	    	coordinateList.forEach(location -> {
+	    		// compute the average pressure
+	    		//todayWeather.forEach( d -> {
+	    		//	sum = d.getPressure();
+	    		//});
+	    		//double ave = sum / todayWeather.size();
+	    		//dailyVariationAirPressure = Math.abs(dailyVariationAirPressure - ave);
+	    		// save the todayWeather into dailyRecordMap
+	    		dailyRecordMap.put(solCache, todayWeather);
+	    		// save the dailyRecordMap into weatherDataMap
+	       		weatherDataMap.put(location, dailyRecordMap);
+	    	});
+    		// create a brand new list
+    		todayWeather = new ArrayList<>();
+			solCache = newSol;
+			//computeDailyVariationAirPressure();
+		}
+
+	}
+
+
+	public double getDailyVariationAirPressure(Coordinates location) {
+		return dailyVariationAirPressure;
+	}
+
+/*
+	public void computeDailyVariationAirPressure() {
+    	coordinateList.forEach(location -> {
+
+    		List<DailyWeather> list = dailyRecordMap.get(solCache-1);
+			int i = 0;
+    		list.forEach( d -> {
+
+    			if (solCache > 1)
+    				if (d.getSol() == solCache - 1)
+    					sum += d.getPressure();
+
+    		});
+    		double ave = sum ;
+	    	DailyWeather d = list.get(list.size()-1);
+	    	d.getPressure();
+
+    		//
+    		//t = ;
+    		//p;
+    		//d;
+    		//s;
+    		//d.setDailyAverage(double t, double p, double d, double s);
+    	});
+	}
+*/
 	/**
 	 * Prepare object for garbage collection.
 	 */

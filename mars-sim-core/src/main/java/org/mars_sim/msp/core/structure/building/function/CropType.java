@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropType.java
-* @version 3.07 2014-12-12
+ * @version 3.08 2015-04-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -26,7 +26,7 @@ implements Serializable, Comparable<CropType> {
 	/** The length of the crop type's growing phase. */
 	private double growingTime;
 
-	//2014-10-05 mkung: added new attributes:  cropCategory, edibleBiomass, edibleWaterContent, inedibleBiomass; 
+	//2014-10-05 mkung: added new attributes:  cropCategory, edibleBiomass, edibleWaterContent, inedibleBiomass;
 	// commented out ppf and photoperiod and harvestIndex
 	/** The type of crop */
 	private String cropCategory;
@@ -35,9 +35,10 @@ implements Serializable, Comparable<CropType> {
 	/** The Photoperiod is the number of hours of light needed [in hours per day] */
 	//private double photoperiod;
 	//2014-10-14 mkung: added the fresh basis Edible Biomass Productivity [ in gram per sq m per day ]
-	private double edibleBiomass; 
-	private double edibleWaterContent; 
-	private double inedibleBiomass; 
+	private double edibleBiomass;
+	private double edibleWaterContent;
+	private double inedibleBiomass;
+	private double dailyPAR;
 	/** The average harvest index (from 0 to 1) -- the ratio of the edible over the inedible part of the harvested crop [dimenionsion-less] */
 	//private double harvestIndex;
 
@@ -48,18 +49,19 @@ implements Serializable, Comparable<CropType> {
 	 * @param name - The name of the type of crop.
 	 * @param growingTime - Length of growing phase for crop. (millisols)
 	 */
-	public CropType(String name, double growingTime, String cropCategory, 
-			double edibleBiomass, double edibleWaterContent, double inedibleBiomass) {
+	public CropType(String name, double growingTime, String cropCategory,
+			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR) {
 		this.name = name;
 		this.growingTime = growingTime;
 		//2014-10-05 Added by mkung
 		this.cropCategory = cropCategory;
 		//this.ppf = ppf;
 		//this.photoperiod = photoperiod;
-		//2014-10-14 Added by mkung		
-		this.edibleBiomass = edibleBiomass; 
-		this.edibleWaterContent = edibleWaterContent; 
+		//2014-10-14 Added by mkung
+		this.edibleBiomass = edibleBiomass;
+		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
+		this.dailyPAR = dailyPAR;
 		//this.harvestIndex = harvestIndex;
 	}
 
@@ -87,7 +89,7 @@ implements Serializable, Comparable<CropType> {
 	public String getCropCategory() {
 		return cropCategory;
 	}
-	
+
 	/**
 	* Gets the amount of light needed in terms of Photosynthetic Photon Flux (PPF)
 	* @return crop type's PPF in micro mol per sq meter per second.
@@ -102,41 +104,48 @@ implements Serializable, Comparable<CropType> {
 	**/
 
 	/**
-	* Gets the edible biomass  
-	* @return crop's edible biomass 
+	* Gets the edible biomass
+	* @return crop's edible biomass
 	*/
 	public double getEdibleBiomass() {
 		return edibleBiomass;
 	}
 	/**
-	* Gets the edible water content 
+	* Gets the edible water content
 	* @return crop's edible water content
 	*/
 	public double getEdibleWaterContent() {
-		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);	
+		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);
 		return edibleWaterContent;
 	}
 	/**
-	* Gets the inedible biomass  
-	* @return crop's inedible biomass 
+	* Gets the inedible biomass
+	* @return crop's inedible biomass
 	*/
 	public double getInedibleBiomass() {
 		return inedibleBiomass;
 	}
 
 	/**
+	* Gets the daily PAR, the average amount of light needed per day in terms of daily Photosynthetically active radiation (PAR)
+	* @return crop's daily PAR
+	*/
+	public double getDailyPAR() {
+		return dailyPAR;
+	}
+	/**
 	 * String representation of this cropType.
 	 * @return The settlement and cropType's name.
 	 */
-	// 2014-12-09 Added toString() 
+	// 2014-12-09 Added toString()
 	public String toString() {
-		return name;	
+		return name;
 	}
 
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
 	 */
 	// 2014-12-09 Added compareTo()
@@ -147,7 +156,7 @@ implements Serializable, Comparable<CropType> {
 
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

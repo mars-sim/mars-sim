@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-12-28
+ * @version 3.08 2015-04-07
  * @author Scott Davis
  */
 
@@ -11,8 +11,10 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -28,6 +30,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
@@ -74,85 +77,87 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	//private static Logger logger = Logger.getLogger(Building.class.getName());
-	 
-	DecimalFormat fmt = new DecimalFormat("###.####"); 
-	
+
+	DecimalFormat fmt = new DecimalFormat("###.####");
+
 	// 2015-03-12 Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	/** Default : 3340 Sols (5 orbits). */
 	private int wearLifeTime = 3340000;
 	/** Default : 50 millisols maintenance time. */
-	private int maintenanceTime = 50;	
-	/** Default : 22.5 deg celsius. */	
+	private int maintenanceTime = 50;
+	/** Default : 22.5 deg celsius. */
     private double roomTemperature = 22.5D;
     //public double GREENHOUSE_TEMPERATURE = 24D;
-    
+
     // Data members
-	protected String buildingType;
-	protected String nickName;
-	// 2014-11-27 Added description for each building
-	protected String description = "Stay tuned";
-	
+	protected int id;
+	protected int baseLevel;
+
 	protected double width;
 	protected double length;
 	protected double floorArea;
 
-	protected int baseLevel;
 	protected double xLoc;
 	protected double yLoc;
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-	protected int id;
 
+	protected String buildingType;
+	protected String nickName;
+	// 2014-11-27 Added description for each building
+	protected String description = "Stay tuned";
+
+	protected List<Function> functions;
+	//private List<BuildingKit> buildingKit;
+	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
 
 	/** Unit location coordinates. */
 	private Coordinates location;// = manager.getSettlement().getCoordinates();
-	protected BuildingManager manager; 	
+	protected BuildingManager manager;
 	// 2014-10-28  changed variable's name from "name" to "buildingType"
 	protected ThermalGeneration furnace;
 	protected MalfunctionManager malfunctionManager;
 	protected LifeSupport lifeSupport;
-	
+
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
 	// 2014-11-02 Added HeatModeCache
 	protected HeatMode heatModeCache;
-	protected List<Function> functions;
-	private List<BuildingKit> buildingKit;
-	
+
 	/** Constructor 1
 	 * Constructs a Building object.
 	 * @param template the building template.
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	//2014-10-27  Added getNickName() 
+	//2014-10-27  Added getNickName()
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(), 
+		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
-				template.getFacing(), manager);		
-		
+				template.getFacing(), manager);
+
 		this.manager = manager;
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.FULL_POWER;
-		
+
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
-			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);	
-		
+			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+
 		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
-			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);	
-		
+			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+
 	}
 
 	/** Constructor 2
 	 * Constructs a Building object.
 	 * @param id the building's unique ID number.
 	 * @param buildingType the building Type.
-	 * @param nickName the building's nick name.	  
+	 * @param nickName the building's nick name.
 	 * @param width the width (meters) of the building or -1 if not set.
 	 * @param length the length (meters) of the building or -1 if not set.
 	 * @param xLoc the x location of the building in the settlement.
@@ -162,9 +167,9 @@ LocalBoundedObject, InsidePathLocation {
 	 * @throws BuildingException if building can not be created.
 	 */
 	//2014-10-27  changed variable "name" to "buildingType"
-	public Building(int id, String buildingType, String nickName, double width, double length, 
+	public Building(int id, String buildingType, String nickName, double width, double length,
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
-		
+
 		super(nickName, manager.getSettlement().getCoordinates());
 
 		this.id = id;
@@ -178,9 +183,9 @@ LocalBoundedObject, InsidePathLocation {
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.FULL_POWER;
-	
+
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-	
+
 		// Get building's dimensions.
 		if (width != -1D) {
 			this.width = width;
@@ -202,9 +207,9 @@ LocalBoundedObject, InsidePathLocation {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
 
-		baseLevel = config.getBaseLevel(buildingType);		
+		baseLevel = config.getBaseLevel(buildingType);
 		description = config.getDescription(buildingType);
-		
+
 		// Get the building's functions
 		functions = determineFunctions();
 
@@ -214,8 +219,8 @@ LocalBoundedObject, InsidePathLocation {
 		wearLifeTime = config.getWearLifeTime(buildingType);
 		maintenanceTime = config.getMaintenanceTime(buildingType);
 		roomTemperature = config.getRoomTemperature(buildingType);
-		
-		 
+
+
 		// TODO: determine the benefit of adding base heat requirements.
 		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
 		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
@@ -265,7 +270,7 @@ LocalBoundedObject, InsidePathLocation {
     public void setBuildingNickName(String nickName) {
         this.nickName = nickName;
     }
-    
+
 	/**
      * Gets the initial temperature of a building.
      * @return temperature (deg C)
@@ -281,7 +286,7 @@ LocalBoundedObject, InsidePathLocation {
 		//else
             return roomTemperature;
     }
-	
+
 	public LifeSupport getLifeSupport() {
 		return lifeSupport;
 	}
@@ -289,7 +294,7 @@ LocalBoundedObject, InsidePathLocation {
 	public ThermalGeneration getThermalGeneration() {
 		return furnace;
 	}
-	
+
     /**
      * Gets the temperature of a building.
      * @return temperature (deg C)
@@ -311,7 +316,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set power generation function.
 		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
-		//2014-10-17 mkung 
+		//2014-10-17 mkung
 		// Added thermal generation function.
 		if (config.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
 
@@ -370,7 +375,7 @@ LocalBoundedObject, InsidePathLocation {
 		//2014-10-17  Added and imported ThermalStorage
 		// Set thermal storage function.
 		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
-		
+
 		// Set astronomical observation function
 		if (config.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
 
@@ -385,7 +390,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set administration function.
 		if (config.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
-		
+
 		// Set robotic function.
 		if (config.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
 
@@ -468,16 +473,16 @@ LocalBoundedObject, InsidePathLocation {
 	public String getNickName() {
 		return nickName;
 	}
-	
+
 	/**
 	 * Gets the building type.
 	 * @return building type as a String.
 	 * @deprecated
 	 * TODO internationalize building names for display in user interface.
 	 */
-	// 2014-10-28 change data field from "name" to "buildingType"  
+	// 2014-10-28 change data field from "name" to "buildingType"
 	// TODO: change getName() to getBuildingType()
-	// getName() has 120 occurrences in MSP 
+	// getName() has 120 occurrences in MSP
 	// will retain its name for the time being
 	public String getName() {
 		return buildingType;
@@ -506,7 +511,7 @@ LocalBoundedObject, InsidePathLocation {
 	public double getLength() {
 		return length;
 	}
-	
+
 	@Override
 	public double getXLocation() {
 		return xLoc;
@@ -529,7 +534,7 @@ LocalBoundedObject, InsidePathLocation {
     public int getBaseLevel() {
         return baseLevel;
     }
-	
+
 	/**
 	 * Gets the power this building currently requires for full-power mode.
 	 * @return power in kW.
@@ -544,7 +549,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		//2014-11-02 Added getFullHeatRequired()
 		result = result + getFullHeatRequired();
-		
+
 		return result;
 	}
 
@@ -582,28 +587,28 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
-		//double result = baseHeatRequirement;	
+		//double result = baseHeatRequirement;
 		double result = 0;
-				
+
 		if (furnace != null && furnace.getHeating() != null )
 			furnace.getHeating().getFullHeatRequired();
-		
+
 		return result;
 	}
 	//2014-11-02 Added setHeatGenerated()
 	public void setHeatGenerated(double heatGenerated) {
 		furnace.getHeating().setHeatGenerated(heatGenerated);
 	}
-	
+
 	/**
 	 * Gets the heat the building requires for power-down mode.
 	 * @return heat in kJ/s.
 	*/
 	//2014-10-17  Added getPoweredDownHeatRequired()
-	public double getPoweredDownHeatRequired() {		
-		double result = 0;		
+	public double getPoweredDownHeatRequired() {
+		double result = 0;
 		if (furnace != null && furnace.getHeating() != null)
-			furnace.getHeating().getPoweredDownHeatRequired();		
+			furnace.getHeating().getPoweredDownHeatRequired();
 		return result;
 	}
 
@@ -619,14 +624,14 @@ LocalBoundedObject, InsidePathLocation {
 	 * Sets the building's heat mode.
 	 */
 	//2014-10-17  Added heat mode
-	public void setHeatMode(HeatMode heatMode) {	
+	public void setHeatMode(HeatMode heatMode) {
 		if ( heatModeCache != heatMode) {
 			// if heatModeCache is different from the its last value
 			heatModeCache = heatMode;
 			this.heatMode = heatMode;
 		}
 	}
-	
+
 	/**
 	 * Gets the entity's malfunction manager.
 	 * @return malfunction manager
@@ -659,7 +664,7 @@ LocalBoundedObject, InsidePathLocation {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
 
-			// Add all people maintaining this building. 
+			// Add all people maintaining this building.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
 					if (!people.contains(person)) people.add(person);
@@ -695,7 +700,7 @@ LocalBoundedObject, InsidePathLocation {
 			Robot robot = i.next();
 			Task task = robot.getBotMind().getTaskManager().getTask();
 
-			// Add all robots maintaining this building. 
+			// Add all robots maintaining this building.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
 					if (!robots.contains(robot)) robots.add(robot);
@@ -728,21 +733,21 @@ LocalBoundedObject, InsidePathLocation {
 	// 2014-10-29 change buildingType to nickName
 	public String toString() {
 //		return buildingType;
-		return nickName;	
+		return nickName;
 	}
 
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
 	 */
-	// TODO: find out if we should use nickName vs. buildingType 
+	// TODO: find out if we should use nickName vs. buildingType
 	public int compareTo(Building o) {
 		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
-	
-	
+
+
 	/**
 	 * Time passing for building.
 	 * @param time amount of time passing (in millisols)
@@ -755,12 +760,12 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Send time to each building function.
 		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) i.next().timePassing(time);		
+		while (i.hasNext()) i.next().timePassing(time);
 
 		// Update malfunction manager.
 		malfunctionManager.timePassing(time);
 		// If powered up, active time passing.
-		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);	
+		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
 		//2014-10-17  Added HeatMode
 		// If heat is on, active time passing.
 		if (heatMode == HeatMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
@@ -769,8 +774,11 @@ LocalBoundedObject, InsidePathLocation {
 	public List<Function> getFunctions() {
 		return functions;
 	}
-	
-	
+
+	public Map<Integer, ItemResource> getItemMap() {
+		return itemMap;
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

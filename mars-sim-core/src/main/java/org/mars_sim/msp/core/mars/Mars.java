@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
-/** 
+/**
  * Mars represents the planet Mars in the simulation.
  */
-public class Mars 
+public class Mars
 implements Serializable {
 
 	/** default serial id. */
@@ -31,13 +31,13 @@ implements Serializable {
 	/** Martian weather. */
 	private Weather weather;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @throws Exception if Mars could not be constructed.
 	 */
 	public Mars() {
 		// Initialize surface features
-		surfaceFeatures = new SurfaceFeatures(); 
+		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo();
 		// Initialize weather
@@ -88,6 +88,7 @@ implements Serializable {
 	public void timePassing(double time) {
 		orbitInfo.addTime(time);
 		surfaceFeatures.timePassing(time);
+		weather.timePassing(time);
 	}
 
 	/**
