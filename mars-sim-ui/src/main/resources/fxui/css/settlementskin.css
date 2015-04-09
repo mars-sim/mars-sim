@@ -6,28 +6,22 @@
  * @author Lars Næsbye Christensen
  */
 
-@font-face {
-font-family: "Noto";
-src: url("../fonts/notosans/NotoSans-Regular.ttf");
-} 
-
-@font-face {
-font-family: "Jura";
-src: url("../fonts/jura/Jura-Regular.ttf");
-} 
-
 
 .root {
--fx-base: rgb(50, 50, 50);
--fx-background: rgb(50, 50, 50);
--fx-control-inner-background:  rgb(50, 50, 50);
--fx-accent: darkgoldenrod;
+	-fx-font-size: 32pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-opacity: 1;
+	-fx-base: rgb(50, 50, 50);
+	-fx-background: rgb(50, 50, 50);
+	-fx-control-inner-background:  rgb(50, 50, 50);
+	-fx-accent: darkgoldenrod;
 }
- 
+
 .tab {
--fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
+	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
- 
+
 .menu-bar {
 -fx-font-weight: bold;
 -fx-font-family: "Helvetica";
@@ -40,26 +34,26 @@ src: url("../fonts/jura/Jura-Regular.ttf");
 -fx-font-family: "Helvetica";
 -fx-font-size: 11pt;
 
-} 
+}
 .tool-bar:horizontal {
 -fx-background-color:
 linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));
 }
- 
+
 .button {
 -fx-background-color: transparent;
 }
- 
+
 .button:hover {
 -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
 -fx-color: -fx-hover-base;
 }
- 
+
 .table-view {
 -fx-table-cell-border-color:derive(-fx-base,+10%);
 -fx-table-header-border-color:derive(-fx-base,+20%);
 }
- 
+
 .split-pane:horizontal > * > .split-pane-divider {
 -fx-border-color: transparent -fx-base transparent -fx-base;
 -fx-background-color: transparent, derive(-fx-base,20%);

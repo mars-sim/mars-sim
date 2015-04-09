@@ -1001,10 +1001,10 @@ implements Serializable {
         MarsClock clock = masterClock.getMarsClock();
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(clock);
-        if ( solElapsed != solCache) {
+        if (solElapsed != solCache) {
         	//reportSample = true;
         	solCache = solElapsed;
-        	logger.info(" Current Tick Per Second (TPS) : " + Simulation.instance().getMasterClock().getPulsesPerSecond());
+        	logger.info("<Benchmarking> Current Tick Per Second (TPS) : " + Simulation.instance().getMasterClock().getPulsesPerSecond());
         }
     }
 

@@ -15,71 +15,112 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.networking.MultiplayerServer.ModeTask;
+
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
+import javafx.stage.Modality;
 import javafx.scene.control.Alert.AlertType;
 
 /**
- * The MultiplayerServerClient class serves to set up multiplayer mode in MSP
- * and allows users to select the computer role as either host or client.
+ * The MultiplayerClient class allows the computer to take on the client role.
  */
 public class MultiplayerClient {// extends Application {
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
 
 	private List<String> addresses = new ArrayList<>();
 
 	private int port = 9090;
 
-	public MultiplayerClient() throws IOException {
+	private MainMenu mainMenu;
+	private ModeTask modeTask;
+
+	private Alert alert;
+
+	public MultiplayerClient(MainMenu mainMenu) throws IOException {
+		this.mainMenu = mainMenu;
+
 		InetAddress ip = InetAddress.getLocalHost();
 		String addressStr = ip.getHostAddress();
-		System.out.println("Running the client at " + addressStr + ". Waiting to connect to a host...");
-		createClient(addressStr);
+		logger.info("Running the client at " + addressStr + ". Waiting to connect to a host...");
+		modeTask = new ModeTask(addressStr);
+
 	}
 
 
-	public void createClient(String addressStr) throws IOException {
+	public ModeTask getModeTask() {
+		return modeTask;
+	}
 
-			//searchAddresses("192.168.0");
-			//addresses = getIPAddressList();
+	class ModeTask implements Runnable {
+
+		private String addressStr;
+
+		private ModeTask(String addressStr) {
+			this.addressStr = addressStr;
+		}
+
+		@Override
+		public void run() {
+				Platform.runLater(() -> {
+					createClient(addressStr);
+		        });
+		}
+	}
+
+	public void createClient(String addressStr) {
+
 			addresses.add("127.0.0.1");
 
 			ChoiceDialog<String> dialog = new ChoiceDialog<>("127.0.0.1", addresses);
+			dialog.initModality(Modality.NONE);
+			dialog.initOwner(mainMenu.getStage());
 			dialog.setTitle("Mars Simulation Project");
 			dialog.setHeaderText("Multiplayer Client");
-			dialog.setContentText("You are at " + addressStr + ". Choose the desire local address : ");
+			dialog.setContentText("You are at " + addressStr + ".\nChoose the host address : ");
+
 			Optional<String> result = dialog.showAndWait();
 			//if (result.isPresent()){
 			//    System.out.println("Your choice: " + result.get());
 			//}
 			result.ifPresent(address -> {
-			   System.out.println("Your choice: " + address);
+				logger.info("Connecting to the host at " + address);
 
 			   Socket socket = null;
-
+			   BufferedReader input;
 			   try {
-
 				    socket = new Socket(address, port);
-					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				    String answer = input.readLine();
-				    //dialog.close();
-				    Alert alert = new Alert(AlertType.INFORMATION);
+				    alert = new Alert(AlertType.INFORMATION);
 					alert.setTitle("Mars Simulation Project");
+					alert.initOwner(mainMenu.getStage());
 					alert.setHeaderText("Multiplayer Client");
 					alert.setContentText("Connection established with " + address);
 					alert.showAndWait();
+					//alert.setOnCloseRequest(e -> {
+					//	 try {
+					//		socket.close();
+					//	} catch (Exception e1) {e1.printStackTrace();}
+					//});
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 
 				} finally {
-	                //try {
-					//	socket.close();
-					//} catch (Exception e) {
+					try {
+						socket.close();
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
-					//	e.printStackTrace();
-					//}
+						e.printStackTrace();
+					}
 	                //alert.close();
 	            }
 
