@@ -157,11 +157,10 @@ public class MarsClock implements Serializable {
      */
     // 2015-01-28 Added getSolOfYear()
     public static int getSolOfYear(MarsClock time) {
-
     	int result = 0;
 
         // Add sols up to current month
-        for (int x=1; x < time.month; x++)
+        for (int x = 1; x < time.month; x++)
             result += MarsClock.getSolsInMonth(x, time.orbit) ;
 
         // Add sols up to current sol

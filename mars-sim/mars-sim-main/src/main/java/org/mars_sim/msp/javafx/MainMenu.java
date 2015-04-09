@@ -1,16 +1,20 @@
 /**
  * Mars Simulation Project
  * MainMenu.java
- * @version 3.08 2015-03-15
+ * @version 3.08 2015-04-09
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.javafx;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.networking.MultiplayerMode;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -79,15 +83,24 @@ public class MainMenu {
 	//public ModtoolScene modtoolScene;
 	private MarsProjectFX mpFX;
 
-	//private transient ThreadPoolExecutor executor;
+	private transient ThreadPoolExecutor executor;
+
+	private  MultiplayerMode multiplayer;
 
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
-		 //this.cleanUI =  cleanUI;
-		 this.primaryStage = primaryStage;
-		 this.args = args;
-		 this.mpFX = mpFX;
-		 initAndShowGUI();
+    	//this.cleanUI =  cleanUI;
+    	this.primaryStage = primaryStage;
+    	this.args = args;
+    	this.mpFX = mpFX;
+    	initAndShowGUI();
+
+		stage.setOnCloseRequest(e -> {
+			 if (multiplayer.getChoiceDialog() != null)
+				 multiplayer.getChoiceDialog().close();
+		});
+
 	}
+
 
    private void initAndShowGUI() {
 
@@ -132,6 +145,9 @@ public class MainMenu {
 	   //modtoolScene = new ModtoolScene(stage);
    }
 
+   public Stage getStage() {
+	   return primaryStage;
+   }
 
    public void runOne() {
 
@@ -179,7 +195,7 @@ public class MainMenu {
 
    public void runThree() {
 
-	   primaryStage.setIconified(true);
+	   //primaryStage.setIconified(true);
 
 	   //ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
 	   //executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
@@ -195,17 +211,18 @@ public class MainMenu {
 	   //System.out.println("Stopping Server");
 	   //server.stop();
 
-/*
-	   try {
-		   MultiplayerMode multiplayer = new MultiplayerMode();
-		   //executor.execute(multiplayer);
-		   //pool.shutdown();
+		try {
+			multiplayer = new MultiplayerMode(this);
+			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+			executor.execute(multiplayer.getModeTask());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-*/
-	   primaryStage.toFront();
+
+	   //pool.shutdown();
+
+	   //primaryStage.toFront();
 
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
