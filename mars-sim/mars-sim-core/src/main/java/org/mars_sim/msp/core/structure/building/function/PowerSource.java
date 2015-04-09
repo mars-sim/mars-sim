@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -22,7 +24,6 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(HeatSource.class.getName());
-	//private static int count;
 
 	// Data members
 	private PowerSourceType type;
@@ -36,8 +37,6 @@ implements Serializable {
 	public PowerSource(PowerSourceType type, double maxPower) {
 		this.type = type;
 		this.maxPower = maxPower;
-		//count++;
-		//logger.info("constructor : count is " + count);
 
 	}
 
@@ -76,7 +75,7 @@ implements Serializable {
      * @return maintenance work time (millisols).
      */
 	public abstract double getMaintenanceTime();
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

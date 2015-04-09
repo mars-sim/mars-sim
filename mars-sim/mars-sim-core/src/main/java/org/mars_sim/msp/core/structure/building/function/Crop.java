@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -57,6 +56,10 @@ implements Serializable {
 
 	public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42% are EM within 400 to 700 nm
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm#_top
+
+	public static final double  WATT_TO_PHOTON_CONVERSION_RATIO = 4.609;
+
+	public static final double  EFFICIENCY_HPS = .35D; //high pressure sodium (HPS) lamps efficiency
 
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
@@ -102,6 +105,8 @@ implements Serializable {
 	private double sunlightModifierCache = 1;
 	private double timeCache = 0;
 
+	private double lightingPower = 0; // in kW
+
 	/** Current phase of crop. */
 	private String phase;
 	private String cropName;
@@ -134,9 +139,8 @@ implements Serializable {
 		this.growingArea = growingArea;
 
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
         masterClock = Simulation.instance().getMasterClock();
-
+		marsClock = masterClock.getMarsClock();
 
 		inv = settlement.getInventory();
 		t_initial = farm.getBuilding().getInitialTemperature();
@@ -168,6 +172,10 @@ implements Serializable {
 			}
 			actualHarvest = maxHarvest * fractionalGrowthCompleted;
 		}
+	}
+
+	public double getLightingPower() {
+		return 	lightingPower;
 	}
 
 	public double getGrowingArea() {
@@ -278,7 +286,7 @@ implements Serializable {
 			if (currentPhaseWorkCompleted >= plantingWorkRequired) {
 				remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
 				currentPhaseWorkCompleted = 0D;
-				currentSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
+				//currentSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
 				phase = GERMINATION;
 			}
 			else {
@@ -400,6 +408,7 @@ implements Serializable {
 					// Modify actual harvest amount based on daily tending work.
 					if (masterClock == null)
 						masterClock = Simulation.instance().getMasterClock();
+						// get the current time
 					    MarsClock clock = masterClock.getMarsClock();
 					        // check for the passing of each day
 					int newSol = MarsClock.getSolOfYear(clock);
@@ -451,6 +460,14 @@ implements Serializable {
 		}
 	}
 
+	public void turnOnLighting(double neededWatt) {
+		lightingPower = neededWatt / 1000D / EFFICIENCY_HPS;  // lightingPower is in kW
+	}
+
+	public void turnOffLighting() {
+		lightingPower = 0;
+		//return lightingPower;
+	}
 	// 2015-02-16 Added calculateHarvestModifier()
 	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
 		double harvestModifier = 1D;
@@ -460,32 +477,55 @@ implements Serializable {
 		// TODO: Modify harvest modifier according to the pollination by the  number of bees in the greenhouse
 		// TODO: Modify harvest modifier by amount of artificial light available to the greenhouse
 
-		// Determine harvest modifier according to amount of sunlight.
+		// Determine harvest modifier according to amount of light.
+		double sunlightModifier = 0;
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-		double PAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
-		double instantaneousPAR	= PAR * 4.609 * time * MarsClock.SECONDS_IN_MILLISOL / 1_000_000D;
-		dailyPARCache = dailyPARCache + instantaneousPAR;
-
-		double sunlightModifier = 0;
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-	        MarsClock clock = masterClock.getMarsClock();
+		// get the current time
+		MarsClock clock = masterClock.getMarsClock();
+	    int currentMillisols = (int) clock.getMillisol();
+
+		// 2015-04-09 Added calculation based on solar irradiance and artificial lighting
+		double PAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
+		double instantaneousPAR	= PAR * WATT_TO_PHOTON_CONVERSION_RATIO * time * MarsClock.SECONDS_IN_MILLISOL / 1_000_000D;
+
+
+	    // Gauge if there is enough sunlight
+	    double progress = dailyPARCache / dailyPARRequired;
+	    double ruler = currentMillisols / 1000D;
+
+	    // TODO: what if the time zone of a settlement causes sunlight to shine at near the tail end of the currentMillisols time ?
+
+	    // Compare dailyPARCache / dailyPARRequired  vs. current time / 1000D
+	    if (progress < ruler) {
+	    	//if not enough, turn on lighting
+	    	double neededWatt = growingArea * (dailyPARRequired - instantaneousPAR) / 4.78 / MarsClock.SECONDS_IN_MILLISOL * 1000D;
+	    	turnOnLighting(neededWatt);
+	    	//logger.info("neededWatt is " + neededWatt);
+		    dailyPARCache = dailyPARCache + dailyPARRequired - instantaneousPAR;
+	    }
+	    else {
+	    	turnOffLighting();
+			dailyPARCache = dailyPARCache + instantaneousPAR;
+	    }
 	        // check for the passing of each day
-	        int newSol = MarsClock.getSolOfYear(clock);
+	    int newSol = MarsClock.getSolOfYear(clock);
 		if (newSol != solCache) {
 			//logger.info("Crop.java : calculateHarvestModifier() : instantaneousPAR is "+instantaneousPAR);
-			//if (dailyPARCache < dailyPARRequired)
+			// the crop has memory of the past lighting condition
 			sunlightModifier = 0.8 * sunlightModifierCache  + 0.2 * dailyPARCache / dailyPARRequired;
 			if (sunlightModifier > 1.5)
 				sunlightModifier = 1.5;
+			// TODO: If too much light, the crop's health may suffer unless a person comes to intervene
 			solCache = newSol;
-			logger.info("dailyPARRequired is " + dailyPARRequired);
-			logger.info("dailyPARCache is " + dailyPARCache);
-			logger.info("sunlightModifier is " + sunlightModifier);
+			//logger.info("dailyPARRequired is " + dailyPARRequired);
+			//logger.info("dailyPARCache is " + dailyPARCache);
+			//logger.info("sunlightModifier is " + sunlightModifier);
 			dailyPARCache = 0;
-			logger.info("timeCache is "+ timeCache);
+			//logger.info("timeCache is "+ timeCache);
 			timeCache = 0;
 		}
 		else {
@@ -494,12 +534,10 @@ implements Serializable {
 		}
 
 		//double sunlightModifier = (normalizedSunlight * .55D) + .5D;
-		if (phase.equals(GROWING)) {
+		if (phase.equals(GERMINATION) || phase.equals(GROWING)) {
 			harvestModifier = harvestModifier * sunlightModifier;
 			//System.out.println("Farming.java: sunlight harvestModifier is " + harvestModifier);
 		}
-
-
 
 		double T_NOW = farm.getBuilding().getTemperature();
 		double temperatureModifier = 0 ;

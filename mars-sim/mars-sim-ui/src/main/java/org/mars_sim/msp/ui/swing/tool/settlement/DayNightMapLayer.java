@@ -46,6 +46,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			Building building, double xPos, double yPos, int mapWidth,
 			int mapHeight, double rotation, double scale) {
 
+		// TODO: overlay a red/orange mask if having local dust storm
+
 		if (mapPanel.isShowDayNightLayer()) {
 			int width = SettlementWindow.HORIZONTAL;
 			int height = SettlementWindow.VERTICAL;
@@ -77,10 +79,10 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	            g2d.fillRect(0, 0, width, height);
 	        }
 
-	        else if (sunlight > .97D )
+	        else if (sunlight > .90D )
 	        	return;
 
-	        else if (sunlight >= 0.01D && sunlight <= .97D) {
+	        else if (sunlight >= 0.01D && sunlight <= .90D) {
 	        	shadingArray = new int[width * height];
 		        // TODO: how to make the shadingArray sensitive to the zooming in and out
 

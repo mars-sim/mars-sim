@@ -216,8 +216,8 @@ implements Serializable {
         if (isNewCrop) {
         	double rand = RandomUtil.getRandomDouble(2);
         	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
-        	retrieveAnResource("soil", amount );
-        	storeAnResource(amount, "crop waste");
+        	Storage.retrieveAnResource(amount, "soil", inv, true );
+        	Storage.storeAnResource(amount, "crop waste", inv);
         }
     }
 
@@ -233,7 +233,7 @@ implements Serializable {
         if (isNewCrop) {
         	double rand = RandomUtil.getRandomDouble(2);
         	double amount = Crop.FERTILIZER_NEEDED_PER_SQM * cropArea / 10D * rand;
-        	retrieveAnResource("fertilizer", amount );
+        	Storage.retrieveAnResource(amount, "fertilizer", inv, true);
     		//System.out.println("fertilizer used in planting a new crop : " + amount);
         }
     }
@@ -242,7 +242,7 @@ implements Serializable {
      * Retrieves the resource
      * @param name
      * @parama requestedAmount
-     */
+
     //2015-01-14 Added retrieveAnResource()
     public void retrieveAnResource(String name, double requestedAmount) {
     	try {
@@ -263,7 +263,7 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
     }
-
+ */
     //2014-12-09 Added setCropInQueue()
     public void setCropInQueue(String cropInQueue) {
     	this.cropInQueue = cropInQueue;
@@ -575,10 +575,10 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		storeAnResource(amountCropWaste, "Crop Waste");
+		Storage.storeAnResource(amountCropWaste, "crop waste", inv);
 	}
 
-
+/*
    public void storeAnResource(double amount, String name) {
     	try {
             AmountResource ar = AmountResource.findAmountResource(name);
@@ -596,7 +596,7 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-
+*/
     /**
      * Gets the amount of power required when function is at full power.
      * @return power (kW)
@@ -609,7 +609,7 @@ implements Serializable {
         while (i.hasNext()) {
             Crop crop = i.next();
             if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION))
-                powerRequired += (crop.getMaxHarvest() * powerGrowingCrop);
+                powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
         }
 
         return powerRequired;
@@ -628,7 +628,7 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION) || crop.getPhase().equals(Crop.HARVESTING))
+            if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION))
                 powerRequired += (crop.getMaxHarvest() * powerSustainingCrop);
         }
 

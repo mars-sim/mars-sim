@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
- * A power source that gives a supply of power proportional 
+ * A power source that gives a supply of power proportional
  * to the level of sunlight it receives.
  */
 public class SolarPowerSource
@@ -26,6 +26,10 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double EFFICIENCY_SOLAR_PANEL = .35;
+
+	private Coordinates location ;
+	private SurfaceFeatures surface ;
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power (kW).
@@ -42,9 +46,13 @@ implements Serializable {
 	 */
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
-		Coordinates location = manager.getSettlement().getCoordinates();
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		double sunlight = surface.getSurfaceSunlight(location);
+		if (location == null)
+			location = manager.getSettlement().getCoordinates();
+		if (surface == null)
+			surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//double sunlight = surface.getSurfaceSunlight(location);
+		double sunlight = surface.getSolarIrradiance(location) * EFFICIENCY_SOLAR_PANEL / 600D ; // tentatively normalized to 600 W
+		//TODO: need to account for the system specs of the panel such as area, efficiency, and wattage, etc.
 		return sunlight * getMaxPower();
 	}
 
@@ -52,7 +60,7 @@ implements Serializable {
 	public double getAveragePower(Settlement settlement) {
 		return getMaxPower() / 2D;
 	}
-	
+
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower() * 1D;
