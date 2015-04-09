@@ -274,10 +274,9 @@
 		<functions>
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
-			<!-- power-growing-crop: the power (kW) required for each crop to grow an flourish. -->
-			<!-- power-sustaining-crop: the minimum power (kW) required for each crop just to keep it
-			     alive. -->
-			<!-- growing-area: the total area (square meters) for growing crops. -->
+			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop to grow an flourish. -->
+			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
+			<!-- growing-area: the max growing area (square meters) of all crops. -->
 			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="50.0" >
 				<activity>
 					<activity-spot xloc="0.0" yloc="2.0" />
@@ -312,27 +311,27 @@
 			</robotic-station>
 
 			<storage stock-capacity="10000">
-				<resource-storage resource="Fertilizer" capacity="500.0" />
-				<resource-storage resource="Nitrogen" capacity="500.0" />
-				<resource-storage resource="Ammonia" capacity="500.0" />
-				<resource-storage resource="Nitrate" capacity="500.0" />
-				<resource-storage resource="Nitrite" capacity="500.0" />
+				<resource-storage resource="fertilizer" capacity="500.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
+				<resource-storage resource="ammonia" capacity="500.0" />
+				<resource-storage resource="nitrate" capacity="500.0" />
+				<resource-storage resource="nitrite" capacity="500.0" />
 
-				<resource-storage resource="Soil" capacity="500.0" />
-				<resource-storage resource="Compost" capacity="500.0" />
-				<resource-storage resource="Crop Waste" capacity="500.0" />
+				<resource-storage resource="soil" capacity="500.0" />
+				<resource-storage resource="compost" capacity="500.0" />
+				<resource-storage resource="crop Waste" capacity="500.0" />
 				<resource-storage resource="grey water" capacity="500.0" />
 
 				<resource-storage resource="water" capacity="500.0" />
-				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="carbon Dioxide" capacity="500.0" />
 
-				<resource-initial resource="Nitrogen" amount="50.0" />
-				<resource-initial resource="Ammonia" amount="50.0" />
-				<resource-initial resource="Nitrate" amount="50.0" />
-				<resource-initial resource="Nitrite" amount="50.0" />
-				<resource-initial resource="Fertilizer" amount="50.0" />
-				<resource-initial resource="Soil" amount="100.0" />
-				<resource-initial resource="Compost" amount="100.0" />
+				<resource-initial resource="nitrogen" amount="50.0" />
+				<resource-initial resource="ammonia" amount="50.0" />
+				<resource-initial resource="nitrate" amount="50.0" />
+				<resource-initial resource="nitrite" amount="50.0" />
+				<resource-initial resource="fertilizer" amount="50.0" />
+				<resource-initial resource="soil" amount="100.0" />
+				<resource-initial resource="compost" amount="100.0" />
 			</storage>
 
 			<thermal-generation>

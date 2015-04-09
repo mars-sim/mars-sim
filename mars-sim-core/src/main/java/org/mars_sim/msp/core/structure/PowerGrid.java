@@ -156,7 +156,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if there is enough power in the grid for all 
+	 * Checks if there is enough power in the grid for all
 	 * buildings to be set to full power.
 	 * @return true if sufficient power
 	 */
@@ -213,7 +213,7 @@ implements Serializable {
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> buildings = manager.getBuildings();
 
-			// Reduce each building's power mode to low power until 
+			// Reduce each building's power mode to low power until
 			// required power reduction is met.
 			if (powerMode != PowerMode.POWER_DOWN) {
 				Iterator<Building> iLowPower = buildings.iterator();
@@ -221,19 +221,19 @@ implements Serializable {
 					Building building = iLowPower.next();
 					if (!powerSurplus(building, PowerMode.FULL_POWER)) {
 						building.setPowerMode(PowerMode.POWER_DOWN);
-						neededPower -= building.getFullPowerRequired() - 
+						neededPower -= building.getFullPowerRequired() -
 								building.getPoweredDownPowerRequired();
 					}
 				}
 			}
 
-			// If power needs are still not met, turn off the power to each 
+			// If power needs are still not met, turn off the power to each
 			// uninhabitable building until required power reduction is met.
 			if (neededPower > 0D) {
 				Iterator<Building> iNoPower = buildings.iterator();
 				while (iNoPower.hasNext() && (neededPower > 0D)) {
 					Building building = iNoPower.next();
-					if (!powerSurplus(building, PowerMode.POWER_DOWN) && 
+					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
 							!(building.hasFunction(BuildingFunction.LIFE_SUPPORT))) {
 						building.setPowerMode(PowerMode.NO_POWER);
 						neededPower -= building.getPoweredDownPowerRequired();
@@ -241,13 +241,13 @@ implements Serializable {
 				}
 			}
 
-			// If power needs are still not met, turn off the power to each inhabitable building 
+			// If power needs are still not met, turn off the power to each inhabitable building
 			// until required power reduction is met.
 			if (neededPower > 0D) {
 				Iterator<Building> iNoPower = buildings.iterator();
 				while (iNoPower.hasNext() && (neededPower > 0D)) {
 					Building building = iNoPower.next();
-					if (!powerSurplus(building, PowerMode.POWER_DOWN) && 
+					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
 							building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 						building.setPowerMode(PowerMode.NO_POWER);
 						neededPower -= building.getPoweredDownPowerRequired();
@@ -332,7 +332,7 @@ implements Serializable {
 					logger.fine(
 						Msg.getString(
 							"PowerGrid.log.buildingFullPowerUsed", //$NON-NLS-1$
-							building.getName(),
+							building.getNickName(),
 							Double.toString(building.getFullPowerRequired())
 						)
 					);
@@ -346,7 +346,7 @@ implements Serializable {
 					logger.fine(
 						Msg.getString(
 							"PowerGrid.log.buildingPowerDownPowerUsed", //$NON-NLS-1$
-							building.getName(),
+							building.getNickName(),
 							Double.toString(building.getPoweredDownPowerRequired())
 						)
 					);
@@ -391,7 +391,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Checks if building generates more power 
+	 * Checks if building generates more power
 	 * than it uses in a given power mode.
 	 *
 	 * @param building the building
@@ -402,9 +402,9 @@ implements Serializable {
 	private boolean powerSurplus(Building building, PowerMode mode) {
 		double generated = 0D;
 		if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
-			PowerGeneration powerGeneration = 
+			PowerGeneration powerGeneration =
 					(PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-			generated = powerGeneration.getGeneratedPower(); 
+			generated = powerGeneration.getGeneratedPower();
 		}
 
 		double used = 0D;

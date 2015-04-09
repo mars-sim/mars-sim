@@ -25,6 +25,10 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double EFFICIENCY_SOLAR_HEATING = .50;
+
+	private Coordinates location ;
+	private SurfaceFeatures surface ;
 	/**
 	 * Constructor.
 	 * @param maxHeat the maximum generated power.
@@ -37,27 +41,26 @@ implements Serializable {
 	@Override
 	public double getCurrentHeat(Building building) {
 		BuildingManager manager = building.getBuildingManager();
-		Coordinates location = manager.getSettlement().getCoordinates();
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		double sunlight = surface.getSurfaceSunlight(location);
 
-			//System.out.println("sunlight is " + sunlight);
 		//TODO: calculate the amount of heat produced by passive solar heat
-		
+		if (location == null)
+			location = manager.getSettlement().getCoordinates();
+		if (surface == null)
+			surface = Simulation.instance().getMars().getSurfaceFeatures();
+		//double sunlight = surface.getSurfaceSunlight(location);
+		double sunlight = surface.getSolarIrradiance(location) * EFFICIENCY_SOLAR_HEATING / 600D ; // tentatively normalized to 600 W
+		//TODO: need to account for the system specs of the panel such as area, efficiency, and wattage, etc.
 		return sunlight * getMaxHeat();
-		
 		// Solar thermal mirror only works in direct sunlight.
 		//if (sunlight == 1D) return getMaxHeat();
 		//else return 0D;
-		
-		
 	}
 
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		return getMaxHeat() / 2D;
 	}
-	
+
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxHeat() * 1D;
