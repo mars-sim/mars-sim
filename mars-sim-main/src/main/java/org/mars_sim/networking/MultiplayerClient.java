@@ -34,12 +34,15 @@ public class MultiplayerClient {// extends Application {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
 
-	private List<String> addresses = new ArrayList<>();
-
 	private int port = 9090;
+
+	private String addressStr;
+
+	private List<String> addresses = new ArrayList<>();
 
 	private MainMenu mainMenu;
 	private ModeTask modeTask;
+	private MultiplayerTray multiplayerTray;
 
 	private Alert alert;
 
@@ -47,12 +50,23 @@ public class MultiplayerClient {// extends Application {
 		this.mainMenu = mainMenu;
 
 		InetAddress ip = InetAddress.getLocalHost();
-		String addressStr = ip.getHostAddress();
+		addressStr = ip.getHostAddress();
 		logger.info("Running the client at " + addressStr + ". Waiting to connect to a host...");
 		modeTask = new ModeTask(addressStr);
 
+		multiplayerTray = new MultiplayerTray(this);
+
+
 	}
 
+
+	public String getAddressStr() {
+		return addressStr;
+	}
+
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
 
 	public ModeTask getModeTask() {
 		return modeTask;

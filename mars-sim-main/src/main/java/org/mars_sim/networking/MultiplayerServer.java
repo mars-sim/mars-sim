@@ -26,9 +26,11 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.networking.MultiplayerMode.ModeTask;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 /**
  * The MultiplayerServerClient class allows the computer to take on the server role.
@@ -42,27 +44,41 @@ public class MultiplayerServer { //extends Application {
 	private List<String> addresses = new ArrayList<>();
 
 	private int port = 9090;
-	private transient ThreadPoolExecutor executor;
+
+	private String addressStr;
 
     boolean serverStopped = false;
 
+	private transient ThreadPoolExecutor executor;
+    //private Stage stage;
 	private ModeTask modeTask;
 	private ConnectionThread connectionThread;
 	private MainMenu mainMenu;
+	private MultiplayerTray serverTray;
 
 	public MultiplayerServer(MainMenu mainMenu) throws IOException {
 		this.mainMenu = mainMenu;
 
+		//stage = new Stage();
+
 		InetAddress ip = InetAddress.getLocalHost();
-		String addressStr = ip.getHostAddress();
+		addressStr = ip.getHostAddress();
 
 		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 
 		//logger.info("Running the host at " + addressStr);
 		modeTask = new ModeTask(addressStr);
 
+		serverTray = new MultiplayerTray(this);
 	}
 
+	public String getAddressStr() {
+		return addressStr;
+	}
+
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
 
 	public ModeTask getModeTask() {
 		return modeTask;
