@@ -9,7 +9,6 @@ package org.mars_sim.msp.javafx;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

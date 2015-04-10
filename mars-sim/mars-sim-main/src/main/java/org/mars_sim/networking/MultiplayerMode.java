@@ -49,6 +49,10 @@ public class MultiplayerMode {
 		roles.add("Host");
 		roles.add("Client");
 
+		InetAddress ip = InetAddress.getLocalHost();
+		String addressStr = ip.getHostAddress();
+		logger.info("Your IP address is : " + addressStr);
+
 		serverClientExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 
 	}
@@ -91,13 +95,10 @@ public class MultiplayerMode {
 			   logger.info("Your Multiplayer Role is : " + role);
 			   if (role.equals("Host")) {
 					try {
-						dialog.close();
-						InetAddress ip = InetAddress.getLocalHost();
-						String addressStr = ip.getHostAddress();
-						logger.info("Your IP address is : " + addressStr);
+						//dialog.close();
+						mainMenu.getStage().close();
 						MultiplayerServer server = new MultiplayerServer(mainMenu);
 						serverClientExecutor.execute(server.getModeTask());
-						mainMenu.getStage().close();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

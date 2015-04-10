@@ -134,7 +134,7 @@ public class MainMenu {
        primaryStage.setResizable(false);
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
-       //primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       //primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
        primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
 
@@ -164,7 +164,7 @@ public class MainMenu {
    public void runMainScene() {
 	   Scene scene = mainScene.createMainScene();
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/LanderHab.png").toString()));
+       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
 	   stage.setResizable(true);
 	   //stage.setFullScreen(true);
 	   stage.setScene(scene);
