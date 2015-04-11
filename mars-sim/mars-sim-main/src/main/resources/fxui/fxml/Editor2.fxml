@@ -13,13 +13,15 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox maxHeight="400" maxWidth="1300" minHeight="400.0" minWidth="1300.0" pickOnBounds="true" prefHeight="400.0" prefWidth="1300.0" styleClass="clientarea-background" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="400" maxWidth="1300" minHeight="400.0" minWidth="1300.0" pickOnBounds="true" prefHeight="400.0" prefWidth="1300.0"
+styleClass="clientarea-background" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1"
+stylesheets="../css/editor.css">
   <children>
     <AnchorPane id="decorationRoot" pickOnBounds="false" prefHeight="37.0" prefWidth="40.0" style="-fx-background-color: transparent;" visible="false">
       <children>
         <Label visible="true" prefHeight="36.0" prefWidth="375.0" styleClass="logo-label" text="Mars Simulation Project" AnchorPane.rightAnchor="590.0" AnchorPane.topAnchor="0.0" />
      <Label id="TitleLabel" fx:id="title" layoutY="7.0" mouseTransparent="true" prefWidth="384.0" text="TMars Simulation Project" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="166.0"/>
-   
+
       </children>
     </AnchorPane>
   </children>
