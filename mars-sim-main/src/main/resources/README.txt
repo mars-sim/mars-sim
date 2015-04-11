@@ -7,7 +7,7 @@ http://mars-sim.sourceforge.net/
 ** Installation **
 
 This Java application requires a Java Runtime Environment (JRE) of 
-version 7 or later.  The latest JVM can be freely downloaded from Oracle at:
+version 8 or later.  The latest JVM can be freely downloaded from Oracle at:
 http://java.com/en/download/index.jsp
 
 ---------------------------------------------------------------------
