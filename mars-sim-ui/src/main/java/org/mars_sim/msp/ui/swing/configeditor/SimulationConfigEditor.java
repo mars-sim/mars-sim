@@ -73,16 +73,16 @@ public class SimulationConfigEditor {
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
 		// Initialize data members.
 		this.config = config;
-			
+
 		hasError = false;
 
 		//try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 	    //catch(Exception ex){}
-		
+
 	    f = new JFrame();
-	    
+
 	    f.setSize(600, 300);
-    
+
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -144,14 +144,14 @@ public class SimulationConfigEditor {
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeSelectedSettlements();
-			} 
+			}
 		});
 		configurationButtonInnerTopPanel.add(removeButton);
 
 		// Create configuration button inner bottom panel.
 		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
-		
+
 		// Create default button.
 		JButton defaultButton = new JButton(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
 		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
@@ -175,7 +175,7 @@ public class SimulationConfigEditor {
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
 
-			
+
 		// Create the create button.
 		createButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
@@ -186,22 +186,22 @@ public class SimulationConfigEditor {
 				if (editor != null) {
 					editor.stopCellEditing();
 				}
-				if (!hasError) {										
-					if (mainWindow == null) {					
-					}	
+				if (!hasError) {
+					if (mainWindow == null) {
+					}
 					else {
-						mainWindow.getFrame().dispose();										
+						mainWindow.getFrame().dispose();
 					}
 					f.hide();
-					setConfiguration();									
+					setConfiguration();
 		            // Correct order:
 					// 1. Simulation.createNewSimulation();
 					// 2. MainWindow mw = new MainWindow(true);
-					// 3. Simulation.instance().start();					
-					Simulation.createNewSimulation();					
-					Simulation.instance().start();				
+					// 3. Simulation.instance().start();
+					Simulation.createNewSimulation();
+					Simulation.instance().start();
 		            MainWindow mw = new MainWindow(true);
-		            //mw.getFrame().setVisible(true);  	
+		            //mw.getFrame().setVisible(true);
 					//mw.getFrame().setIconImage(img);
 					closeWindow();
 				}
@@ -224,11 +224,11 @@ public class SimulationConfigEditor {
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);    
-	    
+		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
+
         f.setVisible(true);
 	}
-	
+
 	/**
 	 * Adds a new settlement with default values.
 	 */
@@ -244,7 +244,7 @@ public class SimulationConfigEditor {
 		settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
 	}
 
-	
+
 	/**
 	 * Edits team profile.
 	 */
@@ -263,7 +263,7 @@ public class SimulationConfigEditor {
 		c.setIconImage(img);
         c.setVisible(true);
 
-		
+
 		java.awt.EventQueue.invokeLater(new Runnable() {
 		    @Override
 		    public void run() {
@@ -274,8 +274,8 @@ public class SimulationConfigEditor {
 		*/
 	}
 
-	
-	
+
+
 	/**
 	 * Sets the default settlements from the loaded configuration.
 	 */
@@ -313,7 +313,7 @@ public class SimulationConfigEditor {
 	 */
 	private void closeWindow() {
 		//dispose();
-		f.dispose();	
+		f.dispose();
 	}
 
 	/**
@@ -540,7 +540,7 @@ public class SimulationConfigEditor {
 				Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$				
+				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
 			};
@@ -561,7 +561,7 @@ public class SimulationConfigEditor {
 				info.name = settlementConfig.getInitialSettlementName(x);
 				info.template = settlementConfig.getInitialSettlementTemplate(x);
 				info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
-				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));				
+				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 				settlements.add(info);
@@ -602,7 +602,7 @@ public class SimulationConfigEditor {
 				SettlementInfo info = settlements.get(row);
 				if ((column > -1) && (column < getColumnCount())) {
 					switch (column) {
-					case 0: 
+					case 0:
 						result = info.name;
 						break;
 					case 1:
@@ -613,12 +613,13 @@ public class SimulationConfigEditor {
 						break;
 					case 3:
 						result = info.numOfRobots;
-						break;	
+						break;
 					case 4:
 						result = info.latitude;
 						break;
 					case 5:
 						result = info.longitude;
+						break;
 					}
 				} else {
 					result = Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
@@ -636,7 +637,7 @@ public class SimulationConfigEditor {
 				SettlementInfo info = settlements.get(rowIndex);
 				if ((columnIndex > -1) && (columnIndex < getColumnCount())) {
 					switch (columnIndex) {
-					case 0: 
+					case 0:
 						info.name = (String) aValue;
 						break;
 					case 1:
@@ -648,14 +649,44 @@ public class SimulationConfigEditor {
 						info.population = (String) aValue;
 						break;
 					case 3:
-						info.numOfRobots = (String) aValue;	
-						//info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
+						info.numOfRobots = (String) aValue;
 						break;
+
 					case 4:
-						info.latitude = (String) aValue;
+						String latStr = ((String) aValue).trim();
+						double doubleLat = 0;
+						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
+						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
+							if (latStr.length() > 2) {
+								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+								doubleLat = Math.round(doubleLat*10.0)/10.0;
+								info.latitude =  doubleLat + " " + dir1;
+							}
+							else
+								info.latitude = (String) aValue;
+						}
+						else
+							info.latitude = (String) aValue;
+
 						break;
+
 					case 5:
-						info.longitude = (String) aValue;
+						String longStr = ((String) aValue).trim();
+						double doubleLong = 0;
+						String dir = longStr.substring(longStr.length() - 1, longStr.length());
+						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
+							if (longStr.length() > 2) {
+								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+								doubleLong = Math.round(doubleLong*10.0)/10.0;
+								info.longitude =  doubleLong + " " + dir;
+							}
+							else
+								info.longitude = (String) aValue;
+						}
+						else
+							info.longitude = (String) aValue;
+
+						break;
 					}
 				}
 
@@ -700,6 +731,98 @@ public class SimulationConfigEditor {
 		private void checkForErrors() {
 			clearError();
 
+			// TODO: check to ensure the latitude/longitude is not being used in the host server's settlement registry
+			try {
+				// Ensure the latitude/longitude is not being taken already in the table by another settlement
+				boolean repeated = false;
+				int size = settlementTableModel.getRowCount();
+				for (int x = 0; x < size; x++) {
+
+					String latStr = ((String) (settlementTableModel.getValueAt(x, 4))).trim().toUpperCase();
+					String longStr = ((String) (settlementTableModel.getValueAt(x, 5))).trim().toUpperCase();
+
+					// check if the second from the last character is a digit or a letter, if a letter, setError
+					if (Character.isLetter(latStr.charAt(latStr.length() - 2))){
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
+						return;
+					}
+
+					// check if the last character is a digit or a letter, if digit, setError
+					if (Character.isDigit(latStr.charAt(latStr.length() - 1))){
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
+						return;
+					}
+
+					if (latStr == null || latStr.length() < 2) {
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+						return;
+					}
+
+					if (longStr == null || longStr.length() < 2 ) {
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+						return;
+					}
+
+					//System.out.println("settlement.latitude is "+ settlement.latitude);
+					if (x + 1 < size ) {
+						String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 4))).trim().toUpperCase();
+						String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 5))).trim().toUpperCase();
+
+						//System.out.println("latStr is "+ latStr);
+						//System.out.println("latNextStr is "+ latNextStr);
+						if ( latNextStr == null || latNextStr.length() < 2) {
+							setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+							return;
+						}
+						else if (latStr.equals(latNextStr)) {
+							repeated = true;
+							break;
+						}
+
+						else {
+							double doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+							double doubleLatNext = Double.parseDouble(latNextStr.substring(0, latNextStr.length() - 1));
+							//System.out.println("doubleLat is "+ doubleLat);
+							//System.out.println("doubleLatNext is "+ doubleLatNext);
+							if (doubleLatNext == 0 && doubleLat == 0) {
+								repeated = true;
+								break;
+							}
+						}
+
+						//System.out.println("now checking for longitude");
+
+						if ( longNextStr == null ||  longNextStr.length() < 2) {
+							setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+							return;
+						}
+						else if (longStr.equals(longNextStr)) {
+							repeated = true;
+							break;
+						}
+
+						else {
+							double doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+							double doubleLongNext = Double.parseDouble(longNextStr.substring(0, longNextStr.length() - 1));
+							//System.out.println("doubleLong is "+ doubleLong);
+							//System.out.println("doubleLongNext is "+ doubleLongNext);
+							if (doubleLongNext == 0 && doubleLong == 0) {
+								repeated = true;
+								break;
+							}
+						}
+					}
+				}
+
+				if (repeated) {
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
+					return;
+				}
+
+			} catch(NumberFormatException e) {
+				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
+			}
+
 			Iterator<SettlementInfo> i = settlements.iterator();
 			while (i.hasNext()) {
 				SettlementInfo settlement = i.next();
@@ -736,13 +859,13 @@ public class SimulationConfigEditor {
 						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
 					}
 				}
-				
+
 				// Check that settlement latitude is valid.
 				if ((settlement.latitude == null) || (settlement.latitude.isEmpty())) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLatitude = settlement.latitude.trim().toUpperCase();
-					if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) && 
+					if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) &&
 					        !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(
@@ -771,7 +894,7 @@ public class SimulationConfigEditor {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLongitude = settlement.longitude.trim().toUpperCase();
-					if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) && 
+					if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) &&
 					        !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(

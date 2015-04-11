@@ -1,10 +1,10 @@
 /**
  * Mars Simulation Project
- * editor.css
- * @version 3.08 2015-04-11
- * @author Manny Kung
+ * mainskin.css
+ * General CSS classes for MSP UI
+ * @version 3.08 2015-01-27
+ * @author Lars Næsbye Christensen
  */
-
 /*
  The Stage background.
 */
@@ -22,16 +22,4 @@ Defines the rectangle responsible for the shadow
 -fx-stroke-width: 0;
 -fx-arc-width:20px;
 -fx-arc-height:20px;
-}
-
-.button {
-    -fx-text-fill: white;
-    -fx-font-family: "Arial Narrow";
-    -fx-font-weight: bold;
-    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
-}
-
-.button:hover {
-    -fx-background-color: linear-gradient(#2A5058, #61a2b1);
 }

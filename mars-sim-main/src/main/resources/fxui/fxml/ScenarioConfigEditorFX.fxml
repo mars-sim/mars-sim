@@ -14,14 +14,14 @@
 <?import javafx.scene.web.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="380.0" minWidth="450.0" pickOnBounds="true" 
-prefHeight="400.0" prefWidth="640.0" styleClass="clientarea-background" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="EditorController">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="380.0" minWidth="450.0" pickOnBounds="true"
+prefHeight="400.0" prefWidth="640.0" styleClass="clientarea-background" xmlns="http://javafx.com/javafx/8.0.40"
+xmlns:fx="http://javafx.com/fxml/1" fx:controller="EditorController" stylesheets="../css/editor.css">
   <children>
     <AnchorPane id="decorationRoot" fx:id="decorationRoot" pickOnBounds="false" prefHeight="37.0" prefWidth="640.0" style="-fx-background-color: transparent;" visible="true">
       <children>
         <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true" styleClass="logo" AnchorPane.rightAnchor="146.0" AnchorPane.topAnchor="0.0" />
-     	
+
      	<Button fx:id="close" mnemonicParsing="false" pickOnBounds="true" prefHeight="30.0" prefWidth="34.0" styleClass="decoration-button-close" text="" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="-3.0">
 	      <rotationAxis>
 	        <Point3D />
@@ -30,13 +30,13 @@ fx:controller="EditorController">
 	            <Cursor fx:constant="DEFAULT" />
 	         </cursor>
 	    </Button>
-	    
+
 	    <Button fx:id="maximize" mnemonicParsing="false" pickOnBounds="true" prefHeight="30.0" prefWidth="34.0" styleClass="decoration-button-maximize" text="" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="-3.0">
 	         <cursor>
 	            <Cursor fx:constant="DEFAULT" />
 	         </cursor>
 	    </Button>
-	         
+
 	    <Button fx:id="minimize" mnemonicParsing="false" pickOnBounds="true" prefHeight="30.0" prefWidth="34.0" style="" styleClass="decoration-button-minimize" text="" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="-3.0">
 	         <cursor>
 	            <Cursor fx:constant="DEFAULT" />
@@ -60,17 +60,14 @@ fx:controller="EditorController">
 	        <Glow />
 	      </effect>
 	    </Label>
-     	
-     	
+
+
      	<BorderPane>
-     	</BorderPane> 
-     	
-      </children>      
+     	</BorderPane>
+
+      </children>
     </AnchorPane>
   </children>
-  <stylesheets>
-    <URL value="@demoapp.css" />
-  </stylesheets>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
