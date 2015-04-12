@@ -85,7 +85,7 @@ public class MainMenu {
 
 	private transient ThreadPoolExecutor executor;
 
-	private  MultiplayerMode multiplayer;
+	private MultiplayerMode multiplayer;
 
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
     	//this.cleanUI =  cleanUI;
@@ -148,6 +148,10 @@ public class MainMenu {
    public Stage getStage() {
 	   return primaryStage;
    }
+
+   public MultiplayerMode getMultiplayerMode() {
+	   return multiplayer;
+	}
 
    public void runOne() {
 

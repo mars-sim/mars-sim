@@ -20,6 +20,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.*;
 
 import javax.imageio.ImageIO;
+
+import java.awt.Window;
 import java.io.IOException;
 import java.text.*;
 import java.util.*;
@@ -143,7 +145,7 @@ public class MultiplayerTray { //extends Application {
             // set up a system tray icon.
             tray = java.awt.SystemTray.getSystemTray();
             //URL imageLoc = new URL(iconImageLoc);
-            java.awt.Image image = ImageIO.read(this.getClass().getResource("/icons/lander_hab32.png"));
+            java.awt.Image image = ImageIO.read(this.getClass().getResource("/icons/lander_hab64.png"));
             trayIcon = new java.awt.TrayIcon(image);
             trayIcon.setImageAutoSize(true);
 
@@ -155,15 +157,25 @@ public class MultiplayerTray { //extends Application {
             // show the main app stage.
             java.awt.MenuItem titleItem = new java.awt.MenuItem(connector);
             java.awt.MenuItem ipItem = new java.awt.MenuItem("Your IP is " + addressStr);
-            java.awt.MenuItem openItem = new java.awt.MenuItem("Status");
-            if (multiplayerClient != null)
-            	openItem.addActionListener(event -> Platform.runLater(this::showStage));
-
             // the convention for tray icons seems to be to set the default icon for opening
             // the application stage in a bold font.
             java.awt.Font defaultFont = java.awt.Font.decode(null);
             java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-            openItem.setFont(boldFont);
+
+            java.awt.MenuItem panelItem = null;
+            java.awt.MenuItem openItem = null;
+            if (multiplayerClient != null) {
+	            panelItem = new java.awt.MenuItem("Panel");
+	            	panelItem.addActionListener(event -> {
+	                    //multiplayerClient.getContainer().show();
+	            	});
+
+	            //openItem = new java.awt.MenuItem("Status");
+	            	//openItem.addActionListener(event -> Platform.runLater(this::showStage));
+
+	            //openItem.setFont(boldFont);
+            }
+
 
             // to really exit the application, the user must go to the system tray icon
             // and select the exit option, this will shutdown JavaFX and remove the
@@ -190,8 +202,11 @@ public class MultiplayerTray { //extends Application {
             popup.add(titleItem);
             popup.add(ipItem);
             popup.addSeparator();
-            popup.add(openItem);
-            popup.addSeparator();
+            if (multiplayerClient != null) {
+	            popup.add(panelItem);
+	           // popup.add(openItem);
+	            popup.addSeparator();
+            }
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
 
@@ -250,6 +265,7 @@ public class MultiplayerTray { //extends Application {
 			notificationTimer.cancel();
 			Platform.exit();
 			tray.remove(trayIcon);
+			multiplayerServer.closeServerSocket();
         	// Use System.exit(0) to exit tentatively
         	//System.exit(0);
         }

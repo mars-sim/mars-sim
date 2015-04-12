@@ -32,13 +32,18 @@ public class MultiplayerMode {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerMode.class.getName());
 
-	private ModeTask modeTask = new ModeTask();
 
 	private List<String> roles = new ArrayList<>();
 
 	private ChoiceDialog<String> dialog;
 
+	private ModeTask modeTask = new ModeTask();
+
 	private MainMenu mainMenu;
+
+	private MultiplayerServer multiplayerServer;
+
+	private MultiplayerClient multiplayerClient;
 
 	private transient ThreadPoolExecutor serverClientExecutor;
 
@@ -63,6 +68,14 @@ public class MultiplayerMode {
 
 	public ModeTask getModeTask() {
 		return modeTask;
+	}
+
+	public MultiplayerServer getMultiplayerServer() {
+		return multiplayerServer;
+	}
+
+	public MultiplayerClient getMultiplayerClient() {
+		return multiplayerClient;
 	}
 
 
@@ -97,10 +110,9 @@ public class MultiplayerMode {
 					try {
 						//dialog.close();
 						mainMenu.getStage().close();
-						MultiplayerServer server = new MultiplayerServer(mainMenu);
-						serverClientExecutor.execute(server.getModeTask());
+						multiplayerServer = new MultiplayerServer(mainMenu);
+						serverClientExecutor.execute(multiplayerServer.getModeTask());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -108,10 +120,9 @@ public class MultiplayerMode {
 
 			   else if (role.equals("Client")) {
 					try {
-						MultiplayerClient client = new MultiplayerClient(mainMenu);
-						serverClientExecutor.execute(client.getModeTask());
+						multiplayerClient = new MultiplayerClient(mainMenu);
+						serverClientExecutor.execute(multiplayerClient.getModeTask());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			   }
