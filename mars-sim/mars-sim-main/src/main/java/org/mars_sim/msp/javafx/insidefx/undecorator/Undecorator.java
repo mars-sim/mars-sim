@@ -112,7 +112,7 @@ public class Undecorator extends StackPane {
     private Pane decorationRoot;
     @FXML
     private ContextMenu contextMenu;
-    
+
     MenuItem maximizeMenuItem;
     CheckMenuItem fullScreenMenuItem;
     Region clientArea;
@@ -173,7 +173,7 @@ public class Undecorator extends StackPane {
         setStageStyle(st);
         loadConfig();
 
-        // Properties 
+        // Properties
         maximizeProperty = new SimpleBooleanProperty(false);
         maximizeProperty.addListener(new ChangeListener<Boolean>() {
             @Override
@@ -526,7 +526,7 @@ public class Undecorator extends StackPane {
      * Launch the fade out transition. Must be invoked when the application/window is supposed to be closed
      */
     public void setFadeOutTransition() {
-        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), Undecorator.this);
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(3), Undecorator.this);
         fadeTransition.setToValue(0);
         fadeTransition.play();
         fadeTransition.setOnFinished(new EventHandler<ActionEvent>() {
@@ -802,7 +802,7 @@ public class Undecorator extends StackPane {
             //                resizeRect.setHeight(h - SHADOW_WIDTH * 2);
             //                resizeRect.setLayoutX(SHADOW_WIDTH);
             //                resizeRect.setLayoutY(SHADOW_WIDTH);
-            //            } 
+            //            }
             else {
                 node.resize(w - SHADOW_WIDTH * 2 - ROUNDED_DELTA * 2, h - SHADOW_WIDTH * 2 - ROUNDED_DELTA * 2);
                 node.setLayoutX(SHADOW_WIDTH + ROUNDED_DELTA);
@@ -919,7 +919,7 @@ public class Undecorator extends StackPane {
         try {
             //prop.load(Undecorator.class.getClassLoader().getResourceAsStream("/skin/undecorator.properties"));
             prop.load(getClass().getResourceAsStream("/skin/undecorator.properties"));
-                      
+
             SHADOW_WIDTH = Integer.parseInt(prop.getProperty("window-shadow-width"));
             RESIZE_PADDING = Integer.parseInt(prop.getProperty("window-resize-padding"));
         } catch (IOException ex) {

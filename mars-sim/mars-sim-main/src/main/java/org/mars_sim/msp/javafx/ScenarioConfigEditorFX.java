@@ -25,21 +25,26 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -61,6 +66,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.networking.MultiplayerClient;
+import org.mars_sim.networking.MultiplayerServer;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
@@ -70,25 +77,39 @@ public class ScenarioConfigEditorFX {
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
 
 	// Data members.
-	private String TITLE = Msg.getString("SimulationConfigEditor.title");
+	//private String TITLE = Msg.getString("SimulationConfigEditor.title");
+
+	private int clientID;
+    double orgSceneX, orgSceneY;
+    double orgTranslateX, orgTranslateY;
 	private boolean hasError;
+
+	private String gameMode;
 
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JScrollPane settlementScrollPane;
-
 	private Label errorLabel;
 	private Button createButton;
-	private Stage stage;
+	private Button addButton;
+	private Button removeButton;
+	private Button defaultButton;
+	private Button alphaButton;
+	private Label titleLabel;
+	private Label gameModeLabel;
+	private Label clientIDLabel;
+	private TilePane titlePane;
 
+	private TableCellEditor editor;
+
+	private SwingNode swingNode;
+	private Stage stage;
 	private SimulationConfig config;
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
 
-	private TableCellEditor editor;
+	private MultiplayerClient multiplayerClient;
 
-    double orgSceneX, orgSceneY;
-    double orgTranslateX, orgTranslateY;
 
 	/**
 	 * Constructor
@@ -99,14 +120,25 @@ public class ScenarioConfigEditorFX {
 		// Initialize data members.
 		this.config = config;
 		this.mainMenu = mainMenu;
-		hasError = false;
+		this.hasError = false;
 
 		stage = new Stage();
+
+		if (mainMenu.getMultiplayerMode() != null) {
+			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			multiplayerClient.sendGetNewID();
+			clientID = multiplayerClient.getClientID();
+			gameMode = "Simulation Mode : Multi-Player";//  + "   ";
+			stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t" + gameMode + "\t\t Player ID : " + clientID);
+		}
+		else {
+			gameMode = "Simulation Mode : Single-Player";//  + "   ";
+			stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t" + gameMode + "\t\t");
+		}
 
 
     	Parent parent = null;
 		FXMLLoader fxmlLoader = null;
-
 
 		try {
 			fxmlLoader = new FXMLLoader();
@@ -120,21 +152,40 @@ public class ScenarioConfigEditorFX {
 
 		Undecorator undecorator = new Undecorator(stage, (Region) parent);
 		undecorator.getStylesheets().add("skin/undecorator.css");
+		if ( parent.lookup("#anchorRoot") == null)
+			System.out.println("not found");
+		//((BorderPane) parent.lookup("border")).setCenter(createEditor());
 
-
-		Group group = new Group();
-		group.getChildren().add(undecorator);
-
-		Parent borderParent = createEditor();
-		group.getChildren().add(borderParent);
-
-		Scene scene = new Scene(group);
+	     AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
+	     // List should stretch as anchorpane is resized
+	     BorderPane bp = createEditor();
+	     AnchorPane.setTopAnchor(bp, 5.0);
+	     AnchorPane.setLeftAnchor(bp, 5.0);
+	     AnchorPane.setRightAnchor(bp, 5.0);
+	     // Button will float on right edge
+	     //Button button = new Button("Add");
+	     //AnchorPane.setTopAnchor(button, 10.0);
+	     //AnchorPane.setRightAnchor(button, 10.0);
+	     anchorpane.getChildren().add(bp);
+		//Group group = new Group();
+		//group.getChildren().add(undecorator);
+		//Parent borderParent = createEditor();
+		//group.getChildren().add(borderParent);
+		//((BorderPane) parent).setCenter(createEditor());
+		Scene scene = new Scene(undecorator);
+		//Scene scene = new Scene(group);
 
 		// Fade transition on window closing request
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			 @Override
 			 public void handle(WindowEvent we) {
-
+				 swingNode.setOpacity(0);
+				 createButton.setOpacity(0);
+				 addButton.setOpacity(0);
+				 defaultButton.setOpacity(0);
+				 alphaButton.setOpacity(0);
+				 removeButton.setOpacity(0);
+				 titlePane.setOpacity(0);
 				 we.consume(); // Do not hide
 				 undecorator.setFadeOutTransition();
 				 if (crewEditorFX != null)
@@ -180,28 +231,40 @@ public class ScenarioConfigEditorFX {
 		    };
 */
 
-	private Parent createEditor() {
+	//private Parent createEditor() {
+	private BorderPane createEditor() {
 
-		AnchorPane pane = new AnchorPane();
+		//AnchorPane pane = new AnchorPane();
 
 		BorderPane borderAll = new BorderPane();
-		AnchorPane.setTopAnchor(borderAll, 50.0);
-	    AnchorPane.setLeftAnchor(borderAll, 50.0);
-	    AnchorPane.setRightAnchor(borderAll, 50.0);
+		//AnchorPane.setTopAnchor(borderAll, 50.0);
+	    //AnchorPane.setLeftAnchor(borderAll, 50.0);
+	    //AnchorPane.setRightAnchor(borderAll, 50.0);
 
 		borderAll.setPadding(new Insets(10, 10, 10, 10));
 
 		// Create the title label.
-		Label titleLabel = new Label(Msg.getString("SimulationConfigEditor.chooseSettlements")); //$NON-NLS-1$
-		//titleLabel.setPadding(new Insets(5, 10, 5, 10));
+		//if (multiplayerClient != null)
+		//	clientIDLabel = new Label("Player ID : " + clientID);
 
-		TilePane titlePane = new TilePane(Orientation.HORIZONTAL);
+		//gameModeLabel = new Label(gameMode);
+		titleLabel = new Label(Msg.getString("SimulationConfigEditor.chooseSettlements")); //$NON-NLS-1$
+		//titleLabel.setPadding(new Insets(5, 10, 5, 10));
+		//titlePane = new TilePane(Orientation.VERTICAL);
+		titlePane = new TilePane(Orientation.HORIZONTAL);
 		titlePane.setMaxWidth(600);
-		titlePane.setPadding(new Insets(5, 5, 5, 5));
-		titlePane.setHgap(3.0);
-		titlePane.setVgap(3.0);
-		titlePane.getChildren().add(titleLabel);
-		//titlePane.setAlignment(Pos.CENTER);
+		titlePane.setPadding(new Insets(3, 3, 3, 3));
+		titlePane.setHgap(2.0);
+		titlePane.setVgap(2.0);
+		//if (multiplayerClient != null) {
+		//	titlePane.getChildren().addAll(clientIDLabel, titleLabel);
+		//	clientIDLabel.setAlignment(Pos.TOP_LEFT);
+		//}
+		//else
+		titlePane.getChildren().addAll(titleLabel);
+		titlePane.setAlignment(Pos.TOP_LEFT);
+		//titleLabel.setAlignment(Pos.CENTER);
+		//gameModeLabel.setAlignment(Pos.TOP_LEFT);
 
 		borderAll.setTop(titlePane);
 
@@ -211,8 +274,8 @@ public class ScenarioConfigEditorFX {
 
 		// Create settlement scroll panel.
 		settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(500, 200));
-		settlementScrollPane.setSize(new Dimension(500, 200));
+		settlementScrollPane.setPreferredSize(new Dimension(700, 200));
+		settlementScrollPane.setSize(new Dimension(700, 200));
 		//.add(settlementScrollPane, BorderLayout.CENTER);
 
 		//TableView table = new TableView();
@@ -223,13 +286,15 @@ public class ScenarioConfigEditorFX {
         //table.getColumns().addAll(col1, col2, col3);
 
 		StackPane swingPane = new StackPane();
-		//swingPane.setMaxSize(550, 200);
-		SwingNode swingNode = new SwingNode();
+		swingPane.setMaxSize(700, 200);
+		swingNode = new SwingNode();
+		swingNode.setOpacity(.7);
+		swingNode.setBlendMode(BlendMode.SRC_OVER);
 		createSwingNode(swingNode);
 		swingPane.getChildren().add(swingNode);
-		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-		//swingPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
+		//swingPane.setMaxSize(Region.USE_COMPUTED_SIZE, 200);
 		borderAll.setCenter(swingPane);
 
 		// Create configuration button outer panel.
@@ -243,7 +308,7 @@ public class ScenarioConfigEditorFX {
 		vbTop.setPadding(new Insets(0, 10, 10, 10));
 
 		// Create add settlement button.
-		Button addButton = new Button(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		addButton = new Button(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
 		//addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
@@ -251,7 +316,7 @@ public class ScenarioConfigEditorFX {
 		vbTop.getChildren().add(addButton);
 
 		// Create remove settlement button.
-		Button removeButton = new Button(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		removeButton = new Button(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
 		//removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.setOnAction((event) -> {
 			removeSelectedSettlements();
@@ -265,7 +330,7 @@ public class ScenarioConfigEditorFX {
 		borderButtons.setBottom(vbCenter);
 
 		// Create default button.
-		Button defaultButton = new Button(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		defaultButton = new Button(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
 		//defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
 		defaultButton.setOnAction((event) -> {
 			setDefaultSettlements();
@@ -294,13 +359,13 @@ public class ScenarioConfigEditorFX {
 		createButton = new Button(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
 		//createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		createButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
-		createButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
+		//createButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
 		createButton.setOnAction((event) -> {
 			// Make sure any editing cell is completed, then check if error.
-
 			if (editor != null) {
 				editor.stopCellEditing();
 			}
+
 			if (!hasError) {
 				stage.hide();
 				setConfiguration();
@@ -314,15 +379,14 @@ public class ScenarioConfigEditorFX {
 		//bottomButtonPanel.getChildren().add(createButton);
 
 		// 2014-12-15 Added Edit Alpha Crew button.
-		Button alphaButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		alphaButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
 		//alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
-		alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
+		//alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
 		alphaButton.setOnAction((event) -> {
 			editCrewProile("alpha");
 		});
 		//bottomButtonPanel.getChildren().add(alphaButton);
-
 
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
@@ -332,9 +396,9 @@ public class ScenarioConfigEditorFX {
 		tileButtons.setAlignment(Pos.CENTER);
 		bottomPanel.setBottom(tileButtons);
 
-		pane.getChildren().add(borderAll);
-		return new Group(pane);
-
+		//pane.getChildren().add(borderAll);
+		return borderAll;
+		//return borderAll;
 	}
 
 	private void createSwingNode(final SwingNode swingNode) {
@@ -346,8 +410,8 @@ public class ScenarioConfigEditorFX {
 			settlementTable = new JTable(settlementTableModel);
 			settlementTable.setRowSelectionAllowed(true);
 			settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			settlementTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-			settlementTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+			settlementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+			settlementTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 			settlementTable.getColumnModel().getColumn(2).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(3).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(4).setPreferredWidth(15);
@@ -425,6 +489,10 @@ public class ScenarioConfigEditorFX {
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
+
+			//TODO: send new name latitude, longitude to host server
+			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+
 		}
 	}
 
