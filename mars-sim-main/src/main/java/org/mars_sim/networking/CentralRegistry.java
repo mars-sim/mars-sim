@@ -18,7 +18,7 @@ public class CentralRegistry {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CentralRegistry.class.getName());
 
-	private static final int MAX = 30;
+	public static final int MAX = 30;
 
 	private static String SETTLEMENT_REGISTRY = "registry.txt";
 
@@ -42,7 +42,8 @@ public class CentralRegistry {
   public String toString() {
     String details = "RECORDS ";
     for(int i = 0; i < numSettlements; i++)
-      details += registry[i].getName() + " & " + registry[i].getLatitude() + " & " + registry[i].getLongitude() + " & ";
+      details += registry[i].getName() + " & " + registry[i].getTemplate() + " & " + registry[i].getPopulation() + " & "
+    		  + registry[i].getNumOfRobots() + " & " + registry[i].getLatitude() + " & " + registry[i].getLongitude() + " &";
     logger.info("Sent : "+ details);
     return details;
   }
@@ -65,12 +66,16 @@ public class CentralRegistry {
      StringTokenizer st = new StringTokenizer(line, "&");
      try {
        String name = st.nextToken().trim();
+       String template = st.nextToken().trim();
+       int pop = Integer.parseInt( st.nextToken().trim() );
+       int bots = Integer.parseInt( st.nextToken().trim() );
        double lat = Double.parseDouble( st.nextToken().trim() );
        double lo = Double.parseDouble( st.nextToken().trim() );
-       addEntry(name, lat, lo);
+       addEntry(name, template, pop, bots, lat, lo);
      }
      catch(Exception e) {
     	 logger.info("Problem parsing new entry:\n" + e);
+			e.printStackTrace();
 	}
   }
 
@@ -78,14 +83,14 @@ public class CentralRegistry {
   /* Adds an entry to the array
    *
    */
-  public void addEntry(String name, double lat, double lo) {
+  public void addEntry(String name, String template, int pop, int bots, double lat, double lo) {
     int i = 0;
 
     while ((i < numSettlements))
       i++;
 
     // add in the new entry
-    registry[i] = new SettlementRegistry(name, lat, lo);
+    registry[i] = new SettlementRegistry(name, template, pop, bots, lat, lo);
 
     numSettlements++;
   }
@@ -119,7 +124,8 @@ public class CentralRegistry {
       PrintWriter out = new PrintWriter(
 			new BufferedWriter( new FileWriter(this.getClass().getResource(SETTLEMENT_REGISTRY).getPath().replaceAll("%20", " ")) ), true);
       for (int i=0; i < numSettlements; i++) {
-         line = registry[i].getName() + " & " + registry[i].getLatitude() + " & " + registry[i].getLongitude() + " &";
+         line = registry[i].getName() + " & " + registry[i].getTemplate() + " & " + registry[i].getPopulation() + " & "
+        		 + registry[i].getNumOfRobots() + " & " + registry[i].getLatitude() + " & " + registry[i].getLongitude() + " &";
          out.println(line);
       }
       //out.println();
@@ -135,33 +141,3 @@ public class CentralRegistry {
   }
 
 }
-
-	/*
-	 * Maintains the settlement name and coordinate
-	 */
-	class SettlementRegistry {
-	private int clientID;
-	private String name;
-	private String template;
-	private double longitude;
-	private double latitude;
-
-	  public SettlementRegistry(String n, double lo, double lat) {
-		  name = n;  longitude = lo; latitude = lat;
-	  }
-
-	  public String getName()
-	  { return name;  }
-
-	  public String getTemplate()
-	  { return template;  }
-
-	  public double getLatitude()
-	  { return latitude; }
-
-	  public double getLongitude()
-	  { return longitude; }
-
-
-	}
-

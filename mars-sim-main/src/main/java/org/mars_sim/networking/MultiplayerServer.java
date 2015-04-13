@@ -14,19 +14,24 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.javafx.MainMenu;
+
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 /**
- * The MultiplayerServerClient class allows the computer to take on the server role.
+ * The MultiplayerServer class allows the computer to take on the host server role.
  */
-public class MultiplayerServer { //extends Application {
+public class MultiplayerServer extends Application {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerServer.class.getName());
@@ -42,32 +47,45 @@ public class MultiplayerServer { //extends Application {
 
     boolean serverStopped = false;
 
-	private transient ThreadPoolExecutor executor;
     //private Stage stage;
 	private ModeTask modeTask;
-	private ConnectionThread connectionThread;
 	private MainMenu mainMenu;
-	private MultiplayerTray serverTray;
+	private MultiplayerTray multiplayerTray;
 
 	private Socket socket = null;
 	private ServerSocket ss = null;
 	private CentralRegistry centralRegistry;
+	private PrintWriter out = null;
+	private BufferedReader in = null;
 
+	private ConnectionTask connectionTask;
+	private transient ThreadPoolExecutor serverExecutor;
+	private transient ThreadPoolExecutor connectionTaskExecutor;
 
-	public MultiplayerServer(MainMenu mainMenu) throws IOException {
+	public MultiplayerServer(MainMenu mainMenu) {
 		this.mainMenu = mainMenu;
+		startServer();
+	}
 
-		//stage = new Stage();
+	public MultiplayerServer() {
+		startServer();
+	}
 
-		InetAddress ip = InetAddress.getLocalHost();
+	public void startServer() {
+		//System.out.println("running startServer()");
+		InetAddress ip = null;
+		try {
+			ip = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		addressStr = ip.getHostAddress();
-
-		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 
 		//logger.info("Running the host at " + addressStr);
 		modeTask = new ModeTask(addressStr);
 
-		serverTray = new MultiplayerTray(this);
+		multiplayerTray = new MultiplayerTray(this);
 	}
 
 	public String getAddressStr() {
@@ -92,17 +110,22 @@ public class MultiplayerServer { //extends Application {
 
 		@Override
 		public void run() {
+
 			createHost(addressStr);
+
 		}
 	}
 
 	public void createHost(String addressStr) {
+		long SLEEP_TIME = 500; // .5 second.
+
 		centralRegistry = new CentralRegistry();
 
 		try {
-
+			String msg = "Ready to host at " + addressStr + "\nWaiting for clients to connect...";
 			Platform.runLater(() -> {
-				createAlert("Preparing to run the host at " + addressStr + "...\n\nClick OK to exit the Main Menu and start hosting.");
+				//if (mainMenu != null)
+				createAlert(msg);
 	        });
 
 			ss = new ServerSocket(port);
@@ -110,10 +133,11 @@ public class MultiplayerServer { //extends Application {
 			while (!serverStopped) {
 	        	logger.info("Waiting for clients to connect...");
 	        	socket = ss.accept();
-        		connectionThread = new ConnectionThread(socket);
-        		executor.execute(connectionThread);
+	        	connectionTask = new ConnectionTask(socket);
+	        	connectionTaskExecutor.execute(connectionTask);
 	          	//Thread t = new Thread(new ConnectionThread(socket));
 	          	//t.start();
+				TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 	       }
 
 		} catch (Exception e) {
@@ -125,13 +149,13 @@ public class MultiplayerServer { //extends Application {
 		}
 	}
 
-	class ConnectionThread implements Runnable {
+	class ConnectionTask implements Runnable {
 
 		private Socket socket;
 
-		private long SLEEP_TIME = 1000; // 1 second.
+		//private long SLEEP_TIME = 1000; // 1 second.
 
-		public ConnectionThread(Socket socket) {
+		public ConnectionTask(Socket socket) {
 			this.socket = socket;
 		}
 
@@ -151,9 +175,6 @@ public class MultiplayerServer { //extends Application {
 			});
 
 			// TODO: create a host dialog that lists all exiting connections.
-
-         	PrintWriter out = null;
-			BufferedReader in = null;
 
 			try {
 
@@ -176,11 +197,13 @@ public class MultiplayerServer { //extends Application {
 
 	public void createAlert(String str) {
 		   Alert alert = new Alert(AlertType.INFORMATION);
-		   alert.initOwner(mainMenu.getStage());
 		   alert.setTitle("Mars Simulation Project");
 		   alert.setHeaderText("Multiplayer Host");
+		   if (mainMenu != null) {
+			   alert.initOwner(mainMenu.getStage());
+		   }
 		   alert.setContentText(str);
-		   alert.showAndWait();
+		   alert.show();
 	}
 
 	/* Processes the input line
@@ -188,35 +211,42 @@ public class MultiplayerServer { //extends Application {
 	 * Otherwise, pass the input to doRequest()
 	 */
 	private void processInput(BufferedReader in, PrintWriter out) {
-	     String line;
-	     boolean done = false;
-	     try {
+		long SLEEP_TIME = 500; // .5 second.
+		String line;
+		boolean done = false;
+		try {
 	       while (!done) {
-	         if((line = in.readLine()) == null) {
-	        	 done = true;
-		         //centralRegistry.saveRecords();
-		         //socket.close();
-	         }
-	         else {
-	           logger.info("Command received : '" + line + "'");
-	           if (line.trim().equals("bye")) {
-	        	   done = true;
-	        	   //centralRegistry.saveRecords();
-	        	   //socket.close();
-	           }
-	           else
-	        	   executeCommand(line, out);
-	         }
-	       }
-	     }
-	     catch(IOException e)
-		    { e.printStackTrace();}
-	   }
+	    	   //if (in.readLine() != null && !socket.isClosed()) { // Get Records button got stuck
+
+	    		   if((line = in.readLine()) == null) {
+		        	 done = true;
+			         //centralRegistry.saveRecords();
+			         //socket.close();
+	    		   } else {
+			           logger.info("Command received : '" + line + "'");
+			           if (line.trim().equals("bye")) {
+			        	   done = true;
+			        	   //centralRegistry.saveRecords();
+			           }
+			           else {
+			        	   executeCommand(line, out);
+			        	   centralRegistry.saveRecords();
+			           }
+
+			           try {
+			        	   TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+			           } catch (InterruptedException e) {e.printStackTrace();}
+	    		   }
+	    	   //} // end of if (in.readLine() != null)
+	       } // end of while()
+		} catch(IOException e) {e.printStackTrace();}
+	}
 
 
 	/* Executes the command from client
 	 * case 1: "new name & lat & long"
 	 * case 2: "get"
+	 * case 3: "register"
 	 */
 	private void executeCommand(String line, PrintWriter out) {
 		if (line.trim().toLowerCase().equals("get")) {
@@ -229,7 +259,7 @@ public class MultiplayerServer { //extends Application {
 			out.println( centralRegistry.returnID(id) );
 		}
 	    else if ((line.length() >= 4) &&     // "new "
-	        (line.substring(0,3).toLowerCase().equals("new"))) {
+	        (line.substring(0, 3).toLowerCase().equals("new"))) {
 				logger.info("Command processed : 'new'");
 				centralRegistry.addEntry( line.substring(3) );    // cut out the new keyword
 				//centralRegistry.saveRecords();
@@ -241,9 +271,12 @@ public class MultiplayerServer { //extends Application {
 	/*
 	 * Closes sockets to terminate contact with the server
 	 */
-	  void closeServerSocket() {
+	  void closeSocket() {
 	    try {
-	      ss.close();
+	    	in.close();
+	    	out.close();
+	    	socket.close(); // NullPointerException
+	    	ss.close();
 	    }
 	    catch(Exception e)
 	    { e.printStackTrace();}
@@ -259,29 +292,35 @@ public class MultiplayerServer { //extends Application {
 	//	return ++lastClientID;
 	//}
 
-	public void destroy() {
-		socket= null;
-		executor= null;
-	    modeTask= null;
-		connectionThread= null;
-		mainMenu= null;
-		serverTray= null;
-		socket = null;
-		centralRegistry= null;
-
+	public void setServerStopped(boolean value) {
+		connectionTaskExecutor.shutdown();
+		serverExecutor.shutdown();
+		serverStopped = value;
+		closeSocket();
 	}
 
-    /**
-     * Runs the server.
+	@Override
+	public void start(Stage stage) throws Exception {
+		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		//MultiplayerServer multiplayerServer = new MultiplayerServer();
+		serverExecutor.execute(getModeTask());
+	}
 
     public static void main(String[] args) {
     	launch(args);
     }
 
-	@Override
-	public void start(Stage arg0) throws Exception {
-		new MultiplayerServer();
+	public void destroy() {
+		socket= null;
+		connectionTaskExecutor= null;
+	    modeTask= null;
+		connectionTask= null;
+		mainMenu= null;
+		multiplayerTray= null;
+		socket = null;
+		centralRegistry= null;
 	}
-	*/
+
 
 }

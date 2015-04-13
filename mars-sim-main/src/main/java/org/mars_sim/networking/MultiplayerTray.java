@@ -21,7 +21,6 @@ import javafx.stage.*;
 
 import javax.imageio.ImageIO;
 
-import java.awt.Window;
 import java.io.IOException;
 import java.text.*;
 import java.util.*;
@@ -182,19 +181,21 @@ public class MultiplayerTray { //extends Application {
             // tray icon (removing the tray icon will also shut down AWT).
             java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
             exitItem.addActionListener(event -> {
-            	// msg = "Are you sure you want to quit hosting MSP?";
+            	String msg = "Are you sure you want to quit?";
             	//System.out.println("Just clicked Exit.");
-            	if (multiplayerClient != null) {
-                	Platform.runLater(() -> createAlert());
-            	}
+            	//if (multiplayerClient != null) {
+                	Platform.runLater(() -> createAlert(msg));
+/*            	}
             	else if (multiplayerServer != null) {
                 	// TODO: fix the loading problem for server mode
         			notificationTimer.cancel();
         			Platform.exit();
         			tray.remove(trayIcon);
+        			multiplayerServer.closeServerSocket();
                 	// Use System.exit(0) to exit tentatively
                 	//System.exit(0);
                 }
+*/
             });
 
             // setup the popup menu for the application.
@@ -249,26 +250,18 @@ public class MultiplayerTray { //extends Application {
         }
     }
 
-    public void createAlert() {
+    public void createAlert(String text) {
     	//Stage stage = new Stage();
         stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
         String header = null;
-        String text = null;
+        //String text = null;
         if (multiplayerClient != null) {
         	header = "Multiplayer Client Connector";
-        	text = "Are you sure you want to quit the client connector?";
         }
         else if (multiplayerServer != null) {
         	header = "Multiplayer Host Server";
-        	text = "Are you sure you want to quit hosting MSP?";
-        	// TODO: fix the loading problem for server mode
-			notificationTimer.cancel();
-			Platform.exit();
-			tray.remove(trayIcon);
-			multiplayerServer.closeServerSocket();
-        	// Use System.exit(0) to exit tentatively
-        	//System.exit(0);
         }
+
         //System.out.println("confirm dialog pop up.");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.initOwner(stage);
@@ -279,9 +272,14 @@ public class MultiplayerTray { //extends Application {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.YES){
+			if (multiplayerServer != null) {
+	        	// TODO: fix the loading problem for server mode
+	        	multiplayerServer.setServerStopped(true);
+	        }
 			notificationTimer.cancel();
 			Platform.exit();
 			tray.remove(trayIcon);
+		    System.exit(0);
 		}
 		//else {
 		//}

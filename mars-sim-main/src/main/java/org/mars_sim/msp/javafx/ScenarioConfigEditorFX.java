@@ -66,8 +66,10 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.networking.CentralRegistry;
 import org.mars_sim.networking.MultiplayerClient;
 import org.mars_sim.networking.MultiplayerServer;
+import org.mars_sim.networking.SettlementRegistry;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
@@ -99,6 +101,7 @@ public class ScenarioConfigEditorFX {
 	private Label gameModeLabel;
 	private Label clientIDLabel;
 	private TilePane titlePane;
+	private VBox topVB;
 
 	private TableCellEditor editor;
 
@@ -110,6 +113,8 @@ public class ScenarioConfigEditorFX {
 
 	private MultiplayerClient multiplayerClient;
 
+	private SettlementRegistry settlementRegistry;
+	private SettlementRegistry[] registryArray;
 
 	/**
 	 * Constructor
@@ -123,19 +128,21 @@ public class ScenarioConfigEditorFX {
 		this.hasError = false;
 
 		stage = new Stage();
+		stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");
 
 		if (mainMenu.getMultiplayerMode() != null) {
 			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
-			multiplayerClient.sendGetNewID();
+			multiplayerClient.sendRegister();
 			clientID = multiplayerClient.getClientID();
+			registryArray = multiplayerClient.getSettlementRegistryArray();
+			//settlementRegistry = new SettlementRegistry();
 			gameMode = "Simulation Mode : Multi-Player";//  + "   ";
-			stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t" + gameMode + "\t\t Player ID : " + clientID);
+			//stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");// + gameMode + "\t\t Player ID : " + clientID);
 		}
 		else {
 			gameMode = "Simulation Mode : Single-Player";//  + "   ";
-			stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t" + gameMode + "\t\t");
+			//stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");// + gameMode + "\t\t");
 		}
-
 
     	Parent parent = null;
 		FXMLLoader fxmlLoader = null;
@@ -185,7 +192,8 @@ public class ScenarioConfigEditorFX {
 				 defaultButton.setOpacity(0);
 				 alphaButton.setOpacity(0);
 				 removeButton.setOpacity(0);
-				 titlePane.setOpacity(0);
+				 //titlePane.setOpacity(0);
+				 topVB.setOpacity(0);
 				 we.consume(); // Do not hide
 				 undecorator.setFadeOutTransition();
 				 if (crewEditorFX != null)
@@ -243,11 +251,13 @@ public class ScenarioConfigEditorFX {
 
 		borderAll.setPadding(new Insets(10, 10, 10, 10));
 
+		topVB = new VBox();
+		gameModeLabel = new Label(gameMode);
 		// Create the title label.
-		//if (multiplayerClient != null)
-		//	clientIDLabel = new Label("Player ID : " + clientID);
-
-		//gameModeLabel = new Label(gameMode);
+		if (multiplayerClient != null)
+			clientIDLabel = new Label("Player ID : " + clientID);
+		else
+			clientIDLabel = new Label();
 		titleLabel = new Label(Msg.getString("SimulationConfigEditor.chooseSettlements")); //$NON-NLS-1$
 		//titleLabel.setPadding(new Insets(5, 10, 5, 10));
 		//titlePane = new TilePane(Orientation.VERTICAL);
@@ -265,8 +275,8 @@ public class ScenarioConfigEditorFX {
 		titlePane.setAlignment(Pos.TOP_LEFT);
 		//titleLabel.setAlignment(Pos.CENTER);
 		//gameModeLabel.setAlignment(Pos.TOP_LEFT);
-
-		borderAll.setTop(titlePane);
+		topVB.getChildren().addAll(gameModeLabel, clientIDLabel, titleLabel);
+		borderAll.setTop(topVB);
 
 		// Create settlement scroll panel.
 		//ScrollPane settlementScrollPane = new ScrollPane();
@@ -444,6 +454,17 @@ public class ScenarioConfigEditorFX {
 	}
 
 	/**
+	 * Adds an existing settlement .
+	 */
+	private void addExistingSettlement() {
+		int size = registryArray.length;
+		for (int i = 0; i < size; i++ ) {
+			SettlementInfo settlement = determineExistingSettlementConfiguration(i);
+			settlementTableModel.addSettlement(settlement);
+		}
+	}
+
+	/**
 	 * Removes the settlements selected on the table.
 	 */
 	private void removeSelectedSettlements() {
@@ -547,6 +568,24 @@ public class ScenarioConfigEditorFX {
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
+
+		return settlement;
+	}
+
+	/**
+	 * Determines the configuration of an existing settlement.
+	 * @return settlement configuration.
+	 */
+
+	private SettlementInfo determineExistingSettlementConfiguration(int i) {
+		SettlementInfo settlement = new SettlementInfo();
+
+		settlement.name = registryArray[i].getName();
+		settlement.template = registryArray[i].getTemplate();
+		settlement.population = registryArray[i].getPopulation() + "";
+		settlement.numOfRobots = registryArray[i].getNumOfRobots() + "";
+		settlement.latitude = registryArray[i].getLatitudeStr();
+		settlement.longitude = registryArray[i].getLongitudeStr();
 
 		return settlement;
 	}
@@ -1032,6 +1071,7 @@ public class ScenarioConfigEditorFX {
 
 			} catch(NumberFormatException e) {
 				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
+				e.printStackTrace();
 			}
 
 			Iterator<SettlementInfo> i = settlements.iterator();
@@ -1054,6 +1094,7 @@ public class ScenarioConfigEditorFX {
 						}
 					} catch (NumberFormatException e) {
 						setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
+						e.printStackTrace();
 					}
 				}
 
@@ -1068,6 +1109,7 @@ public class ScenarioConfigEditorFX {
 						}
 					} catch (NumberFormatException e) {
 						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
+						e.printStackTrace();
 					}
 				}
 
@@ -1096,6 +1138,7 @@ public class ScenarioConfigEditorFX {
 						}
 						catch(NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+							e.printStackTrace();
 						}
 					}
 				}
@@ -1123,6 +1166,7 @@ public class ScenarioConfigEditorFX {
 							}
 						} catch(NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+							e.printStackTrace();
 						}
 					}
 				}
