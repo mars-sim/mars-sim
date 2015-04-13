@@ -10,7 +10,6 @@ package org.mars_sim.networking;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -70,17 +69,18 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	private BufferedReader in;     // i/o for the client
 	private PrintWriter out;
 
-	private JTextArea jtaMesgs;
-	private JTextField jtfName, jtfLat, jtfLong;
-	private JButton jbGetRecords;
-	private JButton jbSendNew;
+	private JTextArea ta;
+	private JTextField tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
+	private JButton bGetRecords;
+	private JButton bSendNew;
+	private JButton bRegister;
 	Container c;
 
 	private MainMenu mainMenu;
 	private ModeTask modeTask;
 	private MultiplayerTray multiplayerTray;
-
 	private Alert alert;
+	private SettlementRegistry[] registryArray = new SettlementRegistry[CentralRegistry.MAX];
 
 	public MultiplayerClient(MainMenu mainMenu) throws IOException {
 	    super( "Settlement Registry Client" );
@@ -99,7 +99,7 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	    }});
 
 	    //setState(Frame.ICONIFIED);
-	    setSize(400,400);
+	    setSize(850,400);
 	    setVisible(true);
 	}
 
@@ -186,35 +186,50 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 		    c = getContentPane();
 		    c.setLayout( new BorderLayout() );
 
-		    jtaMesgs = new JTextArea(7, 7);
-		    jtaMesgs.setEditable(false);
-		    JScrollPane jsp = new JScrollPane( jtaMesgs);
+		    ta = new JTextArea(7, 7);
+		    ta.setEditable(false);
+		    JScrollPane jsp = new JScrollPane( ta);
 		    c.add( jsp, "Center");
 
-		    JLabel jlName = new JLabel("Name: ");
-		    jtfName = new JTextField(10);
+		    JLabel lName = new JLabel("Name: ");
+		    tfName = new JTextField(10);
 
-		    JLabel jlLat = new JLabel("Lat: ");
-		    jtfLat = new JTextField(5);
+		    JLabel lTemplate = new JLabel("Template: ");
+		    tfTemplate = new JTextField(15);
 
-		    JLabel jlLong = new JLabel("Long: ");
-		    jtfLong = new JTextField(5);
+		    JLabel lPop = new JLabel("Population: ");
+		    tfPop = new JTextField(3);
 
-		    jbSendNew = new JButton("Send New");
-		    jbSendNew.addActionListener(this);
+		    JLabel lBots = new JLabel("Bots: ");
+		    tfBots = new JTextField(3);
 
-		    jbGetRecords = new JButton("Get Records");
-		    jbGetRecords.addActionListener(this);
+		    JLabel lLat = new JLabel("Lat: ");
+		    tfLat = new JTextField(5);
+
+		    JLabel lLong = new JLabel("Long: ");
+		    tfLong = new JTextField(5);
+
+		    bRegister = new JButton("Register");
+		    bRegister.addActionListener(this);
+
+		    bSendNew = new JButton("Send New");
+		    bSendNew.addActionListener(this);
+
+		    bGetRecords = new JButton("Get Records");
+		    bGetRecords.addActionListener(this);
 
 		    JPanel p1 = new JPanel( new FlowLayout() );
-		    p1.add(jlName); p1.add(jtfName);
-		    p1.add(jlLat); p1.add(jtfLat);
-		    p1.add(jlLong); p1.add(jtfLong);
+		    p1.add(lName); p1.add(tfName);
+		    p1.add(lTemplate); p1.add(tfTemplate);
+		    p1.add(lPop); p1.add(tfPop);
+		    p1.add(lBots); p1.add(tfBots);
+		    p1.add(lLat); p1.add(tfLat);
+		    p1.add(lLong); p1.add(tfLong);
 
 		    JPanel p2 = new JPanel( new FlowLayout() );
-		    p2.add(jbSendNew);
-		    p2.add(jbGetRecords);
-
+		    p2.add(bRegister);
+		    p2.add(bSendNew);
+		    p2.add(bGetRecords);
 
 		    JPanel p = new JPanel();
 		    p.setLayout( new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -257,10 +272,12 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	 * Responds to pressing either "Send New" or "Get Records" buttons
 	 */
 	public void actionPerformed(ActionEvent e) {
-	     if (e.getSource() == jbGetRecords)
-	       sendGetRecords();
-	     else if (e.getSource() == jbSendNew)
-	       sendNewEntry();
+	     if (e.getSource() == bGetRecords)
+	    	 sendGetRecords();
+	     else if (e.getSource() == bSendNew)
+	    	 sendNew();
+	     else if (e.getSource() == bRegister)
+	    	 sendRegister();
 	   }
 
 	   /* Sends out "get" command, read and display responses from server
@@ -275,11 +292,11 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	           (line.substring(0, 7).equals("RECORDS")))
 	         showRegistryContent(RECORDS, line.substring(7).trim() );
 	       else    // should not happen but just in case
-	         jtaMesgs.append( line + "\n");
+	         ta.append( line + "\n");
 	     }
 	     catch(Exception ex)
 	     {
-	       jtaMesgs.append("Problem obtaining records\n");
+	       ta.append("Problem obtaining records\n");
 		   ex.printStackTrace();
 	     }
 	   }
@@ -288,37 +305,45 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	 * 	Parses and displays the registry entries in a formatted view
 	 */
 	private void showRegistryContent(int type, String line) {
-		if (type == 1) {
+		if (type == NEW_ID) {
 			clientID = Integer.parseInt(line);
 		    try {
-		    	jtaMesgs.append("Received :\n");
-		    	jtaMesgs.append("Client ID Assigned: " + clientID + "\n\n");;
+		    	ta.append("Received :\n");
+		    	ta.append("New Client ID Assigned: " + clientID + "\n\n");;
 		    }
 		    catch(Exception e) {
-		      jtaMesgs.append("Problem parsing client id\n");
+		      ta.append("Problem parsing client id\n");
 		      logger.info("Parsing error with client id:\n" + e);
 		    }
 		}
-		else if (type == 0) {
+		else if (type == RECORDS) {
 		    StringTokenizer st = new StringTokenizer(line, "&");
 		    String name;
-		    int i;
+		    String template;
+		    int i = 1;
+		    int pop, bots;
 		    double lat, lo;
-		    i = 1;
 		    try {
-		    	jtaMesgs.append("Received :\n");
+		    	ta.append("Received :\n");
 			    while (st.hasMoreTokens()) {
 			        name = st.nextToken().trim();
+			        template = st.nextToken().trim();
+			        pop = Integer.parseInt( st.nextToken().trim() );
+			        bots = Integer.parseInt( st.nextToken().trim() );
 			        lat = Double.parseDouble( st.nextToken().trim() );
 			        lo = Double.parseDouble( st.nextToken().trim() );
-			        jtaMesgs.append("(" + i + "). " + name + " at ( " + lat + ", " + lo + " )\n");
+			        // Add the new entry into the array
+			        registryArray[i-1] = new SettlementRegistry(name, template, pop, bots, lat, lo);
+			        ta.append("(" + i + "). " + name + "  " + template + "  " + pop + "  " + bots
+			        	+ "  " + registryArray[i-1].getLatitudeStr() + "  " + registryArray[i-1].getLatitudeStr() + "\n");
 			        i++;
 			    }
-			    jtaMesgs.append("\n");
+			    ta.append("\n");
 		    }
 		    catch(Exception e) {
-		      jtaMesgs.append("Problem parsing records\n");
+		      ta.append("Problem parsing records\n");
 		      logger.info("Parsing error with records:\n" + e);
+				e.printStackTrace();
 		    }
 		}
 	}
@@ -327,10 +352,13 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	/* Checks if the user types in a correct settlement name and coordinates
 	 * If true, send "new name & lat & long &" to server
 	 */
-	private void sendNewEntry() {
-	    String name = jtfName.getText().trim();
-	    String lat = jtfLat.getText().trim();
-	    String lo = jtfLong.getText().trim();
+	private void sendNew() {
+	    String name = tfName.getText().trim();
+	    String lat = tfLat.getText().trim();
+	    String lo = tfLong.getText().trim();
+	    String pop = "12";
+	    String bots = "4";
+	    String template = "Mars Direct Base (phase 1)";
 
 	    if ((name.equals("")) && (lat.equals("")) && (lat.equals("")))
 	      JOptionPane.showMessageDialog( null,
@@ -345,15 +373,16 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	              "No name/coordinates entered", "Send Error",
 				JOptionPane.ERROR_MESSAGE);
 	    else {
-	      out.println("new " + name + " & " + lat + " & " + lo + " &");
-	      jtaMesgs.append("Sent :\n" + name + " & " + lat + " & " + lo + " &" + "\n\n");
+	      out.println("new " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+	      //jtaMesgs.append("Sent :\n" + name + " & " + lat + " & " + lo + " &" + "\n\n");
+	      ta.append("Sent :\n" + name + "  " + template + "  " + pop + "  " + bots + "  " + lat + "  " + lo + "\n");
 	    }
 	  }
 
 	/*
 	 * Sends register command to host server to request a new client id
 	 */
-	public void sendGetNewID()  {
+	public void sendRegister()  {
 	     try {
 	       out.println("register");
 	       String line = in.readLine();
@@ -362,11 +391,11 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	           (line.substring(0, 6).equals("NEW_ID")))
 	         showRegistryContent(NEW_ID, line.substring(6).trim() );
 	       else    // should not happen but just in case
-	         jtaMesgs.append( line + "\n");
+	         ta.append( line + "\n");
 	     }
 	     catch(Exception ex)
 	     {
-	       jtaMesgs.append("Problem obtaining a new client id\n");
+	       ta.append("Problem obtaining a new client id\n");
 		   ex.printStackTrace();
 	     }
 	}
@@ -375,16 +404,20 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 		return clientID;
 	}
 
+	public SettlementRegistry[] getSettlementRegistryArray() {
+			return registryArray;
+	}
+
 	public void destroy() {
 		sock= null;
 		in= null;
 		out= null;
-		jtaMesgs= null;
-		jtfName= null;
-		jtfLat= null;
-		jtfLong= null;
-		jbGetRecords= null;
-		jbSendNew= null;
+		ta= null;
+		tfName= null;
+		tfLat= null;
+		tfLong= null;
+		bGetRecords= null;
+		bSendNew= null;
 		mainMenu= null;
 		modeTask= null;
 		multiplayerTray= null;

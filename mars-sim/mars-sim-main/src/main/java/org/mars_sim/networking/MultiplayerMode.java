@@ -96,7 +96,7 @@ public class MultiplayerMode {
 
 
 	public void createChoiceDialog() {
-		dialog = new ChoiceDialog<>("Host", roles);
+		dialog = new ChoiceDialog<>("Client", roles);
 		dialog.initOwner(mainMenu.getStage());
 		dialog.initModality(Modality.NONE);
 		dialog.setTitle("Mars Simulation Project");
