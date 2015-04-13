@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProduceFoodMeta.java
- * @version 3.07 2015-02-02
+ * @version 3.08 2015-04-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -56,7 +56,7 @@ public class ProduceFoodMeta implements MetaTask {
 	            // See if there is an available foodProduction building.
 	            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
 	            if (foodProductionBuilding != null) {
-	            	result += 50D;
+	            	result += 1D;
 	            	
 	                // Crowding modifier.
 	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
@@ -65,12 +65,17 @@ public class ProduceFoodMeta implements MetaTask {
 	                // FoodProduction good value modifier.
 	                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
 		
+	                // Capping the probability at 100 as food production process values can be very large numbers.
+	                if (result > 100D) {
+                        result = 100D;
+                    }
+	                
 	                // If foodProduction building has process requiring work, add
 	                // modifier.
 	                SkillManager skillManager = person.getMind().getSkillManager();
 	                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
 	                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-	                    result += 100D;
+	                    result += 10D;
 	                }
 	
 	            }

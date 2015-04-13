@@ -67,38 +67,10 @@
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->	
-			<resource type="grey water" amount="200.0" />
-			<resource type="carbon dioxide" amount="1000.0" />									
-			<resource type="Fertilizer" amount="50.0" />
+			<resource type="food" amount="500.0" />
 			
-			<!-- Crop -->			
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />			
-			<resource type="White Rice" amount="50.0" />
-			<resource type="Soybean" amount="50.0" />
-			<resource type="White Onion" amount="50.0" />
-			<resource type="Rice" amount="50.0" />	
-			<resource type="Kidney Bean" amount="50.0" />	
-			<resource type="Wheat" amount="50.0" />				
-			<resource type="Cabbage" amount="50.0" />
-			<resource type="Carrot" amount="50.0" />
-			<resource type="Green Onion" amount="50.0" />	
-			<resource type="Peanut" amount="50.0" />			
-			<resource type="Potato" amount="50.0" />									
-			<resource type="Sesame" amount="50.0" />					
-			<resource type="Garlic" amount="50.0" />	
-			<resource type="Lettuce" amount="50.0" />	
-			<resource type="Ginger" amount="50.0" />	
-			<resource type="Sugarcane" amount="50.0" />	
-			<resource type="Strawberry" amount="50.0" />	
-			<resource type="Quinoa" amount="50.0" />													
-			<resource type="Cranberry" amount="50.0" />	
-			<resource type="Blueberry" amount="50.0" />	
-			<resource type="Cucumber" amount="50.0" />		
-			<resource type="Green Bell Pepper" amount="50.0" />				
-											
+			<!-- Crop -->
+			<!-- No starting crops for this template. -->
 
 			<!-- Kitchen Resources -->				
 			<resource type="chlorine" amount="50.0" />							
@@ -120,31 +92,8 @@
 			<resource type="Table Salt" amount="50.0" />
 			<resource type="Sugar" amount="50.0" />																					
 																	
-			<!-- Food Derived Items -->																	
-			<resource type="Tofu" amount="50.0" />
-			<resource type="Roasted Peanut" amount="50.0" />
-			<resource type="White Bread" amount="50.0" />
-			<resource type="White Bun" amount="50.0" />
-			<resource type="Veggie Patty" amount="50.0" />
-			<resource type="Wheat Bread" amount="50" />			
-			<resource type="Wheat Bun" amount="50" />
-			<resource type="Soy Protein" amount="50.0" />	
-			<resource type="Peanut Butter" amount="50.0" />
-			<resource type="Soy Sprout" amount="50.0" />
-
-			<resource type="Soybean Oil" amount="50.0" />
-			<resource type="Peanut Oil" amount="50.0" />
-			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />	
-										
-			<resource type="Cane Fiber" amount="100.0" />
-			<resource type="Rice Vinegar" amount="50.0" />
-			<resource type="Soy Sauce" amount="50.0" />										
-			<resource type="Soymilk" amount="50.0" />																				
-			<resource type="Soy Flour" amount="50.0" />	
-			<resource type="Wheat Flour" amount="50.0" />
-			<resource type="Granola Bar" amount="10.0" />
-
+			<!-- Food Derived Items -->
+			<!-- No food derived items in this template. -->	
 			
 			<!-- Part packages (see part_packages.xml) -->
 			<!-- name: the part package name. -->
@@ -221,7 +170,8 @@
 			<equipment type="Specimen Box" number="100" />
 	
 			
-			<!-- Resources -->	
+			<!-- Resources -->
+			<resource type="food" amount="1000.0" />
 			<resource type="grey water" amount="300.0" />
 			<resource type="carbon dioxide" amount="2000.0" />					
 			<resource type="Fertilizer" amount="50.0" />
@@ -285,12 +235,10 @@
 			<resource type="Soy Protein" amount="50.0" />	
 			<resource type="Peanut Butter" amount="50.0" />
 			<resource type="Soy Sprout" amount="50.0" />
-
 			<resource type="Soybean Oil" amount="50.0" />
 			<resource type="Peanut Oil" amount="50.0" />
 			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />	
-										
+			<resource type="Sesame Oil" amount="50.0" />			
 			<resource type="Cane Fiber" amount="100.0" />
 			<resource type="Rice Vinegar" amount="50.0" />
 			<resource type="Soy Sauce" amount="50.0" />										
@@ -299,7 +247,6 @@
 			<resource type="Wheat Flour" amount="50.0" />
 			<resource type="Granola Bar" amount="10.0" />
 
-						
 			<part-package name="package 2" number="1" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
@@ -391,8 +338,8 @@
 			<equipment type="Large Bag" number="140" />
 			<equipment type="Specimen Box" number="140" />
 
-			
 			<!-- Resources -->
+			<resource type="food" amount="1500.0" />
 			<resource type="grey water" amount="400.0" />
 			<resource type="carbon dioxide" amount="3000.0" />					
 			<resource type="Fertilizer" amount="50.0" />
@@ -432,7 +379,6 @@
 			<resource type="Nitrosomonas spp" amount="20.0" />
 			<resource type="Nitrospira spp" amount="20.0" />
 			<resource type="Rhizobia" amount="20.0" />
-
 			<resource type="toilet tissue" amount="100.0" />							
 			<resource type="paper" amount="100.0" />							
 			<resource type="napkin" amount="100.0" />	
@@ -456,12 +402,10 @@
 			<resource type="Soy Protein" amount="50.0" />	
 			<resource type="Peanut Butter" amount="50.0" />
 			<resource type="Soy Sprout" amount="50.0" />
-
 			<resource type="Soybean Oil" amount="50.0" />
 			<resource type="Peanut Oil" amount="50.0" />
 			<resource type="Garlic Oil" amount="50.0" />
 			<resource type="Sesame Oil" amount="50.0" />	
-										
 			<resource type="Cane Fiber" amount="100.0" />
 			<resource type="Rice Vinegar" amount="50.0" />
 			<resource type="Soy Sauce" amount="50.0" />										
@@ -662,6 +606,7 @@
 			<equipment type="Specimen Box" number="260" />
 			
 			<!-- Resources -->	
+			<resource type="food" amount="3000.0" />
 			<resource type="grey water" amount="1000.0" />
 			<resource type="carbon dioxide" amount="5000.0" />				
 			<resource type="Fertilizer" amount="50.0" />
@@ -701,7 +646,6 @@
 			<resource type="Nitrosomonas spp" amount="20.0" />
 			<resource type="Nitrospira spp" amount="20.0" />
 			<resource type="Rhizobia" amount="20.0" />
-
 			<resource type="toilet tissue" amount="100.0" />							
 			<resource type="paper" amount="100.0" />							
 			<resource type="napkin" amount="100.0" />	
@@ -725,12 +669,10 @@
 			<resource type="Soy Protein" amount="50.0" />	
 			<resource type="Peanut Butter" amount="50.0" />
 			<resource type="Soy Sprout" amount="50.0" />
-
 			<resource type="Soybean Oil" amount="50.0" />
 			<resource type="Peanut Oil" amount="50.0" />
 			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />	
-										
+			<resource type="Sesame Oil" amount="50.0" />				
 			<resource type="Cane Fiber" amount="100.0" />
 			<resource type="Rice Vinegar" amount="50.0" />
 			<resource type="Soy Sauce" amount="50.0" />										
@@ -867,30 +809,8 @@
 			<resource type="food" amount="16512.0" />
 			<resource type="methane" amount="16000.0" />
 			
-			<!-- Food Resources -->			
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Cabbage" amount="50.0" />
-			<resource type="Carrot" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />			
-			<resource type="White Rice" amount="50.0" />
-									
-			<!--<resource type="Tofu" amount="50.0" />-->
-			<resource type="Roasted Peanut" amount="50.0" />
-			<resource type="White Bread" amount="50.0" />
-			<resource type="White Bun" amount="50.0" />
-			<resource type="Veggie Patty" amount="50.0" />
-			<resource type="Wheat Bread" amount="50" />			
-			<resource type="Wheat Bun" amount="50" />
-			<resource type="Soy Protein" amount="50.0" />
-			<resource type="Soybean Oil" amount="50.0" />
-			<resource type="Peanut Oil" amount="50.0" />
-			<resource type="Peanut Butter" amount="50.0" />
-			<resource type="Soy Sprout" amount="50.0" />
-			<resource type="Potato" amount="50.0" />
-			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />
+			<!-- Food Resources -->
+			<!-- No starting food resources for this template. -->
 						
 			<part-package name="package 1" number="1" />
 		</template>
@@ -1035,216 +955,11 @@
 			<resource type="food" amount="16512.0" />
 			<resource type="methane" amount="16000.0" />
 			
-			<!-- Food Resources -->			
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Cabbage" amount="50.0" />
-			<resource type="Carrot" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />			
-			<resource type="White Rice" amount="50.0" />
-									
-			<!--<resource type="Tofu" amount="50.0" />-->
-			<resource type="Roasted Peanut" amount="50.0" />
-			<resource type="White Bread" amount="50.0" />
-			<resource type="White Bun" amount="50.0" />
-			<resource type="Veggie Patty" amount="50.0" />
-			<resource type="Wheat Bread" amount="50" />			
-			<resource type="Wheat Bun" amount="50" />
-			<resource type="Soy Protein" amount="50.0" />
-			<resource type="Soybean Oil" amount="50.0" />
-			<resource type="Peanut Oil" amount="50.0" />
-			<resource type="Peanut Butter" amount="50.0" />
-			<resource type="Soy Sprout" amount="50.0" />
-			<resource type="Potato" amount="50.0" />
-			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />
+			<!-- Food Resources -->	
+			<!-- No starting food resources for this template. -->
 						
 			<part-package name="package 1" number="1" />
 		</template>
-
-        <template id="6" name="Alpha Basis" default-population="12" number-of-robots="6">
-            <building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0"> 
-                <connection-list>
-                    <connection id="1" x-location="0.0" y-location="4.5" />
-                    <connection id="5" x-location="-4.5" y-location="0.0" />
-                </connection-list>
-            </building>
-            <building id="1" type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0">
-                <connection-list>
-                    <connection id="0" x-location="0.0" y-location="-2.0" />
-                    <connection id="2" x-location="0.0" y-location="2.0" />
-                </connection-list>
-            </building>
-            <building id="2" type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0">
-                <connection-list>
-                    <connection id="1" x-location="0.0" y-location="-4.5" />
-                    <connection id="3" x-location="0.0" y-location="4.5" />
-                    <connection id="7" x-location="-4.5" y-location="0.0" />
-                </connection-list>
-            </building>
-            <building id="3" type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0">
-                <connection-list>
-                    <connection id="2" x-location="0.0" y-location="-2.0" />
-                    <connection id="4" x-location="0.0" y-location="2.0" />
-                </connection-list>
-            </building>
-            <building id="4" type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0">
-                <connection-list>
-                    <connection id="3" x-location="0.0" y-location="-4.5" />
-                    <connection id="9" x-location="-4.5" y-location="0.0" />
-                    <connection id="19" x-location="0.0" y-location="4.5" />
-                </connection-list>
-            </building>
-            <building id="19" type="Hallway" length="4.0" x-location="0.0" y-location="32.5" facing="0.0">
-                <connection-list>
-                    <connection id="4" x-location="0.0" y-location="-2.0" />
-                    <connection id="20" x-location="0.0" y-location="2.0" />
-                </connection-list>
-            </building>
-            <building id="20" type="Workshop" x-location="0.0" y-location="39.0" facing="0">
-                <connection-list>
-                    <connection id="19" x-location="0.0" y-location="-4.5" />
-                </connection-list>
-            </building>
-            <building id="5" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
-                <connection-list>
-                    <connection id="0" x-location="0.0" y-location="1.5" />
-                    <connection id="6" x-location="0.0" y-location="-1.5" />
-                </connection-list>
-            </building>
-            <building id="6" type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0">
-                <connection-list>
-                    <connection id="5" x-location="0.0" y-location="4.5" />
-                </connection-list>
-            </building>
-            <building id="7" type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0">
-                <connection-list>
-                    <connection id="2" x-location="0.0" y-location="1.5" />
-                    <connection id="8" x-location="0.0" y-location="-1.5" />
-                </connection-list>
-            </building>
-            <building id="8" type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0">
-                <connection-list>
-                    <connection id="7" x-location="0.0" y-location="4.5" />
-                </connection-list>
-            </building>
-            <building id="9" type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0">
-                <connection-list>
-                    <connection id="4" x-location="0.0" y-location="1.5" />
-                    <connection id="10" x-location="0.0" y-location="-1.5" />
-                </connection-list>
-            </building>
-            <building id="10" type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0">
-                <connection-list>
-                    <connection id="9" x-location="0.0" y-location="4.5" />
-                </connection-list>
-            </building>
-            <building id="11" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
-            <building id="12" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
-            <building id="13" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
-            <building id="14" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
-            <building id="15" type="Starting ERV Base" x-location="70.0" y-location="15.0" facing="90.0" />
-            <building id="16" type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
-            <building id="17" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
-            <building id="18" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
-            <vehicle type="Explorer Rover" number="2" />
-            <vehicle type="Transport Rover" number="1" />
-            <vehicle type="Cargo Rover" number="1" />
-            <vehicle type="Light Utility Vehicle" number="2" />
-            <equipment type="EVA Suit" number="24" />
-            <equipment type="Gas Canister" number="140" />
-            <equipment type="Barrel" number="140" />
-            <equipment type="Bag" number="140" />
-            <equipment type="Large Bag" number="140" />
-            <equipment type="Specimen Box" number="140" />
- 
- 			<!-- Resources -->
-            <resource type="grey water" amount="300.0" />
-            <resource type="carbon dioxide" amount="2000.0" />
- 			<resource type="Fertilizer" amount="50.0" />
- 			
-			<!-- Crop -->			
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />			
-			<resource type="White Rice" amount="50.0" />
-			<resource type="Soybean" amount="50.0" />
-			<resource type="White Onion" amount="50.0" />
-			<resource type="Rice" amount="50.0" />	
-			<resource type="Kidney Bean" amount="50.0" />	
-			<resource type="Wheat" amount="50.0" />				
-			<resource type="Cabbage" amount="50.0" />
-			<resource type="Carrot" amount="50.0" />
-			<resource type="Green Onion" amount="50.0" />	
-			<resource type="Peanut" amount="50.0" />			
-			<resource type="Potato" amount="50.0" />									
-			<resource type="Sesame" amount="50.0" />					
-			<resource type="Garlic" amount="50.0" />	
-			<resource type="Lettuce" amount="50.0" />	
-			<resource type="Ginger" amount="50.0" />	
-			<resource type="Sugarcane" amount="50.0" />	
-			<resource type="Strawberry" amount="50.0" />	
-			<resource type="Quinoa" amount="50.0" />													
-			<resource type="Cranberry" amount="50.0" />	
-			<resource type="Blueberry" amount="50.0" />	
-			<resource type="Cucumber" amount="50.0" />		
-			<resource type="Green Bell Pepper" amount="50.0" />				
-											
-
-			<!-- Kitchen Resources -->				
-			<resource type="chlorine" amount="50.0" />							
-			<resource type="Sodium Hypochlorite" amount="20.0" />
-			<resource type="Acetic Acid Bacteria" amount="20.0" />
-			<resource type="Nitrosomonas spp" amount="20.0" />
-			<resource type="Nitrospira spp" amount="20.0" />
-			<resource type="Rhizobia" amount="20.0" />
-
-			<resource type="toilet tissue" amount="100.0" />							
-			<resource type="paper" amount="100.0" />							
-			<resource type="napkin" amount="100.0" />	
-			<resource type="bleaching chemical" amount="50.0" />	
-			<resource type="Baking Powder" amount="100.0" />
-			<resource type="pulp" amount="100.0" />			
-			<resource type="Honey" amount="100.0" />	
-			<resource type="Yeast" amount="50.0" />
-			<resource type="Epsom Salt" amount="50.0" />
-			<resource type="Table Salt" amount="50.0" />
-			<resource type="Sugar" amount="50.0" />																					
-																	
-			<!-- Food Derived Items -->																	
-			<resource type="Tofu" amount="50.0" />
-			<resource type="Roasted Peanut" amount="50.0" />
-			<resource type="White Bread" amount="50.0" />
-			<resource type="White Bun" amount="50.0" />
-			<resource type="Veggie Patty" amount="50.0" />
-			<resource type="Wheat Bread" amount="50" />			
-			<resource type="Wheat Bun" amount="50" />
-			<resource type="Soy Protein" amount="50.0" />	
-			<resource type="Peanut Butter" amount="50.0" />
-			<resource type="Soy Sprout" amount="50.0" />
-
-			<resource type="Soybean Oil" amount="50.0" />
-			<resource type="Peanut Oil" amount="50.0" />
-			<resource type="Garlic Oil" amount="50.0" />
-			<resource type="Sesame Oil" amount="50.0" />	
-										
-			<resource type="Cane Fiber" amount="100.0" />
-			<resource type="Rice Vinegar" amount="50.0" />
-			<resource type="Soy Sauce" amount="50.0" />										
-			<resource type="Soymilk" amount="50.0" />																				
-			<resource type="Soy Flour" amount="50.0" />	
-			<resource type="Wheat Flour" amount="50.0" />
-			<resource type="Granola Bar" amount="10.0" />
-
-						
-            <part-package name="package 3" number="1" />
-            <resupply>
-                <resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
-            </resupply>
-        </template>
-
 
 	</settlement-template-list>
 	
