@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -15,6 +16,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -92,6 +94,13 @@ extends JComponent {
 		window.setBackground(Color.black);
 
 		window.setUndecorated(true);
+		
+		// Set icon image for window.
+		setIconImage();
+		
+		// Set cursor style.
+		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		
 		// Display the splash window.
 		window.setVisible(true);
 	}
@@ -108,4 +117,12 @@ extends JComponent {
 		return window;
 	}
 
+	private void setIconImage() {
+	    
+	    String fullImageName = "/images/LanderHab.png";
+        URL resource = ImageLoader.class.getResource(fullImageName);
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage(resource);
+        window.setIconImage(img);
+	}
 }
