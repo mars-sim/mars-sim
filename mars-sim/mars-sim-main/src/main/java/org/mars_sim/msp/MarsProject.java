@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 3.08 2015-03-26
+ * @version 3.08 2015-04-14
 
  * @author Scott Davis
  */
@@ -11,19 +11,14 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 import javax.swing.*;
 
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -44,10 +39,6 @@ public class MarsProject {
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
-
-	// 2014-11-19 Added img and IMAGE_DIR for displaying MSP Logo Icon
-    private Image img;
-    private final static String IMAGE_DIR = "/images/";
 
     /**
      * Constructor 1.
@@ -70,25 +61,15 @@ public class MarsProject {
         if (useGUI) {
     		System.setProperty("sun.java2d.opengl", "true");
     		System.setProperty("sun.java2d.ddforcevram", "true");
+    		
         	// Enable capability of loading of svg image using regular method
     		SvgImageLoaderFactory.install();
+    		
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
+            splashWindow.display();
 
-            showSplashScreen(splashWindow);
-
-            boolean newSim = initializeSimulation(args);
-
-            // Create the main desktop window.
-            //MainWindow mw = new MainWindow(true);
-            //mw.getFrame().setVisible(true);
-       		// 2014-11-19 Displayed MSP Logo Icon as MainWindow is loaded
-			//mw.getFrame().setIconImage(img);
-
-            /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-
-            // Start simulation
-            //startSimulation();
+            initializeSimulation(args);
 
             // Dispose the splash window.
             splashWindow.remove();
@@ -96,9 +77,6 @@ public class MarsProject {
         else {
             // Initialize the simulation.
             initializeSimulation(args);
-
-            // Start the simulation.
-            startSimulation();
         }
 
         // this will generate html files for in-game help based on config xml files
@@ -107,22 +85,6 @@ public class MarsProject {
         }
 
     }
-
-    public void showSplashScreen(SplashWindow splashWindow) {
-
-   		// 2014-11-19 Displayed MSP Logo Icon as SplashWindow is loaded
-        String fullImageName = "LanderHab.png";
-        String fileName = fullImageName.startsWith("/") ?
-            	fullImageName :
-            	IMAGE_DIR + fullImageName;
-        URL resource = ImageLoader.class.getResource(fileName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		img = kit.createImage(resource);
-		splashWindow.getJFrame().setIconImage(img);
-        splashWindow.display();
-        splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
-    }
-
 
     /**
      * Initialize the simulation.
@@ -196,8 +158,16 @@ public class MarsProject {
      */
     private void handleLoadDefaultSimulation() throws Exception {
         try {
-            // Load a the default simulation
+            // Load the default simulation
             Simulation.instance().loadSimulation(null);
+            
+            if (useGUI) {
+                // Create the main desktop window.
+                new MainWindow(false);
+            }
+            
+            // Start simulation.
+            startSimulation();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
@@ -216,7 +186,14 @@ public class MarsProject {
             File loadFile = new File(argList.get(index + 1));
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
-            } else {
+                
+                // Create the main desktop window.
+                new MainWindow(false);
+                
+                // Start simulation.
+                startSimulation();
+            } 
+            else {
                 exitWithError("Problem loading simulation. " + argList.get(index + 1) +
                         " not found.", null);
             }
@@ -232,15 +209,7 @@ public class MarsProject {
     private void handleNewSimulation() {
         try {
             SimulationConfig.loadConfig();
-            if (useGUI) {
-                SimulationConfigEditor editor = new SimulationConfigEditor(
-                        SimulationConfig.instance(), null);
-
-         		// 2014-11-19 Displayed MSP Logo Icon as editor is loaded
-    			//editor.setIconImage(img);
-                //editor.setVisible(true);
-            }
-            //Simulation.createNewSimulation();
+            new SimulationConfigEditor(SimulationConfig.instance(), null);
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Could not create a new simulation, startup cannot continue", e);

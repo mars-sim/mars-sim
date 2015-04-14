@@ -192,17 +192,16 @@ public class SimulationConfigEditor {
 					else {
 						mainWindow.getFrame().dispose();
 					}
-					f.hide();
+					f.setVisible(false);
 					setConfiguration();
 		            // Correct order:
 					// 1. Simulation.createNewSimulation();
 					// 2. MainWindow mw = new MainWindow(true);
 					// 3. Simulation.instance().start();
 					Simulation.createNewSimulation();
+					new MainWindow(true);
 					Simulation.instance().start();
-		            MainWindow mw = new MainWindow(true);
-		            //mw.getFrame().setVisible(true);
-					//mw.getFrame().setIconImage(img);
+		            
 					closeWindow();
 				}
 			}
@@ -215,7 +214,7 @@ public class SimulationConfigEditor {
 		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editCrewProile("alpha");
+				editCrewProfile("alpha");
 			}
 		});
 		bottomButtonPanel.add(alphaButton);
@@ -248,7 +247,7 @@ public class SimulationConfigEditor {
 	/**
 	 * Edits team profile.
 	 */
-	private void editCrewProile(String crew) {
+	private void editCrewProfile(String crew) {
 		CrewEditor c = new CrewEditor(config);
 		/*
 		Image img;

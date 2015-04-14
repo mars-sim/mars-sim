@@ -10,12 +10,14 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -55,6 +57,9 @@ public class MainWindow extends JComponent {
 
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
 
+	/** Icon image filename for main window. */
+	private static final String ICON_IMAGE = "/images/LanderHab.png";
+	
 	// Data members
 	private JFrame frame;
 	/** The unit tool bar. */
@@ -98,6 +103,8 @@ public class MainWindow extends JComponent {
     //private boolean cleanUI;
     private boolean useDefault;
 
+    private String statusText;
+    
    	/**
 	 * Constructor 1.
 	 * @param cleanUI true if window should display a clean UI.
@@ -118,6 +125,9 @@ public class MainWindow extends JComponent {
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		setLookAndFeel(false);
+		
+		// Set the icon image for the frame.
+		setIconImage();
 
         init();
 
@@ -128,8 +138,6 @@ public class MainWindow extends JComponent {
 		desktop.openInitialWindows();
 
 	}
-
-	private String statusText;
 
 	// 2015-02-04 Added init()
 	public void init() {
@@ -678,6 +686,18 @@ public class MainWindow extends JComponent {
 			}
 
 		}
+	}
+	
+	/**
+	 * Sets the icon image for the main window.
+	 */
+	public void setIconImage() {
+	    
+        String fullImageName = ICON_IMAGE;
+        URL resource = ImageLoader.class.getResource(fullImageName);
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage(resource);
+        frame.setIconImage(img);
 	}
 
 	/**

@@ -331,7 +331,6 @@ implements ClockListener, Serializable {
 		}
 
 		isUpdating = false;
-		System.out.println("Simulation : exiting loadSimulation()");
 	}
 
 	/**
