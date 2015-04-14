@@ -52,7 +52,7 @@ implements Serializable {
 	//
 	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
 	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
-	// The areocentric longitude at perihelion, L_s = 251°.000 + 0°.00645 * (yr - 2000),
+	// The areocentric longitude at perihelion, L_s = 251.000 + 0.00645 * (yr - 2000),
 	// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
 	// as related to the occasional onset of global dust storms within the advance of this season.
 	// see http://www.giss.nasa.gov/tools/mars24/help/notes.html
