@@ -30,8 +30,8 @@ public class SurfaceFeatures implements Serializable {
 	public static double MEAN_SOLAR_IRRADIANCE =  586D; // in flux or [W/m2]  = 1371 / (1.52*1.52)
 	// This is the so-called "solar constant" of Mars (not really a constant per se), which is the flux of solar radiation at the top of the atmosphere (TOA) at the mean distance a between Mars and the sun.
 	// Note: at the top of the Mars atmosphere
-	// The solar irradiance at Mars’ mean distance from the Sun (1.52 AU) is S0 = 590 Wm-2.
-	// This is about 44% of the Earth’s solar constant (1350 Wm-2).
+	// The solar irradiance at Mars' mean distance from the Sun (1.52 AU) is S0 = 590 Wm-2.
+	// This is about 44% of the Earth's solar constant (1350 Wm-2).
 	// At perihelion (1.382 AU), the maximum available irradiance is S = 717 Wm-2, while at apohelion (1.666 AU) the maximum is S = 493 Wm-2.
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
@@ -171,7 +171,7 @@ public class SurfaceFeatures implements Serializable {
 
     		// Note a: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
     		// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
-    		// The areocentric longitude at perihelion, L_s = 251°.000 + 0°.00645 * (year - 2000),
+    		// The areocentric longitude at perihelion, L_s = 251.000 + 0.00645 * (year - 2000),
     		// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
 
     		// Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
