@@ -201,20 +201,6 @@ public class MainMenu {
 
 	   //primaryStage.setIconified(true);
 
-	   //ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
-	   //executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-	   //int port = 9090;
-	   //ThreadPoolServer server = new ThreadPoolServer(port);
-	   //new Thread(server).start();
-
-	   //try {
-	   //    Thread.sleep(20 * 1000);
-	   //} catch (InterruptedException e) {
-	   //    e.printStackTrace();
-	   //}
-	   //System.out.println("Stopping Server");
-	   //server.stop();
-
 		try {
 			multiplayer = new MultiplayerMode(this);
 			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();

@@ -11,15 +11,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.networking.CentralRegistry;
+import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.javafx.MainMenu;
 
 import javafx.application.Application;
@@ -36,18 +46,21 @@ public class MultiplayerServer extends Application {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerServer.class.getName());
 
+	private static final int MAX_NUM_THREADS = 5;
+
 	//private List<String> roles = new ArrayList<>();
-	//private List<String> addresses = new ArrayList<>();
+	//private List<String> addressList = new ArrayList<>();
+	private Map<Integer, String> addressMap = new ConcurrentHashMap<>();
 
 	private int port = 9090;
+	//private int numClientIDs = 0;
 
-	private int lastClientID = 0;
-
-	private String addressStr;
+	private int id = 1;
+	private String hostServerAddress;
 
     boolean serverStopped = false;
 
-    //private Stage stage;
+    //private Stage stage = new Stage();
 	private ModeTask modeTask;
 	private MainMenu mainMenu;
 	private MultiplayerTray multiplayerTray;
@@ -62,6 +75,8 @@ public class MultiplayerServer extends Application {
 	private transient ThreadPoolExecutor serverExecutor;
 	private transient ThreadPoolExecutor connectionTaskExecutor;
 
+	private Map<Integer, String> idMap = new ConcurrentHashMap<>();
+
 	public MultiplayerServer(MainMenu mainMenu) {
 		this.mainMenu = mainMenu;
 		startServer();
@@ -73,6 +88,9 @@ public class MultiplayerServer extends Application {
 
 	public void startServer() {
 		//System.out.println("running startServer()");
+
+		//stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/lander_hab64.png").toString()));
+
 		InetAddress ip = null;
 		try {
 			ip = InetAddress.getLocalHost();
@@ -80,16 +98,16 @@ public class MultiplayerServer extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		addressStr = ip.getHostAddress();
+		hostServerAddress = ip.getHostAddress();
 
-		//logger.info("Running the host at " + addressStr);
-		modeTask = new ModeTask(addressStr);
+		logger.info("Running the host at " + hostServerAddress);
+		modeTask = new ModeTask(hostServerAddress);
 
 		multiplayerTray = new MultiplayerTray(this);
 	}
 
 	public String getAddressStr() {
-		return addressStr;
+		return hostServerAddress;
 	}
 
 	public MainMenu getMainMenu() {
@@ -117,7 +135,7 @@ public class MultiplayerServer extends Application {
 	}
 
 	public void createHost(String addressStr) {
-		long SLEEP_TIME = 500; // .5 second.
+		//long SLEEP_TIME = 500; // .5 second.
 
 		centralRegistry = new CentralRegistry();
 
@@ -128,25 +146,33 @@ public class MultiplayerServer extends Application {
 				createAlert(msg);
 	        });
 
-			ss = new ServerSocket(port);
+			ss = new ServerSocket(port);//, 0);// InetAddress.getByAddress(new byte[] {127,0,0,1}));
 
 			while (!serverStopped) {
 	        	logger.info("Waiting for clients to connect...");
 	        	socket = ss.accept();
+	        	socket.setKeepAlive(true);
 	        	connectionTask = new ConnectionTask(socket);
 	        	connectionTaskExecutor.execute(connectionTask);
 	          	//Thread t = new Thread(new ConnectionThread(socket));
 	          	//t.start();
-				TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
-	       }
+				//try {
+					//TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+				//} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+				//	e.printStackTrace();
+				//}
+			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		//} finally {
-		//	try {
-		//		ss.close();
-		//	} catch (IOException e) {e.printStackTrace();}
+		//} catch (BindException e) {
+		//	System.err.println("server socket already running.");
+		 //   System.exit(1);
+		} catch (IOException e) {
+		    System.err.println("Unexpected error.");
+		    e.printStackTrace();
+		    System.exit(2);
 		}
+
 	}
 
 	class ConnectionTask implements Runnable {
@@ -161,42 +187,67 @@ public class MultiplayerServer extends Application {
 
 		@Override
 		public void run() {
-			String address = socket.getInetAddress().toString().split("/")[1];
+			int id = 0;
+			String clientAddress = socket.getInetAddress().toString().split("/")[1];
 			String hostname = socket.getInetAddress().toString().split("/")[0];
         	//String clientIP = socket.getInetAddress().toString();
 			if (hostname.trim() == "" || hostname == null)
 				hostname = "[No Name]";
         	//String msg = "A client named at " + address + " has just established a connection with you.";
-        	String msg = "A client at " + address + " has just established a connection with you.";
+        	String msg = "A client at " + clientAddress + " has just established a connection with you.";
         	logger.info(msg);
 
 			Platform.runLater(() -> {
 	        	createAlert(msg);
 			});
 
-			// TODO: create a host dialog that lists all exiting connections.
-
+			// TODO: create a host dialog that lists all clients currently connected
+			//add(clientAddress);
 			try {
 
 	        	in = new BufferedReader( new InputStreamReader(socket.getInputStream()) );
 				out = new PrintWriter(socket.getOutputStream(), true);
 				//out.println(new Date().toString());
-				processInput(in, out);
+				id = processInput(in, out, clientAddress);
 
 				//TimeUnit.SECONDS.sleep(SLEEP_TIME);
 				//System.out.flush();
-				// TODO: if the host dialog is closed, close socket
+				// TODO: create a main host dialog. If this dialog is closed, close all sockets
 				socket.close();
-				logger.info("Done. Client connection closed.");
-				centralRegistry.saveRecords();
-			} catch (Exception e) {e.printStackTrace();}
-
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				removeSettlement(id);
+				idMap.remove(id);
+				addressMap.remove(id);
+				logger.info("Socket closed, client id removed and connection closed.");
+			}
 		} // end of run()
 
 	}
 
+	/* Removes all settlements associated with that ID from the registry
+	 * @param id
+	 */
+	public void removeSettlement(int id) {
+		List<SettlementRegistry> oldList = centralRegistry.getSettlementRegistryList();
+		//List<SettlementRegistry> newList = new ArrayList<> (oldList);
+		// look for all the settlement with a particular client id and remove them from the central registry
+		oldList.forEach( s -> {
+			if (s.getClientID() == id) {
+				oldList.remove(s);
+				logger.info("");
+			}
+		});
+		//oldList = newList;
+	}
+
+	/* Creates an info alert dialog
+	 * @param string message
+	 */
 	public void createAlert(String str) {
 		   Alert alert = new Alert(AlertType.INFORMATION);
+		   //alert.initOwner(stage);
 		   alert.setTitle("Mars Simulation Project");
 		   alert.setHeaderText("Multiplayer Host");
 		   if (mainMenu != null) {
@@ -210,36 +261,47 @@ public class MultiplayerServer extends Application {
 	 * Note: stop when the input stream closes (is null) or "bye" is sent
 	 * Otherwise, pass the input to doRequest()
 	 */
-	private void processInput(BufferedReader in, PrintWriter out) {
+	private int processInput(BufferedReader in, PrintWriter out, String clientAddress) {
 		long SLEEP_TIME = 500; // .5 second.
 		String line;
 		boolean done = false;
+		int id = 0;
 		try {
 	       while (!done) {
+	    	   //System.out.println("processInput() : inside while(!done");
 	    	   //if (in.readLine() != null && !socket.isClosed()) { // Get Records button got stuck
-
-	    		   if((line = in.readLine()) == null) {
-		        	 done = true;
-			         //centralRegistry.saveRecords();
-			         //socket.close();
+	    	   //if (in != null) {
+	    		   if ((line = in.readLine()) == null) { // java.net.SocketException: Connection reset, if hitting the red button on eclipse
+	       				done = true;
 	    		   } else {
 			           logger.info("Command received : '" + line + "'");
-			           if (line.trim().equals("bye")) {
-			        	   done = true;
-			        	   //centralRegistry.saveRecords();
-			           }
+
+			            if ((line.length() >= 4) &&     // "bye "
+			       	        (line.substring(0, 3).toLowerCase().equals("bye"))) {
+			       				logger.info("Command processed : 'bye'");
+			       				String idStr = line.substring(4).trim(); // cut out the get keyword
+			       				id = Integer.parseInt(idStr);
+			       				//TODO: is the keyword "synchronized" needed for removing the id in idMap?
+			       				//idMap.remove(id);
+			       				//addressMap.remove(id);
+					        	if (idMap.size() == 0)
+					        		done = true;
+			       	    }
+
 			           else {
-			        	   executeCommand(line, out);
-			        	   centralRegistry.saveRecords();
+			        	   executeCommand(line, out, clientAddress);
+			        	   //centralRegistry.saveRecords();
 			           }
 
 			           try {
 			        	   TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 			           } catch (InterruptedException e) {e.printStackTrace();}
 	    		   }
-	    	   //} // end of if (in.readLine() != null)
+	    	   //} // end of if (in != null)
 	       } // end of while()
 		} catch(IOException e) {e.printStackTrace();}
+
+		return id;
 	}
 
 
@@ -248,22 +310,40 @@ public class MultiplayerServer extends Application {
 	 * case 2: "get"
 	 * case 3: "register"
 	 */
-	private void executeCommand(String line, PrintWriter out) {
+	private void executeCommand(String line, PrintWriter out, String clientAddress) {
 		if (line.trim().toLowerCase().equals("get")) {
-			logger.info("Command processed : 'get'");
+			logger.info("Command processed : get");
 			out.println( centralRegistry.toString() );
 		}
-		else if (line.trim().toLowerCase().equals("register")) {
-			logger.info("Command processed : 'register'");
-			int id = getNewID();
-			out.println( centralRegistry.returnID(id) );
-		}
+		// TODO: add command get all vs. get
+
+	    else if ((line.length() >= 9) &&     // "register abc"
+		        (line.substring(0, 8).toLowerCase().equals("register"))) {
+			String userName = line.substring(8).trim();    // cut out the register keyword
+			logger.info("Command processed : register " + userName);
+			//centralRegistry.addEntry(userName);
+			int id = getNewID(userName, clientAddress);
+			//addressMap.put(id, clientAddress);
+			//idMap.put(id, userName); // already included inside getNewID(userName);
+			out.println( centralRegistry.returnID(id, userName) );
+	    }
+
 	    else if ((line.length() >= 4) &&     // "new "
 	        (line.substring(0, 3).toLowerCase().equals("new"))) {
-				logger.info("Command processed : 'new'");
+				logger.info("Command processed : new");
 				centralRegistry.addEntry( line.substring(3) );    // cut out the new keyword
-				//centralRegistry.saveRecords();
+				//centralRegistry.saveRecords(); // the best place to save
+				//TODO: determine under what circumstance shall it be saved.
 	    }
+
+	    else if (line.trim().substring(0, 1).toLowerCase().equals("s")) {
+				logger.info("Command processed : 's'");
+				int num = centralRegistry.getSettlementRegistryList().size();
+				out.println("SETTLEMENTS " + num);
+				logger.info("Sent : SETTLEMENTS " + num);
+
+	    }
+
 	    else
 	      logger.info("The command from client cannot be recognized.");
 	  }
@@ -278,14 +358,53 @@ public class MultiplayerServer extends Application {
 	    	socket.close(); // NullPointerException
 	    	ss.close();
 	    }
-	    catch(Exception e)
-	    { e.printStackTrace();}
+	    catch(Exception e) {
+	    	throw new RuntimeException("Error closing server", e);
+	    	//e.printStackTrace();
+	    }
 
 	    System.exit(0);
 	  }
 
-	public int getNewID() {
-		return ++lastClientID;
+	public int getNewID(String userName, String clientAddress) {
+		if (idMap.size() == 0) {
+	        idMap.put(1, userName);
+			addressMap.put(1, clientAddress);
+			return 1;
+		}
+		else {
+
+			List<Integer> unsortedID = new ArrayList<Integer>();
+			idMap.forEach((key, value) ->  unsortedID.add(key));
+			// need to sort the list so that the comparison begins at key = 1
+			List<Integer> sortedID = unsortedID.stream().sorted().collect(Collectors.toList());
+			id = 1;
+			// set id to the lowest possible player id
+			// Note: if a client lost connection, the player id will be returned to the server and reassigned here.
+			sortedID.forEach((key  ->  {
+				if (key == id)
+					id++;
+			}));
+
+/*
+			Set<Integer> keys = idMap.keySet();
+			Integer[] idArray = keys.toArray(new Integer[keys.size()]);
+        	System.out.println("size is " + idArray.length);
+	        for(Integer key: idArray){
+	        	//if (key > largest)
+	        	//	largest = key;
+	        	System.out.println("key is " + key);
+	        	if ((int)key == (int)smallest) {
+	        		smallest++;
+		        	System.out.println("smallest is incremented to " + smallest);
+	        	}
+	        }
+*/
+	        //System.out.println("id is " + id);
+	        idMap.put(id, userName);
+			addressMap.put(id, clientAddress);
+			return id;
+		}
 	}
 
 	//public int assignClientID() {
@@ -302,8 +421,7 @@ public class MultiplayerServer extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-		//MultiplayerServer multiplayerServer = new MultiplayerServer();
+		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
 		serverExecutor.execute(getModeTask());
 	}
 
