@@ -1,20 +1,20 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.08 2015-04-10
+ * @version 3.08 2015-04-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
 
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
-import org.mars_sim.msp.javafx.insidefx.undecorator.UndecoratorController;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,8 +26,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,10 +33,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
@@ -55,21 +52,22 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.avalon.framework.component.Component;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
-import org.mars_sim.networking.CentralRegistry;
 import org.mars_sim.networking.MultiplayerClient;
-import org.mars_sim.networking.MultiplayerServer;
-import org.mars_sim.networking.SettlementRegistry;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
@@ -81,13 +79,17 @@ public class ScenarioConfigEditorFX {
 	// Data members.
 	//private String TITLE = Msg.getString("SimulationConfigEditor.title");
 
-	private int clientID;
+	private int numS = 0; // # of existing settlements recognized by the editor at the moment
+	private int clientID = 0;
     double orgSceneX, orgSceneY;
     double orgTranslateX, orgTranslateY;
 	private boolean hasError;
+	private boolean hasSettlement;
 
+	private String playerName;
 	private String gameMode;
 
+	private JTableHeader header;
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JScrollPane settlementScrollPane;
@@ -95,11 +97,12 @@ public class ScenarioConfigEditorFX {
 	private Button createButton;
 	private Button addButton;
 	private Button removeButton;
-	private Button defaultButton;
+	private Button refreshDefaultButton;
 	private Button alphaButton;
 	private Label titleLabel;
 	private Label gameModeLabel;
 	private Label clientIDLabel;
+	private Label playerLabel;
 	private TilePane titlePane;
 	private VBox topVB;
 
@@ -113,8 +116,7 @@ public class ScenarioConfigEditorFX {
 
 	private MultiplayerClient multiplayerClient;
 
-	private SettlementRegistry settlementRegistry;
-	private SettlementRegistry[] registryArray;
+	private List<SettlementRegistry> settlementList;
 
 	/**
 	 * Constructor
@@ -128,20 +130,22 @@ public class ScenarioConfigEditorFX {
 		this.hasError = false;
 
 		stage = new Stage();
-		stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");
+		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
 		if (mainMenu.getMultiplayerMode() != null) {
 			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
-			multiplayerClient.sendRegister();
+			//multiplayerClient.sendRegister(); // not needed. already registered
 			clientID = multiplayerClient.getClientID();
-			registryArray = multiplayerClient.getSettlementRegistryArray();
-			//settlementRegistry = new SettlementRegistry();
-			gameMode = "Simulation Mode : Multi-Player";//  + "   ";
-			//stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");// + gameMode + "\t\t Player ID : " + clientID);
+			playerName = multiplayerClient.getUsername();
+			if (multiplayerClient.getNumSettlement()> 0)
+				hasSettlement = true;
+			//System.out.println("registrySize is " + registrySize);
+			settlementList = multiplayerClient.getSettlementRegistryList();
+			gameMode = "Simulation Mode : Multi-Player";
 		}
 		else {
-			gameMode = "Simulation Mode : Single-Player";//  + "   ";
-			//stage.setTitle("Mars Simulation Project \t\t Scenario Configuration Editor \t\t");// + gameMode + "\t\t");
+			gameMode = "Simulation Mode : Single-Player";
+			hasSettlement = false;
 		}
 
     	Parent parent = null;
@@ -161,7 +165,6 @@ public class ScenarioConfigEditorFX {
 		undecorator.getStylesheets().add("skin/undecorator.css");
 		if ( parent.lookup("#anchorRoot") == null)
 			System.out.println("not found");
-		//((BorderPane) parent.lookup("border")).setCenter(createEditor());
 
 	     AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
 	     // List should stretch as anchorpane is resized
@@ -169,18 +172,9 @@ public class ScenarioConfigEditorFX {
 	     AnchorPane.setTopAnchor(bp, 5.0);
 	     AnchorPane.setLeftAnchor(bp, 5.0);
 	     AnchorPane.setRightAnchor(bp, 5.0);
-	     // Button will float on right edge
-	     //Button button = new Button("Add");
-	     //AnchorPane.setTopAnchor(button, 10.0);
-	     //AnchorPane.setRightAnchor(button, 10.0);
 	     anchorpane.getChildren().add(bp);
-		//Group group = new Group();
-		//group.getChildren().add(undecorator);
-		//Parent borderParent = createEditor();
-		//group.getChildren().add(borderParent);
-		//((BorderPane) parent).setCenter(createEditor());
+
 		Scene scene = new Scene(undecorator);
-		//Scene scene = new Scene(group);
 
 		// Fade transition on window closing request
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -189,7 +183,7 @@ public class ScenarioConfigEditorFX {
 				 swingNode.setOpacity(0);
 				 createButton.setOpacity(0);
 				 addButton.setOpacity(0);
-				 defaultButton.setOpacity(0);
+				 refreshDefaultButton.setOpacity(0);
 				 alphaButton.setOpacity(0);
 				 removeButton.setOpacity(0);
 				 //titlePane.setOpacity(0);
@@ -252,12 +246,18 @@ public class ScenarioConfigEditorFX {
 		borderAll.setPadding(new Insets(10, 10, 10, 10));
 
 		topVB = new VBox();
+		topVB.setAlignment(Pos.CENTER);
 		gameModeLabel = new Label(gameMode);
 		// Create the title label.
-		if (multiplayerClient != null)
-			clientIDLabel = new Label("Player ID : " + clientID);
-		else
+		if (multiplayerClient != null) {
+			clientIDLabel = new Label("Client ID : " + clientID);
+			playerLabel = new Label("Player : " + playerName);
+		}
+		else {
 			clientIDLabel = new Label();
+			playerLabel = new Label();
+		}
+
 		titleLabel = new Label(Msg.getString("SimulationConfigEditor.chooseSettlements")); //$NON-NLS-1$
 		//titleLabel.setPadding(new Insets(5, 10, 5, 10));
 		//titlePane = new TilePane(Orientation.VERTICAL);
@@ -275,7 +275,13 @@ public class ScenarioConfigEditorFX {
 		titlePane.setAlignment(Pos.TOP_LEFT);
 		//titleLabel.setAlignment(Pos.CENTER);
 		//gameModeLabel.setAlignment(Pos.TOP_LEFT);
-		topVB.getChildren().addAll(gameModeLabel, clientIDLabel, titleLabel);
+
+		HBox topHB = new HBox(50);
+		topHB.setPadding(new Insets(1, 10, 10, 1));
+		topHB.setPrefWidth(400);
+		topHB.getChildren().addAll(playerLabel, clientIDLabel);
+		topHB.setAlignment(Pos.CENTER);
+		topVB.getChildren().addAll(gameModeLabel, topHB, titleLabel);
 		borderAll.setTop(topVB);
 
 		// Create settlement scroll panel.
@@ -298,8 +304,8 @@ public class ScenarioConfigEditorFX {
 		StackPane swingPane = new StackPane();
 		swingPane.setMaxSize(700, 200);
 		swingNode = new SwingNode();
-		swingNode.setOpacity(.7);
-		swingNode.setBlendMode(BlendMode.SRC_OVER);
+		swingNode.setOpacity(.9);
+		//swingNode.setBlendMode(BlendMode.SRC_OVER);
 		createSwingNode(swingNode);
 		swingPane.getChildren().add(swingNode);
 		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
@@ -312,10 +318,10 @@ public class ScenarioConfigEditorFX {
 		borderAll.setLeft(borderButtons);
 
 		// Create configuration button inner top panel.
-		VBox vbTop = new VBox();
-		borderButtons.setTop(vbTop);
-		vbTop.setSpacing(10);
-		vbTop.setPadding(new Insets(0, 10, 10, 10));
+		VBox vbTopLeft = new VBox();
+		borderButtons.setTop(vbTopLeft);
+		vbTopLeft.setSpacing(10);
+		vbTopLeft.setPadding(new Insets(0, 10, 10, 10));
 
 		// Create add settlement button.
 		addButton = new Button(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
@@ -323,7 +329,7 @@ public class ScenarioConfigEditorFX {
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
 		});
-		vbTop.getChildren().add(addButton);
+		vbTopLeft.getChildren().add(addButton);
 
 		// Create remove settlement button.
 		removeButton = new Button(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
@@ -331,7 +337,7 @@ public class ScenarioConfigEditorFX {
 		removeButton.setOnAction((event) -> {
 			removeSelectedSettlements();
 		});
-		vbTop.getChildren().add(removeButton);
+		vbTopLeft.getChildren().add(removeButton);
 
 		// Create configuration button inner bottom panel.
 		VBox vbCenter = new VBox();
@@ -339,17 +345,21 @@ public class ScenarioConfigEditorFX {
 		vbCenter.setPadding(new Insets(0, 10, 10, 10));
 		borderButtons.setBottom(vbCenter);
 
+/*
 		// Create default button.
 		defaultButton = new Button(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
 		//defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
 		defaultButton.setOnAction((event) -> {
-			setDefaultSettlements();
+			if (multiplayerClient == null)
+				setDefaultSettlements();
+			else
+				setExistingSettlements();
 		});
 		vbCenter.getChildren().add(defaultButton);
-
+*/
 		addButton.setMaxWidth(Double.MAX_VALUE);
 		removeButton.setMaxWidth(Double.MAX_VALUE);
-		defaultButton.setMaxWidth(Double.MAX_VALUE);
+		//defaultButton.setMaxWidth(Double.MAX_VALUE);
 
 		// Create bottom panel.
 		BorderPane bottomPanel = new BorderPane();
@@ -364,6 +374,19 @@ public class ScenarioConfigEditorFX {
 		// Create the bottom button panel.
 		//HBox bottomButtonPanel = new HBox();
 		//bottomPanel.setBottom(bottomButtonPanel);
+
+		// Create refresh/defaultButton button.
+		refreshDefaultButton = new Button(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		//defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
+		refreshDefaultButton.setOnAction((event) -> {
+			if (multiplayerClient != null && hasSettlement) {
+				setExistingSettlements();
+			}
+			else
+				setDefaultSettlements();
+		});
+		//vbCenter.getChildren().add(defaultButton);
+
 
 		// Create the create button.
 		createButton = new Button(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
@@ -402,7 +425,7 @@ public class ScenarioConfigEditorFX {
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
 		tileButtons.setHgap(20.0);
 		tileButtons.setVgap(8.0);
-		tileButtons.getChildren().addAll(createButton, alphaButton);
+		tileButtons.getChildren().addAll(refreshDefaultButton, createButton, alphaButton);
 		tileButtons.setAlignment(Pos.CENTER);
 		bottomPanel.setBottom(tileButtons);
 
@@ -411,13 +434,36 @@ public class ScenarioConfigEditorFX {
 		//return borderAll;
 	}
 
+	@SuppressWarnings("serial")
 	private void createSwingNode(final SwingNode swingNode) {
 
         SwingUtilities.invokeLater(() -> {
 
 			// Create settlement table.
-			settlementTableModel = new SettlementTableModel();
-			settlementTable = new JTable(settlementTableModel);
+			settlementTableModel = new SettlementTableModel() ;
+/*
+			if (multiplayerClient != null) {
+				if (multiplayerClient.getNumSettlement()> 0) {
+					//hasSettlement = true;
+					settlementTable = new JTable(settlementTableModel) {
+					    public java.awt.Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
+					        // get the current row
+					    	java.awt.Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+					        // even index, not selected
+					        if ( hasSettlement && Index_row < settlementList.size() ) { //&& !isCellSelected(Index_row, Index_col)) {
+					            comp.setBackground(java.awt.Color.lightGray);
+					        } else {
+					            comp.setBackground(java.awt.Color.white);
+					        }
+					        return comp;
+					    }
+					};
+		        }
+			}
+			else
+*/
+				settlementTable = new JTable(settlementTableModel);
+
 			settlementTable.setRowSelectionAllowed(true);
 			settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			settlementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -426,6 +472,15 @@ public class ScenarioConfigEditorFX {
 			settlementTable.getColumnModel().getColumn(3).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(4).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(5).setPreferredWidth(15);
+
+			settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
+			settlementTable.setBackground(java.awt.Color.WHITE);
+			//settlementTable.setEnabled(true);
+			header = settlementTable.getTableHeader();
+			header.setFont(new Font("Dialog", Font.CENTER_BASELINE, 12));
+			header.setBackground(java.awt.Color.ORANGE);
+			header.setForeground(java.awt.Color.WHITE);
+
 			settlementScrollPane.setViewportView(settlementTable);
 
 			// Create combo box for editing template column in settlement table.
@@ -453,16 +508,6 @@ public class ScenarioConfigEditorFX {
 		settlementTableModel.addSettlement(settlement);
 	}
 
-	/**
-	 * Adds an existing settlement .
-	 */
-	private void addExistingSettlement() {
-		int size = registryArray.length;
-		for (int i = 0; i < size; i++ ) {
-			SettlementInfo settlement = determineExistingSettlementConfiguration(i);
-			settlementTableModel.addSettlement(settlement);
-		}
-	}
 
 	/**
 	 * Removes the settlements selected on the table.
@@ -489,16 +534,24 @@ public class ScenarioConfigEditorFX {
 	}
 
 	/**
+	 * Sets the existing settlements loaded from others client machine.
+	 */
+	private void setExistingSettlements() {
+		settlementTableModel.loadExistingSettlements();
+	}
+
+	/**
 	 * Set the simulation configuration based on dialog choices.
 	 */
 	private void setConfiguration() {
 		SettlementConfig settlementConfig = config.getSettlementConfiguration();
-
 		// Clear configuration settlements.
 		settlementConfig.clearInitialSettlements();
-
+		int size = settlementTableModel.getRowCount();
+		int s = numS; // x needs to be constant running running for loop and should not be set to the global variable numS
 		// Add configuration settlements from table data.
-		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+		for (int x = s ; x < size; x++) {
+
 			String name = (String) settlementTableModel.getValueAt(x, 0);
 			String template = (String) settlementTableModel.getValueAt(x, 1);
 			String population = (String) settlementTableModel.getValueAt(x, 2);
@@ -509,10 +562,13 @@ public class ScenarioConfigEditorFX {
 			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
+			double lat = SettlementRegistry.convertLatLong2Double(latitude);
+			double lo = SettlementRegistry.convertLatLong2Double(longitude);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
-
-			//TODO: send new name latitude, longitude to host server
-			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			// create an instance of the
+			SettlementRegistry newS = new SettlementRegistry(clientID, name, template, populationNum, numOfRobots, lat, lo);
+			//Send the newly created settlement to host server
+			multiplayerClient.sendNew(newS);
 
 		}
 	}
@@ -572,23 +628,6 @@ public class ScenarioConfigEditorFX {
 		return settlement;
 	}
 
-	/**
-	 * Determines the configuration of an existing settlement.
-	 * @return settlement configuration.
-	 */
-
-	private SettlementInfo determineExistingSettlementConfiguration(int i) {
-		SettlementInfo settlement = new SettlementInfo();
-
-		settlement.name = registryArray[i].getName();
-		settlement.template = registryArray[i].getTemplate();
-		settlement.population = registryArray[i].getPopulation() + "";
-		settlement.numOfRobots = registryArray[i].getNumOfRobots() + "";
-		settlement.latitude = registryArray[i].getLatitudeStr();
-		settlement.longitude = registryArray[i].getLongitudeStr();
-
-		return settlement;
-	}
 
 	/**
 	 * Determines a new settlement's name.
@@ -761,6 +800,7 @@ public class ScenarioConfigEditorFX {
 	 * Inner class representing a settlement configuration.
 	 */
 	private class SettlementInfo {
+		String playerName;
 		String name;
 		String template;
 		String population;
@@ -775,11 +815,12 @@ public class ScenarioConfigEditorFX {
 	private class SettlementTableModel extends AbstractTableModel {
 
 		/** default serial id. */
-		private static final long serialVersionUID = 1L;
+		//private static final long serialVersionUID = 1L;
 		// Data members
 		private String[] columns;
 		private List<SettlementInfo> settlements;
-
+		private SettlementInfo cacheS = new SettlementInfo();
+		private List<SettlementInfo> cacheSList = new CopyOnWriteArrayList<>();
 		/**
 		 * Hidden Constructor.
 		 */
@@ -797,18 +838,34 @@ public class ScenarioConfigEditorFX {
 			};
 
 			// Load default settlements.
-			settlements = new ArrayList<SettlementInfo>();
-			loadDefaultSettlements();
+			settlements = new CopyOnWriteArrayList<>();
+
+			if (!hasSettlement) {
+				Platform.runLater(() -> {
+					refreshDefaultButton.setText(Msg.getString("SimulationConfigEditor.button.default"));
+				});
+				loadDefaultSettlements();
+			}
+			else {
+				Platform.runLater(() -> {
+					refreshDefaultButton.setText(Msg.getString("SimulationConfigEditor.button.refresh"));
+				});
+				loadExistingSettlements();
+				//System.out.println("SettlementTableModel : settlements.size() is " + settlements.size() );
+			}
 		}
 
 		/**
 		 * Load the default settlements in the table.
 		 */
 		private void loadDefaultSettlements() {
+			if (getRowCount() > 0 )
+				saveCache();
 			SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			settlements.clear();
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
 				SettlementInfo info = new SettlementInfo();
+				info.playerName = playerName;
 				info.name = settlementConfig.getInitialSettlementName(x);
 				info.template = settlementConfig.getInitialSettlementTemplate(x);
 				info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
@@ -818,7 +875,61 @@ public class ScenarioConfigEditorFX {
 				settlements.add(info);
 			}
 			fireTableDataChanged();
+			loadCache();
 		}
+
+		private void loadExistingSettlements() {
+			if (getRowCount() > 0)
+				saveCache();
+			settlements.clear();
+				settlementList.forEach( s -> {
+					SettlementInfo info = new SettlementInfo();
+					info.playerName = playerName;
+					info.name = s.getName();
+					info.template = s.getTemplate();
+					info.population = s.getPopulation() + "";
+					info.numOfRobots = s.getNumOfRobots() + "";
+					info.latitude = s.getLatitudeStr();
+					info.longitude = s.getLongitudeStr();
+					settlements.add(info);
+					logger.info(info.name + "  " + info.template + "  " + info.population
+							+ "  " + info.numOfRobots + "  " + info.latitude + "  " + info.longitude);
+				});
+			fireTableDataChanged();
+			loadCache();
+		}
+
+		private void saveCache() {
+			int size = getRowCount();
+			cacheSList.clear();
+			int s = numS; // x needs to be constant running running for loop and should not be set to the global variable numS
+			// Add configuration settlements from table data.
+			for (int x = s ; x < size; x++) {
+				cacheS.name = (String) getValueAt(x, 0);
+				cacheS.template = (String) getValueAt(x, 1);
+				cacheS.population = (String) getValueAt(x, 2);
+				cacheS.numOfRobots = (String) getValueAt(x, 3);
+				cacheS.latitude = (String) getValueAt(x, 4);
+				cacheS.longitude = (String) getValueAt(x, 5);
+			}
+			cacheSList.add(cacheS);
+		}
+
+		private void loadCache() {
+			int rowCount = getRowCount();
+			int size = cacheSList.size();
+			// Add configuration settlements from table data.
+			for (int x = rowCount ; x < rowCount + size; x++) {
+				cacheS = cacheSList.get(x - rowCount);
+				setValueAt((String)cacheS.name, x, 0);
+				setValueAt((String)cacheS.template, x, 1);
+				setValueAt((String)cacheS.population, x, 2);
+				setValueAt((String)cacheS.numOfRobots, x, 3);
+				setValueAt((String)cacheS.latitude, x, 4);
+				setValueAt((String)cacheS.longitude, x, 5);
+			}
+		}
+
 
 		@Override
 		public int getRowCount() {
@@ -839,11 +950,24 @@ public class ScenarioConfigEditorFX {
 				return Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
 			}
 		}
-
+		/*
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return true;
 		}
+*/
+
+		@Override
+	    public boolean isCellEditable(int row, int column) {
+			boolean result = true;
+	    	if (hasSettlement) {
+			   if (row < settlementList.size())
+				   // if the settlement is an existing settlement from another client machine, gray out the row and disable row cell editing
+				   result = false;
+			}
+
+	    	return result;
+	    }
 
 		@Override
 		public Object getValueAt(int row, int column) {
@@ -886,57 +1010,88 @@ public class ScenarioConfigEditorFX {
 			if ((rowIndex > -1) && (rowIndex < getRowCount())) {
 				SettlementInfo info = settlements.get(rowIndex);
 				if ((columnIndex > -1) && (columnIndex < getColumnCount())) {
+					if (clientID == 1) {
+						switch (columnIndex) {
+						case 0:
+							info.name = (String) aValue;
+							break;
+						case 1:
+							info.template = (String) aValue;
+							info.population = determineNewSettlementPopulation(info.template);
+							info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
+							break;
+						case 2:
+							info.population = (String) aValue;
+							break;
+						case 3:
+							info.numOfRobots = (String) aValue;
+							break;
 
-					switch (columnIndex) {
-					case 0:
-						info.name = (String) aValue;
-						break;
-					case 1:
-						info.template = (String) aValue;
-						info.population = determineNewSettlementPopulation(info.template);
-						info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
-						break;
-					case 2:
-						info.population = (String) aValue;
-						break;
-					case 3:
-						info.numOfRobots = (String) aValue;
-						break;
-
-					case 4:
-						String latStr = ((String) aValue).trim();
-						double doubleLat = 0;
-						String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-						if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
-							if (latStr.length() > 2) {
-								doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-								doubleLat = Math.round(doubleLat*10.0)/10.0;
-								info.latitude =  doubleLat + " " + dir1;
+						case 4:
+							String latStr = ((String) aValue).trim();
+							double doubleLat = 0;
+							String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
+							if (dir1.toUpperCase().equals("N") | dir1.toUpperCase().equals("S")) {
+								if (latStr.length() > 2) {
+									doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
+									doubleLat = Math.round(doubleLat*10.0)/10.0;
+									info.latitude =  doubleLat + " " + dir1;
+								}
+								else
+									info.latitude = (String) aValue;
 							}
 							else
 								info.latitude = (String) aValue;
-						}
-						else
-							info.latitude = (String) aValue;
-						break;
+							break;
 
-					case 5:
-						String longStr = ((String) aValue).trim();
-						double doubleLong = 0;
-						String dir = longStr.substring(longStr.length() - 1, longStr.length());
-						if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
-							if (longStr.length() > 2) {
-								doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-								doubleLong = Math.round(doubleLong*10.0)/10.0;
-								info.longitude =  doubleLong + " " + dir;
+						case 5:
+							String longStr = ((String) aValue).trim();
+							double doubleLong = 0;
+							String dir = longStr.substring(longStr.length() - 1, longStr.length());
+							if (dir.toUpperCase().equals("E") | dir.toUpperCase().equals("W")) {
+								if (longStr.length() > 2) {
+									doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
+									doubleLong = Math.round(doubleLong*10.0)/10.0;
+									info.longitude =  doubleLong + " " + dir;
+								}
+								else
+									info.longitude = (String) aValue;
 							}
 							else
 								info.longitude = (String) aValue;
-						}
-						else
-							info.longitude = (String) aValue;
-						break;
+							break;
+						}  // switch (columnIndex) {
+
 					}
+					else if (clientID > 1) {
+
+						switch (columnIndex) {
+						case 0:
+							info.name = (String) aValue;
+							break;
+						case 1:
+							info.template = (String) aValue;
+							info.population = determineNewSettlementPopulation(info.template);
+							info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
+							break;
+						case 2:
+							info.population = (String) aValue;
+							break;
+						case 3:
+							info.numOfRobots = (String) aValue;
+							break;
+
+						case 4:
+							info.latitude = (String) aValue;
+							break;
+
+						case 5:
+							info.longitude = (String) aValue;
+
+						}  // switch (columnIndex) {
+
+					} // else if (clientID > 1)
+
 				}
 
 				checkForErrors();
@@ -949,7 +1104,7 @@ public class ScenarioConfigEditorFX {
 		 * @param rowIndexes an array of row indexes of the settlements to remove.
 		 */
 		private void removeSettlements(int[] rowIndexes) {
-			List<SettlementInfo> removedSettlements = new ArrayList<SettlementInfo>(rowIndexes.length);
+			List<SettlementInfo> removedSettlements = new CopyOnWriteArrayList<>();
 
 			for (int x = 0; x < rowIndexes.length; x++) {
 				if ((rowIndexes[x] > -1) && (rowIndexes[x] < getRowCount())) {
@@ -974,10 +1129,37 @@ public class ScenarioConfigEditorFX {
 			fireTableDataChanged();
 		}
 
+		public void checkNumExistingSettlement() {
+			if (multiplayerClient != null) {
+				int newNumS = multiplayerClient.getNumSettlement();
+
+				if (newNumS > 0 && newNumS != numS) {
+					hasSettlement = true;
+					//setExistingSettlements();
+					Platform.runLater(() -> {
+						errorLabel.setText("Settlement list was just refreshed");
+		    			errorLabel.setTextFill(Color.GREEN);
+					});
+				}
+				else if (newNumS == 0) {
+					hasSettlement = false;
+					//setDefaultSettlements();
+					Platform.runLater(() -> {
+						errorLabel.setText("Cannot detect any existing settlements");
+		    			errorLabel.setTextFill(Color.GREEN);
+					});
+				}
+
+				settlementTableModel.fireTableDataChanged();
+			}
+		}
+
 		/**
 		 * Check for errors in table settlement values.
 		 */
 		private void checkForErrors() {
+			//System.out.println("checkForErrors"); // runs only when a user click on a cell
+			checkNumExistingSettlement();
 			clearError();
 
 			// TODO: check to ensure the latitude/longitude is not being used in the host server's settlement registry
