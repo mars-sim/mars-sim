@@ -7,19 +7,15 @@
 
 package org.mars_sim.networking;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,39 +23,39 @@ import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.javafx.MainMenu;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.image.Image;
 import javafx.scene.control.ButtonType;
 
 /**
  * The MultiplayerClient class allows the computer to take on the client role.
  */
-public class MultiplayerClient extends JFrame implements ActionListener {
+public class MultiplayerClient {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
@@ -72,63 +68,63 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	//private static final String LOCALHOST = "localhost";
 
 	private int clientID = 0;
+    private boolean ready = false;
 
 	private String hostAddressStr;
 	private String clientAddressStr;
-
 	private String playerName;
 
 	private List<String> addresses = new ArrayList<>();
 
+	private Stage stage;
 	private Socket sock;
 	private BufferedReader in;     // i/o for the client
 	private PrintWriter out;
 
-	private JTextArea ta;
-	private JTextField tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
-	private JButton bGetRecords;
-	private JButton bSendNew;
-	private JButton bRegister;
-	Container c;
+	private TextArea ta;
+	private TextField tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
+	private Button bGetRecords;
+	private Button bSendNew;
+	private Button bRegister;
+	//Container c;
 
 	private MainMenu mainMenu;
-	private ModeTask modeTask;
+	private SetupTask modeTask;
 	private MultiplayerTray multiplayerTray;
 	private Alert alert;
 	//private SettlementRegistry[] registryArray = new SettlementRegistry[CentralRegistry.MAX];
 	private List<SettlementRegistry> settlementList;
 
-	public MultiplayerClient(MainMenu mainMenu) throws IOException {
-	    super( "Settlement Registry Client" );
+	public MultiplayerClient(MainMenu mainMenu) {
 
 		this.mainMenu = mainMenu;
 
 		settlementList = new CopyOnWriteArrayList<>();
 
-		InetAddress ip = InetAddress.getLocalHost();
+		InetAddress ip = null;
+		try {
+			ip = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		clientAddressStr = ip.getHostAddress();
 		logger.info("Running the client at " + clientAddressStr + ". Waiting to connect to a host...");
-		modeTask = new ModeTask();//clientAddressStr);
 
-	    createPanel();
+        Platform.runLater(() -> {
+    	   	createConnectionStage();
+        });
 
-	    addWindowListener( new WindowAdapter() {
-	       public void windowClosing(WindowEvent e) {
-	    	   sendBye();
-	    }});
-
-	    //setState(Frame.ICONIFIED);
-	    setSize(850,400);
-	    setVisible(true);
+		modeTask = new SetupTask();//clientAddressStr);
 	}
 
 	public void setUserName(String name) {
 		playerName = name;
 	}
 
-	public Container getContainer() {
-		return c;
-	}
+	//public Container getContainer() {
+	//	return c;
+	//}
 
 	public String getAddressStr() {
 		return hostAddressStr;
@@ -138,62 +134,43 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 		return mainMenu;
 	}
 
-	public ModeTask getModeTask() {
+	public SetupTask getModeTask() {
 		return modeTask;
 	}
 
 	/*
 	 * Creates the task that will prompt users to create a dialog box for choosing the host server's IP address
 	 */
-	class ModeTask implements Runnable {
+	class SetupTask implements Runnable {
 
 		//private String addressStr;
 
-		private ModeTask() { //String addressStr) {
+		private SetupTask() { //String addressStr) {
 			//this.addressStr = addressStr;
 		}
 
 		@Override
 		public void run() {
-				Platform.runLater(() -> {
-					//createClient();
-					createDialog();
-		        });
+            /*
+             * Wait until the socket is set up before beginning to read.
+             */
+            Platform.runLater(() -> {
+	            //waitForReady();
+	            /*
+	             * Now that the readerThread has started, it's safe to inform
+	             * the world that the socket is open, if in fact, it is open.
+	             * If used in conjunction with JavaFX, use Platform.runLater()
+	             * when implementing this method to force it to run on the main
+	             * thread.
+	             */
+				//mainMenu.getStage().setIconified(true);
+            	createDialog();
+            });
 		}
 	}
 
-	/*
-	 * Creates a dialog box for choosing the host server's IP address
-
-	public void createClient() { //String addressStr) {
-
-		addresses.add("127.0.0.1");
-
-		ChoiceDialog<String> dialog = new ChoiceDialog<>("127.0.0.1", addresses);
-		dialog.initModality(Modality.APPLICATION_MODAL);
-		dialog.initOwner(mainMenu.getStage());
-		dialog.setTitle("Mars Simulation Project");
-		dialog.setHeaderText("Multiplayer Client");
-		//dialog.setContentText("Your IP: " + addressStr + ".\nChoose host : ");
-		dialog.setContentText("Choose your host : ");
-
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent(address -> {
-			logger.info("Connecting to the host at " + address);
-
-		   try {
-			    makeContact(address);
-			    createAlert(address);
-				multiplayerTray = new MultiplayerTray(this);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-	   });
-	}
-*/
-
 	public void createDialog() {
+
 		// Create the custom dialog.
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
 		dialog.initOwner(mainMenu.getStage());
@@ -271,14 +248,10 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 
 			   try {
 				    makeContact(hostAddressStr);
-				    //System.out.println("done with makeContact()");
 				    sendRegister(); // obtain a client id
-				    //System.out.println("done with sendRegister()");
 				    //createAlert(hostAddressStr);
 					multiplayerTray = new MultiplayerTray(this);
-
 					sendGetRecords(); // obtain the existing settlement list
-
 					mainMenu.runOne();
 
 				} catch (Exception e) {
@@ -302,64 +275,98 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	}
 
 	/*
-	 * Creates a panel to download settlement registry and upload new settlement info
+	 * Creates a stage for displaying commands and responses between host server and client
 	 */
-	private void createPanel() {
-		    c = getContentPane();
-		    c.setLayout( new BorderLayout() );
+	private void createConnectionStage() {
 
-		    ta = new JTextArea(7, 7);
-		    ta.setEditable(false);
-		    JScrollPane jsp = new JScrollPane( ta);
-		    c.add( jsp, "Center");
+	    stage = new Stage();
+	    stage.setTitle("Client Connection Panel");
 
-		    JLabel lName = new JLabel("Name: ");
-		    tfName = new JTextField(10);
+		stage.setOnCloseRequest(e -> {
+			sendBye();
+		});
 
-		    JLabel lTemplate = new JLabel("Template: ");
-		    tfTemplate = new JTextField(15);
+		BorderPane b = new BorderPane();
+	    ta = new TextArea();
+	    ta.setEditable(false);
+	    //ta.setPrefSize( Double.MAX_VALUE, Double.MAX_VALUE );
+		javafx.scene.control.ScrollPane scrollPane = new javafx.scene.control.ScrollPane(ta);
+        scrollPane.setContent(ta);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefWidth(600);
+        //scrollPane.setPrefHeight(400);
+        b.setCenter(scrollPane);
+	    //scrollPane.prefWidthProperty().bind(<parentControl>.prefWidthProperty());
+	    //scrollPane.prefHeightProperty().bind(<parentConrol>.prefHeightProperty());
+	    Label lName = new Label("Name: ");
+	    tfName = new TextField();
+	    tfName.setPromptText("Ismenius Lacus");
+	    tfName.setPrefColumnCount(10);
 
-		    JLabel lPop = new JLabel("Population: ");
-		    tfPop = new JTextField(3);
+	    Label lTemplate = new Label("Template: ");
+	    tfTemplate = new TextField();
+	    tfTemplate.setText("Mars Direct Base (phase 1)");
+	    //tfTemplate.setPromptText("Utopia Base 1");
+	    tfTemplate.setPrefColumnCount(15);
 
-		    JLabel lBots = new JLabel("Bots: ");
-		    tfBots = new JTextField(3);
+	    Label lPop = new Label("Population: ");
+	    tfPop = new TextField();
+	    tfPop.setPromptText("12");
+	    tfPop.setPrefColumnCount(3);
 
-		    JLabel lLat = new JLabel("Lat: ");
-		    tfLat = new JTextField(5);
+	    Label lBots = new Label("Bots: ");
+	    tfBots = new TextField();
+	    tfBots.setPromptText("12");
+	    tfBots.setPrefColumnCount(3);
 
-		    JLabel lLong = new JLabel("Long: ");
-		    tfLong = new JTextField(5);
+	    Label lLat = new Label("Lat: ");
+	    tfLat = new TextField();
+	    lLat.setTooltip(new Tooltip("Enter Latitude with + being North and - being South"));
+	    tfLat.setPromptText("-12.7");
+	    tfLat.setPrefColumnCount(5);
 
-		    bRegister = new JButton("Register");
-		    bRegister.addActionListener(this);
+	    Label lLong = new Label("Long: ");
+	    lLong.setTooltip(new Tooltip("Enter Longitude with + being East and - being West"));
+	    tfLong = new TextField();
+	    tfLong.setPromptText("-10.5");
+	    tfLong.setPrefColumnCount(5);
 
-		    bSendNew = new JButton("Send New");
-		    bSendNew.addActionListener(this);
+	    bRegister = new Button("Register");
+	    bRegister.setOnAction(e -> sendRegister());
+	    bRegister.setPadding(new Insets(5, 5, 5, 5));
 
-		    bGetRecords = new JButton("Get Records");
-		    bGetRecords.addActionListener(this);
+	    bSendNew = new Button("Send New");
+	    bSendNew.setOnAction(e -> sendNew());
+	    bSendNew.setPadding(new Insets(5, 5, 5, 5));
 
-		    JPanel p1 = new JPanel( new FlowLayout() );
-		    p1.add(lName); p1.add(tfName);
-		    p1.add(lTemplate); p1.add(tfTemplate);
-		    p1.add(lPop); p1.add(tfPop);
-		    p1.add(lBots); p1.add(tfBots);
-		    p1.add(lLat); p1.add(tfLat);
-		    p1.add(lLong); p1.add(tfLong);
+	    bGetRecords = new Button("Get Records");
+	    bGetRecords.setOnAction(e -> sendGetRecords());
+	    bGetRecords.setPadding(new Insets(5, 5, 5, 5));
 
-		    JPanel p2 = new JPanel( new FlowLayout() );
-		    p2.add(bRegister);
-		    p2.add(bSendNew);
-		    p2.add(bGetRecords);
+	    HBox hb1 = new HBox(15);
+	    hb1.setPadding(new Insets(5, 5, 5, 5));
+	    hb1.setAlignment(Pos.CENTER);
+	    HBox hb2 = new HBox(15);
+	    hb2.setPadding(new Insets(5, 5, 5, 5));
+	    hb2.setAlignment(Pos.CENTER);
+	    HBox hb3 = new HBox(15);
+	    hb3.setPadding(new Insets(5, 5, 5, 5));
+	    hb3.setAlignment(Pos.CENTER);
+	    VBox vb = new VBox(15);
+	    b.setBottom(vb);
+	    vb.getChildren().addAll(hb1, hb2, hb3);
+	    vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.setAlignment(Pos.CENTER);
+	    hb1.getChildren().addAll(lName, tfName, lTemplate, tfTemplate);
+	    hb2.getChildren().addAll(lPop, tfPop, lBots, tfBots, lLat, tfLat, lLong, tfLong);
+	    hb3.getChildren().addAll(bRegister, bSendNew, bGetRecords);
+	    //hb3.setSpacing(10.0);
 
-		    JPanel p = new JPanel();
-		    p.setLayout( new BoxLayout(p, BoxLayout.Y_AXIS));
-		    p.add(p1); p.add(p2);
-
-		    c.add(p, "South");
-
-		  }
+	    Scene scene = new Scene(b);
+	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toString()));
+	    stage.setScene(scene);
+	    stage.show();
+	  }
 
 	/*
 	 * Closes sockets to terminate contact with the server
@@ -381,20 +388,62 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	 */
 	private void makeContact(String address) {
 	    try {
-	      sock = new Socket(address, PORT);
-		    //System.out.println("done with sock in makeContact()");
-	      in  = new BufferedReader( new InputStreamReader( sock.getInputStream() ) );
-		    //System.out.println("done with in in makeContact()");
-	      out = new PrintWriter( sock.getOutputStream(), true );  // autoflush
-		    //System.out.println("done with out in makeContact()");
+
+          initSocketConnection();
+
+          if (sock != null && sock.isConnected()) {
+		      in  = new BufferedReader( new InputStreamReader( sock.getInputStream() ) );
+		      out = new PrintWriter( sock.getOutputStream(), true );  // autoflush
+          }
+          /*
+           * Notify SocketReaderThread that it can now start.
+           */
+          //notifyReady();
+
 	    }
-	    catch(Exception e)
-	    { e.printStackTrace();}
+	    catch(Exception e) {
+	    	e.printStackTrace();
+	        /*
+	         * This will notify the SocketReaderThread that it should exit.
+	         */
+	        //notifyReady();
+        }
 	  }
+
+
+
+    /**
+     * Initialize the SocketClient up to and including issuing the accept()
+     * method on its socketConnection.
+     * @throws java.net.SocketException
+     */
+    protected void initSocketConnection() throws SocketException {
+        try {
+            sock = new Socket();
+            /*
+             * Allows the socket to be bound even though a previous
+             * connection is in a timeout state.
+             */
+            sock.setReuseAddress(true);
+            /*
+             * Create a socket connection to the server
+             */
+            sock.connect(new InetSocketAddress(hostAddressStr, PORT));
+            //if (debugFlagIsSet(Constants.instance().DEBUG_STATUS)) {
+            //    System.out.println("Connected to " + host
+            //            + "at port " + port);
+            //}
+        } catch (IOException e) {
+            //if (debugFlagIsSet(Constants.instance().DEBUG_EXCEPTIONS)) {
+                e.printStackTrace();
+            //}
+            throw new SocketException();
+        }
+    }
 
 	/*
 	 * Responds to pressing either "Send New" or "Get Records" buttons
-	 */
+
 	public void actionPerformed(ActionEvent e) {
 	     if (e.getSource() == bGetRecords)
 	    	 sendGetRecords();
@@ -403,6 +452,8 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	     else if (e.getSource() == bRegister)
 	    	 sendRegister();
 	   }
+*/
+
 
 	/* Checks if the user types in a correct settlement name and coordinates
 	 * If true, send "new name & lat & long &" to server
@@ -410,7 +461,7 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	private void sendNew() {
 		String id = clientID + "";
 	    String name = tfName.getText().trim();
-	    String template = "Mars Direct Base (phase 1)";
+	    String template = tfTemplate.getText().trim(); // "Mars Direct Base (phase 1)";
 	    String pop = tfPop.getText().trim();
 	    String bots = tfBots.getText().trim();
 	    String lat = tfLat.getText().trim();
@@ -422,7 +473,7 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 				JOptionPane.ERROR_MESSAGE);
 	    else {
 	      out.println("new " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
-	      ta.append("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n\n");
+	      ta.appendText("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
 
@@ -444,7 +495,7 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 					JOptionPane.ERROR_MESSAGE);
 	    else {
 	      out.println("new " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
-	      ta.append("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n\n");
+	      ta.appendText("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
 
@@ -453,20 +504,22 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	 */
 	public void sendRegister()  {
 	     try {
-	    	 logger.info("Sent : register " + playerName);
 	    	 out.println("register " + playerName);
-	    	 //System.out.println("sendRegister() : out is " + out);
+	    	 logger.info("Sent : register " + playerName);
+	    	 ta.appendText("Sent : register " + playerName + "\n");
 	    	 String line = in.readLine();
-	    	 //System.out.println("sendRegister() : line is " + line);
-	    	 logger.info("Received : " + line);
 	    	 if ((line.length() >= 7) &&     // "NEW ID "
-	    			 (line.substring(0, 6).equals("NEW_ID")))
-	    		 		showRegistryContent(NEW_ID, line.substring(6).trim() );
-	    	 else    // should not happen but just in case
-	    		 ta.append( line + "\n");
+	    			 (line.substring(0, 6).equals("NEW_ID"))) {
+		    	 logger.info("Received : " + line);
+	    		 showRegistryContent(NEW_ID, line.substring(6).trim() );
+	    	 }
+	    	 else  {   // should not happen but just in case
+		    	 logger.info("[Unknown format] Received : " + line);
+		    	 ta.appendText("[Unknown format] Received : " + line + "\n");
+	    	 }
 	     }
 	     catch(Exception ex){
-	    	 ta.append("Problem obtaining a new client id\n");
+	    	 ta.appendText("Problem obtaining a new client id\n");
 	    	 ex.printStackTrace();
 	     }
 	}
@@ -477,21 +530,27 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	    */
 	   private void sendGetRecords()  {
 	     try {
+	    	 out.println("get");
 	    	 logger.info("Sent : get");
-		       out.println("get");
-		       String line = in.readLine();
-			    logger.info("Received :\n" + line);
-			   if ((line.substring(0, 9).trim().equals("RECORDS 0")))  // "RECORDS 0"
-				   ta.append("Received : " + line + "\n\n");
-			   else if ((line.length() >= 8) &&     // "RECORDS "
-		           (line.substring(0, 7).equals("RECORDS")))
-		         showRegistryContent(RECORDS, line.substring(7).trim() );
-		       else    // should not happen but just in case
-		         ta.append("Received : " + line + "\n\n");
+	    	 ta.appendText("Sent : get\n");
+	    	 String line = in.readLine();
+	    	 if ((line.substring(0, 9).trim().equals("RECORDS 0"))) { // "RECORDS 0"
+		    	 logger.info("Received : " + line);
+	    		 ta.appendText("Received : " + line + "\n");
+	    	 }
+	    	 else if ((line.length() >= 8) &&     // "RECORDS "
+	    		(line.substring(0, 7).equals("RECORDS"))) {
+		    	 logger.info("Received : " + line);
+	    		 showRegistryContent(RECORDS, line.substring(7).trim() );
+	    	 }
+	    	 else {   // should not happen but just in case
+		    	 logger.info("[Unknown format] Received : " + line);
+		    	 ta.appendText("[Unknown format] Received : " + line + "\n");
+	    	 }
 		     }
 		     catch(Exception ex)
 		     {
-		       ta.append("Problem obtaining records\n");
+		       ta.appendText("Problem obtaining records\n");
 			   ex.printStackTrace();
 		     }
 	   }
@@ -503,13 +562,14 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 		if (type == NEW_ID) {
 			clientID = Integer.parseInt(line);
 		    try {
-		    	ta.append("Sent : register\n\n");
-		    	ta.append("Received : " + playerName + "'s Player ID is "  + clientID + "\n\n");
-		    	bRegister.setEnabled(false);
+		    	ta.appendText("Received : " + playerName + "'s Player ID is "  + clientID + "\n");
+		    	logger.info("Received : " + playerName + "'s Player ID is "  + clientID);
+		    	bRegister.setDisable(true);
 		    }
 		    catch(Exception e) {
-		      ta.append("Problem parsing client id\n");
-		      logger.info("Parsing error with client id:\n" + e);
+		      ta.appendText("Problem parsing client id\n");
+		      logger.info("Parsing error with client id:");
+		      e.printStackTrace();
 		    }
 		}
 		else if (type == RECORDS) {
@@ -520,8 +580,7 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 		    int id, pop, bots;
 		    double lat, lo;
 		    try {
-		    	ta.append("Sent : get\n\n");
-		    	ta.append("Received :\n");
+		    	String text = null;
 			    while (st.hasMoreTokens()) {
 			    	id = Integer.parseInt( st.nextToken().trim() );
 			        name = st.nextToken().trim();
@@ -533,16 +592,17 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 			        // Add the new entry into the array
 			        settlementList.clear();
 			        settlementList.add(new SettlementRegistry(id, name, template, pop, bots, lat, lo));
-			        ta.append("(" + i + "). id : " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
-			        	+ " , " + lat + " , " + lo + "\n");
+			        text = "(" + i + "). id : " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
+			        	+ " , " + lat + " , " + lo + "\n";
 			        i++;
 			    }
-			    ta.append("\n");
+			    ta.appendText("Received :\n" + text + "\n");
+			    logger.info("Received :\n" + text);
 		    }
 		    catch(Exception e) {
-		      ta.append("Problem parsing records\n");
-		      logger.info("Parsing error with records:\n" + e);
-				e.printStackTrace();
+		      ta.appendText("Problem parsing records\n");
+		      logger.info("Parsing error with records:" + e);
+		      e.printStackTrace();
 		    }
 		}
 	}
@@ -559,29 +619,53 @@ public class MultiplayerClient extends JFrame implements ActionListener {
 	public int getNumSettlement() {
 		int result = 0;
 		try {
-			logger.info("Sent : s");
-			ta.append("Sent : s\n\n");
 		   out.println("s");
+		   logger.info("Sent : s");
+		   ta.appendText("Sent : s\n");
 		   String line = in.readLine();
-		    //logger.info("Received : " + line);
 		   if ( line.trim().equals("SETTLEMENTS 0") ) {
 			   result = 0;
-			   ta.append("Received :SETTLEMENTS 0\n\n");
+			   logger.info("Received : SETTLEMENTS 0");
+			   ta.appendText("Received : SETTLEMENTS 0\n");
 		   }
 		   else if ((line.length() >= 12) &&     // "SETTLEMENTS "
 	    			 (line.substring(0, 11).equals("SETTLEMENTS"))) {
 			   result = Integer.parseInt(line.substring(11).trim());
-			   ta.append("Received : "+ result + "\n\n");
 			   logger.info("Received : " + line);
+			   ta.appendText("Received : "+ result + "\n");
 		   }
 		} catch(Exception ex) {
-			ta.append("Problem obtaining records\n");
+			logger.info("Problem obtaining records");
+			ta.appendText("Problem obtaining records\n");
 			ex.printStackTrace();
 		}
 
 		return result;
 	}
 
+    /*
+     * Synchronized method set up to wait until the SetupThread is
+     * sufficiently initialized.  When notifyReady() is called, waiting
+     * will cease.
+
+    private synchronized void waitForReady() {
+        while (!ready) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+ */
+    /*
+     * Synchronized method responsible for notifying waitForReady()
+     * method that it's OK to stop waiting.
+
+    private synchronized void notifyReady() {
+        ready = true;
+        notifyAll();
+    }
+ */
 
 	public List<SettlementRegistry> getSettlementRegistryList() {
 		return settlementList;

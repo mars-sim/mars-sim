@@ -11,16 +11,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,14 +51,15 @@ public class MultiplayerServer extends Application {
 
 	private int port = 9090;
 	//private int numClientIDs = 0;
-
 	private int id = 1;
-	private String hostServerAddress;
-
+    private boolean ready = false;
     boolean serverStopped = false;
 
+
+	private String hostServerAddress;
+
     //private Stage stage = new Stage();
-	private ModeTask modeTask;
+	private HostTask modeTask;
 	private MainMenu mainMenu;
 	private MultiplayerTray multiplayerTray;
 
@@ -71,7 +69,7 @@ public class MultiplayerServer extends Application {
 	private PrintWriter out = null;
 	private BufferedReader in = null;
 
-	private ConnectionTask connectionTask;
+	private SetupConnectionTask connectionTask;
 	private transient ThreadPoolExecutor serverExecutor;
 	private transient ThreadPoolExecutor connectionTaskExecutor;
 
@@ -101,7 +99,7 @@ public class MultiplayerServer extends Application {
 		hostServerAddress = ip.getHostAddress();
 
 		logger.info("Running the host at " + hostServerAddress);
-		modeTask = new ModeTask(hostServerAddress);
+		modeTask = new HostTask(hostServerAddress);
 
 		multiplayerTray = new MultiplayerTray(this);
 	}
@@ -114,22 +112,35 @@ public class MultiplayerServer extends Application {
 		return mainMenu;
 	}
 
-	public ModeTask getModeTask() {
+	public HostTask getModeTask() {
 		return modeTask;
 	}
 
-	class ModeTask implements Runnable {
+	class HostTask implements Runnable {
 
 		private String addressStr;
 
-		private ModeTask(String addressStr) {
+		private HostTask(String addressStr) {
 			this.addressStr = addressStr;
 		}
 
 		@Override
 		public void run() {
+	           /*
+             * Wait until the socket is set up before beginning to read.
+             */
+            Platform.runLater(() -> {
+	            //waitForReady();
+	            /*
+	             * Now that the readerThread has started, it's safe to inform
+	             * the world that the socket is open, if in fact, it is open.
+	             * If used in conjunction with JavaFX, use Platform.runLater()
+	             * when implementing this method to force it to run on the main
+	             * thread.
+	             */
+				createHost(addressStr);
+            });
 
-			createHost(addressStr);
 
 		}
 	}
@@ -139,20 +150,27 @@ public class MultiplayerServer extends Application {
 
 		centralRegistry = new CentralRegistry();
 
+		String msg = "Ready to host at " + addressStr + "\nWaiting for clients to connect...";
+		Platform.runLater(() -> {
+			//if (mainMenu != null)
+			createAlert(msg);
+        });
+
 		try {
-			String msg = "Ready to host at " + addressStr + "\nWaiting for clients to connect...";
-			Platform.runLater(() -> {
-				//if (mainMenu != null)
-				createAlert(msg);
-	        });
 
 			ss = new ServerSocket(port);//, 0);// InetAddress.getByAddress(new byte[] {127,0,0,1}));
+
+	        /*
+             * Allows the socket to be bound even though a previous
+             * connection is in a timeout state.
+             */
+            ss.setReuseAddress(true);
 
 			while (!serverStopped) {
 	        	logger.info("Waiting for clients to connect...");
 	        	socket = ss.accept();
 	        	socket.setKeepAlive(true);
-	        	connectionTask = new ConnectionTask(socket);
+	        	connectionTask = new SetupConnectionTask(socket);
 	        	connectionTaskExecutor.execute(connectionTask);
 	          	//Thread t = new Thread(new ConnectionThread(socket));
 	          	//t.start();
@@ -175,13 +193,13 @@ public class MultiplayerServer extends Application {
 
 	}
 
-	class ConnectionTask implements Runnable {
+	class SetupConnectionTask implements Runnable {
 
 		private Socket socket;
 
 		//private long SLEEP_TIME = 1000; // 1 second.
 
-		public ConnectionTask(Socket socket) {
+		public SetupConnectionTask(Socket socket) {
 			this.socket = socket;
 		}
 
@@ -207,6 +225,12 @@ public class MultiplayerServer extends Application {
 
 	        	in = new BufferedReader( new InputStreamReader(socket.getInputStream()) );
 				out = new PrintWriter(socket.getOutputStream(), true);
+
+                /*
+                 * Notify SocketReaderThread that it can now start.
+                 */
+                //notifyReady();
+
 				//out.println(new Date().toString());
 				id = processInput(in, out, clientAddress);
 
@@ -216,6 +240,10 @@ public class MultiplayerServer extends Application {
 				socket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
+                /*
+                 * This will notify the SocketReaderThread that it should exit.
+                 */
+                //notifyReady();
 			} finally {
 				removeSettlement(id);
 				idMap.remove(id);
@@ -270,7 +298,7 @@ public class MultiplayerServer extends Application {
 	       while (!done) {
 	    	   //System.out.println("processInput() : inside while(!done");
 	    	   //if (in.readLine() != null && !socket.isClosed()) { // Get Records button got stuck
-	    	   //if (in != null) {
+	    	   if (in != null) {
 	    		   if ((line = in.readLine()) == null) { // java.net.SocketException: Connection reset, if hitting the red button on eclipse
 	       				done = true;
 	    		   } else {
@@ -297,7 +325,7 @@ public class MultiplayerServer extends Application {
 			        	   TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 			           } catch (InterruptedException e) {e.printStackTrace();}
 	    		   }
-	    	   //} // end of if (in != null)
+	    	   } // end of if (in != null)
 	       } // end of while()
 		} catch(IOException e) {e.printStackTrace();}
 
@@ -357,6 +385,8 @@ public class MultiplayerServer extends Application {
 	    	out.close();
 	    	socket.close(); // NullPointerException
 	    	ss.close();
+	    	if (ss != null && !ss.isClosed())
+	    		ss.close();
 	    }
 	    catch(Exception e) {
 	    	throw new RuntimeException("Error closing server", e);
@@ -417,6 +447,31 @@ public class MultiplayerServer extends Application {
 		serverStopped = value;
 		closeSocket();
 	}
+
+
+    /*
+     * Synchronized method set up to wait until the SetupThread is
+     * sufficiently initialized.  When notifyReady() is called, waiting
+     * will cease.
+     
+    private synchronized void waitForReady() {
+        while (!ready) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+    */
+    /*
+     * Synchronized method responsible for notifying waitForReady()
+     * method that it's OK to stop waiting.
+    
+    private synchronized void notifyReady() {
+        ready = true;
+        notifyAll();
+    }
+ */
 
 	@Override
 	public void start(Stage stage) throws Exception {

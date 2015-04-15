@@ -243,7 +243,7 @@ public class ScenarioConfigEditorFX {
 	    //AnchorPane.setLeftAnchor(borderAll, 50.0);
 	    //AnchorPane.setRightAnchor(borderAll, 50.0);
 
-		borderAll.setPadding(new Insets(10, 10, 10, 10));
+		borderAll.setPadding(new Insets(10, 15, 10, 15));
 
 		topVB = new VBox();
 		topVB.setAlignment(Pos.CENTER);
@@ -277,7 +277,7 @@ public class ScenarioConfigEditorFX {
 		//gameModeLabel.setAlignment(Pos.TOP_LEFT);
 
 		HBox topHB = new HBox(50);
-		topHB.setPadding(new Insets(1, 10, 10, 1));
+		topHB.setPadding(new Insets(5, 10, 5, 10));
 		topHB.setPrefWidth(400);
 		topHB.getChildren().addAll(playerLabel, clientIDLabel);
 		topHB.setAlignment(Pos.CENTER);

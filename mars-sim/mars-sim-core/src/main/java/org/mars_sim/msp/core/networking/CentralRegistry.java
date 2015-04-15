@@ -117,10 +117,11 @@ public class CentralRegistry {
 	  //new BufferedReader(new FileReader(SETTLEMENT_REGISTRY));
       //new BufferedReader(new FileReader(CentralRegistry.class.getClassLoader().getResource(SETTLEMENT_REGISTRY).getPath().replaceAll("%20", " ")));
       new BufferedReader(new FileReader(this.getClass().getResource(SETTLEMENT_REGISTRY).getPath().replaceAll("%20", " ")));
-
-      while ((line = in.readLine()) != null)
-        addEntry(line);
-      in.close();
+      if (in != null) {
+	      while ((line = in.readLine()) != null)
+	        addEntry(line);
+	      in.close();
+	    }
     }
     catch(IOException e)
     { e.printStackTrace();}
