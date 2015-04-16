@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CentralRegistry.java
- * @version 3.08 2015-04-10
+ * @version 3.08 2015-04-16
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.networking;
@@ -14,7 +14,9 @@ import java.util.logging.Logger;
 /*
  * The CentralRegistry class maintains the record of vital settlements info in multiplayer mode simulation
  */
-public class CentralRegistry {
+public class CentralRegistry implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CentralRegistry.class.getName());
@@ -50,11 +52,12 @@ public class CentralRegistry {
 
 	    else {
 		    details = "RECORDS ";
-		    for(int i = 0; i < settlementList.size(); i++)
-		      //details += registry[i].getClientID() + " & " + registry[i].getName() + " & " + registry[i].getTemplate() + " & " + registry[i].getPopulation() + " & "
-		    //		  + registry[i].getNumOfRobots() + " & " + registry[i].getLatitude() + " & " + registry[i].getLongitude() + " & ";
-		    details += settlementList.get(i).getClientID() + " & " + settlementList.get(i).getName() + " & " + settlementList.get(i).getTemplate() + " & " + settlementList.get(i).getPopulation() + " & "
-		  		  + settlementList.get(i).getNumOfRobots() + " & " + settlementList.get(i).getLatitude() + " & " + settlementList.get(i).getLongitude() + " & ";
+		    for(int i = 0; i < settlementList.size(); i++) {
+		    details +=" & " + settlementList.get(i).getPlayerName() + " & " + settlementList.get(i).getClientID()
+		    		+ " & " + settlementList.get(i).getName() + " & " + settlementList.get(i).getTemplate()
+		    		+ " & " + settlementList.get(i).getPopulation() + " & " + settlementList.get(i).getNumOfRobots()
+		    		+ " & " + settlementList.get(i).getLatitude() + " & " + settlementList.get(i).getLongitude() + " & ";
+		    }
 	    }
 
 	    logger.info("Sent : "+ details);
@@ -78,6 +81,7 @@ public class CentralRegistry {
   public void addEntry(String line) {
      StringTokenizer st = new StringTokenizer(line, "&");
      try {
+    	 String playerName = st.nextToken().trim();
     	 int clientID = Integer.parseInt( st.nextToken().trim() );
     	 String name = st.nextToken().trim();
     	 String template = st.nextToken().trim();
@@ -85,7 +89,7 @@ public class CentralRegistry {
     	 int bots = Integer.parseInt( st.nextToken().trim() );
     	 double lat = Double.parseDouble( st.nextToken().trim() );
     	 double lo = Double.parseDouble( st.nextToken().trim() );
-    	 addEntry(clientID, name, template, pop, bots, lat, lo);
+    	 settlementList.add(new SettlementRegistry(playerName, clientID, name, template, pop, bots, lat, lo));
      }
      catch(Exception e) {
     	 logger.info("Problem parsing new entry:\n" + e);
@@ -96,16 +100,16 @@ public class CentralRegistry {
 
   /* Adds an entry to the array
    *
-   */
-  public void addEntry(int clientID, String name, String template, int pop, int bots, double lat, double lo) {
+
+  public void addEntry(String playerName, int clientID, String name, String template, int pop, int bots, double lat, double lo) {
     //int i = 0;
     //while ((i < numSettlements))
     //  i++;
     // add in the new entry
-    settlementList.add(new SettlementRegistry(clientID, name, template, pop, bots, lat, lo));
+    settlementList.add(new SettlementRegistry(playerName, clientID, name, template, pop, bots, lat, lo));
     //numSettlements++;
   }
-
+*/
 
   /*
    * Loads settlement info from a formatted file with all data on one single line e.g. "name & lat & long...."
