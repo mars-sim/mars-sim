@@ -136,7 +136,7 @@ public class ScenarioConfigEditorFX {
 			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
 			//multiplayerClient.sendRegister(); // not needed. already registered
 			clientID = multiplayerClient.getClientID();
-			playerName = multiplayerClient.getUsername();
+			playerName = multiplayerClient.getPlayerName();
 			if (multiplayerClient.getNumSettlement()> 0)
 				hasSettlement = true;
 			//System.out.println("registrySize is " + registrySize);
@@ -146,6 +146,7 @@ public class ScenarioConfigEditorFX {
 		else {
 			gameMode = "Simulation Mode : Single-Player";
 			hasSettlement = false;
+			playerName = "Default";
 		}
 
     	Parent parent = null;
@@ -466,12 +467,14 @@ public class ScenarioConfigEditorFX {
 
 			settlementTable.setRowSelectionAllowed(true);
 			settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			settlementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-			settlementTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-			settlementTable.getColumnModel().getColumn(2).setPreferredWidth(15);
+			settlementTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+			settlementTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+			settlementTable.getColumnModel().getColumn(2).setPreferredWidth(80);
 			settlementTable.getColumnModel().getColumn(3).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(4).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(5).setPreferredWidth(15);
+			settlementTable.getColumnModel().getColumn(6).setPreferredWidth(15);
+
 
 			settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
 			settlementTable.setBackground(java.awt.Color.WHITE);
@@ -552,24 +555,25 @@ public class ScenarioConfigEditorFX {
 		// Add configuration settlements from table data.
 		for (int x = s ; x < size; x++) {
 
-			String name = (String) settlementTableModel.getValueAt(x, 0);
-			String template = (String) settlementTableModel.getValueAt(x, 1);
-			String population = (String) settlementTableModel.getValueAt(x, 2);
+			String playerName = (String) settlementTableModel.getValueAt(x, 0);
+			String name = (String) settlementTableModel.getValueAt(x, 1);
+			String template = (String) settlementTableModel.getValueAt(x, 2);
+			String population = (String) settlementTableModel.getValueAt(x, 3);
 			int populationNum = Integer.parseInt(population);
 			//System.out.println("populationNum is " + populationNum);
-			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 3);
+			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 4);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
 			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
-			String latitude = (String) settlementTableModel.getValueAt(x, 4);
-			String longitude = (String) settlementTableModel.getValueAt(x, 5);
+			String latitude = (String) settlementTableModel.getValueAt(x, 5);
+			String longitude = (String) settlementTableModel.getValueAt(x, 6);
 			double lat = SettlementRegistry.convertLatLong2Double(latitude);
 			double lo = SettlementRegistry.convertLatLong2Double(longitude);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
 			// create an instance of the
-			SettlementRegistry newS = new SettlementRegistry(clientID, name, template, populationNum, numOfRobots, lat, lo);
+			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
 			//Send the newly created settlement to host server
-			multiplayerClient.sendNew(newS);
-
+			if (multiplayerClient != null)
+				multiplayerClient.sendNew(newS);
 		}
 	}
 
@@ -648,7 +652,7 @@ public class ScenarioConfigEditorFX {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+				if (name.equals(settlementTableModel.getValueAt(x, 1))) {
 					nameUsed = true;
 				}
 			}
@@ -673,7 +677,7 @@ public class ScenarioConfigEditorFX {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+				if (name.equals(settlementTableModel.getValueAt(x, 1))) {
 					nameUsed = true;
 				}
 			}
@@ -829,6 +833,7 @@ public class ScenarioConfigEditorFX {
 
 			// Add table columns.
 			columns = new String[] {
+				Msg.getString("SimulationConfigEditor.column.player"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
@@ -851,7 +856,6 @@ public class ScenarioConfigEditorFX {
 					refreshDefaultButton.setText(Msg.getString("SimulationConfigEditor.button.refresh"));
 				});
 				loadExistingSettlements();
-				//System.out.println("SettlementTableModel : settlements.size() is " + settlements.size() );
 			}
 		}
 
@@ -884,7 +888,7 @@ public class ScenarioConfigEditorFX {
 			settlements.clear();
 				settlementList.forEach( s -> {
 					SettlementInfo info = new SettlementInfo();
-					info.playerName = playerName;
+					info.playerName = s.getPlayerName();
 					info.name = s.getName();
 					info.template = s.getTemplate();
 					info.population = s.getPopulation() + "";
@@ -905,12 +909,13 @@ public class ScenarioConfigEditorFX {
 			int s = numS; // x needs to be constant running running for loop and should not be set to the global variable numS
 			// Add configuration settlements from table data.
 			for (int x = s ; x < size; x++) {
-				cacheS.name = (String) getValueAt(x, 0);
-				cacheS.template = (String) getValueAt(x, 1);
-				cacheS.population = (String) getValueAt(x, 2);
-				cacheS.numOfRobots = (String) getValueAt(x, 3);
-				cacheS.latitude = (String) getValueAt(x, 4);
-				cacheS.longitude = (String) getValueAt(x, 5);
+				cacheS.playerName = (String) getValueAt(x, 0);
+				cacheS.name = (String) getValueAt(x, 1);
+				cacheS.template = (String) getValueAt(x, 2);
+				cacheS.population = (String) getValueAt(x, 3);
+				cacheS.numOfRobots = (String) getValueAt(x, 4);
+				cacheS.latitude = (String) getValueAt(x, 5);
+				cacheS.longitude = (String) getValueAt(x, 6);
 			}
 			cacheSList.add(cacheS);
 		}
@@ -922,11 +927,12 @@ public class ScenarioConfigEditorFX {
 			for (int x = rowCount ; x < rowCount + size; x++) {
 				cacheS = cacheSList.get(x - rowCount);
 				setValueAt((String)cacheS.name, x, 0);
-				setValueAt((String)cacheS.template, x, 1);
-				setValueAt((String)cacheS.population, x, 2);
-				setValueAt((String)cacheS.numOfRobots, x, 3);
-				setValueAt((String)cacheS.latitude, x, 4);
-				setValueAt((String)cacheS.longitude, x, 5);
+				setValueAt((String)cacheS.name, x, 1);
+				setValueAt((String)cacheS.template, x, 2);
+				setValueAt((String)cacheS.population, x, 3);
+				setValueAt((String)cacheS.numOfRobots, x, 4);
+				setValueAt((String)cacheS.latitude, x, 5);
+				setValueAt((String)cacheS.longitude, x, 6);
 			}
 		}
 
@@ -977,21 +983,32 @@ public class ScenarioConfigEditorFX {
 				if ((column > -1) && (column < getColumnCount())) {
 					switch (column) {
 					case 0:
-						result = info.name;
+						result = info.playerName;
+						if (multiplayerClient != null) {
+							if (hasSettlement)
+								result = multiplayerClient.getSettlementRegistryList().get(row).getPlayerName();
+							//else
+							//	result = info.playerName;
+						}
+						//else
+						//	result = info.playerName;
 						break;
 					case 1:
-						result = info.template;
+						result = info.name;
 						break;
 					case 2:
-						result = info.population;
+						result = info.template;
 						break;
 					case 3:
-						result = info.numOfRobots;
+						result = info.population;
 						break;
 					case 4:
-						result = info.latitude;
+						result = info.numOfRobots;
 						break;
 					case 5:
+						result = info.latitude;
+						break;
+					case 6:
 						result = info.longitude;
 						break;
 					}
@@ -1012,22 +1029,27 @@ public class ScenarioConfigEditorFX {
 				if ((columnIndex > -1) && (columnIndex < getColumnCount())) {
 					if (clientID == 1) {
 						switch (columnIndex) {
+
 						case 0:
+							info.playerName = (String) aValue;
+							break;
+
+						case 1:
 							info.name = (String) aValue;
 							break;
-						case 1:
+						case 2:
 							info.template = (String) aValue;
 							info.population = determineNewSettlementPopulation(info.template);
 							info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
 							break;
-						case 2:
+						case 3:
 							info.population = (String) aValue;
 							break;
-						case 3:
+						case 4:
 							info.numOfRobots = (String) aValue;
 							break;
 
-						case 4:
+						case 5:
 							String latStr = ((String) aValue).trim();
 							double doubleLat = 0;
 							String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
@@ -1044,7 +1066,7 @@ public class ScenarioConfigEditorFX {
 								info.latitude = (String) aValue;
 							break;
 
-						case 5:
+						case 6:
 							String longStr = ((String) aValue).trim();
 							double doubleLong = 0;
 							String dir = longStr.substring(longStr.length() - 1, longStr.length());
@@ -1067,25 +1089,28 @@ public class ScenarioConfigEditorFX {
 
 						switch (columnIndex) {
 						case 0:
-							info.name = (String) aValue;
+							info.playerName = (String) aValue;
 							break;
 						case 1:
+							info.name = (String) aValue;
+							break;
+						case 2:
 							info.template = (String) aValue;
 							info.population = determineNewSettlementPopulation(info.template);
 							info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
 							break;
-						case 2:
+						case 3:
 							info.population = (String) aValue;
 							break;
-						case 3:
+						case 4:
 							info.numOfRobots = (String) aValue;
 							break;
 
-						case 4:
+						case 5:
 							info.latitude = (String) aValue;
 							break;
 
-						case 5:
+						case 6:
 							info.longitude = (String) aValue;
 
 						}  // switch (columnIndex) {
@@ -1170,8 +1195,8 @@ public class ScenarioConfigEditorFX {
 				int size = settlementTableModel.getRowCount();
 				for (int x = 0; x < size; x++) {
 
-					String latStr = ((String) (settlementTableModel.getValueAt(x, 4))).trim().toUpperCase();
-					String longStr = ((String) (settlementTableModel.getValueAt(x, 5))).trim().toUpperCase();
+					String latStr = ((String) (settlementTableModel.getValueAt(x, 5))).trim().toUpperCase();
+					String longStr = ((String) (settlementTableModel.getValueAt(x, 6))).trim().toUpperCase();
 
 					// check if the second from the last character is a digit or a letter, if a letter, setError
 					if (Character.isLetter(latStr.charAt(latStr.length() - 2))){
@@ -1197,8 +1222,8 @@ public class ScenarioConfigEditorFX {
 
 					//System.out.println("settlement.latitude is "+ settlement.latitude);
 					if (x + 1 < size ) {
-						String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 4))).trim().toUpperCase();
-						String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 5))).trim().toUpperCase();
+						String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 5))).trim().toUpperCase();
+						String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 6))).trim().toUpperCase();
 
 						//System.out.println("latStr is "+ latStr);
 						//System.out.println("latNextStr is "+ latNextStr);

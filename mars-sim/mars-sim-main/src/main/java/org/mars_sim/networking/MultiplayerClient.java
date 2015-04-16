@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-13
+ * @version 3.08 2015-04-16
  * @author Manny Kung
  */
 
@@ -22,8 +22,6 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
 
 import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.javafx.MainMenu;
@@ -264,13 +262,13 @@ public class MultiplayerClient {
 	/*
 	 * Creates an alert to inform the user that the client can make a connection with the server
 	 */
-	public void createAlert(String address) {
+	public void createAlert(String header, String content) {
 	    alert = new Alert(AlertType.INFORMATION);
 	    alert.initModality(Modality.NONE);
 		alert.setTitle("Mars Simulation Project");
 		alert.initOwner(mainMenu.getStage());
 		alert.setHeaderText("Multiplayer Client");
-		alert.setContentText("Connection verified with " + address);
+		alert.setContentText(content); // "Connection verified with " + address
 		alert.show();
 	}
 
@@ -459,6 +457,7 @@ public class MultiplayerClient {
 	 * If true, send "new name & lat & long &" to server
 	 */
 	private void sendNew() {
+		String playerName = this.playerName;
 		String id = clientID + "";
 	    String name = tfName.getText().trim();
 	    String template = tfTemplate.getText().trim(); // "Mars Direct Base (phase 1)";
@@ -467,13 +466,12 @@ public class MultiplayerClient {
 	    String lat = tfLat.getText().trim();
 	    String lo = tfLong.getText().trim();
 
-	    if ((name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
-	      JOptionPane.showMessageDialog( null,
-	           "No name/coordinates entered", "Send Error",
-				JOptionPane.ERROR_MESSAGE);
+	    if ( playerName.equals("") | (name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
+	    	createAlert("Input Error", "Please type in settlement data with the correct format.");
+	    	//JOptionPane.showMessageDialog( null,  "No name/coordinates entered", "Send Error", JOptionPane.ERROR_MESSAGE);
 	    else {
-	      out.println("new " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
-	      ta.appendText("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
+	      out.println("new " + " & " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+	      ta.appendText("Sent : " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
 
@@ -481,6 +479,7 @@ public class MultiplayerClient {
 	 * If true, send "new name & lat & long &" to server
 	 */
 	public void sendNew(SettlementRegistry s) {
+		String playerName = s.getPlayerName();
 		String id = s.getClientID() + "";
 	    String name = s.getName();
 	    String template = s.getTemplate();
@@ -489,13 +488,12 @@ public class MultiplayerClient {
 	    String lat = s.getLatitude() + "";
 	    String lo = s.getLongitude() + "";
 
-	    if ((name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
-		      JOptionPane.showMessageDialog( null,
-		           "No name/coordinates entered", "Send Error",
-					JOptionPane.ERROR_MESSAGE);
+	    if ( playerName.equals("") | name.equals("") | template.equals("") | pop.equals("") | bots.equals("") | lat.equals("") | lo.equals(""))
+	    	createAlert("Send Error", "Please check on settlement data.");
+	    	//JOptionPane.showMessageDialog( null, "No name/coordinates entered", "Send Error",JOptionPane.ERROR_MESSAGE);
 	    else {
-	      out.println("new " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
-	      ta.appendText("Sent :\n" + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
+	      out.println("new " + " & " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
+	      ta.appendText("Sent : " + playerName + " , " +  id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
 
@@ -574,14 +572,14 @@ public class MultiplayerClient {
 		}
 		else if (type == RECORDS) {
 		    StringTokenizer st = new StringTokenizer(line, "&");
-		    String name;
-		    String template;
+		    String playerName, name, template;
 		    int i = 1;
 		    int id, pop, bots;
 		    double lat, lo;
 		    try {
 		    	String text = null;
 			    while (st.hasMoreTokens()) {
+			        playerName = st.nextToken().trim();
 			    	id = Integer.parseInt( st.nextToken().trim() );
 			        name = st.nextToken().trim();
 			        template = st.nextToken().trim();
@@ -591,13 +589,13 @@ public class MultiplayerClient {
 			        lo = Double.parseDouble( st.nextToken().trim() );
 			        // Add the new entry into the array
 			        settlementList.clear();
-			        settlementList.add(new SettlementRegistry(id, name, template, pop, bots, lat, lo));
-			        text = "(" + i + "). id : " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
+			        settlementList.add(new SettlementRegistry(playerName, id, name, template, pop, bots, lat, lo));
+			        text = "(" + i + "). " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
 			        	+ " , " + lat + " , " + lo + "\n";
 			        i++;
 			    }
 			    ta.appendText("Received :\n" + text + "\n");
-			    logger.info("Received :\n" + text);
+			    logger.info("Received : " + text);
 		    }
 		    catch(Exception e) {
 		      ta.appendText("Problem parsing records\n");
@@ -612,7 +610,7 @@ public class MultiplayerClient {
 		return clientID;
 	}
 
-	public String getUsername() {
+	public String getPlayerName() {
 		return playerName;
 	}
 

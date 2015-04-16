@@ -1,9 +1,15 @@
 package org.mars_sim.msp.core.networking;
 
+import java.io.Serializable;
+
 /*
  * The information about a settlement kept by the host server.
  */
-public class SettlementRegistry {
+public class SettlementRegistry implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+	private String playerName;
 	private int clientID;
 	private int numOfRobots;
 	private int population;
@@ -12,16 +18,20 @@ public class SettlementRegistry {
 	private double longitude;
 	private double latitude;
 
-	public SettlementRegistry(int id, String n, String template, int pop, int bots, double lat, double lo) {
-		clientID = id; name = n; this.template = template; population = pop; numOfRobots = bots; latitude = lat; longitude = lo;
+	public SettlementRegistry(String p, int id, String n, String template, int pop, int bots, double lat, double lo) {
+		playerName = p; clientID = id; name = n; this.template = template; population = pop; numOfRobots = bots; latitude = lat; longitude = lo;
   }
 
   //public void setID(int id) {
 	//  this.clientID = id;
   //}
 
+	public String getPlayerName() {
+		return playerName;
+	}
+
   public int getClientID() {
-	return clientID ;
+	return clientID;
   }
 
   public String getName() {
