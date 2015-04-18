@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-16
+ * @version 3.08 2015-04-17
  * @author Manny Kung
  */
 
@@ -74,6 +74,8 @@ public class MultiplayerClient {
 
 	private List<String> addresses = new ArrayList<>();
 
+	//private static MultiplayerClient instance = null;
+
 	private Stage stage;
 	private Socket sock;
 	private BufferedReader in;     // i/o for the client
@@ -93,7 +95,56 @@ public class MultiplayerClient {
 	//private SettlementRegistry[] registryArray = new SettlementRegistry[CentralRegistry.MAX];
 	private List<SettlementRegistry> settlementList;
 
-	public MultiplayerClient(MainMenu mainMenu) {
+	protected MultiplayerClient() {
+	}
+
+	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
+	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
+	 * see http://crunchify.com/lazy-creation-of-singleton-threadsafe-instance-without-using-synchronized-keyword/
+	 */
+    private static class HoldInstance {
+        private static final MultiplayerClient INSTANCE = new MultiplayerClient();
+    }
+
+    public static MultiplayerClient getInstance() {
+        return HoldInstance.INSTANCE;
+    }
+
+
+/*  Method 1 : Simple Singleton Pattern: (Lazy Initialization + ThreadSafe with synchronized block)
+ *  This implementation using the synchronized keyword to make the traditional approach thread-safe
+ *
+  	private static MultiplayerClient instance = null;
+
+  	protected MultiplayerClient() {	}
+
+	public static MultiplayerClient getInstance() {
+		if (instance == null) {
+			synchronized (MultiplayerClient.class) {
+				if (instance == null) {
+					instance = new MultiplayerClient();
+				}
+			}
+		}
+		return instance;
+	}
+
+*/
+
+/*	Method 2 : Auto ThreadSafe Singleton Pattern using Object
+ *  This implementation is more optimized than others since the need for checking
+ *  the value of the Singleton instance ( i.e. instance == null ) is eliminated
+ *
+	private static final Object instance = new Object();
+
+  	protected MultiplayerClient() {	}
+
+	public static Object getInstance() {
+		return instance;
+	}
+*/
+
+	public void runMultiplayerClient(MainMenu mainMenu) {
 
 		this.mainMenu = mainMenu;
 
@@ -470,7 +521,7 @@ public class MultiplayerClient {
 	    	createAlert("Input Error", "Please type in settlement data with the correct format.");
 	    	//JOptionPane.showMessageDialog( null,  "No name/coordinates entered", "Send Error", JOptionPane.ERROR_MESSAGE);
 	    else {
-	      out.println("new " + " & " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
 	      ta.appendText("Sent : " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
@@ -492,7 +543,7 @@ public class MultiplayerClient {
 	    	createAlert("Send Error", "Please check on settlement data.");
 	    	//JOptionPane.showMessageDialog( null, "No name/coordinates entered", "Send Error",JOptionPane.ERROR_MESSAGE);
 	    else {
-	      out.println("new " + " & " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
+	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
 	      ta.appendText("Sent : " + playerName + " , " +  id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
@@ -591,7 +642,7 @@ public class MultiplayerClient {
 			        settlementList.clear();
 			        settlementList.add(new SettlementRegistry(playerName, id, name, template, pop, bots, lat, lo));
 			        text = "(" + i + "). " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
-			        	+ " , " + lat + " , " + lo + "\n";
+			        	+ " , " + lat + " , " + lo;
 			        i++;
 			    }
 			    ta.appendText("Received :\n" + text + "\n");

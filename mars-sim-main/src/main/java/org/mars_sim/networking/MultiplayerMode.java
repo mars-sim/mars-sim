@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-09
+ * @version 3.08 2015-04-17
  * @author Manny Kung
  */
 
@@ -18,6 +18,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.networking.MultiplayerClient;
 
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
@@ -43,7 +44,7 @@ public class MultiplayerMode {
 
 	private MultiplayerServer multiplayerServer;
 
-	private MultiplayerClient multiplayerClient;
+	//private MultiplayerClient multiplayerClient;
 
 	private transient ThreadPoolExecutor serverClientExecutor;
 
@@ -74,9 +75,9 @@ public class MultiplayerMode {
 		return multiplayerServer;
 	}
 
-	public MultiplayerClient getMultiplayerClient() {
-		return multiplayerClient;
-	}
+	// MultiplayerClient getMultiplayerClient() {
+	//	return multiplayerClient;
+	//}
 
 
 	class ModeTask implements Runnable {
@@ -110,8 +111,9 @@ public class MultiplayerMode {
 					try {
 						//dialog.close();
 						mainMenu.getStage().close();
-						multiplayerServer = new MultiplayerServer(mainMenu);
-						serverClientExecutor.execute(multiplayerServer.getModeTask());
+						//MultiplayerServer.getInstance();
+						((MultiplayerServer) MultiplayerServer.instance).runServer(mainMenu);
+						serverClientExecutor.execute(((MultiplayerMode) MultiplayerServer.getInstance()).getModeTask());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -120,8 +122,8 @@ public class MultiplayerMode {
 
 			   else if (role.equals("Client")) {
 					try {
-						multiplayerClient = new MultiplayerClient(mainMenu);
-						serverClientExecutor.execute(multiplayerClient.getModeTask());
+						MultiplayerClient.getInstance().runMultiplayerClient(mainMenu);
+						serverClientExecutor.execute(MultiplayerClient.getInstance().getModeTask());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
