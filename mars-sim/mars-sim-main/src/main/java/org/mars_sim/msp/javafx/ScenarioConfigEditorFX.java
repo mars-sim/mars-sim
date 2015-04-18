@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.08 2015-04-16
+ * @version 3.08 2015-04-17
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
@@ -66,6 +66,8 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.networking.MultiplayerClient;
+
+
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
@@ -139,7 +141,8 @@ public class ScenarioConfigEditorFX {
 		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
 		if (mainMenu.getMultiplayerMode() != null) {
-			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			//multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			multiplayerClient = MultiplayerClient.getInstance();
 			//multiplayerClient.sendRegister(); // not needed. already registered
 			clientID = multiplayerClient.getClientID();
 			playerName = multiplayerClient.getPlayerName();
@@ -575,11 +578,13 @@ public class ScenarioConfigEditorFX {
 			double lat = SettlementRegistry.convertLatLong2Double(latitude);
 			double lo = SettlementRegistry.convertLatLong2Double(longitude);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
-			// create an instance of the
-			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
 			//Send the newly created settlement to host server
-			if (multiplayerClient != null)
+			if (multiplayerClient != null) {
+				// create an instance of the
+				SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
 				multiplayerClient.sendNew(newS);
+				//settlementConfig.setMultiplayerClient(multiplayerClient);
+			}
 		}
 	}
 
@@ -1087,7 +1092,7 @@ public class ScenarioConfigEditorFX {
 				String latStr = ((String) aValue).trim();
 				double doubleLat = 0;
 				String latA = latStr.substring(0, latStr.length() - 1).trim();
-				System.out.println("latA is "+ latA);
+				//System.out.println("latA is "+ latA);
 				if ( !(isInteger(latA) || isDecimal(latA)) ) {
 					//System.out.println("latA is not an integer nor a double: " + latA);
 					info.latitude = (String) aValue;
@@ -1123,7 +1128,7 @@ public class ScenarioConfigEditorFX {
 				String loStr = ((String) aValue).trim();
 				double doubleLo = 0;
 				String loA = loStr.substring(0, loStr.length() - 1).trim();
-				System.out.println("loA is "+ loA);
+				//System.out.println("loA is "+ loA);
 				if ( !(isInteger(loA) || isDecimal(loA)) ) {
 					//System.out.println("loA is not an integer nor a double: " + loA);
 					info.latitude = (String) aValue;
@@ -1132,8 +1137,8 @@ public class ScenarioConfigEditorFX {
 				else  {
 					String d = loStr.substring(loStr.length() - 1, loStr.length()).toUpperCase();
 					//System.out.println("d is "+ d);
-					if (d.equals("N") | d.equals("S")) {
-						System.out.println("loStr has the direction of " + d);
+					if (d.equals("E") | d.equals("W")) {
+						//System.out.println("loStr has the direction of " + d);
 						if (loA.length() > 2) {
 							// round it to only one decimal place
 							doubleLo = Double.parseDouble(loA);

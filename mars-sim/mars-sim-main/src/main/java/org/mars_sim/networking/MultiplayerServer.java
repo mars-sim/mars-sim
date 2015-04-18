@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-11
+ * @version 3.08 2015-04-17
  * @author Manny Kung
  */
 
@@ -59,9 +59,11 @@ public class MultiplayerServer extends Application {
 	private String hostServerAddress;
 
     //private Stage stage = new Stage();
-	private HostTask modeTask;
+	private HostTask hostTask;
 	private MainMenu mainMenu;
 	private MultiplayerTray multiplayerTray;
+
+	static final Object instance = new Object();
 
 	private Socket socket = null;
 	private ServerSocket ss = null;
@@ -75,32 +77,55 @@ public class MultiplayerServer extends Application {
 
 	private Map<Integer, String> idMap = new ConcurrentHashMap<>();
 
-	public MultiplayerServer(MainMenu mainMenu) {
+
+	//protected MultiplayerServer() {
+	//	System.out.println("constructor");
+	//	startServer();
+	//}
+
+	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
+	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
+	 * see http://crunchify.com/lazy-creation-of-singleton-threadsafe-instance-without-using-synchronized-keyword/
+
+    private static class HoldInstance {
+        private static final MultiplayerServer INSTANCE = new MultiplayerServer();
+    }
+
+    public static MultiplayerServer getInstance() {
+        return HoldInstance.INSTANCE;
+    }
+*/
+
+    /*	Method 2 : Auto ThreadSafe Singleton Pattern using Object
+     *  This implementation is more optimized than others since the need for checking
+     *  the value of the Singleton instance ( i.e. instance == null ) is eliminated
+     */
+
+    public static Object getInstance() {
+    	return instance;
+    }
+
+	public void runServer(MainMenu mainMenu) {
 		this.mainMenu = mainMenu;
 		startServer();
 	}
 
-	public MultiplayerServer() {
-		startServer();
-	}
-
 	public void startServer() {
+		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
 		//System.out.println("running startServer()");
-
 		//stage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource("/icons/lander_hab64.png").toString()));
-
 		InetAddress ip = null;
 		try {
 			ip = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		hostServerAddress = ip.getHostAddress();
-
 		logger.info("Running the host at " + hostServerAddress);
-		modeTask = new HostTask(hostServerAddress);
-
+		hostTask = new HostTask(hostServerAddress);
+		serverExecutor.execute(getHostTask());
 		multiplayerTray = new MultiplayerTray(this);
 	}
 
@@ -112,8 +137,8 @@ public class MultiplayerServer extends Application {
 		return mainMenu;
 	}
 
-	public HostTask getModeTask() {
-		return modeTask;
+	public HostTask getHostTask() {
+		return hostTask;
 	}
 
 	class HostTask implements Runnable {
@@ -126,22 +151,9 @@ public class MultiplayerServer extends Application {
 
 		@Override
 		public void run() {
-	           /*
-             * Wait until the socket is set up before beginning to read.
-             */
             Platform.runLater(() -> {
-	            //waitForReady();
-	            /*
-	             * Now that the readerThread has started, it's safe to inform
-	             * the world that the socket is open, if in fact, it is open.
-	             * If used in conjunction with JavaFX, use Platform.runLater()
-	             * when implementing this method to force it to run on the main
-	             * thread.
-	             */
 				createHost(addressStr);
             });
-
-
 		}
 	}
 
@@ -453,7 +465,7 @@ public class MultiplayerServer extends Application {
      * Synchronized method set up to wait until the SetupThread is
      * sufficiently initialized.  When notifyReady() is called, waiting
      * will cease.
-     
+
     private synchronized void waitForReady() {
         while (!ready) {
             try {
@@ -466,28 +478,29 @@ public class MultiplayerServer extends Application {
     /*
      * Synchronized method responsible for notifying waitForReady()
      * method that it's OK to stop waiting.
-    
+
     private synchronized void notifyReady() {
         ready = true;
         notifyAll();
     }
  */
 
-	@Override
 	public void start(Stage stage) throws Exception {
+		startServer();
 		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
-		serverExecutor.execute(getModeTask());
+		serverExecutor.execute(getHostTask());
 	}
 
     public static void main(String[] args) {
     	launch(args);
+    	//new MultiplayerServer();
     }
 
 	public void destroy() {
 		socket= null;
 		connectionTaskExecutor= null;
-	    modeTask= null;
+	    hostTask= null;
 		connectionTask= null;
 		mainMenu= null;
 		multiplayerTray= null;

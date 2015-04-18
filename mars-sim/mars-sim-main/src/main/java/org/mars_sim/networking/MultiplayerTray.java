@@ -21,6 +21,9 @@ import javafx.stage.*;
 
 import javax.imageio.ImageIO;
 
+import org.mars_sim.networking.MultiplayerClient;
+import org.mars_sim.networking.MultiplayerServer;
+
 import java.io.IOException;
 import java.text.*;
 import java.util.*;
@@ -66,7 +69,7 @@ public class MultiplayerTray { //extends Application {
         // sets up the tray icon (using awt code run on the swing thread).
         javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
  */
-       	init();
+       	setStage();
 
     }
 
@@ -77,29 +80,13 @@ public class MultiplayerTray { //extends Application {
     	running =  CLIENT_RUNNING;
     	connector = CLIENT_CONNECTOR;
 
-    	init();
+    	setStage();
 
     }
 
-    public void init() {
+    public void setStage() {
         Platform.runLater(() -> {
-        	stage = new Stage();
-            // out stage will be translucent, so give it a transparent style.
-            stage.initStyle(StageStyle.TRANSPARENT);
-           	//stage = multiplayerClient.getMainMenu().getStage();
-            // create the layout for the javafx stage.
-            StackPane layout = new StackPane(createContent());
-            layout.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5);");
-            layout.setPrefSize(300, 200);
-
-            layout.setOnMouseClicked(event -> stage.hide());
-
-            Scene scene = new Scene(layout);
-            // a scene with a transparent fill is necessary to implement the translucent app window.
-            scene.setFill(Color.TRANSPARENT);
-
-            stage.setScene(scene);
-            stage.setIconified(true);
+        	createStage();
         });
 
         // Note: instructs the javafx system not to exit implicitly when the last application window is shut.
@@ -110,6 +97,25 @@ public class MultiplayerTray { //extends Application {
         javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
     }
 
+    private void createStage() {
+    	stage = new Stage();
+        // out stage will be translucent, so give it a transparent style.
+        stage.initStyle(StageStyle.TRANSPARENT);
+       	//stage = multiplayerClient.getMainMenu().getStage();
+        // create the layout for the javafx stage.
+        StackPane layout = new StackPane(createContent());
+        layout.setStyle("-fx-background-color: rgba(255, 255, 255, 0.5);");
+        layout.setPrefSize(300, 200);
+
+        layout.setOnMouseClicked(event -> stage.hide());
+
+        Scene scene = new Scene(layout);
+        // a scene with a transparent fill is necessary to implement the translucent app window.
+        scene.setFill(Color.TRANSPARENT);
+
+        stage.setScene(scene);
+        stage.setIconified(true);
+    }
 
     /**
      * Creates the GUI

@@ -53,7 +53,7 @@ public class CentralRegistry implements Serializable{
 	    else {
 		    details = "RECORDS ";
 		    for(int i = 0; i < settlementList.size(); i++) {
-		    details +=" & " + settlementList.get(i).getPlayerName() + " & " + settlementList.get(i).getClientID()
+		    details += settlementList.get(i).getPlayerName() + " & " + settlementList.get(i).getClientID()
 		    		+ " & " + settlementList.get(i).getName() + " & " + settlementList.get(i).getTemplate()
 		    		+ " & " + settlementList.get(i).getPopulation() + " & " + settlementList.get(i).getNumOfRobots()
 		    		+ " & " + settlementList.get(i).getLatitude() + " & " + settlementList.get(i).getLongitude() + " & ";
