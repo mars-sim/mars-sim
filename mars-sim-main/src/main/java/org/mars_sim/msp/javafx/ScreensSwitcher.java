@@ -1,6 +1,7 @@
 package org.mars_sim.msp.javafx;
- 
+
 import java.util.HashMap;
+import java.util.Optional;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -11,6 +12,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -19,11 +23,11 @@ public class ScreensSwitcher extends StackPane {
     //Holds the screens to be displayed
 
     private HashMap<String, Node> screens = new HashMap<>();
-    private MainMenu mainmenu;
-    
+    private MainMenu mainMenu;
+
     public ScreensSwitcher(MainMenu mainmenu) {
         super();
-        this.mainmenu = mainmenu;
+        this.mainMenu = mainmenu;
     }
 
     //Add the screen to the collection
@@ -56,7 +60,7 @@ public class ScreensSwitcher extends StackPane {
     //First it makes sure the screen has been already loaded.  Then if there is more than
     //one screen the new screen is been added second, and then the current screen is removed.
     // If there isn't any screen being displayed, the new screen is just added to the root.
-    public boolean setScreen(final String name) {       
+    public boolean setScreen(final String name) {
         if (screens.get(name) != null) {   //screen loaded
             final DoubleProperty opacity = opacityProperty();
 
@@ -93,10 +97,10 @@ public class ScreensSwitcher extends StackPane {
     }
 
     public MainMenu getMainMenu() {
-        return mainmenu;
+        return mainMenu;
     }
-    
-    
+
+
     //This method will remove the screen with the given name from the collection of screens
     public boolean unloadScreen(String name) {
         if (screens.remove(name) == null) {
@@ -105,6 +109,25 @@ public class ScreensSwitcher extends StackPane {
         } else {
             return true;
         }
+    }
+
+    public void exitDialog() {
+    	Alert alert = new Alert(AlertType.CONFIRMATION);
+    	alert.setTitle("Mars Simulation Project");
+    	alert.setHeaderText("Confirmation Dialog");
+		alert.initOwner(mainMenu.getStage());
+    	alert.setContentText("Are you sure about exiting MSP?");
+    	ButtonType buttonTypeYes = new ButtonType("Yes");
+    	ButtonType buttonTypeNo = new ButtonType("No");
+    	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+    	Optional<ButtonType> result = alert.showAndWait();
+    	if (result.get() == buttonTypeYes){
+    		if (mainMenu.getMultiplayerMode() != null)
+    			if (mainMenu.getMultiplayerMode().getChoiceDialog() != null)
+    				mainMenu.getMultiplayerMode().getChoiceDialog().close();
+    		System.exit(0);
+    	} else {
+    	}
     }
 }
 

@@ -9,7 +9,7 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
 prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller" stylesheets="../css/mainmenu.css">
+fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController" stylesheets="../css/mainmenu.css">
   <children>
       <BorderPane layoutX="-1.0" prefHeight="480.0" prefWidth="600.0">
          <bottom>
@@ -52,14 +52,14 @@ fx:controller="org.mars_sim.msp.javafx.controller.Screen1Controller" stylesheets
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Load Saved Default" textFill="#f75d0c">
+          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Load Default" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <effect>
                         <SepiaTone />
                      </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Multiplayer Setup" textFill="#f75d0c">
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Multiplayer" textFill="#f75d0c">
                      <font>
                         <Font name="Caladea Bold" size="18.0" />
                      </font>

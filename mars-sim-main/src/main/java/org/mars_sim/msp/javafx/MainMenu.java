@@ -8,6 +8,7 @@
 package org.mars_sim.msp.javafx;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
@@ -26,6 +27,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -35,13 +38,19 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class MainMenu {
@@ -85,7 +94,7 @@ public class MainMenu {
 
 	private transient ThreadPoolExecutor executor;
 
-	private MultiplayerMode multiplayer;
+	private MultiplayerMode multiplayerMode;
 
     public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
     	//this.cleanUI =  cleanUI;
@@ -94,13 +103,42 @@ public class MainMenu {
     	this.mpFX = mpFX;
     	initAndShowGUI();
 
-		stage.setOnCloseRequest(e -> {
-			 if (multiplayer.getChoiceDialog() != null)
-				 multiplayer.getChoiceDialog().close();
+    	Platform.setImplicitExit(false);
+
+    	primaryStage.setOnCloseRequest(e -> {
+			boolean isExit = exitDialog(primaryStage);
+			if (!isExit) {
+				e.consume();
+			}
+			else {
+				Platform.exit();
+			}
 		});
 
 	}
 
+    public boolean exitDialog(Stage stage) {
+    	Alert alert = new Alert(AlertType.CONFIRMATION);
+    	alert.setTitle("Mars Simulation Project");
+    	alert.setHeaderText("Confirmation Dialog");
+    	//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(stage);
+    	alert.setContentText("Do you really want to quit MSP?");
+    	ButtonType buttonTypeYes = new ButtonType("Yes");
+    	ButtonType buttonTypeNo = new ButtonType("No");
+    	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+    	Optional<ButtonType> result = alert.showAndWait();
+    	if (result.get() == buttonTypeYes){
+    		if (multiplayerMode != null)
+    			if (multiplayerMode.getChoiceDialog() != null)
+    				multiplayerMode.getChoiceDialog().close();
+    		alert.close();
+    		return true;
+    	} else {
+    		alert.close();
+    	    return false;
+    	}
+    }
 
    private void initAndShowGUI() {
 
@@ -129,7 +167,9 @@ public class MainMenu {
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
        scene.setCursor(Cursor.HAND);
-
+       //primaryStage.initStyle(StageStyle.UNDECORATED);
+       //primaryStage.initStyle (StageStyle.UTILITY);
+       //primaryStage.getStyleClass().add("rootPane");
        primaryStage.centerOnScreen();
        primaryStage.setResizable(false);
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
@@ -140,7 +180,6 @@ public class MainMenu {
 
 	   stage = new Stage();
 	   stage.setTitle(Simulation.WINDOW_TITLE);
-
 	   //menuScene = new MenuScene(stage);
 	   //modtoolScene = new ModtoolScene(stage);
    }
@@ -150,19 +189,15 @@ public class MainMenu {
    }
 
    public MultiplayerMode getMultiplayerMode() {
-	   return multiplayer;
+	   return multiplayerMode;
 	}
 
    public void runOne() {
-
 	   primaryStage.setIconified(true);
-
 	   mainScene = new MainScene(stage);
-
 	   //primaryStage.hide();
 	   //primaryStage.close();
 	   mpFX.handleNewSimulation();
-
    }
 
    public void runMainScene() {
@@ -202,9 +237,9 @@ public class MainMenu {
 	   //primaryStage.setIconified(true);
 
 		try {
-			multiplayer = new MultiplayerMode(this);
+			multiplayerMode = new MultiplayerMode(this);
 			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-			executor.execute(multiplayer.getModeTask());
+			executor.execute(multiplayerMode.getModeTask());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
