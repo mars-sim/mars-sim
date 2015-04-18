@@ -574,7 +574,7 @@ public class ScenarioConfigEditorFX {
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
 			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
 			String latitude = (String) settlementTableModel.getValueAt(x, COLUMN_LATITUDE);
-			String longitude = (String) settlementTableModel.getValueAt(x, COLUMN_LATITUDE);
+			String longitude = (String) settlementTableModel.getValueAt(x, COLUMN_LONGITUDE);
 			double lat = SettlementRegistry.convertLatLong2Double(latitude);
 			double lo = SettlementRegistry.convertLatLong2Double(longitude);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
@@ -1131,7 +1131,7 @@ public class ScenarioConfigEditorFX {
 				//System.out.println("loA is "+ loA);
 				if ( !(isInteger(loA) || isDecimal(loA)) ) {
 					//System.out.println("loA is not an integer nor a double: " + loA);
-					info.latitude = (String) aValue;
+					info.longitude = (String) aValue;
 				}
 
 				else  {
@@ -1144,17 +1144,17 @@ public class ScenarioConfigEditorFX {
 							doubleLo = Double.parseDouble(loA);
 							doubleLo = Math.round(doubleLo*10.0)/10.0;
 							//System.out.println("doubleLo is " + doubleLo);
-							info.latitude =  doubleLo + " " + d;
+							info.longitude =  doubleLo + " " + d;
 						}
 						else{
 							//System.out.println("No need to round. loStr is not a double and latstr has < 3 char");
-							info.latitude = (String) aValue;
+							info.longitude = (String) aValue;
 						}
 					}
 					else {
 						//System.out.println("Invalid ! Trimming off the last character. New loStr is " + loStr);
 						loStr = loStr.substring(0, loStr.length() - 1);
-						info.latitude = loStr;
+						info.longitude = loStr;
 					}
 				}
 
