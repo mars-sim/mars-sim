@@ -31,7 +31,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -113,6 +112,7 @@ public class ScenarioConfigEditorFX {
 	private Label playerLabel;
 	private TilePane titlePane;
 	private VBox topVB;
+	private BorderPane borderAll;
 
 	private TableCellEditor editor;
 
@@ -186,25 +186,6 @@ public class ScenarioConfigEditorFX {
 
 		Scene scene = new Scene(undecorator);
 
-		// Fade transition on window closing request
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			 @Override
-			 public void handle(WindowEvent we) {
-				 swingNode.setOpacity(0);
-				 createButton.setOpacity(0);
-				 addButton.setOpacity(0);
-				 refreshDefaultButton.setOpacity(0);
-				 alphaButton.setOpacity(0);
-				 removeButton.setOpacity(0);
-				 //titlePane.setOpacity(0);
-				 topVB.setOpacity(0);
-				 we.consume(); // Do not hide
-				 undecorator.setFadeOutTransition();
-				 if (crewEditorFX != null)
-					 crewEditorFX.getStage().close();
-			}
-		});
-
 		//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
 		// Transparent scene and stage
@@ -225,6 +206,39 @@ public class ScenarioConfigEditorFX {
         //stage.setTitle(TITLE);
         stage.show();
 
+    	Platform.setImplicitExit(false);
+
+    	stage.setOnCloseRequest(e -> {
+			boolean isExit = mainMenu.exitDialog(stage);
+			e.consume(); // need e.consume() in order to call setFadeOutTransition() below
+			if (isExit) {
+				 borderAll.setOpacity(0);
+				 undecorator.setFadeOutTransition();
+				 if (crewEditorFX != null)
+					 crewEditorFX.getStage().close();
+				 Platform.exit();
+			}
+		});
+/*
+		// Fade transition on window closing request
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			 @Override
+			 public void handle(WindowEvent we) {
+				 swingNode.setOpacity(0);
+				 createButton.setOpacity(0);
+				 addButton.setOpacity(0);
+				 refreshDefaultButton.setOpacity(0);
+				 alphaButton.setOpacity(0);
+				 removeButton.setOpacity(0);
+				 //titlePane.setOpacity(0);
+				 topVB.setOpacity(0);
+				 we.consume(); // Do not hide
+				 undecorator.setFadeOutTransition();
+				 if (crewEditorFX != null)
+					 crewEditorFX.getStage().close();
+			}
+		});
+*/
 	}
 
 /*
@@ -245,14 +259,11 @@ public class ScenarioConfigEditorFX {
 
 	//private Parent createEditor() {
 	private BorderPane createEditor() {
-
 		//AnchorPane pane = new AnchorPane();
-
-		BorderPane borderAll = new BorderPane();
+		borderAll = new BorderPane();
 		//AnchorPane.setTopAnchor(borderAll, 50.0);
 	    //AnchorPane.setLeftAnchor(borderAll, 50.0);
 	    //AnchorPane.setRightAnchor(borderAll, 50.0);
-
 		borderAll.setPadding(new Insets(10, 15, 10, 15));
 
 		topVB = new VBox();

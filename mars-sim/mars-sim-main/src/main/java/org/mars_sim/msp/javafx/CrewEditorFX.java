@@ -24,7 +24,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -39,16 +38,16 @@ public class CrewEditorFX {
 
 	/** Tool name. */
 	public static final String TITLE = "Alpha Crew Editor";
-	
+
 	public static final int SIZE_OF_CREW = 4;
-	
+
 	// Data members
 	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
-	
+
 	private GridPane gridPane;
-	
+
 	//private SimulationConfig config; // needed in the constructor
-	
+
 	private List<TextField> nameTF  = new ArrayList<TextField>();
 
 	private ComboBox<String> personalityOListComboBox;
@@ -58,8 +57,8 @@ public class CrewEditorFX {
 	private List<ComboBox<String>> genderList = new ArrayList<ComboBox<String>>();
 	private List<ComboBox<String>> jobsList = new ArrayList<ComboBox<String>>();
 	private List<ComboBox<String>> personalityList = new ArrayList<ComboBox<String>>();
-	
-	
+
+
 	private Stage stage;
 
 	/**
@@ -67,14 +66,14 @@ public class CrewEditorFX {
 	 * @param config SimulationConfig
 	 */
 	public CrewEditorFX(SimulationConfig config) {
-     
+
 		//this.config = config;
-		pc = config.getPersonConfiguration();			
+		pc = config.getPersonConfiguration();
 
 		stage = new Stage();
 
-		Group root = new Group();	
-		
+		Group root = new Group();
+
 		BorderPane borderAll = new BorderPane();
 		borderAll.setPadding(new Insets(5, 5, 5, 5));
 
@@ -83,61 +82,61 @@ public class CrewEditorFX {
 
 		Label titleLabel = new Label("Alpha Crew Manifest");
 		titleLabel.setAlignment(Pos.CENTER);
-	
+
 		HBox hTop = new HBox();
 		hTop.setAlignment(Pos.CENTER);
 		hTop.getChildren().add(titleLabel);
-	
+
 		borderAll.setTop(hTop);
-				
+
 		// Create list panel.
 		gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		gridPane.setHgap(3.0);
 		gridPane.setVgap(3.0);
 		borderAll.setCenter(gridPane);
-		
-		Label empty = new Label("");	
-		Label slotOne = new Label("Slot 1");	
+
+		Label empty = new Label("");
+		Label slotOne = new Label("Slot 1");
 		Label slotTwo = new Label("Slot 2");
 		Label slotThree = new Label("Slot 3");
 		Label slotFour = new Label("Slot 4");
-				
+
 	    GridPane.setConstraints(empty, 0, 0); // column=2 row=0
 	    GridPane.setConstraints(slotOne, 1, 0);
 	    GridPane.setConstraints(slotTwo, 2, 0);
 	    GridPane.setConstraints(slotThree, 3, 0);
 	    GridPane.setConstraints(slotFour, 4, 0);
-	    
+
 	    // don't forget to add children to gridpane
 	    gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
-		
+
 		Label name = new Label("Name :");
 		Label gender = new Label("Gender :");
-		Label personality = new Label("Personality :");		
-		Label job = new Label("Job :");	
-		
+		Label personality = new Label("Personality :");
+		Label job = new Label("Job :");
+
 	    GridPane.setConstraints(name, 0, 1);
 	    GridPane.setConstraints(gender, 0, 2);
 	    GridPane.setConstraints(personality, 0, 3);
 	    GridPane.setConstraints(job, 0, 4);
-	    
+
 	    gridPane.getChildren().addAll(name, gender, personality, job);
-		
+
 		setUpCrewName();
-		setUpCrewGender();	
-		setUpCrewPersonality();	
+		setUpCrewGender();
+		setUpCrewPersonality();
 		setUpCrewJob();
 
 		// Create button pane.
 		HBox hBottom = new HBox();
 		hBottom.setAlignment(Pos.CENTER);
-		
+
 		// Create commit button.
 		Button commitButton = new Button("Commit Changes");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.setOnAction((event) -> {
-			
+
 			for (int i = 0; i< SIZE_OF_CREW; i++) {
 				String nameStr = nameTF.get(i).getText();
 				//System.out.println(" name is " + nameStr);
@@ -152,35 +151,35 @@ public class CrewEditorFX {
 				//System.out.println(" gender is " + genderStr);
 				// update PersonConfig with the new gender
 				pc.setPersonGender(i, genderStr);
-				
+
 				String personalityStr = (String) personalityList.get(i).getValue();
 				//System.out.println(" personality is " + personalityStr);
 				// update PersonConfig with the new personality
 				pc.setPersonPersonality(i, personalityStr);
-				
+
 				//String jobStr = jobTF.get(i).getText();
 				String jobStr = (String) jobsList.get(i).getValue();
 				//System.out.println(" job is " + jobStr);
 				// update PersonConfig with the new job
 				pc.setPersonJob(i, jobStr);
 			}
-				
+
 			stage.close();
 		});
-		
+
 		hBottom.getChildren().add(commitButton);
 		borderAll.setBottom(hBottom);
 
 		Scene scene = new Scene(root);
-			
+
 		//scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 		//stage.initStyle(StageStyle.TRANSPARENT);
-		
-		stage.setScene(scene);		
+
+		stage.setScene(scene);
 		stage.sizeToScene();
 		stage.toFront();
 
-        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));        
+        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
         stage.centerOnScreen();
         //stage.setResizable(true);
@@ -192,7 +191,7 @@ public class CrewEditorFX {
 	public Stage getStage() {
 		return stage;
 	}
-	
+
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			String n = pc.getConfiguredPersonName(i);
@@ -205,21 +204,21 @@ public class CrewEditorFX {
 	}
 
 	public ComboBox<String> setUpGenderCB() {
-		
+
 		List<String> genderList = new ArrayList<String>(2);
 		genderList.add("M");
 		genderList.add("F");
-		
+
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
-		genderOListComboBox = new ComboBox<String>(genderOList);	   
+		genderOListComboBox = new ComboBox<String>(genderOList);
 
 		return genderOListComboBox;
 	}
-	
-	
+
+
 	public ComboBox<String> setUpCB(int choice) {
 		ComboBox<String> m = null;
-		if (choice == 0) 
+		if (choice == 0)
 			 m = setUpGenderCB() ;
 		else if (choice == 1)
 			 m = setUpPersonalityCB();
@@ -228,14 +227,14 @@ public class CrewEditorFX {
 
 		final ComboBox<String> g = m;
 		g.setOnAction((event) -> {
-			String s = (String) g.getValue(); 
+			String s = (String) g.getValue();
            	g.setValue(s);
-		});		
-	
+		});
+
 		return g;
 	}
-	
-	
+
+
 	public void setUpCrewGender() {
 
 		String s[] = new String[SIZE_OF_CREW];
@@ -255,7 +254,7 @@ public class CrewEditorFX {
 		}
 	}
 
-	
+
 	public ComboBox<String> setUpPersonalityCB() {
 
 		List<String> personalityTypes = new ArrayList<String>(16);
@@ -276,23 +275,23 @@ public class CrewEditorFX {
 		personalityTypes.add("ENFP");
 		personalityTypes.add("ENFJ");
 		Collections.sort(personalityTypes);
-		
+
 		ObservableList<String> personalityOList = FXCollections.observableArrayList(personalityTypes);
-		personalityOListComboBox = new ComboBox<String>(personalityOList);	   
+		personalityOListComboBox = new ComboBox<String>(personalityOList);
 
 		return personalityOListComboBox;
-		
+
 	}
 
-	
-	
-	public void setUpCrewPersonality() {		
+
+
+	public void setUpCrewPersonality() {
 
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			String n[] = new String[16]; 
+			String n[] = new String[16];
 			n[j] = pc.getConfiguredPersonPersonalityType(j);
-			
-			ComboBox<String> g = setUpCB(1);		 // 1 = Personality		
+
+			ComboBox<String> g = setUpCB(1);		 // 1 = Personality
 			//g.setMaximumRowCount(8);
 		    gridPane.add(g, j+1, 3);
 			//g.getModel().setSelectedItem(n[j]);
@@ -300,20 +299,20 @@ public class CrewEditorFX {
 			//g.setSelectedItem(n[j]);
 			personalityList.add(g);
 		}
-		
+
 	}
 
 	public ComboBox<String> setUpJobCB() {
 	/*
-		ObservableList<String> options = 
+		ObservableList<String> options =
 			    FXCollections.observableArrayList(
 			        "Option 1",
 			        "Option 2",
 			        "Option 3"
 			    );
-		final ComboBox comboBox = new ComboBox(options);	    
-	*/			
-					
+		final ComboBox comboBox = new ComboBox(options);
+	*/
+
 		List<String> jobs = new ArrayList<String>(15);
 		jobs.add("Botanist");
 		jobs.add("Areologist");
@@ -331,20 +330,20 @@ public class CrewEditorFX {
 		jobs.add("Mathematician");
 		jobs.add("Meteorologist");
 		Collections.sort(jobs);
-		
+
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
-		jobsOListComboBox = new ComboBox<String>(jobsOList);	   
-		
+		jobsOListComboBox = new ComboBox<String>(jobsOList);
+
 		return jobsOListComboBox;
 	}
-	
-	
-	
-	
-	public void setUpCrewJob() {		
+
+
+
+
+	public void setUpCrewJob() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-			String n[] = new String[15]; 		
-			n[i] = pc.getConfiguredPersonJob(i);			
+			String n[] = new String[15];
+			n[i] = pc.getConfiguredPersonJob(i);
 			ComboBox<String> g = setUpCB(2);		// 2 = Job
 		    //g.setMaximumRowCount(8);
 		    gridPane.add(g, i+1, 4);
@@ -352,8 +351,8 @@ public class CrewEditorFX {
 			jobsList.add(g);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Prepare this window for deletion.
 	 */
