@@ -122,7 +122,7 @@ public class MultiplayerMode {
 
 			   else if (role.equals("Client")) {
 					try {
-						MultiplayerClient.getInstance().runMultiplayerClient(mainMenu);
+						MultiplayerClient.getInstance().runClient(mainMenu);
 						serverClientExecutor.execute(MultiplayerClient.getInstance().getModeTask());
 					} catch (Exception e) {
 						e.printStackTrace();

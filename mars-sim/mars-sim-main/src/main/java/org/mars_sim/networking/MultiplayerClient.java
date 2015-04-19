@@ -84,7 +84,7 @@ public class MultiplayerClient {
 	private TextArea ta;
 	private TextField tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
 	private Button bGetRecords;
-	private Button bSendNew;
+	private Button bCreateNew;
 	private Button bRegister;
 	//Container c;
 
@@ -144,7 +144,7 @@ public class MultiplayerClient {
 	}
 */
 
-	public void runMultiplayerClient(MainMenu mainMenu) {
+	public void runClient(MainMenu mainMenu) {
 
 		this.mainMenu = mainMenu;
 
@@ -200,18 +200,7 @@ public class MultiplayerClient {
 
 		@Override
 		public void run() {
-            /*
-             * Wait until the socket is set up before beginning to read.
-             */
             Platform.runLater(() -> {
-	            //waitForReady();
-	            /*
-	             * Now that the readerThread has started, it's safe to inform
-	             * the world that the socket is open, if in fact, it is open.
-	             * If used in conjunction with JavaFX, use Platform.runLater()
-	             * when implementing this method to force it to run on the main
-	             * thread.
-	             */
 				//mainMenu.getStage().setIconified(true);
             	createDialog();
             });
@@ -384,9 +373,10 @@ public class MultiplayerClient {
 	    bRegister.setOnAction(e -> sendRegister());
 	    bRegister.setPadding(new Insets(5, 5, 5, 5));
 
-	    bSendNew = new Button("Send New");
-	    bSendNew.setOnAction(e -> sendNew());
-	    bSendNew.setPadding(new Insets(5, 5, 5, 5));
+	    bCreateNew = new Button("Create New");
+	    bCreateNew.setTooltip(new Tooltip("Fill in all textfield above to create a new settlement"));
+	    bCreateNew.setOnAction(e -> createNew());
+	    bCreateNew.setPadding(new Insets(5, 5, 5, 5));
 
 	    bGetRecords = new Button("Get Records");
 	    bGetRecords.setOnAction(e -> sendGetRecords());
@@ -408,7 +398,7 @@ public class MultiplayerClient {
 		vb.setAlignment(Pos.CENTER);
 	    hb1.getChildren().addAll(lName, tfName, lTemplate, tfTemplate);
 	    hb2.getChildren().addAll(lPop, tfPop, lBots, tfBots, lLat, tfLat, lLong, tfLong);
-	    hb3.getChildren().addAll(bRegister, bSendNew, bGetRecords);
+	    hb3.getChildren().addAll(bRegister, bCreateNew, bGetRecords);
 	    //hb3.setSpacing(10.0);
 
 	    Scene scene = new Scene(b);
@@ -504,10 +494,10 @@ public class MultiplayerClient {
 */
 
 
-	/* Checks if the user types in a correct settlement name and coordinates
-	 * If true, send "new name & lat & long &" to server
+	/*
+	 * Creates a new settlement and sends "new ..." to server
 	 */
-	private void sendNew() {
+	private void createNew() {
 		String playerName = this.playerName;
 		String id = clientID + "";
 	    String name = tfName.getText().trim();
@@ -524,6 +514,23 @@ public class MultiplayerClient {
 	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
 	      ta.appendText("Sent : " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
+	  }
+
+	/*
+	 * Updates the info of a settlement and sends "update ..." to server
+	 */
+	private void updateSettlement(SettlementRegistry s) {
+		String playerName = s.getPlayerName();
+		String id = s.getClientID() + "";
+	    String name = s.getName();
+	    String template = s.getTemplate();
+	    String pop = s.getPopulation() + "";
+	    String bots = s.getNumOfRobots() + "";
+	    String lat = s.getLatitude() + "";
+	    String lo = s.getLongitude() + "";
+
+	      out.println("update " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+	      ta.appendText("Sent : update " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	  }
 
 	/* Checks if the user types in a correct settlement name and coordinates
@@ -544,7 +551,7 @@ public class MultiplayerClient {
 	    	//JOptionPane.showMessageDialog( null, "No name/coordinates entered", "Send Error",JOptionPane.ERROR_MESSAGE);
 	    else {
 	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " & " + lat + " & " + lo + " & ");
-	      ta.appendText("Sent : " + playerName + " , " +  id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
+	      ta.appendText("Sent : new " + playerName + " , " +  id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
 	    }
 	  }
 
@@ -729,7 +736,7 @@ public class MultiplayerClient {
 		tfLat= null;
 		tfLong= null;
 		bGetRecords= null;
-		bSendNew= null;
+		bCreateNew= null;
 		mainMenu= null;
 		modeTask= null;
 		multiplayerTray= null;

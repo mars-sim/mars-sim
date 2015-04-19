@@ -351,7 +351,13 @@ public class MultiplayerServer extends Application {
 	 * case 3: "register"
 	 */
 	private void executeCommand(String line, PrintWriter out, String clientAddress) {
-		if (line.trim().toLowerCase().equals("get")) {
+	    if ((line.length() >= 7) &&     // "update "
+		        (line.substring(0, 6).toLowerCase().equals("update"))) {
+					logger.info("Command processed : update");
+					centralRegistry.updateEntry( line.substring(6) );    // cut out the update keyword
+		    }
+
+	    else if (line.trim().toLowerCase().equals("get")) {
 			logger.info("Command processed : get");
 			out.println( centralRegistry.toString() );
 		}
@@ -375,6 +381,7 @@ public class MultiplayerServer extends Application {
 				//centralRegistry.saveRecords(); // the best place to save
 				//TODO: determine under what circumstance shall it be saved.
 	    }
+
 
 	    else if (line.trim().substring(0, 1).toLowerCase().equals("s")) {
 				logger.info("Command processed : 's'");
