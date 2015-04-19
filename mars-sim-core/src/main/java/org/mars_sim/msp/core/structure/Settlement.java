@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -75,6 +77,7 @@ implements LifeSupport {
      */
     /** The settlement template name. */
     private String template;
+    private String name;
 
     public double mealsReplenishmentRate = 0.6;
     public double dessertsReplenishmentRate = 0.7;
@@ -128,6 +131,7 @@ implements LifeSupport {
     protected Settlement(String name, Coordinates location) {
         // Use Structure constructor.
         super(name, location);
+    	this.name = name;
         //count++;
         //logger.info("constructor 1 : count is " + count);
     }
@@ -137,6 +141,7 @@ implements LifeSupport {
     protected Settlement(String name, int scenarioID, Coordinates location) {
         // Use Structure constructor.
         super(name, location);
+    	this.name = name;
         this.scenarioID = scenarioID;
         //count++;
         //logger.info("constructor 2 : count is " + count);
@@ -149,7 +154,7 @@ implements LifeSupport {
     public Settlement(String name, int id, String template, Coordinates location, int populationNumber, int initialNumOfRobots) {
         // Use Structure constructor
         super(name, location);
-
+    	this.name = name;
         this.template = template;
         this.scenarioID = id;
         this.initialNumOfRobots = initialNumOfRobots;
@@ -547,8 +552,34 @@ implements LifeSupport {
         makeDailyReport();
 
         updateGoodsManager(time);
-    }
 
+        // 2015-04-18 Added updateRegistry();
+        //updateRegistry();
+    }
+/*
+    // 2015-04-18 updateRegistry()
+    public void updateRegistry() {
+
+	List<SettlementRegistry> settlementList = MultiplayerClient.getInstance().getSettlementRegistryList();
+
+ 	 int clientID = Integer.parseInt( st.nextToken().trim() );
+
+ 	 String template = st.nextToken().trim();
+ 	 int pop = Integer.parseInt( st.nextToken().trim() );
+ 	 int bots = Integer.parseInt( st.nextToken().trim() );
+ 	 double lat = Double.parseDouble( st.nextToken().trim() );
+ 	 double lo = Double.parseDouble( st.nextToken().trim() );
+
+
+ 	 settlementList.forEach( s -> {
+ 			 String pn = s.getPlayerName();
+ 			 String sn = s.getName();
+ 			 if (pn.equals(playerName) && sn.equals(name))
+ 					 s.updateRegistry(playerName, clientID, name, template, pop, bots, lat, lo);
+ 	 });
+
+    }
+*/
     /**
      * Provides the daily statistics on inhabitant's food energy intake
      *

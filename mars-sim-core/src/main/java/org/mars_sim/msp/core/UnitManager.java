@@ -333,8 +333,9 @@ implements Serializable {
     private void createInitialSettlements() {
 
         SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
+        int size = config.getNumberOfInitialSettlements();
         try {
-            for (int x = 0; x < config.getNumberOfInitialSettlements(); x++) {
+            for (int x = 0; x < size ; x++) {
                 // Get settlement name
                 String name = config.getInitialSettlementName(x);
                 if (name.equals(SettlementConfig.RANDOM)) {
@@ -516,9 +517,9 @@ implements Serializable {
     private void createConfiguredPeople() {
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
+        int size = personConfig.getNumberOfConfiguredPeople();
         // Create all configured people.
-        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+        for (int x = 0; x < size; x++) {
             // Get person's name (required)
             String name = personConfig.getConfiguredPersonName(x);
             if (name == null) {
@@ -701,9 +702,9 @@ implements Serializable {
      */
     private void createConfiguredRobots() {
     	RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
+    	int size = robotConfig.getNumberOfConfiguredRobots();
         // Create all configured robot.
-        for (int x = 0; x < robotConfig.getNumberOfConfiguredRobots(); x++) {
+        for (int x = 0; x < size; x++) {
         	//System.out.println("x is "+ x);
             // Get robot's name (required)
             String name = robotConfig.getConfiguredRobotName(x);
@@ -919,9 +920,9 @@ implements Serializable {
     private void createConfiguredRelationships() {
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
+        int size = personConfig.getNumberOfConfiguredPeople();
         // Create all configured people relationships.
-        for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+        for (int x = 0; x < size; x++) {
             try {
                 // Get person's name
                 String name = personConfig.getConfiguredPersonName(x);

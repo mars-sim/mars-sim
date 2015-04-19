@@ -75,6 +75,7 @@ public class CentralRegistry implements Serializable{
     	logger.info("Sent : " + details);
     	return details;
     }
+
  /*
   * Parses and add only one entry (e.g. "name & lat & long") into the java objects
   */
@@ -97,6 +98,34 @@ public class CentralRegistry implements Serializable{
 	}
   }
 
+  /*
+   * Updates the settlement info
+   */
+   public void updateEntry(String line) {
+      StringTokenizer st = new StringTokenizer(line, "&");
+      try {
+     	 String playerName = st.nextToken().trim();
+     	 int clientID = Integer.parseInt( st.nextToken().trim() );
+     	 String name = st.nextToken().trim();
+     	 String template = st.nextToken().trim();
+     	 int pop = Integer.parseInt( st.nextToken().trim() );
+     	 int bots = Integer.parseInt( st.nextToken().trim() );
+     	 double lat = Double.parseDouble( st.nextToken().trim() );
+     	 double lo = Double.parseDouble( st.nextToken().trim() );
+
+     	 settlementList.forEach( s -> {
+     			 String pn = s.getPlayerName();
+     			 String sn = s.getName();
+     			 if (pn.equals(playerName) && sn.equals(name))
+     					 s.updateRegistry(playerName, clientID, name, template, pop, bots, lat, lo);
+     	 });
+      }
+
+      catch(Exception e) {
+     	 logger.info("Problem updating entry:\n" + e);
+ 			e.printStackTrace();
+ 	}
+   }
 
   /* Adds an entry to the array
    *

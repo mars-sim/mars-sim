@@ -248,9 +248,9 @@ implements MonitorModel, UnitListener {
 	 * @return the row index or -1 if not in table model.
 	 */
 	protected int getUnitIndex(Unit unit) {
-		if ((units != null) && units.contains(unit)) 
+		if ((units != null) && units.contains(unit))
 			return getIndex(unit);
-		else 
+		else
 			return -1;
 	}
 

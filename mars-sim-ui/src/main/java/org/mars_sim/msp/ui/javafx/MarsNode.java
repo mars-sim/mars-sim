@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsNode.java
- * @version 3.08 2015-03-31
+ * @version 3.08 2015-04-18
  * @author Manny Kung
  */
 
@@ -46,7 +46,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
 /**
- * The MarsNode class is the is the container for housing 
+ * The MarsNode class is the is the container for housing
  * new javaFX UI tools.
  */
 public class MarsNode {
@@ -55,14 +55,14 @@ public class MarsNode {
 
 	private MainScene mainScene;
 	private Stage stage;
-	
+
 	public MarsNode(MainScene mainScene, Stage stage) {
 		this.mainScene = mainScene;
 		this.stage = stage;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Creates settlement nodes
 	 *@param color
@@ -72,41 +72,49 @@ public class MarsNode {
 	    Pane pane = new Pane();
 	    //pane.setPrefSize(400, 200);
 	    pane.setStyle("-fx-background-color: " + color);
-	    VBox v = new VBox();
+	    VBox v = new VBox(10);
 	    v.setSpacing(10);
-	    v.setPadding(new Insets(0, 20, 10, 20)); 
-	    
-	    Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();	    
+	    v.setPadding(new Insets(0, 20, 10, 20));
+
+	    Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 		Iterator<Settlement> i = settlementList.iterator();
-		while(i.hasNext()) {	
+		while(i.hasNext()) {
 			Settlement settlement = i.next();
-			String sname = settlement.getName();
-			Label label = new Label(" ");
-			v.getChildren().addAll(label, createButton(settlement));
+			//String sname = settlement.getName();
+			//Label label = new Label(" ");
+			v.getChildren().addAll(createEach(settlement));
+
 		}
-		
+
 		pane.getChildren().add(v);
-		
+
 	    return pane;
 	  }
-	  
-	public Button createButton(Settlement settlement) {
-		Button b = new Button(settlement.getName());
-		b.setPadding(new Insets(20));
-		b.setMaxWidth(Double.MAX_VALUE);
 
-		b.setId("settlement-node");
-		b.getStylesheets().add("/fxui/css/settlementnode.css");
-      b.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	public Label createEach(Settlement settlement) {
+		//VBox v = new VBox(10);
+	    //v.setSpacing(10);
+	    //v.setPadding(new Insets(0, 20, 10, 20));
+	    //v.getChildren().addAll();
+		Label l = new Label(settlement.getName());
+		//Button b = new Button("Detail");
+
+		l.setPadding(new Insets(20));
+		l.setMaxWidth(Double.MAX_VALUE);
+
+		l.setId("settlement-node");
+		l.getStylesheets().add("/fxui/css/settlementnode.css");
+
+		l.setOnMouseClicked(new EventHandler<MouseEvent>() {
       	PopOver popOver = null;
           @Override
           public void handle(MouseEvent evt) {
           	if (popOver == null) {
           		// TODO: the new popover will go to the front, pushing the old popover to the background
-                  popOver = createPopOver(b, settlement);
+                  popOver = createPopOver(l, settlement);
           	}
-          	
+
           	else if (popOver.isShowing() && !popOver.isDetached()) {
                   popOver.hide(Duration.seconds(.5));  // (Duration.ZERO)
                   //popOver = null;
@@ -116,22 +124,22 @@ public class MarsNode {
                   popOver.hide(Duration.ZERO);  // (Duration.ZERO)
                   //popOver.show(b);
                   //popOver.setDetached(true);
-              }         	
-          	
+              }
+
           	else if (!popOver.isShowing()) {
-                  popOver = createPopOver(b, settlement);
+                  popOver = createPopOver(l, settlement);
                   //popOver.setDetached(false);
           		//popOver.show(b);
               }
-          	
+
           	else if (evt.getClickCount() == 2 ) {
           		if (!popOver.isShowing()) {
-          			popOver = createPopOver(b, settlement);
+          			popOver = createPopOver(l, settlement);
           			popOver.setDetached(false);
           		}
           		//popOver.show(b);
-              }   
-          	
+              }
+
           }
       });
       /*
@@ -140,12 +148,12 @@ public class MarsNode {
 
 			if (popover == null)
 				popover = createPopOver(b);
-			else 
+			else
 				popover.hide();
 			//System.out.println("create popover");
 		});
-				
-		
+
+
 		b.setOnMouseDragged(new EventHandler<MouseEvent>() {
 	        @Override
 	        public void handle(MouseEvent t) {
@@ -154,31 +162,31 @@ public class MarsNode {
 	            }
 	            if (t.isSecondaryButtonDown()) {
 	                System.out.println("autoaim engaged");
-	            }            
+	            }
 	        }
 	    });
-		*/		
-		
+		*/
+
 		//b.setStyle("-fx-background-color: orange");
-	       
-		return b;
-	}	  
-	
-	public PopOver createPopOver(Button b, Unit unit) {
+
+		return l;
+	}
+
+	public PopOver createPopOver(Label l, Unit unit) {
 		Settlement settlement = null;
 		Person person = null;
 		if (unit instanceof Settlement)
 			settlement = (Settlement) unit;
 		else if (unit instanceof Person)
 			person = (Person) unit;
-		
+
 		//isPopped = true;
-		String title = b.getText();
-		PopOver popover = new PopOver();	
+		String title = l.getText();
+		PopOver popover = new PopOver();
 		popover.setDetachedTitle(title);
 		popover.setDetachable(true);
-      popover.show(b);
-      
+		popover.show(l);
+
 		/*
       popover.setOnShown(evt -> {
       // The user clicked somewhere into the transparent background. If
@@ -190,51 +198,51 @@ public class MarsNode {
 	                }
 	            }
 	        });
-	
+
 	    });
-	      */ 
+	      */
       HBox root = new HBox();
-      
+
       if (settlement != null) {
 			//String sname = settlement.getName();
 			Label label = new Label("                   ");
-			
-	        VBox yesaccordion = new VBox();       
+
+	        VBox yesaccordion = new VBox();
 	        Accordion acc = new Accordion();
 	        acc.getPanes().addAll(this.createPanes(settlement));
 	        yesaccordion.getChildren().add(acc);
-	        root.getChildren().addAll(label, yesaccordion);	 
+	        root.getChildren().addAll(label, yesaccordion);
       }
       else if (person != null) {
 			String sname = person.getName();
 			Label label = new Label("  ");
-      	
+
       }
-      
+
       // Fade In
       Node skinNode = popover.getSkin().getNode();
       skinNode.setOpacity(0);
 
       Duration fadeInDuration = Duration.seconds(1);
-      
+
       FadeTransition fadeIn = new FadeTransition(fadeInDuration, skinNode);
       fadeIn.setFromValue(0);
       fadeIn.setToValue(1);
       fadeIn.play();
-      
+
       popover.setContentNode(root);
-      
+
       return popover;
 	}
-	
+
 	private Collection<TitledPane> createPanes(Settlement settlement){
       Collection<TitledPane> result = new ArrayList<TitledPane>();
       TitledPane tp = new TitledPane();
       tp.setText("Population");
-      
+
       String family = "Helvetica";
       double size = 12;
-   
+
       TextFlow textFlow = new TextFlow();
       textFlow.setLayoutX(80);
       textFlow.setLayoutY(80);
@@ -247,10 +255,10 @@ public class MarsNode {
       //Text text4 = new Text("\nNames: " + settlement.getRobots());
       //text4.setFont(Font.font(family, FontPosture.ITALIC, size));
       textFlow.getChildren().addAll(text1, text3);
-      
+
       //TextArea ta1 = new TextArea();
       //ta1.setText("Settlers: " + settlement.getCurrentPopulationNum() + " of " + settlement.getPopulationCapacity() );
-      //ta1.appendText("Names: " + settlement.getInhabitants());       
+      //ta1.appendText("Names: " + settlement.getInhabitants());
       //ta1.appendText("Bots: " + settlement.getCurrentNumOfRobots() + " of " + settlement.getRobotCapacity() );
       //ta1.appendText("Names: " + settlement.getRobots());
 
@@ -264,62 +272,64 @@ public class MarsNode {
       //      s1.setFitToWidth(content.prefWidth(-1)<arg2.getWidth());
       //      s1.setFitToHeight(content.prefHeight(-1)<arg2.getHeight());
       //    }}});
-      
+
       VBox vb = new VBox();
       vb.getChildren().addAll(textFlow, s1);
-      tp.setContent(vb);    
-      
+      tp.setContent(vb);
+
       result.add(tp);
-      
+
       tp = new TitledPane();
       tp.setText("Food Preparation");
       tp.setContent(new Button("Kitchen 1"));
       result.add(tp);
-      
+
       tp = new TitledPane();
       tp.setText("Greenhouse");
-      createGreenhouses(tp, settlement);       
+      createGreenhouses(tp, settlement);
       result.add(tp);
-      
+
       return result;
   }
-	
+
 	public VBox createPeople(Settlement settlement) {
 	    //BorderPane border = new BorderPane();
 	    //border.setPadding(new Insets(20, 0, 20, 20));
 
-	    VBox v = new VBox();
+	    VBox v = new VBox(10);
 	    v.setSpacing(10);
-	    v.setPadding(new Insets(0, 20, 10, 20)); 
-	    
+	    v.setPadding(new Insets(0, 20, 10, 20));
+
 
 	    Collection<Person> persons = settlement.getInhabitants();
 		List<Person> personList = new ArrayList<Person>(persons);
 		Iterator<Person> i = personList.iterator();
-		while(i.hasNext()) {	
+		while(i.hasNext()) {
 			Person person = i.next();
-			String sname = person.getName();
-			v.getChildren().add(createPersonButton(person));
+			//String sname = person.getName();
+			v.getChildren().add(createPerson(person));
 		}
-		
+
 		return v;
 	}
-	
-	public Button createPersonButton(Person person) {
-		Button b = new Button(person.getName());
-		b.setPadding(new Insets(20));
-		b.setMaxWidth(Double.MAX_VALUE);
-		b.setId("settlement-node");
-		b.getStylesheets().add("/fxui/css/personnode.css");
-      b.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+	public Label createPerson(Person person) {
+		//Button b = new Button(person.getName());
+		Label l = new Label(person.getName());
+
+		l.setPadding(new Insets(20));
+		l.setMaxWidth(Double.MAX_VALUE);
+		l.setId("settlement-node");
+		l.getStylesheets().add("/fxui/css/personnode.css");
+		l.setOnMouseClicked(new EventHandler<MouseEvent>() {
       	PopOver popOver = null;
           @Override
           public void handle(MouseEvent evt) {
           	if (popOver == null) {
           		// TODO: the new popover will go to the front, pushing the old popover to the background
-                  popOver = createPopOver(b, person);
+                  popOver = createPopOver(l, person);
           	}
-          	
+
           	else if (popOver.isShowing() && !popOver.isDetached()) {
                   popOver.hide(Duration.seconds(.5));  // (Duration.ZERO)
                   //popOver = null;
@@ -329,38 +339,38 @@ public class MarsNode {
                   popOver.hide(Duration.ZERO);  // (Duration.ZERO)
                   //popOver.show(b);
                   //popOver.setDetached(true);
-              }         	
-          	
+              }
+
           	else if (!popOver.isShowing()) {
-                  popOver = createPopOver(b, person);
+                  popOver = createPopOver(l, person);
                   //popOver.setDetached(false);
           		//popOver.show(b);
               }
-          	
+
           	else if (evt.getClickCount() == 2 ) {
           		if (!popOver.isShowing()) {
-          			popOver = createPopOver(b, person);
+          			popOver = createPopOver(l, person);
           			popOver.setDetached(false);
           		}
           		//popOver.show(b);
-              }   
-          	
+              }
+
           }
       });
 
-		return b;
+		return l;
 	}
-	
+
   public void createGreenhouses(TitledPane tp, Settlement settlement) {
   	VBox v = new VBox();
 	    v.setSpacing(10);
-	    v.setPadding(new Insets(0, 20, 10, 20)); 
- 	
-  	List<Building> buildings = settlement.getBuildingManager().getBuildings();   	
-  	
+	    v.setPadding(new Insets(0, 20, 10, 20));
+
+  	List<Building> buildings = settlement.getBuildingManager().getBuildings();
+
 		Iterator<Building> iter1 = buildings.iterator();
 		while (iter1.hasNext()) {
-			Building building = iter1.next();				
+			Building building = iter1.next();
 	    	if (building.hasFunction(BuildingFunction.FARMING)) {
 	//        	try {
 	        		Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
@@ -371,18 +381,18 @@ public class MarsNode {
 	        }
 		}
 
-  
+
 	    tp.setContent(v);//"1 2 3 4 5..."));
 	    tp.setExpanded(true);
-	    
+
   }
-  
+
 
 	public Button createGreenhouseDialog(Farming farm) {
 		String name = farm.getBuilding().getNickName();
 		Button b = new Button(name);
 		b.setMaxWidth(Double.MAX_VALUE);
-		
+
       List<String> choices = new ArrayList<>();
       choices.add("Lettuce");
       choices.add("Green Peas");
@@ -395,7 +405,7 @@ public class MarsNode {
       dialog.initOwner(stage); // post the same icon from stage
       dialog.initStyle(StageStyle.UTILITY);
       //dialog.initModality(Modality.NONE);
-      
+
 		b.setPadding(new Insets(20));
 		b.setId("settlement-node");
 		b.getStylesheets().add("/fxui/css/settlementnode.css");
@@ -404,35 +414,35 @@ public class MarsNode {
 	    	Optional<String> selected = dialog.showAndWait();
 	        selected.ifPresent(crop -> System.out.println("Crop added to the queue: " + crop));
 	    });
-		
+
 	   //ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 	   //ButtonType buttonTypeOk = new ButtonType("OK", ButtonData.OK_DONE);
 	   //dialog.getButtonTypes().setAll(buttonTypeCancel, buttonTypeOk);
-	    
+
 	    return b;
 	}
-	
+
 	/*
 	public void createDialog(Alert alert) {
-	    
+
 	    DialogPane dialogPane = alert.getDialogPane();
 	    dialogPane.getStylesheets().add(
 	    //getClass().getResource("dialog.css").toExternalForm());
 	    "/fxui/css/dialog.css");
-	    
-	    final DialogPane dlgPane = dlg.getDialogPane(); 
-	    dlgPane.getButtonTypes().add(ButtonType.OK); 
-	    dlgPane.getButtonTypes().add(ButtonType.CANCEL); 
 
-	    final Button btOk = (Button) dlg.getDialogPane().lookupButton(ButtonType.OK); 
-	    btOk.addEventFilter(ActionEvent.ACTION, (event) -> { 
-	      if (!validateAndStore()) { 
-	        event.consume(); 
-	      } 
-	    }); 
+	    final DialogPane dlgPane = dlg.getDialogPane();
+	    dlgPane.getButtonTypes().add(ButtonType.OK);
+	    dlgPane.getButtonTypes().add(ButtonType.CANCEL);
+
+	    final Button btOk = (Button) dlg.getDialogPane().lookupButton(ButtonType.OK);
+	    btOk.addEventFilter(ActionEvent.ACTION, (event) -> {
+	      if (!validateAndStore()) {
+	        event.consume();
+	      }
+	    });
 
 	    dlg.showAndWait();
 	}
 	*/
-	
+
 }

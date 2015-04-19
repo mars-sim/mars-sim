@@ -26,6 +26,17 @@ public class SettlementRegistry implements Serializable{
 	//  this.clientID = id;
   //}
 
+	public void updateRegistry(String pn, int i, String n, String t, int p, int b, double la, double lo){
+		playerName = pn;
+		clientID = i;
+		name = n;
+		template = t;
+		population = p;
+		numOfRobots = b;
+		latitude = la;
+		longitude = lo;
+	}
+
 	public String getPlayerName() {
 		return playerName;
 	}
