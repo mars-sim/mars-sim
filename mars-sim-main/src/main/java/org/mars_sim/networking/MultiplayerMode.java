@@ -9,8 +9,10 @@ package org.mars_sim.networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -44,9 +46,9 @@ public class MultiplayerMode {
 
 	private MultiplayerServer multiplayerServer;
 
-	//private MultiplayerClient multiplayerClient;
+	private MultiplayerClient multiplayerClient;
 
-	private transient ThreadPoolExecutor serverClientExecutor;
+	//private transient ThreadPoolExecutor serverClientExecutor;
 
 	//public void start(Stage primaryStage) throws IOException {
 	public MultiplayerMode(MainMenu mainMenu) throws IOException {
@@ -55,11 +57,14 @@ public class MultiplayerMode {
 		roles.add("Host");
 		roles.add("Client");
 
-		InetAddress ip = InetAddress.getLocalHost();
+		InetAddress ip = null;
+		try {
+			ip = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {e.printStackTrace();}
 		String addressStr = ip.getHostAddress();
 		logger.info("Your IP address is : " + addressStr);
 
-		serverClientExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		//serverClientExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 
 	}
 
@@ -110,10 +115,13 @@ public class MultiplayerMode {
 			   if (role.equals("Host")) {
 					try {
 						//dialog.close();
-						mainMenu.getStage().close();
-						//MultiplayerServer.getInstance();
-						((MultiplayerServer) MultiplayerServer.instance).runServer(mainMenu);
-						serverClientExecutor.execute(((MultiplayerMode) MultiplayerServer.getInstance()).getModeTask());
+						mainMenu.getStage().close(); // needed in order to start a new UI application thread
+						//MultiplayerServer server =  (MultiplayerServer) MultiplayerServer.instance;
+						//MultiplayerServer server =  MultiplayerServer.getInstance();
+						//server.runServer();
+                        //javax.swing.SwingUtilities.invokeLater(() ->);
+						((MultiplayerServer) MultiplayerServer.instance).runServer();
+						//serverClientExecutor.execute(server.getHostTask());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -122,8 +130,10 @@ public class MultiplayerMode {
 
 			   else if (role.equals("Client")) {
 					try {
-						MultiplayerClient.getInstance().runClient(mainMenu);
-						serverClientExecutor.execute(MultiplayerClient.getInstance().getModeTask());
+						//MultiplayerClient client = MultiplayerClient.getInstance();
+						//client.runClient();
+						MultiplayerClient.getInstance().runClient();
+						//serverClientExecutor.execute(client.getClientTask());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

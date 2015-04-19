@@ -238,12 +238,12 @@ public class MainMenu {
 
 		try {
 			multiplayerMode = new MultiplayerMode(this);
-			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-			executor.execute(multiplayerMode.getModeTask());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		executor.execute(multiplayerMode.getModeTask());
 
 	   //pool.shutdown();
 

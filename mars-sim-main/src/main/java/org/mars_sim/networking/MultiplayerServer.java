@@ -25,10 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.networking.CentralRegistry;
-import org.mars_sim.msp.core.networking.SettlementRegistry;
-import org.mars_sim.msp.javafx.MainMenu;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -60,10 +56,12 @@ public class MultiplayerServer extends Application {
 
     //private Stage stage = new Stage();
 	private HostTask hostTask;
-	private MainMenu mainMenu;
+	//private MainMenu mainMenu;
 	private MultiplayerTray multiplayerTray;
 
-	static final Object instance = new Object();
+	//static final Object instance = new Object();
+	static final Object instance = new MultiplayerServer();
+
 
 	private Socket socket = null;
 	private ServerSocket ss = null;
@@ -71,17 +69,14 @@ public class MultiplayerServer extends Application {
 	private PrintWriter out = null;
 	private BufferedReader in = null;
 
-	private SetupConnectionTask connectionTask;
+	private ConnectionTask connectionTask;
 	private transient ThreadPoolExecutor serverExecutor;
 	private transient ThreadPoolExecutor connectionTaskExecutor;
 
 	private Map<Integer, String> idMap = new ConcurrentHashMap<>();
 
 
-	//protected MultiplayerServer() {
-	//	System.out.println("constructor");
-	//	startServer();
-	//}
+
 
 	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
 	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
@@ -94,23 +89,34 @@ public class MultiplayerServer extends Application {
     public static MultiplayerServer getInstance() {
         return HoldInstance.INSTANCE;
     }
+
+    protected MultiplayerServer() {
+		System.out.println("constructor");
+	}
 */
 
     /*	Method 2 : Auto ThreadSafe Singleton Pattern using Object
      *  This implementation is more optimized than others since the need for checking
      *  the value of the Singleton instance ( i.e. instance == null ) is eliminated
-     */
-
+*/
     public static Object getInstance() {
     	return instance;
     }
 
-	public void runServer(MainMenu mainMenu) {
-		this.mainMenu = mainMenu;
-		startServer();
-	}
+    // To start MultiplayerServer by itself, the following empty constructor must be commented out.
+    //protected MultiplayerServer() {
+ 		//System.out.println("calling MultiplayerServer constructor");
+ 	//}
 
-	public void startServer() {
+	//public void runServer() {//MainMenu mainMenu) {
+		//this.mainMenu = mainMenu;
+	//	System.out.println("start runServer()");
+	//	startServer();
+	//}
+
+
+	public void runServer() {
+		//System.out.println("running runServer()");
 		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
 		//System.out.println("running startServer()");
@@ -124,8 +130,10 @@ public class MultiplayerServer extends Application {
 
 		hostServerAddress = ip.getHostAddress();
 		logger.info("Running the host at " + hostServerAddress);
+
 		hostTask = new HostTask(hostServerAddress);
-		serverExecutor.execute(getHostTask());
+		serverExecutor.execute(hostTask);
+
 		multiplayerTray = new MultiplayerTray(this);
 	}
 
@@ -133,9 +141,9 @@ public class MultiplayerServer extends Application {
 		return hostServerAddress;
 	}
 
-	public MainMenu getMainMenu() {
-		return mainMenu;
-	}
+	//public MainMenu getMainMenu() {
+	//	return mainMenu;
+	//}
 
 	public HostTask getHostTask() {
 		return hostTask;
@@ -182,7 +190,7 @@ public class MultiplayerServer extends Application {
 	        	logger.info("Waiting for clients to connect...");
 	        	socket = ss.accept();
 	        	socket.setKeepAlive(true);
-	        	connectionTask = new SetupConnectionTask(socket);
+	        	connectionTask = new ConnectionTask(socket);
 	        	connectionTaskExecutor.execute(connectionTask);
 	          	//Thread t = new Thread(new ConnectionThread(socket));
 	          	//t.start();
@@ -205,13 +213,13 @@ public class MultiplayerServer extends Application {
 
 	}
 
-	class SetupConnectionTask implements Runnable {
+	class ConnectionTask implements Runnable {
 
 		private Socket socket;
 
 		//private long SLEEP_TIME = 1000; // 1 second.
 
-		public SetupConnectionTask(Socket socket) {
+		public ConnectionTask(Socket socket) {
 			this.socket = socket;
 		}
 
@@ -290,9 +298,9 @@ public class MultiplayerServer extends Application {
 		   //alert.initOwner(stage);
 		   alert.setTitle("Mars Simulation Project");
 		   alert.setHeaderText("Multiplayer Host");
-		   if (mainMenu != null) {
-			   alert.initOwner(mainMenu.getStage());
-		   }
+		   //if (mainMenu != null) {
+			//   alert.initOwner(mainMenu.getStage());
+		   //}
 		   alert.setContentText(str);
 		   alert.show();
 	}
@@ -493,10 +501,10 @@ public class MultiplayerServer extends Application {
  */
 
 	public void start(Stage stage) throws Exception {
-		startServer();
-		serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-		connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
-		serverExecutor.execute(getHostTask());
+		runServer();
+		//serverExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		//connectionTaskExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_NUM_THREADS); // newCachedThreadPool();
+		//serverExecutor.execute(getHostTask());
 	}
 
     public static void main(String[] args) {
@@ -506,10 +514,11 @@ public class MultiplayerServer extends Application {
 
 	public void destroy() {
 		socket= null;
+		serverExecutor = null;
 		connectionTaskExecutor= null;
 	    hostTask= null;
 		connectionTask= null;
-		mainMenu= null;
+		//mainMenu= null;
 		multiplayerTray= null;
 		socket = null;
 		centralRegistry= null;

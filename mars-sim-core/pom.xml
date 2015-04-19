@@ -17,7 +17,6 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
     	<groupId>org.jdom</groupId>
     	<artifactId>jdom</artifactId>
@@ -29,14 +28,19 @@
     	<version>0.9</version>
     </dependency>
     <dependency>
-    	<groupId>net.sf.mars-sim</groupId>
-    	<artifactId>mars-sim-mapdata</artifactId>
-    	<version>${project.version}</version>
-    </dependency>
-    <dependency>
     	<groupId>com.google.guava</groupId>
     	<artifactId>guava</artifactId>
     	<version>18.0</version>
 	</dependency>
+    <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-mapdata</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
+        <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-network</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

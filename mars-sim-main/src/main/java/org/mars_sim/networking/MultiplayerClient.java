@@ -21,10 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.networking.SettlementRegistry;
-import org.mars_sim.msp.javafx.MainMenu;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -88,10 +87,12 @@ public class MultiplayerClient {
 	private Button bRegister;
 	//Container c;
 
-	private MainMenu mainMenu;
-	private SetupTask modeTask;
+	//private MainMenu mainMenu;
+	private ClientTask clientTask;
 	private MultiplayerTray multiplayerTray;
 	private Alert alert;
+	private transient ThreadPoolExecutor clientExecutor;
+
 	//private SettlementRegistry[] registryArray = new SettlementRegistry[CentralRegistry.MAX];
 	private List<SettlementRegistry> settlementList;
 
@@ -144,9 +145,9 @@ public class MultiplayerClient {
 	}
 */
 
-	public void runClient(MainMenu mainMenu) {
+	public void runClient() { //MainMenu mainMenu) {
 
-		this.mainMenu = mainMenu;
+		//this.mainMenu = mainMenu;
 
 		settlementList = new CopyOnWriteArrayList<>();
 
@@ -154,7 +155,6 @@ public class MultiplayerClient {
 		try {
 			ip = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		clientAddressStr = ip.getHostAddress();
@@ -164,7 +164,9 @@ public class MultiplayerClient {
     	   	createConnectionStage();
         });
 
-		modeTask = new SetupTask();//clientAddressStr);
+		clientTask = new ClientTask();//clientAddressStr);
+		clientExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+		clientExecutor.execute(clientTask);
 	}
 
 	public void setUserName(String name) {
@@ -179,22 +181,22 @@ public class MultiplayerClient {
 		return hostAddressStr;
 	}
 
-	public MainMenu getMainMenu() {
-		return mainMenu;
-	}
+	//public MainMenu getMainMenu() {
+	//	return mainMenu;
+	//}
 
-	public SetupTask getModeTask() {
-		return modeTask;
+	public ClientTask getClientTask() {
+		return clientTask;
 	}
 
 	/*
 	 * Creates the task that will prompt users to create a dialog box for choosing the host server's IP address
 	 */
-	class SetupTask implements Runnable {
+	class ClientTask implements Runnable {
 
 		//private String addressStr;
 
-		private SetupTask() { //String addressStr) {
+		private ClientTask() { //String addressStr) {
 			//this.addressStr = addressStr;
 		}
 
@@ -211,7 +213,7 @@ public class MultiplayerClient {
 
 		// Create the custom dialog.
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.initOwner(mainMenu.getStage());
+		//dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Multiplayer Client");
 		dialog.setContentText("Enter your username and host : ");
@@ -290,7 +292,7 @@ public class MultiplayerClient {
 				    //createAlert(hostAddressStr);
 					multiplayerTray = new MultiplayerTray(this);
 					sendGetRecords(); // obtain the existing settlement list
-					mainMenu.runOne();
+					//mainMenu.runOne();
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -306,7 +308,7 @@ public class MultiplayerClient {
 	    alert = new Alert(AlertType.INFORMATION);
 	    alert.initModality(Modality.NONE);
 		alert.setTitle("Mars Simulation Project");
-		alert.initOwner(mainMenu.getStage());
+		//alert.initOwner(mainMenu.getStage());
 		alert.setHeaderText("Multiplayer Client");
 		alert.setContentText(content); // "Connection verified with " + address
 		alert.show();
@@ -737,8 +739,8 @@ public class MultiplayerClient {
 		tfLong= null;
 		bGetRecords= null;
 		bCreateNew= null;
-		mainMenu= null;
-		modeTask= null;
+		//mainMenu= null;
+		clientTask= null;
 		multiplayerTray= null;
 		alert= null;
 	}
