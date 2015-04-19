@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.networking;
+package org.mars_sim.networking;
 
 import java.io.Serializable;
 
