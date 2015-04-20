@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.networking;
+package org.mars_sim.msp.networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,11 +20,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.javafx.MainMenu;
-import org.mars_sim.networking.MultiplayerClient;
 
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * The MultiplayerServerClient class serves to set up multiplayer mode in MSP
@@ -103,7 +106,13 @@ public class MultiplayerMode {
 
 	public void createChoiceDialog() {
 		dialog = new ChoiceDialog<>("Client", roles);
-		dialog.initOwner(mainMenu.getStage());
+		//dialog.initOwner(mainMenu.getStage());
+		// Get the Stage.
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+		// Add corner icon.
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/server48.png").toString()));
+		// Add Stage icon
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/server256.png").toString()));
 		dialog.initModality(Modality.NONE);
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Multiplayer Setup");
@@ -120,7 +129,11 @@ public class MultiplayerMode {
 						//MultiplayerServer server =  MultiplayerServer.getInstance();
 						//server.runServer();
                         //javax.swing.SwingUtilities.invokeLater(() ->);
+						//Platform.setImplicitExit(true);
+						//Platform.exit();
 						((MultiplayerServer) MultiplayerServer.instance).runServer();
+						//mainMenu.getStage().fireEvent(new WindowEvent(mainMenu.getStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+
 						//serverClientExecutor.execute(server.getHostTask());
 					} catch (Exception e) {
 						e.printStackTrace();

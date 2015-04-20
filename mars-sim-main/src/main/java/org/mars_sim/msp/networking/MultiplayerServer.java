@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.networking;
+package org.mars_sim.msp.networking;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +29,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -60,7 +62,7 @@ public class MultiplayerServer extends Application {
 	private MultiplayerTray multiplayerTray;
 
 	//static final Object instance = new Object();
-	static final Object instance = new MultiplayerServer();
+	public static final Object instance = new MultiplayerServer();
 
 
 	private Socket socket = null;
@@ -295,6 +297,11 @@ public class MultiplayerServer extends Application {
 	 */
 	public void createAlert(String str) {
 		   Alert alert = new Alert(AlertType.INFORMATION);
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			// Add corner icon.
+			stage.getIcons().add(new Image(this.getClass().getResource("/icons/server48.png").toString()));
+			// Add Stage icon
+			alert.setGraphic(new ImageView(this.getClass().getResource("/icons/server256.png").toString()));
 		   //alert.initOwner(stage);
 		   alert.setTitle("Mars Simulation Project");
 		   alert.setHeaderText("Multiplayer Host");

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.networking;
+package org.mars_sim.msp.networking;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +33,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -47,6 +49,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.ButtonType;
 
 /**
@@ -173,10 +176,6 @@ public class MultiplayerClient {
 		playerName = name;
 	}
 
-	//public Container getContainer() {
-	//	return c;
-	//}
-
 	public String getAddressStr() {
 		return hostAddressStr;
 	}
@@ -204,19 +203,104 @@ public class MultiplayerClient {
 		public void run() {
             Platform.runLater(() -> {
 				//mainMenu.getStage().setIconified(true);
-            	createDialog();
+            	connectDialog();
             });
 		}
 	}
 
-	public void createDialog() {
+	public void connectDialog() {
 
 		// Create the custom dialog.
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		Dialog<String> dialog = new Dialog<>();
+		// Get the Stage.
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+		// Add corner icon.
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/client48.png").toString()));
+		// Add Stage icon
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/network256.png").toString()));
 		//dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Multiplayer Client");
-		dialog.setContentText("Enter your username and host : ");
+		dialog.setContentText("Enter the host address : ");
+
+		// Set the button types.
+		ButtonType connectButtonType = new ButtonType("Connect", ButtonData.OK_DONE);
+		//ButtonType localHostButton = new ButtonType("localhost");
+		//dialog.getDialogPane().getButtonTypes().addAll(localHostButton, loginButtonType, ButtonType.CANCEL);
+		dialog.getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CANCEL);
+
+		// Create the username and password labels and fields.
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		//TextField tfUser = new TextField();
+		//tfUser.setPromptText("Username");
+		TextField tfHostAddress = new TextField();
+		//PasswordField password = new PasswordField();
+		tfHostAddress.setPromptText("192.168.xxx.xxx");
+		//hostAddress.setText("192.168.xxx.xxx");
+		Button localhostB = new Button("Use localhost");
+
+		//grid.add(new Label("Username:"), 0, 0);
+		//grid.add(tfUser, 1, 0);
+		grid.add(new Label("Host Address:"), 0, 1);
+		grid.add(tfHostAddress, 1, 1);
+		grid.add(localhostB, 2, 1);
+
+		// Enable/Disable connect button depending on whether the host address was entered.
+		Node connectButton = dialog.getDialogPane().lookupButton(connectButtonType);
+		connectButton.setDisable(true);
+
+		// Do some validation (using the Java 8 lambda syntax).
+		tfHostAddress.textProperty().addListener((observable, oldValue, newValue) -> {
+		    connectButton.setDisable(newValue.trim().isEmpty());
+		});
+
+		dialog.getDialogPane().setContent(grid);
+
+		// Request focus on the username field by default.
+		Platform.runLater(() -> tfHostAddress.requestFocus());
+
+		// Convert the result to a username-password-pair when the login button is clicked.
+		dialog.setResultConverter(dialogButton -> {
+		    if (dialogButton == connectButtonType) {
+		        return tfHostAddress.getText();
+		    }
+		    return null;
+		});
+
+		localhostB.setOnAction(event -> {
+			tfHostAddress.setText("127.0.0.1");
+        });
+		//localhostB.setPadding(new Insets(1));
+		//localhostB.setPrefWidth(10);
+
+		Optional<String> result = dialog.showAndWait();
+
+		result.ifPresent(input -> {
+			String hostAddressStr = input;
+			this.hostAddressStr = hostAddressStr;
+		    logger.info("Connecting to host at " + hostAddressStr);
+			loginDialog();
+		});
+
+	}
+
+	public void loginDialog() {
+		// Create the custom dialog.
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		// Get the Stage.
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+		// Add corner icon.
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/login32.png").toString()));
+		// Add Stage icon
+		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/login256.png").toString()));
+		//dialog.initOwner(mainMenu.getStage());
+		dialog.setTitle("Mars Simulation Project");
+		dialog.setHeaderText("Multiplayer Client");
+		dialog.setContentText("Enter your username and password : ");
 
 		// Set the button types.
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
@@ -232,17 +316,17 @@ public class MultiplayerClient {
 
 		TextField tfUser = new TextField();
 		tfUser.setPromptText("Username");
-		TextField tfHostAddress = new TextField();
-		//PasswordField password = new PasswordField();
-		tfHostAddress.setPromptText("192.168.xxx.xxx");
+		//TextField tfPassword = new TextField();
+		PasswordField tfPassword = new PasswordField();
+		tfPassword.setPromptText("xxxx");
 		//hostAddress.setText("192.168.xxx.xxx");
-		Button localhostB = new Button("use localhost");
+		Button defaultPassword = new Button("Use default");
 
 		grid.add(new Label("Username:"), 0, 0);
 		grid.add(tfUser, 1, 0);
-		grid.add(new Label("Host Address:"), 0, 1);
-		grid.add(tfHostAddress, 1, 1);
-		grid.add(localhostB, 2, 1);
+		grid.add(new Label("Password:"), 0, 1);
+		grid.add(tfPassword, 1, 1);
+		grid.add(defaultPassword, 2, 1);
 
 		// Enable/Disable login button depending on whether a username was entered.
 		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
@@ -261,29 +345,22 @@ public class MultiplayerClient {
 		// Convert the result to a username/host address pair when the login button is clicked.
 		dialog.setResultConverter(dialogButton -> {
 		    if (dialogButton == loginButtonType) {
-		        return new Pair<>(tfUser.getText(), tfHostAddress.getText());
+		        return new Pair<>(tfUser.getText(), tfPassword.getText());
 		    }
 		    return null;
 		});
 
-		localhostB.setOnAction(event -> {
-			tfHostAddress.setText("127.0.0.1");
+		defaultPassword.setOnAction(event -> {
+			tfPassword.setText("Default");
         });
 		//localhostB.setPadding(new Insets(1));
 		//localhostB.setPrefWidth(10);
 
-		//Optional<ButtonType> hostButton = dialog.showAndWait();
-		//if (hostButton.get() == localHostButton){
-		//	hostAddress.setText("127.0.0.1");
-		//}
-
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 
 		result.ifPresent(input -> {
-			String hostAddressStr = tfHostAddress.getText();
-			this.hostAddressStr = hostAddressStr;
 			playerName = tfUser.getText();
-		    logger.info("User " + input.getKey() + " connecting to host at " + input.getValue());
+		    logger.info("User " + input.getKey() + " connecting to host at " + hostAddressStr);
 		    //logger.info("Connecting to the host at " + hostAddressStr);
 
 			   try {
@@ -300,7 +377,6 @@ public class MultiplayerClient {
 		});
 
 	}
-
 	/*
 	 * Creates an alert to inform the user that the client can make a connection with the server
 	 */
