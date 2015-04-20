@@ -7,8 +7,8 @@
 package org.mars_sim.msp.javafx;
 
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
-import org.mars_sim.msp.networking.MultiplayerClient;
-import org.mars_sim.msp.networking.SettlementRegistry;
+import org.mars_sim.msp.network.MultiplayerClient;
+import org.mars_sim.msp.network.SettlementRegistry;
 
 import java.awt.Dimension;
 import java.awt.Font;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-17
+ * @version 3.08 2015-04-20
  * @author Manny Kung
  */
 
@@ -12,14 +12,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.msp.network.MultiplayerClient;
+import org.mars_sim.msp.network.MultiplayerServer;
 
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;
@@ -27,8 +26,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-
 /**
  * The MultiplayerServerClient class serves to set up multiplayer mode in MSP
  * and allows user to select the computer as a host or a client.

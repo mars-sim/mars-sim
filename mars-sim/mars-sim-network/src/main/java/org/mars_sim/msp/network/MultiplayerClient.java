@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.networking;
+package org.mars_sim.msp.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +36,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -299,7 +298,7 @@ public class MultiplayerClient {
 		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/login256.png").toString()));
 		//dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
-		dialog.setHeaderText("Multiplayer Client");
+		dialog.setHeaderText("Log in");
 		dialog.setContentText("Enter your username and password : ");
 
 		// Set the button types.
@@ -351,7 +350,7 @@ public class MultiplayerClient {
 		});
 
 		defaultPassword.setOnAction(event -> {
-			tfPassword.setText("Default");
+			tfPassword.setText("msp0");
         });
 		//localhostB.setPadding(new Insets(1));
 		//localhostB.setPrefWidth(10);
@@ -586,7 +585,7 @@ public class MultiplayerClient {
 	    String lo = tfLong.getText().trim();
 
 	    if ( playerName.equals("") | (name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
-	    	createAlert("Input Error", "Please type in settlement data with the correct format.");
+	    	createAlert("Input Error", "Please type in all settlement info.");
 	    	//JOptionPane.showMessageDialog( null,  "No name/coordinates entered", "Send Error", JOptionPane.ERROR_MESSAGE);
 	    else {
 	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
