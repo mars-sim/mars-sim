@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.networking;
+package org.mars_sim.msp.networking;
 
 import javafx.application.*;
 import javafx.geometry.Pos;
@@ -21,8 +21,6 @@ import javafx.stage.*;
 
 import javax.imageio.ImageIO;
 
-import org.mars_sim.networking.MultiplayerClient;
-import org.mars_sim.networking.MultiplayerServer;
 
 import java.io.IOException;
 import java.text.*;

@@ -7,6 +7,8 @@
 package org.mars_sim.msp.javafx;
 
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
+import org.mars_sim.msp.networking.MultiplayerClient;
+import org.mars_sim.msp.networking.SettlementRegistry;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -63,8 +65,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
-import org.mars_sim.networking.MultiplayerClient;
-import org.mars_sim.networking.SettlementRegistry;
 
 
 /**
