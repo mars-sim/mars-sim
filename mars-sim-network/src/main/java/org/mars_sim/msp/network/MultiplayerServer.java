@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.networking;
+package org.mars_sim.msp.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
