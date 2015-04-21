@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -354,8 +355,11 @@ public class MultiplayerServer extends Application {
 	    		   }
 	    	   } // end of if (in != null)
 	       } // end of while()
-		} catch(IOException e) {e.printStackTrace();}
-
+		} catch(IOException e) { //| SocketException e) {
+			e.printStackTrace();
+			//logger.log(e);
+		    //throw e;
+		}
 		return id;
 	}
 

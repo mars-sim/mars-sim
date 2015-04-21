@@ -7,12 +7,15 @@
 
 package org.mars_sim.msp.network;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -25,7 +28,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -63,7 +70,9 @@ public class MultiplayerClient {
 	private static final int NEW_ID = 1;
 
 	private static final int PORT = 9090;
+	private static final int PORT_CHAT = 9876;
 
+	private static final String MULTICAST_ADDRESS = "224.0.0.7";
 	//private static final String LOCALHOST = "localhost";
 
 	private int clientID = 0;
@@ -72,6 +81,8 @@ public class MultiplayerClient {
 	private String hostAddressStr;
 	private String clientAddressStr;
 	private String playerName;
+    InetAddress iadr;
+    MulticastSocket so ;
 
 	private List<String> addresses = new ArrayList<>();
 
@@ -83,7 +94,7 @@ public class MultiplayerClient {
 	private PrintWriter out;
 
 	private TextArea ta;
-	private TextField tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
+	private TextField tfChat, tfName, tfTemplate, tfPop, tfBots, tfLat, tfLong;
 	private Button bGetRecords;
 	private Button bCreateNew;
 	private Button bRegister;
@@ -98,20 +109,19 @@ public class MultiplayerClient {
 	//private SettlementRegistry[] registryArray = new SettlementRegistry[CentralRegistry.MAX];
 	private List<SettlementRegistry> settlementList;
 
-	protected MultiplayerClient() {
-	}
+	public MultiplayerClient() {}
 
 	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
 	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
 	 * see http://crunchify.com/lazy-creation-of-singleton-threadsafe-instance-without-using-synchronized-keyword/
 	 */
-    private static class HoldInstance {
-        private static final MultiplayerClient INSTANCE = new MultiplayerClient();
-    }
+    //private static class HoldInstance {
+    //    private static final MultiplayerClient INSTANCE = new MultiplayerClient();
+   // }
 
-    public static MultiplayerClient getInstance() {
-        return HoldInstance.INSTANCE;
-    }
+   // public static MultiplayerClient getInstance() {
+    //    return HoldInstance.INSTANCE;
+   // }
 
 
 /*  Method 1 : Simple Singleton Pattern: (Lazy Initialization + ThreadSafe with synchronized block)
@@ -313,62 +323,80 @@ public class MultiplayerClient {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 150, 10, 10));
 
-		TextField tfUser = new TextField();
-		tfUser.setPromptText("Username");
+		TextField tfPlayer = new TextField();
+		tfPlayer.setPromptText("e.g. m03j");
 		//TextField tfPassword = new TextField();
 		PasswordField tfPassword = new PasswordField();
 		tfPassword.setPromptText("xxxx");
-		//hostAddress.setText("192.168.xxx.xxx");
-		Button defaultPassword = new Button("Use default");
 
-		grid.add(new Label("Username:"), 0, 0);
-		grid.add(tfUser, 1, 0);
-		grid.add(new Label("Password:"), 0, 1);
+		Button defaultPWB = new Button("Use Default");
+		Button guestB = new Button("As Guest");
+
+		defaultPWB.setOnAction(event -> {
+			tfPassword.setText("msp0");
+        });
+
+		guestB.setOnAction(event -> {
+			tfPlayer.setText("Guest_");
+			tfPassword.setText("msp0");
+        });
+
+		grid.add(new Label("Player Name :"), 0, 0);
+		grid.add(tfPlayer, 1, 0);
+		grid.add(guestB, 2, 0);
+		grid.add(new Label("Password :"), 0, 1);
 		grid.add(tfPassword, 1, 1);
-		grid.add(defaultPassword, 2, 1);
+		grid.add(defaultPWB, 2, 1);
 
 		// Enable/Disable login button depending on whether a username was entered.
 		Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
 		loginButton.setDisable(true);
 
 		// Do some validation (using the Java 8 lambda syntax).
-		tfUser.textProperty().addListener((observable, oldValue, newValue) -> {
+		tfPlayer.textProperty().addListener((observable, oldValue, newValue) -> {
 		    loginButton.setDisable(newValue.trim().isEmpty());
 		});
 
 		dialog.getDialogPane().setContent(grid);
 
-		// Request focus on the username field by default.
-		Platform.runLater(() -> tfUser.requestFocus());
+		// Request focus on the player name field by default.
+		Platform.runLater(() -> tfPlayer.requestFocus());
 
-		// Convert the result to a username/host address pair when the login button is clicked.
+		// Convert the result to a player name /host address pair when the login button is clicked.
 		dialog.setResultConverter(dialogButton -> {
 		    if (dialogButton == loginButtonType) {
-		        return new Pair<>(tfUser.getText(), tfPassword.getText());
+		        return new Pair<>(tfPlayer.getText(), tfPassword.getText());
 		    }
 		    return null;
 		});
 
-		defaultPassword.setOnAction(event -> {
-			tfPassword.setText("msp0");
-        });
+
 		//localhostB.setPadding(new Insets(1));
 		//localhostB.setPrefWidth(10);
 
 		Optional<Pair<String, String>> result = dialog.showAndWait();
 
 		result.ifPresent(input -> {
-			playerName = tfUser.getText();
-		    logger.info("User " + input.getKey() + " connecting to host at " + hostAddressStr);
+			playerName = tfPlayer.getText();
+		    logger.info("Player " + input.getKey() + " connecting to host at " + hostAddressStr);
 		    //logger.info("Connecting to the host at " + hostAddressStr);
 
 			   try {
-				    makeContact(hostAddressStr);
-				    sendRegister(); // obtain a client id
-				    //createAlert(hostAddressStr);
-					multiplayerTray = new MultiplayerTray(this);
-					sendGetRecords(); // obtain the existing settlement list
-					//mainMenu.runOne();
+				   makeContact(hostAddressStr);
+				   // obtain a client id
+				   sendRegister();
+
+				   // establish chat
+				   iadr = InetAddress.getByName(MULTICAST_ADDRESS);
+				   so = new MulticastSocket(PORT_CHAT);
+	               so.joinGroup(iadr);
+	               new Receiver(so,ta);
+	               sendMess("Online");
+
+				   //createAlert(hostAddressStr);
+				   multiplayerTray = new MultiplayerTray(this);
+				   sendGetRecords(); // obtain the existing settlement list
+				   //mainMenu.runOne();
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -413,7 +441,31 @@ public class MultiplayerClient {
         b.setCenter(scrollPane);
 	    //scrollPane.prefWidthProperty().bind(<parentControl>.prefWidthProperty());
 	    //scrollPane.prefHeightProperty().bind(<parentConrol>.prefHeightProperty());
-	    Label lName = new Label("Name: ");
+
+        tfChat = new TextField();
+        tfChat.setPromptText("Type here to chat and hit enter to send");
+        tfChat.setPrefColumnCount(50);
+
+        // Listen for TextField text changes
+/*
+        tfChat.textProperty().addListener(new ChangeListener<String>() {
+        	public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                ta.appendText(playerName + " : " + newValue + "\n");
+                sendMess(newValue);
+            }
+        });
+*/
+        tfChat.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+            	String text = tfChat.getText();
+            	//ta.appendText(playerName + " : " + text + "\n");
+                sendMess(text);
+                tfChat.setText("");
+            }
+        });
+
+
+        Label lName = new Label("Name: ");
 	    tfName = new TextField();
 	    tfName.setPromptText("Ismenius Lacus");
 	    tfName.setPrefColumnCount(10);
@@ -470,7 +522,8 @@ public class MultiplayerClient {
 	    hb3.setAlignment(Pos.CENTER);
 	    VBox vb = new VBox(15);
 	    b.setBottom(vb);
-	    vb.getChildren().addAll(hb1, hb2, hb3);
+
+	    vb.getChildren().addAll(tfChat, hb1, hb2, hb3);
 	    vb.setPadding(new Insets(5, 5, 5, 5));
 		vb.setAlignment(Pos.CENTER);
 	    hb1.getChildren().addAll(lName, tfName, lTemplate, tfTemplate);
@@ -799,6 +852,22 @@ public class MultiplayerClient {
         notifyAll();
     }
  */
+
+	public void sendMess(String s) {
+		byte[] data = null;
+		if (s.equals("Online"))
+	        data = ("[Status Update] : " + playerName + " is now online").getBytes();
+		else
+			data = (playerName + " : " + s).getBytes();
+        DatagramPacket packet = new DatagramPacket(data,data.length,iadr,PORT_CHAT);
+        try {
+        	so.send(packet);
+        }
+        catch(IOException ie) {
+                Toolkit.getDefaultToolkit().beep();
+                JOptionPane.showMessageDialog(null, "Data overflow !");
+        }
+	}
 
 	public List<SettlementRegistry> getSettlementRegistryList() {
 		return settlementList;
