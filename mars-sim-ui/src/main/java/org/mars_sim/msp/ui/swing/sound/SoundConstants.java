@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-05-21
 
  * @author Dima Stepanchuk
  */
@@ -38,11 +38,7 @@ public interface SoundConstants {
 	public final static String SND_EQUIPMENT = "equipment.ogg";
 
 	// Supported sound formats
-	public final static String SND_FORMAT_WAV  = ".wav";
-	public final static String SND_FORMAT_MP3  = ".mp3";
 	public final static String SND_FORMAT_OGG  = ".ogg";
-	public final static String SND_FORMAT_MID =  ".mid";
-	public final static String SND_FORMAT_MIDI = ".midi";
 
 	/** maximum amount of clips in cache. */
 	public final static int MAX_CACHE_SIZE = 5;
