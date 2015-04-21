@@ -80,9 +80,9 @@ public class MultiplayerMode {
 		return multiplayerServer;
 	}
 
-	// MultiplayerClient getMultiplayerClient() {
-	//	return multiplayerClient;
-	//}
+	 public MultiplayerClient getMultiplayerClient() {
+		return multiplayerClient;
+	}
 
 
 	class ModeTask implements Runnable {
@@ -142,7 +142,9 @@ public class MultiplayerMode {
 					try {
 						//MultiplayerClient client = MultiplayerClient.getInstance();
 						//client.runClient();
-						MultiplayerClient.getInstance().runClient();
+						//MultiplayerClient.getInstance().runClient();
+						multiplayerClient = new MultiplayerClient();
+						multiplayerClient.runClient();
 						//serverClientExecutor.execute(client.getClientTask());
 					} catch (Exception e) {
 						e.printStackTrace();

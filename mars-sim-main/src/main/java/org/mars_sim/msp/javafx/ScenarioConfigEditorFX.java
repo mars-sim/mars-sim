@@ -141,8 +141,8 @@ public class ScenarioConfigEditorFX {
 		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
 		if (mainMenu.getMultiplayerMode() != null) {
-			//multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
-			multiplayerClient = MultiplayerClient.getInstance();
+			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			//multiplayerClient = MultiplayerClient.getInstance();
 			//multiplayerClient.sendRegister(); // not needed. already registered
 			clientID = multiplayerClient.getClientID();
 			playerName = multiplayerClient.getPlayerName();
