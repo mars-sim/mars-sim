@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-05-21
 
  * @author Dima Stepanchuk
  * @author Sebastien Venot
@@ -15,15 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -43,7 +34,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
  * A class to play sound files.
  */
 public class AudioPlayer
-implements LineListener, MetaEventListener {
+implements LineListener {
 
 	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
 
@@ -53,18 +44,6 @@ implements LineListener, MetaEventListener {
 
 	/** The current clip sound. */
 	private Clip currentClip;
-
-	/** The current MIDI sound. */
-	private Sequencer sequencer;
-
-	/** MIDI sound synthesizer */
-	private Synthesizer synthesizer;
-
-	/** MIDI sound receiver */
-	private Receiver synthReceiver;
-
-	/** MIDI sound transmitter */
-	private Transmitter seqTransmitter;
 
 	/** Is the audio player muted? */
 	private boolean mute;
@@ -84,10 +63,7 @@ implements LineListener, MetaEventListener {
 	public AudioPlayer() {
 		currentClip = null;
 		currentLine = null;
-		sequencer = null;
-		synthesizer = null;
-		synthReceiver = null;
-		seqTransmitter = null;
+
 
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
@@ -110,13 +86,9 @@ implements LineListener, MetaEventListener {
 		sound_player = new Thread() {
 			public void run() {
 				if ((filepath != null) && filepath.length() != 0) {
-					if (filepath.endsWith(SoundConstants.SND_FORMAT_WAV)) {
-						startPlayWavSound(filepath, loop);
-					} else if (filepath.endsWith(SoundConstants.SND_FORMAT_MP3) || filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
+					if (filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
 						startPlayCompressedSound(filepath, loop);
-					} else if (filepath.endsWith(SoundConstants.SND_FORMAT_MIDI) || filepath.endsWith(SoundConstants.SND_FORMAT_MID)) {
-						startMidiSound(filepath, loop);
-					}
+					} 
 				}
 			}
 
@@ -133,7 +105,7 @@ implements LineListener, MetaEventListener {
 	 * @param filepath the file path to the sound
 	 * @param loop Should the sound clip be looped?
 	 */
-	public void startPlayWavSound(String filepath, boolean loop) {
+	public void startPlayOggSound(String filepath, boolean loop) {
 		try {
 			if (!audioCache.containsKey(filepath)) {
 				URL soundURL = getClass().getClassLoader().getResource(filepath);
@@ -176,7 +148,7 @@ implements LineListener, MetaEventListener {
 	}
 
 	/**
-	 * Play compressed sound (MP3 or OGG files) The sounds are not cached in
+	 * Play compressed sound (OGG files) The sounds are not cached in
 	 * this case.
 	 * @param filepath filepath the file path to the sound
 	 * @param loop Should the sound clip be looped?
@@ -236,45 +208,6 @@ implements LineListener, MetaEventListener {
 	}
 
 	/**
-	 * Play compressed sound (MP3 or OGG files) The sounds are not cached in
-	 * this case.
-	 * @param filepath filepath the file path to the sound
-	 * @param loop Should the sound clip be looped?
-	 */
-	public void startMidiSound(String filepath, boolean loop) {
-
-		looping = loop;
-
-		try {
-			// --This tells you what your MidiDevices are
-			sequencer = MidiSystem.getSequencer();
-			synthesizer = MidiSystem.getSynthesizer();
-			sequencer.open();
-			synthesizer.open();
-
-			synthReceiver = synthesizer.getReceiver();
-			seqTransmitter = sequencer.getTransmitter();
-			seqTransmitter.setReceiver(synthReceiver);
-
-			// From file
-			Sequence sequence = MidiSystem.getSequence(new File(filepath));
-
-			sequencer.setSequence(sequence);
-			sequencer.addMetaEventListener(this);
-			setVolume(volume);
-			setMute(mute);
-			if (looping) {
-				sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
-				sequencer.start();
-			} else {
-				sequencer.start();
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, Msg.getString("AudioPlayer.log.issuesCompressed"), e); //$NON-NLS-1$
-		}
-	}
-
-	/**
 	 * Play a clip once.
 	 * @param filepath the filepath to the sound file.
 	 */
@@ -306,12 +239,7 @@ implements LineListener, MetaEventListener {
 			currentLine.removeLineListener(this);
 			currentLine = null;
 		}
-		if ((sequencer != null) && sequencer.isOpen()) {
-			sequencer.stop();
-			sequencer.close();
-			sequencer.removeMetaEventListener(this);
-			sequencer = null;
-		}
+
 	}
 
 	/**
@@ -369,9 +297,6 @@ implements LineListener, MetaEventListener {
 			} catch (IllegalArgumentException e) {};
 		}
 
-		if (sequencer != null) {
-			setVolumeSequencer(volume);
-		}
 	}
 
 	/**
@@ -404,28 +329,9 @@ implements LineListener, MetaEventListener {
 			}
 		}
 
-		if (sequencer != null) {
-			muteSequencer(mute);
-		}
+
 	}
 
-	private void muteSequencer(boolean mute) {
-		Sequence sequence = sequencer.getSequence();
-		int tracks = sequence.getTracks().length;
-
-		for (int i = 0; i < tracks; i++) {
-			sequencer.setTrackMute(i, mute);
-		}
-	}
-
-	private void setVolumeSequencer(float volume) {
-		// convert to a range 0 to 127
-		int convert = (int) (volume * 127);
-		MidiChannel[] channels = synthesizer.getChannels();
-		for (MidiChannel channel : channels) {
-			channel.controlChange(7, convert);
-		}
-	}
 
 	/**
 	 * LineListener interface. This method is called when an event occurs during
@@ -450,18 +356,5 @@ implements LineListener, MetaEventListener {
 		sound_player = null;
 	}
 
-	/**
-	 * For handling midi player events
-	 */
-	@Override
-	public void meta(MetaMessage meta) {
-		if (meta.getType() == 47) {
-			if (sequencer != null) {
-				sequencer.stop();
-				sequencer.close();
-				sequencer.removeMetaEventListener(this);
-				sequencer = null;
-			}
-		}
-	}
+
 }
