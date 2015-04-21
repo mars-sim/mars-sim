@@ -1,0 +1,11 @@
+JOrbisComment is a simple comment editor for Ogg Vorbis.
+This program is just provided here for setting an example, how to use
+JOrbis for editing comments.
+
+The following command will generate new Ogg Vorbis file 'bar.ogg' from
+'foo.ogg' and 'bar.ogg' will include comments from 'foo.ogg' and new
+two comments; TITLE, ARTIST.
+
+  $ java -classpath .. -DJOrbis.comment.0=TITLE=sometitle \
+                       -DJOrbis.comment.1=ARTIST=somename \
+		       JOrbisComment foo.ogg  bar.ogg
