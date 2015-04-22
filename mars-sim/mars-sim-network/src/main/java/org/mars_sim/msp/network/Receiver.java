@@ -7,12 +7,12 @@ import java.net.MulticastSocket;
 import javafx.scene.control.TextArea;
 
 // Modified from http://mrbool.com/how-to-create-chat-application-in-java/26778
-class Receiver implements Runnable {
+public class Receiver implements Runnable {
 	Thread activity = new Thread(this);
 	MulticastSocket so;
 	TextArea txt;
 
-	Receiver(MulticastSocket sock, TextArea txtAr) {
+	public Receiver(MulticastSocket sock, TextArea txtAr) {
 		so = sock;
 		txt = txtAr;
 		activity.start();

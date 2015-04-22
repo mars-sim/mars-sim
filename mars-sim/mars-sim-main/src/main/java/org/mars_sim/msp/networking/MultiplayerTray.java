@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.network;
+package org.mars_sim.msp.networking;
 
 import javafx.application.*;
 import javafx.geometry.Pos;
@@ -21,6 +21,8 @@ import javafx.stage.*;
 
 import javax.imageio.ImageIO;
 
+import org.mars_sim.msp.networking.MultiplayerClient;
+
 import java.io.IOException;
 import java.text.*;
 import java.util.*;
@@ -30,8 +32,6 @@ public class MultiplayerTray { //extends Application {
 
 	private static String CLIENT_RUNNING = "MSP client connector is running";
 	private static String CLIENT_CONNECTOR  = "MSP Client Connector";
-	private static String SERVER_RUNNING = "MSP host server is running";
-	private static String SERVER_CONNECTOR  = "MSP Host Server";
 
 	private String running;
 	private String connector;
@@ -41,7 +41,7 @@ public class MultiplayerTray { //extends Application {
     // application stage is stored so that it can be shown and hidden based on system tray icon operations.
     private Stage stage;
 
-    private MultiplayerServer multiplayerServer;
+    private MultiplayerClient multiplayerClient;
 
     // a timer allowing the tray icon to provide a periodic notification event.
     private Timer notificationTimer = new Timer();
@@ -52,20 +52,14 @@ public class MultiplayerTray { //extends Application {
     // format used to display the current time in a tray icon notification.
     private DateFormat timeFormat = SimpleDateFormat.getTimeInstance();
 
+    public MultiplayerTray(MultiplayerClient multiplayerClient) { //final Stage stage) {
+    	this.multiplayerClient = multiplayerClient;
+    	this.addressStr = multiplayerClient.getAddressStr();
+        //this.stage = stage;
+    	running =  CLIENT_RUNNING;
+    	connector = CLIENT_CONNECTOR;
 
-    public MultiplayerTray(MultiplayerServer multiplayerServer) { //final Stage stage) {
-    	this.multiplayerServer = multiplayerServer;
-    	this.addressStr = multiplayerServer.getAddressStr();
-    	running =  SERVER_RUNNING;
-    	connector = SERVER_CONNECTOR;
-/*
-        Platform.runLater(() -> {
-        	stage = new Stage();
-        });
-        // sets up the tray icon (using awt code run on the swing thread).
-        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
- */
-       	setStage();
+    	setStage();
 
     }
 
@@ -139,6 +133,10 @@ public class MultiplayerTray { //extends Application {
             trayIcon = new java.awt.TrayIcon(image);
             trayIcon.setImageAutoSize(true);
 
+            // if the user double-clicks on the tray icon, show the main app stage.
+            if (multiplayerClient != null)
+            	trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+
             // if the user selects the default menu item (which includes the app name),
             // show the main app stage.
             java.awt.MenuItem titleItem = new java.awt.MenuItem(connector);
@@ -150,6 +148,18 @@ public class MultiplayerTray { //extends Application {
 
             java.awt.MenuItem panelItem = null;
             java.awt.MenuItem openItem = null;
+            if (multiplayerClient != null) {
+	            panelItem = new java.awt.MenuItem("Panel");
+	            	panelItem.addActionListener(event -> {
+	                    //multiplayerClient.getContainer().show();
+	            	});
+
+	            //openItem = new java.awt.MenuItem("Status");
+	            	//openItem.addActionListener(event -> Platform.runLater(this::showStage));
+
+	            //openItem.setFont(boldFont);
+            }
+
 
             // to really exit the application, the user must go to the system tray icon
             // and select the exit option, this will shutdown JavaFX and remove the
@@ -178,6 +188,11 @@ public class MultiplayerTray { //extends Application {
             popup.add(titleItem);
             popup.add(ipItem);
             popup.addSeparator();
+            if (multiplayerClient != null) {
+	            popup.add(panelItem);
+	           // popup.add(openItem);
+	            popup.addSeparator();
+            }
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
 
@@ -225,7 +240,10 @@ public class MultiplayerTray { //extends Application {
         stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
         String header = null;
         //String text = null;
-        header = "Multiplayer Host Server";
+        if (multiplayerClient != null) {
+        	header = "Multiplayer Client Connector";
+        }
+
         //System.out.println("confirm dialog pop up.");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.initOwner(stage);
@@ -236,10 +254,6 @@ public class MultiplayerTray { //extends Application {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.YES){
-			if (multiplayerServer != null) {
-	        	// TODO: fix the loading problem for server mode
-	        	multiplayerServer.setServerStopped(true);
-	        }
 			notificationTimer.cancel();
 			Platform.exit();
 			tray.remove(trayIcon);

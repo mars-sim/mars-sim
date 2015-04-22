@@ -7,8 +7,8 @@
 package org.mars_sim.msp.javafx;
 
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
-import org.mars_sim.msp.network.MultiplayerClient;
 import org.mars_sim.msp.network.SettlementRegistry;
+import org.mars_sim.msp.networking.MultiplayerClient;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -55,6 +55,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -483,7 +484,18 @@ public class ScenarioConfigEditorFX {
 			}
 			else
 */
-				settlementTable = new JTable(settlementTableModel);
+				settlementTable = new JTable(settlementTableModel) {
+				    public java.awt.Component prepareRenderer(
+				        TableCellRenderer renderer, int row, int column) {
+				    	java.awt.Component c = super.prepareRenderer(renderer, row, column);
+				    	// if this is an existing settlement registered by another client machine,
+				    	if (hasSettlement && row < settlementList.size())
+				    		c.setForeground(java.awt.Color.ORANGE);
+				    	else
+				    		c.setForeground(java.awt.Color.GREEN);
+				        return c;
+				    }
+				};
 
 			settlementTable.setRowSelectionAllowed(true);
 			settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -885,8 +897,8 @@ public class ScenarioConfigEditorFX {
 		 * Load the default settlements in the table.
 		 */
 		private void loadDefaultSettlements() {
-			if (getRowCount() > 0 )
-				saveCache();
+			//if (getRowCount() > 0 )
+				//saveCache();
 			SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			settlements.clear();
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
@@ -901,12 +913,12 @@ public class ScenarioConfigEditorFX {
 				settlements.add(info);
 			}
 			fireTableDataChanged();
-			loadCache();
+			//loadCache();
 		}
 
 		private void loadExistingSettlements() {
-			if (getRowCount() > 0)
-				saveCache();
+			//if (getRowCount() > 0)
+				//saveCache();
 			settlements.clear();
 				settlementList.forEach( s -> {
 					SettlementInfo info = new SettlementInfo();
@@ -922,7 +934,7 @@ public class ScenarioConfigEditorFX {
 							+ "  " + info.numOfRobots + "  " + info.latitude + "  " + info.longitude);
 				});
 			fireTableDataChanged();
-			loadCache();
+			//loadCache();
 		}
 
 		private void saveCache() {
@@ -1012,8 +1024,10 @@ public class ScenarioConfigEditorFX {
 					case 0:
 						result = info.playerName;
 						if (multiplayerClient != null) {
-							if (hasSettlement)
-								result = multiplayerClient.getSettlementRegistryList().get(row).getPlayerName();
+							List<SettlementRegistry> settlementList = multiplayerClient.getSettlementRegistryList();
+							if (hasSettlement && row < settlementList.size()) {
+								result = settlementList.get(row).getPlayerName();
+							}
 							//else
 							//	result = info.playerName;
 						}
