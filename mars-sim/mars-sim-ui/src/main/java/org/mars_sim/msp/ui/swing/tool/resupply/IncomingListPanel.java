@@ -135,7 +135,7 @@ implements ListSelectionListener {
 				 Transportable transportItem = (Transportable) event.getSource();
 
 				 if (EventType.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
-					 if (TransitState.PLANNED == transportItem.getTransitState() || 
+					 if (TransitState.PLANNED == transportItem.getTransitState() ||
 							 TransitState.IN_TRANSIT.equals(transportItem.getTransitState())) {
 						 transportList.add(transportItem);
 						 Collections.sort(transportList);
@@ -143,7 +143,7 @@ implements ListSelectionListener {
 						 fireIntervalAdded(this, transportIndex, transportIndex);
 					 }
 				 }
-				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) || 
+				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) ||
 						 EventType.TRANSPORT_ITEM_CANCELLED.equals(event.getType())) {
 					 int transportIndex = transportList.indexOf(transportItem);
 					 transportList.remove(transportItem);

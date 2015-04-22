@@ -40,8 +40,8 @@ implements Serializable {
 
 	// Data members
 	/** Phi value of coordinates PHI is latitude in (-PI - PI) radians (although only 0-PI) seem to be legal values. */
-	private double phi; 
-	/** Theta value of coordinates, THETA is longitute in (0-2PI) radians. */
+	private double phi;
+	/** Theta value of coordinates, THETA is longitude in (0-2PI) radians. */
 	private double theta;
 	/** Sine of phi (stored for efficiency). */
 	private double sinPhi;
@@ -120,7 +120,7 @@ implements Serializable {
 	public void setPhi(double newPhi) {
 		if (newPhi <= 0D) {
 			phi = 0D;
-		} else if (newPhi > Math.PI) { 
+		} else if (newPhi > Math.PI) {
 			phi = Math.PI;
 		}
 		else {
@@ -214,7 +214,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the arc angle between this location and a given 
+	 * Gets the arc angle between this location and a given
 	 * coordinates.
 	 * @param otherCoords the destination location.
 	 * @return the arc angle (radians).
@@ -224,7 +224,7 @@ implements Serializable {
 		return getAngleVincenty(otherCoords);
 	}
 
-	/** 
+	/**
 	 * Calculates the arc angle between this location and a
 	 * given coordinates using the spherical law of cosines.
 	 * http://en.wikipedia.org/wiki/Spherical_law_of_cosines
@@ -251,7 +251,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Calculates the arc angle between this location and a 
+	 * Calculates the arc angle between this location and a
 	 * given location using the haversine formula.
 	 * http://en.wikipedia.org/wiki/Haversine_formula
 	 * @param otherCoords the destination location.
@@ -272,7 +272,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Calculates the arc angle between this location and a 
+	 * Calculates the arc angle between this location and a
 	 * given location using Vincenty's formula.
 	 * http://en.wikipedia.org/wiki/Vincenty%27s_formulae
 	 * @param otherCoords the destination location.
@@ -312,7 +312,7 @@ implements Serializable {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Gets a common formatted string to represent this location.
 	 * @return formatted longitude & latitude string for this Coordinates object
 	 * @see #getFormattedLongitudeString()
@@ -326,9 +326,9 @@ implements Serializable {
 		return buffer.toString();
 	}
 
-	/** 
+	/**
 	 * Gets a common formatted string to represent longitude for
-	 * this location. 
+	 * this location.
 	 * ex. "35.6 E"
 	 * @return formatted longitude string for this Coordinates object
 	 */
@@ -336,9 +336,9 @@ implements Serializable {
 		return getFormattedLongitudeString(theta);
 	}
 
-	/** 
+	/**
 	 * Gets a common formatted string to represent longitude for
-	 * this location. 
+	 * this location.
 	 * ex. "35.6 E"
 	 * @param theta the radian theta value for the location.
 	 * @return formatted longitude string for this Coordinates object
@@ -362,9 +362,9 @@ implements Serializable {
 		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
 	}
 
-	/** 
+	/**
 	 * Gets a common formatted string to represent latitude for this
-	 * location. 
+	 * location.
 	 * ex. "35.6 S"
 	 * @return formatted latitude string for this Coordinates object
 	 */
@@ -372,9 +372,9 @@ implements Serializable {
 		return getFormattedLatitudeString(phi);
 	}
 
-	/** 
+	/**
 	 * Gets a common formatted string to represent latitude for this
-	 * location. 
+	 * location.
 	 * ex. "35.6 S"
 	 * @param phi the radian phi value for the location.
 	 * @return formatted latitude string for this Coordinates object
@@ -400,25 +400,25 @@ implements Serializable {
 		return formatter.format(degrees) + " " + Msg.getString("direction.degreeSign") + direction; //$NON-NLS-1$
 	}
 
-	/** 
-	 * Converts phi to latitude 
+	/**
+	 * Converts phi to latitude
 	 * @param phi in radians
 	 * @return latitude in degrees
 	 */
 	public double getPhi2Lat(double phi) {
-		
+
 		double piHalf = Math.PI / 2.0;
-		double lat_degree = 0; 	
+		double lat_degree = 0;
 		if (phi < piHalf) {
 		    lat_degree = ((piHalf - phi) / piHalf) * 90;
 		    //hemisphere = 1;
 		} else if (phi > piHalf){
-			lat_degree = ((phi - piHalf) / piHalf) * 90; 
+			lat_degree = ((phi - piHalf) / piHalf) * 90;
 			//hemisphere = 2;
-		}			
-		return lat_degree;	
+		}
+		return lat_degree;
 	}
-	
+
 	/** Converts spherical coordinates to rectangular coordinates.
 	 *  Returns integer x and y display coordinates for spherical
 	 *  location.
@@ -448,15 +448,15 @@ implements Serializable {
 	 * @param low_edge lower edge of map (in pixels)
 	 * @return pixel offset value for map
 	 */
-	public IntPoint findRectPosition(double newPhi, double newTheta, 
+	public IntPoint findRectPosition(double newPhi, double newTheta,
 			double rho, int half_map, int low_edge) {
 
 		double temp_col = newTheta + ((Math.PI / -2D) - theta);
 		double temp_buff_x = rho * Math.sin(newPhi);
-		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) 
+		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col))
 				+ half_map) - low_edge;
-		int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) * 
-				Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) + 
+		int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) *
+				Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) +
 				half_map) - low_edge;
 		return new IntPoint(buff_x, buff_y);
 	}
@@ -546,7 +546,7 @@ implements Serializable {
 	 */
 	public Coordinates getNewLocation(Direction direction, double distance) {
 
-		// Breaking line into iterative set of 10km plumb lines to estimate 
+		// Breaking line into iterative set of 10km plumb lines to estimate
 		// cardinal direction on sphere.
 
 		double iterationDistance = 10D;
@@ -571,7 +571,7 @@ implements Serializable {
 		return finalCoordinates;
 	}
 
-	/** 
+	/**
 	 * Parse a latitude string into a phi value.
 	 * ex. "25.344 N"
 	 * @param latitude as string
@@ -592,7 +592,7 @@ implements Serializable {
 			numberString = numberString.replace(',', '.');
 			latValue = Double.parseDouble(numberString);
 		}
-		catch(NumberFormatException e) { 
+		catch(NumberFormatException e) {
 			throw new IllegalStateException("Latitude number invalid: " + latitude);
 		}
 
@@ -608,7 +608,7 @@ implements Serializable {
 		return phi;
 	}
 
-	/** 
+	/**
 	 * Parse a longitude string into a theta value.
 	 * ex. "63.5532 W"
 	 * @param longitude as string
@@ -629,7 +629,7 @@ implements Serializable {
 			numberString = numberString.replace(',', '.');
 			longValue = Double.parseDouble(numberString);
 		}
-		catch(NumberFormatException e) { 
+		catch(NumberFormatException e) {
 			throw new IllegalStateException("Longitude number invalid: " + longitude);
 		}
 
@@ -642,7 +642,7 @@ implements Serializable {
 
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;
-	}	
+	}
 
 	/**
 	 * Gets a random latitude.

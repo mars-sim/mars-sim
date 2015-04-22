@@ -124,6 +124,7 @@ public class ScenarioConfigEditorFX {
 	private CrewEditorFX crewEditorFX;
 
 	private MultiplayerClient multiplayerClient;
+	private SettlementConfig settlementConfig;
 
 	private List<SettlementRegistry> settlementList;
 
@@ -137,6 +138,8 @@ public class ScenarioConfigEditorFX {
 		this.config = config;
 		this.mainMenu = mainMenu;
 		this.hasError = false;
+
+		settlementConfig = config.getSettlementConfiguration();
 
 		stage = new Stage();
 		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
@@ -427,6 +430,7 @@ public class ScenarioConfigEditorFX {
 				Simulation.createNewSimulation();
 				mainMenu.runMainScene();
 				Simulation.instance().start();
+				multiplayerClient.prepareListeners();
 				closeWindow();
 			}
 
@@ -579,38 +583,52 @@ public class ScenarioConfigEditorFX {
 	 * Set the simulation configuration based on dialog choices.
 	 */
 	private void setConfiguration() {
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		// Clear configuration settlements.
 		settlementConfig.clearInitialSettlements();
-		int size = settlementTableModel.getRowCount();
-		int s = numS; // x needs to be constant running running for loop and should not be set to the global variable numS
 		// Add configuration settlements from table data.
-		for (int x = s ; x < size; x++) {
-
-			String playerName = (String) settlementTableModel.getValueAt(x, COLUMN_PLAYER_NAME);
-			String name = (String) settlementTableModel.getValueAt(x, COLUMN_SETTLEMENT_NAME);
-			String template = (String) settlementTableModel.getValueAt(x, COLUMN_TEMPLATE);
-			String population = (String) settlementTableModel.getValueAt(x, COLUMN_POPULATION);
-			int populationNum = Integer.parseInt(population);
-			//System.out.println("populationNum is " + populationNum);
-			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, COLUMN_BOTS);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
-			String latitude = (String) settlementTableModel.getValueAt(x, COLUMN_LATITUDE);
-			String longitude = (String) settlementTableModel.getValueAt(x, COLUMN_LONGITUDE);
-			double lat = SettlementRegistry.convertLatLong2Double(latitude);
-			double lo = SettlementRegistry.convertLatLong2Double(longitude);
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
-			//Send the newly created settlement to host server
+		for (int x = 0 ; x < settlementTableModel.getRowCount(); x++) {
 			if (multiplayerClient != null) {
-				// create an instance of the
-				SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
-				multiplayerClient.sendNew(newS);
-				//settlementConfig.setMultiplayerClient(multiplayerClient);
+				if (hasSettlement && x < settlementList.size())
+						; // do nothing to the existing settlements from other clients
+				else {
+					createSettlement(x);
+				}
+			}
+			else {
+				createSettlement(x);
 			}
 		}
 	}
 
+	/**
+	 * Creates a settlement based from each row of choice
+	 */
+	private void createSettlement(int x) {
+
+		String playerName = (String) settlementTableModel.getValueAt(x, COLUMN_PLAYER_NAME);
+		String name = (String) settlementTableModel.getValueAt(x, COLUMN_SETTLEMENT_NAME);
+		String template = (String) settlementTableModel.getValueAt(x, COLUMN_TEMPLATE);
+		String population = (String) settlementTableModel.getValueAt(x, COLUMN_POPULATION);
+		int populationNum = Integer.parseInt(population);
+		//System.out.println("populationNum is " + populationNum);
+		String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, COLUMN_BOTS);
+		int numOfRobots = Integer.parseInt(numOfRobotsStr);
+		//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
+		String latitude = (String) settlementTableModel.getValueAt(x, COLUMN_LATITUDE);
+		String longitude = (String) settlementTableModel.getValueAt(x, COLUMN_LONGITUDE);
+		double lat = SettlementRegistry.convertLatLong2Double(latitude);
+		double lo = SettlementRegistry.convertLatLong2Double(longitude);
+
+		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
+
+		//Send the newly created settlement to host server
+		if (multiplayerClient != null) {
+			// create an instance of the
+			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
+			multiplayerClient.sendNew(newS);
+			//settlementConfig.setMultiplayerClient(multiplayerClient);
+		}
+	}
 	/**
 	 * Close and dispose dialog window.
 	 */

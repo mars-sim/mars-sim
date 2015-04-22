@@ -92,6 +92,7 @@ implements VehicleOperator, Serializable {
     private Favorite favorite;
     private TaskSchedule taskSchedule;
     private JobHistory jobHistory;
+    private Settlement buriedSettlement;
 
     /**
      * Constructs a Person object at a given settlement.
@@ -608,12 +609,25 @@ implements VehicleOperator, Serializable {
             associatedSettlement = newSettlement;
             fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
             if (oldSettlement != null) {
+            	setBuriedSettlement(oldSettlement);
                 oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
             }
             if (newSettlement != null) {
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
         }
+    }
+
+    /**
+     * Sets the associated settlement for a person.
+     * @param settlement
+     */
+    public void setBuriedSettlement(Settlement settlement) {
+    	buriedSettlement = settlement;
+    }
+
+    public Settlement getBuriedSettlement() {
+    	return buriedSettlement;
     }
 
     /**

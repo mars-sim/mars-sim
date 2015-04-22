@@ -71,7 +71,7 @@ implements ClockListener {
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
 	private boolean showRobotLabels;
-	private boolean showDayNightLayer = true; // turn on by default
+	private boolean showDayNightLayer;
 
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
@@ -101,7 +101,7 @@ implements ClockListener {
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		showRobotLabels = false;
-		showDayNightLayer = false;
+		showDayNightLayer = true;  // turn on by default
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
