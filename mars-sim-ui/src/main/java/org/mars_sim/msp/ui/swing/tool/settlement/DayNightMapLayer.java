@@ -74,8 +74,9 @@ public class DayNightMapLayer implements SettlementMapLayer {
             //	dayTime = false;
 
 	        if (sunlight <.01D) {
-	            //g2d.setColor(new Color(0, 0, 0, 128));
-	            g2d.setColor(new Color(0, 0, 0, 196));
+	        	// create a grey mask to cover the settlement map, simulating the darkness of the night
+	        	//TODO: during dust storm, use a red/orange mask to cover the map
+	            g2d.setColor(new Color(0, 0, 0, 128)); //(0, 0, 0, 196));
 	            g2d.fillRect(0, 0, width, height);
 	        }
 

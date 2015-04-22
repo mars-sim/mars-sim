@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -1217,6 +1218,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
+/*
 		if (event.getUnit() instanceof Settlement) {
 
 			//removeAllElements();
@@ -1233,8 +1235,22 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				j.next().addUnitListener(this);
 			}
 		}
-
+*/
 		//repaint(); // raise some cpu util% but not too bad
+
+		Object unit = event.getUnit();
+		if (unit instanceof Settlement) {
+			Settlement settlement = (Settlement) unit;
+			UnitManagerEventType eventType = event.getEventType();
+			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
+				System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
+				settlement.addUnitListener(this);
+			}
+			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
+				System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
+				settlement.removeUnitListener(this);
+			}
+		}
 	}
 
 	public void destroy() {
