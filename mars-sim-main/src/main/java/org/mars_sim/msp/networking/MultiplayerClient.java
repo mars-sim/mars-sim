@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * MultiplayerServerClient.java
- * @version 3.08 2015-04-17
+ * @version 3.08 2015-04-21
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.network;
+package org.mars_sim.msp.networking;
 
 import java.awt.Toolkit;
 import java.io.BufferedReader;
@@ -19,7 +19,10 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -28,8 +31,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.msp.network.Receiver;
+import org.mars_sim.msp.network.SettlementRegistry;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -50,6 +68,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -61,7 +80,7 @@ import javafx.scene.control.ButtonType;
 /**
  * The MultiplayerClient class allows the computer to take on the client role.
  */
-public class MultiplayerClient {
+public class MultiplayerClient implements UnitListener, HistoricalEventListener, UnitManagerListener {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
@@ -72,7 +91,9 @@ public class MultiplayerClient {
 	private static final int PORT = 9090;
 	private static final int PORT_CHAT = 9876;
 
-	private static final String MULTICAST_ADDRESS = "224.0.0.7";
+	private static final int TIME_DELAY = 60 * 1000; // in miliseconds
+
+	private static final String MULTICAST_ADDRESS = "ff02::fb"; // FF02:0:0:0:0:0:0:2"; // ff01::114"; //224.0.0.7";
 	//private static final String LOCALHOST = "localhost";
 
 	private int clientID = 0;
@@ -84,8 +105,7 @@ public class MultiplayerClient {
     InetAddress iadr;
     MulticastSocket so ;
 
-	private List<String> addresses = new ArrayList<>();
-
+	//private List<String> addresses = new ArrayList<>();
 	//private static MultiplayerClient instance = null;
 
 	private Stage stage;
@@ -98,9 +118,9 @@ public class MultiplayerClient {
 	private Button bGetRecords;
 	private Button bCreateNew;
 	private Button bRegister;
-	//Container c;
 
-	//private MainMenu mainMenu;
+	private MainMenu mainMenu;
+    private Timeline timeline;
 	private ClientTask clientTask;
 	private MultiplayerTray multiplayerTray;
 	private Alert alert;
@@ -157,9 +177,9 @@ public class MultiplayerClient {
 	}
 */
 
-	public void runClient() { //MainMenu mainMenu) {
+	public void runClient(MainMenu mainMenu) {
 
-		//this.mainMenu = mainMenu;
+		this.mainMenu = mainMenu;
 
 		settlementList = new CopyOnWriteArrayList<>();
 
@@ -189,9 +209,9 @@ public class MultiplayerClient {
 		return hostAddressStr;
 	}
 
-	//public MainMenu getMainMenu() {
-	//	return mainMenu;
-	//}
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
 
 	public ClientTask getClientTask() {
 		return clientTask;
@@ -211,7 +231,7 @@ public class MultiplayerClient {
 		@Override
 		public void run() {
             Platform.runLater(() -> {
-				//mainMenu.getStage().setIconified(true);
+				mainMenu.getStage().setIconified(true);
             	connectDialog();
             });
 		}
@@ -223,6 +243,7 @@ public class MultiplayerClient {
 		Dialog<String> dialog = new Dialog<>();
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest((event) -> event.consume());
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/client48.png").toString()));
 		// Add Stage icon
@@ -384,19 +405,28 @@ public class MultiplayerClient {
 			   try {
 				   makeContact(hostAddressStr);
 				   // obtain a client id
-				   sendRegister();
+				   boolean isSuccessful = sendRegister();
 
-				   // establish chat
-				   iadr = InetAddress.getByName(MULTICAST_ADDRESS);
-				   so = new MulticastSocket(PORT_CHAT);
-	               so.joinGroup(iadr);
-	               new Receiver(so,ta);
-	               sendMess("Online");
+				   if (isSuccessful) {
+					   // establish chat
+					   iadr = InetAddress.getByName(MULTICAST_ADDRESS);
+					   so = new MulticastSocket(PORT_CHAT);
+		               so.joinGroup(iadr);
+		               new Receiver(so,ta);
+		               sendChatText("Online");
 
-				   //createAlert(hostAddressStr);
-				   multiplayerTray = new MultiplayerTray(this);
-				   sendGetRecords(); // obtain the existing settlement list
-				   //mainMenu.runOne();
+					   //createAlert(hostAddressStr);
+					   multiplayerTray = new MultiplayerTray(this);
+					   sendGetRecords(); // obtain the existing settlement list
+					   //startTimer();
+					   mainMenu.runOne();
+					   stage.setOnCloseRequest((event) -> stage.close());
+				   }
+				   else {
+					   // shake the dialog or send an alert to inform the user the login has been used
+					   dialog.close();
+					   loginDialog();
+				   }
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -459,8 +489,9 @@ public class MultiplayerClient {
             @Override public void handle(ActionEvent event) {
             	String text = tfChat.getText();
             	//ta.appendText(playerName + " : " + text + "\n");
-                sendMess(text);
-                tfChat.setText("");
+                sendChatText(text);
+                //tfChat.setText("");
+                tfChat.clear();
             }
         });
 
@@ -625,7 +656,7 @@ public class MultiplayerClient {
 
 
 	/*
-	 * Creates a new settlement and sends "new ..." to server
+	 * Creates a new settlement from user input and sends "new ..." to server
 	 */
 	private void createNew() {
 		String playerName = this.playerName;
@@ -647,9 +678,64 @@ public class MultiplayerClient {
 	  }
 
 	/*
+	 * Creates a new settlement from the simulation and sends "new ..." to server
+	 */
+	private void createNew(Settlement s) { //String name, String template, int pop, int bots, String lat, String lo) {
+		String playerName = this.playerName;
+		String id = clientID + "";
+	    String name = s.getName();
+	    String template = s.getTemplate();
+	    String pop = s.getAllAssociatedPeople().size() + "";
+	    String bots = s.getAllAssociatedRobots().size() + "";
+	    String lat = s.getCoordinates().getFormattedLatitudeString();
+	    String lo = s.getCoordinates().getFormattedLongitudeString();
+
+	    if ( playerName.equals("") | (name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
+	    	createAlert("Input Error", "Please ensure all settlement info are correct.");
+	    	//JOptionPane.showMessageDialog( null,  "No name/coordinates entered", "Send Error", JOptionPane.ERROR_MESSAGE);
+	    else {
+	      out.println("new " + playerName + " & " + id + " & " + name + " & " + template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+	      ta.appendText("Sent : " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
+	    }
+	  }
+
+	/*
+	 * Removes a settlement from the simulation and sends "new ..." to server
+	 */
+	private void removeOld(Settlement s) { //String name, String template, int pop, int bots, String lat, String lo) {
+		String playerName = this.playerName;
+		String id = clientID + "";
+	    String name = s.getName();
+/*
+	    String template = null;
+	    String pop = null;
+	    String bots = null;
+	    String lat = null;
+	    String lo = null;
+*/
+	    settlementList.forEach(ss -> {
+
+			if (ss.getPlayerName().equals(playerName) && ss.getName().equals(name)) {
+				//String template = ss.getTemplate();
+				//String pop = ss.getPopulation() + "";
+				//String bots = ss.getNumOfRobots() + "";
+				//String lat = ss.getLatitudeStr();
+				//String lo = ss.getLongitudeStr();
+
+			    if ( playerName.equals("") | (name.equals("")) ) // | (template.equals("")) | (pop.equals("")) | (bots.equals("")) | (lat.equals("")) | (lo.equals("")))
+			    	createAlert("Input Error", "Please ensure all settlement info are correct.");
+			    else {
+			      out.println("remove " + playerName + " & " + id + " & " + name + " & " ); //+ template + " & " + pop + " & " + bots + " &" + lat + " & " + lo + " & ");
+			      ta.appendText("Sent : " + playerName + " , " + id + " , " + name ); //+ " , " + template + " , " + pop + " , " + bots + " , " + lat + " , " + lo + "\n");
+			    }
+			}
+	    });
+	  }
+
+	/*
 	 * Updates the info of a settlement and sends "update ..." to server
 	 */
-	private void updateSettlement(SettlementRegistry s) {
+	private void sendUpdate(SettlementRegistry s) {
 		String playerName = s.getPlayerName();
 		String id = s.getClientID() + "";
 	    String name = s.getName();
@@ -688,7 +774,8 @@ public class MultiplayerClient {
 	/*
 	 * Sends register command to host server to request a new client id
 	 */
-	public void sendRegister()  {
+	public boolean sendRegister()  {
+		boolean isSuccessful = false;
 	     try {
 	    	 out.println("register " + playerName);
 	    	 logger.info("Sent : register " + playerName);
@@ -698,16 +785,22 @@ public class MultiplayerClient {
 	    			 (line.substring(0, 6).equals("NEW_ID"))) {
 		    	 logger.info("Received : " + line);
 	    		 showRegistryContent(NEW_ID, line.substring(6).trim() );
+	    		 isSuccessful = true;
 	    	 }
-	    	 else  {   // should not happen but just in case
-		    	 logger.info("[Unknown format] Received : " + line);
-		    	 ta.appendText("[Unknown format] Received : " + line + "\n");
+	    	 else  {   // this playerName has been taken
+		    	 logger.info(line);
+		    	 ta.appendText(line + "\n");
+		    	 isSuccessful = false;
+		    	 //logger.info("[Unknown format] Received : " + line);
+		    	 //ta.appendText("[Unknown format] Received : " + line + "\n");
 	    	 }
 	     }
 	     catch(Exception ex){
 	    	 ta.appendText("Problem obtaining a new client id\n");
 	    	 ex.printStackTrace();
 	     }
+
+	     return isSuccessful;
 	}
 
 
@@ -759,13 +852,16 @@ public class MultiplayerClient {
 		    }
 		}
 		else if (type == RECORDS) {
+			// clear the existing list
+	        settlementList.clear();
 		    StringTokenizer st = new StringTokenizer(line, "&");
 		    String playerName, name, template;
-		    int i = 1;
+		    int i = 0;
 		    int id, pop, bots;
 		    double lat, lo;
 		    try {
 		    	String text = null;
+		    	ta.appendText("Received :\n");
 			    while (st.hasMoreTokens()) {
 			        playerName = st.nextToken().trim();
 			    	id = Integer.parseInt( st.nextToken().trim() );
@@ -775,15 +871,15 @@ public class MultiplayerClient {
 			        bots = Integer.parseInt( st.nextToken().trim() );
 			        lat = Double.parseDouble( st.nextToken().trim() );
 			        lo = Double.parseDouble( st.nextToken().trim() );
-			        // Add the new entry into the array
-			        settlementList.clear();
+			        // Add an entry into the list
 			        settlementList.add(new SettlementRegistry(playerName, id, name, template, pop, bots, lat, lo));
-			        text = "(" + i + "). " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
+			    	//System.out.println("settlementList.size() is now " + settlementList.size());
+			        int num = i + 1;
+			        text = "(" + num + "). " + playerName + " , " + id + " , " + name + " , " + template + " , " + pop + " , " + bots
 			        	+ " , " + lat + " , " + lo;
+				    ta.appendText(text + "\n");
 			        i++;
 			    }
-			    ta.appendText("Received :\n" + text + "\n");
-			    logger.info("Received : " + text);
 		    }
 		    catch(Exception e) {
 		      ta.appendText("Problem parsing records\n");
@@ -853,24 +949,130 @@ public class MultiplayerClient {
     }
  */
 
-	public void sendMess(String s) {
+	/**
+	 * Sends chat text
+	 *@param text
+	 */
+	public void sendChatText(String text) {
 		byte[] data = null;
-		if (s.equals("Online"))
-	        data = ("[Status Update] : " + playerName + " is now online").getBytes();
+
+		if (playerName != null) {
+
+			if (text.equals("Online"))
+		        data = ("[Status Update] : " + playerName + " is now online").getBytes();
+			else
+				data = (playerName + " : " + text).getBytes();
+
+	        DatagramPacket packet = new DatagramPacket(data, data.length, iadr, PORT_CHAT);
+
+	        try {
+	        	so.send(packet);
+	        }
+	        catch(IOException ie) {
+	                Toolkit.getDefaultToolkit().beep();
+	                //JOptionPane.showMessageDialog(null, "Data overflow !");
+	                logger.info("Data overflow error. Cannot send chat text");
+	        }
+		}
 		else
-			data = (playerName + " : " + s).getBytes();
-        DatagramPacket packet = new DatagramPacket(data,data.length,iadr,PORT_CHAT);
-        try {
-        	so.send(packet);
-        }
-        catch(IOException ie) {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null, "Data overflow !");
-        }
+			logger.info("Cannot send until registering with an valid player name.");
 	}
 
 	public List<SettlementRegistry> getSettlementRegistryList() {
 		return settlementList;
+	}
+
+	/**
+	 * Checks if a player has any activity within a predefined period of time
+	 */
+	public void checkPlayerActivity() {
+		String startTime = "10:00";
+		//String endTime = "12:00";
+		//if (startTime == null )
+        //    ; // tag the playername with currentTime
+		//else {
+		String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		Date d1 = null;
+		Date d2 = null;
+
+		try {
+			d1 = sdf.parse(startTime);
+			d2 = sdf.parse(currentTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		long elapsed = d2.getTime() - d1.getTime();
+		// check which player has a time tag older than TIME_DELAY ago
+		// kick the player off from the idMap and addressMap
+		if (Math.abs(elapsed) > TIME_DELAY)
+			; // unregister player, clear idMap, addressMap and timeTagMap, send msg
+
+	}
+
+
+	/**
+	 * Creates and starts the timer
+	 *@return Scene
+	 */
+	public void startTimer() {
+	    // Set up earth time text update
+	    timeline = new Timeline(new KeyFrame(
+	            Duration.millis(TIME_DELAY),
+	            ae -> checkPlayerActivity()));
+	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+	    timeline.play();
+	}
+
+	@Override
+	public void eventAdded(int index, HistoricalEvent event) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void eventsRemoved(int startIndex, int endIndex) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void unitUpdate(UnitEvent event) {
+		UnitEventType eventType = event.getType();
+		Object target = event.getTarget();
+		if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT || eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+			//Person person = (Person) target;
+		//if (eventType == UnitEventType.ASSOCIATED_SETTLEMENT_EVENT) {
+		//	Settlement settlement = (Settlement) target;
+			Settlement settlement = ((Person) target).getAssociatedSettlement();
+			// find the settlement
+			String name = settlement.getName();
+			settlementList.forEach(s -> {
+				if (s.getPlayerName().equals(playerName) && s.getName().equals(name)) {
+					int n = settlement.getAllAssociatedPeople().size();
+					s.setPop(n);
+					System.out.println("New population is now "+ n);
+					sendUpdate(s);
+				}
+			});
+		}
+	}
+
+	@Override
+	public void unitManagerUpdate(UnitManagerEvent event) {
+		UnitManagerEventType eventType = event.getEventType();
+		Object unit = event.getUnit();
+		if (unit instanceof Settlement) {
+			Settlement settlement = (Settlement) unit;
+			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
+				System.out.println(settlement.getName() + " just added");
+				createNew(settlement);
+			}
+			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
+				System.out.println(settlement.getName() + " just deleted");
+				removeOld(settlement);
+			}
+		}
 	}
 
 	public void destroy() {
@@ -888,4 +1090,5 @@ public class MultiplayerClient {
 		multiplayerTray= null;
 		alert= null;
 	}
+
 }

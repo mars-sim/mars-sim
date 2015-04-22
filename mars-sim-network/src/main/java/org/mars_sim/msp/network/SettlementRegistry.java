@@ -37,6 +37,14 @@ public class SettlementRegistry implements Serializable{
 		longitude = lo;
 	}
 
+	public void setPop(int p) {
+		population = p;
+	}
+
+	public void setName(String n) {
+		name = n;
+	}
+
 	public String getPlayerName() {
 		return playerName;
 	}

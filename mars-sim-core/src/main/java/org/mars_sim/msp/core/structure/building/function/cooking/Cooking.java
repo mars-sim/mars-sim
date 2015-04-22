@@ -7,11 +7,11 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,7 +75,7 @@ implements Serializable {
     private boolean cookNoMore = false;
 
     // Data members
-    private List<CookedMeal> cookedMeals = new ArrayList<CookedMeal>();
+    private List<CookedMeal> cookedMeals = new CopyOnWriteArrayList<>();//<CookedMeal>();
     //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
@@ -99,10 +99,10 @@ implements Serializable {
     private AmountResource dryFoodAR = null;
     private Building building = null;
 
-    private Map<String, Double> ingredientMap = new HashMap<String, Double>();
-    private Map<String, Integer> mealMap = new HashMap<String, Integer>();
+    private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
+    private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
 
-    //private List<HotMeal> hotMealCache;
+    //private List<HotMeal> hotMealCache;ConcurrentHashMap
     private int hotMealCacheSize;
 
     /**
@@ -160,8 +160,8 @@ implements Serializable {
     	while (i.hasNext()) {
 
     		HotMeal aMeal = i.next();
-	        List<Double> proportionList = new ArrayList<Double>();
-	        List<Double> waterContentList = new ArrayList<Double>();
+	        List<Double> proportionList = new CopyOnWriteArrayList<>(); //<Double>();
+	        List<Double> waterContentList = new CopyOnWriteArrayList<>(); //ArrayList<Double>();
 
 	       	List<Ingredient> ingredientList = aMeal.getIngredientList();
 	        Iterator<Ingredient> j = ingredientList.iterator();
@@ -511,7 +511,7 @@ implements Serializable {
  	 * @return list of hot meal recipes.
  	 */
  	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
- 		List<HotMeal> result = new ArrayList<HotMeal>(mealConfigMealList.size());
+ 		List<HotMeal> result = new CopyOnWriteArrayList<>(); //ArrayList<HotMeal>(mealConfigMealList.size());
 
  	    Iterator<HotMeal> i = mealConfigMealList.iterator();
  	    while (i.hasNext()) {
@@ -592,7 +592,7 @@ implements Serializable {
     // 2015-01-02 Modified pickOneOil()
 	public String pickOneOil() {
 
-	    	List<String> oilList = new ArrayList<String>();
+	    	List<String> oilList = new CopyOnWriteArrayList<>();
 
 	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Soybean Oil");

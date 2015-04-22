@@ -48,14 +48,14 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private static final int DESC = 4;
 	private static final int COLUMNCOUNT = 5;
 
-	// 2014-12-17 Added Timer and isPaused	
+	// 2014-12-17 Added Timer and isPaused
 	//private Timer timer;
 	private boolean isPaused = false;
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
 	private boolean showMalfunction = true;
 	private boolean showMalfunctionCache = true;
-	
+
 	/** Names of the displayed columns. */
 	static private String columnNames[];
 	/** Types of the individual columns. */
@@ -76,9 +76,9 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
-	
+
 	//private static int count;
-	
+
 	private List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 
 	// Event categories to be displayed.
@@ -87,7 +87,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private boolean displayMission = false;
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
-	
+
 	/**
 	 * constructor.
 	 * Create a new Event model based on the specified event manager.
@@ -100,24 +100,24 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		this.manager = manager;
 		this.notifyBox = notifyBox;
 		this.desktop = desktop;
-		
+
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
-		
+
 		// Add this model as an event listener.
 		manager.addListener(this);
 
 	}
-	
+
 	private void updateCachedEvents() {
 
 		//System.out.println("EventTableModel.java : just called updateCachedEvents()");
-		
+
 		// Clean out cached events.
 		cachedEvents = new ArrayList<HistoricalEvent>();
 
-		
+
 		// Filter events based on category.
 		for (int x = 0; x < manager.size(); x++) {
 			HistoricalEvent event = manager.getEvent(x);
@@ -142,11 +142,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		// Update all table listeners.
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				
+
 				fireTableDataChanged();
 			}
 		});
-		
+
 	}
 
 	/**
@@ -208,7 +208,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		if (event != null) {
 			Object source = event.getSource();
 			if (source instanceof Unit) result = source;
-			else if (source instanceof Building) 
+			else if (source instanceof Building)
 				result = ((Building) source).getBuildingManager().getSettlement();
 		}
 		return result;
@@ -220,7 +220,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 */
 	public boolean getOrdered() {
 		return true;
-		//return false; // 2015-01-14 if false, events will be missing and # events will be out of sync 
+		//return false; // 2015-01-14 if false, events will be missing and # events will be out of sync
 	}
 
 	/**
@@ -234,7 +234,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		//if (rowIndex == 0 && columnIndex == 2)
 		// check if event.getCategory() == MEDICAL or MALFUNCTION
 		//	System.out.println("getValueAt() : rowIndex is " + rowIndex + ", columnIndex is " + columnIndex);
-		
+
 		if (rowIndex < cachedEvents.size()) {
 			HistoricalEvent event = cachedEvents.get(rowIndex);
 
@@ -297,47 +297,47 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void eventAdded(int index, HistoricalEvent event) {
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
-	
+
 		if (nMenu == null) {
 			//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
-			
+
 			try {
 				MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
-				NotificationMenu nMenu = mwm.getNotificationMenu();	
+				NotificationMenu nMenu = mwm.getNotificationMenu();
 				nMenu = mwm.getNotificationMenu();
 			} catch (NullPointerException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			}
-			
+
 		}
-		
-		if (nMenu != null) {
-			
+
+		else if (nMenu != null) {
+
 			// 2015-01-14 Added noFiring condition
 			Boolean noFiring = false;
-			
+
 			showMedical = nMenu.getShowMedical();
 			if (showMedical != showMedicalCache ) {
-				showMedicalCache = showMedical;		
+				showMedicalCache = showMedical;
 			}
-			
+
 			showMalfunction = nMenu.getShowMalfunction();
 			if (showMalfunction != showMalfunctionCache ) {
 				showMalfunctionCache = showMalfunction;
 			}
-			
+
 			if (!showMedical && !showMalfunction) {
 				notifyBox.emptyQueue();
-				noFiring = true;	
+				noFiring = true;
 			}
-			
+
 			if (!noFiring)
 				if (!isPaused)
 					if ((index == 0) && (event != null) ) {
 						SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
 					}
-			
+
 		}
 	}
 
@@ -449,23 +449,23 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		desktop = null;
 		nMenu = null;
 	}
-	
+
 	/**
 	 * Internal class for launching a notify window.
 	 */
 	private class NotifyBoxLauncher implements Runnable {
-	    
+
 	    private HistoricalEvent event;
 	    private NotifyBoxLauncher(HistoricalEvent event) {
 	        this.event = event;
 	    }
-	    
+
 	    public void run() {
 			notifyBox.validateMsg(event);
 			// Note: adding try-catch can cause UI significant slow down here
 	    }
 	}
-	
+
 	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
 		isPaused = false;
@@ -475,5 +475,5 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void pauseChange(boolean isPaused) {
 		isPaused = true;
 	};
-	
+
 }

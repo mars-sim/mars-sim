@@ -22,11 +22,11 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the ManufactureGood task.
  */
 public class ManufactureGoodMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureGood"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -39,15 +39,15 @@ public class ManufactureGoodMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
-        // Cancel any manufacturing processes that's beyond the skill of any people 
+        // Cancel any manufacturing processes that's beyond the skill of any people
         // associated with the settlement.
         ManufactureGood.cancelDifficultManufacturingProcesses(person);
-       	
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
+
             // the person has to be inside the settlement to check for manufacture override
             if (!person.getSettlement().getManufactureOverride())  {
 
@@ -68,8 +68,8 @@ public class ManufactureGoodMeta implements MetaTask {
                         result = 100D;
                     }
 
-                    if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-                        result += 50D;
+                    //if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
+                    //    result += 50D;
 
                     // If manufacturing building has process requiring work, add
                     // modifier.
@@ -83,7 +83,7 @@ public class ManufactureGoodMeta implements MetaTask {
 
                     // Job modifier.
                     Job job = person.getMind().getJob();
-                    if (job != null) 
+                    if (job != null)
                         result *= job.getStartTaskProbabilityModifier(ManufactureGood.class);
 
                 }
@@ -100,37 +100,37 @@ public class ManufactureGoodMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-	      
+
         double result = 0D;
 
-        // Cancel any manufacturing processes that's beyond the skill of any people 
+        // Cancel any manufacturing processes that's beyond the skill of any people
         // associated with the settlement.
         ManufactureGood.cancelDifficultManufacturingProcesses(robot);
-	
-	        if (robot.getBotMind().getRobotJob() instanceof Makerbot) 
-	        	           	
-		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
+
+	        if (robot.getBotMind().getRobotJob() instanceof Makerbot)
+
+		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
 		            // If settlement has manufacturing override, no new
 		            // manufacturing processes can be created.
 		            if (!robot.getSettlement().getManufactureOverride()) {
 		        	// the person has to be inside the settlement to check for manufacture override
-	
+
 			            // See if there is an available manufacturing building.
 			            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
 			            if (manufacturingBuilding != null) {
 			                result = 100D;
-			
+
 			                // Crowding modifier.
 			                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, manufacturingBuilding);
 			                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, manufacturingBuilding);
-			
+
 			                // Manufacturing good value modifier.
 			                result *= ManufactureGood.getHighestManufacturingProcessValue(robot, manufacturingBuilding);
-			
+
 			                if (result > 100D) {
 			                    result = 100D;
 			                }
-			
+
 			                // If manufacturing building has process requiring work, add
 			                // modifier.
 			                SkillManager skillManager = robot.getBotMind().getSkillManager();
@@ -138,11 +138,11 @@ public class ManufactureGoodMeta implements MetaTask {
 			                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
 			                    result += 10D;
 			                }
-			
+
 				            // Effort-driven task modifier.
 				            result *= robot.getPerformanceRating();
 			            }
-			            
+
 			        }
 
         return result;

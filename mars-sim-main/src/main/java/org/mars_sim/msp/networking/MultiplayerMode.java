@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.javafx.MainMenu;
-import org.mars_sim.msp.network.MultiplayerClient;
 import org.mars_sim.msp.network.MultiplayerServer;
 
 import javafx.application.Platform;
@@ -144,7 +143,7 @@ public class MultiplayerMode {
 						//client.runClient();
 						//MultiplayerClient.getInstance().runClient();
 						multiplayerClient = new MultiplayerClient();
-						multiplayerClient.runClient();
+						multiplayerClient.runClient(mainMenu);
 						//serverClientExecutor.execute(client.getClientTask());
 					} catch (Exception e) {
 						e.printStackTrace();

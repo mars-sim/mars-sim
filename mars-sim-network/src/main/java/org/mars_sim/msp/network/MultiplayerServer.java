@@ -44,16 +44,10 @@ public class MultiplayerServer extends Application {
 
 	private static final int MAX_NUM_THREADS = 5;
 
-	//private List<String> roles = new ArrayList<>();
-	//private List<String> addressList = new ArrayList<>();
-	private Map<Integer, String> addressMap = new ConcurrentHashMap<>();
-
 	private int port = 9090;
-	//private int numClientIDs = 0;
-	private int id = 1;
+
     private boolean ready = false;
     boolean serverStopped = false;
-
 
 	private String hostServerAddress;
 
@@ -65,7 +59,6 @@ public class MultiplayerServer extends Application {
 	//static final Object instance = new Object();
 	public static final Object instance = new MultiplayerServer();
 
-
 	private Socket socket = null;
 	private ServerSocket ss = null;
 	private CentralRegistry centralRegistry;
@@ -76,10 +69,8 @@ public class MultiplayerServer extends Application {
 	private transient ThreadPoolExecutor serverExecutor;
 	private transient ThreadPoolExecutor connectionTaskExecutor;
 
-	private Map<Integer, String> idMap = new ConcurrentHashMap<>();
-
-
-
+	//private Map<Integer, String> addressMap = new ConcurrentHashMap<>(); // store clientID & address
+	//private Map<Integer, String> idMap = new ConcurrentHashMap<>();
 
 	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
 	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
@@ -180,9 +171,7 @@ public class MultiplayerServer extends Application {
         });
 
 		try {
-
 			ss = new ServerSocket(port);//, 0);// InetAddress.getByAddress(new byte[] {127,0,0,1}));
-
 	        /*
              * Allows the socket to be bound even though a previous
              * connection is in a timeout state.
@@ -269,8 +258,8 @@ public class MultiplayerServer extends Application {
                 //notifyReady();
 			} finally {
 				removeSettlement(id);
-				idMap.remove(id);
-				addressMap.remove(id);
+				centralRegistry.getIdMap().remove(id);
+				centralRegistry.getAddressMap().remove(id);
 				logger.info("Socket closed, client id removed and connection closed.");
 			}
 		} // end of run()
@@ -340,7 +329,7 @@ public class MultiplayerServer extends Application {
 			       				//TODO: is the keyword "synchronized" needed for removing the id in idMap?
 			       				//idMap.remove(id);
 			       				//addressMap.remove(id);
-					        	if (idMap.size() == 0)
+					        	if (centralRegistry.getIdMap().size() == 0)
 					        		done = true;
 			       	    }
 
@@ -384,13 +373,19 @@ public class MultiplayerServer extends Application {
 
 	    else if ((line.length() >= 9) &&     // "register abc"
 		        (line.substring(0, 8).toLowerCase().equals("register"))) {
-			String userName = line.substring(8).trim();    // cut out the register keyword
-			logger.info("Command processed : register " + userName);
+			String playerName = line.substring(8).trim();    // cut out the register keyword
+			logger.info("Command processed : register " + playerName);
 			//centralRegistry.addEntry(userName);
-			int id = getNewID(userName, clientAddress);
-			//addressMap.put(id, clientAddress);
-			//idMap.put(id, userName); // already included inside getNewID(userName);
-			out.println( centralRegistry.returnID(id, userName) );
+			boolean doesPlayerNameExist = centralRegistry.verifyPlayerName(playerName, clientAddress);
+
+			if (doesPlayerNameExist)
+				out.println( centralRegistry.disapprovePlayerName(playerName) );
+			else {
+				int id = centralRegistry.assignNewID(playerName, clientAddress);
+				//addressMap.put(id, clientAddress);
+				//idMap.put(id, userName); // already included inside getNewID(userName);
+				out.println( centralRegistry.approveID(id, playerName) );
+			}
 	    }
 
 	    else if ((line.length() >= 4) &&     // "new "
@@ -400,6 +395,12 @@ public class MultiplayerServer extends Application {
 				//centralRegistry.saveRecords(); // the best place to save
 				//TODO: determine under what circumstance shall it be saved.
 	    }
+
+	    else if ((line.length() >= 7) &&     // "remove "
+		        (line.substring(0, 6).toLowerCase().equals("remove"))) {
+					logger.info("Command processed : remove");
+					centralRegistry.removeEntry( line.substring(6) );    // cut out the remove keyword
+		    }
 
 
 	    else if (line.trim().substring(0, 1).toLowerCase().equals("s")) {
@@ -434,46 +435,8 @@ public class MultiplayerServer extends Application {
 	    System.exit(0);
 	  }
 
-	public int getNewID(String userName, String clientAddress) {
-		if (idMap.size() == 0) {
-	        idMap.put(1, userName);
-			addressMap.put(1, clientAddress);
-			return 1;
-		}
-		else {
 
-			List<Integer> unsortedID = new ArrayList<Integer>();
-			idMap.forEach((key, value) ->  unsortedID.add(key));
-			// need to sort the list so that the comparison begins at key = 1
-			List<Integer> sortedID = unsortedID.stream().sorted().collect(Collectors.toList());
-			id = 1;
-			// set id to the lowest possible player id
-			// Note: if a client lost connection, the player id will be returned to the server and reassigned here.
-			sortedID.forEach((key  ->  {
-				if (key == id)
-					id++;
-			}));
 
-/*
-			Set<Integer> keys = idMap.keySet();
-			Integer[] idArray = keys.toArray(new Integer[keys.size()]);
-        	System.out.println("size is " + idArray.length);
-	        for(Integer key: idArray){
-	        	//if (key > largest)
-	        	//	largest = key;
-	        	System.out.println("key is " + key);
-	        	if ((int)key == (int)smallest) {
-	        		smallest++;
-		        	System.out.println("smallest is incremented to " + smallest);
-	        	}
-	        }
-*/
-	        //System.out.println("id is " + id);
-	        idMap.put(id, userName);
-			addressMap.put(id, clientAddress);
-			return id;
-		}
-	}
 
 	//public int assignClientID() {
 	//	return ++lastClientID;
