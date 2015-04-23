@@ -50,9 +50,9 @@ extends MonitorTab {
 	private static final long serialVersionUID = 1L;
 
 	private JTableHeader theHeader;
-	
+
 	private TableHeaderRenderer theRenderer;
-	
+
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
 	 * object. It represents an arrow Icon that can be other ascending or
@@ -143,8 +143,8 @@ extends MonitorTab {
 						icon = descendingIcon;
 				}
 				cell.setIcon(icon);
-				// 2014-12-17 Added 
-				cell.setOpaque(true); 
+				// 2014-12-17 Added
+				cell.setOpaque(true);
 				//cell.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 				//cell.setForeground(Color.WHITE);
 				//cell.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
@@ -194,20 +194,20 @@ extends MonitorTab {
             // Create scrollable table window
             table = new JTable(sortedModel) {
             	/** default serial id. */
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 
 				/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
             	public void tableChanged(TableModelEvent e) {
-            	
+
             		if (e.getType() == TableModelEvent.DELETE) {
             			// Store selected row objects.
             			List<Object> selected = getSelection();
-            			
+
             			// Call super implementation to remove row and clear selection.
     					super.tableChanged(e);
-    					
+
     					// Reselect rows if row objects still around.
     					MonitorModel model = (MonitorModel) getModel();
     					Iterator<Object> i = selected.iterator();
@@ -220,7 +220,7 @@ extends MonitorTab {
             		}
             		else super.tableChanged(e);
             	}
-            	
+
                 /**
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
@@ -229,8 +229,8 @@ extends MonitorTab {
                     return getCellText(e);
                 };
             };
-            
-            
+
+
     		// call it a click to display details button when user double clicks the table
     		table.addMouseListener(
     			new MouseListener() {
@@ -249,7 +249,7 @@ extends MonitorTab {
 
         	// 2014-12-30 Added setTableStyle()
             setTableStyle(table);
-		
+
          	// Add a mouse listener for the mouse event selecting the sorted column
          	// Not the best way but no double click is provided on Header class
         	theHeader.addMouseListener(new MouseAdapter() {
@@ -265,19 +265,19 @@ extends MonitorTab {
             // Simple JTable
             table = new JTable(model) {
             	/** default serial id. */
-				private static final long serialVersionUID = 1L;
+				//private static final long serialVersionUID = 1L;
 				/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
             	public void tableChanged(TableModelEvent e) {
-            	
+
             		if (e.getType() == TableModelEvent.DELETE) {
             			// Store selected row objects.
             			List<Object> selected = getSelection();
-            			
+
             			// Call super implementation to remove row and clear selection.
     					super.tableChanged(e);
-    					
+
     					// Reselect rows if row objects still around.
     					MonitorModel model = (MonitorModel) getModel();
     					Iterator<Object> i = selected.iterator();
@@ -290,7 +290,7 @@ extends MonitorTab {
             		}
             		else super.tableChanged(e);
             	}
-            	
+
                 /**
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
@@ -302,7 +302,7 @@ extends MonitorTab {
            	// 2015-01-13 Added setTableStyle()
             setTableStyle(table);
         }
-        
+
         // Set single selection mode if necessary.
         if (singleSelection) table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -313,30 +313,30 @@ extends MonitorTab {
 
         setName(model.getName());
         setSortColumn(0);
-        
+
         // 2014-12-29 Added ColumnResizer
         final JTable ctable = table;
-        
+
 	    SwingUtilities.invokeLater(new Runnable(){
 	        public void run()  {
-	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);
 	         } });
     }
 
 	// 2014-12-30 Added setTableStyle()
     public void setTableStyle(JTable table) {
-    	
+
     	// Get the TableColumn header to display sorted column
     	theHeader = table.getTableHeader();
     	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
     	theHeader.setDefaultRenderer(theRenderer);
-    	
+
 	    // 2014-11-11 Added auto resize
 		//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.getTableHeader().setOpaque(false);
 		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
-		table.getTableHeader().setForeground(new Color(255, 255, 120)); 
+		table.getTableHeader().setForeground(new Color(255, 255, 120));
 		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 		// Font doesn't get rendered yet
 		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
@@ -347,10 +347,10 @@ extends MonitorTab {
 			table.setShowGrid(true);
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
-	
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
+
 	}
-    
+
     /**
      * Display property window anchored to a main desktop.
      *

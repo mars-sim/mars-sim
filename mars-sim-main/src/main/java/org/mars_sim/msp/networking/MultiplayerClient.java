@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.msp.network.ClientRegistry;
 import org.mars_sim.msp.network.Receiver;
 import org.mars_sim.msp.network.SettlementRegistry;
 
@@ -115,7 +116,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	MulticastSocket so;
 
 	// private List<String> addresses = new ArrayList<>();
-	// private static MultiplayerClient instance = null;
+	private static MultiplayerClient instance = null;
 
 	private Stage stage;
 	private Socket sock;
@@ -135,12 +136,36 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	private Alert alert;
 	private transient ThreadPoolExecutor clientExecutor;
 
-	// private SettlementRegistry[] registryArray = new
-	// SettlementRegistry[CentralRegistry.MAX];
-	private List<SettlementRegistry> settlementList;
+	private static List<SettlementRegistry> settlementList;
 
-	public MultiplayerClient() {
+	/*
+	 * Method 1 : ThreadSafe Singleton Pattern: (Lazy Initialization + ThreadSafe
+	 * with synchronized block) This implementation using the synchronized
+	 * keyword to make the traditional approach thread-safe.
+	 *
+	 * http://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-with-examples
+	 * Note we need it only for the first few threads who might create the separate instances.
+	 * To avoid this extra overhead every time, double checked locking principle is used.
+	 * In this approach, the synchronized block is used inside the if condition with an additional check
+	 * to ensure that only one instance of singleton class is created.
+	*/
+	 //requires private static MultiplayerClient instance = null;
+
+	 protected MultiplayerClient() { }
+
+	 public static MultiplayerClient getInstance() {
+		 if (instance == null) {
+			synchronized (MultiplayerClient.class) {
+				if (instance == null) {
+					  instance = new MultiplayerClient();
+				}
+			}
+		 }
+
+		 return instance;
 	}
+
+
 
 	/*
 	 * Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using
@@ -149,29 +174,18 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	 * see http://crunchify.com/lazy-creation-of-singleton-threadsafe-instance-
 	 * without-using-synchronized-keyword/
 	 */
-	// private static class HoldInstance {
-	// private static final MultiplayerClient INSTANCE = new
-	// MultiplayerClient();
-	// }
+	//private MultiplayerClient() {
+	//}
 
-	// public static MultiplayerClient getInstance() {
-	// return HoldInstance.INSTANCE;
-	// }
+	//private static class HoldInstance {
+	//	 private static final MultiplayerClient INSTANCE = new MultiplayerClient();
+	//}
 
-	/*
-	 * Method 1 : Simple Singleton Pattern: (Lazy Initialization + ThreadSafe
-	 * with synchronized block) This implementation using the synchronized
-	 * keyword to make the traditional approach thread-safe
-	 *
-	 * private static MultiplayerClient instance = null;
-	 *
-	 * protected MultiplayerClient() { }
-	 *
-	 * public static MultiplayerClient getInstance() { if (instance == null) {
-	 * synchronized (MultiplayerClient.class) { if (instance == null) { instance
-	 * = new MultiplayerClient(); } } } return instance; }
-	 *
-	 */
+	//public static MultiplayerClient getInstance() {
+	//	return HoldInstance.INSTANCE;
+	//}
+
+
 
 	/*
 	 * Method 2 : Auto ThreadSafe Singleton Pattern using Object This
@@ -190,7 +204,8 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 
 		this.mainMenu = mainMenu;
 
-		settlementList = new CopyOnWriteArrayList<>();
+		new ClientRegistry();
+		settlementList = ClientRegistry.getSettlementList();
 
 		InetAddress ip = null;
 		try {
@@ -731,8 +746,8 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		String template = s.getTemplate();
 		String pop = s.getAllAssociatedPeople().size() + "";
 		String bots = s.getAllAssociatedRobots().size() + "";
-		String lat = Math.round(s.getCoordinates().getPhi() * 10.0)/10.0 + "";
-		String lo = Math.round(s.getCoordinates().getTheta() * 10.0)/10.0 + "";
+		String lat = Math.round(s.getCoordinates().getLatitudeDouble() * 10.0)/10.0 + ""; //.getPhi()
+		String lo = Math.round(s.getCoordinates().getLongitudeDouble() * 10.0)/10.0 + "";
 
 		if (playerName.equals("") | (name.equals("")) | (template.equals("")) | (pop.equals("")) | (bots.equals(""))
 				| (lat.equals("")) | (lo.equals(""))) {
@@ -863,7 +878,9 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 			}
 		} else if (type == RECORDS) {
 			// clear the existing list
-			settlementList.clear();
+			//settlementList.clear();
+			if (settlementList != null)
+				ClientRegistry.clearSettlementList();
 			StringTokenizer st = new StringTokenizer(line, "&");
 			String playerName, name, template;
 			int i = 0;
@@ -1113,11 +1130,11 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 			Settlement settlement = (Settlement) unit;
 			UnitManagerEventType eventType = event.getEventType();
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-				System.out.println("MultiplayerClient : " + settlement.getName() + " just added");
+				//System.out.println("MultiplayerClient : " + settlement.getName() + " just added");
 				sendNewInSimulation(settlement);
 				settlement.addUnitListener(this);
 			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-				System.out.println("MultiplayerClient : " + settlement.getName() + " just deleted");
+				//System.out.println("MultiplayerClient : " + settlement.getName() + " just deleted");
 				removeOld(settlement);
 				settlement.removeUnitListener(this);
 			}
