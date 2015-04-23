@@ -62,7 +62,7 @@ implements Transportable, Serializable {
 	private int populationNum;
 	private int numOfRobots;
 	private int scenarioID;
-	
+
 	/**
 	 * Constructor.
 	 * @param name the name of the arriving settlement.
@@ -72,8 +72,8 @@ implements Transportable, Serializable {
 	 * @param populationNum the population of new immigrants arriving with the settlement.
 	 */
 	public ArrivingSettlement(
-		String name, String template, 
-		MarsClock arrivalDate, Coordinates landingLocation, 
+		String name, String template,
+		MarsClock arrivalDate, Coordinates landingLocation,
 		int populationNum, int numOfRobots
 	) {
 		this.name = name;
@@ -89,18 +89,18 @@ implements Transportable, Serializable {
 	 * Gets the scenarioID of the arriving settlement.
 	 * @return settlement scenarioID
 	 */
-	public int getScenarioID() {		
+	public int getScenarioID() {
 		return scenarioID;
 	}
-	
+
 	/**
 	 * Sets the scenarioID of the arriving settlement.
 	 * @param settlement id
 	 */
 	public void setScenarioID(int id) {
-		scenarioID = id;		
+		scenarioID = id;
 	}
-	
+
 	/**
 	 * Gets the name of the arriving settlement.
 	 * @return settlement name
@@ -228,17 +228,17 @@ implements Transportable, Serializable {
 	public void setNumOfRobots(int numOfRobots) {
 		this.numOfRobots = numOfRobots;
 	}
-	
+
 	/**
 	 * Commits a set of modifications for the arriving settlement.
 	 */
 	public void commitModification() {
 		HistoricalEvent newEvent = new TransportEvent(
 			this,
-			EventType.TRANSPORT_ITEM_MODIFIED, 
+			EventType.TRANSPORT_ITEM_MODIFIED,
 			"Arriving settlement modified"
 		);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);  
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 
 	@Override
@@ -309,7 +309,7 @@ implements Transportable, Serializable {
 		// Create new settlement with unit manager.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		// 2014-10-29 Computed sid
-		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+		//List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
 		Settlement newSettlement = new Settlement(name, scenarioID, template, landingLocation, populationNum, numOfRobots);
@@ -358,7 +358,7 @@ implements Transportable, Serializable {
 			String equipmentType = equipmentI.next();
 			int number = template.getEquipment().get(equipmentType);
 			for (int x=0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
+				Equipment equipment = EquipmentFactory.getEquipment(equipmentType,
 						newSettlement.getCoordinates(), false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);

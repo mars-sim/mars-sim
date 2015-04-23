@@ -337,6 +337,28 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets a double to represent longitude for
+	 * this location.
+	 * ex. "-35.6"
+	 * @return double longitude
+	 */
+	// 2015-04-23 Added getLongitudeDouble()
+	public double getLongitudeDouble() {
+		double degrees;
+
+		degrees = 0D;
+
+		if ((theta < Math.PI) && (theta >= 0D)) {
+			degrees = Math.toDegrees(theta);
+		} else if (theta >= Math.PI) {
+			degrees = Math.toDegrees((Math.PI * 2D) - theta);
+			degrees = -degrees;
+		}
+
+		return degrees;
+	}
+
+	/**
 	 * Gets a common formatted string to represent longitude for
 	 * this location.
 	 * ex. "35.6 E"
@@ -372,6 +394,29 @@ implements Serializable {
 		return getFormattedLatitudeString(phi);
 	}
 
+	/**
+	 * Gets a double to represent latitude
+	 * location.
+	 * ex. "-35.6"
+	 * @return latitude double
+	 */
+	// 2015-04-23 Added getLatitudeDouble()
+	public double getLatitudeDouble() {
+		double degrees;
+		double piHalf = Math.PI / 2.0;
+
+		degrees = 0D;
+
+		if (phi <= piHalf) {
+			degrees = ((piHalf - phi) / piHalf) * 90D;
+		} else if (phi > piHalf) {
+			degrees = ((phi - piHalf) / piHalf) * 90D;
+			degrees = - degrees ;
+		}
+
+		return degrees;
+
+	}
 	/**
 	 * Gets a common formatted string to represent latitude for this
 	 * location.

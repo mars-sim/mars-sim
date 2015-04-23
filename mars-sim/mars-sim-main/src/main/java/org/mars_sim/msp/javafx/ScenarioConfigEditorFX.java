@@ -66,6 +66,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 
 
 /**
@@ -145,12 +146,12 @@ public class ScenarioConfigEditorFX {
 		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
 		if (mainMenu.getMultiplayerMode() != null) {
-			multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
-			//multiplayerClient = MultiplayerClient.getInstance();
+			//multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
+			multiplayerClient = MultiplayerClient.getInstance();
 			//multiplayerClient.sendRegister(); // not needed. already registered
 			clientID = multiplayerClient.getClientID();
 			playerName = multiplayerClient.getPlayerName();
-			if (multiplayerClient.getNumSettlement()> 0)
+			if (multiplayerClient.getNumSettlement() > 0)
 				hasSettlement = true;
 			//System.out.println("registrySize is " + registrySize);
 			settlementList = multiplayerClient.getSettlementRegistryList();
@@ -430,7 +431,8 @@ public class ScenarioConfigEditorFX {
 				Simulation.createNewSimulation();
 				mainMenu.runMainScene();
 				Simulation.instance().start();
-				multiplayerClient.prepareListeners();
+				if (multiplayerClient != null)
+					multiplayerClient.prepareListeners();
 				closeWindow();
 			}
 
@@ -510,10 +512,14 @@ public class ScenarioConfigEditorFX {
 			settlementTable.getColumnModel().getColumn(4).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(5).setPreferredWidth(15);
 			settlementTable.getColumnModel().getColumn(6).setPreferredWidth(15);
-
-
 			settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
 			settlementTable.setBackground(java.awt.Color.WHITE);
+
+		    SwingUtilities.invokeLater(new Runnable(){
+		        public void run()  {
+		        	ColumnResizer.adjustColumnPreferredWidths(settlementTable);
+		         } });
+
 			//settlementTable.setEnabled(true);
 			header = settlementTable.getTableHeader();
 			header.setFont(new Font("Dialog", Font.CENTER_BASELINE, 12));

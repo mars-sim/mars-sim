@@ -1243,11 +1243,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			Settlement settlement = (Settlement) unit;
 			UnitManagerEventType eventType = event.getEventType();
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-				System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
+				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
 				settlement.addUnitListener(this);
 			}
 			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-				System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
+				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
 				settlement.removeUnitListener(this);
 			}
 		}

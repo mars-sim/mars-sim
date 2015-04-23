@@ -16,6 +16,16 @@
     	<artifactId>mars-sim-core</artifactId>
     	<version>${project.version}</version>
     </dependency>
+        <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-mapdata</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
+        <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-network</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
     <dependency>
     	<groupId>org.apache.commons</groupId>
   		<artifactId>commons-lang3</artifactId>
@@ -53,11 +63,6 @@
     	<version>5.0</version>
     </dependency>
     <dependency>
-    	<groupId>net.sf.mars-sim</groupId>
-    	<artifactId>mars-sim-mapdata</artifactId>
-    	<version>${project.version}</version>
-    </dependency>
-        <dependency>
     	<groupId>com.google.guava</groupId>
     	<artifactId>guava</artifactId>
     	<version>18.0</version>
@@ -82,6 +87,6 @@
 		<artifactId>jorbis</artifactId>
 		<version>0.0.17</version>
 	</dependency>
- 	
+
   </dependencies>
 </project>
