@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2015-03-01
+ * @version 3.08 2015-04-24
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -272,9 +272,14 @@ implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
+        
         // normal bodily function consume a minute amount of energy
         // even if a person does not perform any tasks
-        reduceEnergy(time);
+        // Note: removing this as reduce energy is already handled
+        // in the TaskManager and people are always performing tasks
+        // unless dead. - Scott
+        //reduceEnergy(time);
+        
         checkStarvation(hunger);
         //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
 
@@ -390,39 +395,39 @@ implements Serializable {
         }
     }
 
-    // 2014-11-28 Added consumeDessert()
-    @SuppressWarnings("unused")
-	public void consumeDessert(double amount, Unit container) {
-        Inventory inv = container.getInventory();
-
-    	if (container == null) throw new IllegalArgumentException("container is null");
-
-		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
-
-		double foodEaten = amount;
-		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
-
-		// 2015-01-09 Added addDemandTotalRequest()
-    	inv.addAmountDemandTotalRequest(soymilkAR);
-
-		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
-
-		if (soymilkAvailable < 0.01D) {
-			throw new IllegalStateException( container.getName() + " has " + " very little soymilk remaining!");
-		}
-		else {
-			// if container has less than enough food, finish up all food in the container
-			if (foodEaten > soymilkAvailable)
-				foodEaten = soymilkAvailable;
-
-			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
-			// subtract food from container
-			inv.retrieveAmountResource(soymilkAR, foodEaten);
-
-			// 2015-01-09 addDemandRealUsage()
-		   	inv.addAmountDemand(soymilkAR, foodEaten);
-		}
-    }
+//    // 2014-11-28 Added consumeDessert()
+//    @SuppressWarnings("unused")
+//	public void consumeDessert(double amount, Unit container) {
+//        Inventory inv = container.getInventory();
+//
+//    	if (container == null) throw new IllegalArgumentException("container is null");
+//
+//		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
+//
+//		double foodEaten = amount;
+//		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
+//
+//		// 2015-01-09 Added addDemandTotalRequest()
+//    	inv.addAmountDemandTotalRequest(soymilkAR);
+//
+//		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
+//
+//		if (soymilkAvailable < 0.01D) {
+//			throw new IllegalStateException( container.getName() + " has " + " very little soymilk remaining!");
+//		}
+//		else {
+//			// if container has less than enough food, finish up all food in the container
+//			if (foodEaten > soymilkAvailable)
+//				foodEaten = soymilkAvailable;
+//
+//			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
+//			// subtract food from container
+//			inv.retrieveAmountResource(soymilkAR, foodEaten);
+//
+//			// 2015-01-09 addDemandRealUsage()
+//		   	inv.addAmountDemand(soymilkAR, foodEaten);
+//		}
+//    }
 
 
     /**
@@ -599,36 +604,44 @@ implements Serializable {
         return fatigue;
     }
 
-    /** Gets the person's daily food intake
-     *  @return person's energy level in kilojoules
-     *  Note: one large calorie is about 4.2 kilojoules
+    /** 
+     * Gets the person's caloric energy.
+     * @return person's caloric energy in kilojoules
+     * Note: one large calorie is about 4.2 kilojoules
      */
     public double getEnergy() {
         return kJoules;
     }
 
-    /** Reduces the person's energy level
-     *  @param kilojoules
+    /** Reduces the person's caloric energy.
+     *  @param time the amount of time (millisols).
      */
     public void reduceEnergy(double time) {
+        double dailyEnergyIntake = 10100D;
+        // Changing this to a more linear reduction of energy.
+        // We may want to change it back to exponential. - Scott
+        double xdelta = (time / 1000D) * dailyEnergyIntake;
     	// TODO: re-tune the experimental FACTOR to work in most situation
-    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
+//    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
         //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
         //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
-        kJoules = kJoules / exponential(xdelta);
+//        kJoules = kJoules / exponential(xdelta);
+        kJoules -= xdelta;
 
-        if (kJoules < 100)
-        	kJoules = 100; // 100 kJ is the lowest possible energy level
+        if (kJoules < 100D) {
+            // 100 kJ is the lowest possible energy level
+        	kJoules = 100D; 
+        }
 
         //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);
     }
 
-    public double exponential(double x) {
-    	  x = 1d + x / 256d;
-    	  x *= x; x *= x; x *= x; x *= x;
-    	  x *= x; x *= x; x *= x; x *= x;
-    	  return x;
-    	}
+//    public double exponential(double x) {
+//    	  x = 1d + x / 256d;
+//    	  x *= x; x *= x; x *= x; x *= x;
+//    	  x *= x; x *= x; x *= x; x *= x;
+//    	  return x;
+//    	}
 
     /** Sets the person's energy level
      *  @param kilojoules
@@ -646,11 +659,16 @@ implements Serializable {
         // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
         // double FACTOR = 0.8D;
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
+        // Note: changing this to a more linear addition of energy.
+        // We may want to change it back to exponential. - Scott
         double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
-        kJoules = kJoules + foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO/kJoules) / ENERGY_FACTOR;
+//        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
+        kJoules += xdelta;
 
-        if (kJoules > FOOD_COMPOSITION_ENERGY_RATIO)
-        	kJoules = FOOD_COMPOSITION_ENERGY_RATIO;
+        double dailyEnergyIntake = 10100D;
+        if (kJoules > dailyEnergyIntake) {
+        	kJoules = dailyEnergyIntake;
+        }
         //System.out.println("PhysicalCondition : addEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
 
@@ -741,8 +759,10 @@ implements Serializable {
         else if (person != null) {
 
                 Complaint starvation = getMedicalManager().getStarvation();
-                if (hunger > personStarvationTime
-                		|| ((hunger > 1000D) && (kJoules < 500D))) {
+                
+//                if (hunger > personStarvationTime
+//                		|| ((hunger > 1000D) && (kJoules < 500D))) {
+                if (hunger > personStarvationTime) {
                     if (!problems.containsKey(starvation)) {
                         addMedicalComplaint(starvation);
                         isBatteryDepleting = true;
@@ -750,8 +770,9 @@ implements Serializable {
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
-                else if (hunger < 1000D
-                		|| kJoules > 500D ) {
+//                else if (hunger < 1000D
+//                		|| kJoules > 500D ) {
+                else if (hunger < 100D) {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {
                         illness.startRecovery();

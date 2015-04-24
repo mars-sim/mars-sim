@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMealMeta.java
- * @version 3.08 2015-04-13
+ * @version 3.08 2015-04-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -42,9 +42,9 @@ public class EatMealMeta implements MetaTask {
         double energy = person.getPhysicalCondition().getEnergy();
 
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
-        if ((hunger > 250D) || (energy < 3000D)) {
+        if ((hunger > 250D) || (energy < 2525D)) {
             double hungerFactor = hunger / 10D;
-            double energyFactor = (12000 - energy) / 100D;
+            double energyFactor = (2525D - energy) / 100D;
             double avgFactor = (hungerFactor + energyFactor) / 2D;
             if (avgFactor < 0D) {
                 avgFactor = 0D;
