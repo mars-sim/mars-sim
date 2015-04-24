@@ -1,10 +1,8 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-04-24
  * @author Scott Davis
- * 
- * 2014-10-15 mkung: check if there are any fresh food, if not, endTask()  
  */
 package org.mars_sim.msp.core.person.ai.task;
 
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -99,7 +98,6 @@ implements Serializable {
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
 		   
 		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-            //int size = kitchen.getHotMealCacheSize();
 	        if (size == 0) {
 	        	counter++;
 	        	boolean display = false;
@@ -125,9 +123,9 @@ implements Serializable {
 	        	
 	            }
 	            endTask();
-	            kitchen.cleanup();
 	        
-		    } else {
+		    } 
+	        else {
 		    	
 		    	counter = 0;
 				// 2015-01-06
@@ -140,7 +138,6 @@ implements Serializable {
 				String jobName = person.getMind().getJob().getName(person.getGender());
 				logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
 				    	                " in " + person.getSettlement());      
-
 		    }
 	    }
 	    else endTask();
@@ -174,9 +171,9 @@ implements Serializable {
 	            		+ " because none of the ingredients of a meal are available ");
 	            
 	            endTask();
-	            kitchen.cleanup();
 	        
-		    } else {
+		    } 
+	        else {
 		    	
 		    	counter = 0;
 				// 2015-01-06
@@ -233,14 +230,15 @@ implements Serializable {
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
+            //System.out.println(person + " ending cooking due to malfunction.");
             return time;
         }
 
 		if (person != null) {
 	        // If meal time is over, clean up kitchen and end task.
-	        if (!isMealTime(person)) {
+	        if (!isMealTime(person.getCoordinates())) {
 	        	endTask();
-	            kitchen.cleanup();
+	            //System.out.println(person + " ending cooking due to meal time over.");
 	            //logger.info(person.getName() + " just finished cooking.");
 	            return time;
 	        }
@@ -249,19 +247,16 @@ implements Serializable {
 	        // If meal time is over, clean up kitchen and end task.
 	        if (!isMealTime(robot)) {
 	        	endTask();
-	            kitchen.cleanup();
 	            //logger.info(robot.getName() + " just finished cooking.");
 	            return time;
 	        }
 		}
-
-        
         
         // 2015-01-04a Added getCookNoMore() condition 
         if (kitchen.getCookNoMore()) {
         	//System.out.println("CookMeal.java cookingPhase() : cookNoMore = true. calling endTask() ");
         	endTask();
-        	kitchen.cleanup();
+        	//System.out.println(person + " ending cooking due cook no more.");
         	return time;
         }
                 
@@ -277,12 +272,16 @@ implements Serializable {
 	        
 		// Determine amount of effective work time based on "Cooking" skill.
 	    int cookingSkill = getEffectiveSkillLevel();
-	    if (cookingSkill == 0) workTime /= 2;
-	    	else workTime += workTime * (.2D * (double) cookingSkill);
+	    if (cookingSkill == 0) {
+	        workTime /= 2;
+	    }
+	    else {
+	        workTime += workTime * (.2D * (double) cookingSkill);
+	    }
 	
 	    // Add this work to the kitchen.
 	    kitchen.addWork(workTime);
-	
+	    
 	    // Add experience
 	    addExperience(time);
 	
@@ -303,20 +302,24 @@ implements Serializable {
         double newPoints = time / 25D;
         int experienceAptitude = 0;
         
-		if (person != null) 
+		if (person != null) {
 			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-	                NaturalAttribute.EXPERIENCE_APTITUDE);			
-		else if (robot != null)
+	                NaturalAttribute.EXPERIENCE_APTITUDE);	
+		}
+		else if (robot != null) {
 			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
                 NaturalAttribute.EXPERIENCE_APTITUDE);
+		}
 		
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         
-		if (person != null) 
+		if (person != null) { 
 			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
-		else if (robot != null)
+		}
+		else if (robot != null) {
 			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+		}
     }
 
     /**
@@ -342,29 +345,35 @@ implements Serializable {
 		else if (robot != null)
 	        skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
         
-        if (skill <= 3) chance *= (4 - skill);
-        else chance /= (skill - 2);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
         // Modify based on the kitchen building's wear condition.
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-			if (person != null) 
-	            logger.info(person.getName() + " has accident while cooking.");       				
-			else if (robot != null)
+			if (person != null) {
+	            logger.info(person.getName() + " has accident while cooking.");   
+			}
+			else if (robot != null) {
 				logger.info(robot.getName() + " has accident while cooking.");
+			}
             
             kitchen.getBuilding().getMalfunctionManager().accident();
         }
     }	
 
     /**
-     * Checks if it is currently a meal time at the person's location.
-     * @param person the person to check for.
+     * Checks if it is currently a meal time at the location.
+     * @param location the coordinate location to check for.
      * @return true if meal time
      */
-    public static boolean isMealTime(Person person) {
-        double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));			
+    public static boolean isMealTime(Coordinates location) {
+        double timeDiff = 1000D * (location.getTheta() / (2D * Math.PI));			
 	    return mealTime(timeDiff);
 	    
     }

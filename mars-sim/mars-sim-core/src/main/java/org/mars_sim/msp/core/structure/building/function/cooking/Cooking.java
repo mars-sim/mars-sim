@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2015-01-28
+ * @version 3.08 2015-04-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -83,7 +84,6 @@ implements Serializable {
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
 	private int solCache = 1;
-	private int numOfCookedMealCache = 0;
     private double cookingWorkTime;
     private double dryMassPerServing;
 
@@ -97,13 +97,9 @@ implements Serializable {
     private HotMeal aMeal;
     private Settlement settlement;
     private AmountResource dryFoodAR = null;
-    private Building building = null;
 
     private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
-
-    //private List<HotMeal> hotMealCache;ConcurrentHashMap
-    private int hotMealCacheSize;
 
     /**
      * Constructor.
@@ -114,7 +110,6 @@ implements Serializable {
     public Cooking(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-        this.building = building;
 
         // 2014-12-30 Changed inv to include the whole settlement
         //inv = getBuilding().getInventory();
@@ -199,9 +194,9 @@ implements Serializable {
     	} // end of while (i.hasNext())
     }
 
-    public int getHotMealCacheSize() {
-    	return hotMealCacheSize;
-    }
+//    public int getHotMealCacheSize() {
+//    	return hotMealCacheSize;
+//    }
 
 	/**
 	 * Gets the water content for a crop.
@@ -345,8 +340,9 @@ implements Serializable {
      */
     public boolean hasCookedMeal() {
     	int size = 0;
-    	if (cookedMeals != null)
+    	if (cookedMeals != null) {
     		size = cookedMeals.size();
+    	}
         return (size > 0);
     }
 
@@ -429,15 +425,17 @@ implements Serializable {
     }
 
     /**
-     * Cleanup kitchen after mealtime.
+     * Cleanup kitchen after meal time.
      */
-    public void cleanup() {
+    public void cleanUp() {
         cookingWorkTime = 0D;
         cookNoMore = false;
     }
 
-
-    // 2015-01-04a Added getCookNoMore()
+    /**
+     * Check if there should be no more cooking at this kitchen during this meal time.
+     * @return true if no more cooking.
+     */
  	public boolean getCookNoMore() {
  		return cookNoMore;
  	}
@@ -458,35 +456,47 @@ implements Serializable {
         //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime );
         //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
 
-    	//if ( !cookNoMore &&
-    	if (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
+    	if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
             double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
-            double maxServings = population * settlement.getMealsReplenishmentRate() / 10.0;
-            int numOfCookedMeal = cookedMeals.size();
+            double maxServings = population * settlement.getMealsReplenishmentRate();
             //System.out.println( " maxServings is " + maxServings);
             //System.out.println( " MEAL_REPLENISHED_RATE is " + MEAL_REPLENISHED_RATE);
-            if ( numOfCookedMealCache != numOfCookedMeal ) {
-            	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
-            	numOfCookedMealCache = numOfCookedMeal;
-            }
 
-            if (numOfCookedMeal > maxServings)
+            int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
+            
+            if (numSettlementCookedMeals > maxServings) {
             	cookNoMore = true;
-
+            }
             else {
             	//System.out.println("calling pickAMeal()");
 	    		aMeal = pickAMeal();
 	    		if (aMeal != null) {
 	    			cookAHotMeal(aMeal);
-	    			cookNoMore = true;
 	    		}
-
 	    	}
     	}
 
     }
 
+    /**
+     * Gets the total number of available cooked meals at a settlement.
+     * @param settlement the settlement.
+     * @return number of cooked meals.
+     */
+    private int getTotalAvailableCookedMealsAtSettlement(Settlement settlement) {
+        
+        int result = 0;
+        
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
+            result += kitchen.getNumberOfAvailableCookedMeals();
+        }
+        
+        return result;
+    }
 
     /**
      * Chooses a hot meal recipe that can be cooked here.
@@ -521,7 +531,7 @@ implements Serializable {
  	        }
  	    }
 
- 		hotMealCacheSize = result.size();
+// 		hotMealCacheSize = result.size();
  		//System.out.println("hotMealCacheSize is "+hotMealCacheSize);
  	    return result;
  	}
@@ -650,17 +660,11 @@ implements Serializable {
 		        String ingredientName = oneIngredient.getName();
 		        // 2014-12-11 Updated to using dry weight
 		        double dryMass = oneIngredient.getDryMass();
-		        boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientName, true);
-		        if (hasIt)
-		        	;
-	        } // end of while
+		        retrieveAnIngredientFromMap(dryMass, ingredientName, true);
+	        }
 
 	        retrieveOil();
-
-	        //boolean hasIt =
 	        retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
-	        //if (hasIt)
-	        	//resourceMap.put(ingredientName, cacheAmount-dryMass);
 
 	        useWater();
 
@@ -672,11 +676,6 @@ implements Serializable {
 	        //logger.info("a new meal made : " + meal.getName());
 	    	cookedMeals.add(meal);
 	    	mealCounterPerSol++;
-            int numOfCookedMeal = cookedMeals.size();
-            if ( numOfCookedMealCache != numOfCookedMeal ) {
-            	//System.out.println( " numOfCookedMeal is " + numOfCookedMeal);
-            	numOfCookedMealCache = numOfCookedMeal;
-            }
 
 	    	// 2014-12-08 Added to Multimaps
 	    	qualityMap.put(nameOfMeal, mealQuality);
@@ -720,7 +719,6 @@ implements Serializable {
   		return result;
       }
 
-  	// 2015-02-08 Added replenishIngredientMap()
       public boolean replenishIngredientMap(double cacheAmount, double amount, String name, boolean isRetrieving) {
       	boolean result = true;
       	//if (cacheAmount < amount)
@@ -761,42 +759,6 @@ implements Serializable {
 	    	retrieveAnIngredientFromMap(AMOUNT_OF_OIL_PER_MEAL, oil, true);
 	    }
     }
-
-    /**
-     * Retrieves the resource
-     * @param name
-     * @param requestedAmount
-
-    //2015-02-07 Added retrieveAnResource()
-    public boolean retrieveAnResource(double requestedAmount, String name, boolean isRetrieving ) {
-    	boolean result = false;
-    	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);
-	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);
-	        if (amountStored < requestedAmount) {
-	     		//requestedAmount = amountStored;
-	    		//logger.warning("Not enough " + name + " for making a meal.");
-	    		result = false;
-	        }
-	    	else if (Math.round(amountStored*10000.0)/10000.0 < 0.0001) {
-	    		//logger.warning("no more " + name + " in " + settlement.getName());
-	    		result = false;
-	    	}
-	    	else {
-	    		if (isRetrieving) {
-		    		inv.retrieveAmountResource(nameAR, requestedAmount);
-		    		inv.addAmountDemand(nameAR, requestedAmount);
-	    		}
-	    		result = true;
-	    	}
-	    }  catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-	    }
-
-    	return result;
-    }
-    */
 
     public void setChef(String name) {
     	this.producerName = name;
@@ -858,88 +820,62 @@ implements Serializable {
     // 2014-10-08: Currently converting each unit of expired meal into x kg of packed food
     // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
-    	boolean hasAMeal = hasCookedMeal();
-	     //logger.info(" hasAMeal : "+ hasAMeal);
-    	//TODO: check for whether it is meal hour. if it's not, bypass some steps below
-	     if ( hasAMeal ) {
-	    	 double rate = settlement.getMealsReplenishmentRate();
-	         //int newNumOfCookedMeal = cookedMeals.size();
-	         //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
-	         Iterator<CookedMeal> i = cookedMeals.iterator();
-	         while (i.hasNext()) {
-	            CookedMeal meal = i.next();
-	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-	            if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-	            	//dailyMealList.add(meal);
-	 	      		try {
-	 	      			i.remove();
-		            	// 2015-02-27 The probability that the expired dessert is of no good and must be discarded is also dependent upon the food quality
-		            	double quality = meal.getQuality()/2D + 1D;
-	 	      			double num = RandomUtil.getRandomDouble(8*quality);
-	 	      			if (num < 1) {
-	 	      				Storage.storeAnResource(dryMassPerServing, "Food Waste", inv);
-			            	logger.info(dryMassPerServing  + " kg " + meal.getName()
-			                		+ " expired, turned bad and discarded at " + getBuilding().getNickName()
-			                		+ " in " + settlement.getName() );
-	 	      			}
-	 	      			else {
-	 	      				preserveFood();
-			            	logger.info("Meal Expired. Convert "
-			            			+ dryMassPerServing  + " kg "
-			                		+ meal.getName()
-			                		+ " into preserved food "
-			                		+  " at " + getBuilding().getNickName()
-			                		+ " in " + settlement.getName() );
-			      	   		if(logger.isLoggable(Level.FINEST)) {
-			      	            logger.finest("No one is eating " + meal.getName() + ". Convert meal into preserved food at " +
-			      	                    getBuilding().getBuildingManager().getSettlement().getName());
-			      	   		}
-	 	      			}
-		      	        // 2015-01-12 Adjust the rate to go down for each meal
-			  	    	if (rate > 0 )
-			  	    		rate -= DOWN;
-				         settlement.setMealsReplenishmentRate(rate);
-	 	      		} catch (Exception e) {}
-	          	}
+        boolean hasAMeal = hasCookedMeal();
+        //TODO: check for whether it is meal hour. if it's not, bypass some steps below
+        if (hasAMeal) {
+            double rate = settlement.getMealsReplenishmentRate();
+            //int newNumOfCookedMeal = cookedMeals.size();
+            //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+            Iterator<CookedMeal> i = cookedMeals.iterator();
+            while (i.hasNext()) {
+                CookedMeal meal = i.next();
+                MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+                if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
+                    
+                    try {
+                        cookedMeals.remove(meal);
+                        
+                        // 2015-02-27 The probability that the expired meal is of no good and must be discarded is also dependent upon the food quality
+                        double quality = meal.getQuality()/2D + 1D;
+                        double num = RandomUtil.getRandomDouble(8*quality);
+                        if (num < 1) {
+                            Storage.storeAnResource(dryMassPerServing, "Food Waste", inv);
+                            logger.fine(dryMassPerServing  + " kg " + meal.getName()
+                                    + " expired, turned bad and discarded at " + getBuilding().getNickName()
+                                    + " in " + settlement.getName() );
+                        }
+                        else {
+                            // Convert the meal into preserved food.
+                            preserveFood();
+                            logger.fine("Meal Expired. Convert "
+                                    + dryMassPerServing  + " kg "
+                                    + meal.getName()
+                                    + " into preserved food at "
+                                    + getBuilding().getNickName()
+                                    + " in " + settlement.getName() );
+                        }
+                        // 2015-01-12 Adjust the rate to go down for each meal
+                        if (rate > 0) {
+                            rate -= DOWN;
+                        }
+                        settlement.setMealsReplenishmentRate(rate);
+                    } 
+                    catch (Exception e) {}
+                }
 
-	         }
-	     }
-	     //numOfCookedMealCache = newNumOfCookedMeal;
+            }
+        }
 
-	     // 2015-01-12 Added checkEndOfDay()
-	     checkEndOfDay();
+        // Check if not meal time, clean up.
+        Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
+        if (!CookMeal.isMealTime(location)) {
+            cleanUp();
+        }
+        
+        // 2015-01-12 Added checkEndOfDay()
+        checkEndOfDay();
     }
-/*
-	public boolean storeAnResource(double amount, String name) {
-		Inventory inventory = inv;
-		return storeAnResource(amount, name, inventory);
-	}
 
-	// 2015-02-06 Added storeAnResource()
-	public boolean storeAnResource(double amount, String name, Inventory inv) {
-		boolean result = false;
-		try {
-			AmountResource ar = AmountResource.findAmountResource(name);
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-
-			if (remainingCapacity < amount) {
-			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-				amount = remainingCapacity;
-				result = false;
-			    //logger.info("addHarvest() : storage is full!");
-			}
-			else {
-				inv.storeAmountResource(ar, amount, true);
-				inv.addAmountSupplyAmount(ar, amount);
-				result = true;
-			}
-		} catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-		}
-
-		return result;
-	}
-*/
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
 
@@ -1030,7 +966,6 @@ implements Serializable {
     public void destroy() {
         super.destroy();
         inv = null;
-        building = null;
         cookedMeals.clear();
         cookedMeals = null;
         settlement = null;

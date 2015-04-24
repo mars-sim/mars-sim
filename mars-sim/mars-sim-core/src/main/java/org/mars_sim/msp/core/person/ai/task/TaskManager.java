@@ -190,20 +190,26 @@ implements Serializable {
 		
 	}
 
+	/**
+	 * Reduce the person's caloric energy over time.
+	 * @param time the passing time (
+	 */
     public void reduceEnergy(double time) {
     	PhysicalCondition health = null;
-		// 2015-01-30 Added reducekJoules()
-		// TODO: need to match the kind of activity to the energy output
 		if (person != null) 
 			health = person.getPhysicalCondition();			
 		else if (robot != null)
 			health = robot.getPhysicalCondition();
 		
-		int ACTIVITY_FACTOR = 6;
-		double newTime = ACTIVITY_FACTOR * time ;
-		health.reduceEnergy(newTime);
-        //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
+//		int ACTIVITY_FACTOR = 6;
+//		double newTime = ACTIVITY_FACTOR * time ;
+//		health.reduceEnergy(newTime);
 		
+		// Changing reduce energy to be just time as it otherwise
+		// ends up being too much energy reduction compared to the
+		// amount gained from eating.
+		health.reduceEnergy(time);;
+        //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
     }
     
 	/** 
@@ -220,6 +226,7 @@ implements Serializable {
 			if (efficiency < .1D) {
 				efficiency = .1D;
 			}
+			
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
@@ -228,8 +235,20 @@ implements Serializable {
 			remainingTime = currentTask.performTask(time);
 		}
 		
-        reduceEnergy(time - remainingTime);
-		
+		// Expend energy based on activity.
+		if (currentTask != null) {
+		    
+		    double energyTime = time - remainingTime;
+		    
+		    // Double energy expenditure if performing effort-driven task.
+		    if (currentTask.isEffortDriven()) {
+		        energyTime *= 2D;
+		    }
+		    
+		    if (energyTime > 0D) {
+		        reduceEnergy(energyTime);
+		    }
+		}
         
 		return remainingTime;
 		
