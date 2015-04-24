@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2015-01-04
+ * @version 3.08 2015-04-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -68,7 +67,8 @@ extends VehicleMission {
 
 	// Data members
 	private Settlement startingSettlement;
-
+	private Map<AmountResource, Double> dessertResources;
+	
 	/**
 	 * Constructor.
 	 * @param name the name of the mission.
@@ -876,51 +876,77 @@ extends VehicleMission {
 			foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
 		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
 		result.put(food, foodAmount);
-
-	///*	
-		// 2015-03-09 Added picking a dessert randomly for the journey		
-    	List<String> dessertList = new ArrayList<String>();
-    	// TODO: tweak the dessertAmount. Desserts are optional but important when food is running out.
-		double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * timeSols;// not using * crew; // not using PreparingDessert.getDessertMassPerServing()  
-		
-	  	// Put together a list of available dessert 
-		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-        for(String n : availableDesserts) {   	
-        	//double amount = PreparingDessert.getDryMass(n);  
-        	// see if a food resource is available
-        	boolean isAvailable = Storage.retrieveAnResource(dessertAmount, n, startingSettlement.getInventory(), false);
-        	if (isAvailable) dessertList.add(n);   	  	        	
-        }
-        //System.out.println("RoverMission.java : getResourcesNeededForTrip() : dessertList.size() is " + dessertList.size());
-		// TODO: implement an algorithm for the vehicle occupants to decide which dessert to pick based on the favorite dessert and other factors
-        // Pick one of the desserts
-        String dessertName = PreparingDessert.getADessert(dessertList);	
-        //System.out.println("RoverMission.java : getResourcesNeededForTrip() : dessert choice is " + dessertName); 
-		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-		
-	    if (!dessertName.equals("None")) {	    	
-	    	AmountResource dessert = AmountResource.findAmountResource(dessertName);  
-			//  Added capacity for a dessert
-	    	//System.out.println("RoverMission.java : getResourcesNeededForTrip() : vehicle is " + getRover().getName()); 
-	    	getRover().getInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
-	    	boolean isItThere = Storage.retrieveAnResource(dessertAmount, dessertName, getRover().getInventory(), false);
-			//System.out.println("RoverMission.java : getResourcesNeededForTrip() :  isItThere is "  + isItThere);
-			
-	    	//if (isItThere) {
-		    	if (useBuffer)
-			    	dessertAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-			    
-		    	result.put(dessert, dessertAmount);
-				//System.out.println("RoverMission.java : getResourcesNeededForTrip() : "  + result.get(dessert) + " : " + dessertName +" kg added to the map");
-				// save the name of the chosen dessert into the vehicle
-				//getRover().setTypeOfDessertLoaded(dessertName);
-	    	//}
-			
-	    }	
-	
-	    //*/
 		
 		return result;
+	}
+	
+	@Override
+	public Map<Resource, Number> getOptionalResourcesToLoad() {
+	    
+	    Map<Resource, Number> result = super.getOptionalResourcesToLoad();
+       
+	    // Initialize dessert resources if necessary.
+	    if (dessertResources == null) {
+	        determineDessertResources();
+	    }
+	    
+	    // Add any dessert resources to optional resources to load.
+	    Iterator<AmountResource> i = dessertResources.keySet().iterator();
+	    while (i.hasNext()) {
+	        AmountResource dessert = i.next();
+	        double amount = dessertResources.get(dessert);
+	        
+	        if (result.containsKey(dessert)) {
+	            double initialAmount = (double) result.get(dessert);
+	            amount += initialAmount;
+	        }
+	        
+	        result.put(dessert, amount);
+	    }
+	    
+	    return result;
+	}
+	
+	/**
+	 * Determine an unprepared dessert resource to load on the mission.
+	 */
+	private void determineDessertResources() {
+	    
+	    dessertResources = new HashMap<AmountResource, Double>(1);
+	    
+	    // Determine estimate time for trip.
+        double distance = getTotalRemainingDistance();
+        double time = getEstimatedTripTime(true, distance);
+        double timeSols = time / 1000D;
+
+        int crewNum = getPeopleNumber();
+        
+        // Determine dessert amount for trip.
+        double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols;
+        
+        
+        // Put together a list of available unprepared dessert resources. 
+        List<String> dessertList = new ArrayList<String>();
+        String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+        for (String n : availableDesserts) {     
+            
+            // See if an unprepared dessert resource is available
+            boolean isAvailable = Storage.retrieveAnResource(dessertAmount, n, startingSettlement.getInventory(), false);
+            if (isAvailable) {
+                dessertList.add(n);                    
+            }
+        }
+        
+        // Randomly choose an unprepared dessert resource from the available resources.
+        AmountResource dessert = null;
+        if (dessertList.size() > 0) {
+            String dessertName = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
+            dessert = AmountResource.findAmountResource(dessertName);
+        }
+        
+        if (dessert != null) {
+            dessertResources.put(dessert, dessertAmount);
+        }
 	}
 
 	@Override
@@ -978,12 +1004,6 @@ extends VehicleMission {
 			if (inv.getAmountResourceStored(food, false) < 50D) {
 				hasBasicResources = false;
 			}
-	    	// 2015-01-04 Added Soymilk
-			//AmountResource soymilk = AmountResource.findAmountResource("Soymilk");
-			//if (inv.getAmountResourceStored(soymilk, false) < 20D) {
-			//	hasBasicResources = false;
-			//}	
-
 		} 
 		catch (Exception e) {
 			e.printStackTrace(System.err);
