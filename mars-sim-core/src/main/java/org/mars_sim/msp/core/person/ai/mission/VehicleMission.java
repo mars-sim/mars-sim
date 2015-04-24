@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.07 2015-03-01
+ * @version 3.08 2015-04-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
@@ -829,29 +831,18 @@ implements UnitListener {
 		while (iR.hasNext() && result) {
 			Resource resource = iR.next();
 			if (resource instanceof AmountResource) {
-				boolean isDessert = false;
-				// 2015-03-15 Skipped calculating the remaining amount of desserts since desserts are non-essential	
-				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-                for(String n : availableDesserts) {
-                	AmountResource dessert = AmountResource.findAmountResource(n);        		
-                	if (resource.equals(dessert))
-    	        		isDessert = true;     	
-                }
-	        	
-                if (!isDessert) {
 
-					double amount = (Double) neededResources.get(resource);
-					double amountStored = inv
-							.getAmountResourceStored((AmountResource) resource, false);
-					if (amountStored < amount) {
-						logger.severe(vehicle.getName() + " does not have enough " + resource + 
-								" to continue with " + getName() + " (required: " + amount + 
-								" kg, stored: " + amountStored + " kg)");
-						result = false;
-					}
-                }	
-				
-			} else if (resource instanceof ItemResource) {
+			    double amount = (Double) neededResources.get(resource);
+			    double amountStored = inv
+			            .getAmountResourceStored((AmountResource) resource, false);
+			    if (amountStored < amount) {
+			        logger.severe(vehicle.getName() + " does not have enough " + resource + 
+			                " to continue with " + getName() + " (required: " + amount + 
+			                " kg, stored: " + amountStored + " kg)");
+			        result = false;
+			    }
+			} 
+			else if (resource instanceof ItemResource) {
 				int num = (Integer) neededResources.get(resource);
 				int numStored = inv.getItemResourceNum((ItemResource) resource);
 				if (numStored < num) {
@@ -1128,7 +1119,6 @@ implements UnitListener {
 	 * @return resources and their number.
 	 */
 	public Map<Resource, Number> getOptionalResourcesToLoad() {
-		// TODO: add extra food/dessert as optionalResources
 		return getPartsNeededForTrip(getTotalRemainingDistance());
 	}
 
@@ -1145,7 +1135,30 @@ implements UnitListener {
 	 * @return equipment and their number.
 	 */
 	public Map<Class, Integer> getOptionalEquipmentToLoad() {
-		return new HashMap<Class, Integer>(0);
+	    
+	    Map<Class, Integer> result = new HashMap<Class, Integer>();
+	    
+	    // Add containers needed for optional amount resources.
+	    Map<Resource, Number> optionalResources = getOptionalResourcesToLoad();
+	    Iterator<Resource> i = optionalResources.keySet().iterator();
+	    while (i.hasNext()) {
+	        Resource resource = i.next();
+	        if (resource instanceof AmountResource) {
+	            AmountResource amountResource = (AmountResource) resource;
+	            double amount = (double) optionalResources.get(amountResource);
+	            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(amountResource);
+	            double capacity = ContainerUtil.getContainerCapacity(containerClass);
+	            int numContainers = (int) Math.ceil(amount / capacity);
+	            
+	            if (result.containsKey(containerClass)) {
+	                numContainers += result.get(containerClass);
+	            }
+	            
+	            result.put(containerClass, numContainers);
+	        }
+	    }
+	    
+		return result;
 	}
 
 	/**

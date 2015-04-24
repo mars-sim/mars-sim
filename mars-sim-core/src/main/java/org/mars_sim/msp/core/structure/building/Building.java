@@ -753,9 +753,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-
 	public void timePassing(double time) {
-			// Check for valid argument.
+		// Check for valid argument.
 		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
 
 		// Send time to each building function.

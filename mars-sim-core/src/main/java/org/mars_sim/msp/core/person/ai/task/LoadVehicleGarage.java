@@ -106,7 +106,6 @@ implements Serializable {
     		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
     		        vehicle.getName())); //$NON-NLS-1$
     		requiredResources = mission.getRequiredResourcesToLoad();
-    		// TODO: add extra food/dessert as optionalResources
     		optionalResources = mission.getOptionalResourcesToLoad();
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
     		optionalEquipment = mission.getOptionalEquipmentToLoad();
