@@ -38,7 +38,7 @@ public interface SoundConstants {
 	public final static String SND_EQUIPMENT = "equipment.ogg";
 
 	// Supported sound formats
-	public final static String SND_FORMAT_OGG  = ".ogg";
+	public final static String SND_FORMAT_OGG = ".ogg";
 
 	/** maximum amount of clips in cache. */
 	public final static int MAX_CACHE_SIZE = 5;
