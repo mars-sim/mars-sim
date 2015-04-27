@@ -5,9 +5,9 @@
  * @author Lars Naesbye Christensen
  */
 
-a:link,a:visited{color:darkgoldenrod;}
-body{background-color:rgb(50, 50, 50);color:#FFF;font-family:sans-serif;}
-body,h3{font-size:14pt;line-height:1.1em;}
+a, a:link, a:visited, a:hover{color:rgb(184, 134, 11);}
+body {background-color:rgb(50, 50, 50);color:#FFFFFF;font-family:sans-serif;}
+body, h3{font-size:14pt;line-height:1.1em;}
 h2{font-size:14pt;font-weight:700;line-height:1.2em;text-align:center;text-decoration:underline;}
 h3{font-weight:700;}
 p{margin-left:13pt;}
