@@ -72,14 +72,6 @@ public abstract class UnitWindow extends JInternalFrame {
         // Use JInternalFrame constructor
         super(unit.getName(), true, true, false, true);
 
-        //UIManager.put("InternalFrame.activeTitleBackground", new ColorUIResource(new Color(248,250,175)));
-        //UIManager.put("InternalFrame.inactiveTitleBackground", new ColorUIResource(new Color(248,250,175)));
-        //UIManager.put("InternalFrame.titleFont", new Font("Dialog", Font.PLAIN, 11));
-        //javax.swing.plaf.basic.BasicInternalFrameUI ui = 
-        //    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
-        //this.setUI(ui); 
-        //updateUI();
-        
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         titlePane.setOpaque(true);

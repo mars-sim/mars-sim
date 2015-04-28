@@ -58,6 +58,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -98,7 +99,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	private static final int PORT = 9090;
 	private static final int PORT_CHAT = 9876;
 
-	private static final int TIME_DELAY = 60 * 1000; // in miliseconds
+	//private static final int TIME_DELAY = 60 * 1000; // in miliseconds
 
 	private static final String MULTICAST_ADDRESS = "ff02::fb"; // FF02:0:0:0:0:0:0:2";
 																// //
@@ -109,7 +110,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	private int clientID = 0;
 	private boolean ready = false;
 
-	private String hostAddressStr;
+	private String serverAddressStr;
 	private String clientAddressStr;
 	private String playerName;
 	InetAddress iadr;
@@ -230,7 +231,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	}
 
 	public String getAddressStr() {
-		return hostAddressStr;
+		return serverAddressStr;
 	}
 
 	public MainMenu getMainMenu() {
@@ -268,7 +269,16 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		Dialog<String> dialog = new Dialog<>();
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		stage.setOnCloseRequest((event) -> event.consume());
+    	stage.setOnCloseRequest(e -> {
+			boolean isExit = mainMenu.exitDialog(stage);
+			if (!isExit) {
+				e.consume();
+			}
+			else {
+				Platform.exit();
+			}
+		});
+
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/client48.png").toString()));
 		// Add Stage icon
@@ -293,16 +303,16 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 
 		// TextField tfUser = new TextField();
 		// tfUser.setPromptText("Username");
-		TextField tfHostAddress = new TextField();
+		TextField tfServerAddress = new TextField();
 		// PasswordField password = new PasswordField();
-		tfHostAddress.setPromptText("192.168.xxx.xxx");
-		// hostAddress.setText("192.168.xxx.xxx");
+		tfServerAddress.setPromptText("192.168.xxx.xxx");
+		tfServerAddress.setText("192.168.xxx.xxx");
 		Button localhostB = new Button("Use localhost");
 
 		// grid.add(new Label("Username:"), 0, 0);
 		// grid.add(tfUser, 1, 0);
-		grid.add(new Label("Host Address:"), 0, 1);
-		grid.add(tfHostAddress, 1, 1);
+		grid.add(new Label("Server Address:"), 0, 1);
+		grid.add(tfServerAddress, 1, 1);
 		grid.add(localhostB, 2, 1);
 
 		// Enable/Disable connect button depending on whether the host address
@@ -311,61 +321,73 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		connectButton.setDisable(true);
 
 		// Do some validation (using the Java 8 lambda syntax).
-		tfHostAddress.textProperty().addListener((observable, oldValue, newValue) -> {
+		tfServerAddress.textProperty().addListener((observable, oldValue, newValue) -> {
 			connectButton.setDisable(newValue.trim().isEmpty());
 		} );
 
 		dialog.getDialogPane().setContent(grid);
 
 		// Request focus on the username field by default.
-		Platform.runLater(() -> tfHostAddress.requestFocus());
+		Platform.runLater(() -> tfServerAddress.requestFocus());
 
 		// Convert the result to a username-password-pair when the login button
 		// is clicked.
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == connectButtonType) {
-				return tfHostAddress.getText();
+				return tfServerAddress.getText();
 			}
 			return null;
 		} );
 
 		localhostB.setOnAction(event -> {
-			tfHostAddress.setText("127.0.0.1");
+			tfServerAddress.setText("127.0.0.1");
 		} );
 		// localhostB.setPadding(new Insets(1));
 		// localhostB.setPrefWidth(10);
 
 		Optional<String> result = dialog.showAndWait();
-
 		result.ifPresent(input -> {
-			String hostAddressStr = input;
-			this.hostAddressStr = hostAddressStr;
-			logger.info("Connecting to host at " + hostAddressStr);
+			String serverAddressStr = tfServerAddress.getText();
+			this.serverAddressStr = serverAddressStr;
+			logger.info("Connecting to server at " + serverAddressStr);
 			loginDialog();
 		} );
 
 	}
 
 	public void loginDialog() {
+
 		// Create the custom dialog.
 		Dialog<Pair<String, String>> dialog = new Dialog<>();
 		// Get the Stage.
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 		// Add corner icon.
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/login32.png").toString()));
+	   	stage.setOnCloseRequest(e -> {
+				boolean isExit = mainMenu.exitDialog(stage);
+				if (!isExit) {
+					e.consume();
+				}
+				else {
+					Platform.exit();
+				}
+		});
 		// Add Stage icon
 		dialog.setGraphic(new ImageView(this.getClass().getResource("/icons/login256.png").toString()));
 		// dialog.initOwner(mainMenu.getStage());
 		dialog.setTitle("Mars Simulation Project");
 		dialog.setHeaderText("Log in");
 		dialog.setContentText("Enter your username and password : ");
+		//dialog.initModality(Modality.NONE);
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		//dialog.setOnCloseRequest((event) -> stage.close());
 
 		// Set the button types.
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
 		// ButtonType localHostButton = new ButtonType("localhost");
 		// dialog.getDialogPane().getButtonTypes().addAll(localHostButton,
 		// loginButtonType, ButtonType.CANCEL);
-		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+		dialog.getDialogPane().getButtonTypes().add(loginButtonType);// , ButtonType.CANCEL);
 
 		// Create the username and password labels and fields.
 		GridPane grid = new GridPane();
@@ -422,22 +444,24 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 			return null;
 		} );
 
-		// localhostB.setPadding(new Insets(1));
-		// localhostB.setPrefWidth(10);
+		dialog.show();
 
-		Optional<Pair<String, String>> result = dialog.showAndWait();
+		loginButton.addEventFilter(EventType.ROOT,  e-> {
+			if(e.getEventType().equals(ActionEvent.ACTION)) {
 
-		result.ifPresent(input -> {
-			playerName = tfPlayer.getText();
-			logger.info("Player " + input.getKey() + " connecting to host at " + hostAddressStr);
-			// logger.info("Connecting to the host at " + hostAddressStr);
+				e.consume();
+
+				playerName = tfPlayer.getText();
+				logger.info("Player " + tfPlayer.getText() + " connecting to server at " + serverAddressStr);
+				// logger.info("Connecting to the host at " + hostAddressStr);
 
 			try {
-				makeContact(hostAddressStr);
+				makeContact(serverAddressStr);
 				// obtain a client id
 				boolean isSuccessful = sendRegister();
 
 				if (isSuccessful) {
+					dialog.close();
 					// establish chat
 					iadr = InetAddress.getByName(MULTICAST_ADDRESS);
 					so = new MulticastSocket(PORT_CHAT);
@@ -452,19 +476,31 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					mainMenu.runOne();
 					// prepareListeners(); // to be run in
 					// ScenarioConfigEditorFX
-					stage.setOnCloseRequest((event) -> stage.close());
 				} else {
 					// shake the dialog or send an alert to inform the user the
-					// login has been used
-					dialog.close();
-					loginDialog();
+					// player name is NOT valid
+	                ShakeTransition anim = new ShakeTransition(dialog.getDialogPane(), t-> tfPlayer.requestFocus()); //dialog.close());
+	                anim.playFromStart();
+					//DialogEarthquakeCenter dec = new DialogEarthquakeCenter(dialog);
+					//dec.startTimer();
+					//dec.startNudging();
+					//try {
+					//	System.out.println("start sleeping ");
+					//	Thread.sleep(2000);
+					//	System.out.println("done sleeping ");
+					//}	catch (InterruptedException e) {}
+					//dialog.close();
+					//loginDialog();
 				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
-		} );
 
+		}
+		//else // if cancel is pressed
+			//loginDialog();
+	});
 	}
 
 	/*
@@ -486,13 +522,21 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	 * and client
 	 */
 	private void createConnectionStage() {
-
 		stage = new Stage();
 		stage.setTitle("Client Connection Panel");
-
-		stage.setOnCloseRequest(e -> {
-			sendBye();
-		} );
+		//stage.setOnCloseRequest(e -> {
+		//	sendBye();
+		//});
+	   	stage.setOnCloseRequest(e -> {
+				boolean isExit = mainMenu.exitDialog(stage);
+				if (!isExit) {
+					e.consume();
+				}
+				else {
+					sendBye();
+					Platform.exit();
+				}
+		});
 
 		BorderPane b = new BorderPane();
 		ta = new TextArea();
@@ -606,8 +650,8 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	 */
 	private void sendBye() {
 		try {
-			out.println("bye " + clientID); // tell server that client is
-											// disconnecting
+			// tell server that the player is disconnecting
+			out.println("bye " + playerName);
 			// out.close(); // not working for threaded server
 			sock.close();
 		} catch (Exception e) {
@@ -660,7 +704,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 			/*
 			 * Create a socket connection to the server
 			 */
-			sock.connect(new InetSocketAddress(hostAddressStr, PORT));
+			sock.connect(new InetSocketAddress(serverAddressStr, PORT));
 			// if (debugFlagIsSet(Constants.instance().DEBUG_STATUS)) {
 			// System.out.println("Connected to " + host
 			// + "at port " + port);
@@ -770,17 +814,34 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		String id = clientID + "";
 		String name = s.getName();
 
+
+		Iterator<SettlementRegistry> i = settlementList.iterator();
+			while (i.hasNext()) {
+				SettlementRegistry ss = i.next(); // must be called before you can call i.remove()
+				if (ss.getPlayerName().equals(playerName) && ss.getName().equals(name)) {
+					if (playerName.equals("") | (name.equals("")))
+						createAlert("remove error", "Please ensure the settlement info are correct.");
+					else {
+						out.println("remove " + playerName + " & " + id + " & " + name + " & ");
+						ta.appendText("Sent : remove " + playerName + " , " + id + " , " + name);
+					}
+					i.remove();
+				}
+			}
+
+/*
 		settlementList.forEach(ss -> {
 			if (ss.getPlayerName().equals(playerName) && ss.getName().equals(name)) {
 
 				if (playerName.equals("") | (name.equals("")))
-					createAlert("Input Error", "Please ensure all settlement info are correct.");
+					createAlert("remove error", "Please ensure the settlement info are correct.");
 				else {
 					out.println("remove " + playerName + " & " + id + " & " + name + " & ");
-					ta.appendText("Sent : " + playerName + " , " + id + " , " + name);
+					ta.appendText("Sent : remove " + playerName + " , " + id + " , " + name);
 				}
 			}
 		} );
+*/
 	}
 
 	/*
@@ -998,7 +1059,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 
 	/**
 	 * Checks if a player has any activity within a predefined period of time
-	 */
+
 	public void checkPlayerActivity() {
 		String startTime = "10:00";
 		// String endTime = "12:00";
@@ -1022,20 +1083,21 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		if (Math.abs(elapsed) > TIME_DELAY)
 			; // unregister player, clear idMap, addressMap and timeTagMap, send
 				// msg
-
 	}
+*/
 
 	/**
 	 * Creates and starts the timer
 	 *
 	 * @return Scene
-	 */
+
 	public void startTimer() {
 		// Set up earth time text update
 		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> checkPlayerActivity()));
 		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 		timeline.play();
 	}
+*/
 
 	/**
 	 * Sets up this class with two listeners
