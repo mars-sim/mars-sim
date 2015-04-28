@@ -11,12 +11,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -26,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.threeten.extra.Interval;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -33,6 +42,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * The MultiplayerServer class allows the computer to take on the host server role.
@@ -44,9 +54,11 @@ public class MultiplayerServer extends Application {
 
 	private static final int MAX_NUM_THREADS = 5;
 
+	private static final int TIME_DELAY = 60 ; // in seconds
+
 	private int port = 9090;
 
-    private boolean ready = false;
+    //private boolean ready = false;
     boolean serverStopped = false;
 
 	private String hostServerAddress;
@@ -64,6 +76,8 @@ public class MultiplayerServer extends Application {
 	private CentralRegistry centralRegistry;
 	private PrintWriter out = null;
 	private BufferedReader in = null;
+	private Timeline timeline;
+	private Instant oldLogTime;
 
 	private ConnectionTask connectionTask;
 	private transient ThreadPoolExecutor serverExecutor;
@@ -71,6 +85,7 @@ public class MultiplayerServer extends Application {
 
 	//private Map<Integer, String> addressMap = new ConcurrentHashMap<>(); // store clientID & address
 	//private Map<Integer, String> idMap = new ConcurrentHashMap<>();
+	private Map<Integer, Instant> timeTagMap = new ConcurrentHashMap<>();
 
 	/* Method 3: Lazy Creation of Singleton ThreadSafe Instance without Using Synchronized Keyword.
 	 * This implementation relies on the well-specified initialization phase of execution within the Java Virtual Machine (JVM).
@@ -234,7 +249,7 @@ public class MultiplayerServer extends Application {
 			// TODO: create a host dialog that lists all clients currently connected
 			//add(clientAddress);
 			try {
-
+				startTimer();
 	        	in = new BufferedReader( new InputStreamReader(socket.getInputStream()) );
 				out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -286,20 +301,20 @@ public class MultiplayerServer extends Application {
 	 * @param string message
 	 */
 	public void createAlert(String str) {
-		   Alert alert = new Alert(AlertType.INFORMATION);
-			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-			// Add corner icon.
-			stage.getIcons().add(new Image(this.getClass().getResource("/icons/server48.png").toString()));
-			// Add Stage icon
-			alert.setGraphic(new ImageView(this.getClass().getResource("/icons/server256.png").toString()));
-		   //alert.initOwner(stage);
-		   alert.setTitle("Mars Simulation Project");
-		   alert.setHeaderText("Multiplayer Host");
-		   //if (mainMenu != null) {
-			//   alert.initOwner(mainMenu.getStage());
-		   //}
-		   alert.setContentText(str);
-		   alert.show();
+		Alert alert = new Alert(AlertType.INFORMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		// Add corner icon
+		stage.getIcons().add(new Image(this.getClass().getResource("/icons/server48.png").toString()));
+		// Add Stage icon
+		alert.setGraphic(new ImageView(this.getClass().getResource("/icons/server256.png").toString()));
+		//alert.initOwner(stage);
+		alert.setTitle("Mars Simulation Project");
+		alert.setHeaderText("Multiplayer Host");
+		//if (mainMenu != null) {
+		//   alert.initOwner(mainMenu.getStage());
+		//}
+		alert.setContentText(str);
+		alert.show();
 	}
 
 	/* Processes the input line
@@ -324,17 +339,20 @@ public class MultiplayerServer extends Application {
 			            if ((line.length() >= 4) &&     // "bye "
 			       	        (line.substring(0, 3).toLowerCase().equals("bye"))) {
 			       				logger.info("Command processed : 'bye'");
-			       				String idStr = line.substring(4).trim(); // cut out the get keyword
-			       				id = Integer.parseInt(idStr);
-			       				//TODO: is the keyword "synchronized" needed for removing the id in idMap?
-			       				//idMap.remove(id);
-			       				//addressMap.remove(id);
+			       				String playerName = line.substring(4).trim(); // cut out the get keyword
+			       				// extract the clientID of the player
+			       				//id = Integer.parseInt(idStr);
+			       				//TODO: should I set the timer to wait for a minute b4 removing the playerName?
+			       				centralRegistry.getIdMap().remove(playerName);
+			       				// when a value is removed, does it also remove key?
+			       				centralRegistry.getAddressMap().remove(playerName);
+			       				// TODO: if idMap is empty and done is true, will server just quit processing ?
 					        	if (centralRegistry.getIdMap().size() == 0)
 					        		done = true;
 			       	    }
 
 			           else {
-			        	   executeCommand(line, out, clientAddress);
+			        	   id = executeCommand(line, out, clientAddress, id);
 			        	   //centralRegistry.saveRecords();
 			           }
 
@@ -357,8 +375,12 @@ public class MultiplayerServer extends Application {
 	 * case 1: "new name & lat & long"
 	 * case 2: "get"
 	 * case 3: "register"
+	 * @return id
 	 */
-	private void executeCommand(String line, PrintWriter out, String clientAddress) {
+	private int executeCommand(String line, PrintWriter out, String clientAddress, int id) {
+		int newId = 0;
+		boolean updateTimeTag = true;
+
 	    if ((line.length() >= 7) &&     // "update "
 		        (line.substring(0, 6).toLowerCase().equals("update"))) {
 					logger.info("Command processed : update");
@@ -378,13 +400,15 @@ public class MultiplayerServer extends Application {
 			//centralRegistry.addEntry(userName);
 			boolean doesPlayerNameExist = centralRegistry.verifyPlayerName(playerName, clientAddress);
 
-			if (doesPlayerNameExist)
+			if (doesPlayerNameExist) {
 				out.println( centralRegistry.disapprovePlayerName(playerName) );
+				updateTimeTag = false;
+			}
 			else {
-				int id = centralRegistry.assignNewID(playerName, clientAddress);
+				newId = centralRegistry.assignNewID(playerName, clientAddress);
 				//addressMap.put(id, clientAddress);
 				//idMap.put(id, userName); // already included inside getNewID(userName);
-				out.println( centralRegistry.approveID(id, playerName) );
+				out.println( centralRegistry.approveID(newId, playerName) );
 			}
 	    }
 
@@ -411,9 +435,24 @@ public class MultiplayerServer extends Application {
 
 	    }
 
-	    else
-	      logger.info("The command from client cannot be recognized.");
+	    else {
+	    	logger.info("The command from client cannot be recognized.");
+			updateTimeTag = false;
+	    }
+
+		if (updateTimeTag && id != 0) {
+			timeTagMap.put(id, Instant.now());
+			newId = id;
+		}
+
+		return newId;
 	  }
+
+	/**
+	 * Updates timeTagMap with latest timestamp
+	 */
+	public void updateTimeTag(int id) {
+	}
 
 	/*
 	 * Closes sockets to terminate contact with the server
@@ -473,6 +512,55 @@ public class MultiplayerServer extends Application {
         notifyAll();
     }
  */
+
+	/**
+	 * Creates and starts the timer
+	 *
+	 * @return Scene
+	 */
+	public void startTimer() {
+		// Set up earth time text update
+		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY),
+				ae -> checkPlayerActivity()
+				));
+		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		timeline.play();
+	}
+
+	/**
+	 * Checks if a player has any activity within a predefined period of time
+	 */
+	public void checkPlayerActivity() {
+
+		for (Map.Entry<Integer, Instant> entry : timeTagMap.entrySet()) {
+			int key = entry.getKey();
+			Instant value = entry.getValue();
+			// check which player has a time tag older than TIME_DELAY ago
+			// kick the player off from the idMap and addressMap
+			System.out.println("Key = " + key + ", Value = " + value);
+			// each player has its own time tag
+
+			if (value == null)
+				entry.setValue(Instant.now());
+
+			Instant newLogTime = Instant.now();
+			long elapsed = java.time.Duration.between(oldLogTime, newLogTime).toMillis() / 1000;
+
+			if (elapsed > TIME_DELAY) {
+				// unregister player,
+				// clear idMap, addressMap
+				centralRegistry.getIdMap().remove(key);
+				centralRegistry.getAddressMap().remove(key);
+				// Do NOT clear timeTagMap. leave it as it is.
+				// send msg to panel
+				//sendDisconnect();
+				// TODO: where in this class to update new value e.g. entry.setValue(newLogTime);
+			}
+
+		}
+
+	}
+
 
 	public void start(Stage stage) throws Exception {
 		runServer();

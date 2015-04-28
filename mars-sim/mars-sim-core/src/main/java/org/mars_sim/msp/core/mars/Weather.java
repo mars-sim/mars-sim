@@ -44,7 +44,7 @@ implements Serializable {
 	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 	// in kPa. under Earth's atmosphere, at 25 C, 50% relative humidity
 
 
-	private static final double VIKING_LATITUDE = 22.48D;
+	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
 
 	private static final int TEMPERATURE = 0;
 	private static final int AIR_PRESSURE = 0;
