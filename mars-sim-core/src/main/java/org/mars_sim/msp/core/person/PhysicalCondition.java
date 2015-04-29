@@ -118,6 +118,9 @@ implements Serializable {
     /** Most serious problem. */
     private HealthProblem serious;
 
+    // 2015-04-29 Added RadiationExposure
+    private RadiationExposure radiation;
+
 
 
     /**
@@ -125,8 +128,13 @@ implements Serializable {
      * @param newPerson The person requiring a physical presence.
      */
     public PhysicalCondition(Person newPerson) {
+        // 2015-04-29 Added RadiationExposure();
+        radiation = new RadiationExposure(this);
+        radiation.initializeWithRandomDose();
+
         deathDetails = null;
         person = newPerson;
+
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         fatigue = RandomUtil.getRandomDouble(1000D);
@@ -138,6 +146,7 @@ implements Serializable {
 
         // 2015-02-23 Added hygiene
         hygiene = RandomUtil.getRandomDouble(100D);
+
 
         alive = true;
         medicationList = new ArrayList<Medication>();
@@ -179,6 +188,9 @@ implements Serializable {
         }
     }
 
+    public RadiationExposure getRadiationExposure() {
+    	return radiation;
+    }
 
 
     public double getMassPerServing() {
@@ -209,6 +221,8 @@ implements Serializable {
             PersonConfig config) {
 
         boolean illnessEvent = false;
+
+        radiation.timePassing(time);
 
         // Check the existing problems
         if (!problems.isEmpty()) {
@@ -272,14 +286,14 @@ implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
-        
+
         // normal bodily function consume a minute amount of energy
         // even if a person does not perform any tasks
         // Note: removing this as reduce energy is already handled
         // in the TaskManager and people are always performing tasks
         // unless dead. - Scott
         //reduceEnergy(time);
-        
+
         checkStarvation(hunger);
         //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
 
@@ -604,7 +618,7 @@ implements Serializable {
         return fatigue;
     }
 
-    /** 
+    /**
      * Gets the person's caloric energy.
      * @return person's caloric energy in kilojoules
      * Note: one large calorie is about 4.2 kilojoules
@@ -630,7 +644,7 @@ implements Serializable {
 
         if (kJoules < 100D) {
             // 100 kJ is the lowest possible energy level
-        	kJoules = 100D; 
+        	kJoules = 100D;
         }
 
         //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);
@@ -759,7 +773,7 @@ implements Serializable {
         else if (person != null) {
 
                 Complaint starvation = getMedicalManager().getStarvation();
-                
+
 //                if (hunger > personStarvationTime
 //                		|| ((hunger > 1000D) && (kJoules < 500D))) {
                 if (hunger > personStarvationTime) {

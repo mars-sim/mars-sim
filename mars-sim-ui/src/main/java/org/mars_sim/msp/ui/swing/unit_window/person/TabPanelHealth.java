@@ -25,13 +25,14 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * The HealthTabPanel is a tab panel for a person's health.
  */
 public class TabPanelHealth
@@ -49,6 +50,7 @@ extends TabPanel {
 	private JLabel performanceLabel;
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
+	private RadiationTableModel radiationTableModel;
 
 	// Data cache
 	private double fatigueCache;
@@ -62,7 +64,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelHealth(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelHealth(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
@@ -94,7 +96,7 @@ extends TabPanel {
 		// Prepare fatigue label
 		fatigueCache = condition.getFatigue();
 		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(fatigueCache)), JLabel.RIGHT); 
+		        formatter.format(fatigueCache)), JLabel.RIGHT);
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
@@ -104,10 +106,10 @@ extends TabPanel {
 		// Prepare hunger label
 		hungerCache = condition.getHunger();
 		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(hungerCache)), JLabel.RIGHT); 
+		        formatter.format(hungerCache)), JLabel.RIGHT);
 		conditionPanel.add(hungerLabel);
 
-		// 
+		//
 		// Prepare energy name label
 		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(energyNameLabel);
@@ -115,18 +117,18 @@ extends TabPanel {
 		// Prepare energy label
 		energyCache = condition.getEnergy();
 		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-		        formatter.format(energyCache)), JLabel.RIGHT); 
+		        formatter.format(energyCache)), JLabel.RIGHT);
 		conditionPanel.add(energyLabel);
 
-		
-		// Prepare streses name label
+
+		// Prepare stress name label
 		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
 		stressCache = condition.getStress();
 		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(stressCache)), JLabel.RIGHT); 
+		        formatter.format(stressCache)), JLabel.RIGHT);
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
@@ -136,12 +138,37 @@ extends TabPanel {
 		// Performance rating label
 		performanceCache = person.getPerformanceRating() * 100D;
 		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(performanceCache)), JLabel.RIGHT); 
+		        formatter.format(performanceCache)), JLabel.RIGHT);
 		conditionPanel.add(performanceLabel);
+
+
+		// 2015-04-29 Added radiation dose info
+		// Prepare radiation panel
+		JPanel radiationPanel = new JPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
+		radiationPanel.setBorder(new MarsPanelBorder());
+		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
+
+		// Prepare radiation label
+		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelRadiation.label"), JLabel.CENTER); //$NON-NLS-1$
+		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
+
+		// Prepare radiation scroll panel
+		JScrollPane radiationScrollPanel = new JScrollPane();
+		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
+
+		// Prepare radiation table model
+		radiationTableModel = new RadiationTableModel(person);
+
+		// Create radiation table
+		JTable radiationTable = new JTable(radiationTableModel);
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		radiationTable.setCellSelectionEnabled(false);
+		radiationScrollPanel.setViewportView(radiationTable);
+		radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 
 		// Prepare table panel.
 		JPanel tablePanel = new JPanel(new GridLayout(2, 1));
-		centerContentPanel.add(tablePanel, BorderLayout.CENTER);
+		centerContentPanel.add(tablePanel, BorderLayout.SOUTH);
 
 		// Prepare medication panel.
 		JPanel medicationPanel = new JPanel(new BorderLayout());
@@ -201,7 +228,7 @@ extends TabPanel {
 		if (fatigueCache *.95 > newF || fatigueCache *1.05 < newF) {
 			fatigueCache = newF;
 			fatigueLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-			        formatter.format(fatigueCache))); 
+			        formatter.format(fatigueCache)));
 		}
 
 		// Update hunger if necessary.
@@ -209,7 +236,7 @@ extends TabPanel {
 		if (hungerCache *.95 > newH || hungerCache *1.05 < newH) {
 			hungerCache = newH;
 			hungerLabel.setText(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-			        formatter.format(hungerCache))); 
+			        formatter.format(hungerCache)));
 		}
 
 		// Update energy if necessary.
@@ -217,15 +244,15 @@ extends TabPanel {
 		if (energyCache *.98 > newEnergy || energyCache *1.02 < newEnergy   ) {
 			energyCache = newEnergy;
 			energyLabel.setText(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-			        formatter.format(energyCache))); 
+			        formatter.format(energyCache)));
 		}
-		
+
 		// Update stress if necessary.
 		double newS = condition.getStress();
 		if (stressCache *.95 > newS || stressCache*1.05 < newS) {
 			stressCache = newS;
 			stressLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-			        formatter.format(stressCache))); 
+			        formatter.format(stressCache)));
 		}
 
 		// Update performance cache if necessary.
@@ -233,7 +260,7 @@ extends TabPanel {
 		if (performanceCache *95D > newP || performanceCache *105D < newP) {
 			performanceCache = newP * 100D;
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-			        formatter.format(performanceCache))); 
+			        formatter.format(performanceCache)));
 		}
 
 		// Update medication table model.
@@ -241,9 +268,92 @@ extends TabPanel {
 
 		// Update health problem table model.
 		healthProblemTableModel.update();
+
+		// Update radiation dose table model
+		radiationTableModel.update();
 	}
 
-	/** 
+	/**
+	 * Internal class used as model for the radiation dose table.
+	 */
+	private static class RadiationTableModel
+	extends AbstractTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private RadiationExposure radiation;
+
+		private int dose[][];
+
+		private RadiationTableModel(Person person) {
+			radiation = person.getPhysicalCondition().getRadiationExposure();
+			dose = radiation.getDose();
+		}
+
+		public int getRowCount() {
+			return 3;
+		}
+
+		public int getColumnCount() {
+			return 4;
+		}
+
+		public Class<?> getColumnClass(int columnIndex) {
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 0) {
+			    dataType = String.class;
+			}
+			if (columnIndex == 1) {
+			    dataType = String.class;
+			}
+			if (columnIndex == 2) {
+			    dataType = String.class;
+			}
+			if (columnIndex == 3) {
+			    dataType = String.class;
+			}
+			return dataType;
+		}
+
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 1) {
+			    return Msg.getString("TabPanelRadiation.column.BFO"); //$NON-NLS-1$
+			}
+			else if (columnIndex == 2) {
+			    return Msg.getString("TabPanelRadiation.column.ocular"); //$NON-NLS-1$
+			}
+			else if (columnIndex == 3) {
+			    return Msg.getString("TabPanelRadiation.column.skin"); //$NON-NLS-1$
+			}
+			else {
+			    return null;
+			}
+		}
+
+		public Object getValueAt(int row, int column) {
+			String str = null;
+			if (column == 0) {
+				if (row == 0)
+					str = "30-Day";
+				else if (row == 1)
+					str = "Annual";
+				else if (row == 2)
+					str = "Career";
+			}
+			else
+				str = dose[row][column-1] + "";
+			return str;
+		}
+
+		public void update() {
+			dose = radiation.getDose();
+			fireTableDataChanged();
+		}
+	}
+
+
+	/**
 	 * Internal class used as model for the health problem table.
 	 */
 	private static class HealthProblemTableModel
@@ -313,7 +423,7 @@ extends TabPanel {
 					String conditionStr = problem.getStateString();
 					if (!condition.isDead()) {
 					    conditionStr = Msg.getString("TabPanelHealth.healthRating", //$NON-NLS-1$
-					            conditionStr, Integer.toString(problem.getHealthRating())); 
+					            conditionStr, Integer.toString(problem.getHealthRating()));
 					}
 					return conditionStr;
 				}
@@ -336,7 +446,7 @@ extends TabPanel {
 		}
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the medication table.
 	 */
 	private static class MedicationTableModel
@@ -388,7 +498,7 @@ extends TabPanel {
 			Object result = null;
 			if (row < getRowCount()) {
 				if (column == 0) {
-				    result = medicationCache.get(row).getName(); 
+				    result = medicationCache.get(row).getName();
 				}
 				else if (column == 1) {
 				    result = medicationCache.get(row).getDuration();

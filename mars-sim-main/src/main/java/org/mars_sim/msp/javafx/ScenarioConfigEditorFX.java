@@ -330,7 +330,7 @@ public class ScenarioConfigEditorFX {
 		StackPane swingPane = new StackPane();
 		swingPane.setMaxSize(700, 200);
 		swingNode = new SwingNode();
-		swingNode.setOpacity(.9);
+		swingNode.setOpacity(.7);
 		//swingNode.setBlendMode(BlendMode.SRC_OVER);
 		createSwingNode(swingNode);
 		swingPane.getChildren().add(swingNode);
