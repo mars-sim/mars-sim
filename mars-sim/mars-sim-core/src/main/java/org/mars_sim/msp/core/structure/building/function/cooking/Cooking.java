@@ -299,7 +299,9 @@ implements Serializable {
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
-                    if (task instanceof CookMeal) result++;
+                    if (task instanceof CookMeal) {
+                        result++;
+                    }
                 }
             }
             catch (Exception e) {}
@@ -324,7 +326,9 @@ implements Serializable {
                     Task task = person.getMind().getTaskManager().getTask();
                     if (task instanceof CookMeal) {
                         int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-                        if (cookingSkill > result) result = cookingSkill;
+                        if (cookingSkill > result) {
+                            result = cookingSkill;
+                        }
                     }
                 }
             }
@@ -362,8 +366,6 @@ implements Serializable {
      * Eats a cooked meal from this facility.
      * @return the meal
      */
-    // Called by EatMeal.java's constructor
-    // 2015-02-27 Renamed to chooseAMeal(). A person will select the favorite main/side dish if available
     public CookedMeal chooseAMeal(Person person) {
     	CookedMeal result = null;
     	CookedMeal bestFavDish = null;
@@ -393,15 +395,11 @@ implements Serializable {
 
         if (bestFavDish != null) {
         	cookedMeals.remove(bestFavDish);
-        	// 2015-01-06 Added dailyMealList
-        	//dailyMealList.add(bestMainDish);
         	result = bestFavDish;
         }
         // if a peron's favorite dish is not found
         else if (bestMeal != null) {
         	cookedMeals.remove(bestMeal);
-        	// 2015-01-06 Added dailyMealList
-        	//dailyMealList.add(bestMeal);
         	result = bestMeal;
         }
 
@@ -453,23 +451,18 @@ implements Serializable {
     public void addWork(double workTime) {
 
     	cookingWorkTime += workTime;
-        //logger.info("addWork() : cookingWorkTime is " + cookingWorkTime );
-        //logger.info("addWork() : workTime is " + Math.round(workTime*100.0)/100.0);
 
     	if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
             double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
             double maxServings = population * settlement.getMealsReplenishmentRate();
-            //System.out.println( " maxServings is " + maxServings);
-            //System.out.println( " MEAL_REPLENISHED_RATE is " + MEAL_REPLENISHED_RATE);
 
             int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
             
-            if (numSettlementCookedMeals > maxServings) {
+            if (numSettlementCookedMeals >= maxServings) {
             	cookNoMore = true;
             }
             else {
-            	//System.out.println("calling pickAMeal()");
 	    		aMeal = pickAMeal();
 	    		if (aMeal != null) {
 	    			cookAHotMeal(aMeal);
@@ -521,7 +514,7 @@ implements Serializable {
  	 * @return list of hot meal recipes.
  	 */
  	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
- 		List<HotMeal> result = new CopyOnWriteArrayList<>(); //ArrayList<HotMeal>(mealConfigMealList.size());
+ 		List<HotMeal> result = new CopyOnWriteArrayList<>();
 
  	    Iterator<HotMeal> i = mealConfigMealList.iterator();
  	    while (i.hasNext()) {
@@ -531,14 +524,10 @@ implements Serializable {
  	        }
  	    }
 
-// 		hotMealCacheSize = result.size();
- 		//System.out.println("hotMealCacheSize is "+hotMealCacheSize);
  	    return result;
  	}
 
 
-    // 2014-11-29 Created isMealAvailable()
- 	// 2015-02-08 Refactored isMealAvailable()
     public boolean isMealAvailable(HotMeal aMeal) {
     	boolean result = true;
 
@@ -554,24 +543,8 @@ implements Serializable {
 
 	        result = retrieveAnIngredientFromMap(dryMass, ingredientName, false);
         	if (!result) break;
-        	/*
-	        if (ingredientMap.containsKey(ingredientName)) {
-
-		        double value = ingredientMap.get(ingredientName);
-		        if (value >= dryMass)
-		        	result = true;
-		        else {
-		        	result = retrieveAnResourceFromMap(dryMass, ingredientName, false);
-		        	if (!result) break;
-			    }
-
-	        } else {
-	        	result = retrieveAnResourceFromMap(dryMass, ingredientName, false);
-	        	if (!result) break;
-	        }
-	        */
         }
- 		//System.out.println("isMealAvailable is " + result);
+ 		
 		return result;
     }
 
@@ -637,109 +610,101 @@ implements Serializable {
      * Gets the amount of the food item in the whole settlement.
      * @return foodAvailable
      */
-    // 2015-01-02 Added getAmountAvailable
     public double getAmountAvailable(String name) {
 	    AmountResource foodAR = AmountResource.findAmountResource(name);
 		double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 		return foodAvailable;
 	}
 
-
-
-    // 2014-11-29 Created cookAHotMeal()
-    // 2014-12-12 Revised to deduct the dry weight for each ingredient
+    /**
+     * Cook a hot meal.
+     * @param hotMeal the meal to cook.
+     */
     public void cookAHotMeal(HotMeal hotMeal) {
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();
 	    Iterator<Ingredient> i = ingredientList.iterator();
+	    while (i.hasNext()) {
+	        Ingredient oneIngredient = i.next();
+	        String ingredientName = oneIngredient.getName();
+	        // 2014-12-11 Updated to using dry weight
+	        double dryMass = oneIngredient.getDryMass();
+	        retrieveAnIngredientFromMap(dryMass, ingredientName, true);
+	    }
 
-	        while (i.hasNext()) {
+	    retrieveOil();
+	    retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
 
-		        Ingredient oneIngredient;
-		        oneIngredient = i.next();
-		        String ingredientName = oneIngredient.getName();
-		        // 2014-12-11 Updated to using dry weight
-		        double dryMass = oneIngredient.getDryMass();
-		        retrieveAnIngredientFromMap(dryMass, ingredientName, true);
-	        }
+	    useWater();
 
-	        retrieveOil();
-	        retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
+	    String nameOfMeal = hotMeal.getMealName();
+	    //TODO: kitchen equipment and quality of food should affect mealQuality
+	    int mealQuality = getBestCookSkill();
+	    MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	    CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
+	    logger.finest("a new meal cooked by : " + meal.getName());
+	    cookedMeals.add(meal);
+	    mealCounterPerSol++;
 
-	        useWater();
+	    // 2014-12-08 Added to Multimaps
+	    qualityMap.put(nameOfMeal, mealQuality);
+	    timeMap.put(nameOfMeal, expiration);
 
-	    	String nameOfMeal = hotMeal.getMealName();
-	    	//TODO: kitchen equipment and quality of food should affect mealQuality
-	       	int mealQuality = getBestCookSkill();
-	        MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	        CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
-	        //logger.info("a new meal made : " + meal.getName());
-	    	cookedMeals.add(meal);
-	    	mealCounterPerSol++;
+	    logger.finest(getBuilding().getBuildingManager().getSettlement().getName() +
+	            " has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
 
-	    	// 2014-12-08 Added to Multimaps
-	    	qualityMap.put(nameOfMeal, mealQuality);
-	    	timeMap.put(nameOfMeal, expiration);
-
-	  	    if (logger.isLoggable(Level.FINEST)) {
-	  	        	logger.finest(getBuilding().getBuildingManager().getSettlement().getName() +
-	  	        			" has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
-	  	    }
-
-	  	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
     }
 
+    public boolean retrieveAnIngredientFromMap(double amount, String name, boolean isRetrieving) {
+        boolean result = true;
+        // 1. check local map cache
+        //Object value = resourceMap.get(name);
+        if (ingredientMap.containsKey(name)) {
+            //if (value != null) {
+            //double cacheAmount = (double) value;
+            double cacheAmount = ingredientMap.get(name);
+            // 2. if found, retrieve the resource locally
+            // 2a. check if cacheAmount > dryMass
+            if (cacheAmount >= amount) {
+                // compute new value for key
+                // subtract the amount from the cache
+                // set result to true
+                ingredientMap.put(name, cacheAmount-amount);
+                //result = true && result; // not needed since there is no change to the value of result
+            }
+            else {
+                result = replenishIngredientMap(cacheAmount, amount, name, isRetrieving);
+            }
+        }
+        else {
+            result = replenishIngredientMap(0, amount, name, isRetrieving);
+        }
 
-  	// 2015-02-08 Added retrieveAnIngredientFromMap()
-      public boolean retrieveAnIngredientFromMap(double amount, String name, boolean isRetrieving) {
-      	boolean result = true;
-  		// 1. check local map cache
-  		//Object value = resourceMap.get(name);
-      	if (ingredientMap.containsKey(name)) {
-  		//if (value != null) {
-  			//double cacheAmount = (double) value;
-  			double cacheAmount = ingredientMap.get(name);
-  		    // 2. if found, retrieve the resource locally
-  			// 2a. check if cacheAmount > dryMass
-  			if (cacheAmount >= amount) {
-  				// compute new value for key
-  				// subtract the amount from the cache
-  				// set result to true
-  				 ingredientMap.put(name, cacheAmount-amount);
-  				//result = true && result; // not needed since there is no change to the value of result
-  			}
-  			else {
-  				result = replenishIngredientMap(cacheAmount, amount, name, isRetrieving);
-  			}
-  		}
-  		else {
-  			result = replenishIngredientMap(0, amount, name, isRetrieving);
-  		}
+        return result;
+    }
 
-  		return result;
-      }
-
-      public boolean replenishIngredientMap(double cacheAmount, double amount, String name, boolean isRetrieving) {
-      	boolean result = true;
-      	//if (cacheAmount < amount)
-  	    // 2b. if not, retrieve whatever amount from inv
-  		// Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
-  		boolean hasFive = Storage.retrieveAnResource(amount * 5, name, inv, isRetrieving);
-      	// 2b1. if inv has it, save it to local map cache
-      	if (hasFive) {
-      		// take 5 out, put 4 into resourceMap, use 1 right now
-      		ingredientMap.put(name, cacheAmount + amount * 4);
-      		//result = true && result; // not needed since there is no change to the value of result
-      	}
-      	else { // 2b2.
-      		boolean hasOne = Storage.retrieveAnResource(amount, name, inv, isRetrieving);
-      		if (hasOne)
-  	    		; // no change to resourceMap since resourceMap.put(name, cacheAmount);
-      		else
-      			result = false;
-      	}
-      	return result;
-      }
+    public boolean replenishIngredientMap(double cacheAmount, double amount, String name, boolean isRetrieving) {
+        boolean result = true;
+        //if (cacheAmount < amount)
+        // 2b. if not, retrieve whatever amount from inv
+        // Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
+        boolean hasFive = Storage.retrieveAnResource(amount * 5, name, inv, isRetrieving);
+        // 2b1. if inv has it, save it to local map cache
+        if (hasFive) {
+            // take 5 out, put 4 into resourceMap, use 1 right now
+            ingredientMap.put(name, cacheAmount + amount * 4);
+            //result = true && result; // not needed since there is no change to the value of result
+        }
+        else { // 2b2.
+            boolean hasOne = Storage.retrieveAnResource(amount, name, inv, isRetrieving);
+            if (hasOne)
+                ; // no change to resourceMap since resourceMap.put(name, cacheAmount);
+            else
+                result = false;
+        }
+        return result;
+    }
 
     // 2015-01-28 Added useWater()
     public void useWater() {
@@ -815,17 +780,13 @@ implements Serializable {
     /**
      * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
      */
-    // 2014-10-08: Currently converting each unit of expired meal into x kg of packed food
-    // 2014-11-28 Added anyMeal for checking if any CookedMeal exists
     public void timePassing(double time) {
-        boolean hasAMeal = hasCookedMeal();
-        //TODO: check for whether it is meal hour. if it's not, bypass some steps below
-        if (hasAMeal) {
+        
+        if (hasCookedMeal()) {
             double rate = settlement.getMealsReplenishmentRate();
-            //int newNumOfCookedMeal = cookedMeals.size();
-            //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
+            
+            // Handle expired cooked meals.
             Iterator<CookedMeal> i = cookedMeals.iterator();
             while (i.hasNext()) {
                 CookedMeal meal = i.next();
@@ -835,9 +796,9 @@ implements Serializable {
                     try {
                         cookedMeals.remove(meal);
                         
-                        // 2015-02-27 The probability that the expired meal is of no good and must be discarded is also dependent upon the food quality
-                        double quality = meal.getQuality()/2D + 1D;
-                        double num = RandomUtil.getRandomDouble(8*quality);
+                        // Check if cooked meal has gone bad and has to be thrown out.
+                        double quality = meal.getQuality() / 2D + 1D;
+                        double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
                             Storage.storeAnResource(dryMassPerServing, "Food Waste", inv);
                             logger.fine(dryMassPerServing  + " kg " + meal.getName()
@@ -854,7 +815,8 @@ implements Serializable {
                                     + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
                         }
-                        // 2015-01-12 Adjust the rate to go down for each meal
+                        
+                        // Adjust the rate to go down for each meal that wasn't eaten.
                         if (rate > 0) {
                             rate -= DOWN;
                         }
@@ -862,7 +824,6 @@ implements Serializable {
                     } 
                     catch (Exception e) {}
                 }
-
             }
         }
 
@@ -883,7 +844,7 @@ implements Serializable {
 	    // Added 2014-12-08 : Sanity check for the passing of each day
 		int newSol = currentTime.getSolOfMonth();
 	    double rate = settlement.getMealsReplenishmentRate();
-	    if ( newSol != solCache) {
+	    if (newSol != solCache) {
 	    	// 2015-01-12 Adjust the rate to go up automatically by default
 	       	solCache = newSol;
 	    	rate += UP;
@@ -894,39 +855,7 @@ implements Serializable {
 	 		if (!qualityMap.isEmpty()) qualityMap.clear();
 
 	 		cleanUpKitchen();
-
-	       	/*
-	       	// TODO: do we need to clear all desserts by the end of the day?
-	    	// It is causing the system to hang
-	 		boolean hasAMeal = hasCookedMeal();
-		    if ( hasAMeal ) {
-		    	int newNumOfCookedMeal = cookedMeals.size();
-		        //if ( numOfCookedMealCache != newNumOfCookedMeal)	logger.info("Still has " + newNumOfCookedMeal +  " CookedMeal(s)" );
-		    	Iterator<CookedMeal> j = cookedMeals.iterator();
-
-		    	while (j.hasNext()) {
-		        	try {
-		        		j.remove();
-		        		refrigerateFood();
-		        		// 2015-01-12 For each meal that needs to be refrigerated
-		        		// Adjust the rate to go down
-		        		if (rate > 0 )
-		        			rate -= DOWN;
-		                logger.info("End of Day. Refrigerate "
-		                 		+ dryMassPerServing + " kg "
-		                 		+ dryFoodAR.getName()
-		                 		+  " at " + getBuilding().getNickName()
-		                 		+ " in " + settlement.getName()
-		                 		);
-		        	} catch (Exception e) {}
-		        	//logger.info("Month " + newMonth + " Sol " + newSol + " : "
-			 		//		+ mealCounterPerSol + " meals made yesterday in "
-				    //    	+ building.getNickName() + " at " + settlement.getName());
-		    	} // end of while (j.hasNext())
-		    } // end of if ( hasAMeal )
-		    */
-	    } // end of if ( newSol != solCache)
-
+	    }
 	}
 
 	// 2015-02-27 Added cleanUpKitchen()
@@ -981,14 +910,11 @@ implements Serializable {
 
 	@Override
 	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }

@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -82,18 +83,17 @@ implements Serializable {
 	public CookMeal(Person person) {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
-
-        //logger.info("just called CookMeal's constructor");
         
         // Initialize data members
         setDescription(Msg.getString("Task.description.cookMeal.detail", 
                 getMealName())); //$NON-NLS-1$
         
-        // Get available kitchen if any.
+        // Get an available kitchen.
         Building kitchenBuilding = getAvailableKitchen(person);
 
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	    	
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
 		   
@@ -123,12 +123,12 @@ implements Serializable {
 	        	
 	            }
 	            endTask();
-	        
 		    } 
 	        else {
 		    	
 		    	counter = 0;
-				// 2015-01-06
+		    	
+		    	// Set the chef name at the kitchen.
 				kitchen.setChef(person.getName());
 				
 		    	// Add task phase
@@ -140,8 +140,9 @@ implements Serializable {
 				    	                " in " + person.getSettlement());      
 		    }
 	    }
-	    else endTask();
-	    
+	    else {
+	        endTask();
+	    }
     }
     
 	public CookMeal(Robot robot) {
@@ -159,6 +160,7 @@ implements Serializable {
 
 	    if (kitchenBuilding != null) {
 	    	kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+	    	
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);	
 		   
@@ -183,7 +185,7 @@ implements Serializable {
 			    addPhase(COOKING);
 				setPhase(COOKING);	
 				  
-				String jobName = robot.getBotMind().getRobotJob().getName(robot.getRobotType());
+				String jobName = RobotJob.getName(robot.getRobotType());
 				logger.finest(jobName + " " + robot.getName() + " cooking at " + kitchen.getBuilding().getNickName() + 
 				    	                " in " + robot.getSettlement());      
 
@@ -192,16 +194,17 @@ implements Serializable {
 	    else endTask();
 	    
     }
+	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.COOKING;
     }
     
+    @Override
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return BuildingFunction.COOKING;
     }
     
-
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
@@ -235,37 +238,39 @@ implements Serializable {
         }
 
 		if (person != null) {
-	        // If meal time is over, clean up kitchen and end task.
+	        // If meal time is over, end task.
 	        if (!isMealTime(person.getCoordinates())) {
+	            logger.finest(person + " ending cooking due to meal time over.");
 	        	endTask();
-	            //System.out.println(person + " ending cooking due to meal time over.");
-	            //logger.info(person.getName() + " just finished cooking.");
+	            return time;
+	        }
+	        
+	        // If enough meals have been cooked for this meal, end task.
+	        if (kitchen.getCookNoMore()) {
+	            logger.finest(person + " ending cooking due cook no more.");
+	            endTask();
 	            return time;
 	        }
 		}
 		else if (robot != null) {
-	        // If meal time is over, clean up kitchen and end task.
+	        // If meal time is over, end task.
 	        if (!isMealTime(robot)) {
+	            logger.finest(robot + " ending cooking due to meal time over.");
 	        	endTask();
-	            //logger.info(robot.getName() + " just finished cooking.");
 	            return time;
 	        }
+	        
+	        // If enough meals have been cooked for this meal, end task.
+            if (kitchen.getCookNoMore()) {
+                logger.finest(robot + " ending cooking due cook no more.");
+                endTask();
+                return time;
+            }
 		}
-        
-        // 2015-01-04a Added getCookNoMore() condition 
-        if (kitchen.getCookNoMore()) {
-        	//System.out.println("CookMeal.java cookingPhase() : cookNoMore = true. calling endTask() ");
-        	endTask();
-        	//System.out.println(person + " ending cooking due cook no more.");
-        	return time;
-        }
                 
-        double workTime = 0;      
-        
-		if (person != null) {			
-	        workTime = time;
-		}
-		else if (robot != null) {
+        double workTime = time;      
+		
+        if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
 	        workTime = time/2;
 		}
@@ -375,7 +380,6 @@ implements Serializable {
     public static boolean isMealTime(Coordinates location) {
         double timeDiff = 1000D * (location.getTheta() / (2D * Math.PI));			
 	    return mealTime(timeDiff);
-	    
     }
     
     public static boolean isMealTime(Robot robot) {
@@ -446,9 +450,9 @@ implements Serializable {
     }
 
     /**
-     * Gets an available kitchen at the person's settlement.
+     * Gets an available kitchen building at the person's settlement.
      * @param person the person to check for.
-     * @return kitchen or null if none available.
+     * @return kitchen building or null if none available.
      */
     public static Building getAvailableKitchen(Person person) {
         Building result = null;
@@ -509,7 +513,9 @@ implements Serializable {
             while (i.hasNext()) {
                 Building building = i.next();
                 Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
-                if (kitchen.getNumCooks() < kitchen.getCookCapacity()) result.add(building);
+                if (kitchen.getNumCooks() < kitchen.getCookCapacity()) {
+                    result.add(building);
+                }
             }
         }
 
@@ -519,10 +525,12 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = null;
-		if (person != null) 
+		if (person != null) {
 			manager = person.getMind().getSkillManager();
-		else if (robot != null)
+		}
+		else if (robot != null) {
 			manager = robot.getBotMind().getSkillManager();
+		}
 		
         return manager.getEffectiveSkillLevel(SkillType.COOKING);
     }

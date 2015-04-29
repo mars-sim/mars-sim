@@ -104,43 +104,36 @@ public class CookMealMeta implements MetaTask {
 	      
         double result = 0D;
         
-        if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
-            if (CookMeal.isMealTime(robot)) {
-                if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
+        if (CookMeal.isMealTime(robot)) {
+            if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
 
-                    // See if there is an available kitchen.
-                    Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
+                // See if there is an available kitchen.
+                Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
 
-                    if (kitchenBuilding != null) {
+                if (kitchenBuilding != null) {
 
-                        Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+                    Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
-                        // Check if there are enough ingredients to cook a meal.
-                        int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
-                        if (numGoodRecipes > 0) {
+                    // Check if there are enough ingredients to cook a meal.
+                    int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
 
-                            // Check if there is at least one person in the settlement.
-                            int population = robot.getSettlement().getCurrentPopulationNum();
-                            if (population > 1) {                    	
+                    // Check if enough meals have been cooked at kitchen for this meal time.
+                    boolean enoughMeals = kitchen.getCookNoMore();
 
-                                result = 300D;
+                    if ((numGoodRecipes > 0) && !enoughMeals) {             	
 
-                                // Crowding modifier.
-                                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
-                            }
-                        }
-                    }
+                        result = 300D;
 
-                    // Effort-driven task modifier.
-                    result *= robot.getPerformanceRating();	
+                        // Crowding modifier.
+                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
 
-                    if (result < 0D)  {
-                        result = 0D;
+                        // Effort-driven task modifier.
+                        result *= robot.getPerformanceRating(); 
                     }
                 }
             }
         }
-        
+
         return result;
 	}
 }

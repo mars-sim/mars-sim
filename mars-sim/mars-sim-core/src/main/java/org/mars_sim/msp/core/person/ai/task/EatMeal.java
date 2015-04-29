@@ -186,6 +186,9 @@ public class EatMeal extends Task implements Serializable {
       
       // Pick up a meal at kitchen if one is available.
       meal = kitchen.chooseAMeal(person);
+      if (meal != null) {
+          logger.fine(person + " picking up a cooked meal to eat: " + meal.getName());
+      }
       
       setPhase(PICK_UP_DESSERT);
       return time;
@@ -216,6 +219,9 @@ public class EatMeal extends Task implements Serializable {
         
         // Pick up a dessert at kitchen if one is available.
         dessert = dessertKitchen.chooseADessert(person);
+        if (dessert != null) {
+            logger.fine(person + " picking up a prepared dessert to eat: " + dessert.getName());
+        }
         
         setPhase(EATING_MEAL);
         return time;
