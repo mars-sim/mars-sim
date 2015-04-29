@@ -118,8 +118,7 @@ public class Sleep extends Task implements Serializable {
     }
 
     public Sleep(Robot robot) {
-        super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 
-                (250D + RandomUtil.getRandomDouble(80D)));
+        super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
 
         boolean walkSite = false;
 

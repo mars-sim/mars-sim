@@ -328,8 +328,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 			}
 		}
 		malfunctionManager.timePassing(time);
-
-/*
+		
         // If robot is dead, then skip
         if (health.getDeathDetails() == null) {
 
@@ -348,7 +347,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
                 setDead();
             }
         }
-*/
     }
 
 
