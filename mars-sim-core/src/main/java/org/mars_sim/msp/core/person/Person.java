@@ -93,6 +93,7 @@ implements VehicleOperator, Serializable {
     private TaskSchedule taskSchedule;
     private JobHistory jobHistory;
     private Settlement buriedSettlement;
+    private Role role;
 
     /**
      * Constructs a Person object at a given settlement.
@@ -130,6 +131,9 @@ implements VehicleOperator, Serializable {
         // 2015-02-27 Added Favorite class
         favorite = new Favorite(this);
 
+        // 2015-04-28 Added Role class
+        role = new Role(this);
+
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
 
@@ -153,6 +157,25 @@ implements VehicleOperator, Serializable {
 
     }
 
+    /**
+     * Sets the role for a person.
+     */
+    // 2015-04-28 Added setRole()
+	public void setRole(RoleType type) {
+		getRole().setRoleType(type);
+	}
+
+    /**
+     * Gets the instance of Role for a person.
+     */
+    // 2015-04-28 Added getRole()
+	public Role getRole() {
+		return role;
+	}
+
+    /**
+     * Gets the instance of JobHistory for a person.
+     */
     // 2015-02-27 Added getJobHistory()
     public JobHistory getJobHistory() {
     	return jobHistory;
@@ -684,8 +707,6 @@ implements VehicleOperator, Serializable {
     	return kitchenWithMeal;
     }
 
-
-
     public void setKitchenWithDessert(PreparingDessert kitchen) {
     	this.kitchenWithDessert = kitchen;
     }
@@ -709,4 +730,5 @@ implements VehicleOperator, Serializable {
         scientificAchievement.clear();
         scientificAchievement = null;
     }
+
 }

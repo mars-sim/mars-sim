@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.07 2014-12-03
+ * @version 3.08 2015-04-28
  * @author Scott Davis
  */
 
@@ -32,9 +32,9 @@ public class TabPanelUnitWindow extends UnitWindow {
     public TabPanelUnitWindow(MainDesktopPane desktop, Unit unit) {
         // Use UnitWindow constructor
         super(desktop, unit, false);
-        
+
         Settlement settlement = (Settlement) unit;
-        
+
         // Add tab panels
         addTopPanel(new LocationTabPanel(settlement, desktop));
         addTabPanel(new TabPanelPopulation(settlement, desktop));
@@ -42,8 +42,6 @@ public class TabPanelUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelVehicles(settlement, desktop));
         addTabPanel(new InventoryTabPanel(settlement, desktop));
         addTabPanel(new TabPanelPowerGrid(settlement, desktop));
-    	//2014-10-17 Added TabPanelHeatingSystem        
-        addTabPanel(new TabPanelThermalSystem(settlement, desktop));
         addTabPanel(new TabPanelBuildings(settlement, desktop));
         addTabPanel(new TabPanelGoods(settlement, desktop));
         addTabPanel(new TabPanelCredit(settlement, desktop));
@@ -53,11 +51,15 @@ public class TabPanelUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelMissions(settlement, desktop));
         addTabPanel(new TabPanelConstruction(settlement, desktop));
         addTabPanel(new TabPanelScience(settlement, desktop));
+    	//2014-10-17 Added TabPanelHeatingSystem
+        addTabPanel(new TabPanelThermalSystem(settlement, desktop));
         //2014-11-23 Added TabPanelFoodProduction
         addTabPanel(new TabPanelFoodProduction(settlement, desktop));
         //2014-12-02 Added TabPanelCooking
-        addTabPanel(new TabPanelCooking(settlement, desktop));       
+        addTabPanel(new TabPanelCooking(settlement, desktop));
         //2015-01-21 Added TabPanelBot
-        addTabPanel(new TabPanelBots(settlement, desktop));       
+        addTabPanel(new TabPanelBots(settlement, desktop));
+        //2015-04-28 Added TabPanelStructure
+        addTabPanel(new TabPanelStructure(settlement, desktop));
     }
 }

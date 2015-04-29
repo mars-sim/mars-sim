@@ -19,5 +19,10 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+	<dependency>
+	    <groupId>org.threeten</groupId>
+	    <artifactId>threeten-extra</artifactId>
+	    <version>0.9</version>
+	</dependency>
   </dependencies>
 </project>
