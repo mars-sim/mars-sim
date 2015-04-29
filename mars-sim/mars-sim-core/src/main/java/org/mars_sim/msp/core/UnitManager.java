@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -685,9 +686,9 @@ implements Serializable {
                     person.getFavorite().setFavoriteSideDish(sideDish);
                     person.getFavorite().setFavoriteDessert(dessert);
                     person.getFavorite().setFavoriteActivity(activity);
-
-
                 }
+
+                establishRole(settlement);
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -695,6 +696,47 @@ implements Serializable {
         }
     }
 
+    // 2015-04-28 Added establishRole()
+    private void establishRole(Settlement settlement) {
+    	Collection<Person> people = settlement.getInhabitants();
+    	Person numberOne = null;
+    	Person numberTwo = null;
+    	int highest = 0;
+    	int secondHighest = 0;
+    	int othersHighest = 0;
+    	int secondOthersHighest = 0;
+    	// compare their leadership scores
+        for (Person p : people) {
+        	int leadershipPt = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
+        	if (leadershipPt > highest) {
+        		secondHighest = highest;
+        		numberTwo = numberOne;
+        		highest = leadershipPt;
+        		numberOne = p;
+       			othersHighest = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+        	}
+
+        	else if (leadershipPt == highest)	{
+       			int others = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
+       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+       			if (others > othersHighest) {
+            		secondHighest = highest;
+            		numberTwo = numberOne;
+            		highest = leadershipPt;
+            		numberOne = p;
+       			}
+       			// TODO: look at other attributes and/or skills when comparing individuals
+        	}
+        }
+
+		numberOne.setRole(RoleType.COMMANDER);
+		numberTwo.setRole(RoleType.SUB_COMMANDER);
+    }
 
     /**
      * Creates all configured Robots.
