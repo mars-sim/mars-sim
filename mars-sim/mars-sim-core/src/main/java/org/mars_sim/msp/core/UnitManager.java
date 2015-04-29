@@ -699,43 +699,65 @@ implements Serializable {
     // 2015-04-28 Added establishRole()
     private void establishRole(Settlement settlement) {
     	Collection<Person> people = settlement.getInhabitants();
-    	Person numberOne = null;
-    	Person numberTwo = null;
-    	int highest = 0;
-    	int secondHighest = 0;
-    	int othersHighest = 0;
-    	int secondOthersHighest = 0;
+    	Person cc = null;
+    	Person cv = null;
+    	int cc_leadership = 0;
+    	int cv_leadership = 0;
+    	int cc_combined = 0;
+    	int cv_combined = 0;
     	// compare their leadership scores
         for (Person p : people) {
-        	int leadershipPt = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
-        	if (leadershipPt > highest) {
-        		secondHighest = highest;
-        		numberTwo = numberOne;
-        		highest = leadershipPt;
-        		numberOne = p;
-       			othersHighest = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+        	int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
+    		int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
+   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
+   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+        	// if this person p has a higher leadership score than the previous cc
+        	if (p_leadership > cc_leadership) {
+        		cv_leadership = cc_leadership;
+        		cc_leadership = p_leadership;
+        		cv = cc;
+        		cc = p;
+        		cv_combined = cc_combined;
+        		cc_combined = p_combined;
+        	}
+        	// if this person p has the same leadership score as p1
+        	else if (p_leadership == cc_leadership)	{
+       			// if this person p has a higher combined score in those 4 categories than the previous cc
+       			if (p_combined > cc_combined) {
+       				// this person becomes the cc
+            		cv_leadership = cc_leadership;
+            		cc_leadership = p_leadership;
+            		cv = cc;
+            		cc = p;
+            		cv_combined = cc_combined;
+            		cc_combined = p_combined;
+       			}
+
+       			else {
+       				// if this person p has a lower combined score in those 4 categories than previous cc
+       				// but have a higher leadership score than the previous cv
+       				if ( p_leadership > cv_leadership) {
+	       				// this person p becomes the sub-commander
+	       				cv = p;
+	       				cv_leadership = p_leadership;
+	       				cv_combined = p_combined;
+	       			}
+       			}
         	}
 
-        	else if (leadershipPt == highest)	{
-       			int others = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
-       			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
-       			if (others > othersHighest) {
-            		secondHighest = highest;
-            		numberTwo = numberOne;
-            		highest = leadershipPt;
-            		numberOne = p;
-       			}
-       			// TODO: look at other attributes and/or skills when comparing individuals
+        	else if (p_leadership > cv_leadership) {
+        		// this person p becomes the sub-commander
+   				cv = p;
+   				cv_leadership = p_leadership;
+   				cv_combined = p_combined;
         	}
         }
 
-		numberOne.setRole(RoleType.COMMANDER);
-		numberTwo.setRole(RoleType.SUB_COMMANDER);
+        // TODO: look at other attributes and/or skills when comparing individuals
+
+        cc.setRole(RoleType.COMMANDER);
+		cv.setRole(RoleType.SUB_COMMANDER);
     }
 
     /**
