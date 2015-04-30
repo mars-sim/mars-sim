@@ -7,11 +7,16 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
-public class RadiationExposure {
+public class RadiationExposure implements Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
 	// COLUMNS of the 2-D dose array
 	// Organ dose equivalent limits, per NCRP guidelines
