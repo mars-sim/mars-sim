@@ -13,18 +13,21 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.Manager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
- * The Mind class represents a person's mind. It keeps track of missions and 
+ * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.
  */
 public class Mind
@@ -51,10 +54,11 @@ implements Serializable {
     /** The person's skill manager. */
     private SkillManager skillManager;
 
-    
+    private MasterClock masterClock;
+
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
-    
+
     /**
      * Constructor 1.
      * @param person the person owning this mind
@@ -76,8 +80,10 @@ implements Serializable {
 
         // Construct a skill manager.
         skillManager = new SkillManager(person);
+
+        masterClock = Simulation.instance().getMasterClock();
     }
-    
+
     /**
      * Time passing.
      * @param time the time passing (millisols)
@@ -85,48 +91,57 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-    	// The new job will be Locked in until the beginning of the next day 
+    	// For now, a Mayor/Manager cannot switch job, no need to unlock jobLock at the end of the day
+    	// The new job will be Locked in until the beginning of the next day
     	if (jobLock) {
-	        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();     
+	        MarsClock clock = masterClock.getMarsClock();
 	        // check for the passing of each day
 	        int solElapsed = MarsClock.getSolOfYear(clock);
-	        if ( solElapsed != solCache) { 
-	        	solCache = solElapsed;    	
+	        if ( solElapsed != solCache) {
+	        	solCache = solElapsed;
 	        	jobLock = false;
 	        }
     	}
-        
-        if (person != null) { 
-	        // Check if this person needs to get a new job or change jobs.
-	        if (!jobLock || job == null) { 
-	        	// getNewJob() is checking if existing job is "good enough"
-	        	Job newJob = JobManager.getNewJob(person);
-	        	String newJobStr = newJob.getName(person.getGender());
-	        	String jobStr = null;
-	        	if (job == null)
-	        		jobStr = null;
-	        	else
-	        		jobStr = job.getName(person.getGender());
-	        	if (newJob != null) //System.out.println("timePassing() : newJob is null");
-		           	if (!newJobStr.equals(jobStr)) {
-			            //job = newJob;
-		           		setJob(newJob, false, JobManager.SETTLEMENT);
-		           	}
-	        	//System.out.println(person.getName() + "'s jobLock is false.");
-	        }
-	
-	        // Take action as necessary.
-	        takeAction(time);
-	
-	        // Update stress based on personality.
-	        personality.updateStress(time);
-	
-	        // Update relationships.
-	        Simulation.instance().getRelationshipManager().timePassing(person, time);
+
+    	// For now, a Mayor/Manager cannot switch job
+    	if (job instanceof Manager)
+    		jobLock = true;
+
+    	assignJob();
+
+        // Take action as necessary.
+        takeAction(time);
+
+        // Update stress based on personality.
+        personality.updateStress(time);
+
+        // Update relationships.
+        Simulation.instance().getRelationshipManager().timePassing(person, time);
+
+    }
+
+    // 2015-04-30 Added assignJob() Note: first called by UnitManager at the start of the sim
+    public void assignJob() {
+        // Check if this person needs to get a new job or change jobs.
+        if (!jobLock || job == null) {
+        	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
+         	Job newJob = JobManager.getNewJob(person);
+           	// 2015-04-30 Already excluded mayor/manager job from being assigned in JobManager.getNewJob()
+         	String newJobStr = newJob.getName(person.getGender());
+        	String jobStr = null;
+        	if (job == null)
+        		jobStr = null;
+        	else
+        		jobStr = job.getName(person.getGender());
+        	if (newJob != null) //System.out.println("timePassing() : newJob is null");
+	           	if (!newJobStr.equals(jobStr)) {
+		            //job = newJob;
+	           		setJob(newJob, false, JobManager.SETTLEMENT);
+	           	}
+        	//System.out.println(person.getName() + "'s jobLock is false.");
         }
     }
 
-    
     /**
      * Take appropriate action for a given amount of time.
      * @param time time in millisols
@@ -137,12 +152,12 @@ implements Serializable {
         if ((mission != null) && mission.isDone()) {
             mission = null;
         }
-        
+
         boolean activeMission = (mission != null);
 
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
-        
+
         if (person != null) {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 overrideMission = person.getSettlement().getMissionCreationOverride();
@@ -155,7 +170,7 @@ implements Serializable {
                 if (remainingTime > 0D) {
                     takeAction(remainingTime);
                 }
-            } 
+            }
             else {
                 if (activeMission) {
                     mission.performMission(person);
@@ -174,10 +189,10 @@ implements Serializable {
                     takeAction(time);
                 }
             }
-        	
-        	
+
+
         }
-     
+
 
     }
 
@@ -236,7 +251,7 @@ implements Serializable {
     	else
     		jobStr = job.getName(person.getGender());
     	// TODO : check if the initiator's role allows the job to be changed
-    	if (!newJobStr.equals(jobStr)) 
+    	if (!newJobStr.equals(jobStr))
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 		        // 2015-03-30 Added saveJob()
@@ -244,10 +259,21 @@ implements Serializable {
 		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 		    	// the new job will be Locked in until the beginning of the next day
 		        jobLock = true;
+
+		        int population = person.getSettlement().getAllAssociatedPeople().size();
+
+		        // Assign a role associate with
+                if (population >= UnitManager.POPULATION_WITH_MAYOR)
+                	person.assignSpecialiststo7Divisions();
+                else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER)
+                	person.assignSpecialiststo3Divisions();
+                else
+                	person.assignSpecialiststo3Divisions();
+
     	    }
     }
 
-    
+
     /**
      * Returns true if person has an active mission.
      * @return true for active mission
@@ -263,8 +289,8 @@ implements Serializable {
     public void setInactive() {
         taskManager.clearTask();
         if (hasActiveMission()) {
-        	if (person != null) 
-                mission.removePerson(person);           
+        	if (person != null)
+                mission.removePerson(person);
 
             mission = null;
         }
@@ -276,7 +302,7 @@ implements Serializable {
      */
     public void setMission(Mission newMission) {
         if (newMission != mission) {
-        	
+
         	if (person != null) {
         		if (mission != null) {
                     mission.removePerson(person);
@@ -290,7 +316,7 @@ implements Serializable {
 
                 person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
         	}
-  
+
         }
     }
 
@@ -309,7 +335,7 @@ implements Serializable {
                 missions = false;
             }
         }
-        
+
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
@@ -324,23 +350,23 @@ implements Serializable {
         }
 
         if (missions) {
-	        if (person != null) {	
+	        if (person != null) {
 	           missionWeights = missionManager.getTotalMissionProbability(person);
 	           weightSum += missionWeights;
 	        }
-	        
+
 		}
 
-        if (person != null) {	
-	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
+        if (person != null) {
+	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
 	                (Double.isInfinite(weightSum))) {
 	            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
 	                    + weightSum);
 	        }
         }
-        
-	
-        
+
+
+
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
 
@@ -349,31 +375,31 @@ implements Serializable {
             if (rand < taskWeights) {
                 Task newTask = taskManager.getNewTask();
                 taskManager.addTask(newTask);
-                
+
                 return;
-            } 
+            }
             else {
                 rand -= taskWeights;
             }
         }
-        
-        
+
+
         if (missions) {
             if (rand < missionWeights) {
             	Mission newMission = null;
             	if (person != null) {
                     logger.fine(person.getName() + " starting a new mission.");
                     newMission = missionManager.getNewMission(person);
-                    
+
             	}
-                
+
                 if (newMission != null) {
                     missionManager.addMission(newMission);
                     setMission(newMission);
                 }
-                
+
                 return;
-            } 
+            }
             else {
                 rand -= missionWeights;
             }
@@ -412,8 +438,8 @@ implements Serializable {
         taskManager.destroy();
         if (mission != null) mission.destroy();
         mission = null;
-        job = null;       
-        if (personality !=null) personality.destroy();      
+        job = null;
+        if (personality !=null) personality.destroy();
         personality = null;
         skillManager.destroy();
         skillManager = null;

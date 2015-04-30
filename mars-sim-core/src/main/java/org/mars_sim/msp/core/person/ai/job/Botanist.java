@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -37,7 +36,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
-/** 
+/**
  * The Botanist class represents a job for a botanist.
  */
 public class Botanist
@@ -59,7 +58,7 @@ implements Serializable {
 		// 2015-01-03 Added PrepareDessert
 		//jobTasks.add(PrepareDessert.class);
 		//jobTasks.add(CookMeal.class);
-		
+
 		// Add botany-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
@@ -74,7 +73,7 @@ implements Serializable {
 
 		// Add botanist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);	
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -105,7 +104,7 @@ implements Serializable {
 
 		return result;
 	}
-	
+
 
 	/**
 	 * Gets the base settlement need for this job.
@@ -140,14 +139,9 @@ implements Serializable {
 		//double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 		//result *= foodValue;
 		//System.out.println("getSettlementNeed() : result is " + result);
-	    
-		return result;	
+
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 }

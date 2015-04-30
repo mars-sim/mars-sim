@@ -28,14 +28,13 @@ import org.mars_sim.msp.core.person.ai.task.PerformMathematicalModeling;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
-/** 
+/**
  * The Mathematician class represents a job for a mathematician.
  */
 public class Mathematician
@@ -54,9 +53,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Mathematician.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add mathematician-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
@@ -70,7 +66,7 @@ implements Serializable {
 
 		// Add mathematician-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -110,12 +106,7 @@ implements Serializable {
 			}
 		}
 
-		return result;  
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

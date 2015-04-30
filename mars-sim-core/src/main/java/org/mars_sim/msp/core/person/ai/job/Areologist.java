@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -48,7 +47,7 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
+/**
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
  */
 public class Areologist
@@ -57,7 +56,7 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	//private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
 	/**
@@ -66,7 +65,7 @@ implements Serializable {
 	public Areologist() {
 		// Use Job constructor
 		super(Areologist.class);
-		
+
 		// 2015-01-03 Added PrepareDessert
 		//jobTasks.add(PrepareDessert.class);
 
@@ -80,7 +79,7 @@ implements Serializable {
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
 		jobTasks.add(StudyFieldSamples.class);
-		
+
 		// Add areologist-related missions.
 		jobMissionStarts.add(Exploration.class);
 		jobMissionJoins.add(Exploration.class);
@@ -109,23 +108,23 @@ implements Serializable {
 	 * @return capability (min 0.0).
 	 */
 	public double getCapability(Person person) {
-		
+
 		double result = 0D;
-		
+
 		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.AREOLOGY);
 		result = areologySkill;
-		
+
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
-		
+
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets the base settlement need for this job.
 	 * @param settlement the settlement in need.
@@ -133,7 +132,7 @@ implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
-		
+
 		// Add (labspace * tech level / 2) for all labs with areology specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -144,7 +143,7 @@ implements Serializable {
 		        result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 		    }
 		}
-		
+
 		// Add (labspace * tech level / 2) for all parked rover labs with areology specialties.
 		Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 		while (j.hasNext()) {
@@ -159,7 +158,7 @@ implements Serializable {
                 }
 			}
 		}
-		
+
 		// Add (labspace * tech level / 2) for all labs with areology specialties in rovers out on missions.
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -177,13 +176,8 @@ implements Serializable {
                 }
 			}
 		}
-        
-		return result;	
+
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

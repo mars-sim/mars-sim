@@ -23,7 +23,9 @@ public enum SkillType {
 	CHEMISTRY			(Msg.getString("SkillType.chemistry")), //$NON-NLS-1$
 	PHYSICS				(Msg.getString("SkillType.physics")), //$NON-NLS-1$
 	MATHEMATICS			(Msg.getString("SkillType.mathematics")), //$NON-NLS-1$
-	METEOROLOGY			(Msg.getString("SkillType.meteorology")); //$NON-NLS-1$
+	METEOROLOGY			(Msg.getString("SkillType.meteorology")), //$NON-NLS-1$
+	MANAGEMENT			(Msg.getString("SkillType.management")); //$NON-NLS-1$
+
 
 	private String name;
 

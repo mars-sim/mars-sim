@@ -35,6 +35,7 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void setRoleType(RoleType type) {
+    	//System.out.println("RoleType is "+ type);
 		this.type = type;
 	}
 

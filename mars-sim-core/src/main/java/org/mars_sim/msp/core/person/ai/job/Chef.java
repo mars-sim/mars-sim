@@ -22,13 +22,12 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
-/** 
+/**
  * The Chef class represents a job for a chef.
  */
 public class Chef
@@ -67,7 +66,7 @@ implements Serializable {
 	 * Gets a person's capability to perform this job.
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
-	 */	
+	 */
 	public double getCapability(Person person) {
 
 		double result = 0D;
@@ -80,7 +79,7 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);	
+		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 
@@ -100,7 +99,7 @@ implements Serializable {
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING); 
+			Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
 			result += (double) kitchen.getCookCapacity();
 		}
 
@@ -108,12 +107,7 @@ implements Serializable {
 		int population = settlement.getCurrentPopulationNum();
 		result+= ((double) population / 10D);
 
-		return result;			
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

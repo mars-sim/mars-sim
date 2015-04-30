@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -47,7 +46,7 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
+/**
  * The Biologist class represents a job for a biologist.
  */
 public class Biologist
@@ -69,7 +68,7 @@ implements Serializable {
 		// 2015-01-03 Added PrepareDessert
 		//jobTasks.add(PrepareDessert.class);
 		//jobTasks.add(CookMeal.class);
-		
+
 		// Add biologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
@@ -84,14 +83,14 @@ implements Serializable {
 
 		//2014-11-23 Added ProduceFood.class
 		jobTasks.add(ProduceFood.class);
-		
+
 		// Add biologist-related missions.
 		jobMissionJoins.add(AreologyStudyFieldMission.class);
 		jobMissionStarts.add(BiologyStudyFieldMission.class);
 		jobMissionJoins.add(BiologyStudyFieldMission.class);
 		jobMissionJoins.add(Exploration.class);
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -164,12 +163,7 @@ implements Serializable {
 			}
 		}
 
-		return result;  
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

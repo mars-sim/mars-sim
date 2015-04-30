@@ -27,14 +27,13 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
-/** 
+/**
  * The Meteorologist class represents a job for a meteorologist.
  */
 public class Meteorologist
@@ -51,10 +50,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Meteorologist.class);
 
-		// 2015-01-03 Added CookMeal and PrepareDessert
-		//jobTasks.add(CookMeal.class);
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add meteorologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
@@ -67,7 +62,7 @@ implements Serializable {
 
 		// Add meteorologist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -107,12 +102,8 @@ implements Serializable {
 			}
 		}
 
-		return result;  
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
 }

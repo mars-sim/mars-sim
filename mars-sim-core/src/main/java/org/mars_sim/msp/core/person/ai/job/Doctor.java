@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -38,7 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
-/** 
+/**
  * The Doctor class represents a job for an medical treatment expert.
  */
 public class Doctor
@@ -73,7 +72,7 @@ implements Serializable {
 
 		// Add doctor-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);	
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -125,7 +124,7 @@ implements Serializable {
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
 				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 			}
-		}		
+		}
 
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
@@ -134,14 +133,9 @@ implements Serializable {
 			Building building = j.next();
 			MedicalCare infirmary = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
 			result+= (double) infirmary.getTechLevel() / 2D;
-		}			
+		}
 
-		return result;	
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }
