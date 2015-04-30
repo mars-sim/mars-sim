@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -36,7 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
-/** 
+/**
  * The Astronomer class represents a job for an astronomer.
  */
 public class Astronomer
@@ -69,7 +68,7 @@ implements Serializable {
 
 		// Add astronomer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -105,7 +104,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
-			if (lab.hasSpecialty(ScienceType.ASTRONOMY)) 
+			if (lab.hasSpecialty(ScienceType.ASTRONOMY))
 				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
 		}
 
@@ -113,17 +112,12 @@ implements Serializable {
 		Iterator<Building> j = manager.getBuildings(BuildingFunction.ASTRONOMICAL_OBSERVATIONS).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			AstronomicalObservation observatory = (AstronomicalObservation) 
+			AstronomicalObservation observatory = (AstronomicalObservation)
 					building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
 			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
 		}
 
-		return result;  
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

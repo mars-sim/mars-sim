@@ -25,14 +25,13 @@ import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
-/** 
- * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and 
+/**
+ * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and
  * vehicles.
  */
 public class Engineer
@@ -62,7 +61,7 @@ implements Serializable {
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);	
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -112,12 +111,7 @@ implements Serializable {
 			result += workshop.getTechLevel() * workshop.getConcurrentProcesses() / 2D;
 		}
 
-		return result;	
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

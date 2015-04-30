@@ -32,10 +32,9 @@ import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-/** 
+/**
  * The Driver class represents a rover driver job.
  */
 public class Driver
@@ -112,7 +111,7 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 
 		double result = 0D;
-		
+
 		// Get number of vehicles parked at a settlement.
 		double settlementVehicleNum = settlement.getAllAssociatedVehicles().size();
 
@@ -121,9 +120,4 @@ implements Serializable {
 		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

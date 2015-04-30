@@ -11,10 +11,10 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class represents the task schedule of a person.
@@ -27,15 +27,15 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private int solCache;	
+	private int solCache;
 	private int startTime;
 	private String actorName;
 	private String taskName;
-	private String doAction;	
+	private String doAction;
 	//private String startTime;
-	
-	private Map <Integer, List<DailyTask>> schedules;	  	
-	private List<DailyTask> currentSchedule;	
+
+	private Map <Integer, List<DailyTask>> schedules;
+	private List<DailyTask> currentSchedule;
 
 	//private Person person;
 	private MarsClock time;
@@ -47,46 +47,46 @@ implements Serializable {
 	 * @param taskName
 	 * @param startTime
 	 */
-	public TaskSchedule(Person person) {	
+	public TaskSchedule(Person person) {
 		//this.person = person;
 		actorName = person.getName();
 		this.solCache = 1;
 		this.schedules = new HashMap <Integer, List<DailyTask>>();
-		this.currentSchedule = new ArrayList<DailyTask>();
+		this.currentSchedule = new CopyOnWriteArrayList<DailyTask>();
 	}
-	
-	public TaskSchedule(Robot robot) {	
+
+	public TaskSchedule(Robot robot) {
 		//this.robot = robot;
 		actorName = robot.getName();
 		this.solCache = 1;
 		this.schedules = new HashMap <Integer, List<DailyTask>>();
-		this.currentSchedule = new ArrayList<DailyTask>();
+		this.currentSchedule = new CopyOnWriteArrayList<DailyTask>();
 	}
-	
+
 	public void addTask(String taskName, String doAction) {
 		this.taskName = taskName;
 		this.doAction = doAction;
 		this.time = Simulation.instance().getMasterClock().getMarsClock();
 		this.startTime = (int) time.getMillisol();
-		     
+
         // check for the passing of each day
-        int solElapsed = MarsClock.getSolOfYear(time);         
-        if ( solElapsed != solCache) {       	       	        	     
+        int solElapsed = MarsClock.getSolOfYear(time);
+        if ( solElapsed != solCache) {
         	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
         	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
-        	//if (solCache != 0) 
-        	schedules.put(solCache, currentSchedule);   
+        	//if (solCache != 0)
+        	schedules.put(solCache, currentSchedule);
         	// create a new schedule for the new day
-        	List<DailyTask> newSchedule =  new ArrayList<DailyTask>();
-    		this.currentSchedule = newSchedule;    		
-        	solCache = solElapsed; 
+        	List<DailyTask> newSchedule =  new CopyOnWriteArrayList<DailyTask>();
+    		this.currentSchedule = newSchedule;
+        	solCache = solElapsed;
         }
         //if (currentSchedule.isEmpty()) {
-        DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);			
-        currentSchedule.add(dailyTask);  	
+        DailyTask dailyTask = new DailyTask(startTime, taskName, doAction);
+        currentSchedule.add(dailyTask);
 
 	}
-	
+
 	/**
 	 * Gets all schedules of a person.
 	 * @return schedules
@@ -94,7 +94,7 @@ implements Serializable {
 	public Map <Integer, List<DailyTask>> getSchedules() {
 		return schedules;
 	}
-	
+
 	/**
 	 * Gets the today's schedule.
 	 * @return currentSchedule
@@ -102,7 +102,7 @@ implements Serializable {
 	public List<DailyTask> getCurrentSchedule() {
 		return currentSchedule;
 	}
-	
+
 	/**
 	 * Gets the current sol.
 	 * @return solCache
@@ -110,7 +110,7 @@ implements Serializable {
 	public int getSolCache() {
 		return solCache;
 	}
-	
+
 	/**
 	 * Gets the task name.
 	 * @return task name
@@ -134,7 +134,7 @@ implements Serializable {
 	public String getDoAction() {
 		return doAction;
 	}
-	
+
 	/**
 	 * Gets the start time of the task.
 	 * @return start time
@@ -142,8 +142,8 @@ implements Serializable {
 	public int getStartTime() {
 		return startTime;
 	}
-	
-	
+
+
 	public class DailyTask implements Serializable {
 
 		/** default serial id. */
@@ -153,18 +153,18 @@ implements Serializable {
 		private String taskName;
 
 		private String doAction;
-		
+
 		private int startTime;
 
 		public DailyTask(int startTime, String taskName, String doAction) {
 			this.taskName = taskName;
 			this.doAction = doAction;
-			//time = Simulation.instance().getMasterClock().getMarsClock();	
+			//time = Simulation.instance().getMasterClock().getMarsClock();
 			//this.startTime = time.getMillisolString();
 			//this.startTime = (int) time.getMillisol();
 			this.startTime = startTime;
 		}
-				
+
 		public int getStartTime() {
 			return startTime;
 		}
@@ -172,11 +172,11 @@ implements Serializable {
 		public String getTaskName() {
 			return taskName;
 		}
-		
+
 		public String getDoAction() {
 			return doAction;
 		}
-		
+
 	}
-	
+
 }

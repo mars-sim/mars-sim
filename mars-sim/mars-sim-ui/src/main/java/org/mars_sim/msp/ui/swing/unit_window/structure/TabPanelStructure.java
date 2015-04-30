@@ -15,10 +15,8 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
+
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -33,9 +31,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.lang3.text.WordUtils;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -64,7 +63,7 @@ extends TabPanel {
 	public TabPanelStructure(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelStructure.title"), //$NON-NLS-1$
+			"Org", //$NON-NLS-1$
 			null,
 			Msg.getString("TabPanelStructure.tooltip"), //$NON-NLS-1$
 			unit, desktop
@@ -101,13 +100,105 @@ extends TabPanel {
 	public void createTree() {
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(settlement.getName());
+
+		DefaultMutableTreeNode commanderStaffNode = new DefaultMutableTreeNode("Command Staff");
 		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode("Commander");
-		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode("Sub-commander");
-		root.add(commanderNode);
-		root.add(subCommanderNode);
+		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode("Sub-Commander");
+
+		DefaultMutableTreeNode staffNode = new DefaultMutableTreeNode("Cabinet Staff");
+		DefaultMutableTreeNode mayorNode = new DefaultMutableTreeNode("Mayor");
+
+		DefaultMutableTreeNode agricultureNode = new DefaultMutableTreeNode("Agriculture");
+		DefaultMutableTreeNode agricultureSpecialistNode = new DefaultMutableTreeNode("Agriculture Specialist");
+		DefaultMutableTreeNode agricultureChiefNode = new DefaultMutableTreeNode("Chief of Agriculture");
+
+		DefaultMutableTreeNode engineeringNode = new DefaultMutableTreeNode("Engineering");
+		DefaultMutableTreeNode engineeringSpecialistNode = new DefaultMutableTreeNode("Engineering Specialist");
+		DefaultMutableTreeNode engineeringChiefNode = new DefaultMutableTreeNode("Chief of Engineering");
+
+		DefaultMutableTreeNode logisticNode = new DefaultMutableTreeNode("Logistic");
+		DefaultMutableTreeNode logisticSpecialistNode = new DefaultMutableTreeNode("Logistic Specialist");
+		DefaultMutableTreeNode logisticChiefNode = new DefaultMutableTreeNode("Chief of Logistic and Transportation");
+
+		DefaultMutableTreeNode missionNode = new DefaultMutableTreeNode("Mission");
+		DefaultMutableTreeNode missionSpecialistNode = new DefaultMutableTreeNode("Mission Specialist");
+		DefaultMutableTreeNode missionChiefNode = new DefaultMutableTreeNode("Chief of Mission");
+
+		DefaultMutableTreeNode safetyNode = new DefaultMutableTreeNode("Safety");
+		DefaultMutableTreeNode safetySpecialistNode = new DefaultMutableTreeNode("Safety Specialist");
+		DefaultMutableTreeNode safetyChiefNode = new DefaultMutableTreeNode("Chief of Safety");
+
+		DefaultMutableTreeNode scienceNode = new DefaultMutableTreeNode("Science");
+		DefaultMutableTreeNode scienceSpecialistNode = new DefaultMutableTreeNode("Science Specialist");
+		DefaultMutableTreeNode scienceChiefNode = new DefaultMutableTreeNode("Chief of Science");
+
+		DefaultMutableTreeNode supplyNode = new DefaultMutableTreeNode("Supply");
+		DefaultMutableTreeNode supplySpecialistNode = new DefaultMutableTreeNode("Resource Specialist");
+		DefaultMutableTreeNode supplyChiefNode = new DefaultMutableTreeNode("Chief of Supply and Resource");
+
+		int population = settlement.getAllAssociatedPeople().size();
+
+        if (population >= UnitManager.POPULATION_WITH_MAYOR) {
+        	root.add(staffNode);
+        	staffNode.add(mayorNode);
+
+        	staffNode.add(agricultureNode);
+        	agricultureNode.add(agricultureChiefNode);
+           	agricultureNode.add(agricultureSpecialistNode);
+
+        	staffNode.add(engineeringNode);
+        	engineeringNode.add(engineeringChiefNode);
+        	engineeringNode.add(engineeringSpecialistNode);
+
+           	staffNode.add(logisticNode);
+        	logisticNode.add(logisticChiefNode);
+           	logisticNode.add(logisticSpecialistNode);
+
+           	staffNode.add(missionNode);
+        	missionNode.add(missionChiefNode);
+           	missionNode.add(missionSpecialistNode);
+
+         	staffNode.add(safetyNode);
+        	safetyNode.add(safetyChiefNode);
+        	safetyNode.add(safetySpecialistNode);
+
+           	staffNode.add(scienceNode);
+        	scienceNode.add(scienceChiefNode);
+           	scienceNode.add(scienceSpecialistNode);
+
+          	staffNode.add(supplyNode);
+        	supplyNode.add(supplyChiefNode);
+        	supplyNode.add(supplySpecialistNode);
+
+
+        	// TODO: More to add
+        }
+        else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+        	root.add(commanderStaffNode);
+    		commanderStaffNode.add(commanderNode);
+    		commanderStaffNode.add(subCommanderNode);
+
+        	commanderStaffNode.add(engineeringNode);
+        	engineeringNode.add(engineeringChiefNode);
+        	engineeringNode.add(engineeringSpecialistNode);
+
+           	commanderStaffNode.add(safetyNode);
+        	safetyNode.add(safetyChiefNode);
+        	safetyNode.add(safetySpecialistNode);
+
+          	commanderStaffNode.add(supplyNode);
+        	supplyNode.add(supplyChiefNode);
+        	supplyNode.add(supplySpecialistNode);
+        }
+        else { // if population < 12
+        	root.add(commanderNode);
+        	root.add(engineeringSpecialistNode);
+           	root.add(safetySpecialistNode);
+          	root.add(supplySpecialistNode);
+        }
 
 		JTree tree = new JTree(root);
-        tree.setVisibleRowCount(10);
+        tree.setVisibleRowCount(8);
 
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
             private Icon personIcon = UIManager.getIcon("RadioButton.icon"); //OptionPane.errorIcon");
@@ -129,37 +220,75 @@ extends TabPanel {
                 else
                 	// this node is just a role
                     setIcon(roleIcon);
+                // TODO: how to detect a brand node that is empty ?
                 return c;
             }
         });
 
 
-	   	Collection<Person> people = settlement.getInhabitants();
-
-    	Person commander = null;
-    	Person subCommander = null;
-    	DefaultMutableTreeNode cc = null;
-    	DefaultMutableTreeNode cv = null;
+	   	Collection<Person> people = settlement.getAllAssociatedPeople(); //.getInhabitants();
 
     	for (Person p : people) {
     		if (p.getRole().getType() == RoleType.COMMANDER) {
-    			commander = p;
-    			cc = new DefaultMutableTreeNode(commander);
-    	    	commanderNode.add(cc);
+    	    	commanderNode.add(new DefaultMutableTreeNode(p));
     		}
     		else if (p.getRole().getType() == RoleType.SUB_COMMANDER) {
-    			subCommander = p;
-    	    	cv = new DefaultMutableTreeNode(subCommander);
-    	    	subCommanderNode.add(cv);
+    	    	subCommanderNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.MAYOR) {
+    	    	mayorNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_AGRICULTURE) {
+    	    	agricultureChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.AGRICULTURE_SPECIALIST) {
+    			agricultureSpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.CHIEF_OF_ENGINEERING) {
+    	    	engineeringChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.ENGINEERING_SPECIALIST) {
+    	    	engineeringSpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
+    	    	logisticChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST) {
+    			logisticSpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_MISSION_PLANNING) {
+    	    	missionChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.MISSION_SPECIALIST) {
+    			missionSpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
+    	    	safetyChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.SAFETY_SPECIALIST) {
+    			safetySpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_SCIENCE) {
+    	    	scienceChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.SCIENCE_SPECIALIST) {
+    			scienceSpecialistNode.add(new DefaultMutableTreeNode(p));
+    		}
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY) {
+    	    	supplyChiefNode.add(new DefaultMutableTreeNode(p));
+    		}
+    		else if (p.getRole().getType() == RoleType.RESOURCE_SPECIALIST) {
+    			supplySpecialistNode.add(new DefaultMutableTreeNode(p));
     		}
     		else {
+    			// anyone who does not belong will be placed in the root node
     			DefaultMutableTreeNode node = new DefaultMutableTreeNode(p);
     			root.add(node);
     		}
     	}
 
-    	DefaultTreeModel mod = new DefaultTreeModel(root);
-    	tree.setModel(mod);
+    	DefaultTreeModel defaultTreeModel = new DefaultTreeModel(root);
+    	tree.setModel(defaultTreeModel);
 
     	for (int i = 0; i < tree.getRowCount(); i++)
     		tree.expandRow(i);
@@ -202,7 +331,8 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-
+		// TODO: if a person dies, have settlement re-elect another chief
+		// and run createTree() again here
 
 	}
 }

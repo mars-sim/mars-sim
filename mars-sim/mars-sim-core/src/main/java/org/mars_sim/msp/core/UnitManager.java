@@ -63,6 +63,9 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(UnitManager.class.getName());
 
+    public static final int POPULATION_WITH_SUB_COMMANDER = 12;
+    public static final int POPULATION_WITH_MAYOR = 48;
+
     // Data members
 	private int solCache;
     /** Collection of all units. */
@@ -667,13 +670,16 @@ implements Serializable {
             while (i.hasNext()) {
                 Settlement settlement = i.next();
 
+                // Fill up the settlement by creating more people
                 while (settlement.getCurrentPopulationNum() < settlement.getInitialPopulation()) {
                     PersonGender gender = PersonGender.FEMALE;
                     if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                         gender = PersonGender.MALE;
                     }
+
                     Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, "Earth",settlement); //TODO: read from file
                     addUnit(person);
+
                     relationshipManager.addInitialSettler(person, settlement);
 
                     // 2015-02-27 and 2015-03-24 Added Favorite class
@@ -686,78 +692,279 @@ implements Serializable {
                     person.getFavorite().setFavoriteSideDish(sideDish);
                     person.getFavorite().setFavoriteDessert(dessert);
                     person.getFavorite().setFavoriteActivity(activity);
-                }
 
-                establishRole(settlement);
-            }
+
+                    // 2015-04-30 Assign a job to everyone
+                    person.getMind().assignJob();
+
+                    // 2015-04-30 Assign a role to everyone
+                    if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR)
+                    	person.assignSpecialiststo7Divisions();
+                    else //if (population >= POPULATION_WITH_SUB_COMMANDER)
+                    	//person.assignSpecialiststo3Divisions();
+                    //else
+                    	person.assignSpecialiststo3Divisions();
+                } // end of while
+
+                // 2015-04-30 Assign head and chiefs
+                if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR)
+                	establishGovernment(settlement);
+                else
+                	establishCommand(settlement, settlement.getInitialPopulation());
+
+            } // end of while
+
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw new IllegalStateException("People could not be created: " + e.getMessage(), e);
         }
     }
 
-    // 2015-04-28 Added establishRole()
-    private void establishRole(Settlement settlement) {
-    	Collection<Person> people = settlement.getInhabitants();
+    // 2015-04-28 Added establishCommand()
+    private void establishCommand(Settlement settlement, int pop) {
+    	System.out.println(" pop is "+ pop);
+    	Collection<Person> people = settlement.getAllAssociatedPeople();
     	Person cc = null;
-    	Person cv = null;
     	int cc_leadership = 0;
-    	int cv_leadership = 0;
     	int cc_combined = 0;
+
+    	Person cv = null;
+    	int cv_leadership = 0;
     	int cv_combined = 0;
     	// compare their leadership scores
         for (Person p : people) {
         	int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
-    		int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION)
-   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+            int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+            				+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
         	// if this person p has a higher leadership score than the previous cc
         	if (p_leadership > cc_leadership) {
-        		cv_leadership = cc_leadership;
-        		cc_leadership = p_leadership;
-        		cv = cc;
+        		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+	        		cv_leadership = cc_leadership;
+	           		cv = cc;
+	        		cv_combined = cc_combined;
+	       		}
         		cc = p;
-        		cv_combined = cc_combined;
+        		cc_leadership = p_leadership;
         		cc_combined = p_combined;
         	}
-        	// if this person p has the same leadership score as p1
+        	// if this person p has the same leadership score as the previous cc
         	else if (p_leadership == cc_leadership)	{
-       			// if this person p has a higher combined score in those 4 categories than the previous cc
+       			// if this person p has a higher combined score than the previous cc
        			if (p_combined > cc_combined) {
        				// this person becomes the cc
-            		cv_leadership = cc_leadership;
-            		cc_leadership = p_leadership;
-            		cv = cc;
+            		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+    	           		cv = cc;
+    	        		cv_leadership = cc_leadership;
+    	        		cv_combined = cc_combined;
+    	       		}
             		cc = p;
-            		cv_combined = cc_combined;
+            		cc_leadership = p_leadership;
             		cc_combined = p_combined;
        			}
-
+/*
        			else {
-       				// if this person p has a lower combined score in those 4 categories than previous cc
+       				// if this person p has a lower combined score than previous cc
        				// but have a higher leadership score than the previous cv
-       				if ( p_leadership > cv_leadership) {
-	       				// this person p becomes the sub-commander
-	       				cv = p;
+       				if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+	       				if ( p_leadership > cv_leadership) {
+		       				// this person p becomes the sub-commander
+		       				cv = p;
+		       				cv_leadership = p_leadership;
+		       				cv_combined = p_combined;
+		       			}
+	       				else if ( p_leadership == cv_leadership) {
+	       					if ( p_combined > cv_combined) {
+	       						cv = p;
+			       				cv_leadership = p_leadership;
+			       				cv_combined = p_combined;
+	       					}
+	       				}
+       				}
+       			}
+*/
+        	}
+        	else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+
+   				if ( p_leadership > cv_leadership) {
+       				// this person p becomes the sub-commander
+       				cv = p;
+       				cv_leadership = p_leadership;
+       				cv_combined = p_combined;
+       			}
+   				else if ( p_leadership == cv_leadership) {
+   				// compare person p's combined score with the cv's combined score
+   					if ( p_combined > cv_combined) {
+   						cv = p;
 	       				cv_leadership = p_leadership;
 	       				cv_combined = p_combined;
-	       			}
-       			}
-        	}
+   					}
+   				}
 
-        	else if (p_leadership > cv_leadership) {
-        		// this person p becomes the sub-commander
-   				cv = p;
-   				cv_leadership = p_leadership;
-   				cv_combined = p_combined;
-        	}
+	        }
         }
 
         // TODO: look at other attributes and/or skills when comparing individuals
 
         cc.setRole(RoleType.COMMANDER);
-		cv.setRole(RoleType.SUB_COMMANDER);
+        // pop < POPULATION_WITH_MAYOR
+        if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+           	System.out.println("setting cv now. pop is " + pop);
+        	cv.setRole(RoleType.SUB_COMMANDER);
+            electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+            electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+            electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+        }
+        else ;// no chief are needed
+
+    }
+
+
+    // 2015-04-30 Added establishGovernment()
+    private void establishGovernment(Settlement settlement) {
+    	Collection<Person> people = settlement.getAllAssociatedPeople();
+    	Person mayorCandidate = null;
+    	int m_leadership = 0;
+    	int m_combined = 0;
+    	// compare their leadership scores
+        for (Person p : people) {
+        	int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
+            int p_tradeSkill = 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+            p_leadership = p_leadership  + p_tradeSkill;
+            int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
+   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+   			+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
+        	// if this person p has a higher leadership score than the previous cc
+        	if (p_leadership > m_leadership) {
+        		m_leadership = p_leadership;
+        		mayorCandidate = p;
+        		m_combined = p_combined;
+        	}
+        	// if this person p has the same leadership score as the previous cc
+        	else if (p_leadership == m_leadership)	{
+       			// if this person p has a higher combined score in those 4 categories than the previous cc
+       			if (p_combined > m_combined) {
+       				// this person becomes the cc
+            		m_leadership = p_leadership;
+            		mayorCandidate = p;
+            		m_combined = p_combined;
+       			}
+        	}
+        }
+
+        mayorCandidate.setRole(RoleType.MAYOR);
+
+        electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
+        electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+        electChief(settlement, RoleType.CHIEF_OF_MISSION_PLANNING);
+        electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+        electChief(settlement, RoleType.CHIEF_OF_SCIENCE);
+        electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+        electChief(settlement, RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS);
+
+    }
+
+
+    // 2015-04-30 Added electChief()
+    private void electChief(Settlement settlement, RoleType role) {
+    	//System.out.println("role is "+ role);
+    	Collection<Person> people = settlement.getAllAssociatedPeople();
+
+    	RoleType specialty = null;
+    	Person chief = null;
+    	int c_skills = 0;
+    	int c_combined = 0;
+
+    	SkillType skill_1 = null;
+		SkillType skill_2 = null;
+		SkillType skill_3 = null;
+		SkillType skill_4 = null;
+    	if (role == RoleType.CHIEF_OF_ENGINEERING) {
+    		skill_1 = SkillType.MATERIALS_SCIENCE;
+    		skill_2 = SkillType.CONSTRUCTION;
+    		skill_3 = SkillType.PHYSICS;
+    		skill_4 = SkillType.MECHANICS;
+    		specialty = RoleType.ENGINEERING_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_AGRICULTURE) {
+    		skill_1 = SkillType.BOTANY;
+    		skill_2 = SkillType.BIOLOGY;
+    		skill_3 = SkillType.CHEMISTRY;
+    		skill_4 = SkillType.TRADING;
+    		specialty = RoleType.AGRICULTURE_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
+    		skill_1 = SkillType.EVA_OPERATIONS;
+    		skill_2 = SkillType.MEDICINE;
+    		skill_3 = SkillType.COOKING;
+    		skill_4 = SkillType.CONSTRUCTION;
+    		specialty = RoleType.SAFETY_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_SCIENCE) {
+    		skill_1 = SkillType.AREOLOGY;
+    		skill_2 = SkillType.CHEMISTRY;
+    		skill_3 = SkillType.PHYSICS;
+    		skill_4 = SkillType.MATHEMATICS;
+    		specialty = RoleType.SCIENCE_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
+    		skill_1 = SkillType.MATHEMATICS;
+    		skill_2 = SkillType.DRIVING;
+    		skill_3 = SkillType.CONSTRUCTION;
+    		skill_4 = SkillType.EVA_OPERATIONS;
+    		specialty = RoleType.MISSION_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_SUPPLY) {
+    		skill_1 = SkillType.TRADING;
+    		skill_2 = SkillType.MATHEMATICS;
+    		skill_3 = SkillType.BOTANY;
+    		skill_4 = SkillType.COOKING;
+    		specialty = RoleType.RESOURCE_SPECIALIST;
+        }
+    	else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
+    		skill_1 = SkillType.DRIVING;
+    		skill_2 = SkillType.METEOROLOGY;
+    		skill_3 = SkillType.AREOLOGY;
+    		skill_4 = SkillType.MATHEMATICS;
+    		specialty = RoleType.LOGISTIC_SPECIALIST;
+        }
+
+    	// compare their scores
+    	for (Person p : people) {
+
+    		if ( p.getRole().getType() == specialty ) {
+    				//&& (p.getRole().getType() != RoleType.COMMANDER)
+    				//&& (p.getRole().getType() != RoleType.SUB_COMMANDER)) {
+
+	        	int p_skills = 6 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_1)
+	            			+  5 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_2)
+	        				+  4 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_3)
+	        				+  3 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_4);
+
+
+	            int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP)
+	            		+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+	            		+  p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MANAGEMENT);
+	        	// if this person p has a higher experience score than the previous cc
+	        	if (p_skills > c_skills) {
+	        		c_skills = p_skills;
+	        		chief = p;
+	        		c_combined = p_combined;
+	        	}
+	        	// if this person p has the same experience score as the previous chief
+	        	else if (p_skills == c_skills)	{
+	       			// if this person p has a higher combined score in those 4 categories than the previous chief
+	       			if (p_combined > c_combined) {
+	       				// this person becomes the chief
+	            		c_skills = p_skills;
+	            		chief = p;
+	            		c_combined = p_combined;
+	       			}
+	        	}
+	        }
+	    }
+        //chief.setRole(role);
+    	chief.getRole().setRoleType(role);
+    	System.out.println("Chief is "+ chief.getName());
     }
 
     /**

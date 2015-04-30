@@ -20,11 +20,10 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-/** 
- * The Architect class represents an architect job focusing on construction of buildings, settlement 
+/**
+ * The Architect class represents an architect job focusing on construction of buildings, settlement
  * and other structures.
  */
 public class Architect
@@ -52,7 +51,7 @@ implements Serializable {
 		jobMissionStarts.add(BuildingSalvageMission.class);
 		jobMissionJoins.add(BuildingSalvageMission.class);
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionStarts.add(EmergencySupplyMission.class);
@@ -83,12 +82,7 @@ implements Serializable {
 		double result = 0D;
 		// Add number of buildings currently at settlement.
 		result += settlement.getBuildingManager().getBuildingNum() / 10D;
-		return result;  
+		return result;
 	}
 
-	@Override
-	public double getCapability(Robot robot) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

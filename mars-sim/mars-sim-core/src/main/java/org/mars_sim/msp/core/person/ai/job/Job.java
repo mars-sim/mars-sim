@@ -14,10 +14,9 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
-/** 
+/**
  * The Job class represents a person's job.
  */
 public abstract class Job
@@ -57,7 +56,7 @@ implements Serializable {
 	 * Gets the job's internationalized name for display in user interface.
 	 * This uses directly the name of the class that extends {@link Job},
 	 * so take care not to rename those, or if you do then remember to
-	 * change the keys in <code>messages.properties</code> accordingly. 
+	 * change the keys in <code>messages.properties</code> accordingly.
 	 * @param gender {@link PersonGender}
 	 * @return name
 	 */
@@ -72,7 +71,7 @@ implements Serializable {
 		key.append(jobClass.getSimpleName());
 		return Msg.getString(key.toString()); //$NON-NLS-1$
 	};
-	
+
 	public Class<? extends Job> getJobClass() {
 		return this.jobClass;
 	}
@@ -89,9 +88,9 @@ implements Serializable {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
-	public abstract double getCapability(Robot robot);
+	//public abstract double getCapability(Robot robot);
 
-	
+
 	/**
 	 * Gets the probability modifier for starting a non-job-related task.
 	 * @param taskClass the task class

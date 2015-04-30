@@ -54,7 +54,7 @@ implements ActionListener {
 	/** data cache */
 	private String jobCache = ""; //$NON-NLS-1$
 
-	private JLabel jobLabel;
+	private JLabel jobLabel,roleLabel;
 
 	private JComboBoxMW<?> jobComboBox;
 
@@ -125,6 +125,16 @@ implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
 			jobPanel.add(jobComboBox);
+
+			// Prepare role panel
+			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			rolePanel.setBorder(new MarsPanelBorder());
+			topContentPanel.add(rolePanel);
+
+			// Prepare v label
+			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.CENTER); //$NON-NLS-1$
+			rolePanel.add(roleLabel);
+
 		}
 
 		else if (unit instanceof Robot) {
@@ -147,11 +157,11 @@ implements ActionListener {
 
 		// Prepare job title panel
 		JPanel jobHistoryPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		centerContentPanel.add(jobHistoryPanel);
+		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
 
 		// Prepare job title label
-		JLabel jobTitleLabel = new JLabel(Msg.getString("TabPanelCareer.jobTitle"), JLabel.CENTER); //$NON-NLS-1$
-		jobHistoryPanel.add(jobTitleLabel, BorderLayout.NORTH);
+		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
+		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
 		if (unit instanceof Person)
@@ -162,7 +172,7 @@ implements ActionListener {
 		// Create attribute scroll panel
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(scrollPanel);
+		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
 		JTable table = new JTable(jobHistoryTableModel);
@@ -199,6 +209,9 @@ implements ActionListener {
 			mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
+
+			String role = person.getRole().toString();
+			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + " " + role);
 
 			// Update job if necessary.
 			if (dead) {

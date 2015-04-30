@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * Trader.java
- * @version 3.07 2014-12-06
- * @author Scott Davis
+ * Manager.java
+ * @version 3.08 2015-04-30
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;
 
@@ -13,20 +13,12 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Trader
+public class Manager
 extends Job
 implements Serializable {
 
@@ -39,28 +31,24 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 */
-	public Trader() {
+	public Manager() {
 		// Use Job constructor.
-		super(Trader.class);
+		super(Manager.class);
 
-		// Add trader-related tasks.
-		jobTasks.add(LoadVehicleEVA.class);
-        jobTasks.add(LoadVehicleGarage.class);
-        jobTasks.add(UnloadVehicleEVA.class);
-        jobTasks.add(UnloadVehicleGarage.class);
-        jobTasks.add(ConsolidateContainers.class);
+		// Add Manager-related tasks.
+		//jobTasks.add(LoadVehicleEVA.class);
+        //jobTasks.add(LoadVehicleGarage.class);
 
-		// Add trader-related missions.
+		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);
 		jobMissionJoins.add(Trade.class);
         jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
+
+		// Should mayor be heroic in this frontier world? Yes
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
-        jobMissionJoins.add(BuildingConstructionMission.class);
-        jobMissionJoins.add(BuildingSalvageMission.class);
-        jobMissionStarts.add(EmergencySupplyMission.class);
-        jobMissionJoins.add(EmergencySupplyMission.class);
+
 	}
 
 	/**
@@ -72,14 +60,18 @@ implements Serializable {
 
 		double result = 0D;
 
-		int tradingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.TRADING);
-		result = tradingSkill;
+		int managerSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
+		result = managerSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
+
+		// Add leadership aptitude.
+		int leadershipAptitude = attributes.getAttribute(NaturalAttribute.LEADERSHIP);
+		result+= result * ((leadershipAptitude - 50D) / 100D);
 
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
