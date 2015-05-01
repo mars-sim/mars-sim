@@ -909,6 +909,7 @@ public class MainScene {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm on Exit");
+		alert.initOwner(stage);
 		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
 		alert.setContentText(Msg.getString("MainScene.exit.content"));
 		ButtonType buttonTypeOne = new ButtonType("Save and End");

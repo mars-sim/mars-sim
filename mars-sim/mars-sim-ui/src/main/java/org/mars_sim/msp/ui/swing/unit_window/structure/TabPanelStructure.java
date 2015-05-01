@@ -105,7 +105,7 @@ extends TabPanel {
 		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode("Commander");
 		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode("Sub-Commander");
 
-		DefaultMutableTreeNode staffNode = new DefaultMutableTreeNode("Cabinet Staff");
+		DefaultMutableTreeNode cabinetNode = new DefaultMutableTreeNode("Cabinet");
 		DefaultMutableTreeNode mayorNode = new DefaultMutableTreeNode("Mayor");
 
 		DefaultMutableTreeNode agricultureNode = new DefaultMutableTreeNode("Agriculture");
@@ -139,34 +139,34 @@ extends TabPanel {
 		int population = settlement.getAllAssociatedPeople().size();
 
         if (population >= UnitManager.POPULATION_WITH_MAYOR) {
-        	root.add(staffNode);
-        	staffNode.add(mayorNode);
+        	root.add(mayorNode);
+        	root.add(cabinetNode);
 
-        	staffNode.add(agricultureNode);
+        	cabinetNode.add(agricultureNode);
         	agricultureNode.add(agricultureChiefNode);
            	agricultureNode.add(agricultureSpecialistNode);
 
-        	staffNode.add(engineeringNode);
+        	cabinetNode.add(engineeringNode);
         	engineeringNode.add(engineeringChiefNode);
         	engineeringNode.add(engineeringSpecialistNode);
 
-           	staffNode.add(logisticNode);
+           	cabinetNode.add(logisticNode);
         	logisticNode.add(logisticChiefNode);
            	logisticNode.add(logisticSpecialistNode);
 
-           	staffNode.add(missionNode);
+           	cabinetNode.add(missionNode);
         	missionNode.add(missionChiefNode);
            	missionNode.add(missionSpecialistNode);
 
-         	staffNode.add(safetyNode);
+         	cabinetNode.add(safetyNode);
         	safetyNode.add(safetyChiefNode);
         	safetyNode.add(safetySpecialistNode);
 
-           	staffNode.add(scienceNode);
+           	cabinetNode.add(scienceNode);
         	scienceNode.add(scienceChiefNode);
            	scienceNode.add(scienceSpecialistNode);
 
-          	staffNode.add(supplyNode);
+          	cabinetNode.add(supplyNode);
         	supplyNode.add(supplyChiefNode);
         	supplyNode.add(supplySpecialistNode);
 

@@ -722,7 +722,6 @@ implements Serializable {
 
     // 2015-04-28 Added establishCommand()
     private void establishCommand(Settlement settlement, int pop) {
-    	System.out.println(" pop is "+ pop);
     	Collection<Person> people = settlement.getAllAssociatedPeople();
     	Person cc = null;
     	int cc_leadership = 0;
@@ -808,7 +807,6 @@ implements Serializable {
         cc.setRole(RoleType.COMMANDER);
         // pop < POPULATION_WITH_MAYOR
         if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-           	System.out.println("setting cv now. pop is " + pop);
         	cv.setRole(RoleType.SUB_COMMANDER);
             electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
             electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
@@ -962,9 +960,8 @@ implements Serializable {
 	        	}
 	        }
 	    }
-        //chief.setRole(role);
-    	chief.getRole().setRoleType(role);
-    	System.out.println("Chief is "+ chief.getName());
+        chief.setRole(role);
+    	//System.out.println("Chief is "+ chief.getName());
     }
 
     /**
