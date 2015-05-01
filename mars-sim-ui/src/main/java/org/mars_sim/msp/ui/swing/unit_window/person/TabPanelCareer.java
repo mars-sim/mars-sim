@@ -8,8 +8,10 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,10 +20,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -54,7 +58,7 @@ implements ActionListener {
 	/** data cache */
 	private String jobCache = ""; //$NON-NLS-1$
 
-	private JLabel jobLabel,roleLabel;
+	private JLabel jobLabel, roleLabel, errorLabel;
 
 	private JComboBoxMW<?> jobComboBox;
 
@@ -106,9 +110,12 @@ implements ActionListener {
 	    	person = (Person) unit;
 
 			// Prepare job panel
-			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			jobPanel.setBorder(new MarsPanelBorder());
-			topContentPanel.add(jobPanel);
+			JPanel topPanel = new JPanel(new GridLayout(3, 1, 0, 0));
+			topPanel.setBorder(new MarsPanelBorder());
+			topContentPanel.add(topPanel);
+
+			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new GridLayout(3, 1, 0, 0)); //
+			topPanel.add(jobPanel);
 
 			// Prepare job label
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
@@ -120,6 +127,7 @@ implements ActionListener {
 			for (Job job : JobManager.getJobs()) {
 				jobNames.add(job.getName(person.getGender()));
 			}
+
 			Collections.sort(jobNames);
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
 			jobComboBox.setSelectedItem(jobCache);
@@ -128,12 +136,20 @@ implements ActionListener {
 
 			// Prepare role panel
 			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			rolePanel.setBorder(new MarsPanelBorder());
-			topContentPanel.add(rolePanel);
+			rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+			topPanel.setBorder(new MarsPanelBorder());
+			topPanel.add(rolePanel);
 
-			// Prepare v label
+			// Prepare role label
 			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.CENTER); //$NON-NLS-1$
+			//roleLabel.setBorder(new MarsPanelBorder());
+			//roleLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			rolePanel.add(roleLabel);
+
+			errorLabel = new JLabel();
+			errorLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
+			errorLabel.setForeground(Color.red);
+			topPanel.add(errorLabel);
 
 		}
 
@@ -161,6 +177,7 @@ implements ActionListener {
 
 		// Prepare job title label
 		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
+		jobHistoryPanel.add(new JLabel());
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
@@ -211,7 +228,7 @@ implements ActionListener {
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 
 			String role = person.getRole().toString();
-			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + " " + role);
+			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + " : " + role);
 
 			// Update job if necessary.
 			if (dead) {
@@ -262,8 +279,23 @@ implements ActionListener {
 				person = (Person) unit;
 
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
+				String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
-				if (!jobCache.equals(selectedJobStr)) {
+				// 2015-04-30 if job is Manager, loads and set to the previous job and quit;
+				if (jobStrCache.equals("Manager")) {
+					jobComboBox.setSelectedItem(jobStrCache);
+					errorLabel.setText("Mayor cannot switch job arbitrary!");
+					errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				}
+
+				else if (selectedJobStr.equals("Manager")) {
+					jobComboBox.setSelectedItem(jobStrCache);
+					errorLabel.setText("Manager job is available for Mayor only!");
+					errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				}
+
+				else if (!jobCache.equals(selectedJobStr)) {
+					errorLabel.setText("");
 				    jobComboBox.setSelectedItem(selectedJobStr);
 				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
 				    // as soon as the combobox selection is changed or wait for checking of "approval" ?
@@ -281,16 +313,13 @@ implements ActionListener {
 					person.getMind().setJob(selectedJob, true, JobManager.USER);
 					// updates the jobHistoryList in jobHistoryTableModel
 					jobHistoryTableModel.update();
-					System.out.println("Yes they are diff");
+					//System.out.println("Yes they are diff");
 					jobCache = selectedJobStr;
 				}
 /*
 				person = (Person) unit;
-
 				String jobStrCache = person.getMind().getJob().getName(person.getGender());
-
 				if (!selectedJobStr.equals(jobStrCache)) {
-
 					Job selectedJob = null;
 					Iterator<Job> i = JobManager.getJobs().iterator();
 					while (i.hasNext()) {
@@ -300,13 +329,11 @@ implements ActionListener {
 							// gets selectedJob by running through iterator to match it
 					        selectedJob = job;
 					}
-
 					// update to the new selected job
 					person.getMind().setJob(selectedJob, true, JobManager.USER);
 					// updates the jobHistoryList in jobHistoryTableModel
 					jobHistoryTableModel.update();
 					System.out.println("Yes they are diff");
-
 				}
 */
 			}
