@@ -28,5 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/nimrod/nimrodlf-1.2b.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
