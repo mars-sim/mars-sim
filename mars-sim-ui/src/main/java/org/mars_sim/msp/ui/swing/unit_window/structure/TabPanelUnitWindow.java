@@ -61,5 +61,7 @@ public class TabPanelUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelBots(settlement, desktop));
         //2015-04-28 Added TabPanelStructure
         addTabPanel(new TabPanelStructure(settlement, desktop));
+        //2015-05-01 Added TabPanelWeather
+        addTabPanel(new TabPanelWeather(settlement, desktop));
     }
 }

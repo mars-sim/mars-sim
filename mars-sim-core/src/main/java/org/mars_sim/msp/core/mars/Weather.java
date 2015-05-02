@@ -36,18 +36,19 @@ implements Serializable {
 	//private static final double SEA_LEVEL_GRAVITY = 3.0D;
 	/** extreme cold temperatures at Mars. */
 	private static final double EXTREME_COLD = -120D;
+
 	/** Viking 1's longitude (49.97 W) in millisols  */
 	private static final double VIKING_LONGITUDE_OFFSET_IN_MILLISOLS = 138.80D; 	// = 49.97W/180 deg * 500 millisols;
+	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
 
 	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_MARS = 0.57D; 	// in kPa
 	public static final double PARTIAL_PRESSURE_CARBON_DIOXIDE_EARTH = 0.035D; 	// in kPa
 	public static final double PARTIAL_PRESSURE_WATER_VAPOR_ROOM_CONDITION = 1.6D; 	// in kPa. under Earth's atmosphere, at 25 C, 50% relative humidity
 
-
-	private static final double VIKING_LATITUDE = 22.48D; // At 22.48E
-
 	private static final int TEMPERATURE = 0;
-	private static final int AIR_PRESSURE = 0;
+	private static final int AIR_PRESSURE = 1;
+	private static final int AIR_DENSITY = 2;
+	private static final int WIND_SPEED = 3;
 
 	//private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
 
@@ -60,6 +61,10 @@ implements Serializable {
 	private int solCache = 1;
 
 	private double sum;
+
+	private double windSpeed = 5; // TODO: need to get the base wind speed for that season
+
+	private int oldDir;
 
 	private double viking_dt;
 
@@ -107,6 +112,8 @@ implements Serializable {
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
 
+		if (Simulation.instance().getMasterClock() != null)
+			masterClock = Simulation.instance().getMasterClock();
 	}
 
 	/**
@@ -121,14 +128,15 @@ implements Serializable {
 
 	/**
 	 * Gets the air density at a given location.
-	 * @return air density in kg/m3.
+	 * @return air density in g/m3.
 	 */
 	// 2015-03-17 Added computeAirDensity()
 	public double computeAirDensity(Coordinates location) {
 		double result = 0;
 		checkLocation(location);
 		//The air density is derived from the equation of state : d = p / .1921 / (t + 273.1)
-		result = getAirPressure(location) / (.1921 * (getTemperature(location) + 273.1));
+		result = 1000D * getAirPressure(location) / (.1921 * (getTemperature(location) + 273.1));
+		result = Math.round(result *10.0)/10.0;
 	 	return result;
 	}
 
@@ -142,43 +150,94 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the wind speed at a given location.
+	 * @return wind speed in m/s.
+	 */
+	// 2015-05-01 Added computeWindSpeed()
+	public double computeWindSpeed(Coordinates location) {
+		double result = 0;
+		//checkLocation(location);
+
+		// TODO: get wind speed using theoretical model and/or empirical data
+		result = windSpeed + RandomUtil.getRandomDouble(2) - RandomUtil.getRandomDouble(2);
+
+		if (result > 15)
+			result = 15;
+		if (result < 0)
+			result = 0;
+
+		return result;
+	}
+
+	/**
+	 * Gets the wind speed at a given location.
+	 * @return wind speed in m/s.
+	 */
+	// 2015-05-01 Added getWindSpeed()
+	public double getWindSpeed(Coordinates location) {
+		return computeWindSpeed(location);
+	}
+
+	// 2015-05-01 Added getWindDirection()
+	public int getWindDirection(Coordinates location) {
+		return computeWindDirection(location);
+	}
+
+	// 2015-05-01 Added computeWindDirection()
+	public int computeWindDirection(Coordinates location) {
+		int result = 0;
+		//checkLocation(location);
+
+		int newDir = RandomUtil.getRandomInt(359);
+
+		// TODO: should the ratio of the weight of the past direction and present direction of the wind be 9 to 1 ?
+		result = (oldDir * 9 + newDir) / 10;
+
+		if (result > 360)
+			result = result - 360;
+
+		oldDir = result;
+
+		return result;
+	}
+
+	/**
 	 * Computes the air pressure at a given location.
 	 * @return air pressure in Pa.
 	 */
 	// 2015-04-08 Added getAirPressure()
 	public double getAirPressure(Coordinates location) {
-		return computeAirPressure(location);
+		return getCachedAirPressure(location);
 	}
 
 	/**
-	 * Gets the air pressure at a given location.
-	 * @return air pressure in Pa.
+	 * Gets the cached air pressure at a given location.
+	 * @return air pressure in kPa.
 	 */
-	// 2015-03-06 Added computeAirPressure()
-	public double computeAirPressure(Coordinates location) {
+	// 2015-03-06 Added getCachedAirPressure()
+	public double getCachedAirPressure(Coordinates location) {
 		checkLocation(location);
-		//masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = masterClock.getMarsClock();
 	    millisols =  (int) marsClock.getMillisol() ;
 		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
 
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {
-			double cache = updateAirPressure(location);
-			airPressureCacheMap.put(location, cache);
+			double newP = calculateAirPressure(location);
+			airPressureCacheMap.put(location, newP);
 			//System.out.println("air pressure : "+cache);
-			return cache;
+			return newP;
 		}
 
-		else return getCacheValue(airPressureCacheMap, location, AIR_PRESSURE);
+		else return getCachedReading(airPressureCacheMap, location, AIR_PRESSURE);
 
 	}
 
 	/**
-	 * Updates the air pressure at a given location.
-	 * @return air pressure in Pa.
+	 * Calculates the air pressure at a given location.
+	 * @return air pressure in kPa.
 	 */
-	public double updateAirPressure(Coordinates location) {
+	public double calculateAirPressure(Coordinates location) {
 		// Get local elevation in meters.
 		if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain();
@@ -212,18 +271,18 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the surface temperature at a given location.
-	 * @return temperature in Celsius.
+	 * Gets the temperature at a given location.
+	 * @return temperature in deg Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
-		return computeTemperature(location);
+		return getCachedTemperature(location);
 	}
 
 	/**
-	 * Computes the surface temperature at a given location.
-	 * @return temperature in Celsius.
+	 * Gets the cached temperature at a given location.
+	 * @return temperature in deg Celsius.
 	 */
-	public double computeTemperature(Coordinates location) {
+	public double getCachedTemperature(Coordinates location) {
 		checkLocation(location);
 
 		if (marsClock == null)
@@ -232,39 +291,22 @@ implements Serializable {
 	    millisols =  (int) marsClock.getMillisol() ;
 
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {
-			double temperatureCache = updateTemperature(location);
-			temperatureCacheMap.put(location,temperatureCache);
+			double newT = calculateTemperature(location);
+			temperatureCacheMap.put(location,newT);
 			//System.out.println("Weather.java: temperatureCache is " + temperatureCache);
-			return temperatureCache;
+			return newT;
 		}
 
-		else return getCacheValue(temperatureCacheMap, location, TEMPERATURE);
+		else return getCachedReading(temperatureCacheMap, location, TEMPERATURE);
 
 	}
 
-	/*
-    public double getTemperatureCache(Coordinates location) {
-    	double result;
-
-       	if (temperatureCacheMap.containsKey(location)) {
-       		result = temperatureCacheMap.get(location);
-    	}
-    	else {
-    		double temperatureCache = updateTemperature(location);
-			temperatureCacheMap.put(location,temperatureCache);
-    		result = temperatureCache;
-    	}
-
-    	return result;
-    }
-    */
-
 
 	/**
-	 * Computes the surface temperature at a given location.
+	 * Calculates the surface temperature at a given location.
 	 * @return temperature in Celsius.
 	 */
-	public double updateTemperature(Coordinates location) {
+	public double calculateTemperature(Coordinates location) {
 
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
@@ -362,8 +404,8 @@ implements Serializable {
 	 * If calling the given location for the first time from the cache map, call update temperature/air pressure instead
 	 * @return temperature or pressure
 	 */
-	// 2015-03-06 Added getCacheValue()
-    public double getCacheValue(Map<Coordinates, Double> map, Coordinates location, int value) {
+	// 2015-03-06 Added getCachedReading()
+    public double getCachedReading(Map<Coordinates, Double> map, Coordinates location, int value) {
     	double result;
 
        	if (map.containsKey(location)) {
@@ -372,9 +414,9 @@ implements Serializable {
     	else {
     		double cache = 0;
     		if (value == TEMPERATURE )
-    			cache = updateTemperature(location);
+    			cache = calculateTemperature(location);
     		else if (value == AIR_PRESSURE )
-    			cache = updateAirPressure(location);
+    			cache = calculateAirPressure(location);
 
 			map.put(location, cache);
 
@@ -399,7 +441,7 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-	    // collect a number of sample data point throughout the date and also get an average
+	    // Sample a data point every 100 milliseconds, (compute the average) and store the data
 	    double currentMillisols =  (int) marsClock.getMillisol();
 	    if (currentMillisols % 100 == 0) {
 	    	//List<DailyWeather> todayWeather = new ArrayList<>();
@@ -409,6 +451,7 @@ implements Serializable {
 		    	todayWeather.add(weather);
 	    	});
 	    }
+
 	    // check for the passing of each day
 	    int newSol = MarsClock.getSolOfYear(marsClock);
 		if (newSol != solCache) {
@@ -431,7 +474,6 @@ implements Serializable {
 		}
 
 	}
-
 
 	public double getDailyVariationAirPressure(Coordinates location) {
 		return dailyVariationAirPressure;
@@ -463,10 +505,21 @@ implements Serializable {
     	});
 	}
 */
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		// Do nothing
+
+		weatherDataMap = null;
+		dailyRecordMap = null;
+		todayWeather = null;
+		coordinateList = null;
+		temperatureCacheMap = null;
+		airPressureCacheMap = null;
+		marsClock = null;
+		surfaceFeatures = null;
+		terrainElevation = null;
+		masterClock = null;
 	}
 }
