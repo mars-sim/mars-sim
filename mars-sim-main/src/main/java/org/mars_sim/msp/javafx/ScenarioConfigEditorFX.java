@@ -52,6 +52,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -139,6 +140,13 @@ public class ScenarioConfigEditorFX {
 		this.config = config;
 		this.mainMenu = mainMenu;
 		this.hasError = false;
+
+		try {
+			UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+			}
+	    catch(Exception ex){
+			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
+	    }
 
 		settlementConfig = config.getSettlementConfiguration();
 
@@ -496,9 +504,9 @@ public class ScenarioConfigEditorFX {
 				    	java.awt.Component c = super.prepareRenderer(renderer, row, column);
 				    	// if this is an existing settlement registered by another client machine,
 				    	if (hasSettlement && row < settlementList.size())
-				    		c.setForeground(java.awt.Color.ORANGE);
+				    		c.setForeground(java.awt.Color.YELLOW);
 				    	else
-				    		c.setForeground(java.awt.Color.GREEN);
+				    		c.setForeground(java.awt.Color.BLUE);
 				        return c;
 				    }
 				};
@@ -515,10 +523,9 @@ public class ScenarioConfigEditorFX {
 			settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
 			settlementTable.setBackground(java.awt.Color.WHITE);
 
-		    SwingUtilities.invokeLater(new Runnable(){
-		        public void run()  {
+			//SwingUtilities.invokeLater(() -> {
 		        	ColumnResizer.adjustColumnPreferredWidths(settlementTable);
-		         } });
+		    //});
 
 			//settlementTable.setEnabled(true);
 			header = settlementTable.getTableHeader();

@@ -199,31 +199,22 @@ extends TabPanel {
 
 		JTree tree = new JTree(root);
         tree.setVisibleRowCount(8);
-
-        tree.setCellRenderer(new DefaultTreeCellRenderer() {
-            private Icon personIcon = UIManager.getIcon("RadioButton.icon"); //OptionPane.errorIcon");
-            private Icon roleIcon = UIManager.getIcon("FileChooser.detailsViewIcon");//OptionPane.informationIcon");
-            private Icon homeIcon = UIManager.getIcon("FileChooser.homeFolderIcon");
-            @Override
-            public Component getTreeCellRendererComponent(JTree tree,
-                    Object value, boolean selected, boolean expanded,
-                    boolean isLeaf, int row, boolean focused) {
-                Component c = super.getTreeCellRendererComponent(tree, value,
-                        selected, expanded, isLeaf, row, focused);
-                //if (selected)
-                if (isLeaf)
-                	// this node is a person
-                    setIcon(personIcon);
-                else if (row == 0)
-                	// this is the root node
-                	setIcon(homeIcon);
-                else
-                	// this node is just a role
-                    setIcon(roleIcon);
-                // TODO: how to detect a brand node that is empty ?
-                return c;
-            }
-        });
+		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		System.out.println("CurrentTheme is " + currentTheme);
+/*
+		if (desktop.getMainWindow() != null) {
+			if (!desktop.getMainWindow().getLookAndFeelTheme().equals("nimrod")) {
+				editIcons(tree);
+			}
+		} else {
+			(desktop.getMainScene() != null) {
+				if (!desktop.getMainScene().getLookAndFeelTheme().equals("nimrod")) {
+					editIcons(tree);
+				}
+		}
+*/
+		if (!UIManager.getLookAndFeel().getClass().getName().equals("javax.swing.plaf.nimbus.NimbusLookAndFeel") )
+			editIcons(tree);
 
 
 	   	Collection<Person> people = settlement.getAllAssociatedPeople(); //.getInhabitants();
@@ -314,6 +305,34 @@ extends TabPanel {
 
     	tree.addMouseListener(ml);
 
+	}
+
+	public void editIcons(JTree tree) {
+
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+            private Icon personIcon = UIManager.getIcon("RadioButton.icon"); //OptionPane.errorIcon");
+            private Icon roleIcon = UIManager.getIcon("FileChooser.detailsViewIcon");//OptionPane.informationIcon");
+            private Icon homeIcon = UIManager.getIcon("FileChooser.homeFolderIcon");
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree,
+                    Object value, boolean selected, boolean expanded,
+                    boolean isLeaf, int row, boolean focused) {
+                Component c = super.getTreeCellRendererComponent(tree, value,
+                        selected, expanded, isLeaf, row, focused);
+                //if (selected)
+                if (isLeaf)
+                	// this node is a person
+                    setIcon(personIcon);
+                else if (row == 0)
+                	// this is the root node
+                	setIcon(homeIcon);
+                else
+                	// this node is just a role
+                    setIcon(roleIcon);
+                // TODO: how to detect a brand node that is empty ?
+                return c;
+            }
+        });
 	}
 
 	public Person findPerson(String name) {
