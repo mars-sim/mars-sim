@@ -34,6 +34,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -164,15 +165,14 @@ extends JPanel {
 	// 2015-01-01 init()
 	public void init() {
 
-	       this.functionPanels = new ArrayList<BuildingFunctionPanel>();
-	        // Set style and layout
-	        setPanelStyle(this);
-	        setLayout(new BorderLayout(0, 0));
+        this.functionPanels = new ArrayList<BuildingFunctionPanel>();
+        // Set style and layout
+        setPanelStyle(this);
+        setLayout(new BorderLayout(0, 0));
 
         // 2014-11-27 Added namePanel and buildingNameLabel
         namePanel = new JPanel(new GridLayout(3,1,0,0));
-
-		setupDetailButton();
+		//setupDetailButton();
 
         //scrollPanel.setPreferredSize(new Dimension(200, 220));
         buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
@@ -219,12 +219,12 @@ extends JPanel {
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
 
         // Prepare function scroll panel.
-        // JScrollPane scrollPanel = new JScrollPane();
-        CustomScroll scrollPanel = new CustomScroll(functionListPanel);
+        JScrollPane scrollPanel = new JScrollPane();
+        scrollPanel.setViewportView(functionListPanel);
+        //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
         scrollPanel.setPreferredSize(new Dimension(290, 280));
         add(scrollPanel, BorderLayout.CENTER);
 
-        //scrollPanel.setViewportView(functionListPanel);
         setPanelStyle(functionListPanel);
 
 		if (isTranslucent) {

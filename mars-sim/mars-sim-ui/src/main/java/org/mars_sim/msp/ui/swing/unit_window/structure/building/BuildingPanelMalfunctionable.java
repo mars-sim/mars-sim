@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * The BuildingPanelMalfunctionable class is a building function panel representing 
+ * The BuildingPanelMalfunctionable class is a building function panel representing
  * the malfunctions of a settlement building.
  */
 public class BuildingPanelMalfunctionable
@@ -71,7 +71,7 @@ extends BuildingFunctionPanel {
         scrollPanel.setOpaque(false);
         scrollPanel.setBackground(new Color(0,0,0,128));
         scrollPanel.getViewport().setOpaque(false);
-        scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
+        scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));//0, 0, 0, 0));
         scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create malfunction list main panel.
@@ -79,14 +79,14 @@ extends BuildingFunctionPanel {
 		scrollPanel.setViewportView(malfunctionListMainPanel);
 		malfunctionListMainPanel.setOpaque(false);
 		malfunctionListMainPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Create malfunction list panel
 		malfunctionListPanel = new JPanel();
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 		malfunctionListPanel.setOpaque(false);
 		malfunctionListPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Create malfunction panels
 		malfunctionCache = new ArrayList<Malfunction>(malfunctionable.getMalfunctionManager().getMalfunctions());
 		malfunctionPanels = new ArrayList<MalfunctionPanel>();
@@ -94,7 +94,11 @@ extends BuildingFunctionPanel {
 		while (i.hasNext()) {
 			MalfunctionPanel panel = new MalfunctionPanel(i.next());
 			malfunctionListPanel.add(panel);
+			malfunctionListPanel.setOpaque(false);
+			malfunctionListPanel.setBackground(new Color(0,0,0,128));
 			malfunctionPanels.add(panel);
+			panel.setOpaque(false);
+			panel.setBackground(new Color(0,0,0,128));
 		}
 	}
 
@@ -113,6 +117,8 @@ extends BuildingFunctionPanel {
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction);
 					malfunctionPanels.add(panel);
 					malfunctionListPanel.add(panel);
+					malfunctionListPanel.setOpaque(false);
+					malfunctionListPanel.setBackground(new Color(0,0,0,128));
 					panel.setOpaque(false);
 					panel.setBackground(new Color(0,0,0,128));
 				}

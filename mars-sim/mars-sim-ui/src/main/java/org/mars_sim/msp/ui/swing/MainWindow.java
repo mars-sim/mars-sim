@@ -59,8 +59,12 @@ public class MainWindow extends JComponent {
 
 	/** Icon image filename for main window. */
 	private static final String ICON_IMAGE = "/images/LanderHab.png";
-	
+
+
 	// Data members
+	// 2015-05-02 Added lookAndFeelTheme
+	private String lookAndFeelTheme;
+
 	private JFrame frame;
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
@@ -104,7 +108,7 @@ public class MainWindow extends JComponent {
     private boolean useDefault;
 
     private String statusText;
-    
+
    	/**
 	 * Constructor 1.
 	 * @param cleanUI true if window should display a clean UI.
@@ -124,8 +128,8 @@ public class MainWindow extends JComponent {
 		// Set look and feel of UI.
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 
-		setLookAndFeel(false);
-		
+		setLookAndFeel(false, true);
+
 		// Set the icon image for the frame.
 		setIconImage();
 
@@ -642,12 +646,24 @@ public class MainWindow extends JComponent {
 	 * Sets the look and feel of the UI
 	 * @param nativeLookAndFeel true if native look and feel should be used.
 	 */
-	public void setLookAndFeel(boolean nativeLookAndFeel) {
+	// 2015-05-02 Edited setLookAndFeel()
+	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
+		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		System.out.println("CurrentTheme is " + currentTheme);
 		if (nativeLookAndFeel) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
+				lookAndFeelTheme = "system";
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		} else if (nimRODLookAndFeel) {
+			try {
+				UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+				changed = true;
+				lookAndFeelTheme = "nimrod";
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
@@ -659,6 +675,7 @@ public class MainWindow extends JComponent {
 					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
+						lookAndFeelTheme = "nimbus";
 						changed = true;
 						break;
 					}
@@ -668,6 +685,7 @@ public class MainWindow extends JComponent {
 				if (!foundNimbus) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 					UIManager.setLookAndFeel(new MetalLookAndFeel());
+					lookAndFeelTheme = "metal";
 					changed = true;
 				}
 			} catch (Exception e) {
@@ -687,12 +705,12 @@ public class MainWindow extends JComponent {
 
 		}
 	}
-	
+
 	/**
 	 * Sets the icon image for the main window.
 	 */
 	public void setIconImage() {
-	    
+
         String fullImageName = ICON_IMAGE;
         URL resource = ImageLoader.class.getResource(fullImageName);
         Toolkit kit = Toolkit.getDefaultToolkit();
@@ -714,6 +732,10 @@ public class MainWindow extends JComponent {
 	 */
 	public ToolToolBar getToolToolBar() {
 		return toolToolbar;
+	}
+
+	public String getLookAndFeelTheme() {
+		return lookAndFeelTheme;
 	}
 
 }

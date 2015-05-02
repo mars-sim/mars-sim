@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
@@ -53,14 +54,15 @@ public class SimulationConfigEditor {
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
 
 	// Data members.
-	private SimulationConfig config;
+	private boolean hasError;
+
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
-	private boolean hasError;
 	private JLabel errorLabel;
 	private JButton createButton;
-
 	private JFrame f;
+
+	private SimulationConfig config;
 
 	/**
 	 * Constructor
@@ -73,8 +75,12 @@ public class SimulationConfigEditor {
 
 		hasError = false;
 
-		//try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-	    //catch(Exception ex){}
+		try {
+			UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+			}
+	    catch(Exception ex){
+			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
+	    }
 
 	    f = new JFrame();
 

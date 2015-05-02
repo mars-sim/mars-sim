@@ -85,8 +85,6 @@ public class MainScene {
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
-    private StringProperty timeStamp;
-
     private int theme;
     private int memMax;
     private int memTotal;
@@ -95,6 +93,10 @@ public class MainScene {
 
     private boolean cleanUI = true;
 	//private boolean useDefault;
+
+    private StringProperty timeStamp;
+	// 2015-05-02 Added lookAndFeelTheme
+	private String lookAndFeelTheme;
 
 	private Thread newSimThread;
 	private Thread loadSimThread;
@@ -144,7 +146,9 @@ public class MainScene {
 
 		// Set look and feel of UI.
 		UIConfig.INSTANCE.useUIDefault();
-		//setLookAndFeel(false);
+        SwingUtilities.invokeLater(() -> {
+    		setLookAndFeel(false, true);
+        });
 
         // Detect if a user hits ESC
         scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
@@ -829,12 +833,24 @@ public class MainScene {
 	 * Sets the look and feel of the UI
 	 * @param nativeLookAndFeel true if native look and feel should be used.
 	 */
-	public void setLookAndFeel(boolean nativeLookAndFeel) {
+	// 2015-05-02 Edited setLookAndFeel()
+	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
+		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		System.out.println("CurrentTheme is " + currentTheme);
 		if (nativeLookAndFeel) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
+				lookAndFeelTheme = "system";
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		} else if (nimRODLookAndFeel) {
+			try {
+				UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+				changed = true;
+				lookAndFeelTheme = "nimrod";
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
@@ -846,6 +862,7 @@ public class MainScene {
 					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
+						lookAndFeelTheme = "nimbus";
 						changed = true;
 						break;
 					}
@@ -855,6 +872,7 @@ public class MainScene {
 				if (!foundNimbus) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 					UIManager.setLookAndFeel(new MetalLookAndFeel());
+					lookAndFeelTheme = "metal";
 					changed = true;
 				}
 			} catch (Exception e) {
@@ -863,12 +881,15 @@ public class MainScene {
 		}
 
 		if (changed) {
-		//	SwingUtilities.updateComponentTreeUI(frame);
+
+			//SwingUtilities.updateComponentTreeUI(frame);
+
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();
 				//desktop.updateTransportWizardLF();
 			}
+
 		}
 	}
 
@@ -886,7 +907,7 @@ public class MainScene {
 		//mainWindow = new MainWindow(true, true);
         SwingUtilities.invokeLater(() -> {
             swingNode.setContent(desktop);
-    		setLookAndFeel(false);
+    		setLookAndFeel(false, true);
             //swingNode.setContent(mainWindow);
         });
     }
