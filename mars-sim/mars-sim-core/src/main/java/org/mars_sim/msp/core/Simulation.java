@@ -78,9 +78,10 @@ implements ClockListener, Serializable {
 
 	@SuppressWarnings("restriction")
 	public final static String WINDOW_TITLE = Msg.getString(
-			"Simulation.title", Simulation.VERSION +
-			" Build " + Simulation.BUILD_VERSION +
-			" running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			"Simulation.title", Simulation.VERSION
+			+ " Build " + Simulation.BUILD_VERSION
+			+ " running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			+ " with " + Runtime.getRuntime().availableProcessors() + " available CPU(s)"
 		); //$NON-NLS-1$
 
 
