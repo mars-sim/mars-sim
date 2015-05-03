@@ -82,47 +82,47 @@ public class SettlementTransparentPanel extends JComponent {
 
 
 	private JSlider zoomSlider;
-	private JPanel rightPane, borderPane, nameBtnPane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ; 
+	private JPanel rightPane, borderPane, nameBtnPane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
 	private JButton renameBtn, infoButton;
-	private JLabel zoomLabel; 	
+	private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
 	private JComboBoxMW<?> settlementListBox;
 	/** Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
-	
+
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
 	//private Settlement settlement;
-	
+
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
-    	
+
         this.mapPanel = mapPanel;
-        this.desktop = desktop;           
-  
+        this.desktop = desktop;
+
         createAndShowGUI();
     }
-    
-    
-    public void createAndShowGUI() {   
-    		        
+
+
+    public void createAndShowGUI() {
+
         buildSettlementNameComboBox();
-        buildInfoP(); 
+        buildInfoP();
         buildrenameBtn();
-        
-        buildZoomLabel();	
+
+        buildZoomLabel();
         buildZoomSlider();
-        buildButtonPane();    
+        buildButtonPane();
         buildLabelPane();
 
 		nameBtnPane = new JPanel(new FlowLayout());
 		nameBtnPane.setBackground(new Color(0,0,0,0));
         nameBtnPane.setOpaque(false);
-        
+
       	nameBtnPane.add(infoP);
        	nameBtnPane.add(renameP);
        	nameBtnPane.add(new JLabel(""));
-       	
+
 		settlementPanel = new JPanel();//new BorderLayout());
 		settlementPanel.setBackground(new Color(0,0,0,0));
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
@@ -130,13 +130,13 @@ public class SettlementTransparentPanel extends JComponent {
 		Box box = new Box(BoxLayout.Y_AXIS);
 	    box.add(Box.createVerticalGlue());
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));   
+	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	    box.add(Box.createVerticalGlue());
 		box.setOpaque(false);
 		box.setBackground(new Color(0,0,0,0));
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
-		
+
         // Make panel drag-able
 //    	ComponentMover cmName = new ComponentMover();
 //    	cmName.registerComponent(box);
@@ -151,31 +151,31 @@ public class SettlementTransparentPanel extends JComponent {
 	    rightPane = new JPanel(new BorderLayout());
 //		rightPane.setBackground(new Color(0,0,0,15));
 	    rightPane.setBackground(new Color(0,0,0,0));
-	
+
 	    controlPane.add(buttonPane);
 	    controlPane.add(zoomLabel);
 	    borderPane.add(controlPane, BorderLayout.SOUTH);
-	    
-        zoomPane.add(borderPane); 
+
+        zoomPane.add(borderPane);
         zoomPane.add(zoomSlider);
-        zoomPane.add(labelPane); 
-       
+        zoomPane.add(labelPane);
+
         // Make panel drag-able
 //  		ComponentMover cmZoom = new ComponentMover(zoomPane);
 		//cmZoom.registerComponent(rightPane);
-//		cmZoom.registerComponent(zoomPane);	
-		
-	    mapPanel.add(box, BorderLayout.NORTH);  
-        //mapPanel.add(rightPane, BorderLayout.EAST); 
+//		cmZoom.registerComponent(zoomPane);
+
+	    mapPanel.add(box, BorderLayout.NORTH);
+        //mapPanel.add(rightPane, BorderLayout.EAST);
         //mapPanel.add(zoomPane, BorderLayout.WEST);
-        mapPanel.add(zoomPane, BorderLayout.EAST);        
+        mapPanel.add(zoomPane, BorderLayout.EAST);
         mapPanel.setVisible(true);
     }
-     
-    
+
+
 	@SuppressWarnings("unchecked")
-	public void buildSettlementNameComboBox() { 
-		
+	public void buildSettlementNameComboBox() {
+
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new JComboBoxMW(settlementCBModel);
 		//settlementListBox.setBorder(null);
@@ -184,14 +184,15 @@ public class SettlementTransparentPanel extends JComponent {
 		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
 		settlementListBox.setBackground(new Color(51,25,0,40)); // dull gold color
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
-		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$ 
+		settlementListBox.setForeground(Color.GREEN);
+		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
 		settlementListBox.addItemListener(new ItemListener() {
 			@Override
 			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
 				Settlement s;
-				// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving 
+				// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
 				if (desktop.getIsTransportingBuilding()) {
 					s = desktop.getSettlement();
 					settlementListBox.setSelectedItem(s);
@@ -202,14 +203,14 @@ public class SettlementTransparentPanel extends JComponent {
 				}
 				//System.out.println(" settlement is " + settlement.getName());
 				mapPanel.setSettlement(s);
-			} 
+			}
 		});
 
-		
+
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
 			Settlement s;
-			// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving 
+			// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
 			if (desktop.getIsTransportingBuilding()) {
 				s = desktop.getSettlement();
 				settlementListBox.setSelectedItem(s);
@@ -221,59 +222,59 @@ public class SettlementTransparentPanel extends JComponent {
 			//System.out.println(" settlement is " + settlement.getName());
 			mapPanel.setSettlement(s);
 		}
-    
+
 	}
-	
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {	
-			
+
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+
 		private static final long serialVersionUID = 1L;
-		private String prompt;		
+		private String prompt;
 		//public boolean isOptimizedDrawingEnabled();
 		//private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-		public PromptComboBoxRenderer(){	
+		public PromptComboBoxRenderer(){
 			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
-		    //settlementListBox.setRenderer(defaultRenderer);		
+		    //settlementListBox.setRenderer(defaultRenderer);
 		    //setOpaque(false);
 		    setHorizontalAlignment(CENTER);
 		    setVerticalAlignment(CENTER);
 		}
-		
+
 		public PromptComboBoxRenderer(String prompt){
 				this.prompt = prompt;
 			}
-			
+
 			@Override
 		    public Component getListCellRendererComponent(JList list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
 		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);		        
+		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 				if (value == null) {
 					setText( prompt );
 					//this.setForeground(Color.green);
 			        //this.setBackground(new Color(184,134,11));
 					return this;
 				}
-				
+
 				if (isSelected) {
-					result.setForeground(Color.green);
+					result.setForeground(Color.GREEN);
 			        result.setBackground(new Color(184,134,11,50));
-		
+
 		          // unselected, and not the DnD drop location
 		          } else {
-		        	  result.setForeground(Color.green);
+		        	  result.setForeground(Color.ORANGE);
 		        	  result.setBackground(new Color(255,229,204,50));
 				      //result.setBackground(new Color(184,134,11)); //brown
 		          }
-				
+
 		        //result.setOpaque(false);
 
 		        return result;
 		    }
 	}
 
-	
-    public void buildZoomLabel() { 
+
+    public void buildZoomLabel() {
 
 		zoomLabel = new JLabel(Msg.getString("SettlementTransparentPanel.label.zoom")); //$NON-NLS-1$
 		//zoomLabel.setPreferredSize(new Dimension(60, 20));
@@ -286,11 +287,11 @@ public class SettlementTransparentPanel extends JComponent {
 		//zoomLabel.setBorder(new LineBorder(Color.green, 1, true));
 		//zoomLabel.setBorderPainted(true);
 		zoomLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		
+
     }
-    
-    public void buildZoomSlider() { 
-				
+
+    public void buildZoomSlider() {
+
         UIDefaults sliderDefaults = new UIDefaults();
 
         sliderDefaults.put("Slider.thumbWidth", 15);
@@ -347,36 +348,36 @@ public class SettlementTransparentPanel extends JComponent {
 				mapPanel.setScale(newScale);
 			}
 		});
-		
-		//zoomPane.add(zoomSlider);		
-        
+
+		//zoomPane.add(zoomSlider);
+
 		// Add mouse wheel listener for zooming.
 		mapPanel.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent evt) {
 				int numClicks = evt.getWheelRotation();
 				if (numClicks > 0) {
 					// Move zoom slider down.
-					if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
+					if (zoomSlider.getValue() > zoomSlider.getMinimum())
 						zoomSlider.setValue(zoomSlider.getValue() - 1);
 				}
 				else if (numClicks < 0) {
 					// Move zoom slider up.
-					if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
+					if (zoomSlider.getValue() < zoomSlider.getMaximum())
 						zoomSlider.setValue(zoomSlider.getValue() + 1);
 				}
 			}
 		});
-		
+
     }
-    
+
     public void buildInfoP() {
-       
+
 		infoP = new JPanel(new FlowLayout());
 		infoP.setBackground(new Color(0,0,0,0));
-		infoP.setAlignmentX(FlowLayout.CENTER); 
-		
+		infoP.setAlignmentX(FlowLayout.CENTER);
+
 		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
-		infoButton.setPreferredSize(new Dimension(35, 20));
+		infoButton.setPreferredSize(new Dimension(50, 20)); //35, 20));
 		infoButton.setFont(new Font("Dialog", Font.PLAIN, 12));
 		infoButton.setForeground(Color.GREEN);
 		infoButton.setContentAreaFilled(false);
@@ -386,25 +387,25 @@ public class SettlementTransparentPanel extends JComponent {
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
 		infoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				Settlement settlement = mapPanel.getSettlement();				
+				Settlement settlement = mapPanel.getSettlement();
 				if (settlement != null) {
 					// 2014-10-26 obtained settlement object
-					//setCurrentSettlement(settlement);					
+					//setCurrentSettlement(settlement);
 					desktop.openUnitWindow(settlement, false);
 				}
 			}
 		});
 		infoP.add(infoButton);
     }
-		
+
     public void buildrenameBtn() {
-	    	
+
 		renameP  = new JPanel(new FlowLayout());
 		renameP.setBackground(new Color(0,0,0,0));
-		renameP.setAlignmentX(FlowLayout.CENTER); 
+		renameP.setAlignmentX(FlowLayout.CENTER);
 
 		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
-		renameBtn.setPreferredSize(new Dimension(65, 20));
+		renameBtn.setPreferredSize(new Dimension(80, 20)); //
 		renameBtn.setFont(new Font("Dialog", Font.PLAIN, 12));
 		renameBtn.setForeground(Color.GREEN);
 		renameBtn.setContentAreaFilled(false);
@@ -418,10 +419,10 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 		renameP.add(renameBtn);
     }
-    
-    
+
+
     public void buildButtonPane() {
-  		
+
         buttonPane = new JPanel();
         buttonPane.setBackground(new Color(0,0,0,0));
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
@@ -438,7 +439,7 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		buttonPane.add(rotateClockwiseButton);
-	
+
 		JButton recenterButton = new JButton(" + ");//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
 		recenterButton.setPreferredSize(new Dimension(20, 20));
 		recenterButton.setOpaque(false);
@@ -470,19 +471,19 @@ public class SettlementTransparentPanel extends JComponent {
 		});
 
 		buttonPane.add(rotateCounterClockwiseButton);
-		
+
     }
-    
+
     public void buildLabelPane() {
 
         labelPane = new JPanel();
-        labelPane.setBackground(new Color(0,0,0,0));      
-        
+        labelPane.setBackground(new Color(0,0,0,0));
+
 		JButton labelsButton = new JButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
 		labelsButton.setOpaque(false);
 		//labelsButton.setFont(new Font("Dialog", Font.BOLD, 16));
 		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
-		//labelsButton.setBackground(new Color(139,69,19,40)); 
+		//labelsButton.setBackground(new Color(139,69,19,40));
 		//labelsButton.setBackground(new Color(51,25,0,5)); // dull gold color
 		labelsButton.setBackground(new Color(0,0,0,0));
 		labelsButton.setPreferredSize(new Dimension(80, 20));
@@ -502,14 +503,14 @@ public class SettlementTransparentPanel extends JComponent {
 				//repaint();
 			}
 		});
-		
-		labelPane.add(labelsButton);	
-   
+
+		labelPane.add(labelsButton);
+
 	}
     /*
     class MyCellRenderer extends JLabel implements ListCellRenderer<Object>  {
 		private static final long serialVersionUID = 1L;
-	
+
 		public MyCellRenderer() {
 	          setOpaque(true);
 	      }
@@ -518,16 +519,16 @@ public class SettlementTransparentPanel extends JComponent {
 	                                                    int index,
 	                                                    boolean isSelected,
 	                                                    boolean cellHasFocus) {
-	
+
 	          setText(value.toString());
-	  		  setBackground(new Color(0,0,0,0)); 
-	  		  
+	  		  setBackground(new Color(0,0,0,0));
+
 	          Color background = Color.orange;
 	          Color foreground = Color.green;
-	
+
 	          // check if this cell represents the current DnD drop location
 	          JList.DropLocation dropLocation = list.getDropLocation();
-	
+
 	          if (dropLocation != null
 	                  && !dropLocation.isInsert()
 	                  && dropLocation.getIndex() == index) {
@@ -536,14 +537,14 @@ public class SettlementTransparentPanel extends JComponent {
 	          } else if (isSelected) {
 	              background = Color.orange;
 	              foreground = Color.green;
-	
+
 	          // unselected
 	          } else {
 	          };
-	
+
 	          setBackground(background);
 	          setForeground(foreground);
-	
+
 	          return this;
 	      }
     }
@@ -560,7 +561,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.setBackground(new Color(222,184,135,0)); // pale silky brown
         UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
         UIManager.put("PopupMenu.border", res);
-        result.setLightWeightPopupEnabled(false); 
+        result.setLightWeightPopupEnabled(false);
 
 		// Create Day Night Layer menu item.
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -573,7 +574,7 @@ public class SettlementTransparentPanel extends JComponent {
 			}
 		});
 		result.add(dayNightLabelMenuItem);
-		
+
 		// Create building label menu item.
 		JCustomCheckBoxMenuItem buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
@@ -630,7 +631,7 @@ public class SettlementTransparentPanel extends JComponent {
 			}
 		});
 		result.add(personLabelMenuItem);
-		
+
 		// Create person label menu item.
 		JCustomCheckBoxMenuItem robotLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
@@ -642,30 +643,30 @@ public class SettlementTransparentPanel extends JComponent {
 			}
 		});
 		result.add(robotLabelMenuItem);
-		
+
 		result.pack();
 
 		return result;
 	}
 
-	
+
 	public class JCustomCheckBoxMenuItem extends JCheckBoxMenuItem {
 
 		public JCustomCheckBoxMenuItem(String s, boolean b) {
 			super(s, b);
 		}
 		private static final long serialVersionUID = 1L;
-		/*public void paint(Graphics g) { 
+		/*public void paint(Graphics g) {
 			//protected void paintComponent(Graphics g) {
 				//super.paintComponent(g);
-		
-                Graphics2D g2d = (Graphics2D) g.create(); 
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f)); 
-                super.paint(g2d); 
-                g2d.dispose(); 
+
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                super.paint(g2d);
+                g2d.dispose();
         } */
 	}
-	
+
 	/**
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
@@ -673,12 +674,12 @@ public class SettlementTransparentPanel extends JComponent {
 	// 2014-10-26 Added askNameDialog()
 	public String askNameDialog() {
 		return JOptionPane
-			.showInputDialog(desktop, 
+			.showInputDialog(desktop,
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"), //$NON-NLS-1$
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
 			        JOptionPane.QUESTION_MESSAGE);
 	}
-	
+
 	/**
 	 * Ask for a new building name using TextInputDialog in JavaFX/8
 	 * @return new name
@@ -692,12 +693,12 @@ public class SettlementTransparentPanel extends JComponent {
 
 		Optional<String> result = dialog.showAndWait();
 		//result.ifPresent(name -> {});
-		
+
 		if (result.isPresent()){
 		    //logger.info("The settlement name has been changed to : " + result.get());
 			newName = result.get();
-		}	
-		
+		}
+
 		return newName;
 	}
 	/**
@@ -706,57 +707,57 @@ public class SettlementTransparentPanel extends JComponent {
 	 */
 	// 2014-10-26 Modified renameSettlement()
 	public void renameSettlement() {
-			
+
 		String oldName = mapPanel.getSettlement().getName();
 
-		//logger.info("Old name was " + oldName);		
+		//logger.info("Old name was " + oldName);
 		//boolean isFX = Platform.isFxApplicationThread();
-		
+
 		if (desktop.getMainScene() != null) {
 
-			Platform.runLater(() -> {	
-				
+			Platform.runLater(() -> {
+
 				String newName = askNameFX(oldName);
-		
+
 				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
 				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
 					//System.out.println("newName is " + newName);
 					newName = askNameFX(oldName);
-					
+
 					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
 						return;
 					else
 						mapPanel.getSettlement().changeName(newName);
 
 				}
-				
+
 				else {
-					
+
 					mapPanel.getSettlement().changeName(newName);
 					//logger.info("New name is now " + newName);
 				}
-			
-			});				
-			
+
+			});
+
 		}
-		
-		else { 		
-		
+
+		else {
+
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			//String nameCache = settlement.getType();
 			String settlementNewName = askNameDialog();
-					
+
 			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
 				settlementNewName = askNameDialog();
 			else {
 				mapPanel.getSettlement().changeName(settlementNewName);
 			}
-		
+
 		}
-		
+
 		desktop.closeToolWindow(SettlementWindow.NAME);
-		desktop.openToolWindow(SettlementWindow.NAME);	
-		
+		desktop.openToolWindow(SettlementWindow.NAME);
+
 	}
 
 	/**
@@ -764,7 +765,7 @@ public class SettlementTransparentPanel extends JComponent {
 	 */
 	public class SettlementComboBoxModel
 	extends DefaultComboBoxModel<Object>
-	implements 
+	implements
 	UnitManagerListener,
 	UnitListener {
 
@@ -788,7 +789,7 @@ public class SettlementTransparentPanel extends JComponent {
 			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
-				i.next().addUnitListener(this);			
+				i.next().addUnitListener(this);
 			}
 			*/
 		}
@@ -815,9 +816,9 @@ public class SettlementTransparentPanel extends JComponent {
 				updateSettlements();
 			}
 		}
-		
+
 		//2014-12-19 Added unitUpdate()
-		public void unitUpdate(UnitEvent event) {	
+		public void unitUpdate(UnitEvent event) {
 			// Note: Easily 100+ UnitEvent calls every second
 			UnitEventType eventType = event.getType();
 			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
@@ -828,31 +829,29 @@ public class SettlementTransparentPanel extends JComponent {
 				mapPanel.setSettlement(s);
 				// Updated ComboBox
 				settlementListBox.setSelectedItem(s);
-				//System.out.println("SettlementWindow : The settlement the new building is transporting to is " + settlement);
-				// Select the relevant settlement
 				//this.pack();
 			}
 		}
-		
+
 		/**
 		 * Prepare class for deletion.
 		 */
 		public void destroy() {
 
 			removeAllElements();
-			
+
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.removeUnitManagerListener(this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
-				i.next().removeUnitListener(this);			
+				i.next().removeUnitListener(this);
 			}
-			
+
 		}
 	}
-    
+
 	/**
 	 * Prepare class for deletion.
 	 */
@@ -865,4 +864,3 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementCBModel = null;
 	}
 }
- 

@@ -484,6 +484,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					//DialogEarthquakeCenter dec = new DialogEarthquakeCenter(dialog);
 					//dec.startTimer();
 					//dec.startNudging();
+	                //new PauseTransition(Duration.seconds(2));
 					//try {
 					//	System.out.println("start sleeping ");
 					//	Thread.sleep(2000);
