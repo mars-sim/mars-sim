@@ -32,8 +32,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
+import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -54,7 +56,8 @@ extends TabPanel {
 	// Data Members
 	// 2014-10-25  Changed label name to heatGenCapacityLabel
 	/** The total heat generated label. */
-	private JLabel heatGenCapacityLabel;
+	private JLabel heatGenLabel;
+	private JLabel powerGenLabel;
 	/** The total heat used label. */
 	//private JLabel heatGenLabel;
 	/** The total heat storage capacity label. */
@@ -69,7 +72,8 @@ extends TabPanel {
 	// Data cache
 	/** The total heat generated cache. */
 	// 2014-10-25  Changed names of variables to heatGenCapacityCache, heatGenCache
-	private double heatGenCapacityCache;
+	private double heatGenCache;
+	private double powerGenCache;
 	/** The total heat used cache. */
 	//private double heatGenCache;
 	/** The total thermal storage capacity cache. */
@@ -108,14 +112,28 @@ extends TabPanel {
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.
-		JPanel heatInfoPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel heatInfoPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		heatInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare heat generated label.
-		heatGenCapacityCache = thermalSystem.getGeneratedHeat();
-		heatGenCapacityLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGenCapacity", formatter.format(heatGenCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
-		heatInfoPanel.add(heatGenCapacityLabel);
+		heatGenCache = thermalSystem.getGeneratedHeat();
+		heatGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen", formatter.format(heatGenCache)), JLabel.CENTER); //$NON-NLS-1$
+		heatInfoPanel.add(heatGenLabel);
+
+		// Prepare power generated label.
+		powerGenCache = thermalSystem.getGeneratedPower();
+		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen", formatter.format(powerGenCache)), JLabel.CENTER); //$NON-NLS-1$
+		heatInfoPanel.add(powerGenLabel);
+
+		double eff_electric_heat = ElectricHeatSource.getEfficiency();
+		JLabel effLabel = new JLabel("Electric Furnace eff : " + eff_electric_heat, JLabel.CENTER);
+		heatInfoPanel.add(effLabel);
+
+		double eff_solar_heat = SolarHeatSource.getEfficiency();
+		JLabel effLabel2 = new JLabel("Solar Heat Engine eff : " + eff_solar_heat, JLabel.CENTER);
+		heatInfoPanel.add(effLabel2);
+
 
 		// Prepare heat storage capacity label.
 		//thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
@@ -161,16 +179,25 @@ extends TabPanel {
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
 		// Check if the old heatGenCapacityCache is different from the latest .
-		if (heatGenCapacityCache != thermalSystem.getGeneratedHeat()) {
-				heatGenCapacityCache = thermalSystem.getGeneratedHeat();
-			heatGenCapacityLabel.setText(
+		if (heatGenCache != thermalSystem.getGeneratedHeat()) {
+				heatGenCache = thermalSystem.getGeneratedHeat();
+			heatGenLabel.setText(
 				Msg.getString(
-					"TabPanelThermalSystem.totalHeatGenCapacity", //$NON-NLS-1$
-					formatter.format(heatGenCapacityCache)
+					"TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
+					formatter.format(heatGenCache)
 				)
 			);
 		}
 
+		if (powerGenCache != thermalSystem.getGeneratedPower()) {
+			powerGenCache = thermalSystem.getGeneratedPower();
+			powerGenLabel.setText(
+				Msg.getString(
+					"TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
+					formatter.format(powerGenCache)
+				)
+			);
+		}
 		// CANNOT USE thermalSystem class to compute the individual building heat usage
 		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
 		// Update heat Gen label.
@@ -273,54 +300,63 @@ extends TabPanel {
 
 			// if the building has thermal control system, display columns
 			if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+				//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+
 				if (column == 0) {
-					if (heatMode == HeatMode.FULL_POWER) {
+					if (heatMode == HeatMode.ONLINE) {
 						return dotGreen;
 					}
-					else if (heatMode == HeatMode.POWER_DOWN) {
+					else if (heatMode == HeatMode.HEAT_OFF) {
+						return dotYellow; // TODO: will change to dotBlue
+					}
+					else if (heatMode == HeatMode.OFFLINE) {
 						return dotYellow;
 					}
-					else if (heatMode == HeatMode.NO_POWER) {
-						return dotRed;
-					}
+					//else if (heatMode == HeatMode.NO_POWER) {
+					//	return dotRed;
+					//}
 					else return null;
 				}
-				else if (column == 1) return buildingsWithThermal.get(row);
+				else if (column == 1)
+					return buildingsWithThermal.get(row);
+				else if (column == 2)
+					// return temperature of the building;
+					return building.getTemperature();
+				else if (column == 3) {
+					double generated = 0D;
+					//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+
+						if (heatMode == HeatMode.ONLINE) {
+							try {
+								ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+								if (heater != null) {
+									generated = heater.getGeneratedHeat();
+									return generated;
+								}
+								else
+									return generated;
+							}
+							catch (Exception e) {}
+						}
+						else if (heatMode == HeatMode.HEAT_OFF) {
+							return generated;
+						}
+					//}
+
+				}
 				else if (column == 4) {
 					double generatedCapacity = 0D;
-					if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+					//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
 						try {
 							ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 							// 2014-10-25  Changed to calling getGeneratedCapacity()
 							generatedCapacity = heater.getGeneratedCapacity();
 						}
 						catch (Exception e) {}
-					}
+					//}
 					return generatedCapacity;
 				}
 
-				else if (column == 3) {
-					double generated = 0D;
-					if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
-
-						if (heatMode == HeatMode.FULL_POWER) {
-							try {
-								ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-								generated = heater.getGeneratedHeat();
-							}
-							catch (Exception e) {}
-								return generated;
-
-						}
-						else if (heatMode == HeatMode.POWER_DOWN) {
-							return generated;
-						}
-					}
-
-				}
-				else if (column == 2)
-					// return temperature of the building;
-					return building.getTemperature();
 			}
 			return null;
 		}

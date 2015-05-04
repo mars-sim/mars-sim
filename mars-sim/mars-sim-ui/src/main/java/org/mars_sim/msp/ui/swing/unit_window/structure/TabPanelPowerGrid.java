@@ -29,13 +29,14 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * This is a tab panel for a settlement's power grid information.
  */
 public class TabPanelPowerGrid
@@ -75,7 +76,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
 		super(
@@ -153,7 +154,7 @@ extends TabPanel {
 		powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		powerTable.getColumnModel().getColumn(3).setPreferredWidth(10);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
-		//resizable automatically when its Panel resizes		
+		//resizable automatically when its Panel resizes
 		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//powerTablePanel.add(powerTable.getTableHeader(), BorderLayout.NORTH);
@@ -205,7 +206,7 @@ extends TabPanel {
 		powerTableModel.update();
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the power table.
 	 */
 	private static class PowerTableModel extends AbstractTableModel {
@@ -258,7 +259,7 @@ extends TabPanel {
 			PowerMode powerMode = building.getPowerMode();
 
 			if (column == 0) {
-				if (powerMode == PowerMode.FULL_POWER) { 
+				if (powerMode == PowerMode.FULL_POWER) {
 					return dotGreen;
 				}
 				else if (powerMode == PowerMode.POWER_DOWN) {
@@ -279,6 +280,13 @@ extends TabPanel {
 					}
 					catch (Exception e) {}
 				}
+				if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {
+					try {
+						ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
+						generated += heater.calculateGeneratedPower();
+					}
+					catch (Exception e) {}
+				}
 				return generated;
 			}
 			else if (column == 3) {
@@ -293,7 +301,7 @@ extends TabPanel {
 		}
 
 		public void update() {
-			if (!buildings.equals(settlement.getBuildingManager().getBuildings())) 
+			if (!buildings.equals(settlement.getBuildingManager().getBuildings()))
 				buildings = settlement.getBuildingManager().getBuildings();
 
 			fireTableDataChanged();

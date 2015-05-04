@@ -37,6 +37,8 @@ implements Serializable {
 	// Data members.
 	private List<PowerSource> powerSources;
 
+	private ThermalGeneration thermalGeneration;
+	private Building building;
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
@@ -45,11 +47,15 @@ implements Serializable {
 	public PowerGeneration(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
+		this.building = building;
 
 		// Determine power sources.
 		BuildingConfig config = SimulationConfig.instance()
 				.getBuildingConfiguration();
 		powerSources = config.getPowerSources(building.getBuildingType());
+
+		thermalGeneration = building.getThermalGeneration();
+
 	}
 
 	/**
@@ -156,6 +162,14 @@ implements Serializable {
 			}
 		}
 
+		// 2015-05-04 Added the contribution of the solar heat engine (in electricity generation mode)
+		if (thermalGeneration == null)
+			thermalGeneration = building.getThermalGeneration();
+
+		// Note: some buildings don't have thermal generation function
+		if (thermalGeneration != null)
+			result += thermalGeneration.calculateGeneratedPower();
+
 		return result;
 	}
 
@@ -200,7 +214,7 @@ implements Serializable {
 		for (int x = 0; x < powerSources.size(); x++) {
 			result[x + 1] = powerSources.get(x).getType().getString();
 		}
-			
+
 		return result;
 	}
 
@@ -211,17 +225,17 @@ implements Serializable {
 	public List<PowerSource> getPowerSources() {
 		return new ArrayList<PowerSource>(powerSources);
 	}
-	
+
     @Override
     public double getMaintenanceTime() {
-        
+
         double result = 0D;
-        
+
         Iterator<PowerSource> i = powerSources.iterator();
         while (i.hasNext()) {
             result += i.next().getMaintenanceTime();
         }
-        
+
         return result;
     }
 

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 
 /**
- * The HeatGeneration class handles how the buildings of a settlement  
+ * The HeatGeneration class handles how the buildings of a settlement
  * generate heat and how the Thermal Control behaves
  */
 public class ThermalGeneration
@@ -34,39 +34,39 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
-	DecimalFormat fmt = new DecimalFormat("#.#######"); 
-	
+	DecimalFormat fmt = new DecimalFormat("#.#######");
+
 	/** TODO Name of the building function needs to be internationalized. */
 	private static final BuildingFunction FUNCTION = BuildingFunction.THERMAL_GENERATION;
 
 	// Data members.
 	private List<HeatSource> heatSources;
 	private Building building;
-	
+
 	// 2014-11-02 Created heatGenerated and heatGeneratedCache
 	private double heatGenerated;
 	private double heatGeneratedCache;
 
-	
+
 	private boolean sufficientHeat;
 	//private static int count;
 
 	// 2014-10-25 Added heatSource
 	private HeatSource heatSource;
-	
+
 	private Heating heating;
-	
+
   	//protected HeatMode heatMode;
 	/**
 	 * Constructor
 	 */
 	public ThermalGeneration(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);	
+		super(FUNCTION, building);
 		//count++;
 		//logger.info("constructor : count is " + count);
-		
-	
+
+
 		heating = new Heating(building);
 
 		// Determine heat sources.
@@ -74,7 +74,7 @@ implements Serializable {
 				.getBuildingConfiguration();
 		heatSources = config.getHeatSources(building.getBuildingType());
 		this.building = building;
-		
+
 	}
 
 	/**
@@ -144,7 +144,7 @@ implements Serializable {
 		return result;
 	}
 	/**
-	 * Checks if there is enough heat in the grid for all 
+	 * Checks if there is enough heat in the grid for all
 	 * buildings to be set to full heat.
 	 * @return true if sufficient heat
 	 */
@@ -153,7 +153,7 @@ implements Serializable {
 	}
 
 
-	/** 	
+	/**
 	 * Gets the total amount of heat that this building is capable of producing (regardless malfunctions).
 	 * @return heat generated in kJ/s (heat flow rate)
 	 */
@@ -161,17 +161,17 @@ implements Serializable {
 	//2014-10-24 mkung: added getGeneratedCapacity()
 	// Note: NOT affected by HeatMode.POWER_DOWN
 	public double getGeneratedCapacity() {
-		double result = 0D;	
+		double result = 0D;
 			Iterator<HeatSource> i = heatSources.iterator();
 			while (i.hasNext()) {
 				result += i.next().getCurrentHeat(getBuilding());
 			}
-			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
+			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		return result;
 	}
-	
+
 	/**
-	 * Gets the total amount of heat that this building is CURRENTLY producing 
+	 * Gets the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kJ/s (heat flow rate)
 	 */
 	// get heat from HeatSource.java
@@ -181,38 +181,66 @@ implements Serializable {
 			// if heatGeneratedCache is different from the its last value
 			heatGeneratedCache = heatGenerated;
 		logger.info("heatGenerated is " + heatGenerated);
-			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) ); 
+			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		}
 		return heatGenerated; // = 0.0 if heatMode == HeatMode.POWER_DOWN
 	}
-	
+
 	/**
-	 * Calculate the total amount of heat that this building is CURRENTLY producing 
+	 * Calculate the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kW
 	 */
 	// 2014-11-02 Created calculateGeneratedHeat()
 	public void calculateGeneratedHeat() {
-		
-		double result = 0D; 
+
+		double result = 0D;
 		HeatMode heatMode = building.getHeatMode();
-	
-	// Building should only produce heat if it has no current malfunctions.
-	if (!getBuilding().getMalfunctionManager().hasMalfunction() 
-			&& heatMode == HeatMode.FULL_POWER) {
-		// No heat if heatMode = HeatMode.POWER_DOWN
-		Iterator<HeatSource> i = heatSources.iterator();
-		while (i.hasNext()) {
-			/// 2014-10-27 mkung: for testing
-			//HeatSource heatSource = i.next();
-		    //System.out.println(heatSource.toString());
-		    ///
-			result += i.next().getCurrentHeat(getBuilding());
+
+		// Building should only produce heat if it has no current malfunctions.
+		if (!getBuilding().getMalfunctionManager().hasMalfunction()
+				&& heatMode == HeatMode.ONLINE) {
+			// No heat if heatMode = HeatMode.POWER_DOWN
+			Iterator<HeatSource> i = heatSources.iterator();
+			while (i.hasNext()) {
+				/// 2014-10-27 mkung: for testing
+				//HeatSource heatSource = i.next();
+			    //System.out.println(heatSource.toString());
+			    ///
+				result += i.next().getCurrentHeat(getBuilding());
+			}
 		}
+
+		// store new result in heatGenerated
+		heatGenerated = result;
 	}
-	// store new result in heatGenerated 
-	heatGenerated = result;
-}
-	
+
+
+	/**
+	 * Calculate the total amount of heat that this building is CURRENTLY producing
+	 * @return heat generated in kW
+	 */
+	// 2015-05-04 Created calculateGeneratedPower()
+	public double calculateGeneratedPower() {
+
+		double result = 0D;
+		HeatMode heatMode = building.getHeatMode();
+
+		if (!getBuilding().getMalfunctionManager().hasMalfunction()
+				&& heatMode == HeatMode.HEAT_OFF) {
+			// at HEAT_OFF, the solar heat engine will be set to output electricity instead of heat
+			Iterator<HeatSource> i = heatSources.iterator();
+			while (i.hasNext()) {
+				HeatSource heatSource = i.next();
+			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEAT)) {
+			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+			    	result += heatSource.getCurrentPower(getBuilding());
+			    }
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
@@ -223,14 +251,16 @@ implements Serializable {
 		// 2014-11-02 Added calculateGeneratedHeat()
 		// Set heatGenerated at the building the furnace belongs
 		calculateGeneratedHeat();
-				
+
+		//calculateGeneratedPower();
+
 		if ( heatGeneratedCache != heatGenerated) {
 			// if heatGeneratedCache is different from the its last value
 			heatGeneratedCache = heatGenerated;
 			building.setHeatGenerated(heatGenerated);
 		}
-			
-		for (HeatSource source : heatSources) {
+
+		//for (HeatSource source : heatSources) {
 			/*
 			if (source instanceof FuelHeatSource) {
 				FuelHeatSource fuelSource = (FuelHeatSource) source;
@@ -239,22 +269,22 @@ implements Serializable {
 				}
 			}
 			*/
-		}
-		
+		//}
+
 		heating.timePassing(time);
 	}
 
-	
+
 	public Heating getHeating() {
 		return heating;
 	}
-	
+
 	/**
 	 * Gets the amount of heat required when function is at full power.
 	 * @return heat (J)
 	 */
 	// 2014-11-02: temporarily set getFullHeatRequired() = heatGenerated
-	// thus getGeneratedHeat() = getFullHeatRequired() 
+	// thus getGeneratedHeat() = getFullHeatRequired()
 	// will consolidate them into one in near future
 	public double getFullHeatRequired() {
 		return heatGenerated;
@@ -277,7 +307,7 @@ implements Serializable {
 		for (int x = 0; x < heatSources.size(); x++) {
 			result[x + 1] = heatSources.get(x).getType().getString();
 		}
-			
+
 		return result;
 	}
 
@@ -288,8 +318,8 @@ implements Serializable {
 	public HeatSource getHeatSource() {
 		return heatSource;
 	}
-	
-	
+
+
 	/**
 	 * Gets the heat sources for the building.
 	 * @return list of heat sources.
@@ -297,17 +327,17 @@ implements Serializable {
 	public List<HeatSource> getHeatSources() {
 		return new ArrayList<HeatSource>(heatSources);
 	}
-	
+
     @Override
     public double getMaintenanceTime() {
-        
+
         double result = 0D;
-        
+
         Iterator<HeatSource> i = heatSources.iterator();
         while (i.hasNext()) {
             result += i.next().getMaintenanceTime();
         }
-        
+
         return result;
     }
 
@@ -324,7 +354,7 @@ implements Serializable {
 
 
 	public double getFullPowerRequired() {
-		
+
 		return 0;
 	}
 
@@ -337,15 +367,15 @@ implements Serializable {
 	/**
 	 * Switch on or off the heating system
 	 * @param true if it's on
-	
+
 	public void setHeating(boolean isOn) {
 		heating = isOn;
 	}
  */
 	/**
 	 * get the state of the heating system
-	 * @param true if it's on  
-	
+	 * @param true if it's on
+
 	public boolean isHeating() {
 		return heating;
 	}
@@ -353,15 +383,15 @@ implements Serializable {
 	/**
 	 * Gets the capacity of the furnace.
 	 * @return heat in J
-	 
+
 	public double getCapacity() {
 		return capacity;
 	}
 */
 	/**
 	 * Gets the efficiency
-	 * @return between 0 to 1 
-	
+	 * @return between 0 to 1
+
 	public double getEfficiency() {
 		return efficiency;
 	}
@@ -370,7 +400,7 @@ implements Serializable {
 	/**
 	 * Gets the heat required from the grid.
 	 * @return heat in J
-	 
+
 	public double getRequiredHeat() {
 		return heatRequired;
 	}

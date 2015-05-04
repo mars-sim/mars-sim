@@ -25,7 +25,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double EFFICIENCY_SOLAR_THERMAL = .70;
+	private static double efficiency_solar_thermal = .70;
 
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
@@ -38,6 +38,10 @@ implements Serializable {
 		super(PowerSourceType.SOLAR_THERMAL, maxPower);
 	}
 
+	public static double getEfficiency() {
+		return efficiency_solar_thermal;
+	}
+
 	@Override
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
@@ -46,7 +50,7 @@ implements Serializable {
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//double sunlight = surface.getSurfaceSunlight(location);
-		double sunlight = surface.getSolarIrradiance(location) * EFFICIENCY_SOLAR_THERMAL / 600D ; // tentatively normalized to 600 W
+		double sunlight = surface.getSolarIrradiance(location) * efficiency_solar_thermal / 600D ; // tentatively normalized to 600 W
 		//TODO: need to account for the system specs of the panel such as area, efficiency, and wattage, etc.		// Solar thermal mirror only works in direct sunlight.
 		//if (sunlight == 1D) return getMaxPower();
 		//else return 0D;

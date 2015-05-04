@@ -38,7 +38,7 @@ implements Serializable {
 		//logger.info("constructor : maxHeat is " + maxHeat);
 		//count++;
 		//logger.info("constructor : count is " + count);
-		
+
 	}
 
 	/**
@@ -76,11 +76,16 @@ implements Serializable {
      * @return maintenance work time (millisols).
      */
 	public abstract double getMaintenanceTime();
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;
+	}
+
+	public double getCurrentPower(Building building) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -240,7 +240,7 @@
 				<!-- Heat Source -->
 				<!-- type: the type of heat source. -->
 				<!-- capacity: the maximum  power capacity kW produced by the heat source. -->
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 
@@ -335,7 +335,7 @@
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 
@@ -556,7 +556,7 @@
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 
@@ -732,7 +732,7 @@
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 		</functions>
@@ -768,7 +768,7 @@
 				</activity>
 			</research>
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 		</functions>
@@ -826,7 +826,7 @@
 				</activity>
 			</management>
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
 			</thermal-generation>
 		</functions>
@@ -910,7 +910,7 @@
 			</storage>
 
 			<thermal-generation>
-				<heat-source type="Solar Heat Source" capacity="10.0" />
+				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="30.0" />
 			</thermal-generation>
 		</functions>
@@ -1130,7 +1130,7 @@
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Wind Turbine power generator provides a completely non-polluting
-		form of renewable energy. Asides from the typical maintenance tasks,
+		form of renewable energy. Asides from typical maintenance tasks,
 		it is an integral part of a modular distributed renewable energy generation system complimenting
 			the nuclear power generators for the power grid.
 		</description>
