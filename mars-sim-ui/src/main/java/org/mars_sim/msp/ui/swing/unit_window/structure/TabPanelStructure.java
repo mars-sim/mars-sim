@@ -200,7 +200,7 @@ extends TabPanel {
 		JTree tree = new JTree(root);
         tree.setVisibleRowCount(8);
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
-		System.out.println("CurrentTheme is " + currentTheme);
+		//System.out.println("CurrentTheme is " + currentTheme);
 /*
 		if (desktop.getMainWindow() != null) {
 			if (!desktop.getMainWindow().getLookAndFeelTheme().equals("nimrod")) {

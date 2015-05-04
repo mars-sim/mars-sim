@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
@@ -69,7 +70,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  * The Building class is a settlement's building.
  */
 public class Building
-extends Unit
+extends Structure
 implements Malfunctionable, Serializable, // Comparable<Building>,
 LocalBoundedObject, InsidePathLocation {
 
@@ -143,7 +144,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = template.getBuildingType();
 
 		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.FULL_POWER;
+		heatMode = HeatMode.ONLINE;
 
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -182,7 +183,7 @@ LocalBoundedObject, InsidePathLocation {
 
 
 		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.FULL_POWER;
+		heatMode = HeatMode.ONLINE;
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -767,7 +768,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
 		//2014-10-17  Added HeatMode
 		// If heat is on, active time passing.
-		if (heatMode == HeatMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
+		if (heatMode == HeatMode.ONLINE) malfunctionManager.activeTimePassing(time);
 	}
 
 	public List<Function> getFunctions() {

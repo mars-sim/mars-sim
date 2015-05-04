@@ -260,16 +260,17 @@ implements Serializable {
 		    	// the new job will be Locked in until the beginning of the next day
 		        jobLock = true;
 
-		        int population = person.getSettlement().getAllAssociatedPeople().size();
-
-		        // Assign a role associate with
-                if (population >= UnitManager.POPULATION_WITH_MAYOR)
-                	person.assignSpecialiststo7Divisions();
-                else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER)
-                	person.assignSpecialiststo3Divisions();
-                else
-                	person.assignSpecialiststo3Divisions();
-
+		        int population = 0;
+		        if (person.getSettlement() != null) {
+		        	population = person.getSettlement().getAllAssociatedPeople().size();
+			        // Assign a role associate with
+	                if (population >= UnitManager.POPULATION_WITH_MAYOR)
+	                	person.assignSpecialiststo7Divisions();
+	                else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER)
+	                	person.assignSpecialiststo3Divisions();
+	                else
+	                	person.assignSpecialiststo3Divisions();
+		        }
     	    }
     }
 

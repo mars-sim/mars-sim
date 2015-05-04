@@ -531,7 +531,7 @@ implements LifeSupport {
             zeroPopulationTime += time;
             if (zeroPopulationTime > 1000D) {
                 powerGrid.setPowerMode(PowerMode.POWER_DOWN);
-                thermalSystem.setHeatMode(HeatMode.POWER_DOWN);
+                thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
             }
         } else {
             zeroPopulationTime = 0D;

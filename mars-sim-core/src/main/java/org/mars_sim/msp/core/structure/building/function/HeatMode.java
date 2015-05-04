@@ -1,25 +1,28 @@
+/**
+ * Mars Simulation Project
+ * HeatMode.java
+ * @version 3.08 2015-05-04
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author Manny Kung
- * 2014-10-17
- */
 public enum HeatMode {
 
-	FULL_POWER (Msg.getString("HeatMode.fullPower")), //$NON-NLS-1$
-	HALF_POWER (Msg.getString("HeatMode.halfPower")), //$NON-NLS-1$
-	POWER_DOWN (Msg.getString("HeatMode.powerDown")), //$NON-NLS-1$
-	NO_POWER (Msg.getString("HeatMode.noPower")), //$NON-NLS-1$
-	POWER_UP ("Power up"); // meaning "OPERATIONAL" 
+	ONLINE (Msg.getString("HeatMode.online")), //$NON-NLS-1$
+	//HALF_POWER (Msg.getString("HeatMode.halfPower")), //$NON-NLS-1$
+	HEAT_OFF (Msg.getString("HeatMode.heatOff")), //$NON-NLS-1$
+	OFFLINE (Msg.getString("HeatMode.offline")), //$NON-NLS-1$
+	POWER_UP ("Power up"); // meaning "OPERATIONAL"
 
 	private String name;
-		
+
 	/** hidden constructor. */
 	private HeatMode(String name) {
 		this.name = name;
-	
+
 	}
 
 	/** gives back an internationalized {@link String} for display in user interface. */

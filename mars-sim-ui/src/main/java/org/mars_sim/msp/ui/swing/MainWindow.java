@@ -650,7 +650,7 @@ public class MainWindow extends JComponent {
 	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
-		System.out.println("CurrentTheme is " + currentTheme);
+		//System.out.println("CurrentTheme is " + currentTheme);
 		if (nativeLookAndFeel) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
