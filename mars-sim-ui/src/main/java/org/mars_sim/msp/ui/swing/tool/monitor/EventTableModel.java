@@ -13,18 +13,24 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.controlsfx.control.Notifications;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindowMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
+
+import javafx.application.Platform;
+import javafx.geometry.Pos;
 /**
  * This class provides a table model for use with the MonitorWindow that
  * provides a mean to display the Historical Event. This is actually an
@@ -76,6 +82,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
+	private MainSceneMenu mainSceneMenu;
 
 	//private static int count;
 
@@ -293,50 +300,128 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * @param index Index of new event in the manager.
 	 * @param event The new event added.
 	 */
-	// include any kind of event, including ai.task.TaskEvent
+	// 2015-05-04 Modified eventAdded to use controlsfx's notification window for javaFX UI
 	public void eventAdded(int index, HistoricalEvent event) {
+		// TODO: include historical events and ai.task.TaskEvent, filtered by user's options
+
 		updateCachedEvents();
 		// fireTableRowsInserted(index, index);
+		if (desktop.getMainWindow() != null) {
+			if (nMenu == null) {
+				try {
+					//MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
+					//NotificationMenu nMenu = mwm.getNotificationMenu();
+					//nMenu = mwm.getNotificationMenu();
+					nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
 
-		if (nMenu == null) {
-			//nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+			} else if (nMenu != null) {
 
-			try {
-				MainWindowMenu mwm = desktop.getMainWindow().getMainWindowMenu();
-				NotificationMenu nMenu = mwm.getNotificationMenu();
-				nMenu = mwm.getNotificationMenu();
-			} catch (NullPointerException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
+				// 2015-01-14 Added noFiring condition
+				Boolean noFiring = false;
+
+				showMedical = nMenu.getShowMedical();
+				if (showMedical != showMedicalCache ) {
+					showMedicalCache = showMedical;
+				}
+
+				showMalfunction = nMenu.getShowMalfunction();
+				if (showMalfunction != showMalfunctionCache ) {
+					showMalfunctionCache = showMalfunction;
+				}
+
+				if (!showMedical && !showMalfunction) {
+					notifyBox.emptyQueue();
+					noFiring = true;
+				}
+
+				if (!noFiring)
+					if (!isPaused)
+						if ((index == 0) && (event != null) ) {
+							SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
+						}
+
 			}
 
-		}
+		} else if (desktop.getMainScene() != null) {
 
-		else if (nMenu != null) {
+			if ( mainSceneMenu == null) {
+				try {
 
-			// 2015-01-14 Added noFiring condition
-			Boolean noFiring = false;
+					mainSceneMenu = desktop.getMainScene().getMainSceneMenu();
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
 
-			showMedical = nMenu.getShowMedical();
-			if (showMedical != showMedicalCache ) {
-				showMedicalCache = showMedical;
-			}
+			} else if (mainSceneMenu != null) {
 
-			showMalfunction = nMenu.getShowMalfunction();
-			if (showMalfunction != showMalfunctionCache ) {
-				showMalfunctionCache = showMalfunction;
-			}
+				// 2015-01-14 Added noFiring condition
+				Boolean noFiring = false;
+/*
+				showMedical = nMenu.getShowMedical();
+				if (showMedical != showMedicalCache ) {
+					showMedicalCache = showMedical;
+				}
 
-			if (!showMedical && !showMalfunction) {
-				notifyBox.emptyQueue();
-				noFiring = true;
-			}
+				showMalfunction = nMenu.getShowMalfunction();
+				if (showMalfunction != showMalfunctionCache ) {
+					showMalfunctionCache = showMalfunction;
+				}
 
-			if (!noFiring)
-				if (!isPaused)
-					if ((index == 0) && (event != null) ) {
-						SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
-					}
+				if (!showMedical && !showMalfunction) {
+					notifyBox.emptyQueue();
+					noFiring = true;
+				}
+*/
+				if (!noFiring)
+					if (!isPaused)
+						if ((index == 0) && (event != null) ) {
+
+								int position = 0;
+								String header = null ;
+								String message = event.getDescription(); //.toUpperCase();
+								// reset willNotify to false
+								boolean willNotify = false;
+
+								if ( message != null && message != "" ) {
+
+								    HistoricalEventCategory category = event.getCategory();
+
+								    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+								           // && showMalfunction ) {
+								        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+
+								        // Only display notification window when malfunction has occurred, not when fixed.
+								        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+								            willNotify = true;
+								        }
+								    }
+
+								    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
+								            // && showMedical )	{
+
+								        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+
+								        // Only display notification windows when medical problems are starting or person has died.
+								        if ((event.getType() == EventType.MEDICAL_STARTS) ||
+								                (event.getType() == EventType.MEDICAL_DEATH)) {
+								            willNotify = true;
+								        }
+								    }
+								}
+								if (willNotify)
+									Platform.runLater(new NotifyFXLauncher(header, message, position));
+
+							}
+						}
+
+
+
+
 
 		}
 	}
@@ -438,18 +523,27 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	}
 
 	/**
-	 * Prepares the model for deletion.
+	 * Internal class for launching a notify window.
 	 */
-	public void destroy() {
-		manager.removeListener(this);
-		manager = null;
-		cachedEvents.clear();
-		cachedEvents = null;
-		notifyBox = null;
-		desktop = null;
-		nMenu = null;
-	}
+	private class NotifyFXLauncher implements Runnable {
+		private String header;
+		private String message;
+		private Pos pos = null;
 
+		private NotifyFXLauncher(String header, String message, int position) {
+			this.header = header;
+			this.message = message;
+			if (position == 0)
+				pos = Pos.BOTTOM_LEFT;
+			else
+				pos = Pos.BOTTOM_LEFT;
+		}
+
+	    public void run() {
+	    	Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
+	    }
+
+	}
 	/**
 	 * Internal class for launching a notify window.
 	 */
@@ -475,5 +569,19 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void pauseChange(boolean isPaused) {
 		isPaused = true;
 	};
+
+	/**
+	 * Prepares the model for deletion.
+	 */
+	public void destroy() {
+		manager.removeListener(this);
+		manager = null;
+		cachedEvents.clear();
+		cachedEvents = null;
+		notifyBox = null;
+		desktop = null;
+		nMenu = null;
+		mainSceneMenu = null;
+	}
 
 }

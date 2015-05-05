@@ -15,8 +15,10 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -28,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -37,6 +40,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import org.controlsfx.control.PopOver;
+import org.controlsfx.control.Rating;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -74,7 +78,7 @@ public class MarsNode {
 	    pane.setStyle("-fx-background-color: " + color);
 	    VBox v = new VBox(10);
 	    v.setSpacing(10);
-	    v.setPadding(new Insets(0, 20, 10, 20));
+	    v.setPadding(new Insets(20, 20, 20, 20));
 
 	    Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
@@ -202,20 +206,51 @@ public class MarsNode {
 	    });
 	      */
       HBox root = new HBox();
+	  root.setSpacing(2);
+	  root.setPadding(new Insets(10, 10, 10, 10));
 
       if (settlement != null) {
 			//String sname = settlement.getName();
-			Label label = new Label("                   ");
+			//Label sideLabel = new Label("Settlement Dashboard");
+			//sideLabel.setRotate(-90);
+			Label topLabel = new Label("Settlement Dashboard");
+			//topLabel.setFont(new Font("Cambria", 20));
+			topLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+			//topLabel.setSpacing(10);
+			topLabel.setPadding(new Insets(5, 5, 5, 5));
 
-	        VBox yesaccordion = new VBox();
+			//topLabel.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			 //   @Override public void handle(MouseEvent e) {
+			//    	topLabel.setScaleX(1.5);
+			//    	topLabel.setScaleY(1.5);
+			//    }
+			//});
+
+			topLabel.setTextFill(Color.FIREBRICK);
+			topLabel.setAlignment(Pos.BOTTOM_CENTER);
+
+	        VBox vBox = new VBox();
 	        Accordion acc = new Accordion();
+
 	        acc.getPanes().addAll(this.createPanes(settlement));
-	        yesaccordion.getChildren().add(acc);
-	        root.getChildren().addAll(label, yesaccordion);
+	        vBox.getChildren().addAll(topLabel, acc);
+	        root.getChildren().addAll(vBox);
+
       }
+
       else if (person != null) {
-			String sname = person.getName();
-			Label label = new Label("  ");
+			//String sname = person.getName();
+			//Label label = new Label("Your Rating : ");
+			//Rating rating = new Rating();
+			Pane pane = new Pane();
+
+
+
+			//pane.getChildren().add(rating);
+			//rating.setMaxSize(200, 20);
+			root.getChildren().addAll(pane);
+
+
 
       }
 
@@ -235,9 +270,29 @@ public class MarsNode {
       return popover;
 	}
 
+	public TitledPane createTemperatureGauge() {
+
+		TitledPane tp = new TitledPane();
+	    tp.setText("Weather");
+
+	    String family = "Helvetica";
+	    double size = 12;
+
+		TemperatureGauge temperatureGauge = new TemperatureGauge();
+		Pane pane = temperatureGauge.toDraw();
+		tp.setContent(pane);
+
+	    return tp;
+	}
+
 	private Collection<TitledPane> createPanes(Settlement settlement){
       Collection<TitledPane> result = new ArrayList<TitledPane>();
       TitledPane tp = new TitledPane();
+
+      tp = createTemperatureGauge();
+      result.add(tp);
+
+      tp = new TitledPane();
       tp.setText("Population");
 
       String family = "Helvetica";

@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -40,6 +41,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -127,11 +129,11 @@ extends TabPanel {
 		heatInfoPanel.add(powerGenLabel);
 
 		double eff_electric_heat = ElectricHeatSource.getEfficiency();
-		JLabel effLabel = new JLabel("Electric Furnace eff : " + eff_electric_heat, JLabel.CENTER);
+		JLabel effLabel = new JLabel("Electric Furnace Efficiency : " + eff_electric_heat, JLabel.CENTER);
 		heatInfoPanel.add(effLabel);
 
 		double eff_solar_heat = SolarHeatSource.getEfficiency();
-		JLabel effLabel2 = new JLabel("Solar Heat Engine eff : " + eff_solar_heat, JLabel.CENTER);
+		JLabel effLabel2 = new JLabel("Solar Water Heater Efficiency : " + eff_solar_heat, JLabel.CENTER);
 		heatInfoPanel.add(effLabel2);
 
 
@@ -156,6 +158,7 @@ extends TabPanel {
 		heatTableModel = new HeatTableModel(settlement);
 		// Prepare thermal control table.
 		JTable heatTable = new JTable(heatTableModel);
+	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 		heatScrollPane.setViewportView(heatTable);
 		heatTable.setCellSelectionEnabled(false);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
