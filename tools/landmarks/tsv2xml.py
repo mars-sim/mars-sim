@@ -1,9 +1,8 @@
 # coding=utf-8
-
 # Mars Simulation Project
 # Script for importing tab-separated landmark file
 # tsv2xml.py
-# @version 3.07 2014-12-27
+# @version 3.08 2015-05-05
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.4 or later and the 'SearchResults' file to be in the
@@ -24,7 +23,7 @@ from decimal import Decimal
 
 # Initialize types 
 xmldoc = Document()
-# in case we don't have a key line (bad!), assume some defaults
+# in case we don't have a key line (bad!), assume some default field indices
 index_feature_name = 0
 index_target = 1
 index_diameter = 2
