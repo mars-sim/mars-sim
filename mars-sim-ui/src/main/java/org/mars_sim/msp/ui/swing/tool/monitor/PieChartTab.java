@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project 
+ * Mars Simulation Project
  * PieChartView.java
  * @version 3.07 2014-12-06
 
@@ -26,8 +26,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
-import org.jfree.data.AbstractDataset;
-import org.jfree.data.PieDataset;
+import org.jfree.data.general.AbstractDataset;
+import org.jfree.data.general.PieDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -45,7 +45,7 @@ class PieChartTab extends MonitorTab {
 	private static final long serialVersionUID = 1L;
 
     public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
-    
+
     /**
      * Minimum time (milliseconds) between chart updates
      * based on table update events.
@@ -82,23 +82,23 @@ class PieChartTab extends MonitorTab {
          * values according to the values in one column.
          */
         void calculate() {
-            
+
         	long time = System.nanoTime() / 1000000L;
         	if ((time - lastUpdateTime) > MIN_TIME_BETWEEN_UPDATES) {
         		lastUpdateTime = time;
-        		
+
         		int rows = model.getRowCount();
 
         		Map<Comparable, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(dataMap));
-            
+
         		// Clear the temp map.
         		Iterator<Comparable> iter = tempMap.keySet().iterator();
         		while (iter.hasNext()) tempMap.put(iter.next(), 0);
-                
+
 
         		// Add category values and categories.
         		for(int i = 0; i < rows; i++) {
-                
+
         			Comparable category = (Comparable) model.getValueAt(i, column);
         			if (category == null) category = NONECAT;
         			else if (!(category instanceof String)) category = category.toString();
@@ -110,8 +110,8 @@ class PieChartTab extends MonitorTab {
 
         			// Put updated value in data map.
         			tempMap.put(category, count);
-        		}    
-            
+        		}
+
         		if (!dataMap.equals(tempMap)) {
         			dataMap.clear();
         			dataMap = tempMap;
@@ -120,7 +120,7 @@ class PieChartTab extends MonitorTab {
         		else tempMap.clear();
         	}
         }
-        
+
 
         /**
          * Set the column that is displayed in the Pie chart. It results in
@@ -159,17 +159,17 @@ class PieChartTab extends MonitorTab {
         public void tableChanged(TableModelEvent e) {
             calculate();
         }
-        
+
         /**
          * Returns the index for a given key.
          * @see org.jfree.data.KeyedValues#getIndex(Comparable)
-         * 
+         *
          * @param key the key.
          * @return the index.
          */
         public int getIndex(Comparable key) {
             int result = -1;
-            
+
             Set<Comparable> keys = dataMap.keySet();
             if (keys.contains(key)) {
                 int count = 0;
@@ -179,75 +179,75 @@ class PieChartTab extends MonitorTab {
                     else count++;
                 }
             }
-            
+
             return result;
         }
-        
+
         /**
          * Returns the value (possibly null) for a given key.
-         * If the key is not recognized, the method should return null. 
+         * If the key is not recognized, the method should return null.
          * @see org.jfree.data.KeyedValues#getValue(Comparable)
-         * 
+         *
          * @param key the key.
          * @return the value.
          */
         public Number getValue(Comparable key) {
             return dataMap.get(key);
         }
-        
+
         /**
          * Returns the number of items (values) in the collection.
          * @see org.jfree.data.Values#getItemCount()
-         * 
+         *
          * @return the item count.
          */
         public int getItemCount() {
             return dataMap.size();
         }
-        
+
         /**
          * Returns a value.
          * @see org.jfree.data.Values#getValue(int)
-         * 
+         *
          * @param item the item of interest (zero-based index).
          * @return the value.
          */
         public Number getValue(int item) {
             Number result = null;
-            
+
             Object[] keys = dataMap.keySet().toArray();
             if (item < keys.length) result = dataMap.get(keys[item]);
-            
+
             return result;
         }
-        
+
         /**
          * Returns the key associated with an item (value).
          * @see org.jfree.data.KeyedValues#getKey(int)
-         * 
+         *
          * @param index the item index (zero-based).
          * @return the key.
          */
         public Comparable getKey(int index) {
             Comparable result = null;
-            
+
             Object[] keys = dataMap.keySet().toArray();
             if (index < keys.length) result = (Comparable) keys[index];
-            
+
             return result;
         }
-        
+
         /**
          * Returns the keys.
          * @see org.jfree.data.KeyedValues#getKeys()
-         * 
+         *
          * @return the keys.
          */
         public List<Comparable> getKeys() {
             List<Comparable> result = new ArrayList<Comparable>(dataMap.size());
             Iterator<Comparable> i = dataMap.keySet().iterator();
             while (i.hasNext()) result.add(i.next());
-            
+
             return result;
         }
     }
@@ -276,8 +276,8 @@ class PieChartTab extends MonitorTab {
         // then customise it a little...
         PiePlot plot = (PiePlot)chart.getPlot();
         plot.setCircular(false);
-        plot.setRadius(0.60);
-        plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
+        //plot.setRadius(0.60);
+        //plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
         pieModel.addChangeListener(plot);
 
         chartpanel = new ChartPanel(chart, true);
