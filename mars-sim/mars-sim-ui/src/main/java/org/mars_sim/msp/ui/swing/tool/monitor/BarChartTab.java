@@ -24,11 +24,16 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPosition;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.CategoryLabelWidthType;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.AbstractSeriesDataset;
-import org.jfree.data.CategoryDataset;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.AbstractSeriesDataset;
+import org.jfree.text.TextBlockAnchor;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -167,7 +172,7 @@ extends MonitorTab {
 				}
 			}
 
-			return result;    
+			return result;
 		}
 
 		public int getRowCount() {
@@ -260,6 +265,12 @@ extends MonitorTab {
 				 }
 			 }
 		 }
+
+		@Override
+		public Comparable getSeriesKey(int arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	private TableBarDataset barModel = null;
@@ -281,11 +292,18 @@ extends MonitorTab {
 		Plot plot = chart.getPlot();
 
 		// Set bottom labels to vertical.
+		//CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
+		//CategoryLabelPositions defaultPos = new CategoryLabelPositions();
+		//CategoryLabelPositions verticalPosition = new CategoryLabelPositions(
+		//		 CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6.0)        );
+		//hAxis.setCategoryLabelPositions(verticalPosition);
 		CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
-		CategoryLabelPosition defaultPos = new CategoryLabelPosition();
-		CategoryLabelPosition verticalPosition = new CategoryLabelPosition(defaultPos.getCategoryAnchor(), 
-				defaultPos.getLabelAnchor(), defaultPos.getRotationAnchor(), (3D * Math.PI / 2D));
-		hAxis.setBottomCategoryLabelPosition(verticalPosition);
+		hAxis.setCategoryLabelPositions(CategoryLabelPositions
+            .createUpRotationLabelPositions(3D * Math.PI / 2D));
+
+		//CategoryLabelPosition verticalPosition = new CategoryLabelPosition(defaultPos.getCategoryAnchor(),
+		//		defaultPos.getLabelAnchor(), defaultPos.getRotationAnchor(), (3D * Math.PI / 2D));
+		//hAxis.setBottomCategoryLabelPosition(verticalPosition);
 
 		// Estimate the width of the chart by multiplying the categories by the
 		// number of series. First calculate the column width as this is
