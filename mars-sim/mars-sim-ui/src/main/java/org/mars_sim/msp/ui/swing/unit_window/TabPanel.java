@@ -41,12 +41,12 @@ public abstract class TabPanel extends JScrollPane {
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, 
+    public TabPanel(String tabTitle, Icon tabIcon, String tabToolTip,
             Unit unit, MainDesktopPane desktop) {
-                
+
         // Use JScrollPane constructor
         super();
-        
+
         // Initialize data members
         this.tabTitle = tabTitle;
         this.tabIcon = tabIcon;
@@ -58,22 +58,22 @@ public abstract class TabPanel extends JScrollPane {
         JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
         //viewPanel.setBackground(THEME_COLOR);
         setViewportView(viewPanel);
-        
+
         // Create top content panel
         topContentPanel = new JPanel();
         //topContentPanel.setBackground(THEME_COLOR);
         topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
         topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(topContentPanel, BorderLayout.NORTH);
-        
+
         // Create center content panel
         centerContentPanel = new JPanel(new BorderLayout(0, 0));
         //centerContentPanel.setBackground(THEME_COLOR);
         centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);
-        
+
   		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
- 
+
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class TabPanel extends JScrollPane {
     public String getTabTitle() {
         return tabTitle;
     }
-    
+
     /**
      * Gets the tab icon.
      *
@@ -93,7 +93,7 @@ public abstract class TabPanel extends JScrollPane {
     public Icon getTabIcon() {
         return tabIcon;
     }
-    
+
     /**
      * Gets the tab tool tip.
      *
@@ -102,12 +102,12 @@ public abstract class TabPanel extends JScrollPane {
     public String getTabToolTip() {
         return tabToolTip;
     }
-    
+
     /**
      * Updates the info on this panel.
      */
     public abstract void update();
-    
+
     /**
      * Gets the main desktop.
      * @return desktop.
@@ -115,7 +115,7 @@ public abstract class TabPanel extends JScrollPane {
     public MainDesktopPane getDesktop() {
     	return desktop;
     }
- 
+
     /**
      * Gets the unit.
      * @return unit.

@@ -68,7 +68,7 @@ public abstract class UnitWindow extends JInternalFrame {
      * @param displayDescription true if unit description is to be displayed.
      */
     public UnitWindow(MainDesktopPane desktop, Unit unit, boolean displayDescription) {
-        
+
         // Use JInternalFrame constructor
         super(unit.getName(), true, true, false, true);
 
@@ -76,20 +76,20 @@ public abstract class UnitWindow extends JInternalFrame {
         BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         titlePane.setOpaque(true);
         titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
-        
+
         // Initialize data members
         this.desktop = desktop;
         this.unit = unit;
         tabPanels = new ArrayList<TabPanel>();
 
-        
+
         // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
         // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
         //getContentPane().setBackground(THEME_COLOR);
 
-        
+
         // Create name panel
         namePanel = new JPanel(new BorderLayout(0, 0));
         //namePanel.setBackground(THEME_COLOR);
@@ -108,28 +108,27 @@ public abstract class UnitWindow extends JInternalFrame {
         //namePanel.add(nameLabel, BorderLayout.EAST);
         //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
         namePanel.add(nameLabel, BorderLayout.WEST);
-        
+
         // Create description label if necessary.
         if (displayDescription) {
             JLabel descriptionLabel = new JLabel(unit.getDescription(), JLabel.CENTER);
             namePanel.add(descriptionLabel, BorderLayout.SOUTH);
         }
-        
+
         // Create center panel
         centerPanel = new JTabbedPane();
         mainPane.add(namePanel, BorderLayout.NORTH);
         //centerPanel.setBackground(THEME_COLOR);
         mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
-       
+
         //TODO: disabled in SVN while in development
         //this.addInternalFrameListener(new UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
-	
+
         //setStyle();
-        
   		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
     }
-    
+
 
     /**
      * Adds a tab panel to the center panel.
@@ -139,7 +138,7 @@ public abstract class UnitWindow extends JInternalFrame {
     protected final void addTabPanel(TabPanel panel) {
         if (!tabPanels.contains(panel)) {
             tabPanels.add(panel);
-            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(), 
+            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
                 panel, panel.getTabToolTip());
         }
     }
@@ -150,16 +149,16 @@ public abstract class UnitWindow extends JInternalFrame {
             namePanel.add(panel,BorderLayout.CENTER);
         }
     }
-     
+
     /**
      * Gets the unit for this window.
      *
-     * @return unit 
+     * @return unit
      */
     public Unit getUnit() {
         return unit;
     }
-    
+
     /**
      * Updates this window.
      */
@@ -169,14 +168,14 @@ public abstract class UnitWindow extends JInternalFrame {
         	tabPanel.update();
         }
     }
-    
-    
+
+
 
   /*
     public static BufferedImage changeImageWidth(BufferedImage image, int width) {
 	        float ratio = (float) image.getWidth() / (float) image.getHeight();
 	        int height = (int) (width / ratio);
-	        
+
 	        BufferedImage temp = new BufferedImage(width, height,
 	                image.getType());
 	        Graphics2D g2 = temp.createGraphics();
@@ -187,31 +186,31 @@ public abstract class UnitWindow extends JInternalFrame {
 
 	        return temp;
 	}
-	    
+
 	public static ConvolveOp getGaussianBlurFilter(int radius, boolean horizontal) {
 	        if (radius < 1) {
 	            throw new IllegalArgumentException("Radius must be >= 1");
 	        }
-	        
+
 	        int size = radius * 2 + 1;
 	        float[] data = new float[size];
-	        
+
 	        float sigma = radius / 3.0f;
 	        float twoSigmaSquare = 2.0f * sigma * sigma;
 	        float sigmaRoot = (float) Math.sqrt(twoSigmaSquare * Math.PI);
 	        float total = 0.0f;
-	        
+
 	        for (int i = -radius; i <= radius; i++) {
 	            float distance = i * i;
 	            int index = i + radius;
 	            data[index] = (float) Math.exp(-distance / twoSigmaSquare) / sigmaRoot;
 	            total += data[index];
 	        }
-	        
+
 	        for (int i = 0; i < data.length; i++) {
 	            data[i] /= total;
-	        }        
-	        
+	        }
+
 	        Kernel kernel = null;
 	        if (horizontal) {
 	            kernel = new Kernel(size, 1, data);
@@ -220,33 +219,33 @@ public abstract class UnitWindow extends JInternalFrame {
 	        }
 	        return new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
 	}
-	
-	
+
+
 	 @Override
 	 public boolean isOpaque() {
 	     return false;
 	 }
 	 */
-	
+
 	 /*
 	 public float getAlpha() {
 	     return alpha;
 	 }
-	
+
 	 public void setAlpha(float alpha) {
 	     this.alpha = alpha;
 	     repaint();
 	 }
 	*/
-    
+
 	 @Override
 	 protected void paintComponent(Graphics g) {
 	     setupGraphics((Graphics2D) g);
-	
+
 	     Point location = getLocation();
 	     location.x = (int) (-location.x - BLUR_SIZE);
 	     location.y = (int) (-location.y - BLUR_SIZE);
-	
+
 	     Insets insets = getInsets();
 	     Shape oldClip = g.getClip();
 	     g.setClip(insets.left, insets.top,
@@ -256,21 +255,21 @@ public abstract class UnitWindow extends JInternalFrame {
 	     g.setClip(oldClip);
 	 }
 
-	
+
 	 private static void setupGraphics(Graphics2D g2) {
 	     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);
-	    
+
 	     Toolkit tk = Toolkit.getDefaultToolkit();
 	     Map desktopHints = (Map) (tk.getDesktopProperty("awt.font.desktophints"));
 	     if (desktopHints != null) {
 	         g2.addRenderingHints(desktopHints);
 	     }
 	 }
-	    
+
 	/**
 	 * Prepares unit window for deletion.
 	 */
 	public void destroy() {}
-	     
+
 }

@@ -87,6 +87,10 @@
 		<artifactId>jorbis</artifactId>
 		<version>0.0.17</version>
 	</dependency>
-
+	<dependency>
+		<groupId>eu.hansolo.enzo</groupId>
+		<artifactId>Enzo</artifactId>
+		<version>0.2.4</version>
+	</dependency>
   </dependencies>
 </project>

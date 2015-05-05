@@ -28,7 +28,9 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import org.controlsfx.control.Rating;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -43,7 +45,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javafx.application.Platform;
 
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job history.
@@ -56,13 +61,18 @@ implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	/** data cache */
+	private int solCache = 1;
+	private int numStarsCache = 0;
+
 	private String jobCache = ""; //$NON-NLS-1$
 
-	private JLabel jobLabel, roleLabel, errorLabel;
+	private JLabel jobLabel, roleLabel, errorLabel, ratingLabel;
 
 	private JComboBoxMW<?> jobComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
+
+	private StarRater starRater;
 
 	/**
 	 * Constructor.
@@ -110,7 +120,8 @@ implements ActionListener {
 	    	person = (Person) unit;
 
 			// Prepare job panel
-			JPanel topPanel = new JPanel(new GridLayout(3, 1, 0, 0));
+			JPanel topPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+			topPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(topPanel);
 
@@ -136,15 +147,45 @@ implements ActionListener {
 
 			// Prepare role panel
 			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			topPanel.setBorder(new MarsPanelBorder());
+			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.add(rolePanel);
-
 			// Prepare role label
 			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.CENTER); //$NON-NLS-1$
-			//roleLabel.setBorder(new MarsPanelBorder());
-			//roleLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			rolePanel.add(roleLabel);
+			//topPanel.add(roleLabel);
+
+			JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
+			//JPanel rPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			//JLabel ratingLabel = new JLabel("Rating : ");//, JLabel.CENTER);
+			//rPanel.add(ratingLabel);
+			starRater = new StarRater(5, 0, 0);
+			starRater.setToolTipText("Click to submit rating to supervisor (once every 7 sols)");
+	        starRater.addStarListener(
+	            new StarRater.StarListener()   {
+	                @SuppressWarnings("deprecation")
+					public void handleSelection(int selection) {
+	                    //System.out.println(selection);
+	            		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	                	ratingLabel.setText("Rating Submitted on " + clock.getTimeStamp());
+	                	ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		        		starRater.setRating(selection);
+
+		        		// TODO: determine what to do with the new rating
+		        		//if (numStarsCache == selection) ....
+
+		        		numStarsCache = selection;
+		        		starRater.disable();
+	                }
+	            });
+	        //ratingPanel.add(rPanel);
+	        //ratingPanel.add(ratingLabel);
+	        ratingPanel.add(starRater);
+			topPanel.add(ratingPanel);
+
+			ratingLabel = new JLabel();
+			ratingLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
+			ratingLabel.setForeground(Color.blue);
+			topPanel.add(ratingLabel);
 
 			errorLabel = new JLabel();
 			errorLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
@@ -212,6 +253,16 @@ implements ActionListener {
 	 */
 	public void update() {
 
+		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+        // check for the passing of each day
+        int solElapsed = MarsClock.getSolOfYear(clock);
+        if ( solElapsed != solCache && solElapsed > solCache + 7) {
+			starRater.setRating(numStarsCache);
+        	starRater.enable();
+        	ratingLabel.setText("");
+        	solCache = solElapsed;
+        }
+
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
@@ -228,8 +279,8 @@ implements ActionListener {
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 
 			String role = person.getRole().toString();
-			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + " : " + role);
-
+			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + "  :  " + role);
+			//roleLabel.setFont();
 			// Update job if necessary.
 			if (dead) {
 				jobCache = deathInfo.getJob();

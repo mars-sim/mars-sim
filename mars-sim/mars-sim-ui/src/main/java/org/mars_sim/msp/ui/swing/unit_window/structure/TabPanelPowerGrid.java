@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -34,6 +35,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -130,7 +132,7 @@ extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
-
+		powerScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		// Prepare outer table panel.
 		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		//outerTablePanel.setBorder(new MarsPanelBorder());
@@ -147,6 +149,7 @@ extends TabPanel {
 
 		// Prepare power table.
 		JTable powerTable = new JTable(powerTableModel);
+	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
 		powerTable.setCellSelectionEnabled(false);
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
