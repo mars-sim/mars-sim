@@ -8,11 +8,8 @@
  */
 package org.mars_sim.msp.ui.swing.sound;
 
-import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -49,10 +46,6 @@ public class OggVorbisPlayer implements Runnable {
 	private int RETRY = 3;
 	int retry = RETRY;
 
-	String playlistfile = "playlist";
-
-	boolean icestats = false;
-
 	SyncState oy;
 	StreamState os;
 	Page og;
@@ -79,8 +72,6 @@ public class OggVorbisPlayer implements Runnable {
 	boolean playonstartup = false;
 
 	public void init() {
-
-		loadPlaylist();
 
 	}
 
@@ -566,46 +557,6 @@ public class OggVorbisPlayer implements Runnable {
 		player = null;
 	}
 
-	public void actionPerformed(ActionEvent e) {
-
-		String item = null;
-		if (!item.startsWith("http://"))
-			return;
-		if (item.endsWith(".pls")) {
-			item = fetch_pls(item);
-			if (item == null)
-				return;
-		} else if (item.endsWith(".m3u")) {
-			item = fetch_m3u(item);
-			if (item == null)
-				return;
-		}
-		byte[] foo = item.getBytes();
-		for (int i = foo.length - 1; i >= 0; i--) {
-			if (foo[i] == '/') {
-				item = item.substring(0, i + 1) + "stats.xml";
-				break;
-			}
-		}
-		System.out.println(item);
-		try {
-			URL url = null;
-			url = new URL(item);
-			BufferedReader stats = new BufferedReader(new InputStreamReader(url
-					.openConnection().getInputStream()));
-			while (true) {
-				String bar = stats.readLine();
-				if (bar == null)
-					break;
-				System.out.println(bar);
-			}
-		} catch (Exception ee) {
-			// System.err.println(ee);
-		}
-		return;
-
-	}
-
 	public void play_sound() {
 		if (player != null)
 			return;
@@ -767,50 +718,6 @@ public class OggVorbisPlayer implements Runnable {
 			return line;
 		}
 		return null;
-	}
-
-	void loadPlaylist() {
-
-		if (playlistfile == null) {
-			return;
-		}
-
-		try {
-			InputStream is = null;
-			try {
-				URL url = null;
-				url = new URL(playlistfile);
-				URLConnection urlc = url.openConnection();
-				is = urlc.getInputStream();
-			} catch (Exception ee) {
-			}
-			if (is == null) {
-				try {
-					is = new FileInputStream(System.getProperty("user.dir")
-							+ System.getProperty("file.separator")
-							+ playlistfile);
-				} catch (Exception ee) {
-				}
-			}
-
-			if (is == null)
-				return;
-
-			while (true) {
-				String line = readline(is);
-				if (line == null)
-					break;
-				byte[] foo = line.getBytes();
-				for (int i = 0; i < foo.length; i++) {
-					if (foo[i] == 0x0d) {
-						line = new String(foo, 0, i);
-						break;
-					}
-				}
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-		}
 	}
 
 	private String readline(InputStream is) {
