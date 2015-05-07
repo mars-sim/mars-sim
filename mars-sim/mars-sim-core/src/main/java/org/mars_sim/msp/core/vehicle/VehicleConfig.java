@@ -19,7 +19,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
  * Provides configuration information about vehicle units.

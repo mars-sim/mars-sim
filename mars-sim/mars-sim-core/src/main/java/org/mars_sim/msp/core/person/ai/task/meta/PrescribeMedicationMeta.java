@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Medicbot;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 
 /**
  * Meta task for the PrescribeMedication task.
