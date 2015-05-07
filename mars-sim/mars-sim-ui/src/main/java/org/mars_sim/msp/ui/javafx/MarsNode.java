@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,7 +39,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.Rating;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;

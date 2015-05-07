@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -27,10 +26,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
-
-
-
-
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;

@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
