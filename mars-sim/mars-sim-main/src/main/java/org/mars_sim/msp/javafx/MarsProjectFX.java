@@ -7,6 +7,7 @@
 package org.mars_sim.msp.javafx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -44,15 +45,9 @@ public class MarsProjectFX extends Application  {
     private MainMenu mainMenu;
 
     private List<String> argList;
-    //private Stage primaryStage;
-    /**
-     * Constructor
-     * @param args command line arguments.
-     */
 
-	public void start(Stage primaryStage) {
 
-		//this.primaryStage = primaryStage;
+    public void mainThread() {
 
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -67,35 +62,42 @@ public class MarsProjectFX extends Application  {
 
         System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
         */
+    	//this.primaryStage = primaryStage;
 
-        logger.info("Starting " + Simulation.WINDOW_TITLE);
+    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
-        setLogging();
-        setDirectory();
+		setLogging();
+		setDirectory();
 
-        argList = Arrays.asList(args);
-        useGUI = !argList.contains("-headless");
+		argList = Arrays.asList(args);
+		useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
-
-        if (useGUI) {
-    		System.setProperty("sun.java2d.opengl", "true");
-    		System.setProperty("sun.java2d.ddforcevram", "true");
-        	// Enable capability of loading of svg image using regular method
-    		SvgImageLoaderFactory.install();
-	        mainMenu = new MainMenu(this, args, primaryStage, true);
-	    }
-
-	    else {
-	        // Initialize the simulation.
-	        initializeSimulation(args);
-	        // Start the simulation.
-	        startSimulation();
-	    }
 
 	    // this will generate html files for in-game help based on config xml files
 	    if (generateHelp) {
 	    	HelpGenerator.generateHtmlHelpFiles();
 	    }
+
+	    if (useGUI) {
+	    	System.setProperty("sun.java2d.opengl", "true");
+	    	System.setProperty("sun.java2d.ddforcevram", "true");
+	       	// Enable capability of loading of svg image using regular method
+	    	SvgImageLoaderFactory.install();
+		    //   mainMenu = new MainMenu(this, args, primaryStage, true);
+		} else {
+		    // Initialize the simulation.
+		    initializeSimulation(args);
+		    // Start the simulation.
+		    startSimulation();
+		}
+
+    }
+
+	public void start(Stage primaryStage) {
+
+		if (useGUI) {
+			mainMenu = new MainMenu(this, args, primaryStage, true);
+		}
 
 	}
 
@@ -110,6 +112,8 @@ public class MarsProjectFX extends Application  {
      */
     boolean initializeSimulation(String[] args) {
         boolean result = false;
+
+		System.out.println("initializeSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         // Create a simulation
         List<String> argList = Arrays.asList(args);
@@ -162,6 +166,7 @@ public class MarsProjectFX extends Application  {
      */
     private void exitWithError(String message, Exception e) {
         showError(message, e);
+        Platform.exit();
         System.exit(1);
     }
 
@@ -218,6 +223,8 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
+		System.out.println("handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
+
         try {
             int index = argList.indexOf("-load");
             // Get the next argument as the filename.
@@ -240,6 +247,8 @@ public class MarsProjectFX extends Application  {
      * Create a new simulation instance.
      */
     void handleNewSimulation() {
+		System.out.println("handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
+
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
@@ -258,6 +267,8 @@ public class MarsProjectFX extends Application  {
      * Start the simulation instance.
      */
     public void startSimulation() {
+		System.out.println("startSimulation() is in "+Thread.currentThread().getName() + " Thread");
+
         // Start the simulation.
         Simulation.instance().start();
     }
@@ -282,7 +293,10 @@ public class MarsProjectFX extends Application  {
     }
 
     public static void main(String[] args) {
+    	//System.out.println("main() is in " + Thread.currentThread().getName() + " Thread");
     	MarsProjectFX.args = args;
+    	MarsProjectFX fx = new MarsProjectFX();
+    	fx.mainThread();
         launch(args);
     }
 }
