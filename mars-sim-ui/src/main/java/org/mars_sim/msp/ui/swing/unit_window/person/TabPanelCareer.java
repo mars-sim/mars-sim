@@ -28,7 +28,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
-import org.controlsfx.control.Rating;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -47,8 +46,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import javafx.application.Platform;
 
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job history.

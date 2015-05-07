@@ -2,13 +2,25 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Point;
+
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.dial.*;
+import org.jfree.chart.plot.dial.DialBackground;
+import org.jfree.chart.plot.dial.DialCap;
+import org.jfree.chart.plot.dial.DialPlot;
+import org.jfree.chart.plot.dial.DialTextAnnotation;
+import org.jfree.chart.plot.dial.DialValueIndicator;
+import org.jfree.chart.plot.dial.StandardDialFrame;
+import org.jfree.chart.plot.dial.StandardDialRange;
+import org.jfree.chart.plot.dial.StandardDialScale;
 import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.ValueDataset;
 import org.jfree.ui.GradientPaintTransformType;

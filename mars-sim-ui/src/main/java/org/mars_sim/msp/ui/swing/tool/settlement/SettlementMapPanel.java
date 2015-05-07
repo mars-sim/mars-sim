@@ -7,18 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,6 +22,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * A panel for displaying the settlement map.

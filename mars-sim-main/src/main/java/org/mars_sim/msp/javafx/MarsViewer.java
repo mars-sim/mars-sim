@@ -1,11 +1,16 @@
 package org.mars_sim.msp.javafx;
 
-import javafx.animation.*;
-import javafx.application.Application;
-import javafx.scene.*;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;

@@ -17,7 +17,6 @@ import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +25,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javafx.application.Platform;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -67,8 +68,6 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
-
-import javafx.application.Platform;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI.

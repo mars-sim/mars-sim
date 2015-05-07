@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
