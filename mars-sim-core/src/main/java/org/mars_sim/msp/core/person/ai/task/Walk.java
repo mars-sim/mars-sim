@@ -73,8 +73,8 @@ implements Serializable {
     private Map<Integer, TaskPhase> walkingStepPhaseMap;
     private int walkingStepIndex;
 
-    private Person person;
-    private Robot robot;
+   //private Person person;
+    //private Robot robot;
 
     /**
      * Constructor.
@@ -83,9 +83,8 @@ implements Serializable {
     public Walk(Person person) {
         super(NAME, person, false, false, 0D, false, 0D);
 
-        this.person = person;
+        //this.person = person;
 
-        logger.finer(person + " starting new walk task.");
 
         // Initialize data members.
         walkingStepIndex = 0;
@@ -215,7 +214,7 @@ implements Serializable {
     public Walk(Robot robot) {
         super(NAME, robot, false, false, 0D, false, 0D);
 
-        this.robot = robot;
+        //this.robot = robot;
 
         logger.finer(robot + " starting new walk task.");
 
