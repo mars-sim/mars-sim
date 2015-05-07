@@ -73,12 +73,17 @@ implements Serializable {
     private Map<Integer, TaskPhase> walkingStepPhaseMap;
     private int walkingStepIndex;
 
+    private Person person;
+    private Robot robot;
+
     /**
      * Constructor.
      * @param person the person performing the task.
      */
     public Walk(Person person) {
         super(NAME, person, false, false, 0D, false, 0D);
+
+        this.person = person;
 
         logger.finer(person + " starting new walk task.");
 
@@ -94,7 +99,7 @@ implements Serializable {
                 Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
                 Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                         interiorPos.getX(), interiorPos.getY(), entity);
-                walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
                         adjustedInteriorPos.getY(), entity);
             }
         }
@@ -109,7 +114,7 @@ implements Serializable {
                 Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
                 Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                         interiorPos.getX(), interiorPos.getY(), destinationBuilding);
-                walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
                         adjustedInteriorPos.getY(), destinationBuilding);
             }
 
@@ -123,27 +128,27 @@ implements Serializable {
             if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
 
                 Settlement settlement = vehicle.getSettlement();
-                
+
                 // Check if vehicle is in garage.
                 Building garageBuilding = BuildingManager.getBuilding(vehicle);
                 if (garageBuilding != null) {
-                    
+
                     Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
                     Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                             interiorPos.getX(), interiorPos.getY(), garageBuilding);
-                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
                             adjustedInteriorPos.getY(), garageBuilding);
                     walkToSettlement = true;
                 }
                 else if (vehicle instanceof Rover) {
-                    
+
                     // Check if person has a good EVA suit available if in a rover.
                     boolean goodEVASuit = true;
                     boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
                     boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
                     goodEVASuit = roverSuit || wearingSuit;
                     if (goodEVASuit) {
-                        
+
                         // Walk to nearest emergency airlock in settlement.
                         Airlock airlock = settlement.getClosestAvailableAirlock(person);
                         if (airlock != null) {
@@ -151,19 +156,19 @@ implements Serializable {
                             Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
                             Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                                     interiorPos.getX(), interiorPos.getY(), entity);
-                            walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                            walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
                                     adjustedInteriorPos.getY(), entity);
                             walkToSettlement = true;
                         }
                     }
-                    
+
                 }
                 else {
                     // If not a rover, retrieve person from vehicle.
                     vehicle.getInventory().retrieveUnit(person);
                 }
             }
-            
+
             if (!walkToSettlement) {
 
                 // Walk to random location within rover.
@@ -172,7 +177,7 @@ implements Serializable {
                     Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
                     Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                             interiorPos.getX(), interiorPos.getY(), rover);
-                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(),
                             adjustedInteriorPos.getY(), rover);
                 }
             }
@@ -210,6 +215,8 @@ implements Serializable {
     public Walk(Robot robot) {
         super(NAME, robot, false, false, 0D, false, 0D);
 
+        this.robot = robot;
+
         logger.finer(robot + " starting new walk task.");
 
         // Initialize data members.
@@ -224,7 +231,7 @@ implements Serializable {
                 Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
                 Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                         interiorPos.getX(), interiorPos.getY(), entity);
-                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), 
+                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
                         adjustedInteriorPos.getY(), entity);
             }
         }
@@ -239,7 +246,7 @@ implements Serializable {
                 Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
                 Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                         interiorPos.getX(), interiorPos.getY(), destinationBuilding);
-                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), 
+                walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
                         adjustedInteriorPos.getY(), destinationBuilding);
             }
 
@@ -253,27 +260,27 @@ implements Serializable {
             if ((robot.getBotMind().getMission() == null) && (vehicle.getSettlement() != null)) {
 
                 Settlement settlement = vehicle.getSettlement();
-                
+
                 // Check if vehicle is in garage.
                 Building garageBuilding = BuildingManager.getBuilding(vehicle);
                 if (garageBuilding != null) {
-                    
+
                     Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
                     Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                             interiorPos.getX(), interiorPos.getY(), garageBuilding);
-                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), 
+                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
                             adjustedInteriorPos.getY(), garageBuilding);
                     walkToSettlement = true;
                 }
                 else if (vehicle instanceof Rover) {
-                    
+
                     // Check if robot has a good EVA suit available if in a rover.
                     //boolean goodEVASuit = true;
                    // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
                     //boolean wearingSuit = robot.getInventory().containsUnitClass(EVASuit.class);
                     //goodEVASuit = roverSuit || wearingSuit;
                     //if (goodEVASuit) {
-                        
+
                         // Walk to nearest emergency airlock in settlement.
                         Airlock airlock = settlement.getClosestAvailableAirlock(robot);
                         if (airlock != null) {
@@ -281,19 +288,19 @@ implements Serializable {
                             Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
                             Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                                     interiorPos.getX(), interiorPos.getY(), entity);
-                            walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), 
+                            walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
                                     adjustedInteriorPos.getY(), entity);
                             walkToSettlement = true;
                         }
                     //}
-                    
+
                 }
                 else {
                     // If not a rover, retrieve robot from vehicle.
                     vehicle.getInventory().retrieveUnit(robot);
                 }
             }
-            
+
             if (!walkToSettlement) {
 
                 // Walk to random location within rover.
@@ -302,7 +309,7 @@ implements Serializable {
                     Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
                     Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
                             interiorPos.getX(), interiorPos.getY(), rover);
-                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(), 
+                    walkingSteps = new WalkingSteps(robot, adjustedInteriorPos.getX(),
                             adjustedInteriorPos.getY(), rover);
                 }
             }
@@ -415,7 +422,7 @@ implements Serializable {
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
                         Vehicle vehicle = p.getVehicle();
-                        if (vehicle instanceof Airlockable) 
+                        if (vehicle instanceof Airlockable)
                             result = ((Airlockable) vehicle).getAirlock();
                     }
                 }
@@ -427,7 +434,7 @@ implements Serializable {
             Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
-                if (person.getCoordinates().equals(settlement.getCoordinates())) 
+                if (person.getCoordinates().equals(settlement.getCoordinates()))
                     result = settlement.getClosestAvailableAirlock(person);
             }
         }
@@ -438,7 +445,7 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {
-                    if (vehicle instanceof Airlockable) 
+                    if (vehicle instanceof Airlockable)
                         result = ((Airlockable) vehicle).getAirlock();
                 }
             }
@@ -446,7 +453,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     public static Airlock findEmergencyAirlock(Robot robot) {
 
         Airlock result = null;
@@ -463,7 +470,7 @@ implements Serializable {
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
                         Vehicle vehicle = p.getVehicle();
-                        if (vehicle instanceof Airlockable) 
+                        if (vehicle instanceof Airlockable)
                             result = ((Airlockable) vehicle).getAirlock();
                     }
                 }
@@ -475,7 +482,7 @@ implements Serializable {
             Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
-                if (robot.getCoordinates().equals(settlement.getCoordinates())) 
+                if (robot.getCoordinates().equals(settlement.getCoordinates()))
                     result = settlement.getClosestAvailableAirlock(robot);
             }
         }
@@ -486,7 +493,7 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (robot.getCoordinates().equals(vehicle.getCoordinates())) {
-                    if (vehicle instanceof Airlockable) 
+                    if (vehicle instanceof Airlockable)
                         result = ((Airlockable) vehicle).getAirlock();
                 }
             }
@@ -508,7 +515,7 @@ implements Serializable {
 
         return canWalkAllSteps(person, walkingSteps);
     }
-    
+
     public static boolean canWalkAllSteps(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
 
         WalkingSteps walkingSteps = new WalkingSteps(robot, xLoc, yLoc, interiorObject);
@@ -674,7 +681,7 @@ implements Serializable {
      */
     private double walkingSettlementInteriorPhase(double time) {
 	    double timeLeft = time;
-	    
+
     	if (person != null) {
 			logger.finer(person + " walking settlement interior phase.");
 
@@ -695,7 +702,7 @@ implements Serializable {
 		        else {
 		            addSubTask(new WalkSettlementInterior(person, step.building, step.xLoc, step.yLoc));
 		        }
-		       
+
 		}
 		else if (robot != null) {
 		       logger.finer(robot + " walking settlement interior phase.");
@@ -718,9 +725,9 @@ implements Serializable {
 		            addSubTask(new WalkSettlementInterior(robot, step.building, step.xLoc, step.yLoc));
 		        }
 
-		       
+
 		}
- 
+
         return timeLeft;
     }
 
@@ -731,7 +738,7 @@ implements Serializable {
      */
     private double walkingRoverInteriorPhase(double time) {
         double timeLeft = time;
-        
+
     	if (person != null) {
             logger.finer(person + " walking rover interior phase.");
 
@@ -745,7 +752,7 @@ implements Serializable {
                 // Determine new destination location within rover.
                 // TODO: Determine location based on activity spot?
                 Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-                Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(), 
+                Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
                         newRoverLoc.getY(), rover);
                 step.xLoc = relativeRoverLoc.getX();
                 step.yLoc = relativeRoverLoc.getY();
@@ -781,7 +788,7 @@ implements Serializable {
                 // Determine new destination location within rover.
                 // TODO: Determine location based on activity spot?
                 Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-                Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(), 
+                Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
                         newRoverLoc.getY(), rover);
                 step.xLoc = relativeRoverLoc.getX();
                 step.yLoc = relativeRoverLoc.getY();
@@ -804,7 +811,7 @@ implements Serializable {
             }
 
     	}
-    	
+
 
         return timeLeft;
     }
@@ -819,7 +826,7 @@ implements Serializable {
         double timeLeft = time;
 
     	if (person != null) {
-    	   	
+
             logger.finer(person + " walking exterior phase.");
 
             // Check if person has reached destination location.
@@ -837,13 +844,13 @@ implements Serializable {
             }
             else {
                 logger.finer(person + " starting walk outside task.");
-                addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
                         step.xLoc, step.yLoc, true));
             }
 
     	}
     	else if (robot != null) {
-    	   	
+
             logger.finer(robot + " walking exterior phase.");
 
             // Check if robot has reached destination location.
@@ -861,13 +868,13 @@ implements Serializable {
             }
             else {
                 logger.finer(robot + " starting walk outside task.");
-                addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(), 
+                addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
                         step.xLoc, step.yLoc, true));
             }
 
     	}
 
- 
+
         return timeLeft;
     }
 
@@ -900,7 +907,7 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(person.getName() + " unable to exit airlock of " + 
+                    logger.severe(person.getName() + " unable to exit airlock of " +
                             airlock.getEntityName());
                 }
             }
@@ -928,15 +935,15 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(robot.getName() + " unable to exit airlock of " + 
+                    logger.severe(robot.getName() + " unable to exit airlock of " +
                             airlock.getEntityName());
                 }
             }
 
         }
-        
-        
- 
+
+
+
         return timeLeft;
     }
 
@@ -949,7 +956,7 @@ implements Serializable {
         double timeLeft = time;
         if (person != null) {
             logger.finer(person + " walking entering airlock phase.");
-   
+
             // Check if person has reached the inside of the airlock.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Airlock airlock = step.airlock;
@@ -968,7 +975,7 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(person.getName() + " unable to enter airlock of " + 
+                    logger.severe(person.getName() + " unable to enter airlock of " +
                             airlock.getEntityName());
                 }
             }
@@ -976,7 +983,7 @@ implements Serializable {
         }
         else if (robot != null) {
             logger.finer(robot + " walking entering airlock phase.");
-            
+
             // Check if robot has reached the inside of the airlock.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Airlock airlock = step.airlock;
@@ -995,13 +1002,13 @@ implements Serializable {
                 }
                 else {
                     endTask();
-                    logger.severe(robot.getName() + " unable to enter airlock of " + 
+                    logger.severe(robot.getName() + " unable to enter airlock of " +
                             airlock.getEntityName());
                 }
             }
         }
-        
-  
+
+
         return timeLeft;
     }
 
@@ -1013,14 +1020,14 @@ implements Serializable {
     private double exitingRoverGaragePhase(double time) {
 
          double timeLeft = time;
-     
+
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
         Rover rover = step.rover;
         Building garageBuilding = step.building;
 
         if (person != null) {
             logger.finer(person + " walking exiting rover garage phase.");
-            
+
             rover.getInventory().retrieveUnit(person);
             garageBuilding.getInventory().storeUnit(person);
             BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
@@ -1028,13 +1035,13 @@ implements Serializable {
         }
         else if (robot != null) {
             logger.finer(robot + " walking exiting rover garage phase.");
-            
+
             rover.getInventory().retrieveUnit(robot);
             garageBuilding.getInventory().storeUnit(robot);
             BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
 
         }
-  
+
         if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
             walkingStepIndex++;
             setPhase(getWalkingStepPhase());
@@ -1053,7 +1060,7 @@ implements Serializable {
      */
     private double enteringRoverGaragePhase(double time) {
 
- 
+
         double timeLeft = time;
 
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -1062,23 +1069,23 @@ implements Serializable {
 
         if (person != null) {
             logger.finer(person + " walking entering rover garage phase.");
-            
+
             logger.finer(person + " location situation: " + person.getLocationSituation());
             garageBuilding.getInventory().retrieveUnit(person);
             BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
             rover.getInventory().storeUnit(person);
-            
+
         }
         else if (robot != null) {
             logger.finer(robot + " walking entering rover garage phase.");
-            
+
             logger.finer(robot + " location situation: " + robot.getLocationSituation());
             garageBuilding.getInventory().retrieveUnit(robot);
             BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
             rover.getInventory().storeUnit(robot);
- 
+
         }
-    
+
         if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
             walkingStepIndex++;
             setPhase(getWalkingStepPhase());

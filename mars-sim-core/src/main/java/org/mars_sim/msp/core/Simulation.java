@@ -80,8 +80,8 @@ implements ClockListener, Serializable {
 	public final static String WINDOW_TITLE = Msg.getString(
 			"Simulation.title", Simulation.VERSION
 			+ " Build " + Simulation.BUILD_VERSION
-			+ " running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
-			+ " with " + Runtime.getRuntime().availableProcessors() + " available CPU(s)"
+			+ " Running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			+ " with " + Runtime.getRuntime().availableProcessors() + " CPU thread(s)"
 		); //$NON-NLS-1$
 
 
@@ -128,6 +128,7 @@ implements ClockListener, Serializable {
 
 	/** constructor. */
 	private Simulation() {
+		System.out.println("Simulation is in "+Thread.currentThread().getName() + " Thread");
 		initializeTransientData();
 	}
 
