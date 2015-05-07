@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * SettlementWindow.java
+ * SettlementUnitWindow.java
  * @version 3.08 2015-04-28
  * @author Scott Davis
  */
@@ -16,9 +16,9 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 
 /**
- * The SettlementWindow is the window for displaying a settlement.
+ * The SettlementUnitWindow is the window for displaying a settlement.
  */
-public class TabPanelUnitWindow extends UnitWindow {
+public class SettlementUnitWindow extends UnitWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -29,11 +29,13 @@ public class TabPanelUnitWindow extends UnitWindow {
      * @param desktop the main desktop panel.
      * @param unit the unit to display.
      */
-    public TabPanelUnitWindow(MainDesktopPane desktop, Unit unit) {
+    public SettlementUnitWindow(MainDesktopPane desktop, Unit unit) {
         // Use UnitWindow constructor
         super(desktop, unit, false);
 
         Settlement settlement = (Settlement) unit;
+
+        setSize(600,600);
 
         // Add tab panels
         addTopPanel(new LocationTabPanel(settlement, desktop));

@@ -133,6 +133,8 @@ public class MainScene {
 	 */
     public Scene createMainScene() {
 
+		System.out.println("createMainScene() is in "+Thread.currentThread().getName() + " Thread");
+
 		// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?
 
     	marsNode = new MarsNode(this, stage);
