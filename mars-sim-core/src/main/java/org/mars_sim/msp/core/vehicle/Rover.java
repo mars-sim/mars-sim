@@ -7,20 +7,27 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
-
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
  * The Rover class represents the rover type of ground vehicle.  It

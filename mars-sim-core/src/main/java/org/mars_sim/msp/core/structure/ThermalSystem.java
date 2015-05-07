@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ThermalSystem class is the settlement's Thermal Control, Distribution and Storage Subsystem.

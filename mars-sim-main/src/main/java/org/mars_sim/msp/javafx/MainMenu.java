@@ -13,10 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.networking.MultiplayerMode;
-import org.mars_sim.msp.ui.javafx.MainScene;
-
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -27,8 +23,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -47,11 +41,12 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.networking.MultiplayerMode;
+import org.mars_sim.msp.ui.javafx.MainScene;
 
 public class MainMenu {
 

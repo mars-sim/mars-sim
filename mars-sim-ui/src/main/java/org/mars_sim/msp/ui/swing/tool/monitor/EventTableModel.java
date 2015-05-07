@@ -10,6 +10,9 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -17,20 +20,16 @@ import org.controlsfx.control.Notifications;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindowMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
-
-import javafx.application.Platform;
-import javafx.geometry.Pos;
 /**
  * This class provides a table model for use with the MonitorWindow that
  * provides a mean to display the Historical Event. This is actually an
