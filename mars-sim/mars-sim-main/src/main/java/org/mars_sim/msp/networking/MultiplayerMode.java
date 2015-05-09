@@ -53,7 +53,7 @@ public class MultiplayerMode {
 	public MultiplayerMode(MainMenu mainMenu) throws IOException {
 		this.mainMenu = mainMenu;
 
-		roles.add("Host");
+		roles.add("Server");
 		roles.add("Client");
 
 		InetAddress ip = null;
@@ -117,7 +117,7 @@ public class MultiplayerMode {
 
 		   result.ifPresent(role -> {
 			   logger.info("Your Multiplayer Role is : " + role);
-			   if (role.equals("Host")) {
+			   if (role.equals("Server")) {
 					try {
 						//dialog.close();
 						mainMenu.getStage().close(); // needed in order to start a new UI application thread

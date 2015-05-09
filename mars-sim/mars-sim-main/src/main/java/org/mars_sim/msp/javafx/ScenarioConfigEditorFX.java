@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +75,8 @@ import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
-public class ScenarioConfigEditorFX {
+public class ScenarioConfigEditorFX implements Runnable {
+//{
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
@@ -103,6 +106,8 @@ public class ScenarioConfigEditorFX {
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JScrollPane settlementScrollPane;
+	private TableCellEditor editor;
+
 	private Label errorLabel;
 	private Button createButton;
 	private Button addButton;
@@ -116,11 +121,12 @@ public class ScenarioConfigEditorFX {
 	private TilePane titlePane;
 	private VBox topVB;
 	private BorderPane borderAll;
-
-	private TableCellEditor editor;
-
+	private Parent parent;
 	private SwingNode swingNode;
 	private Stage stage;
+
+	private transient ThreadPoolExecutor executor;
+
 	private SimulationConfig config;
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
@@ -139,7 +145,14 @@ public class ScenarioConfigEditorFX {
 		// Initialize data members.
 		this.config = config;
 		this.mainMenu = mainMenu;
-		this.hasError = false;
+
+		hasError = false;
+		//System.out.println("ScenarioConfigEditorFX is on " + Thread.currentThread().getName() + " Thread");
+	}
+
+	public void run() {
+	   	Platform.setImplicitExit(false);
+		//System.out.println("ScenarioConfigEditorFX's run() is on " + Thread.currentThread().getName() + " Thread");
 
 		try {
 			UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
@@ -149,9 +162,6 @@ public class ScenarioConfigEditorFX {
 	    }
 
 		settlementConfig = config.getSettlementConfiguration();
-
-		stage = new Stage();
-		stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
 		if (mainMenu.getMultiplayerMode() != null) {
 			//multiplayerClient = mainMenu.getMultiplayerMode().getMultiplayerClient();
@@ -171,7 +181,6 @@ public class ScenarioConfigEditorFX {
 			playerName = "Default";
 		}
 
-    	Parent parent = null;
 		FXMLLoader fxmlLoader = null;
 
 		try {
@@ -184,74 +193,82 @@ public class ScenarioConfigEditorFX {
 			e.printStackTrace();
 		}
 
-		Undecorator undecorator = new Undecorator(stage, (Region) parent);
-		undecorator.getStylesheets().add("skin/undecorator.css");
-		if ( parent.lookup("#anchorRoot") == null)
-			System.out.println("not found");
 
-	     AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
-	     // List should stretch as anchorpane is resized
-	     BorderPane bp = createEditor();
-	     AnchorPane.setTopAnchor(bp, 5.0);
-	     AnchorPane.setLeftAnchor(bp, 5.0);
-	     AnchorPane.setRightAnchor(bp, 5.0);
-	     anchorpane.getChildren().add(bp);
+		Platform.runLater(() -> {
 
-		Scene scene = new Scene(undecorator);
+			stage = new Stage();
+			stage.setTitle("Mars Simulation Project -- Scenario Configuration Editor");
 
-		//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
+			Undecorator undecorator = new Undecorator(stage, (Region) parent);
+			undecorator.getStylesheets().add("skin/undecorator.css");
+			if ( parent.lookup("#anchorRoot") == null)
+				System.out.println("not found");
 
-		// Transparent scene and stage
-		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
-		stage.initStyle(StageStyle.TRANSPARENT);
-		//stage.setMinWidth(undecorator.getMinWidth());
-		//stage.setMinHeight(undecorator.getMinHeight());
+		     AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
+		     // List should stretch as anchorpane is resized
+		     BorderPane bp = createEditor();
+		     AnchorPane.setTopAnchor(bp, 5.0);
+		     AnchorPane.setLeftAnchor(bp, 5.0);
+		     AnchorPane.setRightAnchor(bp, 5.0);
+		     anchorpane.getChildren().add(bp);
 
-		stage.setScene(scene);
-		stage.sizeToScene();
-		stage.toFront();
+			Scene scene = new Scene(undecorator);
 
-        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+			//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
-        stage.centerOnScreen();
-        stage.setResizable(true);
- 	   	stage.setFullScreen(false);
-        //stage.setTitle(TITLE);
-        stage.show();
+			// Transparent scene and stage
+			scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 
-    	Platform.setImplicitExit(false);
+			stage.initStyle(StageStyle.TRANSPARENT);
+			//stage.setMinWidth(undecorator.getMinWidth());
+			//stage.setMinHeight(undecorator.getMinHeight());
 
-    	stage.setOnCloseRequest(e -> {
-			boolean isExit = mainMenu.exitDialog(stage);
-			e.consume(); // need e.consume() in order to call setFadeOutTransition() below
-			if (isExit) {
-				 borderAll.setOpacity(0);
-				 undecorator.setFadeOutTransition();
-				 if (crewEditorFX != null)
-					 crewEditorFX.getStage().close();
-				 Platform.exit();
-			}
+			stage.setScene(scene);
+			stage.sizeToScene();
+			stage.toFront();
+
+	        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+
+	        stage.centerOnScreen();
+	        stage.setResizable(true);
+	 	   	stage.setFullScreen(false);
+	        //stage.setTitle(TITLE);
+	        stage.show();
+
+	    	stage.setOnCloseRequest(e -> {
+				boolean isExit = mainMenu.exitDialog(stage);
+				e.consume(); // need e.consume() in order to call setFadeOutTransition() below
+				if (isExit) {
+					 borderAll.setOpacity(0);
+					 undecorator.setFadeOutTransition();
+					 if (crewEditorFX != null)
+						 crewEditorFX.getStage().close();
+					 Platform.exit();
+				}
+			});
+	/*
+			// Fade transition on window closing request
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				 @Override
+				 public void handle(WindowEvent we) {
+					 swingNode.setOpacity(0);
+					 createButton.setOpacity(0);
+					 addButton.setOpacity(0);
+					 refreshDefaultButton.setOpacity(0);
+					 alphaButton.setOpacity(0);
+					 removeButton.setOpacity(0);
+					 //titlePane.setOpacity(0);
+					 topVB.setOpacity(0);
+					 we.consume(); // Do not hide
+					 undecorator.setFadeOutTransition();
+					 if (crewEditorFX != null)
+						 crewEditorFX.getStage().close();
+				}
+			});
+	*/
 		});
-/*
-		// Fade transition on window closing request
-		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			 @Override
-			 public void handle(WindowEvent we) {
-				 swingNode.setOpacity(0);
-				 createButton.setOpacity(0);
-				 addButton.setOpacity(0);
-				 refreshDefaultButton.setOpacity(0);
-				 alphaButton.setOpacity(0);
-				 removeButton.setOpacity(0);
-				 //titlePane.setOpacity(0);
-				 topVB.setOpacity(0);
-				 we.consume(); // Do not hide
-				 undecorator.setFadeOutTransition();
-				 if (crewEditorFX != null)
-					 crewEditorFX.getStage().close();
-			}
-		});
-*/
+
+
 	}
 
 /*
@@ -436,11 +453,14 @@ public class ScenarioConfigEditorFX {
 			if (!hasError) {
 				stage.hide();
 				setConfiguration();
-				Simulation.createNewSimulation();
-				mainMenu.runMainScene();
-				Simulation.instance().start();
-				if (multiplayerClient != null)
-					multiplayerClient.prepareListeners();
+				//System.out.println("calling Simulation.createNewSimulation()");
+				//Runnable r = new SimulationTask();
+				//(new Thread(r)).start();
+				if (executor == null) {
+		    		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+		    		executor.execute(new SimulationTask());
+				}
+				//mainMenu.runMainScene();
 				closeWindow();
 			}
 
@@ -1584,4 +1604,13 @@ public class ScenarioConfigEditorFX {
 		}
 	}
 
+	public class SimulationTask implements Runnable {
+		  public void run() {
+				Simulation.createNewSimulation();
+				Simulation.instance().start();
+				mainMenu.runMainScene();
+				if (multiplayerClient != null)
+					multiplayerClient.prepareListeners();
+		  }
+		}
 }

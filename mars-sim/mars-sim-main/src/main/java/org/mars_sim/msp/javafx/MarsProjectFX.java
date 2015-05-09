@@ -46,9 +46,16 @@ public class MarsProjectFX extends Application  {
 
     private List<String> argList;
 
+    public MarsProjectFX() {
+	   	//System.out.println("MarsProjectFX's contructor is on " + Thread.currentThread().getName() + " Thread");
+
+    }
+
+    public void init() {
+	   	//System.out.println("MarsProjectFX's init is on " + Thread.currentThread().getName() + " Thread");
+    }
 
     public void mainThread() {
-
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
         System.out.println(javaCompiler.toString());
@@ -64,6 +71,7 @@ public class MarsProjectFX extends Application  {
         */
     	//this.primaryStage = primaryStage;
 
+    	new Simulation();
     	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 		setLogging();
@@ -83,7 +91,8 @@ public class MarsProjectFX extends Application  {
 	    	System.setProperty("sun.java2d.ddforcevram", "true");
 	       	// Enable capability of loading of svg image using regular method
 	    	SvgImageLoaderFactory.install();
-		    //   mainMenu = new MainMenu(this, args, primaryStage, true);
+		    mainMenu = new MainMenu(this); //, args, true);
+
 		} else {
 		    // Initialize the simulation.
 		    initializeSimulation(args);
@@ -94,12 +103,18 @@ public class MarsProjectFX extends Application  {
     }
 
 	public void start(Stage primaryStage) {
+	   	//System.out.println("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
 
 		if (useGUI) {
-			mainMenu = new MainMenu(this, args, primaryStage, true);
+		    mainMenu = new MainMenu(this); //, args, true);
+		    mainMenu.initAndShowGUI(primaryStage);
 		}
-
 	}
+
+    public void stop() {
+	   	//System.out.println("MarsProjectFX's stop is on " + Thread.currentThread().getName() + " Thread");
+
+    }
 
 	public List<String> getArgList() {
 		return argList;
@@ -112,8 +127,7 @@ public class MarsProjectFX extends Application  {
      */
     boolean initializeSimulation(String[] args) {
         boolean result = false;
-
-		System.out.println("initializeSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//System.out.println("initializeSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
         // Create a simulation
         List<String> argList = Arrays.asList(args);
@@ -223,7 +237,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
-		System.out.println("handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//System.out.println("handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         try {
             int index = argList.indexOf("-load");
@@ -247,14 +261,15 @@ public class MarsProjectFX extends Application  {
      * Create a new simulation instance.
      */
     void handleNewSimulation() {
-		System.out.println("handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//System.out.println("handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
+				Runnable r = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
+				(new Thread(r)).start();
             	// note: cannot load editor in macosx if it was a JDialog
-                ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu,
-                        SimulationConfig.instance());
+                // ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
 
             }
         } catch (Exception e) {
@@ -267,7 +282,7 @@ public class MarsProjectFX extends Application  {
      * Start the simulation instance.
      */
     public void startSimulation() {
-		System.out.println("startSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//System.out.println("startSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         // Start the simulation.
         Simulation.instance().start();

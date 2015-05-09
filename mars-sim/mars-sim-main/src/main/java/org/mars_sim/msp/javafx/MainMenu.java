@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -62,7 +63,7 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-    public String[] args;
+    //public String[] args;
 
     //private double anchorX;
     //private double anchorY;
@@ -82,7 +83,8 @@ public class MainMenu {
 
 	private Stage primaryStage;
 	private Stage stage;
-	//public MenuScene menuScene;
+	public Scene scene;
+
 	public MainScene mainScene;
 	//public ModtoolScene modtoolScene;
 	private MarsProjectFX mpFX;
@@ -91,24 +93,10 @@ public class MainMenu {
 
 	private MultiplayerMode multiplayerMode;
 
-    public MainMenu (MarsProjectFX mpFX, String[] args, Stage primaryStage, boolean cleanUI) {
-    	//this.cleanUI =  cleanUI;
-    	this.primaryStage = primaryStage;
-    	this.args = args;
+    public MainMenu(MarsProjectFX mpFX) { //, String[] args, boolean cleanUI) {
+    	//this.args = args;
     	this.mpFX = mpFX;
-    	initAndShowGUI();
-
-    	Platform.setImplicitExit(false);
-
-    	primaryStage.setOnCloseRequest(e -> {
-			boolean isExit = exitDialog(primaryStage);
-			if (!isExit) {
-				e.consume();
-			}
-			else {
-				Platform.exit();
-			}
-		});
+    	//System.out.println("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 	}
 
@@ -135,7 +123,29 @@ public class MainMenu {
     	}
     }
 
-   private void initAndShowGUI() {
+
+    //public void start(Stage arg0) {
+     // 	System.out.println("MainMenu's start() is on " + Thread.currentThread().getName() + " Thread");
+//
+    //	initAndShowGUI(primaryStage);
+    //}
+
+   void initAndShowGUI(Stage primaryStage) {
+		//System.out.println("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+
+	   this.primaryStage = primaryStage;
+
+    	Platform.setImplicitExit(false);
+
+    	primaryStage.setOnCloseRequest(e -> {
+			boolean isExit = exitDialog(primaryStage);
+			if (!isExit) {
+				e.consume();
+			}
+			else {
+				Platform.exit();
+			}
+		});
 
        ScreensSwitcher switcher = new ScreensSwitcher(this);
        switcher.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
@@ -173,6 +183,7 @@ public class MainMenu {
        primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
 
+       // Starts a new stage for MainScene
 	   stage = new Stage();
 	   stage.setTitle(Simulation.WINDOW_TITLE);
 	   //menuScene = new MenuScene(stage);
@@ -188,6 +199,8 @@ public class MainMenu {
 	}
 
    public void runOne() {
+	   //System.out.println("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+
 	   primaryStage.setIconified(true);
 	   mainScene = new MainScene(stage);
 	   //primaryStage.hide();
@@ -196,13 +209,24 @@ public class MainMenu {
    }
 
    public void runMainScene() {
-	   Scene scene = mainScene.createMainScene();
-       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
-	   stage.setResizable(true);
-	   //stage.setFullScreen(true);
-	   stage.setScene(scene);
-	   stage.show();
+	   //System.out.println("now calling mainScene.createMainScene()");
+	   mainScene.prepareMainScene();
+
+	   Platform.runLater(() -> {
+		   final Scene scene = mainScene.initializeScene();
+	   //});
+		   //System.out.println("done calling mainScene.initializeScene()");
+	   //Platform.runLater(() -> {
+	       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+	       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
+		   stage.setResizable(true);
+		   //stage.setFullScreen(true);
+		   stage.setScene(scene);
+		   stage.show();
+	   });
+
+	   //System.out.println("done running runMainScene()");
+
    }
 
    public void runTwo() {
@@ -210,7 +234,6 @@ public class MainMenu {
 	   primaryStage.setIconified(true);
 
 	   try {
-
 		   mainScene = new MainScene(stage);
 		   Simulation.instance().loadSimulation(null);
 		   Simulation.instance().start();
@@ -255,7 +278,7 @@ public class MainMenu {
 		   		//scene = new MenuScene().createScene();
 		   	//	break;
 	   		//case 2:
-	   			Scene scene = mainScene.createMainScene();
+	   			//Scene scene = mainScene.createMainScene();
 	   			//break;
 	   		//case 3:
 	   			//scene = modtoolScene.createScene(stage);

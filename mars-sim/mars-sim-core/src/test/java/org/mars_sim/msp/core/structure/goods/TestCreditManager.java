@@ -23,7 +23,6 @@ public class TestCreditManager extends TestCase {
         Settlement settlement2 = new MockSettlement();
         settlements.add(settlement2);
         CreditManager manager = new CreditManager(settlements);
-        manager.start();
 
         // Sleeping the thread for a short time to allow the credit manager to finish loading.
         try {
@@ -32,7 +31,7 @@ public class TestCreditManager extends TestCase {
         catch (InterruptedException e) {
             fail();
         }
-        
+
         manager.setCredit(settlement1, settlement2, 100D);
         assertEquals( 100D, manager.getCredit(settlement1, settlement2));
 

@@ -42,10 +42,11 @@ public class HistoricalEventManager {
 	 * Create a new EventManager that represents a particular simulation.
 	 */
 	public HistoricalEventManager() {
+		//System.out.println("HistoricalEventManager's constructor is on " + Thread.currentThread().getName() + " Thread");
 		// The main clock is not initialized until the simulation start
 		this.mainClock = null;
 		//count++;
-		//System.out.println("HistoricalEventManager.java : constructor : count is " + count);	
+		//System.out.println("HistoricalEventManager.java : constructor : count is " + count);
 	}
 
 	/**
@@ -83,14 +84,14 @@ public class HistoricalEventManager {
 
 		MarsClock timestamp;
 
-		// TODO: for debugging the NullPointerException when calling registerNewEvent()		
+		// TODO: for debugging the NullPointerException when calling registerNewEvent()
         if (newEvent == null) {
-            throw new IllegalStateException("newEvent is null"); 
+            throw new IllegalStateException("newEvent is null");
         }
-        
-		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent); 
-		// check if event is MALFUNCTION or MEDICAL, save it for notification box display	
-		
+
+		//System.out.println("HistoricalEventManager.java : calling registerNewEvent() : newEvent is " + newEvent);
+		// check if event is MALFUNCTION or MEDICAL, save it for notification box display
+
 		// Make space for the new event.
 		if (events.size() >= TRANSIENT_EVENTS) {
 			int excess = events.size() - (TRANSIENT_EVENTS - 1);
@@ -101,21 +102,21 @@ public class HistoricalEventManager {
 		if (masterClock != null) {
 			if (mainClock == null) mainClock = masterClock.getMarsClock();
 			 timestamp = (MarsClock) mainClock.clone();
-			 
+
 			// TODO: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
 			 if (timestamp == null) {
 		            throw new IllegalStateException("timestamp is null");
 		        }
-			 
+
 			newEvent.setTimestamp(timestamp);
 		}
 
-				
+
 		events.add(0, newEvent);
 
 		Iterator<HistoricalEventListener> iter = listeners.iterator();
 		while (iter.hasNext()) iter.next().eventAdded(0, newEvent);
-		
+
 	}
 
 	/**

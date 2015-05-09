@@ -3,7 +3,7 @@
  * MalfunctionFactory.java
  * @version 3.07 2014-12-28
 
- * @author Scott Davis 
+ * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.malfunction;
@@ -43,7 +43,7 @@ implements Serializable {
 	private Collection<Malfunction> malfunctions;
 
 	private MalfunctionConfig config;
-	
+
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * @param config malfunction configuration DOM document.
@@ -55,9 +55,10 @@ implements Serializable {
 
 	// 2015-02-04 Added run()
 	public void run() {
+	   	//System.out.println("MalfunctionFactory's run() is on " + Thread.currentThread().getName() + " Thread");
 		malfunctions = config.getMalfunctionList();
 	}
-	
+
 	/**
 	 * Gets a randomly-picked malfunction for a given unit scope.
 	 * @param scope a collection of scope strings defining the unit.
@@ -157,7 +158,7 @@ implements Serializable {
 		return entities;
 	}
 
-	/** 
+	/**
 	 * Gets a collection of malfunctionable entities local to a given settlement.
 	 * @param settlement the settlement.
 	 * @return collection of malfunctionables.
@@ -229,26 +230,26 @@ implements Serializable {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
+				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
 					entities.addAll(getMalfunctionables(vehicle));
 			}
 		}
 
-		
+
 		// Get entities carried by robots
 		Iterator<Robot> jj = settlement.getAllAssociatedRobots().iterator();
 		while (jj.hasNext()) {
 			Robot robot = jj.next();
-			if (robot.getLocationSituation() == LocationSituation.OUTSIDE) 
+			if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(robot));
 		}
-		
+
 		// TODO: how to ask robots first and only ask people if robots are not available so that the tasks are not duplicated ?
 		// Get entities carried by people on EVA.
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
-			if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
+			if (person.getLocationSituation() == LocationSituation.OUTSIDE)
 				entities.addAll(getMalfunctionables(person));
 		}
 

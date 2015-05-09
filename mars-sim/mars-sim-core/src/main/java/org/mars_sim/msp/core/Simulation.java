@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
-
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -79,9 +78,9 @@ implements ClockListener, Serializable {
 	@SuppressWarnings("restriction")
 	public final static String WINDOW_TITLE = Msg.getString(
 			"Simulation.title", Simulation.VERSION
-			+ " Build " + Simulation.BUILD_VERSION
-			+ " Running Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
-			+ " with " + Runtime.getRuntime().availableProcessors() + " CPU thread(s)"
+			+ " - Build " + Simulation.BUILD_VERSION
+			+ " - Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+			+ " - " + Runtime.getRuntime().availableProcessors() + " CPU thread(s)"
 		); //$NON-NLS-1$
 
 
@@ -92,7 +91,8 @@ implements ClockListener, Serializable {
 	/** All historical info. */
 	private transient HistoricalEventManager eventManager;
 	//private transient Thread clockThread;
-	private transient ThreadPoolExecutor executor;
+	private transient ThreadPoolExecutor clockExecutor;
+	private transient ThreadPoolExecutor managerExecutor;
 	private static final boolean debug = logger.isLoggable(Level.FINE);
 
 	// Intransient data members (stored in save file)
@@ -127,8 +127,8 @@ implements ClockListener, Serializable {
     private static boolean useGUI = true;
 
 	/** constructor. */
-	private Simulation() {
-		System.out.println("Simulation is in "+Thread.currentThread().getName() + " Thread");
+	public Simulation() {
+		//System.out.println("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
 		initializeTransientData();
 	}
 
@@ -157,7 +157,8 @@ implements ClockListener, Serializable {
 		Simulation simulation = instance();
 		simulation.defaultLoad = false;
 		simulation.stop();
-		executor.shutdown();
+		clockExecutor.shutdown();
+		managerExecutor.shutdown();
 		masterClock.endClockListenerExecutor();
 		// Wait until current time pulse runs its course
 		// we have no idea how long it will take it to
@@ -173,6 +174,7 @@ implements ClockListener, Serializable {
 	 * @throws Exception if new simulation could not be created.
 	 */
 	public static void createNewSimulation() {
+		//System.out.println("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 	    isUpdating = true;
 
@@ -189,11 +191,11 @@ implements ClockListener, Serializable {
 		simulation.initializeIntransientData();
 
 		// Initialize transient data members.
-		simulation.initializeTransientData();
+		//simulation.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
 
 	    // Sleep current thread for a short time to make sure all simulation objects are initialized.
         try {
-            Thread.sleep(50L);
+           Thread.sleep(50L);
         }
         catch (InterruptedException e) {
             // Do nothing.
@@ -204,32 +206,6 @@ implements ClockListener, Serializable {
 		isUpdating = false;
 	}
 
-	/**
-	 * Destroys the current simulation to prepare for creating or loading a new simulation.
-	 */
-	private void destroyOldSimulation() {
-
-		malfunctionFactory.destroy();
-		malfunctionFactory = null;
-		mars.destroy();
-		mars = null;
-		missionManager.destroy();
-		missionManager = null;
-		relationshipManager.destroy();
-		relationshipManager = null;
-		medicalManager.destroy();
-		medicalManager = null;
-		masterClock.destroy();
-		masterClock = null;
-		unitManager.destroy();
-		unitManager = null;
-		creditManager.destroy();
-		creditManager = null;
-		scientificStudyManager.destroy();
-		scientificStudyManager = null;
-		eventManager.destroy();
-		eventManager = null;
-	}
 
 	/**
 	 * Initialize transient data in the simulation.
@@ -245,33 +221,59 @@ implements ClockListener, Serializable {
 	 */
 	// 2015-02-04 Added threading
 	private void initializeIntransientData() {
+		//System.out.println("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
-		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
-		malfunctionFactory.start();
+		//malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+		//malfunctionFactory.start();
 
-		mars = new Mars();
+		//relationshipManager = new RelationshipManager();
+		//relationshipManager.start();
 
-		missionManager = new MissionManager();
+		//medicalManager = new MedicalManager();
+		//medicalManager.start();
 
-		relationshipManager = new RelationshipManager();
-		relationshipManager.start();
+		if (managerExecutor == null) {
+			managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool();
 
-		medicalManager = new MedicalManager();
-		medicalManager.start();
+			malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+			managerExecutor.execute(malfunctionFactory);
 
-		masterClock = new MasterClock();
+			mars = new Mars();
 
-		unitManager = new UnitManager();
-		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+			missionManager = new MissionManager();
 
-		creditManager = new CreditManager();
-		creditManager.start();
+			relationshipManager = new RelationshipManager();
+			managerExecutor.execute(relationshipManager);
 
-		scientificStudyManager = new ScientificStudyManager();
-		scientificStudyManager.start();
+			medicalManager = new MedicalManager();
+			managerExecutor.execute(medicalManager);
 
-		transportManager = new TransportManager();
-		transportManager.start();
+			masterClock = new MasterClock();
+
+			unitManager = new UnitManager();
+			unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+
+			creditManager = new CreditManager();
+			managerExecutor.execute(creditManager);
+
+			scientificStudyManager = new ScientificStudyManager();
+			managerExecutor.execute(scientificStudyManager);
+
+			transportManager = new TransportManager();
+			managerExecutor.execute(transportManager);
+
+		}
+
+		// creditManager must be after unitManager
+		//creditManager = new CreditManager();
+
+
+		//scientificStudyManager = new ScientificStudyManager();
+		//scientificStudyManager.start();
+
+		//transportManager = new TransportManager();
+		//transportManager.start();
+
 
 		/*
 		try {
@@ -450,7 +452,7 @@ implements ClockListener, Serializable {
 	}
 
 	public void unpause() {
-		if (executor != null) {
+		if (clockExecutor != null) {
 			masterClock.addClockListener(this);
 			masterClock.setPaused(false);
 			masterClock.restart();
@@ -462,7 +464,7 @@ implements ClockListener, Serializable {
 	 * Start the simulation.
 	 */
 	public void start() {
-
+		//System.out.println("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
 /*		if (clockThread == null) {
 			clockThread = new Thread(masterClock, Msg.getString("Simulation.thread.masterClock")); //$NON-NLS-1$
 			masterClock.addClockListener(this);
@@ -472,9 +474,9 @@ implements ClockListener, Serializable {
 		masterClock.addClockListener(this);
 		masterClock.startClockListenerExecutor();
 		//System.out.println("Simulation : just started startClockListenerExecutor()");
-		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
+		clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
 		//System.out.println("Simulation : just made executor");
-		executor.execute(masterClock.getClockThreadTask());
+		clockExecutor.execute(masterClock.getClockThreadTask());
 
 	}
 
@@ -689,5 +691,32 @@ implements ClockListener, Serializable {
     public static boolean getUseGUI() {
     	return useGUI;
     }
+
+	/**
+	 * Destroys the current simulation to prepare for creating or loading a new simulation.
+	 */
+	private void destroyOldSimulation() {
+
+		malfunctionFactory.destroy();
+		malfunctionFactory = null;
+		mars.destroy();
+		mars = null;
+		missionManager.destroy();
+		missionManager = null;
+		relationshipManager.destroy();
+		relationshipManager = null;
+		medicalManager.destroy();
+		medicalManager = null;
+		masterClock.destroy();
+		masterClock = null;
+		unitManager.destroy();
+		unitManager = null;
+		creditManager.destroy();
+		creditManager = null;
+		scientificStudyManager.destroy();
+		scientificStudyManager = null;
+		eventManager.destroy();
+		eventManager = null;
+	}
 
 }

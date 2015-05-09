@@ -31,11 +31,11 @@ import com.phoenixst.plexus.GraphUtils;
 import com.phoenixst.plexus.NoSuchNodeException;
 import com.phoenixst.plexus.Traverser;
 
-/** 
- * The RelationshipManager class keeps track of all the social 
+/**
+ * The RelationshipManager class keeps track of all the social
  * relationships between people.<br/>
  * <br/>
- * The simulation instance has only one relationship manager. 
+ * The simulation instance has only one relationship manager.
  */
 public class RelationshipManager extends Thread
 implements Serializable {
@@ -76,12 +76,13 @@ implements Serializable {
 
 	// 2015-02-04 Added run()
 	public void run() {
+	   	//System.out.println("RelationshipManager's run() is on " + Thread.currentThread().getName() + " Thread");
 		// Create new graph for relationships.
 		relationshipGraph = new DefaultGraph();
 	}
-	
+
 	/**
-	 * Adds an initial settler who will have an existing relationship with all the 
+	 * Adds an initial settler who will have an existing relationship with all the
 	 * other inhabitants if his/her settlement.
 	 * @param person the person to add.
 	 * @param settlement the settlement the person starts at.
@@ -106,7 +107,7 @@ implements Serializable {
 	 * @param initialGroup the group that this person has existing relationships with.
 	 */
 	private void addPerson(Person person, Collection<Person> initialGroup) {
-		if ((person == null) || (initialGroup == null)) 
+		if ((person == null) || (initialGroup == null))
 			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
 
 		if (!relationshipGraph.containsNode(person)) {
@@ -121,7 +122,7 @@ implements Serializable {
 					if(logger.isLoggable(Level.FINEST)) {
 						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
 					}
-				} 
+				}
 			}
 		}
 	}
@@ -169,7 +170,7 @@ implements Serializable {
 
 	/**
 	 * Gets all of a person's relationships.
-	 * @param person the person 
+	 * @param person the person
 	 * @return a list of the person's Relationship objects.
 	 */
 	public List<Relationship> getAllRelationships(Person person) {
@@ -243,7 +244,7 @@ implements Serializable {
 
 	/**
 	 * Time passing for a person's relationships.
-	 * @param person the person 
+	 * @param person the person
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
@@ -274,7 +275,7 @@ implements Serializable {
 		int count2 = 0;
 		while (i.hasNext()) {
 			Person localPerson = i.next();
-			double localPersonStress = localPerson.getPhysicalCondition().getStress(); 
+			double localPersonStress = localPerson.getPhysicalCondition().getStress();
 
 			// Check if new relationship.
 			if (!hasRelationship(person, localPerson)) {
@@ -340,7 +341,7 @@ implements Serializable {
 					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
 				}
 			}
-		}	
+		}
 		count2++;
 	}
 

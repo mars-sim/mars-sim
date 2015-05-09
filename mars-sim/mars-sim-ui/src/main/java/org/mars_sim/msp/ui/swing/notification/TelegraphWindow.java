@@ -51,7 +51,7 @@ import org.pushingpixels.trident.Timeline;
 
 /**
  * Implements the telegraph window.
- * 
+ *
  * @author Paulo Roberto Massa Cereda
  * @version 2.1
  * @since 2.0
@@ -80,15 +80,15 @@ public class TelegraphWindow extends JWindow {
 	 * not...
 	 */
 	private boolean discarded = false;
-	
+
 	//2014-12-17 Added telegraph
-	private Telegraph telegraph; 
-	
-	// 2014-12-17 Added Timer	
+	private Telegraph telegraph;
+
+	// 2014-12-17 Added Timer
 	//private Timer pauseTimer;
 	/**
 	 * Default constructor which initializes everything...
-	 * 
+	 *
 	 * @param theTitle
 	 *            {@link #title}
 	 * @param theDescription
@@ -183,7 +183,7 @@ public class TelegraphWindow extends JWindow {
 				// Add it to the button
 				button.setIcon(config.getButtonIcon());
 				//2014-12-17 Added modifiers to button
-				//button.setOpaque(false); 
+				//button.setOpaque(false);
 				button.setContentAreaFilled(false);
 				button.setBorder(new LineBorder(Color.gray, 1, true));
 				//button.setBorderPainted(true);
@@ -201,7 +201,7 @@ public class TelegraphWindow extends JWindow {
 			// Adding the button to the panel
 			contentPanel.add(button, "cell 1 2, align right");
 		//}
-		
+
 		}
 		// Setting content to the window
 		setContentPane(contentPanel);
@@ -210,7 +210,7 @@ public class TelegraphWindow extends JWindow {
 		setAlwaysOnTop(true);
 
 		// Packing everything
-		pack();
+		//pack();
 
 		// Putting the window away
 		setBounds(-getWidth(), -getHeight(), getWidth(), getHeight());
@@ -245,7 +245,7 @@ public class TelegraphWindow extends JWindow {
 
 	/**
 	 * Sets position on screen.
-	 * 
+	 *
 	 * @param p
 	 *            The new position.
 	 */
