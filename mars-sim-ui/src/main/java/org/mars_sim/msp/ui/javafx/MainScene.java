@@ -85,7 +85,7 @@ public class MainScene {
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
-    private int theme;
+    private int theme = 1;
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
@@ -106,6 +106,7 @@ public class MainScene {
     private Text memUsedText;
 
     private Stage stage;
+    private Scene scene;
 
     private Tab swingTab;
     private Tab settlementTab;
@@ -125,21 +126,21 @@ public class MainScene {
 	 */
     public MainScene(Stage stage) {
          	this.stage = stage;
+
     }
 
 	/**
-	 * Creates the Main Scene
-	 *@return Scene
+	 * Prepares the Main Scene, sets up LookAndFeel UI, starts two timers, prepares Transport Wizard
 	 */
-    public Scene createMainScene() {
-
-		System.out.println("createMainScene() is in "+Thread.currentThread().getName() + " Thread");
+    public void prepareMainScene() {
+		//System.out.println("createMainScene() is in "+Thread.currentThread().getName() + " Thread");
 
 		// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?
 
-    	marsNode = new MarsNode(this, stage);
-
-        Scene scene = init();
+		//Platform.runLater(() -> {
+	    //    scene = initializeScene();
+		//});
+		//System.out.println("done running Platform() in createMainScene()");
 
 		// Load UI configuration.
 		//if (!cleanUI) {
@@ -152,59 +153,13 @@ public class MainScene {
     		setLookAndFeel(false, true);
         });
 
-        // Detect if a user hits ESC
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-              @Override
-              public void handle(KeyEvent t) {
-                if (t.getCode() == KeyCode.ESCAPE) {
-                 	// Toggle the full screen mode to OFF in the pull-down menu under setting
-                	menuBar.exitFullScreen();
-                	// close the MarsNet side panel
-                	closeMarsNet();
-                }
-              }
-          });
-
-        theme = 1;
-        scene.getStylesheets().add("/fxui/css/mainskin.css");
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode().equals(KeyCode.F11)) {
-                	if (theme == 1) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/themeskin.css").toExternalForm());
-                		theme = 2;
-                	}
-                	else if (theme == 2) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/settlementskin.css").toExternalForm());
-                		theme = 3;
-                	}
-                	else if (theme == 3) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-                		theme = 1;
-                	}
-                }
-            }
-        });
-
-
 		startAutosaveTimer();
         //desktop.openInitialWindows(); // doesn't work here
         startEarthTimer();
-
-		// Detect if a user hits the top-right close button
-		// TODO: determine if it is necessary to exit both the simulation stage and the Main Menu
-		// Exit not just the stage but the simulation entirely
-		stage.setOnCloseRequest(e -> {
-			alertOnExit();
-		});
-
+		//System.out.println("done running the two timers");
 		transportWizard = new TransportWizard(this);
+		//System.out.println("done running createMainScene()");
 
-        return scene;
     }
 
 	public void openTransportWizard(BuildingManager buildingManager) {
@@ -221,7 +176,29 @@ public class MainScene {
 	 *@return Scene
 	 */
 	@SuppressWarnings("unchecked")
-	public Scene init() {
+	public Scene initializeScene() {
+
+	   	marsNode = new MarsNode(this, stage);
+
+		// Detect if a user hits the top-right close button
+		// TODO: determine if it is necessary to exit both the simulation stage and the Main Menu
+		// Exit not just the stage but the simulation entirely
+		stage.setOnCloseRequest(e -> {
+			alertOnExit();
+		});
+
+	    // Detect if a user hits ESC
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+              @Override
+              public void handle(KeyEvent t) {
+                if (t.getCode() == KeyCode.ESCAPE) {
+                 	// Toggle the full screen mode to OFF in the pull-down menu under setting
+                	menuBar.exitFullScreen();
+                	// close the MarsNet side panel
+                	closeMarsNet();
+                }
+              }
+        });
 
         //ImageView bg1 = new ImageView();
         //bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map
@@ -304,12 +281,38 @@ public class MainScene {
 
 	    //borderPane.setCenter(splitPane);
 	    borderPane.setCenter(notificationNode);
+
 	    StackPane rootStackPane = new StackPane(borderPane);
 
 	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
-
 	    borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());
+
+	    scene.getStylesheets().add("/fxui/css/mainskin.css");
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().equals(KeyCode.F11)) {
+                	if (theme == 1) {
+                		scene.getStylesheets().clear();
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/themeskin.css").toExternalForm());
+                		theme = 2;
+                	}
+                	else if (theme == 2) {
+                		scene.getStylesheets().clear();
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/settlementskin.css").toExternalForm());
+                		theme = 3;
+                	}
+                	else if (theme == 3) {
+                		scene.getStylesheets().clear();
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+                		theme = 1;
+                	}
+                }
+            }
+        });
+
+        //System.out.println("done running initializeScene()");
 
         return scene;
 	}

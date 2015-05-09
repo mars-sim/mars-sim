@@ -196,7 +196,7 @@ extends TabPanel {
 
 		JTree tree = new JTree(root);
         tree.setVisibleRowCount(8);
-		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		//String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 		//System.out.println("CurrentTheme is " + currentTheme);
 /*
 		if (desktop.getMainWindow() != null) {
@@ -210,8 +210,9 @@ extends TabPanel {
 				}
 		}
 */
-		if (!UIManager.getLookAndFeel().getClass().getName().equals("javax.swing.plaf.nimbus.NimbusLookAndFeel") )
-			editIcons(tree);
+		//if (!currentTheme.equals("com.nilo.plaf.nimrod.NimRODLookAndFeel")); //javax.swing.plaf.nimbus.NimbusLookAndFeel") )
+		//	editIcons(tree);
+
 
 
 	   	Collection<Person> people = settlement.getAllAssociatedPeople(); //.getInhabitants();

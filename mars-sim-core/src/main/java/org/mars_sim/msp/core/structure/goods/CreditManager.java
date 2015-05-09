@@ -25,12 +25,12 @@ import com.phoenixst.plexus.Graph;
 import com.phoenixst.plexus.Graph.Edge;
 import com.phoenixst.plexus.GraphUtils;
 
-/** 
+/**
  * The CreditManager class keeps track of all credits/debts between settlements.
- * The simulation instance has only one credit manager. 
+ * The simulation instance has only one credit manager.
  */
-public class CreditManager extends Thread
-implements Serializable {
+public class CreditManager
+implements Runnable, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -41,16 +41,16 @@ implements Serializable {
 	private transient List<CreditListener> listeners;
 
 	private Collection<Settlement> settlements;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public CreditManager() {
 		// Creates credit manager with all settlements in the simulation.
 		this(Simulation.instance().getUnitManager().getSettlements());
+
 	}
 
-	// 2015-02-04 Added run()
 	public void run() {
 		// Create new graph for credit.
 		creditGraph = new DefaultGraph();
@@ -59,8 +59,8 @@ implements Serializable {
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) creditGraph.addNode(i.next());
 	}
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * @param settlements collection of settlements to use.
@@ -80,9 +80,9 @@ implements Serializable {
 	public void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
 
 		// Check that settlements are in graph.
-		if (!creditGraph.containsNode(settlement1)) 
+		if (!creditGraph.containsNode(settlement1))
 			throw new IllegalArgumentException("settlement: " + settlement1 + " is invalid");
-		if (!creditGraph.containsNode(settlement2)) 
+		if (!creditGraph.containsNode(settlement2))
 			throw new IllegalArgumentException("settlement: " + settlement2 + " is invalid");
 
 		// Remove existing edge between settlements if any.

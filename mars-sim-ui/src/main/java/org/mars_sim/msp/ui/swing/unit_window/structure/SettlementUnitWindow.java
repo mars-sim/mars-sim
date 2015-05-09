@@ -35,7 +35,7 @@ public class SettlementUnitWindow extends UnitWindow {
 
         Settlement settlement = (Settlement) unit;
 
-        setSize(600,600);
+        //setSize(600,600);
 
         // Add tab panels
         addTopPanel(new LocationTabPanel(settlement, desktop));

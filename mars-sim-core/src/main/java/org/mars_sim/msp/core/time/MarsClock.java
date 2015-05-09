@@ -73,6 +73,7 @@ public class MarsClock implements Serializable {
      * @throws Exception if dateString is invalid.
      */
     public MarsClock(String dateString) {
+		//System.out.println("MarsClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
         // Set initial date to dateString. ex: "15-Adir-01:000.000"
         String orbitStr = dateString.substring(0, dateString.indexOf("-"));

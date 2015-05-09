@@ -140,7 +140,7 @@
 			<ingredient id="3" name="green onion" proportion="0.05"/>
 		</main-dish>
 
-		<main-dish id="19" name="Roasted Radish and Baby Carrots " oil="0.01" salt="0.005" category="meal">
+		<main-dish id="19" name="Roasted Radish and Baby Carrots" oil="0.01" salt="0.005" category="meal">
 			<ingredient id="0" name="Carrot" proportion="0.3"/>
 			<ingredient id="1" name="radish" proportion="0.2"/>
 		</main-dish>
