@@ -198,7 +198,7 @@ public class SurfaceFeatures implements Serializable {
 
 			// Part 4 :  absorption and scattering of solar radiation and solar optical depth
 
-			// Added randomness
+			// Added randomness to optical depth
 			double up = RandomUtil.getRandomDouble(.001);
 			double down = RandomUtil.getRandomDouble(.001);
 
@@ -213,14 +213,15 @@ public class SurfaceFeatures implements Serializable {
 	    	double tau = opticalDepth +  up - down;
 	    	if (weather == null)
 	    		weather = Simulation.instance().getMars().getWeather();
-	        opticalDepth = 0.2342 + 0.2237 * weather.getDailyVariationAirPressure(location) + RandomUtil.getRandomDouble(.1);
+	        // assume optical depth is predominately air pressure related. see ref.
+	    	opticalDepth = 0.2342 + 0.2237 * weather.getDailyVariationAirPressure(location) + RandomUtil.getRandomDouble(.1);
 	        // starting value between 0.2 and 0.5
 	    	// Note: during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
 	    	double cos_z =  orbitInfo.getCosineSolarZenithAngle(location);
 	    	G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
 			// TODO: Part 5 : diffuse solar irradiance
-	    	G_dh = G_bh/3; // assumming it's good enough
+	    	G_dh = G_bh / 3; // arbitrary assumption only
 
 	    	// Final:
 	    	G_h = G_bh + G_dh;

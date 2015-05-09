@@ -26,7 +26,12 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double EFFICIENCY_SOLAR_PANEL = .35;
+	// Tentatively set to 0.14% per sol efficiency degradation as reported by NASA MER
+	public static double DEGRADATION_RATE_PER_SOL = .0014;
+
+	private double area;
+
+	private double efficiency_solar_panel = .35;
 
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
@@ -50,10 +55,17 @@ implements Serializable {
 			location = manager.getSettlement().getCoordinates();
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
-		//double sunlight = surface.getSurfaceSunlight(location);
-		double sunlight = surface.getSolarIrradiance(location) * EFFICIENCY_SOLAR_PANEL / 600D ; // tentatively normalized to 600 W
-		//TODO: need to account for the system specs of the panel such as area, efficiency, and wattage, etc.
-		return sunlight * getMaxPower();
+		//double sunlight = surface.getSolarIrradiance(location) * efficiency_solar_panel / 600D ; // tentatively normalized to 600 W
+		//return sunlight * getMaxPower();
+		double actual = surface.getSolarIrradiance(location) * area ;
+		double effective = getMaxPower() * efficiency_solar_panel;
+		double result = 0;
+		if (actual < effective)
+			result = actual;
+		else
+			result = effective;
+		//TODO: need to account for other system specs
+		return result ;
 	}
 
 	@Override
@@ -64,5 +76,13 @@ implements Serializable {
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower() * 1D;
+	}
+
+	public void setEfficiency(double value) {
+		 efficiency_solar_panel = value;
+	}
+
+	public double getEfficiency() {
+		return efficiency_solar_panel;
 	}
 }

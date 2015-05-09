@@ -24,11 +24,13 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
+	public static double DEGRADATION_RATE_PER_SOL = .0014;
 
-	private static double efficiency_solar_heat = .68;
-	private static double efficiency_solar_heat_to_electricity = .68;
+	private double efficiency_solar_heat = .58;
+	private double efficiency_solar_heat_to_electricity = .58;
 
-	private double area = 10;
+	private double area = 5 ;
 
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
@@ -82,9 +84,22 @@ implements Serializable {
 		return result ;
 	}
 
-	public static double getEfficiency() {
+	public double getEfficiency() {
 		return efficiency_solar_heat;
 	}
+
+	public double getEfficiencyElectric() {
+		return efficiency_solar_heat_to_electricity;
+	}
+
+	public void setEfficiency(double value) {
+		efficiency_solar_heat = value;
+	}
+
+	public void setEfficiencyElectric(double value) {
+		efficiency_solar_heat_to_electricity = value;
+	}
+
 
 	@Override
 	public double getAverageHeat(Settlement settlement) {

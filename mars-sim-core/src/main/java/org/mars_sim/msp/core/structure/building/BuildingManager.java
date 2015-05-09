@@ -236,6 +236,22 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets a list of settlement's buildings with power function
+     * @return list of buildings
+     */
+	//2015-05-08 Added getBuildingsWithPower()
+    public List<Building> getBuildingsWithPower() {
+    	// Using JavaFX/8 Stream
+		List<Building> buildings = getBuildings();
+    	List<Building> buildingsWithPower =
+    		buildings.parallelStream()
+    	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()) == true)
+    	        .collect(Collectors.toList());
+
+    	return buildingsWithPower;
+    }
+
+    /**
      * Gets a list of settlement's buildings with thermal function
      * @return list of buildings
      */

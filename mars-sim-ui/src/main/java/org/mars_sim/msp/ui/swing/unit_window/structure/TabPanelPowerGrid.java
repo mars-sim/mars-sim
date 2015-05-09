@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @version 3.07 2014-12-03
+ * @version 3.08 2015-05-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -13,6 +13,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -23,13 +25,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -61,6 +68,7 @@ extends TabPanel {
 	/** The settlement's power grid. */
 	private PowerGrid powerGrid;
 
+	private JLabel eff_electric_Label;
 	// Data cache
 	/** The total power generated cache. */
 	private double powerGeneratedCache;
@@ -71,8 +79,14 @@ extends TabPanel {
 	/** The total power stored cache. */
 	private double powerStoredCache;
 
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
+	private double powerEffCache;
 
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
+	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+
+	private List<PowerSource> powerSources;
+	private BuildingConfig config;
+	private BuildingManager manager;
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -90,6 +104,9 @@ extends TabPanel {
 
 		Settlement settlement = (Settlement) unit;
 		powerGrid = settlement.getPowerGrid();
+		manager = settlement.getBuildingManager();
+		config = SimulationConfig.instance().getBuildingConfiguration();
+
 
 		// Prepare power grid label panel.
 		JPanel powerGridLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -102,7 +119,7 @@ extends TabPanel {
 		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare power info panel.
-		JPanel powerInfoPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel powerInfoPanel = new JPanel(new GridLayout(6, 1, 0, 0));
 		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
@@ -125,6 +142,16 @@ extends TabPanel {
 		powerStoredCache = powerGrid.getStoredPower();
 		powerStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored", formatter.format(powerStoredCache)), JLabel.CENTER); //$NON-NLS-1$
 		powerInfoPanel.add(powerStoredLabel);
+
+		// 2015-05-08 Added eff_electric_label
+		double eff_electric = getAverageEfficiency();
+		eff_electric_Label = new JLabel(Msg.getString("TabPanelPowerGrid.solarPanelEfficiency", formatter2.format(eff_electric*100D)), JLabel.CENTER); //$NON-NLS-1$
+		powerInfoPanel.add(eff_electric_Label);
+
+		// 2015-05-08 Added degradation rate label.
+		double degradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
+		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.degradRate", formatter2.format(degradRate*100D)), JLabel.CENTER); //$NON-NLS-1$
+		powerInfoPanel.add(degradRateLabel);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane powerScrollPane = new JScrollPane();
@@ -165,14 +192,37 @@ extends TabPanel {
 		powerScrollPane.setViewportView(powerTable);
 	}
 
+	public double getAverageEfficiency() {
+		double eff = 0;
+		int i = 0;
+		Iterator<Building> iPower = manager.getBuildingsWithPower().iterator();
+		while (iPower.hasNext()) {
+			Building building = iPower.next();
+			powerSources = config.getPowerSources(building.getBuildingType());
+			Iterator<PowerSource> j = powerSources.iterator();
+			while (j.hasNext()) {
+				PowerSource powerSource = j.next();
+				if (powerSource instanceof SolarPowerSource) {
+					i++;
+					SolarPowerSource solarPowerSource = (SolarPowerSource) powerSource;
+					eff+= solarPowerSource.getEfficiency();
+				}
+			}
+		}
+		// get the average eff
+		eff = eff / i;
+		return eff;
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */
 	public void update() {
 
 		// Update power generated label.
-		if (powerGeneratedCache != powerGrid.getGeneratedPower()) {
-			powerGeneratedCache = powerGrid.getGeneratedPower();
+		double gen = powerGrid.getGeneratedPower();
+		if (powerGeneratedCache != gen) {
+			powerGeneratedCache = gen;
 			powerGeneratedLabel.setText(
 				Msg.getString(
 					"TabPanelPowerGrid.totalPowerGenerated", //$NON-NLS-1$
@@ -182,14 +232,17 @@ extends TabPanel {
 		}
 
 		// Update power used label.
-		if (powerUsedCache != powerGrid.getRequiredPower()) {
-			powerUsedCache = powerGrid.getRequiredPower();
-			powerUsedLabel.setText(Msg.getString("TabPanelPowerGrid.totalPowerUsed",formatter.format(powerUsedCache))); //$NON-NLS-1$
+		double req = powerGrid.getRequiredPower();
+		if (powerUsedCache != req) {
+			powerUsedCache = req;
+			powerUsedLabel.setText(Msg.getString("TabPanelPowerGrid.totalPowerUsed", //$NON-NLS-1$
+					formatter.format(powerUsedCache)));
 		}
 
 		// Update power storage capacity label.
-		if (powerStorageCapacityCache != powerGrid.getStoredPowerCapacity()) {
-			powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
+		double cap = powerGrid.getStoredPowerCapacity();
+		if (powerStorageCapacityCache != cap) {
+			powerStorageCapacityCache = cap;
 			powerStorageCapacityLabel.setText(Msg.getString(
 				"TabPanelPowerGrid.powerStorageCapacity", //$NON-NLS-1$
 				formatter.format(powerStorageCapacityCache)
@@ -197,14 +250,23 @@ extends TabPanel {
 		}
 
 		// Update power stored label.
-		if (powerStoredCache != powerGrid.getStoredPower()) {
-			powerStoredCache = powerGrid.getStoredPower();
+		double store = powerGrid.getStoredPower();
+		if (powerStoredCache != store ) {
+			powerStoredCache = store;
 			powerStoredLabel.setText(Msg.getString(
 				"TabPanelPowerGrid.totalPowerStored", //$NON-NLS-1$
 				formatter.format(powerStoredCache)
 			));
 		}
 
+		double eff = getAverageEfficiency();
+		if (powerEffCache != eff) {
+			powerEffCache = eff;
+		eff_electric_Label.setText(
+				Msg.getString("TabPanelPowerGrid.solarPanelEfficiency",  //$NON-NLS-1$
+				formatter2.format(eff*100D)
+				));
+		}
 		// Update power table.
 		powerTableModel.update();
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @version 3.08 2015-04-02
+ * @version 3.08 2015-05-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -25,13 +26,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
+import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -52,11 +56,25 @@ extends TabPanel {
 	// default logger.
 	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 
-	// Data Members
+	// Data cache
+	/** The total heat generated cache. */
+	// 2014-10-25  Changed names of variables to heatGenCapacityCache, heatGenCache
+	private double heatGenCache;
+	private double powerGenCache;
+	private double eheatCache, epowerCache;
+	/** The total heat used cache. */
+	//private double heatGenCache;
+	/** The total thermal storage capacity cache. */
+	//private double thermalStorageCapacityCache;
+	/** The total heat stored cache. */
+	//private double heatStoredCache;
+
 	// 2014-10-25  Changed label name to heatGenCapacityLabel
 	/** The total heat generated label. */
 	private JLabel heatGenLabel;
 	private JLabel powerGenLabel;
+	private JLabel eff_solar_heat_Label;
+	private JLabel eff_electric_heat_Label;
 	/** The total heat used label. */
 	//private JLabel heatGenLabel;
 	/** The total heat storage capacity label. */
@@ -65,22 +83,19 @@ extends TabPanel {
 	//private JLabel heatStoredLabel;
 	/** Table model for heat info. */
 	private HeatTableModel heatTableModel;
-	/** The settlement's Heating System */
-	private ThermalSystem thermalSystem;
-
-	// Data cache
-	/** The total heat generated cache. */
-	// 2014-10-25  Changed names of variables to heatGenCapacityCache, heatGenCache
-	private double heatGenCache;
-	private double powerGenCache;
-	/** The total heat used cache. */
-	//private double heatGenCache;
-	/** The total thermal storage capacity cache. */
-	//private double thermalStorageCapacityCache;
-	/** The total heat stored cache. */
-	//private double heatStoredCache;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
+	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+
+
+	/** The settlement's Heating System */
+	private ThermalSystem thermalSystem;
+	private ThermalGeneration thermalGeneration;
+	private Settlement settlement;
+	private List<HeatSource> heatSources;
+	private BuildingConfig config;
+	private BuildingManager manager;
+
 
 	/**
 	 * Constructor.
@@ -97,8 +112,12 @@ extends TabPanel {
 			unit, desktop
 		);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
+		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
+		config = SimulationConfig.instance().getBuildingConfiguration();
+
+		//thermalGeneration = thermalSystem.getThermalGeneration();
 
 		// Prepare heating System label panel.
 		JPanel thermalSystemLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -111,7 +130,7 @@ extends TabPanel {
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.
-		JPanel heatInfoPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		JPanel heatInfoPanel = new JPanel(new GridLayout(6, 1, 0, 0));
 		heatInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(heatInfoPanel);
 
@@ -125,13 +144,19 @@ extends TabPanel {
 		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen", formatter.format(powerGenCache)), JLabel.CENTER); //$NON-NLS-1$
 		heatInfoPanel.add(powerGenLabel);
 
-		double eff_electric_heat = ElectricHeatSource.getEfficiency();
-		JLabel effLabel = new JLabel("Electric Furnace Efficiency : " + eff_electric_heat, JLabel.CENTER);
-		heatInfoPanel.add(effLabel);
 
-		double eff_solar_heat = SolarHeatSource.getEfficiency();
-		JLabel effLabel2 = new JLabel("Solar Water Heater Efficiency : " + eff_solar_heat, JLabel.CENTER);
-		heatInfoPanel.add(effLabel2);
+		double eff_electric_heat = getAverageEfficiencyElectricHeating();
+		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency", formatter2.format(eff_electric_heat*100D)), JLabel.CENTER); //$NON-NLS-1$
+		heatInfoPanel.add(eff_electric_heat_Label);
+
+		double eff_solar_heat =  getAverageEfficiencySolarHeating();
+		eff_solar_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  formatter2.format(eff_solar_heat*100D)), JLabel.CENTER); //$NON-NLS-1$
+		heatInfoPanel.add(eff_solar_heat_Label);
+
+		// Prepare degradation rate label.
+		double degradRate = SolarHeatSource.DEGRADATION_RATE_PER_SOL;
+		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelThermalSystem.degradRate", formatter2.format(degradRate*100D)), JLabel.CENTER); //$NON-NLS-1$
+		heatInfoPanel.add(degradRateLabel);
 
 
 		// Prepare heat storage capacity label.
@@ -172,6 +197,52 @@ extends TabPanel {
 
 	}
 
+	public double getAverageEfficiencySolarHeating() {
+		double eff_solar_heat = 0;
+		int i = 0;
+		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
+		while (iHeat.hasNext()) {
+			Building building = iHeat.next();
+			heatSources = config.getHeatSources(building.getBuildingType());
+			//for (HeatSource source : heatSources)
+			Iterator<HeatSource> j = heatSources.iterator();
+			while (j.hasNext()) {
+				HeatSource heatSource = j.next();
+				if (heatSource instanceof SolarHeatSource) {
+					i++;
+					SolarHeatSource solarHeatSource = (SolarHeatSource) heatSource;
+					eff_solar_heat += solarHeatSource.getEfficiency();
+				}
+			}
+		}
+		// get the average eff
+		eff_solar_heat = eff_solar_heat / i;
+		return eff_solar_heat;
+	}
+
+	public double getAverageEfficiencyElectricHeating() {
+		double eff_solar_electric = 0;
+		int i = 0;
+		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
+		while (iHeat.hasNext()) {
+			Building building = iHeat.next();
+			heatSources = config.getHeatSources(building.getBuildingType());
+			//for (HeatSource source : heatSources)
+			Iterator<HeatSource> j = heatSources.iterator();
+			while (j.hasNext()) {
+				HeatSource heatSource = j.next();
+				if (heatSource instanceof SolarHeatSource) {
+					i++;
+					SolarHeatSource solarHeatSource = (SolarHeatSource) heatSource;
+					eff_solar_electric += solarHeatSource.getEfficiencyElectric();
+				}
+			}
+		}
+		// get the average eff
+		eff_solar_electric = eff_solar_electric / i;
+		return eff_solar_electric;
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */
@@ -179,24 +250,40 @@ extends TabPanel {
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
 		// Check if the old heatGenCapacityCache is different from the latest .
-		if (heatGenCache != thermalSystem.getGeneratedHeat()) {
-				heatGenCache = thermalSystem.getGeneratedHeat();
+		double heat = thermalSystem.getGeneratedHeat();
+		if (heatGenCache != heat) {
+				heatGenCache = heat;
 			heatGenLabel.setText(
-				Msg.getString(
-					"TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
-					formatter.format(heatGenCache)
-				)
-			);
+				Msg.getString("TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
+				formatter.format(heatGenCache)
+				));
 		}
 
-		if (powerGenCache != thermalSystem.getGeneratedPower()) {
-			powerGenCache = thermalSystem.getGeneratedPower();
+		double power = thermalSystem.getGeneratedPower();
+		if (powerGenCache != power) {
+			powerGenCache = power;
 			powerGenLabel.setText(
-				Msg.getString(
-					"TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
-					formatter.format(powerGenCache)
-				)
-			);
+				Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
+				formatter.format(powerGenCache)
+				));
+		}
+
+		double eheat = getAverageEfficiencyElectricHeating()*100D;
+		if (eheatCache != eheat) {
+			eheatCache = eheat;
+			eff_electric_heat_Label.setText(
+				Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency",  //$NON-NLS-1$
+				formatter2.format(eheat)
+				));
+		}
+
+		double epower = getAverageEfficiencySolarHeating()*100D;
+		if (epowerCache != epower) {
+			epowerCache = epower;
+			eff_solar_heat_Label.setText(
+				Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  //$NON-NLS-1$
+				formatter2.format(epower)
+				));
 		}
 		// CANNOT USE thermalSystem class to compute the individual building heat usage
 		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
