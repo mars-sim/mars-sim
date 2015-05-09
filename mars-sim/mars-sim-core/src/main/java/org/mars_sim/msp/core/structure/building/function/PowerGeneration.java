@@ -186,6 +186,18 @@ implements Serializable {
 					fuelSource.consumeFuel(time, getBuilding().getInventory());
 				}
 			}
+
+			if (source instanceof SolarPowerSource) {
+				SolarPowerSource solarPowerSource = (SolarPowerSource) source;
+				//System.out.println("solarPowerSource.getMaxPower() is "+ solarPowerSource.getMaxPower());
+				double factor = solarPowerSource.getCurrentPower(getBuilding()) / solarPowerSource.getMaxPower();
+				// TODO : use PowerMode.FULL_POWER ?
+				double d_factor = SolarPowerSource.DEGRADATION_RATE_PER_SOL * time/1000D;
+				double eff = solarPowerSource.getEfficiency() ;
+				double new_eff = eff - eff * d_factor * factor;
+				solarPowerSource.setEfficiency(new_eff);
+				//System.out.println("new_eff is " + new_eff);
+			}
 		}
 	}
 

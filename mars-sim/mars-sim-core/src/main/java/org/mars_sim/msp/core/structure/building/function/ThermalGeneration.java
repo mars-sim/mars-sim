@@ -260,16 +260,18 @@ implements Serializable {
 			building.setHeatGenerated(heatGenerated);
 		}
 
-		//for (HeatSource source : heatSources) {
-			/*
-			if (source instanceof FuelHeatSource) {
-				FuelHeatSource fuelSource = (FuelHeatSource) source;
-				if (fuelSource.isToggleON()) {
-					fuelSource.consumeFuel(time, getBuilding().getInventory());
-				}
+		for (HeatSource source : heatSources)
+			if (source instanceof SolarHeatSource) {
+				SolarHeatSource solarHeatSource = (SolarHeatSource) source;
+				//System.out.println("solarHeatSource.getMaxHeat() is "+ solarHeatSource.getMaxHeat());
+				double factor = solarHeatSource.getCurrentHeat(getBuilding()) / solarHeatSource.getMaxHeat();
+				// TODO : use HeatMode.FULL_POWER ?
+				double d_factor = SolarHeatSource.DEGRADATION_RATE_PER_SOL * time/1000D;
+				double eff = solarHeatSource.getEfficiency() ;
+				double new_eff = eff - eff * d_factor * factor;
+				solarHeatSource.setEfficiency(new_eff);
+				//System.out.println("new_eff is " + new_eff);
 			}
-			*/
-		//}
 
 		heating.timePassing(time);
 	}
