@@ -44,21 +44,19 @@ public abstract class UnitWindow extends JInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+    private static final int BLUR_SIZE = 7;
 	// Data members
-	/** Main window. */
-	protected MainDesktopPane desktop;
-	/** Unit for this window. */
-	protected Unit unit;
 	protected JPanel namePanel;
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
 	private JTabbedPane centerPanel;
-
-    private static final int BLUR_SIZE = 7;
     private BufferedImage image;
 
+	/** Main window. */
+	protected MainDesktopPane desktop;
+	/** Unit for this window. */
+	protected Unit unit;
 
     /**
      * Constructor
