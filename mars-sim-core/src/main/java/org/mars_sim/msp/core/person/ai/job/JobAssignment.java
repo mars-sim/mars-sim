@@ -16,16 +16,22 @@ public class JobAssignment implements Serializable {
 
     private String initiator;
     private String jobType;
-    private MarsClock time;
+    private MarsClock timeSubmitted;
+    private String authorizedBy;
+    private MarsClock timeAuthorized;
+    private String status; // Pending or Approved
 
-	public JobAssignment(MarsClock time, String jobType, String initiator) {
-		this.time = time;
+	public JobAssignment(MarsClock timeSubmitted, String jobType, String initiator) {
+		this.timeSubmitted = timeSubmitted;
 		this.jobType = jobType;
 		this.initiator = initiator;
 	}
 
-	public MarsClock getTime() {
-		return time;
+	public MarsClock getTimeSubmitted() {
+		return timeSubmitted;
+	}
+	public MarsClock getTimeAuthorized() {
+		return timeAuthorized;
 	}
 
 	public String getJobType() {
@@ -34,5 +40,21 @@ public class JobAssignment implements Serializable {
 
 	public String getInitiator() {
 		return initiator;
+	}
+
+	public String getAuthorizedBy() {
+		return authorizedBy;
+	}
+
+	public void setAuthorizedBy(String name) {
+		authorizedBy = name;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

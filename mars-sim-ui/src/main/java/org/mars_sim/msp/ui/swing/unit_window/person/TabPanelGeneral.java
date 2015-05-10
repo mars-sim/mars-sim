@@ -13,7 +13,9 @@ import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -35,7 +37,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelGeneral(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelGeneral(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
@@ -60,16 +62,21 @@ extends TabPanel {
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare gender name label
-		JLabel genderNameLabel = new JLabel(Msg.getString("TabPanelGeneral.gender"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel genderNameLabel = new JLabel(Msg.getString("TabPanelGeneral.gender"), JLabel.RIGHT); //$NON-NLS-1$
+		genderNameLabel.setSize(5, 2);
 		infoPanel.add(genderNameLabel);
 
 		// Prepare gender label
 		String gender = person.getGender().getName();
-		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
-		infoPanel.add(genderLabel);
+		JTextField genderTF = new JTextField(WordUtils.capitalize(gender));
+		genderTF.setEditable(false);
+		genderTF.setColumns(12);
+		//JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
+		infoPanel.add(genderTF);
 
 		// Prepare birthdate and age name label
-		JLabel birthNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthDate"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel birthNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthDate"), JLabel.RIGHT); //$NON-NLS-1$
+		birthNameLabel.setSize(5, 2);
 		infoPanel.add(birthNameLabel);
 
 		// Prepare birthdate and age label
@@ -78,38 +85,54 @@ extends TabPanel {
 			person.getBirthDate(),
 			Integer.toString(person.getAge())
 		); //$NON-NLS-1$
-		JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
-		infoPanel.add(birthDateLabel);
+		//JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
+		JTextField birthDateTF = new JTextField(birthdate);
+		birthDateTF.setEditable(false);
+		birthDateTF.setColumns(12);
+		infoPanel.add(birthDateTF);
 
 		// Prepare birth location name label
-		JLabel birthLocationNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthLocation"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel birthLocationNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthLocation"), JLabel.RIGHT); //$NON-NLS-1$
+		birthLocationNameLabel.setSize(5, 2);
 		infoPanel.add(birthLocationNameLabel);
 
 		// Prepare birth location label
 		String birthLocation = person.getBirthplace();
-		JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
-		infoPanel.add(birthLocationLabel);
+		//JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
+		JTextField birthLocationTF = new JTextField(WordUtils.capitalize(birthLocation));
+		birthLocationTF.setEditable(false);
+		birthLocationTF.setColumns(12);
+		infoPanel.add(birthLocationTF);
 
 		// Prepare weight name label
-		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.RIGHT); //$NON-NLS-1$
+		weightNameLabel.setSize(5, 2);
 		infoPanel.add(weightNameLabel);
 
 		// Prepare weight label
 		double baseMass = person.getBaseMass();
-		JLabel weightLabel = new JLabel(Msg.getString("TabPanelGeneral.kilograms",baseMass), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(weightLabel);
+		//JLabel weightLabel = new JLabel(Msg.getString("TabPanelGeneral.kilograms",baseMass), JLabel.RIGHT); //$NON-NLS-1$
+		JTextField weightTF = new JTextField(Msg.getString("TabPanelGeneral.kilograms",baseMass));
+		weightTF.setEditable(false);
+		weightTF.setColumns(12);
+		infoPanel.add(weightTF);
 
 		// Prepare height name label
-		JLabel heightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.height"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel heightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.height"), JLabel.RIGHT); //$NON-NLS-1$
+		heightNameLabel.setSize(5, 2);
 		infoPanel.add(heightNameLabel);
 
 		// Prepare height label
 		int baseHeight = person.getHeight();
-		JLabel heightLabel = new JLabel(Msg.getString("TabPanelGeneral.centimeters",baseHeight), JLabel.RIGHT); //$NON-NLS-1$
-		infoPanel.add(heightLabel);
+		//JLabel heightLabel = new JLabel(Msg.getString("TabPanelGeneral.centimeters", baseHeight), JLabel.RIGHT); //$NON-NLS-1$
+		JTextField heightTF = new JTextField(Msg.getString("TabPanelGeneral.centimeters", baseHeight));
+		heightTF.setEditable(false);
+		heightTF.setColumns(12);
+		infoPanel.add(heightTF);
 
 		// Prepare BMI name label
-		JLabel BMINameLabel = new JLabel(Msg.getString("TabPanelGeneral.bmi"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel BMINameLabel = new JLabel(Msg.getString("TabPanelGeneral.bmi"), JLabel.RIGHT); //$NON-NLS-1$
+		BMINameLabel.setSize(5, 2);
 		infoPanel.add(BMINameLabel);
 
 		// Prepare BMI label
@@ -120,24 +143,27 @@ extends TabPanel {
 		if (BMI > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
 		if (BMI > 25) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
 		if (BMI > 30) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese");} //$NON-NLS-1$
-		JLabel BMILabel = new JLabel(
-			Msg.getString(
-				"TabPanelGeneral.bmiValue", //$NON-NLS-1$
-				Integer.toString((int)BMI),
-				weightClass
-			),JLabel.RIGHT
-		);
-		infoPanel.add(BMILabel);
+		//JLabel BMILabel = new JLabel(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
+		//		Integer.toString((int)BMI),	weightClass), JLabel.RIGHT);
+		JTextField BMITF = new JTextField(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
+				Integer.toString((int)BMI),	weightClass));
+		BMITF.setEditable(false);
+		BMITF.setColumns(12);
+		infoPanel.add(BMITF);
 
 
 		// Prepare personality name label
-		JLabel personalityNameLabel = new JLabel(Msg.getString("TabPanelGeneral.personalityMBTI"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel personalityNameLabel = new JLabel(Msg.getString("TabPanelGeneral.personalityMBTI"), JLabel.RIGHT); //$NON-NLS-1$
+		personalityNameLabel.setSize(5, 2);
 		infoPanel.add(personalityNameLabel);
 
 		// Prepare personality label
 		String personality = person.getMind().getPersonalityType().getTypeString();
-		JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
-		infoPanel.add(personalityLabel);
+		//JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
+		JTextField personalityTF = new JTextField(WordUtils.capitalize(personality));
+		personalityTF.setEditable(false);
+		personalityTF.setColumns(12);
+		infoPanel.add(personalityTF);
 	}
 
 	/**

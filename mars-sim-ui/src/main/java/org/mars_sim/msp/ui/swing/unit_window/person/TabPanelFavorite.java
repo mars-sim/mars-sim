@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.07 2015-02-27 
+ * @version 3.07 2015-02-27
 
  * @author Manny Kung
  */
@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -36,7 +37,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelFavorite(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelFavorite(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelFavorite.title"), //$NON-NLS-1$
@@ -61,40 +62,56 @@ extends TabPanel {
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare main dish name label
-		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(mainDishNameLabel);
 
 		// Prepare main dish label
 		String mainDish = person.getFavorite().getFavoriteMainDish();
-		JLabel mainDishLabel = new JLabel(mainDish, JLabel.RIGHT);
-		infoPanel.add(mainDishLabel);
+		//JLabel mainDishLabel = new JLabel(mainDish, JLabel.RIGHT);
+		//infoPanel.add(mainDishLabel);
+		JTextField mainDishTF = new JTextField(WordUtils.capitalize(mainDish));
+		mainDishTF.setEditable(false);
+		mainDishTF.setColumns(20);
+		infoPanel.add(mainDishTF);
 
 		// Prepare side dish name label
-		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(sideDishNameLabel);
 
 		// Prepare side dish label
 		String sideDish = person.getFavorite().getFavoriteSideDish();
-		JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
-		infoPanel.add(sideDishLabel);
+		//JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
+		//infoPanel.add(sideDishLabel);
+		JTextField sideDishTF = new JTextField(WordUtils.capitalize(sideDish));
+		sideDishTF.setEditable(false);
+		sideDishTF.setColumns(20);
+		infoPanel.add(sideDishTF);
 
 		// Prepare dessert name label
-		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(dessertNameLabel);
 
 		// Prepare dessert label
 		String dessert = person.getFavorite().getFavoriteDessert();
-		JLabel dessertLabel = new JLabel(WordUtils.capitalize(dessert), JLabel.RIGHT);
-		infoPanel.add(dessertLabel);
-		
+		//JLabel dessertLabel = new JLabel(WordUtils.capitalize(dessert), JLabel.RIGHT);
+		//infoPanel.add(dessertLabel);
+		JTextField dessertTF = new JTextField(WordUtils.capitalize(dessert));
+		dessertTF.setEditable(false);
+		dessertTF.setColumns(20);
+		infoPanel.add(dessertTF);
+
 		// Prepare activity name label
-		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.RIGHT); //$NON-NLS-1$
 		infoPanel.add(activityNameLabel);
 
 		// Prepare activity label
 		String activity = person.getFavorite().getFavoriteActivity();
-		JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
-		infoPanel.add(activityLabel);
+		JTextField activityTF = new JTextField(WordUtils.capitalize(activity));
+		activityTF.setEditable(false);
+		activityTF.setColumns(20);
+		infoPanel.add(activityTF);
+		//JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
+		//infoPanel.add(activityLabel);
 	}
 
 	/**

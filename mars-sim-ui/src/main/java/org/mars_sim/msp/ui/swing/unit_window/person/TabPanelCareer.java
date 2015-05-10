@@ -25,12 +25,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -62,8 +65,10 @@ implements ActionListener {
 	private int numStarsCache = 0;
 
 	private String jobCache = ""; //$NON-NLS-1$
+	private String roleCache;
 
 	private JLabel jobLabel, roleLabel, errorLabel, ratingLabel;
+	private JTextField roleTF;
 
 	private JComboBoxMW<?> jobComboBox;
 
@@ -117,10 +122,10 @@ implements ActionListener {
 	    	person = (Person) unit;
 
 			// Prepare job panel
-			JPanel topPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+			JPanel topPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 			topPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.setBorder(new MarsPanelBorder());
-			topContentPanel.add(topPanel);
+			topContentPanel.add(topPanel, BorderLayout.NORTH);
 
 			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new GridLayout(3, 1, 0, 0)); //
 			topPanel.add(jobPanel);
@@ -143,18 +148,26 @@ implements ActionListener {
 			jobPanel.add(jobComboBox);
 
 			// Prepare role panel
-			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //GridLayout(1, 2));
 			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.add(rolePanel);
+
 			// Prepare role label
-			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.CENTER); //$NON-NLS-1$
+			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"));//, JLabel.RIGHT); //$NON-NLS-1$
+			roleLabel.setSize(10, 2);
 			rolePanel.add(roleLabel);
-			//topPanel.add(roleLabel);
+
+			roleCache = person.getRole().toString();
+			JTextField roleTF = new JTextField(roleCache);
+			roleTF.setEditable(false);
+			//roleTF.setBounds(0, 0, 0, 0);
+			roleTF.setColumns(13);
+			rolePanel.add(roleTF);
 
 			JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
 			//JPanel rPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			//JLabel ratingLabel = new JLabel("Rating : ");//, JLabel.CENTER);
-			//rPanel.add(ratingLabel);
+			JLabel rLabel = new JLabel("Rating : ");//, JLabel.CENTER);
+			ratingPanel.add(rLabel);
 			starRater = new StarRater(5, 0, 0);
 			starRater.setToolTipText("Click to submit rating to supervisor (once every 7 sols)");
 	        starRater.addStarListener(
@@ -174,20 +187,22 @@ implements ActionListener {
 		        		starRater.disable();
 	                }
 	            });
-	        //ratingPanel.add(rPanel);
-	        //ratingPanel.add(ratingLabel);
+
 	        ratingPanel.add(starRater);
 			topPanel.add(ratingPanel);
+
+			JPanel midPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+			topContentPanel.add(midPanel, BorderLayout.CENTER);
 
 			ratingLabel = new JLabel();
 			ratingLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
 			ratingLabel.setForeground(Color.blue);
-			topPanel.add(ratingLabel);
+			midPanel.add(ratingLabel);
 
 			errorLabel = new JLabel();
 			errorLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
 			errorLabel.setForeground(Color.red);
-			topPanel.add(errorLabel);
+			midPanel.add(errorLabel);
 
 		}
 
@@ -210,11 +225,12 @@ implements ActionListener {
 		}
 
 		// Prepare job title panel
-		JPanel jobHistoryPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+		JPanel jobHistoryPanel = new JPanel(new GridLayout(2, 1, 1, 1));
 		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
 
 		// Prepare job title label
 		JLabel historyLabel = new JLabel(Msg.getString("TabPanelCareer.history"), JLabel.CENTER); //$NON-NLS-1$
+		//historyLabel.setBounds(0, 0, width, height);
 		jobHistoryPanel.add(new JLabel());
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
@@ -250,16 +266,6 @@ implements ActionListener {
 	 */
 	public void update() {
 
-		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-        // check for the passing of each day
-        int solElapsed = MarsClock.getSolOfYear(clock);
-        if ( solElapsed != solCache && solElapsed > solCache + 7) {
-			starRater.setRating(numStarsCache);
-        	starRater.enable();
-        	ratingLabel.setText("");
-        	solCache = solElapsed;
-        }
-
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
@@ -270,18 +276,85 @@ implements ActionListener {
 		String currentJob = null;
 
 	    if (unit instanceof Person) {
+
 	    	person = (Person) unit;
 			mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 
-			String role = person.getRole().toString();
-			roleLabel.setText(Msg.getString("TabPanelCareer.roleType") + "  :  " + role);
-			//roleLabel.setFont();
 			// Update job if necessary.
 			if (dead) {
 				jobCache = deathInfo.getJob();
 				jobComboBox.setEnabled(false);
+				roleTF.setText("N/A");
+				starRater.disable();
+			} else {
+				MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+		        // check for the passing of each day
+		        int solElapsed = MarsClock.getSolOfYear(clock);
+		        if ( solElapsed != solCache && solElapsed > solCache + 7) {
+					starRater.setRating(numStarsCache);
+		        	starRater.enable();
+		        	ratingLabel.setText("");
+		        	solCache = solElapsed;
+		        }
+
+		        int pop = person.getSettlement().getAllAssociatedPeople().size();
+
+		        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+
+		        	// If this request is at least one day ago
+			        if ( solElapsed != solCache && solElapsed > solCache + 1) {
+
+			        	//String selectedJobStr = (String) jobComboBox.getSelectedItem();
+			        	//String jobStrCache = person.getMind().getJob().getName(person.getGender());
+
+			        	// Check if the chief or the commander has approved the job reassignment
+			        	// if approved, process with making the new job show up
+			        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+			        	int size = jobAssignmentList.size();
+
+			        	String status = jobAssignmentList.get(size-1).getStatus();
+			        	String selectedJobStr = jobAssignmentList.get(size-1).getJobType();
+
+			        	if (status.equals("Approved")) {
+
+						    jobComboBox.setSelectedItem(selectedJobStr);
+						    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob
+						    // as soon as the combobox selection is changed or wait for checking of "approval" ?
+
+						    // update to the new selected job
+						    Job selectedJob = null;
+							Iterator<Job> i = JobManager.getJobs().iterator();
+							while (i.hasNext()) {
+							    Job job = i.next();
+							    String n = job.getName(person.getGender());
+								if (selectedJobStr.equals(n))
+									// gets selectedJob by running through iterator to match it
+							        selectedJob = job;
+							}
+
+							person.getMind().setJob(selectedJob, true, JobManager.USER);
+							// updates the jobHistoryList in jobHistoryTableModel
+							jobHistoryTableModel.update();
+							//System.out.println("Yes they are diff");
+							jobCache = selectedJobStr;
+
+				        	jobComboBox.setEnabled(true);
+
+							errorLabel.setForeground(Color.red);
+				        	errorLabel.setText("");
+
+				        	solCache = solElapsed;
+				        }
+			        }
+		        }
+
+				String roleNew = person.getRole().toString();
+				if ( roleCache != roleNew) {
+					roleCache = roleNew;
+					roleTF.setText(roleNew);
+				}
 			}
 /*
 			else {
@@ -306,7 +379,6 @@ implements ActionListener {
 			dead = robot.getPhysicalCondition().isDead();
 			deathInfo = robot.getPhysicalCondition().getDeathDetails();
 
-
 		}
 
 	}
@@ -318,7 +390,6 @@ implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-
 		if (source == jobComboBox) {
 			Person person = null;
 			Robot robot = null;
@@ -343,26 +414,46 @@ implements ActionListener {
 				}
 
 				else if (!jobCache.equals(selectedJobStr)) {
-					errorLabel.setText("");
-				    jobComboBox.setSelectedItem(selectedJobStr);
-				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
-				    // as soon as the combobox selection is changed or wait for checking of "approval" ?
-				    // update to the new selected job
-				    Job selectedJob = null;
-					Iterator<Job> i = JobManager.getJobs().iterator();
-					while (i.hasNext()) {
-					    Job job = i.next();
-					    String n = job.getName(person.getGender());
-						if (selectedJobStr.equals(n))
-							// gets selectedJob by running through iterator to match it
-					        selectedJob = job;
-					}
 
-					person.getMind().setJob(selectedJob, true, JobManager.USER);
-					// updates the jobHistoryList in jobHistoryTableModel
-					jobHistoryTableModel.update();
-					//System.out.println("Yes they are diff");
-					jobCache = selectedJobStr;
+					int pop = person.getSettlement().getAllAssociatedPeople().size();
+
+			        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+
+			    		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+						errorLabel.setForeground(Color.BLUE);
+			        	errorLabel.setText("Job Reassignment Submitted on " + clock.getTimeStamp());
+			        	errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+			        	int size = jobAssignmentList.size();
+			        	jobAssignmentList.get(size-1).setStatus("Pending");
+						jobComboBox.setEnabled(false);
+			        }
+
+			        else {
+						errorLabel.setForeground(Color.RED);
+						errorLabel.setText("");
+					    jobComboBox.setSelectedItem(selectedJobStr);
+					    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
+					    // as soon as the combobox selection is changed or wait for checking of "approval" ?
+					    // update to the new selected job
+					    Job selectedJob = null;
+						Iterator<Job> i = JobManager.getJobs().iterator();
+						while (i.hasNext()) {
+						    Job job = i.next();
+						    String n = job.getName(person.getGender());
+							if (selectedJobStr.equals(n))
+								// gets selectedJob by running through iterator to match it
+						        selectedJob = job;
+						}
+
+						person.getMind().setJob(selectedJob, true, JobManager.USER);
+
+						// updates the jobHistoryList in jobHistoryTableModel
+						jobHistoryTableModel.update();
+						//System.out.println("Yes they are diff");
+						jobCache = selectedJobStr;
+
+			        }
 				}
 /*
 				person = (Person) unit;
@@ -473,7 +564,7 @@ implements ActionListener {
 		public Object getValueAt(int row, int column) {
 			int r = jobAssignmentList.size() - row - 1;
 			//System.out.println(" r is " + r);
-			if (column == 0) return MarsClock.getDateTimeStamp(jobAssignmentList.get(r).getTime());
+			if (column == 0) return MarsClock.getDateTimeStamp(jobAssignmentList.get(r).getTimeSubmitted());
 			else if (column == 1) return jobAssignmentList.get(r).getJobType();
 			else if (column == 2) return jobAssignmentList.get(r).getInitiator();
 			else return null;
