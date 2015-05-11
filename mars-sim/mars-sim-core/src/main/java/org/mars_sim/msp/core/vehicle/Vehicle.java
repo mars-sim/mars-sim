@@ -788,7 +788,6 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
 
     public void setTypeOfDessertLoaded(String dessertName) {
-        System.out.println("Vehicle.java : setTypeOfDessertLoaded() : dessert choice : " + dessertName); 
     	typeOfDessertLoaded = dessertName;
     }    
     
