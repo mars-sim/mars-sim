@@ -23,15 +23,17 @@ public class TestCreditManager extends TestCase {
         Settlement settlement2 = new MockSettlement();
         settlements.add(settlement2);
         CreditManager manager = new CreditManager(settlements);
+        Thread creditThread = new Thread(manager);
+        creditThread.start();
 
         // Sleeping the thread for a short time to allow the credit manager to finish loading.
         try {
-            Thread.sleep(50L);
+            Thread.sleep(100L);
         }
         catch (InterruptedException e) {
             fail();
         }
-
+        
         manager.setCredit(settlement1, settlement2, 100D);
         assertEquals( 100D, manager.getCredit(settlement1, settlement2));
 

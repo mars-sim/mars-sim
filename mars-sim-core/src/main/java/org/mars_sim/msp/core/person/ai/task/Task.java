@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.08 2015-03-06
+ * @version 3.08 2015-04-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -140,7 +140,7 @@ implements Serializable, Comparable<Task> {
     public void endTask() {
 
         // End subtask.
-        if (getSubTask() != null) {
+        if ((getSubTask() != null) && (!getSubTask().isDone())) {
             getSubTask().endTask();
         }
         
@@ -391,7 +391,7 @@ implements Serializable, Comparable<Task> {
     double performTask(double time) {
         double timeLeft = time;
         if (subTask != null) {
-            if (subTask.done) {
+            if (subTask.isDone()) {
                 subTask.destroy();
                 subTask = null;
             }
@@ -401,7 +401,7 @@ implements Serializable, Comparable<Task> {
         }
 
         // If no subtask, perform this task.
-        if ((subTask == null) || subTask.done) {
+        if ((subTask == null) || subTask.isDone()) {
 
 			if (person != null) {
 				
@@ -412,7 +412,7 @@ implements Serializable, Comparable<Task> {
 	            } else {
 	
 	                // Perform phases of task until time is up or task is done.
-	                while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
+	                while ((timeLeft > 0D) && !isDone() && ((subTask == null) || subTask.isDone())) {
 	                    if (hasDuration) {
 	
 	                        // Keep track of the duration of the task.

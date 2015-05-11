@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.07 2015-01-14
+ * @version 3.08 2015-05-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -212,12 +212,13 @@ implements Serializable {
     private double walkToOutsideSitePhase(double time) {
     	if (person != null) {
     	 	
-            // If not at field work site location, create walk outside subtask.
-            Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-            Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
-            boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
-            
-            if (LocationSituation.OUTSIDE != person.getLocationSituation() || !closeToLocation) {
+            // If not outside, create walk outside subtask.
+            if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+                
+                setPhase(getOutsideSitePhase());
+            }
+            else {
+                
                 if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
                     Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
                     addSubTask(walkingTask);
@@ -227,18 +228,16 @@ implements Serializable {
                     endTask();
                 }
             }
-            else {
-                setPhase(getOutsideSitePhase());
-            }
     	}
     	else if (robot != null) {
     	 	
-            // If not at field work site location, create walk outside subtask.
-            Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-            Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
-            boolean closeToLocation = LocalAreaUtil.areLocationsClose(robotLocation, outsideLocation);
-            
-            if (LocationSituation.OUTSIDE != robot.getLocationSituation() || !closeToLocation) {
+            // If not outside, create walk outside subtask.
+            if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+                
+                setPhase(getOutsideSitePhase());   
+            }
+            else {
+                
                 if (Walk.canWalkAllSteps(robot, outsideSiteXLoc, outsideSiteYLoc, null)) {
                     Task walkingTask = new Walk(robot, outsideSiteXLoc, outsideSiteYLoc, null);
                     addSubTask(walkingTask);
@@ -247,9 +246,6 @@ implements Serializable {
                     logger.severe(robot.getName() + " cannot walk to outside site.");
                     endTask();
                 }
-            }
-            else {
-                setPhase(getOutsideSitePhase());
             }
     	}
    
@@ -265,66 +261,60 @@ implements Serializable {
     private double walkBackInsidePhase(double time) {
     	
     	if (person != null) {
-    		
-    	      if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
-    	                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	            // Set return location.        
-    	            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-    	            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
-    	                    rawReturnInsideLoc.getY(), interiorObject);
-    	        }
-    	        
-    	        // If not at return inside location, create walk inside subtask.
-    	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-    	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-    	        
-    	        if (LocationSituation.OUTSIDE == person.getLocationSituation() || !closeToLocation) {
-    	            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-    	                addSubTask(walkingTask);
-    	            }
-    	            else {
-    	                logger.severe(person.getName() + " cannot walk back to inside location.");
-    	                endTask();
-    	            }
+
+    	    if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+    	            returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	        // Set return location.        
+    	        Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	                rawReturnInsideLoc.getY(), interiorObject);
+    	    }
+
+    	    // If not inside, create walk inside subtask.
+    	    if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+    	        if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	            Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+    	            addSubTask(walkingTask);
     	        }
     	        else {
+    	            logger.severe(person.getName() + " cannot walk back to inside location.");
     	            endTask();
     	        }
-    	        
+    	    }
+    	    else {
+    	        endTask();
+    	    }
+
     	}
     	else if (robot != null) {
-    		
-    	      if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
-    	                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	            // Set return location.        
-    	            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-    	            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
-    	                    rawReturnInsideLoc.getY(), interiorObject);
-    	        }
-    	        
-    	        // If not at return inside location, create walk inside subtask.
-    	        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-    	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(robotLocation, returnInsideLoc);
-    	        
-    	        if (LocationSituation.OUTSIDE == robot.getLocationSituation() || !closeToLocation) {
-    	            if (Walk.canWalkAllSteps(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	                Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-    	                addSubTask(walkingTask);
-    	            }
-    	            else {
-    	                logger.severe(robot.getName() + " cannot walk back to inside location.");
-    	                endTask();
-    	            }
+
+    	    if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+    	            returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	        // Set return location.        
+    	        Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	                rawReturnInsideLoc.getY(), interiorObject);
+    	    }
+
+    	    // If not inside, create walk inside subtask.
+    	    if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+    	        if (Walk.canWalkAllSteps(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+    	            Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+    	            addSubTask(walkingTask);
     	        }
     	        else {
+    	            logger.severe(robot.getName() + " cannot walk back to inside location.");
     	            endTask();
     	        }
-    	        
+    	    }
+    	    else {
+    	        endTask();
+    	    }
+
     	}
-    	
-  
-        return time;
+
+
+    	return time;
     }
 
     /**
