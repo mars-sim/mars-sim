@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Msg;
@@ -371,7 +371,7 @@ implements Serializable {
     
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
-            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
             double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
             if (oxygen <= (oxygenCap * .15D)) {
@@ -380,7 +380,7 @@ implements Serializable {
             }
 
             // Check if EVA suit is at 15% of its water capacity.
-            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
+            AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
             double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
             double water = suitInv.getAmountResourceStored(waterResource, false);
             if (water <= (waterCap * .15D)) {

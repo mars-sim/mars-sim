@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
@@ -322,9 +322,9 @@ public class HelpGenerator {
 		String[] cargoArray = new String[] {
 			"hydrogen",
 			"methane",
-			LifeSupport.OXYGEN,
-			LifeSupport.WATER,
-			LifeSupport.FOOD,
+			LifeSupportType.OXYGEN,
+			LifeSupportType.WATER,
+			LifeSupportType.FOOD,
 			"rock samples",
 			"ice"
 		};

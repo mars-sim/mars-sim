@@ -2,14 +2,14 @@ package org.mars_sim.msp.core.resource;
 
 import junit.framework.TestCase;
 
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestAmountResourcePhaseStorage extends TestCase {
 
 	private static final String HYDROGEN = "hydrogen";
-	private static final String OXYGEN = LifeSupport.OXYGEN;
-	private static final String WATER = LifeSupport.WATER;
+	private static final String OXYGEN = LifeSupportType.OXYGEN;
+	private static final String WATER = LifeSupportType.WATER;
 	
     @Override
     public void setUp() throws Exception {

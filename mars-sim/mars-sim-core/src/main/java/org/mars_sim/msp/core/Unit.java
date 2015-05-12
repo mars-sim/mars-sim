@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** 
+/**
  * The Unit class is the abstract parent class to all units in the
  * Simulation.  Units include people, vehicles and settlements.
  * This class provides data members and methods common to all units.
@@ -44,7 +44,7 @@ implements Serializable, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param name {@link String} the name of the unit
 	 * @param location {@link Coordinates} the unit's location
@@ -71,17 +71,17 @@ implements Serializable, Comparable<Unit> {
 	public final void changeName(String name) {
 		this.name = name;
 	}
-	
-	/** 
-	 * Gets the unit's UnitManager 
+
+	/**
+	 * Gets the unit's UnitManager
 	 * @return {@link UnitManager} the unit's unit manager
 	 */
 	public UnitManager getUnitManager() {
 		return Simulation.instance().getUnitManager();
 	}
 
-	/** 
-	 * Gets the unit's name 
+	/**
+	 * Gets the unit's name
 	 * @return the unit's name
 	 */
 	public String getName() {
@@ -114,16 +114,16 @@ implements Serializable, Comparable<Unit> {
 		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
 	}
 
-	/** 
-	 * Gets the unit's location 
+	/**
+	 * Gets the unit's location
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
 		return location;
 	}
 
-	/** 
-	 * Sets unit's location coordinates 
+	/**
+	 * Sets unit's location coordinates
 	 * @param newLocation the new location of the unit
 	 */
 	public void setCoordinates(Coordinates newLocation) {
@@ -133,7 +133,7 @@ implements Serializable, Comparable<Unit> {
 		fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
 	}
 
-	/** 
+	/**
 	 * Time passing for unit.
 	 * Unit should take action or be modified by time as appropriate.
 	 * @param time the amount of time passing (in millisols)
@@ -142,7 +142,7 @@ implements Serializable, Comparable<Unit> {
 	public void timePassing(double time) {
 	}
 
-	/** 
+	/**
 	 * Gets the unit's inventory
 	 * @return the unit's inventory object
 	 */
@@ -150,7 +150,7 @@ implements Serializable, Comparable<Unit> {
 		return inventory;
 	}
 
-	/** 
+	/**
 	 * Gets the unit's container unit.
 	 * Returns null if unit has no container unit.
 	 * @return the unit's container unit
@@ -159,7 +159,7 @@ implements Serializable, Comparable<Unit> {
 		return containerUnit;
 	}
 
-	/** 
+	/**
 	 * Gets the topmost container unit that owns this unit.
 	 * Returns null if unit has no container unit.
 	 * @return the unit's topmost container unit
@@ -174,7 +174,7 @@ implements Serializable, Comparable<Unit> {
 		return topUnit;
 	}
 
-	/** 
+	/**
 	 * Sets the unit's container unit.
 	 * @param containerUnit the unit to contain this unit.
 	 */
@@ -183,7 +183,7 @@ implements Serializable, Comparable<Unit> {
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, containerUnit);
 	}
 
-	/** 
+	/**
 	 * Gets the unit's mass including inventory mass.
 	 * @return mass of unit and inventory
 	 * @throws Exception if error getting the mass.
@@ -243,7 +243,7 @@ implements Serializable, Comparable<Unit> {
 						newListener.toString()
 					)
 				);
-			} 
+			}
 			catch (Exception e){
 				e.printStackTrace();
 				logger.log(Level.SEVERE,Msg.getString("Unit.log.addingListenerDupe"),e); //$NON-NLS-1$
@@ -296,7 +296,7 @@ implements Serializable, Comparable<Unit> {
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
 	 */
 	@Override

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -860,21 +860,21 @@ extends VehicleMission {
 				* timeSols * crewNum;
 		if (useBuffer)
 			oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		result.put(oxygen, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
 			waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(water, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() 
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(food, foodAmount);
 		
 		return result;
@@ -992,15 +992,15 @@ extends VehicleMission {
 			if (inv.getAmountResourceStored(methane, false) < 100D) {
 				hasBasicResources = false;
 			}
-			AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+			AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 			if (inv.getAmountResourceStored(oxygen, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+			AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 			if (inv.getAmountResourceStored(water, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+			AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 			if (inv.getAmountResourceStored(food, false) < 50D) {
 				hasBasicResources = false;
 			}

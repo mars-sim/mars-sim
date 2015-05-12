@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -438,21 +438,21 @@ implements Serializable {
         int peopleNum = getRescuePeopleNum(vehicleTarget);
 
         // Determine life support supplies needed for trip.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
         }
         result.put(oxygen, oxygenAmount);
 
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
         }
         result.put(water, waterAmount);
 
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
@@ -756,11 +756,11 @@ implements Serializable {
         Inventory inv = getVehicle().getInventory();
         result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(
                 getVehicle().getFuelType(), false));
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         result.put(oxygen, inv.getAmountResourceCapacity(oxygen, false));
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         result.put(water, inv.getAmountResourceCapacity(water, false));
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         result.put(food, inv.getAmountResourceCapacity(food, false));
 
         // Get parts too.

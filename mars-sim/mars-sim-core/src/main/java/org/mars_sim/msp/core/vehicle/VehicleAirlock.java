@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -57,7 +57,7 @@ extends Airlock {
 		else if (!(vehicle instanceof Crewable)) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.notCrewable")); //$NON-NLS-1$
 		}
-		else if (!(vehicle instanceof LifeSupport)) {
+		else if (!(vehicle instanceof LifeSupportType)) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.noLifeSupport")); //$NON-NLS-1$
 		}
 		else {

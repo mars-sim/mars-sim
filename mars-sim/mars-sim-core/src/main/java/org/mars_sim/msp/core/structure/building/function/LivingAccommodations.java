@@ -166,7 +166,7 @@ public class LivingAccommodations extends Function implements Serializable {
         double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
         double waterUsed = waterUsageBuilding;        
         
-        retrieveAnResource(org.mars_sim.msp.core.LifeSupport.WATER, waterUsed);
+        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);
 
         produceWasteWater(waterUsed);
     }

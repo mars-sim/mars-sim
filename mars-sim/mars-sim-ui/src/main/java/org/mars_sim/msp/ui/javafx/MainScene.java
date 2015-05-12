@@ -157,9 +157,11 @@ public class MainScene {
         //desktop.openInitialWindows(); // doesn't work here
         startEarthTimer();
 		//System.out.println("done running the two timers");
-		transportWizard = new TransportWizard(this);
 		//System.out.println("done running createMainScene()");
+    }
 
+    public void prepareTransportWizard() {
+    	transportWizard = new TransportWizard(this, desktop);
     }
 
 	public void openTransportWizard(BuildingManager buildingManager) {
@@ -218,7 +220,7 @@ public class MainScene {
 		bottomBox.getChildren().addAll(statusBar);
 
 		// Create menuBar
-        menuBar = new MainSceneMenu(this, getDesktop());
+        menuBar = new MainSceneMenu(this, desktop);
         menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
 
 	    // Create BorderPane
@@ -648,11 +650,11 @@ public class MainScene {
 
 		if (result.get() == buttonTypeOne)	{
 			saveOnExit();
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 		}
 		else if (result.get() == buttonTypeTwo)	{
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 		}
 /*
@@ -772,11 +774,11 @@ public class MainScene {
 		MasterClock clock = Simulation.instance().getMasterClock();
 
 		if (type == AUTOSAVE) {
-			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation(fileLocn);
 		}
 		else if (type == SAVE_AS || type == DEFAULT) {
-			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
 
@@ -787,14 +789,14 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
 			}
 		}
-		getDesktop().disposeAnnouncementWindow();
+		desktop.disposeAnnouncementWindow();
 	}
 
 	/**
 	 * Pauses the simulation and opens an announcement window.
 	 */
 	public void pauseSimulation() {
-		getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 		Simulation.instance().getMasterClock().setPaused(true);
 	}
 
@@ -803,7 +805,7 @@ public class MainScene {
 	 */
 	public void unpauseSimulation() {
 		Simulation.instance().getMasterClock().setPaused(false);
-		getDesktop().disposeAnnouncementWindow();
+		desktop.disposeAnnouncementWindow();
 	}
 
 	/**
@@ -811,7 +813,7 @@ public class MainScene {
 	 */
 	public void exitSimulation() {
 
-		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
+		desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
 
 		logger.info("Exiting simulation");
 
@@ -947,11 +949,11 @@ public class MainScene {
 
 		if (result.get() == buttonTypeOne)	{
 			saveOnExit();
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 		}
 		else if (result.get() == buttonTypeTwo)		{
-			getDesktop().openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 		}
 		else if (result.get() == buttonTypeThree)
@@ -962,7 +964,7 @@ public class MainScene {
 	 * Initiates the process of saving a simulation.
 	 */
     public void saveOnExit() {
-		getDesktop().openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
+		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
 

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -73,7 +73,7 @@ implements VehicleOperator, Serializable {
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
 
-    private org.mars_sim.msp.core.LifeSupport support;
+    private org.mars_sim.msp.core.LifeSupportType support;
 
     /** The gender of the person (male or female). */
     private PersonGender gender;
@@ -166,225 +166,16 @@ implements VehicleOperator, Serializable {
 	public void setRole(RoleType type) {
 
 		if (type == RoleType.MAYOR) {
-			getRole().setRoleType(type);
+			getRole().setNewRoleType(type);
 			Job job = JobManager.getJob("Manager");
             if (job != null) {
                 mind.setJob(job, true, JobManager.SETTLEMENT);
             }
 		}
 		else
-			getRole().setRoleType(type);
+			getRole().setNewRoleType(type);
 	}
 
-	public void assignSpecialiststo7Divisions() {
-		// if a person has not been assigned a role, he/she will be mission specialist
-			//int rand = RandomUtil.getRandomInt(1, 2);
-			//System.out.println("rand is "+ rand);
-            Job job = mind.getJob();
-
-            int pop = getSettlement().getAllAssociatedPeople().size();
-            int slot = (int) ((pop - 2 - 7 )/ 7);
-            int missionSlot = 0;
-            int safetySlot = 0;
-            int agriSlot = 0;
-            int engrSlot = 0;
-            int resourceSlot = 0;
-            int scienceSlot = 0;
-            int logSlot = 0;
-
-            if (job.equals(JobManager.getJob("Architect"))) {
-            	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	safetySlot++;
-            }
-            else if (job.equals(JobManager.getJob("Areologist"))) {
-            	getRole().setRoleType(RoleType.MISSION_SPECIALIST);
-            	missionSlot++;
-            }
-            else if (job.equals(JobManager.getJob("Astronomer"))) {
-            	getRole().setRoleType(RoleType.SCIENCE_SPECIALIST);
-            	scienceSlot++;
-            }
-            else if (job.equals(JobManager.getJob("Biologist"))) {
-            	//if (RandomUtil.getRandomInt(1, 2) == 1) {
-            	if (agriSlot < slot) {
-            		getRole().setRoleType(RoleType.AGRICULTURE_SPECIALIST);
-            		agriSlot++;
-            	}
-            	else {
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            		resourceSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Botanist"))) {
-            	getRole().setRoleType(RoleType.AGRICULTURE_SPECIALIST);
-            	agriSlot++;
-            }
-            else if (job.equals(JobManager.getJob("Chef"))) {
-            	getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            	resourceSlot++;
-            }
-            else if (job.equals(JobManager.getJob("Chemist"))) {
-            	//if (RandomUtil.getRandomInt(1, 2) == 1)
-            	if (resourceSlot < slot) {
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            		resourceSlot++;
-            	}
-            	else {
-                	getRole().setRoleType(RoleType.SCIENCE_SPECIALIST);
-                	scienceSlot++;
-            	}
-
-            }
-            else if (job.equals(JobManager.getJob("Doctor"))) {
-            	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	safetySlot++;
-            }
-            else if (job.equals(JobManager.getJob("Driver"))) {
-            	//if (RandomUtil.getRandomInt(1, 2) == 1)
-            	if (missionSlot < slot) {
-                	getRole().setRoleType(RoleType.MISSION_SPECIALIST);
-                	missionSlot++;
-            	}
-            	else if (logSlot < slot) {
-                	getRole().setRoleType(RoleType.LOGISTIC_SPECIALIST);
-                	logSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Engineer"))) {
-            	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            	engrSlot++;
-            }
-            else if (job.equals(JobManager.getJob("Mathematician"))){
-            	//if (RandomUtil.getRandomInt(1, 2) == 1)
-            	if (missionSlot < slot) {
-                	getRole().setRoleType(RoleType.MISSION_SPECIALIST);
-                	missionSlot++;
-            	}
-            	else {
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-                	engrSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Meteorologist"))) {
-            	if (safetySlot < slot) {
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-                	safetySlot++;
-            	}
-            	else {
-	            	getRole().setRoleType(RoleType.MISSION_SPECIALIST);
-	            	missionSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Physicist"))) {
-            	if (engrSlot < slot) {
-            	//if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-                	engrSlot++;
-            	}
-            	else if (scienceSlot < slot) {
-                	getRole().setRoleType(RoleType.SCIENCE_SPECIALIST);
-                	scienceSlot++;
-            	}
-            	else {
-                	getRole().setRoleType(RoleType.LOGISTIC_SPECIALIST);
-                	logSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Technician"))) {
-            	if (engrSlot < slot) {
-            	//if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-                	engrSlot++;
-            	}
-            	else {
-                	getRole().setRoleType(RoleType.LOGISTIC_SPECIALIST);
-                	logSlot++;
-            	}
-            }
-            else if (job.equals(JobManager.getJob("Trader"))) {
-            	if (resourceSlot < slot) {
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            		resourceSlot++;
-            	}
-            	else {
-	            	getRole().setRoleType(RoleType.LOGISTIC_SPECIALIST);
-	            	logSlot++;
-            	}
-            }
-	}
-
-	public void assignSpecialiststo3Divisions() {
-		// if a person has not been assigned a role, he/she will be mission specialist
-			//int rand = RandomUtil.getRandomInt(1, 2);
-			//System.out.println("rand is "+ rand);
-            Job job = mind.getJob();
-
-            int pop = getSettlement().getAllAssociatedPeople().size();
-            int slot = (int) ((pop - 2 - 3 )/ 3);
-            int safetySlot = 0;
-            int engrSlot = 0;
-            int resourceSlot = 0;
-
-            //System.out.println("job is " + job.toString());
-            if (job.equals(JobManager.getJob("Architect"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-            		getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	else
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Areologist")))
-            	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Astronomer")))
-            	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Biologist"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-            		getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	else
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Botanist")))
-            	getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Chef")))
-            	getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Chemist"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	else
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Doctor")))
-            	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Driver")))
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Engineer")))
-            	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Mathematician"))){
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            	else
-                	getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Meteorologist")))
-            	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            else if (job.equals(JobManager.getJob("Physicist"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            	else
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Technician"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-            	else
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            }
-            else if (job.equals(JobManager.getJob("Trader"))) {
-            	if (RandomUtil.getRandomInt(1, 2) == 1)
-                	getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-            	else
-            		getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-            }
-	}
 
     /**
      * Gets the instance of Role for a person.
@@ -508,10 +299,18 @@ implements VehicleOperator, Serializable {
      * @return the person's settlement
      */
     public Settlement getSettlement() {
-        if (LocationSituation.IN_SETTLEMENT == getLocationSituation())
+        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT)
             return (Settlement) getContainerUnit();
+        else if (getLocationSituation() == LocationSituation.OUTSIDE)
+            return (Settlement) getContainerUnit();
+        else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        	//Unit container
+        	//return container.getTopContainerUnit()
+        	Vehicle vehicle = (Vehicle) getContainerUnit();
+        	return (Settlement) vehicle.getSettlement();
+        }
         else
-            return null;
+        	return null;
     }
 
     /**
@@ -679,10 +478,10 @@ implements VehicleOperator, Serializable {
      * Settlement, Vehicle or Equipment.
      * @return Life support system.
      */
-    private LifeSupport getLifeSupport() {
+    private LifeSupportType getLifeSupport() {
 
-        LifeSupport result = null;
-        List<LifeSupport> lifeSupportUnits = new ArrayList<LifeSupport>();
+        LifeSupportType result = null;
+        List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
 
         Settlement settlement = getSettlement();
         if (settlement != null) {
@@ -690,13 +489,13 @@ implements VehicleOperator, Serializable {
         }
         else {
             Vehicle vehicle = getVehicle();
-            if ((vehicle != null) && (vehicle instanceof LifeSupport)) {
+            if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
                 if (BuildingManager.getBuilding(vehicle) != null) {
                     lifeSupportUnits.add(vehicle.getSettlement());
                 }
                 else {
-                    lifeSupportUnits.add((LifeSupport) vehicle);
+                    lifeSupportUnits.add((LifeSupportType) vehicle);
                 }
             }
         }
@@ -705,15 +504,15 @@ implements VehicleOperator, Serializable {
         Iterator<Unit> i = getInventory().getContainedUnits().iterator();
         while (i.hasNext()) {
             Unit contained = i.next();
-            if (contained instanceof LifeSupport) {
-                lifeSupportUnits.add((LifeSupport) contained);
+            if (contained instanceof LifeSupportType) {
+                lifeSupportUnits.add((LifeSupportType) contained);
             }
         }
 
         // Get first life support unit that checks out.
-        Iterator<LifeSupport> j = lifeSupportUnits.iterator();
+        Iterator<LifeSupportType> j = lifeSupportUnits.iterator();
         while (j.hasNext() && (result == null)) {
-            LifeSupport goodUnit = j.next();
+            LifeSupportType goodUnit = j.next();
             if (goodUnit.lifeSupportCheck()) {
                 result = goodUnit;
             }

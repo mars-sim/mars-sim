@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
@@ -507,13 +507,13 @@ public class GoodsManager implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (resource.equals(oxygen))
                 amountNeededSol = config.getOxygenConsumptionRate();
-            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(water))
                 amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+            AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
             if (resource.equals(food)) {
                 amountNeededSol = config.getFoodConsumptionRate();
             }
@@ -531,7 +531,7 @@ public class GoodsManager implements Serializable {
      * @return demand (kg)
      */
     private double getPotableWaterUsageDemand(AmountResource resource) {
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         if (resource.equals(water)) {
             double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -657,13 +657,20 @@ public class GoodsManager implements Serializable {
 
         // Create all farming resources.
         AmountResource wasteWater = AmountResource.findAmountResource("grey water");
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        AmountResource soil = AmountResource.findAmountResource("soil");
         AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
 
         // 2015-01-10 Revised getCropARList()
 //        List<AmountResource> cropARList = getCropARList();
 
-        if (resource.equals(wasteWater) || resource.equals(carbonDioxide)
+        if (resource.equals(water)
+        		|| resource.equals(wasteWater)
+        		|| resource.equals(carbonDioxide)
+        		|| resource.equals(oxygen)
+        		|| resource.equals(soil)
         		|| resource.equals(fertilizer) ) {
 
             // 2014-11-30 Created getValueList()
@@ -675,12 +682,19 @@ public class GoodsManager implements Serializable {
                 Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
                 double amountNeeded = 0D;
+                if (resource.equals(water))
+                    amountNeeded = Crop.WASTE_WATER_NEEDED/2;
                 if (resource.equals(wasteWater))
-                    amountNeeded = Crop.WASTE_WATER_NEEDED;
+                    amountNeeded = Crop.WASTE_WATER_NEEDED/2;
                 else if (resource.equals(carbonDioxide))
                     amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
+                else if (resource.equals(oxygen))
+                    amountNeeded = Crop.OXYGEN_NEEDED;
+                // TODO: soil and fertilizer needs to be estimated differently
+                else if (resource.equals(soil))
+                    amountNeeded = Crop.SOIL_NEEDED_PER_SQM * 10;
                 else if (resource.equals(fertilizer))
-                	amountNeeded = Crop.FERTILIZER_NEEDED * 10 + Crop.FERTILIZER_NEEDED_PER_SQM;
+                	amountNeeded = Crop.FERTILIZER_NEEDED * 10 + 10 * Crop.FERTILIZER_NEEDED_PER_SQM;
                 // Crop.FERTILIZER_NEEDED = 0.001D // a very minute amount needed per timePassing() call if grey water is not available
 
                 // // TODO: very rough estimate now with Crop.FERTILIZER_NEEDED_PER_SQM = 1D // average amount needed when planting a new crop
@@ -2477,21 +2491,21 @@ public class GoodsManager implements Serializable {
 
         // Check food capacity as range limit.
         double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-        double foodCapacity = v.getCargoCapacity(LifeSupport.FOOD);
+        double foodCapacity = v.getCargoCapacity(LifeSupportType.FOOD);
         double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
         double foodRange = distancePerSol * foodSols / 3D;
         if (foodRange < range) range = foodRange;
 
         // Check water capacity as range limit.
         double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-        double waterCapacity = v.getCargoCapacity(LifeSupport.WATER);
+        double waterCapacity = v.getCargoCapacity(LifeSupportType.WATER);
         double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
         double waterRange = distancePerSol * waterSols / 3D;
         if (waterRange < range) range = waterRange;
 
         // Check oxygen capacity as range limit.
         double oxygenConsumptionRate = personConfig.getOxygenConsumptionRate();
-        double oxygenCapacity = v.getCargoCapacity(LifeSupport.OXYGEN);
+        double oxygenCapacity = v.getCargoCapacity(LifeSupportType.OXYGEN);
         double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
         double oxygenRange = distancePerSol * oxygenSols / 3D;
         if (oxygenRange < range) range = oxygenRange;

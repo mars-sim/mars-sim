@@ -28,7 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -213,15 +213,15 @@ class RendezvousVehiclePanel extends WizardPanel {
             		else if (column == 2) 
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
-            			AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            			AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             			result = (int) inv.getAmountResourceStored(oxygen, false);
             		}
                 	else if (column == 4) {
-                		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+                		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
                 		result = (int) inv.getAmountResourceStored(water, false);
                 	}
                 	else if (column == 5) { 
-                		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+                		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
                 		result = (int) inv.getAmountResourceStored(food, false);
                 	}
                 	else if (column == 6) { 

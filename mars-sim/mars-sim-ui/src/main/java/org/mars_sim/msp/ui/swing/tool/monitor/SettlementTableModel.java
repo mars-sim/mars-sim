@@ -14,7 +14,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -147,13 +147,13 @@ extends UnitTableModel {
 
 				case WATER : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource(LifeSupport.WATER));
+							AmountResource.findAmountResource(LifeSupportType.WATER));
 				} break;
 
 
 				case OXYGEN : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource(LifeSupport.OXYGEN));
+							AmountResource.findAmountResource(LifeSupportType.OXYGEN));
 				} break;
 
 				case METHANE : {
@@ -248,7 +248,7 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource(LifeSupport.OXYGEN))) 
+				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN))) 
 					tempColumnNum = OXYGEN;
 				else if (target.equals(AmountResource.findAmountResource("hydrogen"))) 
 					tempColumnNum = HYDROGEN;
@@ -256,7 +256,7 @@ extends UnitTableModel {
 					tempColumnNum = CO2;
 				else if (target.equals(AmountResource.findAmountResource("methane"))) 
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupport.WATER))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("grey water"))) 
 					tempColumnNum = GREY_WATER;
@@ -300,9 +300,9 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
-				AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+				AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
-				AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+				AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 				resourceMap.put(water, getResourceStored(newUnit, water));
 				AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
 				resourceMap.put(hydrogen, getResourceStored(newUnit, hydrogen));

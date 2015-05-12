@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -618,11 +618,11 @@ implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
-            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+            AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
             if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_IN_MONTH_LONG * 3D);
@@ -703,7 +703,7 @@ implements Serializable {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmountNeeded = config.getOxygenConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
  
@@ -720,7 +720,7 @@ implements Serializable {
         }
         
         // Determine water amount needed.
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(water, false);
 
@@ -737,7 +737,7 @@ implements Serializable {
         }
         
         // Determine food amount needed.
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
         double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(food, false);
 

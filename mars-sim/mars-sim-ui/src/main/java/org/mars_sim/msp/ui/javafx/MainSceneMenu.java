@@ -46,20 +46,20 @@ public class MainSceneMenu extends MenuBar  {
 
     //private MainDesktopPane desktop;
 	private CheckMenuItem showFullScreenItem ;
-	
+
 	private Stage stage;
 	private Stage webStage;
 	//private GreenhouseTool greenhouseTool;
-	/** 
+	/**
 	 * Constructor.
 	 * @param mainWindow the main window pane
 	 * @param desktop our main frame
 	 */
-	public MainSceneMenu(MainScene mainScene, MainDesktopPane desktop) {	
+	public MainSceneMenu(MainScene mainScene, MainDesktopPane desktop) {
 		super();
 
 		this.stage = mainScene.getStage();
-       
+
         // --- Menu File
         Menu menuFile = new Menu("File");
         MenuItem newItem = new MenuItem("New...");
@@ -79,7 +79,7 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem3 = new SeparatorMenuItem();
 
         menuFile.getItems().addAll(newItem, SeparatorMenuItem1, openItem, openAutoSaveItem, SeparatorMenuItem2, saveItem, saveAsItem, SeparatorMenuItem3, exitItem);
-        
+
         // --- Menu Tools
         Menu menuTools = new Menu("Tools");
         CheckMenuItem marsNavigatorItem = new CheckMenuItem("Mars Navigator");
@@ -103,26 +103,26 @@ public class MainSceneMenu extends MenuBar  {
         CheckMenuItem webToolItem = new CheckMenuItem("Online Tool");
         webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
-        
+
         menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,
-        		monitorToolItem, missionToolItem,settlementMapToolItem, 
+        		monitorToolItem, missionToolItem,settlementMapToolItem,
         		scienceToolItem, resupplyToolItem, marsNetItem, webToolItem);
-        
-        
+
+
         // --- Menu Settings
         Menu menuSettings = new Menu("Settings");
 
         showFullScreenItem = new CheckMenuItem("Full Screen Mode");
         showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		showFullScreenItem.setSelected(true);
-		
+
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
         showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-        
+
         SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
-        
+
         MenuItem volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
         MenuItem volumeDownItem = new MenuItem("Volume Down");
@@ -131,26 +131,26 @@ public class MainSceneMenu extends MenuBar  {
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
         menuSettings.getItems().addAll(showFullScreenItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
-        
+
         // --- Menu Notification
         Menu menuNotification = new Menu("Notification");
-        
+
         Menu newsPaneItem = new Menu("News Pane");
-        
+
         CheckMenuItem slideFromTop = new CheckMenuItem("Slide from Top");
         slideFromTop.setSelected(true);
-       
+
         CheckMenuItem showHideNewsPane = new CheckMenuItem("Toggle Show/Hide");
 		//showNewsPaneItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 		showHideNewsPane.setSelected(false);
-		
+
 		newsPaneItem.getItems().addAll(slideFromTop, showHideNewsPane);
-		
+
         Menu messageTypeItem = new Menu("Message Type");
         CheckMenuItem medicalItem = new CheckMenuItem("Medical");
         CheckMenuItem malfunctionItem = new CheckMenuItem("Malfunction");
         messageTypeItem.getItems().addAll(medicalItem, malfunctionItem);
-        
+
         Menu displayTimeItem = new Menu("Display Time");
         ToggleGroup displayTimeToggleGroup = new ToggleGroup();
         RadioMenuItem confirmEachItem = new RadioMenuItem("Confirm each");
@@ -162,7 +162,7 @@ public class MainSceneMenu extends MenuBar  {
         RadioMenuItem oneSecondItem = new RadioMenuItem("1 second");
         oneSecondItem.setToggleGroup(displayTimeToggleGroup);
         displayTimeItem.getItems().addAll(confirmEachItem, threeSecondsItem, twoSecondsItem, oneSecondItem);
-        
+
         Menu queueSizeItem = new Menu("Queue Size");
         ToggleGroup queueSizeToggleGroup = new ToggleGroup();
         RadioMenuItem unlimitedItem = new RadioMenuItem("Unlimited");
@@ -174,7 +174,7 @@ public class MainSceneMenu extends MenuBar  {
         queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
 
         menuNotification.getItems().addAll(newsPaneItem, messageTypeItem,displayTimeItem,queueSizeItem);
-        
+
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About");
@@ -187,52 +187,52 @@ public class MainSceneMenu extends MenuBar  {
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem5, userGuideItem);
 
         super.getMenus().addAll(menuFile, menuTools, menuSettings, menuNotification, menuHelp);
-		
-  
+
+
         newItem.setOnAction(new EventHandler<ActionEvent>() {
-     	   @Override 
+     	   @Override
      	   public void handle(ActionEvent e) {
      		   mainScene.newSimulation();
      	   }
      	});
-        
+
         openItem.setOnAction(new EventHandler<ActionEvent>() {
-     	   @Override 
+     	   @Override
      	   public void handle(ActionEvent e) {
      		   mainScene.loadSimulation(MainScene.OTHER);
      	   }
      	});
-        
+
         openAutoSaveItem.setOnAction(new EventHandler<ActionEvent>() {
-     	   @Override 
+     	   @Override
      	   public void handle(ActionEvent e) {
      		   mainScene.loadSimulation(MainScene.AUTOSAVE);
      	   }
      	});
-        
+
         exitItem.setOnAction(new EventHandler<ActionEvent>() {
-        	   @Override 
+        	   @Override
         	   public void handle(ActionEvent e) {
         		   //mainScene.exitSimulation();
         		   //mainScene.getStage().close();
         		   mainScene.alertOnExit();
         	   }
         	});
-        
+
         saveItem.setOnAction(new EventHandler<ActionEvent>() {
-     	   @Override 
+     	   @Override
      	   public void handle(ActionEvent e) {
      		   mainScene.saveSimulation(MainScene.DEFAULT);
      	   }
      	});
-        
+
         saveAsItem.setOnAction(new EventHandler<ActionEvent>() {
-      	   @Override 
+      	   @Override
       	   public void handle(ActionEvent e) {
       		   mainScene.saveSimulation(MainScene.SAVE_AS);
       	   }
-      	});        
-        
+      	});
+
         marsNavigatorItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -241,7 +241,7 @@ public class MainSceneMenu extends MenuBar  {
     			//if (desktop == null) System.out.println("MainWindowFXMenu : marsNav. ");
             }
         });
-        
+
         searchToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -249,7 +249,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(SearchWindow.NAME);
             }
         });
-        
+
         timeToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -257,7 +257,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(TimeWindow.NAME);
             }
         });
-        
+
         monitorToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -265,7 +265,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(MonitorWindow.NAME);
             }
         });
-        
+
         missionToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -273,7 +273,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(MissionWindow.NAME);
             }
         });
-        
+
         settlementMapToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -281,7 +281,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(SettlementWindow.NAME);
             }
         });
-        
+
         scienceToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -289,7 +289,7 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(ScienceWindow.NAME);
             }
         });
-        
+
         resupplyToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -297,23 +297,23 @@ public class MainSceneMenu extends MenuBar  {
     			else desktop.closeToolWindow(ResupplyWindow.NAME);
             }
         });
-        
+
         marsNetItem.setOnAction(e ->  {
     			if (marsNetItem.isSelected())
-    				mainScene.openMarsNet();	
-    			else 
+    				mainScene.openMarsNet();
+    			else
     				mainScene.closeMarsNet();
         });
-        
+
         webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {
     				webStage = startWebTool();
     				webStage.show();
     			}
-    			else 
+    			else
     				webStage.close() ;
         });
-        
+
         showFullScreenItem.setOnAction(e -> {
             	boolean isFullScreen =  mainScene.getStage().isFullScreen();
             	if (!isFullScreen) {
@@ -321,7 +321,7 @@ public class MainSceneMenu extends MenuBar  {
             		showFullScreenItem.setSelected(true);
 	            	mainScene.getStage().setFullScreen(true);
             	}
-            	else { 
+            	else {
             		showFullScreenItem.setSelected(false);
 	            	mainScene.getStage().setFullScreen(false);
             	}
@@ -336,7 +336,7 @@ public class MainSceneMenu extends MenuBar  {
                 	showHideNewsPane.setSelected(false);
                 }
         });
- 
+
 		slideFromTop.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowFromTop()) {
                 	mainScene.getNotificationPane().setShowFromTop(true);
@@ -347,8 +347,8 @@ public class MainSceneMenu extends MenuBar  {
                 	slideFromTop.setText("Slide from Bottom");
                 	slideFromTop.setSelected(true);
                 }
-        });		      
-	        
+        });
+
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -356,7 +356,7 @@ public class MainSceneMenu extends MenuBar  {
     			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
             }
         });
-		
+
         volumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -364,14 +364,14 @@ public class MainSceneMenu extends MenuBar  {
     			desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
             }
         });
-        
+
         muteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
     			desktop.getSoundPlayer().setMute(muteItem.isSelected());
             }
         });
-		
+
         aboutItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -381,7 +381,7 @@ public class MainSceneMenu extends MenuBar  {
     			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
     		}
         });
- 
+
         tutorialItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -400,20 +400,20 @@ public class MainSceneMenu extends MenuBar  {
     			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
     			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
     		}
-        });		
+        });
 	}
-	
+
 	public Stage startWebTool() {
-		
+
 	    Stage webStage = new Stage();
-	    
+
 	    final WebView browser = new WebView();
 	    final WebEngine webEngine = browser.getEngine();
 
 	    ScrollPane scrollPane = new ScrollPane();
 	    scrollPane.setFitToWidth(true);
 	    scrollPane.setContent(browser);
-	    
+
 	    webEngine.getLoadWorker().stateProperty()
 	        .addListener(new ChangeListener<State>() {
 	          @Override
@@ -423,20 +423,21 @@ public class MainSceneMenu extends MenuBar  {
 	            }
 	          }
 	        });
-	    
-	    webEngine.load("http://mars-sim.sourceforge.net/#development");
-	    
-	    
+
+	    //webEngine.load("http://mars-sim.sourceforge.net/#development");
+	    webEngine.load("http://jquerymy.com/");
+
+
 	    Scene webScene = new Scene(scrollPane);
 	    webStage.setScene(webScene);
-	    
+
 	    return webStage;
 	}
-	
+
 	// Toggle the full screen mode off
 	public void exitFullScreen() {
 		showFullScreenItem.setSelected(false);
 	}
 
-	
+
 }

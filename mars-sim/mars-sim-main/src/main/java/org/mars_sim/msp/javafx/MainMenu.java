@@ -214,6 +214,7 @@ public class MainMenu {
 
 	   Platform.runLater(() -> {
 		   final Scene scene = mainScene.initializeScene();
+		   mainScene.prepareTransportWizard();
 	   //});
 		   //System.out.println("done calling mainScene.initializeScene()");
 	   //Platform.runLater(() -> {
@@ -224,6 +225,7 @@ public class MainMenu {
 		   stage.setScene(scene);
 		   stage.show();
 	   });
+
 
 	   //System.out.println("done running runMainScene()");
 

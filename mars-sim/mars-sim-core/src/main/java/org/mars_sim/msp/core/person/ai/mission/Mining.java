@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -930,7 +930,7 @@ extends RoverMission {
                 .getPersonConfiguration();
 
         // Check food capacity as time limit.
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodConsumptionRate = config.getFoodConsumptionRate();
         double foodCapacity = vInv.getAmountResourceCapacity(food, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
@@ -948,7 +948,7 @@ extends RoverMission {
             timeLimit = dessert1TimeLimit;
  */       
         // Check water capacity as time limit.
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate();
         double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
@@ -958,7 +958,7 @@ extends RoverMission {
         }
 
         // Check oxygen capacity as time limit.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenConsumptionRate = config.getOxygenConsumptionRate();
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity
@@ -1102,7 +1102,7 @@ extends RoverMission {
         int crewNum = getPeopleNumber();
 
         // Determine life support supplies needed for trip.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
                 * timeSols * crewNum;
         if (result.containsKey(oxygen)) {
@@ -1110,7 +1110,7 @@ extends RoverMission {
         }
         result.put(oxygen, oxygenAmount);
 
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()
                 * timeSols * crewNum;
         if (result.containsKey(water)) {
@@ -1118,7 +1118,7 @@ extends RoverMission {
         }
         result.put(water, waterAmount);
 
-        AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate()
                 * timeSols * crewNum;
         if (result.containsKey(food)) {

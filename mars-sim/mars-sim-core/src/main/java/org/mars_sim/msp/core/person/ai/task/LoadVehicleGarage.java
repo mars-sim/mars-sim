@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -981,9 +981,9 @@ implements Serializable {
 
         if (!isDessert) {
 	    	// Only life support resources are required at settlement at this time.
-	    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-	    	AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
-	    	AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+	    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	    	AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+	    	AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		
 	    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
 	    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
