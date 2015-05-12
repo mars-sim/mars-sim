@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -52,7 +52,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class Settlement
 extends Structure
-implements LifeSupport {
+implements LifeSupportType {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -98,7 +98,6 @@ implements LifeSupport {
     private boolean resourceProcessOverride = false;
     /** Override flag for construction/salvage mission creation at settlement. */
     private boolean constructionOverride = false;
-
     /** The settlement's building manager. */
     protected BuildingManager buildingManager;
     /** The settlement's building connector manager. */
@@ -115,6 +114,7 @@ implements LifeSupport {
 
     private Inventory inv;
 
+    private ChainOfCommand chainOfCommand;
     /** The settlement's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
     /** Amount of time (millisols) that the settlement has had zero population. */
@@ -160,7 +160,7 @@ implements LifeSupport {
 
         //count++;
         //logger.info("constructor 3 : count is " + count);
-        inv = getInventory();
+        this.inv = getInventory();
         // Set inventory total mass capacity.
         inv.addGeneralCapacity(Double.MAX_VALUE);
         // Initialize building manager
@@ -177,6 +177,8 @@ implements LifeSupport {
         thermalSystem = new ThermalSystem(this);
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<ScienceType, Double>(0);
+
+        chainOfCommand = new ChainOfCommand(this);
     }
 
 	/**
@@ -370,10 +372,10 @@ implements LifeSupport {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
                 result = false;
-            AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+            AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (getInventory().getAmountResourceStored(water, false) <= 0D)
                 result = false;
 
@@ -424,7 +426,7 @@ implements LifeSupport {
      * @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) {
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenTaken = amountRequested;
         double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
@@ -457,7 +459,7 @@ implements LifeSupport {
      * @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested) {
-        AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterTaken = amountRequested;
         double waterLeft = getInventory().getAmountResourceStored(water, false);
         if (waterTaken > waterLeft)
@@ -1159,6 +1161,10 @@ implements LifeSupport {
      */
     public int getInitialNumOfRobots() {
         return initialNumOfRobots;
+    }
+
+    public ChainOfCommand getChainOfCommand() {
+    	return chainOfCommand;
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -43,7 +44,9 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -289,6 +292,7 @@ implements ActionListener {
 				roleTF.setText("N/A");
 				starRater.disable();
 			} else {
+				//if (clock == null)
 				MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 		        // check for the passing of each day
 		        int solElapsed = MarsClock.getSolOfYear(clock);
@@ -299,13 +303,23 @@ implements ActionListener {
 		        	solCache = solElapsed;
 		        }
 
-		        int pop = person.getSettlement().getAllAssociatedPeople().size();
+		        int pop = 0;
+		        Settlement settlement = null;
+		        if (person.getSettlement() != null)
+		        	settlement = person.getSettlement();
+		        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+		        	settlement = (Settlement) person.getTopContainerUnit();
+		        }
+		        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
+		        	settlement = (Settlement) vehicle.getSettlement();
+		        }
+
+		        pop = settlement.getAllAssociatedPeople().size();
 
 		        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
-
 		        	// If this request is at least one day ago
 			        if ( solElapsed != solCache && solElapsed > solCache + 1) {
-
 			        	//String selectedJobStr = (String) jobComboBox.getSelectedItem();
 			        	//String jobStrCache = person.getMind().getJob().getName(person.getGender());
 

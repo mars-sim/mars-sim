@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -101,8 +101,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupport.WATER), 40D);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupport.OXYGEN), 10D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.OXYGEN), 10D);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -145,8 +145,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupport.WATER), 40D);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupport.OXYGEN), 10D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
+            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.OXYGEN), 10D);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -307,8 +307,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupport.WATER), false);
-                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupport.OXYGEN), false);
+                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupportType.WATER), false);
+                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupportType.OXYGEN), false);
                             if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
                                 result.add(rover);
                             }

@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -262,14 +263,21 @@ implements Serializable {
 
 		        int population = 0;
 		        if (person.getSettlement() != null) {
+		        	ChainOfCommand cc = person.getSettlement().getChainOfCommand();
 		        	population = person.getSettlement().getAllAssociatedPeople().size();
 			        // Assign a role associate with
-	                if (population >= UnitManager.POPULATION_WITH_MAYOR)
-	                	person.assignSpecialiststo7Divisions();
-	                else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER)
-	                	person.assignSpecialiststo3Divisions();
-	                else
-	                	person.assignSpecialiststo3Divisions();
+	                if (population >= UnitManager.POPULATION_WITH_MAYOR) {
+	                	cc.set7Divisions(true);
+	                	cc.assignSpecialiststo7Divisions(person);
+	                }
+	                //else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+	                //	person.getSettlement().set3Divisions(true);
+	                //	UnitManager.assignSpecialiststo3Divisions(person);
+	                //}
+	                else {
+	                	cc.set3Divisions(true);
+	                	cc.assignSpecialiststo3Divisions(person);
+	                }
 		        }
     	    }
     }

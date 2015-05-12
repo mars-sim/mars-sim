@@ -140,7 +140,7 @@ implements Serializable {
     	timeMap = ArrayListMultimap.create();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
+        dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
        	// 2014-12-12 Added computeDryMass()
@@ -708,7 +708,7 @@ implements Serializable {
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file
-	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupport.WATER, true);
+	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupportType.WATER, true);
 		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;
 		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);
     }
@@ -860,13 +860,13 @@ implements Serializable {
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
 		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorite", inv, true);
-		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupport.WATER, inv, true);
+		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 	}
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
-		Storage.storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupport.FOOD, inv);
+		Storage.storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupportType.FOOD, inv);
  	}
 
     /**

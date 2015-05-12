@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -714,21 +714,21 @@ public final class TradeUtil {
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		Good oxygenGood = GoodsUtil.getResourceGood(oxygen);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		Good foodGood = GoodsUtil.getResourceGood(food);
 		neededResources.put(foodGood, (int) foodAmount);
 

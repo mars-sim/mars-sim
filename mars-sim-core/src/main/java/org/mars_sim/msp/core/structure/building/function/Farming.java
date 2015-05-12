@@ -366,7 +366,7 @@ implements Serializable {
     }
 
     public static double addSupply(double supply, double demand, Settlement settlement, String buildingName) {
-        AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.FOOD);
+        AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
         supply += settlement.getInventory().getAmountResourceStored(food, false);
 
         double growingAreaValue = demand / (supply + 1D);
@@ -651,8 +651,8 @@ implements Serializable {
     public double getEstimatedHarvestPerOrbit() {
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;
-        return maxHarvestinKg * aveGrowingCyclesPerOrbit;
+        double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
+        return maxHarvestinKg * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
     }
 
     @Override

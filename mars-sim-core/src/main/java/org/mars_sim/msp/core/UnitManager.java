@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -68,6 +69,9 @@ implements Serializable {
 
     // Data members
 	private int solCache;
+    private int safetySlot = 0;
+    private int engrSlot = 0;
+    private int resourceSlot = 0;
     /** Collection of all units. */
     private Collection<Unit> units;
     /** List of possible settlement names. */
@@ -693,17 +697,20 @@ implements Serializable {
                     person.getFavorite().setFavoriteDessert(dessert);
                     person.getFavorite().setFavoriteActivity(activity);
 
-
                     // 2015-04-30 Assign a job to everyone
                     person.getMind().assignJob();
 
+                    ChainOfCommand cc = settlement.getChainOfCommand();
+
                     // 2015-04-30 Assign a role to everyone
-                    if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR)
-                    	person.assignSpecialiststo7Divisions();
-                    else //if (population >= POPULATION_WITH_SUB_COMMANDER)
-                    	//person.assignSpecialiststo3Divisions();
-                    //else
-                    	person.assignSpecialiststo3Divisions();
+                    if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR) {
+                        cc.set7Divisions(true);
+                    	cc.assignSpecialiststo7Divisions(person);
+                    }
+                    else {
+                        cc.set3Divisions(true);
+                        cc.assignSpecialiststo3Divisions(person);
+                    }
                 } // end of while
 
                 // 2015-04-30 Assign head and chiefs
@@ -720,8 +727,23 @@ implements Serializable {
         }
     }
 
+
     // 2015-04-28 Added establishCommand()
     private void establishCommand(Settlement settlement, int pop) {
+
+    	electCommanders(settlement, RoleType.COMMANDER, pop);
+        // pop < POPULATION_WITH_MAYOR
+        if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+        	//electCommanders(settlement, RoleType.SUB_COMMANDER, pop);
+            electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+            electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+            electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+        }
+
+    }
+
+    // 2015-05-11 Added electCommanders()
+    public void electCommanders(Settlement settlement, RoleType role, int pop) {
     	Collection<Person> people = settlement.getAllAssociatedPeople();
     	Person cc = null;
     	int cc_leadership = 0;
@@ -801,24 +823,29 @@ implements Serializable {
 
 	        }
         }
-
         // TODO: look at other attributes and/or skills when comparing individuals
-
         cc.setRole(RoleType.COMMANDER);
-        // pop < POPULATION_WITH_MAYOR
-        if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+
+        if (pop >= POPULATION_WITH_SUB_COMMANDER)
         	cv.setRole(RoleType.SUB_COMMANDER);
-            electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
-            electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
-            electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
-        }
-        else ;// no chief are needed
-
     }
-
 
     // 2015-04-30 Added establishGovernment()
     private void establishGovernment(Settlement settlement) {
+        electMayor(settlement, RoleType.MAYOR);
+
+        electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
+        electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+        electChief(settlement, RoleType.CHIEF_OF_MISSION_PLANNING);
+        electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+        electChief(settlement, RoleType.CHIEF_OF_SCIENCE);
+        electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+        electChief(settlement, RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS);
+
+    }
+
+    // 2015-05-11 Added electMayor()
+    public void electMayor(Settlement settlement, RoleType role) {
     	Collection<Person> people = settlement.getAllAssociatedPeople();
     	Person mayorCandidate = null;
     	int m_leadership = 0;
@@ -851,19 +878,10 @@ implements Serializable {
 
         mayorCandidate.setRole(RoleType.MAYOR);
 
-        electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
-        electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
-        electChief(settlement, RoleType.CHIEF_OF_MISSION_PLANNING);
-        electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
-        electChief(settlement, RoleType.CHIEF_OF_SCIENCE);
-        electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
-        electChief(settlement, RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS);
-
     }
 
-
     // 2015-04-30 Added electChief()
-    private void electChief(Settlement settlement, RoleType role) {
+    public void electChief(Settlement settlement, RoleType role) {
     	//System.out.println("role is "+ role);
     	Collection<Person> people = settlement.getAllAssociatedPeople();
 

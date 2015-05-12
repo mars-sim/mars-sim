@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -573,7 +573,7 @@ implements Serializable {
                 Inventory entityInv = person.getContainerUnit().getInventory();
 
                 // Unload oxygen from suit.
-                AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+                AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
                 double oxygenAmount = suitInv.getAmountResourceStored(oxygen, false);
                 double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true, false);
                 if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
@@ -587,7 +587,7 @@ implements Serializable {
                 catch (Exception e) {}
 
                 // Unload water from suit.
-                AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+                AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
                 double waterAmount = suitInv.getAmountResourceStored(water, false);
                 double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true, false);
                 if (waterAmount > waterCapacity) waterAmount = waterCapacity;

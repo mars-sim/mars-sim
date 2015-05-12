@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -217,7 +217,7 @@ implements Serializable {
      * @param config person configuration.
      * @return True still alive.
      */
-    boolean timePassing(double time, LifeSupport support,
+    boolean timePassing(double time, LifeSupportType support,
             PersonConfig config) {
 
         boolean illnessEvent = false;
@@ -330,7 +330,7 @@ implements Serializable {
      * @param config robot configuration.
      * @return True still alive.
      */
-    public boolean timePassing(double time, LifeSupport support,
+    public boolean timePassing(double time, LifeSupportType support,
             RobotConfig config) {
 /*
     	//1. Check malfunction
@@ -452,7 +452,7 @@ implements Serializable {
      */
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
-		consumePackedFood(amount, container, LifeSupport.FOOD);
+		consumePackedFood(amount, container, LifeSupportType.FOOD);
 
     }
 
@@ -521,7 +521,7 @@ implements Serializable {
      * @return new problem added.
      * @throws Exception if error consuming oxygen.
      */
-    private boolean consumeOxygen(LifeSupport support, double amount) {
+    private boolean consumeOxygen(LifeSupportType support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
 
         return checkResourceConsumption(amountRecieved, amount / 2D,
@@ -535,7 +535,7 @@ implements Serializable {
      * @return new problem added.
      * @throws Exception if error consuming water.
      */
-    private boolean consumeWater(LifeSupport support, double amount) {
+    private boolean consumeWater(LifeSupportType support, double amount) {
         double amountReceived = support.provideWater(amount);
 
         return checkResourceConsumption(amountReceived, amount / 2D,
@@ -582,7 +582,7 @@ implements Serializable {
      * @param pressure minimum air pressure person requires (in Pa)
      * @return new problem added.
      */
-    private boolean requireAirPressure(LifeSupport support, double pressure) {
+    private boolean requireAirPressure(LifeSupportType support, double pressure) {
         return checkResourceConsumption(support.getAirPressure(), pressure,
                 MIN_VALUE, getMedicalManager().getDecompression());
     }
@@ -593,7 +593,7 @@ implements Serializable {
      * @param temperature minimum temperature person requires (in degrees Celsius)
      * @return new problem added.
      */
-    private boolean requireTemperature(LifeSupport support, double minTemperature,
+    private boolean requireTemperature(LifeSupportType support, double minTemperature,
             double maxTemperature) {
 
         boolean freeze = checkResourceConsumption(support.getTemperature(),

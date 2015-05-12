@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -356,9 +356,9 @@ implements Serializable {
         EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {
             carryMass += suit.getMass();
-            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
-            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
+            AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
             carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
         }
         double carryCapacity = person.getInventory().getGeneralCapacity();

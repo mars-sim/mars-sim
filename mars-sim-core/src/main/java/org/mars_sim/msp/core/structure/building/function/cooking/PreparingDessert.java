@@ -465,7 +465,7 @@ implements Serializable {
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file
-    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupport.WATER, inv, true);
+    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;
 		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);
     }

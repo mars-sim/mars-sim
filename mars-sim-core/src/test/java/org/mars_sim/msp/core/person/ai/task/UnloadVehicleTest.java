@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttribute;
@@ -37,9 +37,9 @@ extends TestCase {
 
     public void testUnloadingPhase() throws Exception {
 		
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-		AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
-		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		AmountResource methane = AmountResource.findAmountResource("methane");
 
         String resourceName = "hammer";

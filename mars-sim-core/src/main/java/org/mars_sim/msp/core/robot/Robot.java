@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -331,7 +331,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         if (health.getDeathDetails() == null) {
 
             RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
-            LifeSupport support = getLifeSupport();
+            LifeSupportType support = getLifeSupport();
 
             // Pass the time in the physical condition first as this may
             // result in death.
@@ -420,10 +420,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
      * Settlement, Vehicle or Equipment.
      * @return Life support system.
      */
-    private LifeSupport getLifeSupport() {
+    private LifeSupportType getLifeSupport() {
 
-        LifeSupport result = null;
-        List<LifeSupport> lifeSupportUnits = new ArrayList<LifeSupport>();
+        LifeSupportType result = null;
+        List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
 
         Settlement settlement = getSettlement();
         if (settlement != null) {
@@ -431,13 +431,13 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         }
         else {
             Vehicle vehicle = getVehicle();
-            if ((vehicle != null) && (vehicle instanceof LifeSupport)) {
+            if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
                 if (BuildingManager.getBuilding(vehicle) != null) {
                     lifeSupportUnits.add(vehicle.getSettlement());
                 }
                 else {
-                    lifeSupportUnits.add((LifeSupport) vehicle);
+                    lifeSupportUnits.add((LifeSupportType) vehicle);
                 }
             }
         }
@@ -446,16 +446,16 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         Iterator<Unit> i = getInventory().getContainedUnits().iterator();
         while (i.hasNext()) {
             Unit contained = i.next();
-            if (contained instanceof LifeSupport) {
-                lifeSupportUnits.add((LifeSupport) contained);
+            if (contained instanceof LifeSupportType) {
+                lifeSupportUnits.add((LifeSupportType) contained);
             }
         }
 
         // TODO: turn off the checking of oxygen and water for robot
         // Get first life support unit that checks out.
-        Iterator<LifeSupport> j = lifeSupportUnits.iterator();
+        Iterator<LifeSupportType> j = lifeSupportUnits.iterator();
         while (j.hasNext() && (result == null)) {
-            LifeSupport goodUnit = j.next();
+            LifeSupportType goodUnit = j.next();
             if (goodUnit.lifeSupportCheck()) {
                 result = goodUnit;
             }

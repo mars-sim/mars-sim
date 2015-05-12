@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -46,7 +47,7 @@ implements Serializable {
 	public static final double SOIL_NEEDED_PER_SQM = 1D;
 
 	//  Be sure that FERTILIZER_NEEDED is static, but NOT "static final"
-	public static double FERTILIZER_NEEDED = 0.001D;  // a very minute amount needed per timePassing() call if grey water is not available
+	public static double FERTILIZER_NEEDED = 0.0001D;  // a very minute amount needed per unit time, called if grey water is not available
 
 	public static final double FERTILIZER_NEEDED_PER_SQM = 1D; // amount needed when planting a new crop
 
@@ -317,7 +318,7 @@ implements Serializable {
 				// 2014-10-07 modified parameter list to include crop name
 				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired;
 				// Store the crop harvest
-				storeAnResource(lastHarvest, cropName);
+				Storage.storeAnResource(lastHarvest, cropName, inv);
 				//logger.info("addWork() : " + cropName + " lastHarvest " + Math.round(lastHarvest * 1000.0)/1000.0);
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
@@ -329,7 +330,7 @@ implements Serializable {
 				double modifiedHarvest = actualHarvest * workTime / harvestingWorkRequired;
 				//logger.info("addWork() : " + cropName + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
 				// Store the crop harvest
-				storeAnResource(modifiedHarvest, cropName);
+				Storage.storeAnResource(modifiedHarvest, cropName, inv);
 				remainingWorkTime = 0D;
 				generateCropWaste(modifiedHarvest);
 			}
@@ -341,7 +342,7 @@ implements Serializable {
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() +cropType.getEdibleBiomass());
-		storeAnResource(amountCropWaste, "Crop Waste");
+		Storage.storeAnResource(amountCropWaste, "Crop Waste", inv);
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 
@@ -350,7 +351,7 @@ implements Serializable {
      * Stores an resource
      * @param amount
      * @param name
-     */
+
 	// 2015-02-06 Added storeAnResource()
     public void storeAnResource(double amount, String name) {
     	try {
@@ -369,7 +370,7 @@ implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-
+     */
 
 	/**
 	 * Time passing for crop.
@@ -441,7 +442,7 @@ implements Serializable {
 						logger.info("Crop " + cropName + " at " + settlement.getName() + " died.");
 						// 2015-02-06 Added Crop Waste
 						double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-						storeAnResource(amountCropWaste, "Crop Waste");
+						Storage.storeAnResource(amountCropWaste, "Crop Waste", inv);
 						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
 					}
 
@@ -452,7 +453,7 @@ implements Serializable {
 						logger.info("The seedlings of " + cropName + " at " + settlement.getName() + " did not survive.");
 						// 2015-02-06 Added Crop Waste
 						double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-						storeAnResource(amountCropWaste, "Crop Waste");
+						Storage.storeAnResource(amountCropWaste, "Crop Waste", inv);
 						logger.info("timePassing() : " + amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
 					}
 				}
@@ -485,8 +486,11 @@ implements Serializable {
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 		// get the current time
-		MarsClock clock = masterClock.getMarsClock();
-	    int currentMillisols = (int) clock.getMillisol();
+
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+
+	    int currentMillisols = (int) marsClock.getMillisol();
 
 		// 2015-04-09 Added calculation based on solar irradiance and artificial lighting
 		double PAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
@@ -512,7 +516,7 @@ implements Serializable {
 			dailyPARCache = dailyPARCache + instantaneousPAR;
 	    }
 	        // check for the passing of each day
-	    int newSol = MarsClock.getSolOfYear(clock);
+	    int newSol = MarsClock.getSolOfYear(marsClock);
 		if (newSol != solCache) {
 			//logger.info("Crop.java : calculateHarvestModifier() : instantaneousPAR is "+instantaneousPAR);
 			// the crop has memory of the past lighting condition
@@ -576,9 +580,11 @@ implements Serializable {
 			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
 			double diff = wasteWaterUsed - wasteWaterAvailable;
 			waterUsed = consumeWater(diff);
+			Storage.retrieveAnResource(FERTILIZER_NEEDED, "fertilizer", inv, true);
 			wasteWaterUsed = wasteWaterAvailable;
 		}
-		retrieveAnResource(wasteWater, wasteWaterUsed);
+		Storage.retrieveAnResource(wasteWaterUsed, "grey water", inv, true);
+		//retrieveAnResource(wasteWater, wasteWaterUsed);
 
 		// 2015-01-25 Added waterUsed and combinedWaterUsed
 		double combinedWaterUsed = wasteWaterUsed + waterUsed;
@@ -590,17 +596,18 @@ implements Serializable {
 
 		// Amount of water generated through recycling
 		double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;
-		storeAnResource(waterAmount, org.mars_sim.msp.core.LifeSupport.WATER);
+		Storage.storeAnResource(waterAmount, LifeSupportType.WATER, inv);
 
 		if (sunlightModifier <= .5) {
-			AmountResource o2ar = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.OXYGEN);
+			AmountResource o2ar = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 			double o2Required = factor * maxPeriodHarvest * OXYGEN_NEEDED;
 			double o2Available = inv.getAmountResourceStored(o2ar, false);
 			double o2Used = o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			retrieveAnResource(o2ar, o2Used);
+			//retrieveAnResource(o2ar, o2Used);
+			Storage.retrieveAnResource(o2Used, LifeSupportType.OXYGEN, inv, true);
 
 			double o2Modifier =  o2Used / o2Required * .5D + .5D;
 			harvestModifier = harvestModifier * o2Modifier;
@@ -608,7 +615,7 @@ implements Serializable {
 
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * CO2_GENERATION_RATE;
-			storeAnResource(co2Amount, "carbon dioxide");
+			Storage.storeAnResource(co2Amount, "carbon dioxide", inv);
 		}
 
 		else if (sunlightModifier > .5) {
@@ -621,7 +628,8 @@ implements Serializable {
 
 			if (carbonDioxideUsed > carbonDioxideAvailable)
 				carbonDioxideUsed = carbonDioxideAvailable;
-			retrieveAnResource(carbonDioxide, carbonDioxideUsed);
+			//retrieveAnResource(carbonDioxide, carbonDioxideUsed);
+			Storage.retrieveAnResource(carbonDioxideUsed, "carbon dioxide", inv, true);
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
 			double co2Modifier = carbonDioxideUsed / carbonDioxideRequired * .5D + .5D;
@@ -630,7 +638,7 @@ implements Serializable {
 
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * OXYGEN_GENERATION_RATE;
-			storeAnResource(oxygenAmount, org.mars_sim.msp.core.LifeSupport.OXYGEN);
+			Storage.storeAnResource(oxygenAmount, LifeSupportType.OXYGEN, inv);
 
 		}
 
@@ -665,7 +673,7 @@ implements Serializable {
 
 		*/
 
-		double amountFertilizer = retrieveAnResource("fertilizer", FERTILIZER_NEEDED);
+		//double amountFertilizer = retrieveAnResource("fertilizer", FERTILIZER_NEEDED);
 		//System.out.println("fertilizer used when grey water is not available: " + amountFertilizer);
 		double amountWater = retrieveAnResource("water", waterRequired);
 
@@ -676,7 +684,7 @@ implements Serializable {
 	 * Retrieves an amount from an Amount Resource.
 	 * @param AmountResource resource
 	 * @param double amount
-	 */
+
 	// 2015-01-25 Added retrieveAnResource()
 	public void retrieveAnResource(AmountResource resource, double amount) {
 		try {
@@ -688,11 +696,12 @@ implements Serializable {
 	        logger.log(Level.SEVERE,e.getMessage());
 		}
 	}
+	*/
 	   /**
      * Retrieves the resource
      * @param name
      * @parama requestedAmount
-     */
+    */
     //2015-02-28 Added retrieveAnResource()
     public double retrieveAnResource(String name, double requestedAmount) {
     	try {
@@ -715,6 +724,7 @@ implements Serializable {
 
     	return requestedAmount;
     }
+
 
 
 	/**

@@ -30,7 +30,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -236,15 +236,15 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2) 
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
-						AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+						AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 						result = (int) inv.getAmountResourceStored(oxygen, false);
 					}
 					else if (column == 4) {
-						AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+						AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 						result = (int) inv.getAmountResourceStored(water, false);
 					}
 					else if (column == 5) {
-						AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+						AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 						result = (int) inv.getAmountResourceStored(food, false);
 					}
 					else if (column == 6) {
@@ -329,19 +329,19 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
 				}
 				else if (column == 3) {
-					AmountResource oxygen = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+					AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 					if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
 				}
 				else if (column == 4) {
-					AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+					AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 					if (inv.getAmountResourceStored(water, false) < 100D) result = true;
 				}
 				else if (column == 5) {
-					AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+					AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
 				}
 				else if (column == 6) {
-					AmountResource food = AmountResource.findAmountResource(LifeSupport.FOOD);
+					AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
 				}
 				else if (column == 7) {

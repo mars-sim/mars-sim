@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -39,7 +40,7 @@ import java.util.logging.Logger;
 public class TransportWizard {
 
 	/** default serial id. */
-	//private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TransportWizard.class.getName());
@@ -51,56 +52,50 @@ public class TransportWizard {
 
 	private String buildingNickName;
 
-	//private JPanel mainPane ;
-	//private JLabel announcementLabel;
-
 	private BuildingManager mgr;
 	private MainDesktopPane desktop;
 	private Settlement settlement;
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
 	private Resupply resupply;
-
-	//private MainWindow mainWindow;
 	private MainScene mainScene;
-	//private JFrame j = new JFrame();
-	//private Building building;
 
 
 	/**
-	 * Constructor .
+	 * Constructor 1.
+	 * For non-javaFX UI
 	 * @param desktop the main desktop pane.
 	 */
 	public TransportWizard(final MainDesktopPane desktop) {
-		//super(TITLE, false, false, false, false); //$NON-NLS-1$
 		this.desktop = desktop;
-
-		//mainWindow = desktop.getMainWindow();
 		mainScene = desktop.getMainScene();
-
+		settlementWindow = desktop.getSettlementWindow();
+		mapPanel = settlementWindow.getMapPanel();
 	}
 
-	public TransportWizard(final MainScene mainScene) {
-		//super(TITLE, false, false, false, false); //$NON-NLS-1$
-		//this.desktop = desktop;
+	/**
+	 * Constructor 2.
+	 * For JavaFX UI
+	 * @param mainScene the main scene
+	 */
+	public TransportWizard(final MainScene mainScene, MainDesktopPane desktop) {
+		this.desktop = desktop;
 		this.mainScene = mainScene;
-		//mainWindow = desktop.getMainWindow();
-		desktop = mainScene.getDesktop();
-
+		//if (desktop == null) 	System.out.println("desktop is null");
+		settlementWindow = desktop.getSettlementWindow();
+		//if (settlementWindow == null) System.out.println("settlementWindow is null");
+		mapPanel = settlementWindow.getMapPanel();
+		//if (mapPanel == null) System.out.println("mapPanel is null");
 	}
+
 	public void createGUI(Building newBuilding) {
 		settlement = newBuilding.getBuildingManager().getSettlement();
-		//setSize(400,120);
-		//Point location = MouseInfo.getPointerInfo().getLocation();
-		//setLocation(location);
 	}
 
-	public void initialize(BuildingManager mgr) {
+	public void initialize(BuildingManager mgr) { //, SettlementWindow settlementWindow) {
 		this.mgr = mgr;
 		this.settlement = mgr.getSettlement();
 		this.resupply = mgr.getResupply();
-		this.settlementWindow = desktop.getSettlementWindow();
-		this.mapPanel = settlementWindow.getMapPanel();
 	}
 
 	/**
@@ -178,6 +173,8 @@ public class TransportWizard {
            moveVehicle(correctedTemplate);
 	    } // end of while (buildingI.hasNext())
 
+        if (mainScene != null)
+        	mainScene.unpauseSimulation();
     }
 
     public void moveVehicle(BuildingTemplate template){

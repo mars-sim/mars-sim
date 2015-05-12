@@ -367,7 +367,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		toolWindows.add(monitorWindow);
 
 		// Prepare settlement tool window
-		SettlementWindow settlementWindow = new SettlementWindow(this);
+		//SettlementWindow
+		settlementWindow = new SettlementWindow(this);
 		//Thread sw = new Thread(settlementWindow);
 		//sw.start();
 		try { settlementWindow.setClosed(true); }
@@ -1010,7 +1011,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// 2014-12-23 Added openTransportWizard()
 	public void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
 		//transportWizard.setAnnouncement(announcement);
-		transportWizard.initialize(buildingManager);//, building);
+		transportWizard.initialize(buildingManager);//, settlementWindow);//, building);
 		transportWizard.deliverBuildings();
 		//transportWizard.pack();
 		//add(transportWizard, 0);

@@ -4,7 +4,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -34,7 +34,7 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsWater() throws Exception {
-		AmountResource water = AmountResource.findAmountResource(LifeSupport.WATER);
+		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		assertTrue( GoodsUtil.containsGood(waterGood));
 	}
