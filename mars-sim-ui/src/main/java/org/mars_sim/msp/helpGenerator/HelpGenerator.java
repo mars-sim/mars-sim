@@ -1,3 +1,12 @@
+/**
+ * this can be run at development time to generate .html-files
+ * for the in-game help tool. or can be started with every
+ * run of the simulation.
+ * @author stpa
+ * 2015-05-12
+ * TODO make the generated help files internationalizable.
+ */
+
 package org.mars_sim.msp.helpGenerator;
 
 import java.io.File;
@@ -24,14 +33,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
-/**
- * this can be run at development time to generate .html-files
- * for the in-game help tool. or can be started with every
- * run of the simulation.
- * @author stpa
- * 2014-01-29
- * TODO make the generated help files internationalizable.
- */
+
 public class HelpGenerator {
 
 	/** initialized logger for this class. */
@@ -73,7 +75,7 @@ public class HelpGenerator {
 	 */
 	private static final void helpFileHeader(final StringBuffer s, final String title) {
 		StringBuffer header = new StringBuffer()
-		.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n")
+		.append("<!DOCTYPE HTML>\n")
 		.append("<!-- generated for mars-sim by st.pa. -->\n")
 		.append("<html>\n")
 		.append("\t<head>\n")
