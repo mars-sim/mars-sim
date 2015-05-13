@@ -19,7 +19,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -120,11 +119,13 @@ public class PopUpUnitMenu extends JPopupMenu {
 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-            	JFrame d = new JFrame();
+            	JFrame f = new JFrame();
+            	f.setAlwaysOnTop (true);
+            	f.setFocusable(true);
             	//JInternalFrame d = new JInternalFrame();
             	//final JDialog d = new JDialog();
-                d.setForeground(Color.YELLOW); // orange font
-                d.setFont( new Font("Arial", Font.BOLD, 14 ) );
+                f.setForeground(Color.YELLOW); // orange font
+                f.setFont( new Font("Arial", Font.BOLD, 14 ) );
 
                 String description;
                 String type;
@@ -148,32 +149,35 @@ public class PopUpUnitMenu extends JPopupMenu {
 			    	num = 450;
                 int frameHeight = (int) num;
 
-			    d.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
-		        d.setResizable(false);
-		        d.setUndecorated(true);
-		        d.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
+			    f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
+		        f.setResizable(false);
+		        f.setUndecorated(true);
+		        f.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
 
 			    UnitInfoPanel b = new UnitInfoPanel(desktop);
 			    b.init(name, type, description);
 
-			    d.add(b);
+			    f.add(b);
+
+			    //2014-11-27 Added ComponentMover Class
+			    ComponentMover mover = new ComponentMover(f, b, f.getContentPane());
+			    mover.registerComponent(b);
+
 
             	// Make the buildingPanel to appear at the mouse cursor
                 Point location = MouseInfo.getPointerInfo().getLocation();
-                d.setLocation(location);
+                f.setLocation(location);
 
-                d.setVisible(true);
-				d.addWindowFocusListener(new WindowFocusListener() {
+                f.setVisible(true);
+				f.addWindowFocusListener(new WindowFocusListener() {
 				    public void windowLostFocus(WindowEvent e) {
-				    	d.dispose();
+				    	if (!mover.isMousePressed())
+				    		f.dispose();
 				    }
 				    public void windowGainedFocus(WindowEvent e) {
+				    	//f.setVisible(true);
 				    }
 				});
-
-			    //2014-11-27 Added ComponentMover Class
-			    ComponentMover mover = new ComponentMover(d,b);
-			    mover.registerComponent(b);
 
              }
         });
@@ -257,11 +261,16 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            }
 	            else {
                 	Building building = (Building) unit;
-	            	final JDialog d = new JDialog();
+                	JFrame f = new JFrame();
+	            	//final JDialog d = new JDialog();
+	            	f.setAlwaysOnTop (true);
+	            	f.setFocusable(true);
+	            	//d.setModal (true);
+	            	//d.setModalityType (ModalityType.APPLICATION_MODAL);
 	        		//2014-11-27 Added ComponentMover Class
 	                // Make panel drag-able
-	        		ComponentMover cm = new ComponentMover();
-	        		cm.registerComponent(d);
+	        		ComponentMover mover = new ComponentMover(f, f.getContentPane());
+	        		mover.registerComponent(f);
 
 					final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
 		    		buildingPanel.setOpaque(false);
@@ -270,23 +279,26 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		    		// Make the buildingPanel to appear at the mouse cursor
 	                Point location = MouseInfo.getPointerInfo().getLocation();
-	                d.setLocation(location);
-					d.setUndecorated(true);
-	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
-	                d.add(buildingPanel);
-					d.setSize(300,335);  // undecorated: 300, 335; decorated: 310, 370
-					d.setLayout(new FlowLayout());
+	                f.setLocation(location);
 
-					d.setVisible(true);
-					d.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
+					f.setUndecorated(true);
+	                f.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
+	                f.add(buildingPanel);
+					f.setSize(300, 335);  // undecorated: 300, 335; decorated: 310, 370
+					f.setLayout(new FlowLayout());
 
-				    d.addWindowFocusListener(new WindowFocusListener() {
+					f.setVisible(true);
+					f.getRootPane().setBorder( BorderFactory.createLineBorder(Color.orange) );
+
+				    f.addWindowFocusListener(new WindowFocusListener() {
 						public void windowLostFocus(WindowEvent e) {
 					    	//JWindow w = (JWindow) e.getSource();
-					    	d.dispose();
+					    	if (!mover.isMousePressed())
+					    		f.dispose();
 					    	//w.dispose();
 						}
 						public void windowGainedFocus(WindowEvent e) {
+							//f.setVisible(true);
 						}
 					});
 	            }

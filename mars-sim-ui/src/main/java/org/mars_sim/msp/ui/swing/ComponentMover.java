@@ -28,15 +28,19 @@ import javax.swing.SwingUtilities;
  *  Components can be registered when the class is created. Additional
  *  components can be added at any time using the registerComponent() method.
  */
-public class ComponentMover extends MouseAdapter
-{
+public class ComponentMover extends MouseAdapter {
+
+	private boolean changeCursor = true;
+	private boolean autoLayout = false;
+	private boolean autoscrolls;
+	private boolean potentialDrag;
+
+	private boolean isMousePressed = false;
+
 	private Insets dragInsets = new Insets(0, 0, 0, 0);
 	private Dimension snapSize = new Dimension(1, 1);
 	private Insets edgeInsets = new Insets(0, 0, 0, 0);
-	private boolean changeCursor = true;
-	private boolean autoLayout = false;
 
-	private Class destinationClass;
 	private Component destinationComponent;
 	private Component destination;
 	private Component source;
@@ -45,17 +49,14 @@ public class ComponentMover extends MouseAdapter
 	private Point location;
 
 	private Cursor originalCursor;
-	private boolean autoscrolls;
-	private boolean potentialDrag;
 
+	private Class destinationClass;
 
 	/**
 	 *  Constructor for moving individual components. The components must be
 	 *  regisetered using the registerComponent() method.
 	 */
-	public ComponentMover()
-	{
-	}
+	public ComponentMover() {}
 
 	/**
 	 *  Constructor to specify a Class of Component that will be moved when
@@ -230,6 +231,7 @@ public class ComponentMover extends MouseAdapter
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		isMousePressed = true;
 		source = e.getComponent();
 		int width  = source.getSize().width  - dragInsets.left - dragInsets.right;
 		int height = source.getSize().height - dragInsets.top - dragInsets.bottom;
@@ -237,6 +239,10 @@ public class ComponentMover extends MouseAdapter
 
 		if (r.contains(e.getPoint()))
 			setupForDragging(e);
+	}
+
+	public boolean isMousePressed() {
+		return isMousePressed;
 	}
 
 	private void setupForDragging(MouseEvent e)
@@ -314,6 +320,8 @@ public class ComponentMover extends MouseAdapter
 		//  Adjustments are finished, move the component
 
 		destination.setLocation(locationX, locationY);
+
+		isMousePressed = false;
 	}
 
 	/*
@@ -353,6 +361,8 @@ public class ComponentMover extends MouseAdapter
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
+		isMousePressed = false;
+
 		if (!potentialDrag) return;
 
 		source.removeMouseMotionListener( this );

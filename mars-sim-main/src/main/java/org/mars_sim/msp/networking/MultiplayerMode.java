@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.networking.MultiplayerServer;
 import org.mars_sim.msp.javafx.MainMenu;
-import org.mars_sim.msp.network.MultiplayerServer;
 
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;

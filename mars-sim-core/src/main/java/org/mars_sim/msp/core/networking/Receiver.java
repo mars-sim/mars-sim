@@ -1,4 +1,4 @@
-package org.mars_sim.msp.network;
+package org.mars_sim.msp.core.networking;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

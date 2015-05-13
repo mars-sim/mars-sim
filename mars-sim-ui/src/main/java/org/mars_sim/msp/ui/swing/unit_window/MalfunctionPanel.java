@@ -23,8 +23,8 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-/** 
- * The MalfunctionPanel class displays info about a malfunction. 
+/**
+ * The MalfunctionPanel class displays info about a malfunction.
  */
 public class MalfunctionPanel
 extends JPanel {
@@ -42,9 +42,9 @@ extends JPanel {
 	/** The repair parts label. */
 	private JLabel partsLabel;
 
-	/** 
+	/**
 	 * Constructs a MalfunctionPanel object with a name prefix.
-	 * @param malfunction the malfunction to display 
+	 * @param malfunction the malfunction to display
 	 */
 	public MalfunctionPanel(Malfunction malfunction) {
 
@@ -59,6 +59,8 @@ extends JPanel {
 
 		// Set border
 		setBorder(new MarsPanelBorder());
+		setOpaque(false);
+		setBackground(new Color(0,0,0,128));
 
 		// Prepare name label.
 		nameLabel = new JLabel(malfunction.getName(), JLabel.CENTER);
@@ -79,9 +81,9 @@ extends JPanel {
 		repairPane.add(repairBar);
 
 		// Set initial value for repair progress bar.
-		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
 				+ malfunction.getEVAWorkTime();
-		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
 				malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
 		int percentComplete = 0;
 		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
@@ -112,9 +114,9 @@ extends JPanel {
 		}
 
 		// Update progress bar.
-		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
 				+ malfunction.getEVAWorkTime();
-		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
 				malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
 		int percentComplete = 0;
 		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
