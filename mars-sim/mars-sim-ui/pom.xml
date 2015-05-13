@@ -92,5 +92,25 @@
 		<artifactId>Enzo</artifactId>
 		<version>0.2.4</version>
 	</dependency>
+		<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-validator</artifactId>
+		<version>5.0.3.Final</version>
+	</dependency>
+		<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.6.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>1.6.1</version>
+	</dependency>
+	<dependency>
+		<groupId>com.dooapp.fxform2</groupId>
+		<artifactId>core</artifactId>
+		<version>8.0.9</version>
+	</dependency>
   </dependencies>
 </project>

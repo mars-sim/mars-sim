@@ -7,7 +7,6 @@
 package org.mars_sim.msp.javafx;
 
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
-import org.mars_sim.msp.network.SettlementRegistry;
 import org.mars_sim.msp.networking.MultiplayerClient;
 
 import java.awt.Dimension;
@@ -66,6 +65,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;

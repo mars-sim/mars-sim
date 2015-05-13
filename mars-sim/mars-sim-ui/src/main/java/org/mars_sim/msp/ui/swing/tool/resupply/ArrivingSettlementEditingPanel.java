@@ -32,11 +32,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.networking.ClientRegistry;
+import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.network.ClientRegistry;
-import org.mars_sim.msp.network.SettlementRegistry;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 

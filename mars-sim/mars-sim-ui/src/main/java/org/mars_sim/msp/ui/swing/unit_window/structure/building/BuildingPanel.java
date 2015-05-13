@@ -123,11 +123,11 @@ extends JPanel {
         this.building = building;
         this.desktop = desktop;
 		this.isTranslucent = isTranslucent;
-      //if (isTranslucent) {
+        if (isTranslucent) {
         	//JComponent c = getRootPane();
-        	//c.setOpaque(false);
-        	//c.setBackground(new Color(0,0,0,128));
-        //}
+        	setOpaque(false);
+        	setBackground(new Color(0,0,0,128));
+        }
 		init();
 	}
 
@@ -273,6 +273,8 @@ extends JPanel {
 //        	try {
         		Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
+        		//manufacturePanel.setOpaque(false);
+        		//manufacturePanel.setBackground(new Color(0,0,0,128));
         		functionPanels.add(manufacturePanel);
         		functionListPanel.add(manufacturePanel);
 //        	}

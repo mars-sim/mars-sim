@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.Color;
+
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.structure.building.Building;
@@ -14,7 +16,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
- * The BuildingFunctionPanel class is a panel representing a function for 
+ * The BuildingFunctionPanel class is a panel representing a function for
  * a settlement building.
  */
 public abstract class BuildingFunctionPanel
@@ -41,9 +43,9 @@ extends JPanel {
 		this.building = building;
 		this.desktop = desktop;
 
-        //this.setOpaque(false);
-        //this.setBackground(new Color(0,0,0,0));
-        
+        this.setOpaque(false);
+        this.setBackground(new Color(0,0,0,128));
+
 		setBorder(new MarsPanelBorder());
 	}
 
