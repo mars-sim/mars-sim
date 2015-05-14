@@ -305,16 +305,16 @@ implements ActionListener {
 
 		        int pop = 0;
 		        Settlement settlement = null;
-		        if (person.getSettlement() != null)
-		        	settlement = person.getSettlement();
+		        if (person.getAssociatedSettlement() != null)
+		        	settlement = person.getAssociatedSettlement();
 		        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
 		        	settlement = (Settlement) person.getTopContainerUnit();
 		        }
 		        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 		        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
-		        	settlement = (Settlement) vehicle.getSettlement();
+		        	settlement = vehicle.getSettlement();
 		        }
-
+		        
 		        pop = settlement.getAllAssociatedPeople().size();
 
 		        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
@@ -331,7 +331,7 @@ implements ActionListener {
 			        	String status = jobAssignmentList.get(size-1).getStatus();
 			        	String selectedJobStr = jobAssignmentList.get(size-1).getJobType();
 
-			        	if (status.equals("Approved")) {
+			        	if (status == "Approved") {
 
 						    jobComboBox.setSelectedItem(selectedJobStr);
 						    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob

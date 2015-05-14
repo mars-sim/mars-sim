@@ -59,7 +59,7 @@ public class TemperatureGauge {
                               .minMeasuredValueVisible(true)
                               .maxMeasuredValueVisible(true)
                               .title("Weather")
-                              .unit("°C")
+                              .unit("\u00B0C")
                               .build();
 
         control.setStyle("-tick-label-fill: blue;");
