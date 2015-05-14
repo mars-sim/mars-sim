@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.07 2015-03-02
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -84,9 +84,6 @@ public class ConstructBuildingMeta implements MetaTask {
 	            }
 	        }
 	        
-            if (person.getFavorite().getFavoriteActivity().equals("Construct Building"))
-            	result += 50D;
-	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 	        
@@ -96,6 +93,10 @@ public class ConstructBuildingMeta implements MetaTask {
 	            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);        
 	        }
 	        
+	        // Modify if construction is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+                result *= 2D;
+	        }
         }
     
         return result;

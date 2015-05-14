@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVAMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -113,6 +113,11 @@ public class MaintenanceEVAMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(MaintenanceEVA.class);
+        }
+        
+        // Modify if tinkering is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+            result *= 2D;
         }
     
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcherMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -55,18 +55,18 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
                 if (building != null) {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-
-                    //if (person.getFavorite().getFavoriteActivity().equals("Research"))
-                    //	result += 50D;
-
-                    // Job modifier.
-                    Job job = person.getMind().getJob();
-                    if (job != null)
-                        result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
-
                 }
+            }
+            
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
+            }
 
-                else result = 0D;
+            // Modify if research is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+                result *= 2D;
             }
         }
 

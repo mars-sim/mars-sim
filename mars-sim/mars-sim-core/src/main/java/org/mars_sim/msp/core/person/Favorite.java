@@ -31,13 +31,14 @@ public class Favorite implements Serializable {
 	
 	private String[] availableActivities = 
     	{ 	"Tending Plants",
-			"Astronomy",
 			"Workout",
 			"Research",
 			"Field Work",
 			"Tinkering",
 			"Lab Experimentation",
-			"Cooking"
+			"Cooking",
+			"Construction",
+			"Operations"
 		};
 
 	public Favorite(Person person) {	

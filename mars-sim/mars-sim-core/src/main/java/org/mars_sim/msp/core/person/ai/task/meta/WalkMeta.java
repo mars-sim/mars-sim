@@ -67,14 +67,6 @@ public class WalkMeta implements MetaTask {
         if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
             result = 1000D;
         }
-        else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
-            // If robot is inside a settlement building, may walk to a random location within settlement.
-            result = 1D;
-        }
-        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
-            // If robot is inside a rover, may walk to random location within rover.
-            result = 1D;
-        }
         
         return result;
 	}

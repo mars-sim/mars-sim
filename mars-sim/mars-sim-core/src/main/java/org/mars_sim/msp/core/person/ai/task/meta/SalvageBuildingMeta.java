@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuildingMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -72,9 +72,6 @@ public class SalvageBuildingMeta implements MetaTask {
                 List<BuildingSalvageMission> missions = SalvageBuilding.
                         getAllMissionsNeedingAssistance(person.getSettlement());
                 result = 50D * missions.size();
-                
-                if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-                	result += 50D;
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
@@ -95,6 +92,10 @@ public class SalvageBuildingMeta implements MetaTask {
                 result *= job.getStartTaskProbabilityModifier(SalvageBuilding.class);        
             }
             
+            // Modify if construction is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+                result *= 2D;
+            }
         }  
     
         return result;

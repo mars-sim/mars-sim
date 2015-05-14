@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @version 3.07 2014-10-12
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,9 +63,6 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
                         Lab lab = PerformLaboratoryExperiment.getLocalLab(person, primaryStudy.getScience());
                         if (lab != null) {
                             double primaryResult = 50D;
-
-                            //if (person.getFavorite().getFavoriteActivity().equals("Lab Experimentation"))
-                            //	result += 50D;
 
                             // Get lab building crowding modifier.
                             primaryResult *= PerformLaboratoryExperiment.getLabCrowdingModifier(person, lab);
@@ -137,6 +134,11 @@ public class PerformLaboratoryExperimentMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(PerformLaboratoryExperiment.class);
+        }
+        
+        // Modify if lab experimentation is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Lab Experimentation")) {
+            result *= 2D;
         }
 
         return result;

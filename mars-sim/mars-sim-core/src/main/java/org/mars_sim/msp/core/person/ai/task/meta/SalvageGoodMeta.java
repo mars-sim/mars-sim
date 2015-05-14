@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGoodMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -52,8 +52,9 @@ public class SalvageGoodMeta implements MetaTask {
 	        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	        double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
 	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-	        if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG)
-	            result = 0D;       
+	        if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
+	            result = 0D;
+	        }
 	        
 	        if (result != 0) {
 	            // See if there is an available manufacturing building.
@@ -67,9 +68,6 @@ public class SalvageGoodMeta implements MetaTask {
 	
 	                // Salvaging good value modifier.
 	                result *= SalvageGood.getHighestSalvagingProcessValue(person, manufacturingBuilding);
-	
-	                if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-	                	result += 50D;
 	                
 	                if (result > 100D) {
 	                    result = 100D;
@@ -83,7 +81,7 @@ public class SalvageGoodMeta implements MetaTask {
 	                    result += 10D;
 	                }
 	
-	             // Effort-driven task modifier.
+	                // Effort-driven task modifier.
 			        result *= person.getPerformanceRating();
 			
 			        // Job modifier.
@@ -92,11 +90,14 @@ public class SalvageGoodMeta implements MetaTask {
 			            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
 			        }
 			        
+			        // Modify if tinkering is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+                        result *= 2D;
+                    }
 	            }
-            
 	        }	
-
         }
+        
         return result;
     }
 

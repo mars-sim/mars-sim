@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGoodMeta.java
- * @version 3.08 2015-04-13
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -68,24 +68,27 @@ public class ManufactureGoodMeta implements MetaTask {
                         result = 100D;
                     }
 
-                    //if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-                    //    result += 50D;
-
                     // If manufacturing building has process requiring work, add
                     // modifier.
                     SkillManager skillManager = person.getMind().getSkillManager();
                     int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                    if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill))
+                    if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
+                    }
 
                     // Effort-driven task modifier.
                     result *= person.getPerformanceRating();
 
                     // Job modifier.
                     Job job = person.getMind().getJob();
-                    if (job != null)
+                    if (job != null) {
                         result *= job.getStartTaskProbabilityModifier(ManufactureGood.class);
+                    }
 
+                    // Modify if tinkering is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+                        result *= 2D;
+                    }
                 }
             }
         }

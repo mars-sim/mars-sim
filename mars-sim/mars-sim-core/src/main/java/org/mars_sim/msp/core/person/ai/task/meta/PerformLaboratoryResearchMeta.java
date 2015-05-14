@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryResearchMeta.java
- * @version 3.07 2014-10-12
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -59,9 +59,6 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                     if (lab != null) {
                         double primaryResult = 50D;
 
-                        //if (person.getFavorite().getFavoriteActivity().equals("Research"))
-                        //	result += 25D;
-
                         // Get lab building crowding modifier.
                         primaryResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
 
@@ -96,9 +93,6 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
                         if (lab != null) {
                             double collabResult = 25D;
 
-                            //if (person.getFavorite().getFavoriteActivity().equals("Research"))
-                            //	result += 25D;
-
                             // Get lab building crowding modifier.
                             collabResult *= PerformLaboratoryResearch.getLabCrowdingModifier(person, lab);
 
@@ -121,8 +115,6 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
             }
         }
 
-
-        // TODO: should allow a person to perform mobile research/study
         // Check if person is in a moving rover.
         if (PerformLaboratoryExperiment.inMovingRover(person)) {
             result = 0D;
@@ -135,6 +127,11 @@ public class PerformLaboratoryResearchMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class);
+        }
+        
+        // Modify if research is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+            result *= 2D;
         }
 
         return result;

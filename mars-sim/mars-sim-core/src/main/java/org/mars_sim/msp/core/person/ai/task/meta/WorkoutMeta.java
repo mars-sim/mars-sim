@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WorkoutMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -41,9 +41,6 @@ public class WorkoutMeta implements MetaTask {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            //if (person.getFavorite().getFavoriteActivity().equals("Workout"))
-            //	result += 50D;
-
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             result = condition.getStress() - (condition.getFatigue() / 10D)
@@ -65,6 +62,11 @@ public class WorkoutMeta implements MetaTask {
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+        // Modify if working out is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
+            result *= 2D;
+        }
 
         return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaboratorMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -46,7 +46,6 @@ public class InviteStudyCollaboratorMeta implements MetaTask {
         
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        	
-	        
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
 	        if (study != null) {
@@ -65,7 +64,6 @@ public class InviteStudyCollaboratorMeta implements MetaTask {
 	                        result = 25D;
 	                        
 	                        // Crowding modifier
-	                        
 	                        Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
 	                        if (adminBuilding != null) {
 	                            result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
@@ -75,11 +73,19 @@ public class InviteStudyCollaboratorMeta implements MetaTask {
 	                        // Increase probability if person's current job is related to study's science.
 	                        Job job = person.getMind().getJob();
 	                        ScienceType science = study.getScience();	                        
-	                        if (science == ScienceType.getJobScience(job))
-	                            result*= 2D;
-	                        if (job != null)
-	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class);
-		                                            
+	                        if (science == ScienceType.getJobScience(job)) {
+	                            result *= 2D;
+	                        }
+	                        
+	                        // Job modifier.
+	                        if (job != null) {
+	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class); 
+	                        }
+	                        
+	                        // Modify if research is the person's favorite activity.
+	                        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	                            result *= 2D;
+	                        }
 		                }
 		            }
 		        }            

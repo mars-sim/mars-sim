@@ -153,6 +153,11 @@ public class StudyFieldSamplesMeta implements MetaTask {
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
         }
+        
+        // Modify if research is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+            result *= 2D;
+        }
 
         return result;
     }

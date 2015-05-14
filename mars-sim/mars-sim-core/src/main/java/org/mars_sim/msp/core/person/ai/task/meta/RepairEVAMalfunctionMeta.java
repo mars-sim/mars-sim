@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunctionMeta.java
- * @version 3.07 2014-12-27
+ * @version 3.08 2015-15-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -76,10 +76,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
 	                            malfunction)) {
 	                        result += 100D;
-	                        
-	                        if (person.getFavorite().getFavoriteActivity().equals("Repair"))
-	                        	result += 25D;
-	                  
 	                    }
 	                }
 	                catch (Exception e) {
@@ -95,9 +91,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
 	                            result += 100D;
-	                            
-		                        if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-		                        	result += 25D;
 	                        }
 	                    }
 	                    catch (Exception e) {
@@ -117,6 +110,10 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 	            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
 	        }
 
+	        // Modify if tinkering is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+	            result *= 2D;
+	        }
         }
         
         return result;
