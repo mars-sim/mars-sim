@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @version 3.07 2014-10-10
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -95,13 +95,10 @@ public class DigLocalRegolithMeta implements MetaTask {
 	                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
 	                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
 	                result = value * REGOLITH_VALUE_MODIFIER;
-	                
-    		        if (person.getFavorite().getFavoriteActivity().equals("Field Work"))
-    		        	result += 50D;
     		        
-	                if (result > 150D)
-	                    result = 150D;    	
-	                
+	                if (result > 100D) {
+	                    result = 100D;  
+	                }
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error checking good value of regolith.");
@@ -121,6 +118,10 @@ public class DigLocalRegolithMeta implements MetaTask {
 	                result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
 	            }
 	            
+	            // Modify if field work is the person's favorite activity.
+                if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
+                    result *= 2D;
+                }
 	        }
         }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitationMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -46,14 +46,11 @@ public class RespondToStudyInvitationMeta implements MetaTask {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+            // Check if person has been invited to collaborate on any scientific studies.
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
 	            result = 50D;
-
-	            //if (person.getFavorite().getFavoriteActivity().equals("Research"))
-	            //	result += 50D;
-
 	        }
 
 	        // Crowding modifier
@@ -63,13 +60,16 @@ public class RespondToStudyInvitationMeta implements MetaTask {
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
             }
 
-
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
 	        }
 
+	        // Modify if research is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	            result *= 2D;
+	        }
         }
 
         return result;

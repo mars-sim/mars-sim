@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarageMeta.java
- * @version 3.07 2015-03-02
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -68,6 +68,11 @@ public class UnloadVehicleGarageMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
+        }
+        
+        // Modify if operations is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+            result *= 2D;
         }
     
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProduceFoodMeta.java
- * @version 3.08 2015-04-13
+ * @version 3.08 2015-05-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -77,7 +77,6 @@ public class ProduceFoodMeta implements MetaTask {
 	                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
 	                    result += 10D;
 	                }
-	
 	            }
 	        }
 	
@@ -90,6 +89,10 @@ public class ProduceFoodMeta implements MetaTask {
 	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class);
 	        }
 
+            // Modify if cooking is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Cooking")) {
+                result *= 2D;
+            }
         }
         return result;
     }

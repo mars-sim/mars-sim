@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SleepMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -46,12 +47,19 @@ public class SleepMeta implements MetaTask {
             result += (fatigue - 500D) / 4D;
         }
         
-        if (result < 0) result = 0;
+        // Check if person is an astronomer.
+        boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
         
         // Dark outside modifier.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            result *= 2D;
+        boolean isDark = (surface.getSurfaceSunlight(person.getCoordinates()) == 0);
+        if (isDark && !isAstronomer) {
+            // Non-astronomers more likely to sleep when it's dark out.
+            result *= 4D;
+        }
+        else if (!isDark && isAstronomer) {
+            // Astronomers more likely to sleep when it's not dark out.
+            result *= 4D;
         }
         
         // Crowding modifier.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterialsMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,19 +63,8 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
                     // Manufacturing good value modifier.
                     result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
                             manufacturingBuilding);
-/*
-                    if (person == null)
-                    	System.err.println("person == null");
 
-                    if (person.getFavorite() == null)
-                    	System.err.println("person.getFavorite() == null");
-
-                    if (person.getFavorite().getFavoriteActivity() == null)
-                    	System.err.println("person.getFavorite().getFavoriteActivity() == null");
-
-                    if (person.getFavorite().getFavoriteActivity().equals("Tinkering"))
-                    	result += 50D;
-*/
+                    // Cap the result to a max value of 100.
                     if (result > 100D) {
                         result = 100D;
                     }
@@ -108,6 +97,11 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask {
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(
                     ManufactureConstructionMaterials.class);
+        }
+        
+        // Modify if tinkering is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+            result *= 2D;
         }
 
         return result;

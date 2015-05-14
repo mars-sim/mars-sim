@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrepareDessertMeta.java
- * @version 3.08 2015-04-27
+ * @version 3.08 2015-05-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -89,9 +89,9 @@ public class PrepareDessertMeta implements MetaTask {
                         result *= job.getStartTaskProbabilityModifier(CookMeal.class);                
                     }
 
-                    // If the person likes cooking 
-                    if (person.getFavorite().getFavoriteActivity().equals("Cooking")) {
-                        result += 50D;
+                    // Modify if cooking is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Cooking")) {
+                        result *= 2D;
                     }
                 }
             }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @version 3.07 2015-03-02
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,6 +63,7 @@ public class LoadVehicleEVAMeta implements MetaTask {
                 logger.log(Level.SEVERE, "Error finding loading missions.", e);
             }
             
+            // Check if any rovers are in need of EVA suits to allow occupants to exit. 
             if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
                 int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
                 if (numEVASuits >= 2) {
@@ -99,6 +100,11 @@ public class LoadVehicleEVAMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);        
+        }
+        
+        // Modify if operations is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+            result *= 2D;
         }
     
         return result;

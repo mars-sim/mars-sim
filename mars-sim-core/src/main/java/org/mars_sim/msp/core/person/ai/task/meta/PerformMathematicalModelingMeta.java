@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModelingMeta.java
- * @version 3.07 2014-10-12
+ * @version 3.08 2015-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -132,6 +132,11 @@ public class PerformMathematicalModelingMeta implements MetaTask {
         Job job = person.getMind().getJob();
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(PerformMathematicalModeling.class);
+        }
+        
+        // Modify if lab experimentation is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Lab Experimentation")) {
+            result *= 2D;
         }
         
         return result;

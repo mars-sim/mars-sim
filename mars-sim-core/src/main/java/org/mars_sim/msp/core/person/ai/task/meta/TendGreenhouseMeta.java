@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouseMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-05-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -52,9 +52,6 @@ public class TendGreenhouseMeta implements MetaTask {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
 
-                    //if (person.getFavorite().getFavoriteActivity().equals("Tending Plants"))
-                    //	result += 50D;
-
                     int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());
                     result += needyCropsNum * 20D;
 
@@ -72,6 +69,10 @@ public class TendGreenhouseMeta implements MetaTask {
                         result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
                     }
 
+                    // Modify if tending plants is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tending Plants")) {
+                        result *= 2D;
+                    }
                 }
             }
             catch (Exception e) {
