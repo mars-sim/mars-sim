@@ -41,10 +41,13 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType type) {
-		relinquishOldRoleType();
-    	//System.out.println("RoleType is "+ type);
-		this.type = type;
-		person.getSettlement().getChainOfCommand().addJobRoleMap(type);
+	    
+	    if (type != getType()) {
+	        relinquishOldRoleType();
+//	        System.out.println("New RoleType is "+ type);
+	        this.type = type;
+	        person.getSettlement().getChainOfCommand().addJobRoleMap(type);
+	    }
 /*
 		if (type == RoleType.SAFETY_SPECIALIST)
 			person.getSettlement().getChainOfCommand().addRole(type);
