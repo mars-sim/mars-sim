@@ -112,5 +112,10 @@
 		<artifactId>core</artifactId>
 		<version>8.0.9</version>
 	</dependency>
+	<dependency>
+		<groupId>com.plaf.nimrod</groupId>
+		<artifactId>nimrodlf</artifactId>
+		<version>1.2c</version>
+	</dependency>
   </dependencies>
 </project>
