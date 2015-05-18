@@ -6,8 +6,11 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -30,7 +33,6 @@ implements Serializable {
 	DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
-
 	// Data members
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
@@ -38,50 +40,74 @@ implements Serializable {
     //public static final double GREENHOUSE_TEMPERATURE = 24D;
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
-    private static final double T_LOWER_SENSITIVITY = 2.5D;
-
+    private static final double T_LOWER_SENSITIVITY = 2D;
     private static final int HEAT_CAP = 200;
-
-	protected double width;
-	protected double length;
-	protected double floorArea;
-	protected double baseHeatRequirement;
-	protected double basePowerDownHeatRequirement = 0;
+    private static final double HEAT_GAIN_FROM_EQUIPMENT = 3000;
+    private static final double HEAT_DISSIPATED_PER_PERSON = 350D;
+    //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
+    //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
+	// 1 kilopascal = 0.00986923267 atm
+	// 1 cubic ft = L * 0.035315
+    // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
+    private double VOLUME_OF_AIRLOCK =  3 * 3 * 2; //in m^3
+	// Molar mass of CO2 = 44.0095 g/mol
+    // average density of air : 0.020 kg/m3
+	//double n = weather.getAirDensity(coordinates) * vol / 44D;
+	//private double n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
+	// 1 cubic feet of air has a total weight of 38.76 g
+	//private double n_air = 1D;
+	//private double n_sum = n_CO2 + n_air;
+	private double C_p = 1.0015; // specific heat capacity of air at 250K
+	private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
+	private double energy_factor = C_p * VOLUME_OF_AIRLOCK * dryAirDensity /1000; // for airlock heat loss
+	//private double t_factor =  vol / n;
+    private double width;
+	private double length;
+	private double floorArea;
+	//private double baseHeatRequirement;
+	private double basePowerDownHeatRequirement = 0;
+	private double meter2Feet = 10.764;
 	//private static int count;
 	// Specific Heat Capacity = 4.0 for a typical U.S. house
-	protected double SHC = 6.0;
+	private double SHC = 6.0; //in BTU/ sq ft / F
+	private double SHC_Area;
 	// Building Loss Coefficient = 1.0 for a typical U.S. house
-	protected double BLC = 0.2;
-	protected double currentTemperature;
+	//private double BLC = 0.2;
+	private double R_value = 30;
+	private double U_value = 1/R_value;
+    private double factor_heatLossFromRoof;
+    private double factor_heatLossFromCeiling;
+    private double factor_heatLossFromWall;
+    private double factor_heatLossFromCrackLength;
+    private double q_H_factor = 21.4D/10/2.23694; // 1 m per sec = 2.23694 miles per hours
+    private double airChangePerHr = .5;
+
+	//private double factor_heatLoss; // = U_value * floorArea * meter2Feet ;
+
 	// 2014-11-02 Added heatGenerated
 	private double heatGenerated = 0; // the initial value is zero
 	private double heatGeneratedCache = 0; // the initial value is zero
-
 	//private double powerRequired;
 	private double heatRequired;
+	private double deltaTemperature;
+	private double currentTemperature;
+    //private double heatLossEachEVA;
 
-  	protected double deltaTemperature;
-  	protected double storedHeat;
-
-	private double meter2Feet = 10.764;
+	private double storedHeat;
 	//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 	// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
 	// 1 sol on Mars has 88740 secs
 	// 1 sol has 1000 milisol
 	private double elapsedTimeinHrs; // = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
-
-	private double factor_heatLoss; // = BLC * floorArea * meter2Feet ;
-
 	private double t_initial;
 
-	private double SHC_Area;
+  	//private String buildingType;
 
-  	private String buildingType;
-
- 	protected ThermalGeneration furnace;
-
+  	//private ThermalGeneration furnace;
+ 	private ThermalSystem thermalSystem;
 	private Building building;
-
+	private Weather weather;
+	private Coordinates coordinates;
 
 	/**
 	 * Constructor.
@@ -97,23 +123,35 @@ implements Serializable {
 		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		//powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
 
-		deltaTemperature = 0;
-
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
-		buildingType =  getBuilding().getBuildingType();
+		//buildingType =  getBuilding().getBuildingType();
 		floorArea = length * width ;
 
 		elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D /1000D * 24D;
+		//elapsedTimeinHrs = ONE_TENTH_MILLISOLS_PER_UPDATE / 10D *1000D / 24D;
 
-		factor_heatLoss = BLC * floorArea * meter2Feet * elapsedTimeinHrs;
+		//factor_heatLoss = U_value * floorArea * meter2Feet * elapsedTimeinHrs;
+		factor_heatLossFromRoof = U_value * floorArea * meter2Feet;
+		factor_heatLossFromCeiling = U_value * floorArea * meter2Feet;
+		factor_heatLossFromWall = U_value * 2 * (length * 9D + width * 9D) * meter2Feet;
+		//assume airChangePerHr = .5, q_H = 21.4;
+		// CrackLength from two EVA airlock and 4 windows
+		factor_heatLossFromCrackLength = 0.244 * .075 * airChangePerHr * q_H_factor * ( 2 * (2 + 7) + 4 * (2 + 3) );
+		//SHC_Area = floorArea * SHC * floorArea;
+		SHC_Area = floorArea * meter2Feet * meter2Feet * SHC ;
 
-		SHC_Area = floorArea * SHC * floorArea;
 
 		t_initial = building.getInitialTemperature();
-
 		currentTemperature = t_initial;
+		deltaTemperature = 0;
+		//t_factor = vol / R_GAS_CONSTANT / n;
+
+		weather = Simulation.instance().getMars().getWeather();
+		coordinates = building.getBuildingManager().getSettlement().getCoordinates();
+		thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
 	}
+
 
 
 	/**
@@ -137,8 +175,8 @@ implements Serializable {
      * Gets the temperature of a building.
      * @return temperature (deg C)
     */
-	//2014-10-17  Added getTemperature()
-    public double getTemperature() {
+	//2014-10-17  Added getCurrentTemperature()
+    public double getCurrentTemperature() {
             return currentTemperature;
     }
 
@@ -148,8 +186,9 @@ implements Serializable {
 	 */
 	// 2014-11-02 Added checking if PowerMode.POWER_DOWN
 	// TODO: also set up a time sensitivity value
-	public void setNewHeatMode() {
-		double t_now = currentTemperature; //building.getTemperature();
+	public void setNewHeatMode(double t) {
+		//double t_now = currentTemperature; //building.getTemperature();
+		double t_now = t;
 		// if building has no power, power down the heating system
 		if (building.getPowerMode() == PowerMode.POWER_DOWN)
 			building.setHeatMode(HeatMode.HEAT_OFF);
@@ -168,14 +207,15 @@ implements Serializable {
 				building.setHeatMode(HeatMode.ONLINE);
 			} //else ; // do nothing to change the HeatMode
 		}
+
 	}
 
 	/**Adjust the current temperature in response to the delta temperature
 	 * @return none. update currentTemperature
 	 */
-	public void updateTemperature() {
-		currentTemperature += deltaTemperature;
-	}
+	//public void updateTemperature(double dt) {
+	//	currentTemperature += dt;
+	//}
 
 
 	/**
@@ -183,38 +223,59 @@ implements Serializable {
 	 * @return none. save result as deltaTemperature
 	 */
 	//2015-02-19 Modified determineDeltaTemperature() to use MILLISOLS_PER_UPDATE
-	public void determineDeltaTemperature() {
-		//logger.info("determineDeltaTermperature() : In < " + building.getName() + " >");
-
-		double outsideTemperature = Simulation.instance().getMars().getWeather().
-        		getTemperature(building.getBuildingManager().getSettlement().getCoordinates());
-			//logger.info("determineDeltaTermperature() : outsideTemperature is " + outsideTemperature);
+	public double determineDeltaTemperature(double t, double millisols) {
+		// IT HAS THREE PARTS
+		double outsideTemperature = 0;
+		outsideTemperature = weather.getTemperature(coordinates);
 		// heatGain and heatLoss are to be converted from BTU to kJ below
+		//
+		// (1) CALCULATE HEAT GAIN
 		double heatGain = 0; // in BTU
-		double heatGenerated; //in kJ/s
+		double heatGenerated = 0; //in kJ/s
 		if (building.getHeatMode() == HeatMode.ONLINE) {
 			// HeatGenerated in kW
-			// Note: 1 kW = 3413 BTU/hr
-			heatGenerated =  building.getBuildingManager().getSettlement().getThermalSystem().getGeneratedHeat();
-			heatGain = elapsedTimeinHrs * heatGenerated * 3413; // in BTU/hr
-		} // else if (building.getHeatMode() == HeatMode.POWER_DOWN)
-			 //heatGain = 0;
-		// else heatGain = 0;
-			//logger.info("determineDeltaTermperature() : heatMode is " + building.getHeatMode());
-			//logger.info("determineDeltaTermperature() : heatGain is " + fmt.format(heatGain));
-		double diffTinF =  (currentTemperature - outsideTemperature) * 9D / 5D;
-			//logger.info("determineDeltaTermperature() : BLC is " + building.getBLC());
-			//logger.info("determineDeltaTermperature() : TinF is " + fmt.format(TinF));
-			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-			//logger.info("determineDeltaTermperature() : timefactor is " + fmt.format(marsSeconds * hrPerSec));
-			//floorArea = this.length * this.width ;
-			//logger.info("determineDeltaTermperature() : floorArea is " + floorArea);
-		double heatLoss = factor_heatLoss * diffTinF;
-			//logger.info("determineDeltaTermperature() : heatLoss is " + fmt.format(heatLoss));
-		double changeOfTinF = ( heatGain - heatLoss) / SHC_Area ;
-		double changeOfTinC = (changeOfTinF) * 5D / 9D; // the difference between deg F and deg C (namely -32) got cancelled out
+			// Note: 1 kW = 3412.14 BTU/hr
+			if (thermalSystem == null)
+				thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
+			heatGenerated =  thermalSystem.getGeneratedHeat();
+		}
+		// each person emits about 350 BTU/hr
+		double heatGainFromOccupants = HEAT_DISSIPATED_PER_PERSON * building.getInhabitants().size() ;
+		heatGain = 3412.14 * heatGenerated
+				+ heatGainFromOccupants
+				+ HEAT_GAIN_FROM_EQUIPMENT ; // in BTU/hr
+
+		//
+		// (2) CALCULATE HEAT LOSS
+		double energyExpendedToHeatAirlockMartianAir = 0;
+		if (building.getFunction(BuildingFunction.EVA) != null) {
+			if (building.numOfPeopleInAirLock() > 0) {
+				energyExpendedToHeatAirlockMartianAir = energy_factor * (22.5D - outsideTemperature) * 2;
+				// Multiplied by two in order to account for
+				//(1) the energy loss due to the original room-temperature air gushing out
+				//(2) the energy required to heat up the in-rush of the new martian air
+				//System.out.println("energyExpendedToHeatAirlockMartianAir in kW : " + energyExpendedToHeatAirlockMartianAir);
+				//System.out.println("energyExpendedToHeatAirlockMartianAir in BTU : " + 3412.14 * energyExpendedToHeatAirlockMartianAir);
+				// e.g. kW : 0.323
+				// e.g. BTU : 1101.4
+			}
+		}
+		double diffTinF =  (t - outsideTemperature) * 9D / 5D;
+		double heatLoss = diffTinF
+						* (factor_heatLossFromRoof
+						+ factor_heatLossFromCeiling
+						+ factor_heatLossFromWall
+						+ factor_heatLossFromCrackLength * weather.getWindSpeed(coordinates)
+						+ 3412.14 * energyExpendedToHeatAirlockMartianAir);
+
+
+		//
+		// (3) CALCULATE THE INSTANTANEOUS CHANGE OF TEMPERATURE (DELTA T)
+		double changeOfTinF = elapsedTimeinHrs * millisols *( heatGain - heatLoss) / SHC_Area ;
+		double changeOfTinC = changeOfTinF * 5D / 9D ; // the difference between deg F and deg C (namely -32) got cancelled out
 		//applyHeatBuffer(changeOfTinC);
 		deltaTemperature = changeOfTinC;
+		return changeOfTinC;
 	}
 
 	/**
@@ -224,6 +285,7 @@ implements Serializable {
 	//public double getDeltaTemperature() {
 	//    return deltaTemperature;
 	//}
+
 	/**
 	 * Applies a "mathematical" heat buffer to artificially stabilize temperature fluctuation due to rapid simulation time
 	 * @return temperature (degree C)
@@ -237,16 +299,12 @@ implements Serializable {
 		// 3. reduce the frequency of the more intensive computation of heat gain and heat loss in determineDeltaTemperature()
 		// Note*:  MSP is set to run at a much faster pace than the real time clock and the temperature change inside a room is time-dependent.
 		//double factor = t;
-
-
 		if (t > 2) { // && storedHeat >= -30  && storedHeat <= 30) {
-
 			// Arbitrarily select to "trap" the amount heat so as to reduce "t" to half of its value
 			storedHeat = storedHeat + 0.7 * t;
 			t = t - 0.7 * t;
 		}
 		else if (t <= 2 && t >= 1) { // && storedHeat >= -30  && storedHeat <= 30) {
-
 			// Arbitrarily select to "trap" the amount heat so as to reduce "t" to half of its value
 			storedHeat = storedHeat + 0.4 * t;
 			t = t - 0.4 *  t;
@@ -259,7 +317,6 @@ implements Serializable {
 			storedHeat = storedHeat + 0.8 * t;
 			t = t - 0.8 * t;
 		}
-
 
 		if (storedHeat > HEAT_CAP) {
 			t = t + 0.3;
@@ -302,10 +359,14 @@ implements Serializable {
 	// 2014-10-25 Currently skip calling for thermal control for Hallway
 	public void timePassing(double time) {
 
-		// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
-		//if (!building.getBuildingType().equals("Hallway"))
+		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	    int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
+
+		if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 1)
+			// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
+			//if (!building.getBuildingType().equals("Hallway"))
 			//System.out.println("ID: " + building.getID() + "\t" + building.getName());
-			adjustThermalControl();
+			adjustThermalControl(time);
 
 	}
 
@@ -315,28 +376,22 @@ implements Serializable {
 	 * @return power (kW)
 	 */
 	// 2014-10-25 Added adjustThermalControl()
-	public void adjustThermalControl() {
+	public void adjustThermalControl(double time) {
+		// Step 1 of Thermal Control
+		// Detect temperature change based on heat gain and heat loss
+		double t = currentTemperature;
+		double dt = determineDeltaTemperature(t, time);
 
-			MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		    int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
+		// Step 2 of Thermal Control
+		// Adjust the current temperature
+		//t = updateTemperature(dt);
+		t += dt;
+		currentTemperature = t;
 
-			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 1) {
+		// Step 3 of Thermal Control
+		// Turn heat source off if reaching pre-setting temperature
+		setNewHeatMode(t);
 
-				// Detect temperature change based on heat gain and heat loss
-				// Step 2 of Thermal Control
-				determineDeltaTemperature();
-
-				// Adjust the current termperature
-				// Step 3 of Thermal Control
-				updateTemperature();
-
-				// Turn heat source off if reaching pre-setting temperature
-				// Step 1 of Thermal Control
-				setNewHeatMode();
-
-
-			}
-		//}
 	}
 
 
@@ -360,8 +415,11 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-		furnace = null;
 		building = null;
+	 	thermalSystem = null;
+		building = null;
+		weather = null;
+		coordinates = null;
 	}
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
@@ -369,7 +427,7 @@ implements Serializable {
 	 */
 	//2014-11-02  Modified getFullHeatRequired()
 	public double getFullHeatRequired()  {
-		if ( heatGeneratedCache != heatGenerated) {
+		if (heatGeneratedCache != heatGenerated) {
 			heatGeneratedCache = heatGenerated;
 		}
 		// Determine heat required for each function.

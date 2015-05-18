@@ -186,7 +186,7 @@ extends TabPanel {
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		heatTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
 		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
@@ -373,9 +373,9 @@ extends TabPanel {
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.s"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelThermalSystem.column.generated"); //$NON-NLS-1$
+			else if (columnIndex == 4) return Msg.getString("TabPanelThermalSystem.column.capacity"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -408,7 +408,7 @@ extends TabPanel {
 					return buildingsWithThermal.get(row);
 				else if (column == 2)
 					// return temperature of the building;
-					return building.getTemperature();
+					return building.getCurrentTemperature();
 				else if (column == 3) {
 					double generated = 0D;
 					//if (building.hasFunction(BuildingFunction.THERMAL_GENERATION)) {

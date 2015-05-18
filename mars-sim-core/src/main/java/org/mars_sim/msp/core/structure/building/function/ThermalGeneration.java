@@ -46,27 +46,18 @@ implements Serializable {
 	// 2014-11-02 Created heatGenerated and heatGeneratedCache
 	private double heatGenerated;
 	private double heatGeneratedCache;
-
-
 	private boolean sufficientHeat;
-	//private static int count;
 
 	// 2014-10-25 Added heatSource
 	private HeatSource heatSource;
-
 	private Heating heating;
 
-  	//protected HeatMode heatMode;
 	/**
 	 * Constructor
 	 */
 	public ThermalGeneration(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
-		//count++;
-		//logger.info("constructor : count is " + count);
-
-
 		heating = new Heating(building);
 
 		// Determine heat sources.
