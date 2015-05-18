@@ -37,6 +37,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -153,12 +156,18 @@ public class MainMenu {
        switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        switcher.setScreen(MainMenu.screen1ID);
 
+       //Parent globe = createMarsGlobe();
+       //VBox vbox = ((VBox) switcher.lookup("#globe"));
+       //vbox.getChildren().add(globe);
+       //Scene scene = new Scene(switcher);
+
        Group root = new Group();
        Parent parent = createMarsGlobe();
        root.getChildren().addAll(parent, switcher);
        Scene scene = new Scene(root);
+       scene.getStylesheets().add( this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
 
-       /*
+/*
        scene.setOnMousePressed((event) -> {
 	        anchorX = event.getSceneX();
 	        //anchorY = event.getSceneY();
@@ -168,7 +177,7 @@ public class MainMenu {
 	   parent.setRotate(anchorAngle + anchorX -  event.getSceneX());
 	      	parent.setRotate(event.getSceneX());
        });
-		*/
+*/
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
        scene.setCursor(Cursor.HAND);
@@ -200,7 +209,6 @@ public class MainMenu {
 
    public void runOne() {
 	   //System.out.println("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
-
 	   primaryStage.setIconified(true);
 	   mainScene = new MainScene(stage);
 	   //primaryStage.hide();
@@ -209,15 +217,10 @@ public class MainMenu {
    }
 
    public void runMainScene() {
-	   //System.out.println("now calling mainScene.createMainScene()");
 	   mainScene.prepareMainScene();
-
 	   Platform.runLater(() -> {
 		   final Scene scene = mainScene.initializeScene();
 		   mainScene.prepareTransportWizard();
-	   //});
-		   //System.out.println("done calling mainScene.initializeScene()");
-	   //Platform.runLater(() -> {
 	       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 	       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
 		   stage.setResizable(true);
@@ -225,10 +228,7 @@ public class MainMenu {
 		   stage.setScene(scene);
 		   stage.show();
 	   });
-
-
 	   //System.out.println("done running runMainScene()");
-
    }
 
    public void runTwo() {
@@ -330,13 +330,13 @@ public class MainMenu {
        AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
 
        // Build the Scene Graph
-       Group root = new Group();
-       root.getChildren().add(camera);
-       root.getChildren().add(mars);
-       root.getChildren().add(sun);
-       root.getChildren().add(ambient);
+       Group globeComponents = new Group();
+       globeComponents.getChildren().add(camera);
+       globeComponents.getChildren().add(mars);
+       globeComponents.getChildren().add(sun);
+       globeComponents.getChildren().add(ambient);
 
-       RotateTransition rt = new RotateTransition(Duration.seconds(24), mars);
+       RotateTransition rt = new RotateTransition(Duration.seconds(60), mars);
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
        rt.setCycleCount(Animation.INDEFINITE);
@@ -347,7 +347,7 @@ public class MainMenu {
        rt.play();
 
        // Use a SubScene
-       SubScene subScene = new SubScene(root, 512, 512, true, SceneAntialiasing.BALANCED);
+       SubScene subScene = new SubScene(globeComponents, 512, 512, true, SceneAntialiasing.BALANCED);
        subScene.setFill(Color.TRANSPARENT);
        subScene.setCamera(camera);
 

@@ -47,6 +47,8 @@ import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
  * tool bars and main desktop pane.
@@ -661,7 +663,7 @@ public class MainWindow extends JComponent {
 			}
 		} else if (nimRODLookAndFeel) {
 			try {
-				UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+				UIManager.setLookAndFeel( new NimRODLookAndFeel());
 				changed = true;
 				lookAndFeelTheme = "nimrod";
 			} catch (Exception e) {

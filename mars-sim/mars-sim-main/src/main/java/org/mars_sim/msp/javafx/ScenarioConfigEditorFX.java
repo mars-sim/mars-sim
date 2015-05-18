@@ -71,6 +71,8 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+
 
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
@@ -153,14 +155,14 @@ public class ScenarioConfigEditorFX implements Runnable {
 	public void run() {
 	   	Platform.setImplicitExit(false);
 		//System.out.println("ScenarioConfigEditorFX's run() is on " + Thread.currentThread().getName() + " Thread");
-
+/*
 		try {
-			UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+			UIManager.setLookAndFeel(new NimRODLookAndFeel());
 			}
 	    catch(Exception ex){
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 	    }
-
+*/
 		settlementConfig = config.getSettlementConfiguration();
 
 		if (mainMenu.getMultiplayerMode() != null) {
@@ -204,13 +206,13 @@ public class ScenarioConfigEditorFX implements Runnable {
 			if ( parent.lookup("#anchorRoot") == null)
 				System.out.println("not found");
 
-		     AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
-		     // List should stretch as anchorpane is resized
-		     BorderPane bp = createEditor();
-		     AnchorPane.setTopAnchor(bp, 5.0);
-		     AnchorPane.setLeftAnchor(bp, 5.0);
-		     AnchorPane.setRightAnchor(bp, 5.0);
-		     anchorpane.getChildren().add(bp);
+		    AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
+		    // List should stretch as anchorpane is resized
+		    BorderPane bp = createEditor();
+		    AnchorPane.setTopAnchor(bp, 5.0);
+		    AnchorPane.setLeftAnchor(bp, 5.0);
+		    AnchorPane.setRightAnchor(bp, 5.0);
+		    anchorpane.getChildren().add(bp);
 
 			Scene scene = new Scene(undecorator);
 

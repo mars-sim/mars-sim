@@ -44,6 +44,8 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;
+
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 /**
  * A temporary simulation configuration editor dialog.
  * Will be replaced by SimulationConfigEditor later when it is finished.
@@ -76,7 +78,7 @@ public class SimulationConfigEditor {
 		hasError = false;
 
 		try {
-			UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+			UIManager.setLookAndFeel(new NimRODLookAndFeel());
 			}
 	    catch(Exception ex){
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$

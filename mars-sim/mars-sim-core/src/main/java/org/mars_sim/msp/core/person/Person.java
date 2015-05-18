@@ -118,9 +118,9 @@ implements VehicleOperator, Serializable {
         this.birthplace = birthplace;
         this.associatedSettlement = settlement;
 
-        String timeString = createTimeString();
+        String birthTimeString = createBirthTimeString();
 
-        birthTimeStamp = new EarthClock(timeString);
+        birthTimeStamp = new EarthClock(birthTimeString);
         attributes = new NaturalAttributeManager(this);
 
         // 2015-02-27 Added JobHistory
@@ -212,7 +212,7 @@ implements VehicleOperator, Serializable {
      * Create a string representing the birth time of the person.
      * @return birth time string.
      */
-    private String createTimeString() {
+    private String createBirthTimeString() {
         // Set a birth time for the person
         int year = 2003 + RandomUtil.getRandomInt(10)
                 + RandomUtil.getRandomInt(10);

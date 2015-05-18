@@ -18,7 +18,7 @@ import java.util.SimpleTimeZone;
 
 /**
  * The EarthClock class keeps track of Earth Universal Time.
- * It should be synchronized with the Mars clock. 
+ * It should be synchronized with the Mars clock.
  * TODO format date strings in an internationalized fashion depending on user locale.
  */
 public class EarthClock
@@ -33,10 +33,10 @@ implements Serializable {
 	// Data members
 	private final SimpleDateFormat formatter;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param dateString the UT date string in format: "MM/dd/yyyy hh:mm:ss".
-	 * @throws Exception if date string is invalid. 
+	 * @throws Exception if date string is invalid.
 	 */
 	public EarthClock(String dateString) {
 
@@ -53,7 +53,7 @@ implements Serializable {
 
 		formatter.setTimeZone(zone);
 
-		// Set Earth clock to Martian Zero-orbit date-time. 
+		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
 		cal.clear();
 		DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
@@ -66,10 +66,10 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the date/time formatted in a string 
-	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 UT"
-	 * @deprecated
+	 * Returns the date/time formatted in a string
+	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 UT"
 	 */
+	// Kung: why do we want to deprecate this method with @deprecated tag?
 	//2015-01-08 Added if clause
 	public synchronized String getTimeStamp() {
 		String result = formatter.format(cal.getTime());// + " UT";
@@ -78,16 +78,16 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the date formatted in a string 
-	 * @return date formatted in a string. ex "2055-05-06"
-	 * @deprecated
+	 * Returns the date formatted in a string
+	 * @return date formatted in a string. ex "2055-May-06"
 	 */
+	// Kung: why do we want to deprecate this method with @deprecated tag?
 	public synchronized String getDateString() {
-		return getTimeStamp().substring(0,10);
+		return getTimeStamp().substring(0,11);
 	}
 
 	/**
-	 * Adds time to the calendar 
+	 * Adds time to the calendar
 	 * @param seconds seconds added to the calendar
 	 */
 	public synchronized void addTime(double seconds) {
