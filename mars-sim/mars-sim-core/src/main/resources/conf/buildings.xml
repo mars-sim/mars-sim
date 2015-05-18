@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE building-list SYSTEM "conf/dtd/buildings.dtd">
+<!--
+1. 2006 HABITAT DESIGN OPTIMIZATION AND ANALYSIS
+http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20060048561.pdf
+3 areas of design considerations:
+a. Meteoroid Impact
+b. Thermal
+c. Structural
+2. Design of a Martian Habitat, a First Cut
+http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
+ -->
+
 
 <!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list>

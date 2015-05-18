@@ -543,7 +543,7 @@ implements Serializable {
 			//System.out.println("Farming.java: sunlight harvestModifier is " + harvestModifier);
 		}
 
-		double T_NOW = farm.getBuilding().getTemperature();
+		double T_NOW = farm.getBuilding().getCurrentTemperature();
 		double temperatureModifier = 0 ;
 		if (T_NOW > (t_initial + T_TOLERANCE))
 			temperatureModifier = t_initial / T_NOW;

@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE vehicle-configuration SYSTEM "conf/dtd/vehicles.dtd">
+
+<!--
+1. Pressurized Rover Airlocks
+http://www.astrotecture.com/EVA_Systems_files/SAE-2000-01-2389.pdf
+
+2. NASA Space Exploration Vehicle Concept
+http://www.nasa.gov/pdf/464826main_SEV_Concept_FactSheet.pdf
+
+3. Surface Mobility Technology Development: Pressurized Mars Rovers
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.575&rep=rep1&type=pdf
+
+ -->
+
 <vehicle-configuration>
 
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
@@ -26,7 +39,7 @@
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
 		<!-- Default: 5800.0 -->
 		<cargo total-capacity="5800.0">
- 
+
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 1600.0 -->
@@ -50,8 +63,8 @@
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 50.0 -->
-			<capacity resource="dessert" value="50.0" /> 
-			
+			<capacity resource="dessert" value="50.0" />
+
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
@@ -62,13 +75,13 @@
 			<!-- Default: 2000.0 -->
 			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
-<!--			
-			<capacity resource="solid waste" value="100.0" />					
+<!--
+			<capacity resource="solid waste" value="100.0" />
 			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />			
+			<capacity resource="black water" value="100.0" />
 			<capacity resource="food waste" value="100.0" />
 			<capacity resource="toxic waste" value="100.0" />
--->		
+-->
 		</cargo>
 
 		<!-- Sickbay -->
@@ -83,14 +96,14 @@
 			<tech-specialty value="Areology" />
 			<tech-specialty value="Biology" />
 		</lab>
-		
+
 		<!-- Airlock locations (optional) -->
 		<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
 		<!-- interior-xloc, interior-yloc: the relative X/Y location inside the vehicle. -->
 		<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the vehicle. -->
-		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
+		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
 		exterior-yloc="0.0" />
-		
+
 		<!-- Activity spots -->
 		<!-- Locations for people to perform various activities within the vehicle. -->
 		<activity>
@@ -116,18 +129,18 @@
 			<capacity resource="oxygen" value="350.0" />
 			<capacity resource="water" value="1400.0" />
 			<capacity resource="food" value="525.0" />
-			<capacity resource="dessert" value="50.0" />	
-			
-<!--			
-			<capacity resource="solid waste" value="100.0" />					
+			<capacity resource="dessert" value="50.0" />
+
+<!--
+			<capacity resource="solid waste" value="100.0" />
 			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />			
+			<capacity resource="black water" value="100.0" />
 			<capacity resource="food waste" value="100.0" />
 			<capacity resource="toxic waste" value="100.0" />
--->						
+-->
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
-		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
+		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75"
 		exterior-yloc="0.0" />
 		<activity>
 			<activity-spot type="operator" xloc=".45" yloc="4.3" />
@@ -141,7 +154,7 @@
 			<activity-spot type="sickbay" xloc="0.0" yloc=".3" />
 		</activity>
 	</vehicle>
-	
+
 	<!-- Cargo rover -->
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another.</description>
@@ -154,18 +167,18 @@
 			<capacity resource="oxygen" value="350.0" />
 			<capacity resource="water" value="1400.0" />
 			<capacity resource="food" value="525.0" />
-			<capacity resource="dessert" value="100.0" />	
-			
-<!--			
-			<capacity resource="solid waste" value="100.0" />					
+			<capacity resource="dessert" value="100.0" />
+
+<!--
+			<capacity resource="solid waste" value="100.0" />
 			<capacity resource="grey water" value="100.0" />
-			<capacity resource="black water" value="100.0" />			
+			<capacity resource="black water" value="100.0" />
 			<capacity resource="food waste" value="100.0" />
 			<capacity resource="toxic waste" value="100.0" />
--->		
+-->
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
-		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0" 
+		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"
 		exterior-yloc="0.0" />
 		<activity>
 			<activity-spot type="operator" xloc=".5" yloc="2.9" />
@@ -194,7 +207,7 @@
 			<activity-spot type="operator" xloc="0.0" yloc=".13" />
 		</activity>
 	</vehicle>
-	
+
 	<!-- remote controlled prospecting rover
 	<vehicle type="remote controlled prospector" width="1.5" length="2.5">
 		<description>used for automatic mineral prospecting</description>
@@ -203,7 +216,7 @@
 		<empty-mass value="250.0" />
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">
-			<capacity resource="methane" value="100.0" />			
+			<capacity resource="methane" value="100.0" />
 		</cargo>
 	</vehicle>-->
 <!--
@@ -238,7 +251,7 @@
 	</vehicle>
 -->
 	<!-- List of rover names -->
-	<rover-name-list>		
+	<rover-name-list>
 
 		<rover-name value="Dune Drifter" />
 		<rover-name value="Oasis" />
@@ -246,21 +259,21 @@
 		<rover-name value="Desert Fox" />
 		<rover-name value="Serenity" />
 		<rover-name value="Gypsea" />
-		<rover-name value="Martian Cloud" />	
+		<rover-name value="Martian Cloud" />
 		<rover-name value="Sand Spirit" />
 		<rover-name value="Dust Sprite" />
 		<rover-name value="Phobos Drifter" />
 		<rover-name value="Osprey" />
 		<rover-name value="Dune Runner" />
 		<rover-name value="Wind Runner" />
-		<rover-name value="Sand Dancer" />	
+		<rover-name value="Sand Dancer" />
 		<rover-name value="Nomad" />
 		<rover-name value="Spice Trader" />
 		<rover-name value="Solitude" />
 		<rover-name value="Dust Storm" />
 		<rover-name value="Martian Escape" />
 		<rover-name value="Odyssey" />
-		<rover-name value="Deimos Tide" />	
+		<rover-name value="Deimos Tide" />
 		<rover-name value="Red Mariner" />
 		<rover-name value="Shooting Star" />
 		<rover-name value="Dust Devil" />
@@ -268,10 +281,10 @@
 		<rover-name value="Windstorm" />
 		<rover-name value="Drift Wood" />
 		<rover-name value="Desertfarer" />
-		<rover-name value="Dream Chaser" />	
-		<rover-name value="Bedouin" />	
+		<rover-name value="Dream Chaser" />
+		<rover-name value="Bedouin" />
 		<rover-name value="Fremen Wanderer" />
-		<rover-name value="Beagle IV" />	
+		<rover-name value="Beagle IV" />
 		<rover-name value="Firefly" />
 		<rover-name value="Desert Pearl" />
 		<rover-name value="Princess of the Sands" />
@@ -300,7 +313,7 @@
 		<rover-name value="Nergal" /> <!-- Babylonian for "Mars" -->
 		<rover-name value="Areos Aster" /> <!-- Greek for "star of Ares" -->
 		<rover-name value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
-																						
+
 	</rover-name-list>
 
 </vehicle-configuration>

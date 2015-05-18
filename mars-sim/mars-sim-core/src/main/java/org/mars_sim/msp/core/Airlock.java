@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-/** 
+/**
  * The Airlock class represents an airlock to a vehicle or structure.
  */
 public abstract class Airlock implements Serializable {
@@ -59,7 +59,7 @@ public abstract class Airlock implements Serializable {
     private Collection<Unit> occupants;
 
     /** The person currently operating the airlock. */
-    private Unit operator; 
+    private Unit operator;
     /** People waiting for the airlock by the inner door. */
     private List<Unit> awaitingInnerDoor;
     /** People waiting for the airlock by the outer door. */
@@ -175,9 +175,9 @@ public abstract class Airlock implements Serializable {
         if (!activated) {
             if (!innerDoorLocked) {
                 while ((occupants.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
-                	
 
-					if (awaitingInnerDoor.get(0) instanceof Person) {  
+
+					if (awaitingInnerDoor.get(0) instanceof Person) {
 						Person person = (Person) awaitingInnerDoor.get(0);
 
 		                    awaitingInnerDoor.remove(person);
@@ -188,11 +188,11 @@ public abstract class Airlock implements Serializable {
 		                        logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
 		                        occupants.add(person);
 		                    }
-						
+
 					}
 					else if (awaitingInnerDoor.get(0) instanceof Robot) {
 						Robot robot = (Robot) awaitingInnerDoor.get(0);
-						
+
 		                    awaitingInnerDoor.remove(robot);
 		                    if (awaitingInnerDoor.contains(robot)) {
 		                        throw new IllegalStateException(robot + " still awaiting inner door!");
@@ -202,14 +202,14 @@ public abstract class Airlock implements Serializable {
 		                        occupants.add(robot);
 		                    }
 					}
-					        
+
                 }
                 innerDoorLocked = true;
             }
             else if (!outerDoorLocked) {
                 while ((occupants.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
-                	
-    				if (awaitingOuterDoor.get(0) instanceof Person) {  
+
+    				if (awaitingOuterDoor.get(0) instanceof Person) {
 
 	                    Person person = (Person) awaitingOuterDoor.get(0);
 	                    awaitingOuterDoor.remove(person);
@@ -220,11 +220,11 @@ public abstract class Airlock implements Serializable {
 	                        logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
 	                        occupants.add(person);
 	                    }
-	                    
+
     				}
 					else if (awaitingOuterDoor.get(0) instanceof Robot) {
 						Robot robot = (Robot) awaitingOuterDoor.get(0);
-						
+
 	                    awaitingOuterDoor.remove(robot);
 	                    if (awaitingOuterDoor.contains(robot)) {
 	                        throw new IllegalStateException(robot + " still awaiting outer door!");
@@ -233,9 +233,9 @@ public abstract class Airlock implements Serializable {
 	                        logger.finer(robot.getName() + " enters outer door of " + getEntityName() + " airlock.");
 	                        occupants.add(robot);
 	                    }
-	                    
+
     				}
-    
+
                 }
                 outerDoorLocked = true;
             }
@@ -324,7 +324,7 @@ public abstract class Airlock implements Serializable {
         return result;
     }
     */
-    
+
     /**
      * Add airlock cycle time.
      * @param time cycle time (millisols)
@@ -372,15 +372,15 @@ public abstract class Airlock implements Serializable {
             else {
                 return false;
             }
-     
+
             Iterator<Unit> i = occupants.iterator();
                 while (i.hasNext()) {
                      Unit occupant = i.next();
                      logger.finest(occupant.getName() + " exiting airlock at " + getEntity() + " state: " + getState());
                      exitAirlock(occupant);
  				}
- 				
-            occupants.clear();       
+
+            occupants.clear();
 
             operator = null;
 
@@ -394,9 +394,9 @@ public abstract class Airlock implements Serializable {
      * Causes a person within the airlock to exit either inside or outside.
      * @param occupant the person to exit.
      */
-    protected abstract void exitAirlock(Unit occupant);      
-    //protected abstract void exitAirlock(Robot robot); 
-    /** 
+    protected abstract void exitAirlock(Unit occupant);
+    //protected abstract void exitAirlock(Robot robot);
+    /**
      * Checks if the airlock's outer door is locked.
      * @return true if outer door is locked
      */
@@ -427,7 +427,7 @@ public abstract class Airlock implements Serializable {
     public String getState() {
         return state;
     }
-    
+
     /**
      * Sets the state of the airlock.
      * @param state the airlock state.
@@ -444,7 +444,7 @@ public abstract class Airlock implements Serializable {
     public Unit getOperator() {
         return operator;
     }
-    
+
     /**
      * Clears the airlock operator.
      */
@@ -481,7 +481,7 @@ public abstract class Airlock implements Serializable {
             awaitingOuterDoor.add(person);
         }
     }
-    
+
     public void addAwaitingAirlockOuterDoor(Robot robot) {
         if (!awaitingOuterDoor.contains(robot)) {
             logger.finer(robot.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
@@ -497,25 +497,25 @@ public abstract class Airlock implements Serializable {
     public void timePassing(double time) {
         Person person = null;
         Robot robot = null;
-        
+
         if (activated) {
             // Check if operator is dead.
             if (operator != null) {
 
                 boolean isDead = false;
-                
+
                 if (operator instanceof Person) {
                  	person = (Person) operator;
                  	isDead = person.getPhysicalCondition().isDead();
-                
+
                 }
                 else if (operator instanceof Robot) {
                 	robot = (Robot) operator;
                 	isDead = robot.getPhysicalCondition().isDead();
-        		
+
                 }
-            	
-            	
+
+
                 if (isDead) {
                     // If operator is dead, deactivate airlock.
                 	String operatorName = operator.getName();
@@ -526,28 +526,28 @@ public abstract class Airlock implements Serializable {
                 else {
                     // Check if airlock operator still has a task involving the airlock.
                     boolean hasAirlockTask = false;
-                    
+
                     Task task = null;
-                    
+
                     if (operator instanceof Person) {
                      	person = (Person) operator;
                      	 task = person.getMind().getTaskManager().getTask();
-                         
+
                     }
                     else if (operator instanceof Robot) {
                     	robot = (Robot) operator;
                     	 task = robot.getBotMind().getTaskManager().getTask();
-                         
+
                     }
- 
-                    
+
+
                     while (task != null) {
                         if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)) {
                             hasAirlockTask = true;
                         }
                         task = task.getSubTask();
                     }
-                    
+
                     if (!hasAirlockTask) {
                         String operatorName = operator.getName();
                         deactivateAirlock();
@@ -592,31 +592,34 @@ public abstract class Airlock implements Serializable {
      * @return inventory
      */
     public abstract Inventory getEntityInventory();
-    
+
     /**
      * Gets the entity this airlock is attached to.
      * @return entity.
      */
     public abstract Object getEntity();
-    
+
     /**
      * Gets an available position inside the airlock entity.
      * @return available local position.
      */
     public abstract Point2D getAvailableInteriorPosition();
-    
+
     /**
      * Gets an available position outside the airlock entity.
      * @return available local position.
      */
     public abstract Point2D getAvailableExteriorPosition();
-    
+
     /**
      * Gets an available position inside the airlock.
      * @return available local position.
      */
     public abstract Point2D getAvailableAirlockPosition();
 
+    public Collection<Unit> getOccupants() {
+    	return occupants;
+    }
     /**
      * Prepare object for garbage collection.
      */

@@ -17,13 +17,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -117,6 +123,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected ThermalGeneration furnace;
 	protected MalfunctionManager malfunctionManager;
 	protected LifeSupport lifeSupport;
+	private EVA eva;
 
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
@@ -130,7 +137,6 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	//2014-10-27  Added getNickName()
 	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
@@ -141,7 +147,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = template.getBuildingType();
 
 		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.ONLINE;
+		heatMode = HeatMode.HEAT_OFF;
 
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -298,8 +304,8 @@ LocalBoundedObject, InsidePathLocation {
      * @return temperature (deg C)
      */
 	//2014-10-17  Added getTemperature()
-    public double getTemperature() {
-            return getThermalGeneration().getHeating().getTemperature();
+    public double getCurrentTemperature() {
+            return getThermalGeneration().getHeating().getCurrentTemperature();
     }
 
 	/**
@@ -331,6 +337,8 @@ LocalBoundedObject, InsidePathLocation {
 		if (config.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
 
 		// Set EVA function.
+		//eva = new EVA(this);
+		//if (config.hasEVA(buildingType)) buildingFunctions.add(eva);
 		if (config.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
 
 		// Set recreation function.
@@ -422,8 +430,9 @@ LocalBoundedObject, InsidePathLocation {
 			Function function = i.next();
 			if (function.getFunction() == functionType) result = function;
 		}
-		if (result != null) return result;
-		else throw new IllegalStateException(buildingType + " does not have " + functionType);
+		//if (result != null) return result;
+		//else throw new IllegalStateException(buildingType + " does not have " + functionType);
+		return result;
 	}
 
 	/**
@@ -638,12 +647,53 @@ LocalBoundedObject, InsidePathLocation {
 		return malfunctionManager;
 	}
 
-	/**
-	 * Gets a collection of people affected by this entity.
-	 * Children buildings should add additional people as necessary.
-	 * @return person collection
-	 */
-	public Collection<Person> getAffectedPeople() {
+
+	public int numOfPeopleInAirLock() {
+        int num = 0;
+		//if (getFunction(BuildingFunction.EVA) != null) {
+			//EVA eva = (EVA) getFunction(BuildingFunction.EVA);
+	        num = ((EVA) getFunction(BuildingFunction.EVA)).getAirlock().getOccupants().size();
+			//if (num > 0) System.out.println("num is " + num);
+		//}
+        return num;
+/*
+        List<Building> evaBuildings = manager.getBuildings(BuildingFunction.EVA);
+        if (evaBuildings.size() > 0) {
+            Iterator<Building> i = evaBuildings.iterator();
+    		while (i.hasNext()) {
+            	Building building = i.next();
+            	//building.get
+    		}
+        }
+
+
+         		int result = 0;
+		//Collection<Person> people = getInhabitants();
+		// Check all people in settlement.
+		//Iterator<Person> i = people.iterator();
+		Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			//System.out.println(person.getName() + "'s location : " + person.getBuildingLocation().getNickName());
+			//System.out.println("Building location with heating : " + getNickName());
+			if (person.getBuildingLocation().getNickName().equals(getNickName())) {
+				Task task = person.getMind().getTaskManager().getTask();
+				// Add all people maintaining this building.
+				if (task instanceof EnterAirlock || task instanceof ExitAirlock ) {
+					result++;
+					System.out.println(result + " in the airlock : ");
+				}
+			}
+		}
+		if (result > 0)
+			System.out.println("result : "+ result);
+		return result;
+*/
+
+	}
+
+
+    public Collection<Person> getInhabitants() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// If building has life support, add all occupants of the building.
@@ -656,6 +706,29 @@ LocalBoundedObject, InsidePathLocation {
 			}
 		}
 
+		return people;
+    }
+
+	/**
+	 * Gets a collection of people affected by this entity.
+	 * Children buildings should add additional people as necessary.
+	 * @return person collection
+	 */
+	public Collection<Person> getAffectedPeople() {
+/*
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+
+		// If building has life support, add all occupants of the building.
+		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+			Iterator<Person> i = lifeSupport.getOccupants().iterator();
+			while (i.hasNext()) {
+				Person occupant = i.next();
+				if (!people.contains(occupant)) people.add(occupant);
+			}
+		}
+*/
+		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
 		Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
 		while (i.hasNext()) {
@@ -679,6 +752,8 @@ LocalBoundedObject, InsidePathLocation {
 
 		return people;
 	}
+
+
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
@@ -762,10 +837,10 @@ LocalBoundedObject, InsidePathLocation {
 		// Update malfunction manager.
 		malfunctionManager.timePassing(time);
 		// If powered up, active time passing.
-		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
+		//if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
 		//2014-10-17  Added HeatMode
 		// If heat is on, active time passing.
-		if (heatMode == HeatMode.ONLINE) malfunctionManager.activeTimePassing(time);
+		//if (heatMode == HeatMode.ONLINE) malfunctionManager.activeTimePassing(time);
 	}
 
 	public List<Function> getFunctions() {

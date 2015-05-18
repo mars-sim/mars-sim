@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE people-configuration SYSTEM "conf/dtd/people.dtd">
+<!--
+1. EMU: Extravehicular Activity Suit Systems Design How to Walk, Talk, and Breathe on Mars
+http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
+ -->
 
 <people-configuration>
 

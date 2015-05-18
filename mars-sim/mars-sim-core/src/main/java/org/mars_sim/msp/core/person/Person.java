@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -362,7 +363,7 @@ implements VehicleOperator, Serializable {
      * @param time amount of time passing (in millisols).
      */
     public void timePassing(double time) {
-
+    	//System.out.println("Container Unit : " + this.getContainerUnit());
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
 
@@ -601,8 +602,7 @@ implements VehicleOperator, Serializable {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
                 if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport =
-                            (org.mars_sim.msp.core.structure.building.function.LifeSupport)
+                   LifeSupport lifeSupport = (LifeSupport)
                             building.getFunction(BuildingFunction.LIFE_SUPPORT);
                     localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
                 }
@@ -735,6 +735,27 @@ implements VehicleOperator, Serializable {
     	return kitchenWithDessert;
     }
 
+	   /**
+  * Gets an available living accommodations building that the person can use.
+  * Returns null if no living accommodations building is currently available.
+  * @param person the person
+  * @return available living accommodations building
+  */
+ public Building getBuildingLocation() {
+     Building result = null;
+     if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+         BuildingManager manager = getSettlement().getBuildingManager();
+         result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+         //List<Building> buildings = manager.getBuildings();
+         //Iterator<Building> i = buildings.iterator();
+        // while (i.hasNext()) {
+ 		//	Building b = i.next();
+ 		//	String buildingType = b.getBuildingType();
+ 		//}
+     }
+
+     return result;
+ }
     @Override
     public void destroy() {
         super.destroy();
