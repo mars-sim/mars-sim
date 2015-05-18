@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen3Controller">
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen3Controller">
    <children>
-      <BorderPane prefHeight="480.0" prefWidth="600.0">
+      <BorderPane prefHeight="640.0" prefWidth="640.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="600.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="640.0" prefWidth="640.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
@@ -25,7 +25,7 @@
           </VBox>
          </center>
          <bottom>
-            <HBox prefHeight="40.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+            <HBox prefHeight="40.0" prefWidth="640.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
            <Label text="Credits" textFill="#ffe100" BorderPane.alignment="CENTER">
@@ -33,7 +33,7 @@
             <Font name="Aharoni Bold" size="36.0" />
           </font>
                <BorderPane.margin>
-                  <Insets top="10.0" />
+                  <Insets top="20.0" />
                </BorderPane.margin>
         </Label>
          </top>

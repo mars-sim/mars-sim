@@ -35,3 +35,12 @@ Defines the rectangle responsible for the shadow
 -fx-arc-width:20px;
 -fx-arc-height:20px;
 }
+
+.text{
+    -fx-fill: #FFB03B;
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+.text:hover{
+    -fx-fill: #ffef00;
+}

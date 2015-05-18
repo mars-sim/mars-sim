@@ -68,6 +68,8 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+
 /**
  * The MainScene class is the primary Stage for MSP. It is the container for housing
  * desktop swing node, javaFX UI, pull-down menu and icons for tools.
@@ -158,6 +160,7 @@ public class MainScene {
         startEarthTimer();
 		//System.out.println("done running the two timers");
 		//System.out.println("done running createMainScene()");
+
     }
 
     public void prepareTransportWizard() {
@@ -855,7 +858,7 @@ public class MainScene {
 			}
 		} else if (nimRODLookAndFeel) {
 			try {
-				UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+				UIManager.setLookAndFeel(new NimRODLookAndFeel());
 				changed = true;
 				lookAndFeelTheme = "nimrod";
 			} catch (Exception e) {
@@ -917,6 +920,7 @@ public class MainScene {
     		setLookAndFeel(false, true);
             //swingNode.setContent(mainWindow);
         });
+		desktop.openInitialWindows();
     }
 
 	public void closeMarsNet() {
@@ -978,12 +982,15 @@ public class MainScene {
 		}
     }
 
-
-
 	//public void setMainMenu(MainMenu mainMenu) {
 	//	this.mainMenu = mainMenu;
 	//}
 
+    public void openInitialWindows() {
+    	SwingUtilities.invokeLater(() -> {
+    		desktop.openInitialWindows();
+    	});
+    }
 
 	public void destroy() {
 		newSimThread = null;

@@ -41,7 +41,7 @@ public class MarsProjectStarter {
         command.append("*").append(File.pathSeparator);
         command.append("jars").append(File.separator).append("*");
         command.append(" org.mars_sim.msp.MarsProject");
-        //command.append(" org.mars_sim.msp.MarsProjectFX");
+        //command.append(" org.mars_sim.msp.javafx.MarsProjectFX");
 
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);
@@ -49,7 +49,7 @@ public class MarsProjectStarter {
             Process process = Runtime.getRuntime().exec(commandStr);
 
             // Creating stream consumers for processes.
-            StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "OUTPUT");            
+            StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "OUTPUT");
             StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "OUTPUT");
 
             // Starting the stream consumers.
@@ -57,7 +57,7 @@ public class MarsProjectStarter {
             outputConsumer.start();
 
             process.waitFor();
-            
+
             // Close stream consumers.
             errorConsumer.join();
             outputConsumer.join();

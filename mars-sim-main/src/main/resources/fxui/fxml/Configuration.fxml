@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
+<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
     <children>
-      <BorderPane prefHeight="480.0">
+      <BorderPane prefHeight="640.0" prefWidth="640.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="480.0" prefWidth="600.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="640.0" prefWidth="640.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
@@ -45,15 +45,15 @@
           </VBox>
          </center>
          <bottom>
-            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="640.0" BorderPane.alignment="CENTER" />
          </bottom>
          <top>
-           <Label prefHeight="20.0" prefWidth="110.0" style="-fx-background-color: transparent;" text="Config" textFill="#fff600" BorderPane.alignment="CENTER">
+           <Label prefHeight="53.0" prefWidth="235.0" style="-fx-background-color: transparent;" text="Configuration" textFill="#fff600" BorderPane.alignment="CENTER">
           <font>
             <Font name="Aharoni Bold" size="36.0" />
           </font>
                <BorderPane.margin>
-                  <Insets top="10.0" />
+                  <Insets top="20.0" />
                </BorderPane.margin>
         </Label>
          </top>
