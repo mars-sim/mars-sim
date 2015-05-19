@@ -46,7 +46,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
-	
+
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 0D;
 
@@ -63,18 +63,18 @@ implements Serializable {
 	 */
 	public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true, 
+        super(NAME, person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(300D));
-        
+
         // Determine study to review.
         study = determineStudy();
         if (study != null) {
-            setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail", 
+            setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail",
                     study.toString())); //$NON-NLS-1$
-            
+
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {         
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
@@ -82,9 +82,9 @@ implements Serializable {
                     adminWalk = true;
                 }
             }
-            
+
             if (!adminWalk) {
-                
+
                 if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
@@ -101,12 +101,12 @@ implements Serializable {
             logger.info("study could not be determined");
             endTask();
         }
-        
+
         // Initialize phase
         addPhase(REVIEW);
         setPhase(REVIEW);
     }
-    
+
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
@@ -131,32 +131,32 @@ implements Serializable {
 
         return result;
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.ADMINISTRATION;
     }
-    
+
     /**
      * Determines the scientific study that will be reviewed.
      * @return study or null if none available.
      */
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
-        
+
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
-        
+
         // Get all studies in the peer review phase.
         ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
         Iterator<ScientificStudy> i = studyManager.getOngoingStudies().iterator();
         while (i.hasNext()) {
             ScientificStudy study = i.next();
             if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {
-                
+
                 // Check that person isn't a researcher in the study.
-                if (!person.equals(study.getPrimaryResearcher()) && 
+                if (!person.equals(study.getPrimaryResearcher()) &&
                         !study.getCollaborativeResearchers().keySet().contains(person)) {
-                
+
                     // Check if person's current job is related to study primary science.
                     Job job = person.getMind().getJob();
                     if (job != null) {
@@ -168,16 +168,16 @@ implements Serializable {
                 }
             }
         }
-        
+
         // Randomly select study.
         if (possibleStudies.size() > 0) {
             int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
             result = possibleStudies.get(selected);
         }
-        
+
         return result;
     }
-    
+
     @Override
     protected void addExperience(double time) {
         // Add experience to relevant science skill
@@ -215,40 +215,40 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Performs the study peer reviewing phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double reviewingPhase(double time) {
-        
+
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
             endTask();
         }
-        
+
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {
             endTask();
         }
-        
+
         if (isDone()) {
             return time;
         }
-        
+
         // Peer review study. (No operation required for this)
-        
+
         // Add experience
         addExperience(time);
-        
+
         return 0D;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         study = null;
     }
 }

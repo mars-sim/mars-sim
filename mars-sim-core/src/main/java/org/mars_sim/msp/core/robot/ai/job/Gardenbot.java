@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
-/** 
+/**
  * The Gardenbot class represents a job for a gardenbot.
  */
 public class Gardenbot
@@ -48,6 +48,7 @@ implements Serializable {
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
+	// TODO: use capability of the person who programs it
 	public double getCapability(Robot robot) {
 
 		double result = 10D;
@@ -65,7 +66,7 @@ implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets the base settlement need for this job.
 	 * @param settlement the settlement in need.
@@ -82,10 +83,8 @@ implements Serializable {
 			Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 			result += (farm.getGrowingArea() / 8D); // changed from /10D to /5D
 		}
-
 	    //System.out.println("getSettlementNeed() : result is " + result);
-	       
-		return result;	
+		return result;
 	}
 
 }

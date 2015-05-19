@@ -200,9 +200,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</resource-processing>
 
-			<robotic-station slots="1">
+			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.3" yloc="-3.2" />
+					<activity-spot xloc="-0.2" yloc="-3.1" />
 				</activity>
 			</robotic-station>
 
@@ -315,9 +316,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</resource-processing>
 
-			<robotic-station slots="1">
+			<robotic-station slots="2">
 				<activity>
-					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="0" yloc=".2" />
+					<activity-spot xloc="0" yloc=".4" />
 				</activity>
 			</robotic-station>
 
@@ -2015,6 +2017,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required=".5" />
+			<robotic-station slots="1"/>
 		</functions>
 	</building>
 
@@ -2030,6 +2033,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required=".2" />
+			<robotic-station slots="1"/>
 		</functions>
 	</building>
 

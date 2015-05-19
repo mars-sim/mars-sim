@@ -6,13 +6,20 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * The RoboticStation class is a building function for a Robotic Station.
@@ -22,14 +29,24 @@ public class RoboticStation extends Function implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
+
     public final static double POWER_USAGE_PER_ROBOT = 1D; // in kW
 
     private static final double SECONDS_IN_MILLISOL = 88.775244;
-    
+
     private static final BuildingFunction FUNCTION = BuildingFunction.ROBOTIC_STATION;
 
     private int slots;
     private int sleepers;
+	private int occupantCapacity;
+
+	private double powerRequired;
+
+	private Building building;
+	private Inventory inv;
+	private Collection<Robot> robotOccupants;
 
     /**
      * Constructor
@@ -39,11 +56,22 @@ public class RoboticStation extends Function implements Serializable {
     public RoboticStation(Building building) {
         // Call Function constructor.
         super(FUNCTION, building);
+		// Each building has its own instance of LifeSupport
+        // System.out.println("Calling RoboticStation's constructor");
+		this.building = building;
+
+		inv = getBuilding().getInventory();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        slots = config.getRoboticStationSlots(building.getBuildingType());
+		robotOccupants = new ConcurrentLinkedQueue<Robot>();
+		// Set occupant capacity.
+		occupantCapacity = config.getLifeSupportCapacity(building.getBuildingType());
+		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
+		//this.occupantCapacity = occupantCapacity;
+		//this.powerRequired = powerRequired;
 
+        slots = config.getRoboticStationSlots(building.getBuildingType());
         // Load activity spots
         loadActivitySpots(config.getRoboticStationActivitySpots(building.getBuildingType()));
     }
@@ -150,10 +178,10 @@ public class RoboticStation extends Function implements Serializable {
         inv.addDemandTotalRequest(water);
         if (waterUsed > waterAvailable)
             waterUsed = waterAvailable;
-        inv.retrieveAmountResource(water, waterUsed);        
+        inv.retrieveAmountResource(water, waterUsed);
     	// 2015-01-09 addDemandRealUsage()
        	inv.addDemandAmount(water, waterUsed);
-        
+
         AmountResource wasteWater = AmountResource
                 .findAmountResource("waste water");
         double wasteWaterProduced = waterUsed;
@@ -173,6 +201,21 @@ public class RoboticStation extends Function implements Serializable {
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
+
+    	if (inv == null)
+    		inv = getBuilding().getInventory();
+
+		// Make sure all occupants are actually in settlement inventory.
+		// If not, remove them as occupants.
+		if (robotOccupants != null)
+			if (robotOccupants.size() > 0) {
+				Iterator<Robot> ii = robotOccupants.iterator();
+				while (ii.hasNext()) {
+					if (!inv.containsUnit(ii.next()))
+						ii.remove();
+				}
+			}
+
     }
 
     /**
@@ -208,4 +251,93 @@ public class RoboticStation extends Function implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	/**
+	 * Gets the building's capacity for supporting occupants.
+	 * @return number of inhabitants.
+	 */
+	public int getOccupantCapacity() {
+		return occupantCapacity;
+	}
+
+	/**
+	 * Gets a collection of robotOccupants in the building.
+	 * @return collection of robotOccupants
+	 */
+	public Collection<Robot> getRobotOccupants() {
+		return new ConcurrentLinkedQueue<Robot>(robotOccupants);
+	}
+
+	public int getRobotOccupantNumber() {
+		return robotOccupants.size();
+	}
+
+	/**
+	 * Gets the available occupancy room.
+	 * @return occupancy room
+	 */
+	public int getAvailableOccupancy() {
+		int available = occupantCapacity - getRobotOccupantNumber();
+		if (available > 0) return available;
+		else return 0;
+	}
+
+	/**
+	 * Checks if the building contains a particular unit.
+	 * @return true if unit is in building.
+	 */
+	public boolean containsRobotOccupant(Robot robot) {
+		return robotOccupants.contains(robot);
+
+	}
+
+	/**
+	 * Adds a robot to the building.
+	 * Note: robot capacity can be exceeded
+	 * @param robot new robot to add to building.
+	 * @throws BuildingException if robot is already building occupant.
+	 */
+	public void addRobot(Robot robot) {
+		if (!robotOccupants.contains(robot)) {
+			// Remove robot from any other inhabitable building in the settlement.
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				Building building = i.next();
+				if (building.hasFunction(FUNCTION)) {
+					BuildingManager.removePersonOrRobotFromBuilding(robot, building);
+				}
+			}
+
+			// Add robot to this building.
+			logger.finest("Adding " + robot + " to " + getBuilding() + " robotic station.");
+			robotOccupants.add(robot);
+		}
+		else {
+			throw new IllegalStateException("This robot is already in this building.");
+		}
+	}
+
+	/**
+	 * Removes a robot from the building.
+	 * @param occupant the robot to remove from building.
+	 * @throws BuildingException if robot is not building occupant.
+	 */
+	public void removeRobot(Robot robot) {
+		if (robotOccupants.contains(robot)) {
+			robotOccupants.remove(robot);
+		    logger.finest("Removing " + robot + " from " + getBuilding() + " robotic station.");
+		}
+		else {
+			throw new IllegalStateException("The robot is not in this building.");
+		}
+	}
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+		super.destroy();
+    	robotOccupants.clear();;
+    	robotOccupants = null;
+    }
 }

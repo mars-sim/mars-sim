@@ -253,9 +253,7 @@ public class MainMenu {
    }
 
    public void runThree() {
-
 	   //primaryStage.setIconified(true);
-
 		try {
 			multiplayerMode = new MultiplayerMode(this);
 		} catch (IOException e) {
@@ -264,11 +262,8 @@ public class MainMenu {
 		}
 		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 		executor.execute(multiplayerMode.getModeTask());
-
 	   //pool.shutdown();
-
 	   //primaryStage.toFront();
-
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();
@@ -347,7 +342,7 @@ public class MainMenu {
        rt.play();
 
        // Use a SubScene
-       SubScene subScene = new SubScene(globeComponents, 512, 512, true, SceneAntialiasing.BALANCED);
+       SubScene subScene = new SubScene(globeComponents, 640, 640, true, SceneAntialiasing.BALANCED);
        subScene.setFill(Color.TRANSPARENT);
        subScene.setCamera(camera);
 

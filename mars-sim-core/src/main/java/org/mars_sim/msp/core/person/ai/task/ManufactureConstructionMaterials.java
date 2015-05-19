@@ -53,7 +53,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase MANUFACTURE = new TaskPhase(Msg.getString(
             "Task.phase.manufacture")); //$NON-NLS-1$
@@ -76,12 +76,12 @@ implements Serializable {
      * @param person the person to perform the task
      */
     public ManufactureConstructionMaterials(Person person) {
-        super(NAME, person, true, false, STRESS_MODIFIER, true, 
+        super(NAME, person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(50D));
 
         // Initialize data members
         if (person.getSettlement() != null) {
-            setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail", 
+            setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail",
                     person.getSettlement().getName())); //$NON-NLS-1$
         }
         else {
@@ -93,10 +93,10 @@ implements Serializable {
         if (manufactureBuilding != null) {
             workshop = (Manufacture) manufactureBuilding
                     .getFunction(BuildingFunction.MANUFACTURE);
-            
+
             // Walk to manufacturing building.
             walkToActivitySpotInBuilding(manufactureBuilding, false);
-        } 
+        }
         else {
             endTask();
         }
@@ -105,14 +105,14 @@ implements Serializable {
         addPhase(MANUFACTURE);
         setPhase(MANUFACTURE);
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MANUFACTURE;
     }
 
     /**
-     * Gets an available manufacturing building that the person can use. Returns null 
+     * Gets an available manufacturing building that the person can use. Returns null
      * if no manufacturing building is currently available.
      * @param person the person
      * @return available manufacturing building
@@ -138,7 +138,7 @@ implements Serializable {
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager
                     .getLeastCrowdedBuildings(manufacturingBuildings);
-            
+
             if (manufacturingBuildings.size() > 0) {
                 Map<Building, Double> manufacturingBuildingProbs = BuildingManager.
                         getBestRelationshipBuildings(person, manufacturingBuildings);
@@ -150,7 +150,7 @@ implements Serializable {
     }
 
     /**
-     * Gets a list of manufacturing buildings needing work from a list of buildings 
+     * Gets a list of manufacturing buildings needing work from a list of buildings
      * with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @param skill the materials science skill level of the person.
@@ -560,7 +560,7 @@ implements Serializable {
             int techLevel = workshop.getTechLevel();
 
             // Determine all manufacturing processes that are possible and profitable.
-            Map<ManufactureProcessInfo, Double> processProbMap = 
+            Map<ManufactureProcessInfo, Double> processProbMap =
                     new HashMap<ManufactureProcessInfo, Double>();
             Iterator<ManufactureProcessInfo> i = ManufactureUtil
                     .getManufactureProcessesForTechSkillLevel(techLevel,
@@ -578,7 +578,7 @@ implements Serializable {
                 }
             }
 
-            // Randomly choose among possible manufacturing processes based on their relative profitability. 
+            // Randomly choose among possible manufacturing processes based on their relative profitability.
             ManufactureProcessInfo chosenProcess = null;
             if (!processProbMap.isEmpty()) {
                 chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
@@ -616,7 +616,7 @@ implements Serializable {
                 .getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident while manufacturing " + 
+            logger.info(person.getName() + " has accident while manufacturing " +
                     "construction materials.");
             workshop.getBuilding().getMalfunctionManager().accident();
         }

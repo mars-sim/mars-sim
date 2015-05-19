@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -79,6 +80,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
     // Data members
     private String name;
+    private Person owner;
     /** The height of the robot (in cm). */
     private int height;
     /** Settlement X location (meters) from settlement center. */
@@ -102,18 +104,16 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
-
     /** The birthplace of the robot. */
     private String birthplace;
     /** The birth time of the robot. */
     private EarthClock birthTimeStamp;
     /** The settlement the robot is currently associated with. */
     private Settlement associatedSettlement;
+
     private TaskSchedule taskSchedule;
 
     private RobotType robotType;
-
-
 
     /**
      * Constructs a robot object at a given settlement.
@@ -141,7 +141,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         yLoc = 0D;
         isBuried = false;
 
-
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
@@ -156,7 +155,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
 
-
         setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
         height = 156 + RandomUtil.getRandomInt(22);
 
@@ -167,7 +165,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         // Put robot in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-
     }
 
 
@@ -326,12 +323,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 			}
 		}
 		malfunctionManager.timePassing(time);
-		
+
         // If robot is dead, then skip
         if (health.getDeathDetails() == null) {
 
             RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
-            LifeSupportType support = getLifeSupport();
+            LifeSupportType support = getLifeSupportType();
 
             // Pass the time in the physical condition first as this may
             // result in death.
@@ -420,7 +417,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
      * Settlement, Vehicle or Equipment.
      * @return Life support system.
      */
-    private LifeSupportType getLifeSupport() {
+    private LifeSupportType getLifeSupportType() {
 
         LifeSupportType result = null;
         List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
@@ -518,11 +515,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building building = BuildingManager.getBuilding(this);
             if (building != null) {
-                if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-                    org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport =
-                            (org.mars_sim.msp.core.structure.building.function.LifeSupport)
-                            building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                    localRobotGroup = new ConcurrentLinkedQueue<Robot>(lifeSupport.getRobotOccupants());
+                if (building.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
+                    RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                    localRobotGroup = new ConcurrentLinkedQueue<Robot>(roboticStation.getRobotOccupants());
                 }
             }
         } else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -586,9 +581,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
 
 	/**
-	 * Gets a collection of people affected by this entity.
+	 * Gets a collection of people affected by this malfunction bots
 	 * @return person collection
 	 */
+    //TODO: associate each bot with its owner
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 

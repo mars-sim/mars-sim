@@ -238,7 +238,7 @@ implements Serializable {
 
             // Walk to random inhabitable building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(robot);
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
             if (buildingList.size() > 0) {
                 int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
                 Building destinationBuilding = buildingList.get(buildingIndex);

@@ -47,7 +47,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureGood"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase MANUFACTURE = new TaskPhase(Msg.getString(
             "Task.phase.manufacture")); //$NON-NLS-1$
@@ -65,12 +65,12 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ManufactureGood(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 
+		super(NAME, person, true, false, STRESS_MODIFIER, true,
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.manufactureGood.detail", 
+		    setDescription(Msg.getString("Task.description.manufactureGood.detail",
                     person.getSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
@@ -84,7 +84,7 @@ implements Serializable {
 
 			// Walk to manufacturing building.
 			walkToActivitySpotInBuilding(manufactureBuilding, false);
-		} 
+		}
 		else {
 			endTask();
 		}
@@ -93,14 +93,14 @@ implements Serializable {
 		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
 	}
-	
+
 	public ManufactureGood(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 
+		super(NAME, robot, true, false, STRESS_MODIFIER, true,
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
 		if (robot.getSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.manufactureGood.detail", 
+		    setDescription(Msg.getString("Task.description.manufactureGood.detail",
                     robot.getSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
@@ -114,7 +114,7 @@ implements Serializable {
 
 			// Walk to manufacturing building.
 			walkToActivitySpotInBuilding(manufactureBuilding, false);
-		} 
+		}
 		else {
 			endTask();
 		}
@@ -123,14 +123,14 @@ implements Serializable {
 		addPhase(MANUFACTURE);
 		setPhase(MANUFACTURE);
 	}
-	
-	
+
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MANUFACTURE;
     }
-	/** 
-	 * Cancel any manufacturing processes that's beyond the skill of any people 
+	/**
+	 * Cancel any manufacturing processes that's beyond the skill of any people
 	 * associated with the settlement.
 	 * @param person the person
 	 */
@@ -248,14 +248,14 @@ implements Serializable {
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
+			manufacturingBuildings = BuildingManager.getEvenNumOfBotsForBuildings(manufacturingBuildings);
 
 			if (manufacturingBuildings.size() > 0) {
 				//Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-				//		robot, manufacturingBuildings);				
+				//		robot, manufacturingBuildings);
 				//result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
 				int selected = RandomUtil.getRandomInt(manufacturingBuildings.size()-1);
-            	result = manufacturingBuildings.get(selected);			
+            	result = manufacturingBuildings.get(selected);
 			}
 		}
 
@@ -377,7 +377,7 @@ implements Serializable {
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @return highest process good value.
 	 */
-	public static double getHighestManufacturingProcessValue(Person person, 
+	public static double getHighestManufacturingProcessValue(Person person,
 			Building manufacturingBuilding) {
 
 		double highestProcessValue = 0D;
@@ -391,7 +391,7 @@ implements Serializable {
 				techLevel, skillLevel).iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
+			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) ||
 					isProcessRunning(process, manufacturingFunction)) {
 				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
 				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
@@ -403,7 +403,7 @@ implements Serializable {
 
 		return highestProcessValue;
 	}
-	public static double getHighestManufacturingProcessValue(Robot robot, 
+	public static double getHighestManufacturingProcessValue(Robot robot,
 			Building manufacturingBuilding) {
 
 		double highestProcessValue = 0D;
@@ -417,7 +417,7 @@ implements Serializable {
 				techLevel, skillLevel).iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
+			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) ||
 					isProcessRunning(process, manufacturingFunction)) {
 				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
 				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
@@ -438,15 +438,15 @@ implements Serializable {
 		// attribute.
 		double newPoints = time / 100D;
 		int experienceAptitude = 0;
-		if (person != null) 
-			experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);			
+		if (person != null)
+			experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		else if (robot != null)
 			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		
+
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		if (person != null) 
-			person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);			
+		if (person != null)
+			person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
 		else if (robot != null)
 			robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
 	}
@@ -461,8 +461,8 @@ implements Serializable {
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
-		if (person != null) 
-			 manager =	person.getMind().getSkillManager();					
+		if (person != null)
+			 manager =	person.getMind().getSkillManager();
 		else if (robot != null)
 			 manager =	robot.getBotMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
@@ -517,19 +517,19 @@ implements Serializable {
 				process.addWorkTime(providedWorkTime);
 				workTime -= providedWorkTime;
 
-				if ((process.getWorkTimeRemaining() <= 0D) && 
+				if ((process.getWorkTimeRemaining() <= 0D) &&
 						(process.getProcessTimeRemaining() <= 0D)) {
 					workshop.endManufacturingProcess(process, false);
 				}
 			} else {
-				
-				if (person != null) 
+
+				if (person != null)
 					if (!person.getSettlement().getManufactureOverride())
-						process = createNewManufactureProcess();					
+						process = createNewManufactureProcess();
 					else if (robot != null)
 					if (!robot.getSettlement().getManufactureOverride())
 						process = createNewManufactureProcess();
-		
+
 				if (process == null) {
 					endTask();
 				}
@@ -556,7 +556,7 @@ implements Serializable {
 		Iterator<ManufactureProcess> i = workshop.getProcesses().iterator();
 		while (i.hasNext() && (result == null)) {
 			ManufactureProcess process = i.next();
-			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
+			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) &&
 					(process.getWorkTimeRemaining() > 0D)) {
 				result = process;
 			}
@@ -572,7 +572,7 @@ implements Serializable {
 	 * @param manufactureBuilding the manufacturing building.
 	 * @return true if process is running.
 	 */
-	private static boolean isProcessRunning(ManufactureProcessInfo processInfo, 
+	private static boolean isProcessRunning(ManufactureProcessInfo processInfo,
 			Manufacture manufactureBuilding) {
 		boolean result = false;
 
@@ -607,20 +607,20 @@ implements Serializable {
 				ManufactureProcessInfo processInfo = i.next();
 				if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)) {
 					double processValue = 0;
-					if (person != null) 
-						processValue = ManufactureUtil.getManufactureProcessValue(processInfo, 
-								person.getSettlement());						
+					if (person != null)
+						processValue = ManufactureUtil.getManufactureProcessValue(processInfo,
+								person.getSettlement());
 					else if (robot != null)
-						processValue = ManufactureUtil.getManufactureProcessValue(processInfo, 
+						processValue = ManufactureUtil.getManufactureProcessValue(processInfo,
 							robot.getSettlement());
-					
+
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);
 					}
 				}
 			}
 
-			// Randomly choose among possible manufacturing processes based on their relative profitability. 
+			// Randomly choose among possible manufacturing processes based on their relative profitability.
 			ManufactureProcessInfo chosenProcess = null;
 			if (!processProbMap.isEmpty()) {
 				chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
@@ -657,12 +657,12 @@ implements Serializable {
 		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			
-			if (person != null) 
-				logger.info(person.getName() + " has accident while manufacturing.");				
+
+			if (person != null)
+				logger.info(person.getName() + " has accident while manufacturing.");
 			else if (robot != null)
 				logger.info(robot.getName() + " has accident while manufacturing.");
-			
+
 			workshop.getBuilding().getMalfunctionManager().accident();
 		}
 	}
