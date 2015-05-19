@@ -156,7 +156,7 @@ implements VehicleOperator, Serializable {
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
 
-        support = getLifeSupport();
+        support = getLifeSupportType();
 
     }
 
@@ -367,7 +367,7 @@ implements VehicleOperator, Serializable {
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
 
-            support = getLifeSupport();
+            support = getLifeSupportType();
             // Pass the time in the physical condition first as this may
             // result in death.
             if (health.timePassing(time, support, config)) {
@@ -479,7 +479,7 @@ implements VehicleOperator, Serializable {
      * Settlement, Vehicle or Equipment.
      * @return Life support system.
      */
-    private LifeSupportType getLifeSupport() {
+    private LifeSupportType getLifeSupportType() {
 
         LifeSupportType result = null;
         List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
@@ -735,27 +735,28 @@ implements VehicleOperator, Serializable {
     	return kitchenWithDessert;
     }
 
-	   /**
-  * Gets an available living accommodations building that the person can use.
-  * Returns null if no living accommodations building is currently available.
-  * @param person the person
-  * @return available living accommodations building
-  */
- public Building getBuildingLocation() {
-     Building result = null;
-     if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-         BuildingManager manager = getSettlement().getBuildingManager();
-         result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
-         //List<Building> buildings = manager.getBuildings();
-         //Iterator<Building> i = buildings.iterator();
-        // while (i.hasNext()) {
- 		//	Building b = i.next();
- 		//	String buildingType = b.getBuildingType();
- 		//}
-     }
+	/**
+	  * Gets the building the person is located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2015-05-18 Added getBuildingLocation()
+    public Building getBuildingLocation() {
+	     Building result = null;
+	     if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	         BuildingManager manager = getSettlement().getBuildingManager();
+	         result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+	         //List<Building> buildings = manager.getBuildings();
+	         //Iterator<Building> i = buildings.iterator();
+	        // while (i.hasNext()) {
+	 		//	Building b = i.next();
+	 		//	String buildingType = b.getBuildingType();
+	 		//}
+	     }
 
-     return result;
- }
+	     return result;
+	 }
+
     @Override
     public void destroy() {
         super.destroy();

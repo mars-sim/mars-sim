@@ -757,10 +757,9 @@ LocalBoundedObject, InsidePathLocation {
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
-		// If building has life support, add all occupants of the building.
-		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			Iterator<Robot> i = lifeSupport.getRobotOccupants().iterator();
+		if (hasFunction(BuildingFunction.ROBOTIC_STATION)) {
+	       	RoboticStation roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
+			Iterator<Robot> i = roboticStation.getRobotOccupants().iterator();
 			while (i.hasNext()) {
 				Robot occupant = i.next();
 				if (!robots.contains(occupant)) robots.add(occupant);

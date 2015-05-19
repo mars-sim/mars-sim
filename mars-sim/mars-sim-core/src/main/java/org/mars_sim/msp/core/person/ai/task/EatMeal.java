@@ -67,22 +67,22 @@ public class EatMeal extends Task implements Serializable {
     private static final double DESSERT_STRESS_MODIFIER = -.5D;
     private static final int NUMBER_OF_MEAL_PER_SOL = 4;
     private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
-    
+
     /** The proportion of the task for eating a meal. */
     private static final double MEAL_EATING_PROPORTION = .75D;
-    
+
     /** The proportion of the task for eating dessert. */
     private static final double DESSERT_EATING_PROPORTION = .25D;
-    
+
     /** Percentage chance that preserved food has gone bad. */
     private static final double PRESERVED_FOOD_BAD_CHANCE = 5D;
-    
+
     /** Percentage chance that unprepared dessert has gone bad. */
     private static final double UNPREPARED_DESSERT_BAD_CHANCE = 10D;
 
     /** Mass (kg) of single napkin for meal. */
     private static final double NAPKIN_MASS = .0025D;
-    
+
     // Data members
     private CookedMeal meal;
     private PreparedDessert dessert;
@@ -94,26 +94,26 @@ public class EatMeal extends Task implements Serializable {
     private double mealEatingDuration = 0D;
     private double totalDessertEatingTime = 0D;
     private double dessertEatingDuration = 0D;
-    
-    /** 
+
+    /**
      * Constructor.
      * @param person the person to perform the task
      */
     public EatMeal(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, true, 20D + 
+        super(NAME, person, false, false, STRESS_MODIFIER, true, 20D +
                 RandomUtil.getRandomDouble(20D));
-        
+
         // Check if person is not in a settlement or vehicle.
         LocationSituation location = person.getLocationSituation();
         if ((location != LocationSituation.IN_SETTLEMENT) && (location != LocationSituation.IN_VEHICLE)) {
             logger.severe(person + " is trying to eat a meal, but is not in a settlement or a vehicle.");
             endTask();
         }
-        
+
         // Initialize data members.
         mealEatingDuration = getDuration() * MEAL_EATING_PROPORTION;
         dessertEatingDuration = getDuration() * DESSERT_EATING_PROPORTION;
-        
+
         // Take napkin from inventory if available.
         Unit container = person.getTopContainerUnit();
         if (container != null) {
@@ -126,7 +126,7 @@ public class EatMeal extends Task implements Serializable {
         addPhase(PICK_UP_DESSERT);
         addPhase(EATING_MEAL);
         addPhase(EATING_DESSERT);
-        
+
         setPhase(PICK_UP_MEAL);
     }
 
@@ -160,18 +160,18 @@ public class EatMeal extends Task implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Perform the pick up meal phase.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the remaining time (millisol) after the phase has been performed.
      */
     private double pickUpMealPhase(double time) {
-        
+
       // Determine preferred kitchen to get meal.
       if (kitchen == null) {
           kitchen = getKitchenWithMeal(person);
-      
+
           if (kitchen != null) {
               // Walk to kitchen.
               walkToActivitySpotInBuilding(kitchen.getBuilding(), BuildingFunction.COOKING, true);
@@ -183,28 +183,28 @@ public class EatMeal extends Task implements Serializable {
               return time;
           }
       }
-      
+
       // Pick up a meal at kitchen if one is available.
       meal = kitchen.chooseAMeal(person);
       if (meal != null) {
           logger.fine(person + " picking up a cooked meal to eat: " + meal.getName());
       }
-      
+
       setPhase(PICK_UP_DESSERT);
       return time;
     }
-    
+
     /**
      * Perform the pick up dessert phase.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the remaining time (millisol) after the phase has been performed.
      */
     private double pickUpDessertPhase(double time) {
-        
+
         // Determine preferred kitchen to get dessert.
         if (dessertKitchen == null) {
             dessertKitchen = getKitchenWithDessert(person);
-            
+
             if (dessertKitchen != null) {
                 // Walk to dessert kitchen.
                 walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), BuildingFunction.PREPARING_DESSERT, true);
@@ -216,13 +216,13 @@ public class EatMeal extends Task implements Serializable {
                 return time;
             }
         }
-        
+
         // Pick up a dessert at kitchen if one is available.
         dessert = dessertKitchen.chooseADessert(person);
         if (dessert != null) {
             logger.fine(person + " picking up a prepared dessert to eat: " + dessert.getName());
         }
-        
+
         setPhase(EATING_MEAL);
         return time;
     }
@@ -233,16 +233,16 @@ public class EatMeal extends Task implements Serializable {
      * @return the amount of time (millisol) left after performing the eating meal phase.
      */
     private double eatingMealPhase(double time) {
-        
+
         double remainingTime = 0D;
-        
+
         double eatingTime = time;
         if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
             eatingTime = mealEatingDuration - totalMealEatingTime;
         }
-        
+
         if (eatingTime > 0D) {
-            
+
             if (meal != null) {
                 // Eat cooked meal.
                 eatCookedMeal(eatingTime);
@@ -250,7 +250,7 @@ public class EatMeal extends Task implements Serializable {
             else {
                 // Eat preserved food.
                 boolean enoughFood = eatPreservedFood(eatingTime);
-                
+
                 // If not enough preserved food available, change to dessert phase.
                 if (!enoughFood) {
                     setPhase(EATING_DESSERT);
@@ -258,93 +258,93 @@ public class EatMeal extends Task implements Serializable {
                 }
             }
         }
-        
+
         totalMealEatingTime += eatingTime;
-        
+
         // If finished eating, change to dessert phase.
         if (eatingTime < time) {
             setPhase(EATING_DESSERT);
             remainingTime = time - eatingTime;
         }
-        
-        return remainingTime; 
+
+        return remainingTime;
     }
-    
+
     /**
      * Eat a cooked meal.
-     * @param eatingTime the amount of time (millisols) to eat. 
+     * @param eatingTime the amount of time (millisols) to eat.
      */
     private void eatCookedMeal(double eatingTime) {
-        
+
         setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
-        
+
         // Proportion of meal being eaten over this time period.
         double mealProportion = eatingTime / mealEatingDuration;
-        
+
         PhysicalCondition condition = person.getPhysicalCondition();
-        
+
         // Reduce person's hunger by proportion of meal eaten.
         // Entire meal will reduce person's hunger to 0.
         double hunger = condition.getHunger();
         double newHunger = hunger - (hunger * mealProportion);
         condition.setHunger(newHunger);
-        
+
         // Reduce person's stress over time from eating a cooked meal.
         // This is in addition to normal stress reduction from eating task.
         double mealStressModifier = STRESS_MODIFIER * (meal.getQuality() + 1D);
         double newStress = condition.getStress() - (mealStressModifier * eatingTime);
         condition.setStress(newStress);
-        
+
         // Add caloric energy from meal.
         double caloricEnergyFoodAmount = meal.getDryMass() * mealProportion;
         condition.addEnergy(caloricEnergyFoodAmount);
     }
-    
+
     /**
      * Eat a meal of preserved food.
      * @param eatingTime the amount of time (millisols) to eat.
      * @return true if enough preserved food available to eat.
      */
     private boolean eatPreservedFood(double eatingTime) {
-        
+
         setDescription(Msg.getString("Task.description.eatMeal.preserved")); //$NON-NLS-1$
-        
+
         boolean result = true;
-        
+
         PhysicalCondition condition = person.getPhysicalCondition();
-        
+
         // Determine total preserved food amount eaten during this meal.
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double totalFoodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-        
+
         // Proportion of meal being eaten over this time period.
         double mealProportion = eatingTime / mealEatingDuration;
-        
+
         // Food amount eaten over this period of time.
         double foodAmount = totalFoodAmount * mealProportion;
-        
+
         Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-            
+
             // Take preserved food from inventory if it is available.
             if (Storage.retrieveAnResource(foodAmount, "food", inv, true)) {
-                
+
                 // Check if preserved food has gone bad.
                 if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
-                    
+
                     // Throw food out.
                     Storage.storeAnResource(foodAmount, "food waste", inv);
                 }
                 else {
                     // Consume preserved food.
-                    
+
                     // Reduce person's hunger by proportion of meal eaten.
                     // Entire meal will reduce person's hunger to 0.
                     double hunger = condition.getHunger();
                     double newHunger = hunger - (hunger * mealProportion);
                     condition.setHunger(newHunger);
-                
+
                     // Add caloric energy from meal.
                     condition.addEnergy(foodAmount);
                 }
@@ -359,26 +359,26 @@ public class EatMeal extends Task implements Serializable {
             result = false;
             endTask();
         }
-        
+
         return result;
     }
-    
+
     /**
      * Performs the eating dessert phase of the task.
      * @param time the amount of time (millisol) to perform the eating dessert phase.
      * @return the amount of time (millisol) left after performing the eating dessert phase.
      */
     private double eatingDessertPhase(double time) {
-        
+
         double remainingTime = 0D;
-        
+
         double eatingTime = time;
         if ((totalDessertEatingTime + eatingTime) >= dessertEatingDuration) {
             eatingTime = dessertEatingDuration - totalDessertEatingTime;
         }
-        
+
         if (eatingTime > 0D) {
-            
+
             if (dessert != null) {
                 // Eat prepared dessert.
                 eatPreparedDessert(eatingTime);
@@ -386,7 +386,7 @@ public class EatMeal extends Task implements Serializable {
             else {
                 // Eat unprepared dessert (fruit, soy milk, etc).
                 boolean enoughDessert = eatUnpreparedDessert(eatingTime);
-                
+
                 // If not enough unprepared dessert available, end task.
                 if (!enoughDessert) {
                     remainingTime = time;
@@ -394,37 +394,37 @@ public class EatMeal extends Task implements Serializable {
                 }
             }
         }
-        
+
         totalMealEatingTime += eatingTime;
-        
+
         // If finished eating, end task.
         if (eatingTime < time) {
             remainingTime = time - eatingTime;
             endTask();
         }
-        
+
         return remainingTime;
     }
-    
+
     /**
      * Eat a prepared dessert.
-     * @param eatingTime the amount of time (millisols) to eat. 
+     * @param eatingTime the amount of time (millisols) to eat.
      */
     private void eatPreparedDessert(double eatingTime) {
-        
+
         setDescription(Msg.getString("Task.description.eatMeal.preparedDessert")); //$NON-NLS-1$
-        
+
         // Proportion of dessert being eaten over this time period.
         double dessertProportion = eatingTime / dessertEatingDuration;
-        
+
         PhysicalCondition condition = person.getPhysicalCondition();
-        
+
         // Reduce person's stress over time from eating a prepared.
         // This is in addition to normal stress reduction from eating task.
         double mealStressModifier = DESSERT_STRESS_MODIFIER * (dessert.getQuality() + 1D);
         double newStress = condition.getStress() - (mealStressModifier * eatingTime);
         condition.setStress(newStress);
-        
+
         // Add caloric energy from dessert.
         double caloricEnergyFoodAmount = dessert.getDryMass() * dessertProportion;
         condition.addEnergy(caloricEnergyFoodAmount);
@@ -436,24 +436,24 @@ public class EatMeal extends Task implements Serializable {
      * @return true if enough unprepared dessert was available to eat.
      */
     private boolean eatUnpreparedDessert(double eatingTime) {
-        
+
         setDescription(Msg.getString("Task.description.eatMeal.unpreparedDessert")); //$NON-NLS-1$
-        
+
         boolean result = true;
-        
+
         PhysicalCondition condition = person.getPhysicalCondition();
-        
+
         // Determine total unprepared dessert amount eaten during this meal.
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double totalDessertAmount = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
-        
+
         // Determine dessert resource type if not known.
         if (unpreparedDessertType == null) {
-            
+
             // Determine list of available dessert resources.
             List<String> availableDessertResources = getAvailableDessertResources(totalDessertAmount);
             if (availableDessertResources.size() > 0) {
-                
+
                 // Randomly choose available dessert resource.
                 int index = RandomUtil.getRandomInt(availableDessertResources.size() - 1);
                 unpreparedDessertType = availableDessertResources.get(index);
@@ -462,7 +462,7 @@ public class EatMeal extends Task implements Serializable {
                 result = false;
             }
         }
-        
+
         // Consume portion of unprepared dessert resource.
         if (unpreparedDessertType != null) {
             // Proportion of dessert being eaten over this time period.
@@ -502,23 +502,23 @@ public class EatMeal extends Task implements Serializable {
                 endTask();
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets a list of available unprepared dessert resources.
      * @param amountNeeded the amount (kg) of unprepared dessert needed for eating.
      * @return list of resource strings.
      */
     private List<String> getAvailableDessertResources(double amountNeeded) {
-        
+
         List<String> result = new ArrayList<String>();
-        
+
         Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-            
+
             String[] possibleDesserts = PreparingDessert.getArrayOfDesserts();
             for (int x = 0; x < possibleDesserts.length; x++) {
                 String dessert = possibleDesserts[x];
@@ -528,7 +528,7 @@ public class EatMeal extends Task implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -594,7 +594,7 @@ public class EatMeal extends Task implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Gets a kitchen in the person's settlement that currently has prepared desserts.
      * @param person the person to check for
@@ -602,7 +602,7 @@ public class EatMeal extends Task implements Serializable {
      */
     public static PreparingDessert getKitchenWithDessert(Person person) {
         PreparingDessert result = null;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
@@ -616,7 +616,7 @@ public class EatMeal extends Task implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -652,11 +652,11 @@ public class EatMeal extends Task implements Serializable {
         List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
-    
+
     @Override
     public void endTask() {
         super.endTask();
-        
+
         // Throw away napkin waste if one was used.
         if (hasNapkin) {
             Unit container = person.getTopContainerUnit();

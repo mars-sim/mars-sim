@@ -43,7 +43,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents a task that requires a person to provide medical
- * help to someone else. 
+ * help to someone else.
  */
 public class MedicalAssistance
 extends Task
@@ -58,7 +58,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.medicalAssistance"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
             "Task.phase.treatment")); //$NON-NLS-1$
@@ -74,7 +74,7 @@ implements Serializable {
 	/** Health problem to treat. */
 	private HealthProblem problem;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
@@ -95,7 +95,7 @@ implements Serializable {
 
 			// Treat medical problem.
 			Treatment treatment = problem.getIllness().getRecoveryTreatment();
-			setDescription(Msg.getString("Task.description.medicalAssistance.detail", 
+			setDescription(Msg.getString("Task.description.medicalAssistance.detail",
 			        treatment.getName())); //$NON-NLS-1$
 			setDuration(treatment.getAdjustedDuration(skill));
 			setStressModifier(STRESS_MODIFIER * treatment.getSkill());
@@ -111,17 +111,17 @@ implements Serializable {
 					//Building building = medicalCare.getBuilding();
 					// Walk to medical care building.
 					walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
-					
+
 					produceMedicalWaste();
-					
+
 				}
 				else if (medical instanceof SickBay) {
 				    Vehicle vehicle = ((SickBay) medical).getVehicle();
 				    if (vehicle instanceof Rover) {
-				        
+
 				        // Walk to rover sick bay activity spot.
 				        walkToSickBayActivitySpotInRover((Rover) vehicle, false);
-				        
+
 						produceMedicalWaste();
 				    }
 				}
@@ -145,7 +145,7 @@ implements Serializable {
 		addPhase(TREATMENT);
 		setPhase(TREATMENT);
 	}
-	
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MEDICAL_CARE;
@@ -374,7 +374,7 @@ implements Serializable {
 			Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
-				if ((inhabitant != person) && (inhabitant.getMind().getJob()) 
+				if ((inhabitant != person) && (inhabitant.getMind().getJob())
 						instanceof Doctor) {
 					result = true;
 				}
@@ -385,8 +385,8 @@ implements Serializable {
 				Rover rover = (Rover) person.getVehicle();
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
-					Person crewmember = i.next(); 
-					if ((crewmember != person) && (crewmember.getMind().getJob() 
+					Person crewmember = i.next();
+					if ((crewmember != person) && (crewmember.getMind().getJob()
 							instanceof Doctor)) {
 						result = true;
 					}
@@ -401,7 +401,7 @@ implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.MEDICINE);
-	}    
+	}
 
 	@Override
 	public List<SkillType> getAssociatedSkills() {
@@ -410,24 +410,24 @@ implements Serializable {
 		return results;
 	}
 
-	
+
 	public void produceMedicalWaste() {
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
             storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
-            //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);  
+            //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
 	     }
 	}
-	
-	   
+
+
 	// 2015-02-06 Added storeAnResource()
 	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
 		try {
-			AmountResource ar = AmountResource.findAmountResource(name);      
+			AmountResource ar = AmountResource.findAmountResource(name);
 			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-			
+
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
@@ -442,10 +442,10 @@ implements Serializable {
 		} catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 		}
-		
+
 		return result;
-	}	
-	
+	}
+
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -37,15 +37,14 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
-	/** default logger. */
 
-	DecimalFormat fmt = new DecimalFormat("#.#######"); 
-	
+	DecimalFormat fmt = new DecimalFormat("#.#######");
+
 	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
 
-	// Data members 
+	// Data members
 	private int occupantCapacity;
-	
+
 	private double powerRequired;
 
   	private double length;
@@ -54,13 +53,14 @@ implements Serializable {
   	protected double floorArea;
 
   	private String buildingType;
-  	
+
  	//protected ThermalGeneration furnace;
 	private Building building;
 	private Heating heating;
-  	
+
+	private Inventory inv;
 	private Collection<Person> occupants;
-	private Collection<Robot> robotOccupants;
+	//private Collection<Robot> robotOccupants;
 
 	/**
 	 * Constructor.
@@ -70,11 +70,15 @@ implements Serializable {
 	public LifeSupport(Building building) {
 		// Call Function constructor.
 		super(FUNCTION, building);
+		// Each building has its own instance of LifeSupport
+        // System.out.println("Calling LifeSupport's constructor");
 
 		this.building = building;
-		
+
 		occupants = new ConcurrentLinkedQueue<Person>();
-		robotOccupants = new ConcurrentLinkedQueue<Robot>();
+		//robotOccupants = new ConcurrentLinkedQueue<Robot>();
+
+		inv = getBuilding().getInventory();
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -82,12 +86,12 @@ implements Serializable {
 		occupantCapacity = config.getLifeSupportCapacity(building.getBuildingType());
 
 		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
-	    
+
 		length = getBuilding().getLength();
 		width = getBuilding().getWidth() ;
 		buildingType =  getBuilding().getBuildingType();
 		floorArea = length * width ;
-		
+
 		this.buildingType = building.getBuildingType();
 	}
 
@@ -103,11 +107,11 @@ implements Serializable {
 		super(FUNCTION, building);
 
 		occupants = new ConcurrentLinkedQueue<Person>();
-		robotOccupants = new ConcurrentLinkedQueue<Robot>();
+		//robotOccupants = new ConcurrentLinkedQueue<Robot>();
 
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
-		
+
 		this.building = building;
 
 		length = getBuilding().getLength();
@@ -117,7 +121,7 @@ implements Serializable {
 
 		this.buildingType = building.getBuildingType();
 	}
-	
+
 	/**
 	 * Gets the value of the function for a named building.
 	 * @param buildingName the building name.
@@ -129,7 +133,7 @@ implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
 
-		// Demand is 2 occupant capacity for every inhabitant. 
+		// Demand is 2 occupant capacity for every inhabitant.
 		double demand = settlement.getAllAssociatedPeople().size() * 2D;
 
 		double supply = 0D;
@@ -182,6 +186,10 @@ implements Serializable {
 		return occupants.size();
 	}
 
+	//public int getRobotOccupantNumber() {
+	//	return robotOccupants.size();
+	//}
+
 	/**
 	 * Gets the available occupancy room.
 	 * @return occupancy room
@@ -199,12 +207,11 @@ implements Serializable {
 	public boolean containsOccupant(Person person) {
         return occupants.contains(person);
 	}
-	
-	public boolean containsRobotOccupant(Robot robot) {
-		return robotOccupants.contains(robot);
 
-	}
-	
+	//public boolean containsRobotOccupant(Robot robot) {
+	//	return robotOccupants.contains(robot);
+	//}
+
 	/**
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
@@ -212,20 +219,20 @@ implements Serializable {
 	public Collection<Person> getOccupants() {
 		return new ConcurrentLinkedQueue<Person>(occupants);
 	}
-	
+
 	/**
 	 * Gets a collection of robotOccupants in the building.
 	 * @return collection of robotOccupants
 	 */
-	public Collection<Robot> getRobotOccupants() {
-		return new ConcurrentLinkedQueue<Robot>(robotOccupants);
-	}
+	//public Collection<Robot> getRobotOccupants() {
+	//	return new ConcurrentLinkedQueue<Robot>(robotOccupants);
+	//}
 
-	
+
 	/**
 	 * Adds a person to the building.
 	 * Note: building occupant capacity can be exceeded but stress levels
-	 * in the building will increase. 
+	 * in the building will increase.
 	 * (todo: add stress later)
 	 * @param person new person to add to building.
 	 * @throws BuildingException if person is already building occupant.
@@ -247,7 +254,7 @@ implements Serializable {
 		}
 		else {
 			throw new IllegalStateException("Person already occupying building.");
-		} 
+		}
 	}
 
 	/**
@@ -262,79 +269,41 @@ implements Serializable {
 		}
 		else {
 			throw new IllegalStateException("Person does not occupy building.");
-		} 
-	}
-	/**
-	 * Adds a robot to the building.
-	 * Note: robot capacity can be exceeded 
-	 * @param robot new robot to add to building.
-	 * @throws BuildingException if robot is already building occupant.
-	 */
-	public void addRobot(Robot robot) {
-		if (!robotOccupants.contains(robot)) {
-			// Remove robot from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				if (building.hasFunction(FUNCTION)) {
-					BuildingManager.removePersonOrRobotFromBuilding(robot, building);
-				}
-			}
-
-			// Add robot to this building.
-			logger.finest("Adding " + robot + " to " + getBuilding() + " life support.");
-			robotOccupants.add(robot);
 		}
-		else {
-			throw new IllegalStateException("This robot is already in this building.");
-		} 
 	}
 
-	/**
-	 * Removes a robot from the building.
-	 * @param occupant the robot to remove from building.
-	 * @throws BuildingException if robot is not building occupant.
-	 */
-	public void removeRobot(Robot robot) {
-		if (robotOccupants.contains(robot)) {
-			robotOccupants.remove(robot);
-		    logger.finest("Removing " + robot + " from " + getBuilding() + " life support.");
-		}
-		else {
-			throw new IllegalStateException("The robot is not in this building.");
-		} 
-	}
 
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	// 2014-10-25 Currently skip calling for thermal control for Hallway 
+	// 2014-10-25 Currently skip calling for thermal control for Hallway
 	public void timePassing(double time) {
 		//logger.info("timePassing() : building is " + building.getName());
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
-		Inventory inv = getBuilding().getInventory();
-		
+		if (inv == null)
+			inv = getBuilding().getInventory();
+
 		if (occupants != null)
 			if (occupants.size() > 0) {
 				Iterator<Person> i = occupants.iterator();
 				while (i.hasNext()) {
-					if (!inv.containsUnit(i.next())) 
+					if (!inv.containsUnit(i.next()))
 						i.remove();
 				}
 			}
-
+/*
 		if (robotOccupants != null)
 			if (robotOccupants.size() > 0) {
 				Iterator<Robot> ii = robotOccupants.iterator();
 				while (ii.hasNext()) {
-					if (!inv.containsUnit(ii.next())) 
+					if (!inv.containsUnit(ii.next()))
 						ii.remove();
 				}
 			}
-		
+*/
 		// Add stress if building is overcrowded.
 		int overcrowding = getOccupantNumber() - occupantCapacity;
 		if (overcrowding > 0) {
@@ -343,7 +312,7 @@ implements Serializable {
 				logger.finest("Overcrowding at " + getBuilding());
 			}
 			double stressModifier = .1D * overcrowding * time;
-			
+
 			if (occupants != null) {
 				Iterator<Person> j = getOccupants().iterator();
 				while (j.hasNext()) {
@@ -351,7 +320,7 @@ implements Serializable {
 					condition.setStress(condition.getStress() + stressModifier);
 				}
 			}
-		}	
+		}
 	}
 
 
@@ -362,7 +331,7 @@ implements Serializable {
 	public double getFullPowerRequired() {
 		return powerRequired; // + heating.getFullPowerRequired());
 	}
-	
+
 	/**
 	 * Gets the amount of power required when function is at power down level.
 	 * @return power (kW)
@@ -388,13 +357,14 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
 
-		robotOccupants.clear();
-		robotOccupants = null;
+		building = null;
+		heating = null;
+		inv = null;
 		occupants.clear();
 		occupants = null;
 	}

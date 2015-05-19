@@ -32,31 +32,31 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * A task for compiling research data for a scientific study.
  */
-public class CompileScientificStudyResults 
-extends Task 
+public class CompileScientificStudyResults
+extends Task
 implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
-    
+
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.compileScientificStudyResults"); //$NON-NLS-1$
-	
+
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = 0D;
-    
+
     /** Task phases. */
     private static final TaskPhase COMPILING_PHASE = new TaskPhase(Msg.getString(
             "Task.phase.compilingPhase")); //$NON-NLS-1$
-    
+
     // Data members
     /** The scientific study to compile. */
     private ScientificStudy study;
-    
+
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -64,18 +64,18 @@ implements Serializable {
      */
     public CompileScientificStudyResults(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, 
+        super(NAME, person, true, false,
                 STRESS_MODIFIER, true, RandomUtil.getRandomDouble(50D));
-        
+
         // Determine study.
         study = determineStudy();
         if (study != null) {
-            setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail", 
+            setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail",
                     study.toString())); //$NON-NLS-1$
-            
+
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {         
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
@@ -83,9 +83,9 @@ implements Serializable {
                     adminWalk = true;
                 }
             }
-            
+
             if (!adminWalk) {
-                
+
                 if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
@@ -102,12 +102,12 @@ implements Serializable {
             logger.severe("Study could not be determined");
             endTask();
         }
-        
+
         // Initialize phase
         addPhase(COMPILING_PHASE);
         setPhase(COMPILING_PHASE);
     }
-    
+
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
@@ -132,68 +132,68 @@ implements Serializable {
 
         return result;
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.ADMINISTRATION;
     }
-    
+
     /**
      * Determines the scientific study that will be compiled.
      * @return study or null if none available.
      */
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
-        
+
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
-        
+
         // Add primary study if in paper phase.
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
-            if (ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase()) && 
+            if (ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryPaperCompleted()) {
                 // Primary study added twice to double chance of random selection.
                 possibleStudies.add(primaryStudy);
                 possibleStudies.add(primaryStudy);
             }
         }
-        
+
         // Add all collaborative studies in research phase.
         Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase()) && 
-                    !collabStudy.isCollaborativePaperCompleted(person)) 
+            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase()) &&
+                    !collabStudy.isCollaborativePaperCompleted(person))
                 possibleStudies.add(collabStudy);
         }
-        
+
         // Randomly select study.
         if (possibleStudies.size() > 0) {
             int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
             result = possibleStudies.get(selected);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the field of science that the researcher is involved with in a study.
      * @return the field of science or null if researcher is not involved with study.
      */
     private ScienceType getScience() {
         ScienceType result = null;
-        
+
         if (study.getPrimaryResearcher().equals(person)) {
             result = study.getScience();
         }
         else if (study.getCollaborativeResearchers().containsKey(person)) {
             result = study.getCollaborativeResearchers().get(person);
         }
-        
+
         return result;
     }
-    
+
     @Override
     protected void addExperience(double time) {
         // Add experience to relevant science skill
@@ -223,10 +223,10 @@ implements Serializable {
         if (scienceSkill > 1) {
             compilationTime += compilationTime * (.2D * scienceSkill);
         }
-        
+
         return compilationTime;
     }
-    
+
     @Override
     public List<SkillType> getAssociatedSkills() {
         List<SkillType> results = new ArrayList<SkillType>(1);
@@ -254,7 +254,7 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Performs the data results compilation phase.
      * @param time the amount of time (millisols) to perform the phase.
@@ -262,12 +262,12 @@ implements Serializable {
      * @throws Exception if error performing the phase.
      */
     private double compilingPhase(double time) {
-        
+
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
             endTask();
         }
-        
+
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
@@ -276,11 +276,11 @@ implements Serializable {
         else {
             if (study.isCollaborativePaperCompleted(person)) endTask();
         }
-        
+
         if (isDone()) {
             return time;
         }
-        
+
         // Add paper work time to study.
         double compilingTime = getEffectiveCompilationTime(time);
         if (isPrimary) {
@@ -289,17 +289,17 @@ implements Serializable {
         else {
             study.addCollaborativePaperWorkTime(person, compilingTime);
         }
-        
+
         // Add experience
         addExperience(time);
-        
+
         return 0D;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         study = null;
     }
 }

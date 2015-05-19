@@ -27,8 +27,11 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
@@ -438,56 +441,122 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Adds a person to a random inhabitable building within a settlement.
+     * Adds a person/robot to a random inhabitable building within a settlement.
      *
-     * @param person the person to add.
+     * @param unit the person/robot to add.
      * @param settlement the settlement to find a building.
-     * @throws BuildingException if person cannot be added to any building.
+     * @throws BuildingException if person/robot cannot be added to any building.
      */
     public static void addToRandomBuilding(Unit unit, Settlement settlement) {
-    	/*
         Person person = null;
         Robot robot = null;
         if (unit instanceof Person) {
          	person = (Person) unit;
+
+            List<Building> habs = settlement.getBuildingManager().getBuildings(
+                    new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
+
+            List<Building> goodHabs = getLeastCrowdedBuildings(habs);
+
+            Building building = null;
+            if (goodHabs.size() >= 1) {
+                int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
+
+                int count = 0;
+                Iterator<Building> i = goodHabs.iterator();
+                while (i.hasNext()) {
+                    Building tempBuilding = i.next();
+                    if (count == rand) {
+                        building = tempBuilding;
+                        //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+                    }
+                    count++;
+                }
+            }
+
+            if (building != null) {
+        		addPersonOrRobotToBuildingRandomLocation(person, building);
+            	//if (unit instanceof Person)
+            		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
+                //else if (unit instanceof Robot)
+              		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
+            }
+            else {
+                throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
+            }
+
         }
+
 		else if (unit instanceof Robot) {
         	robot = (Robot) unit;
-			}
-        */
+        	// find robot type
+        	RobotType robotType = robot.getRobotType();
+        	RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+        	List<BuildingFunction> functionLists = new ArrayList<>();
+        	functionLists.add(BuildingFunction.ROBOTIC_STATION);
 
-        List<Building> habs = settlement.getBuildingManager().getBuildings(
-                new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
+    		if (robotJob.equals(RobotType.CHEFBOT)){
+            	functionLists.add(BuildingFunction.COOKING);
+            	//functionLists.add(BuildingFunction.FOOD_PRODUCTION);
+    		}
+			else if (robotJob.equals(RobotType.CONSTRUCTIONBOT)){
+				functionLists.add(BuildingFunction.MANUFACTURE);
+      		}
+			else if (robotJob.equals(RobotType.DELIVERYBOT)){
+				functionLists.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+    		}
+			else if (robotJob.equals(RobotType.GARDENBOT)){
+				functionLists.add(BuildingFunction.FARMING);
+    		}
+			else if (robotJob.equals(RobotType.MAKERBOT)){
+				//functionLists.add(BuildingFunction.RESOURCE_PROCESSING);
+            	functionLists.add(BuildingFunction.MANUFACTURE);
+    		}
+			else if (robotJob.equals(RobotType.MEDICBOT)){
+				functionLists.add(BuildingFunction.MEDICAL_CARE);
+    		}
+			else if (robotJob.equals(RobotType.REPAIRBOT)){
+				functionLists.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+    		}
 
-        List<Building> goodHabs = getLeastCrowdedBuildings(habs);
+    		//BuildingFunction[] functionArray = new BuildingFunction[functionLists.size()];
+        	//functionLists.toArray(functionArray);
+        	BuildingFunction[] functionArray = functionLists.toArray(new BuildingFunction[functionLists.size()]);
 
-        Building building = null;
-        if (goodHabs.size() >= 1) {
-            int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
+        	// match robotType with related buildings
+            List<Building> b = settlement.getBuildingManager().getBuildings(functionArray);
 
-            int count = 0;
-            Iterator<Building> i = goodHabs.iterator();
-            while (i.hasNext()) {
-                Building tempBuilding = i.next();
-                if (count == rand) {
-                    building = tempBuilding;
-                    //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+           	// Get a list of building having least number of robots
+            List<Building> bb = getEvenNumOfBotsForBuildings(b);
+
+            Building building = null;
+            // Randomly pick one of the buildings
+            if (bb.size() >= 1) {
+                int rand = RandomUtil.getRandomInt(bb.size() - 1);
+                int count = 0;
+                Iterator<Building> i = bb.iterator();
+                while (i.hasNext()) {
+                    Building tempBuilding = i.next();
+                    if (count == rand) {
+                        building = tempBuilding;
+                        //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+                    }
+                    count++;
                 }
-                count++;
             }
-        }
 
-        if (building != null) {
-    		addPersonOrRobotToBuildingRandomLocation(unit, building);
+            if (building != null) {
+        		addPersonOrRobotToBuildingRandomLocation(unit, building);
+            	//if (unit instanceof Person)
+            		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
+                //else if (unit instanceof Robot)
+              		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
+            }
+            else {
+                throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
+            }
+		}
 
-        	//if (unit instanceof Person)
-        		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
-            //else if (unit instanceof Robot)
-          		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
-        }
-        else {
-            throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
-        }
     }
 
     /**
@@ -578,12 +647,13 @@ public class BuildingManager implements Serializable {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = robot.getSettlement();
-	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
+	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
 	                try {
-	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-	                    if (lifeSupport.containsRobotOccupant(robot)) {
+	                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+	                    if (roboticStation.containsRobotOccupant(robot)) {
 	                        if (result == null) {
 	                            result = building;
 	                        }
@@ -654,6 +724,7 @@ public class BuildingManager implements Serializable {
      * @throws BuildingException if building in list does not have the life support function.
      */
     public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
+
         List<Building> result = new ArrayList<Building>();
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
@@ -671,6 +742,34 @@ public class BuildingManager implements Serializable {
             Building building = j.next();
             LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+            if (crowded < -1) crowded = -1;
+            if (crowded == leastCrowded) result.add(building);
+        }
+
+        return result;
+    }
+
+    public static List<Building> getEvenNumOfBotsForBuildings(List<Building> buildingList) {
+
+        List<Building> result = new ArrayList<Building>();
+        // Find least crowded population.
+        int leastCrowded = Integer.MAX_VALUE;
+        Iterator<Building> i = buildingList.iterator();
+        while (i.hasNext()) {
+        	RoboticStation roboticStation = (RoboticStation)  i.next().getFunction(BuildingFunction.ROBOTIC_STATION);
+        	if (roboticStation == null) System.out.println("roboticStation is null");
+            int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
+            if (crowded < -1) crowded = -1;
+            if (crowded < leastCrowded) leastCrowded = crowded;
+        }
+
+        // Add least crowded buildings to list.
+        Iterator<Building> j = buildingList.iterator();
+        while (j.hasNext()) {
+            Building building = j.next();
+        	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+            int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded == leastCrowded) result.add(building);
         }
@@ -796,10 +895,10 @@ public class BuildingManager implements Serializable {
     public static void addPersonOrRobotToBuildingSameLocation(Unit unit, Building building)  {
         if (building != null) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
                 if (unit instanceof Person) {
                  	Person person = (Person) unit;
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
@@ -807,15 +906,16 @@ public class BuildingManager implements Serializable {
                 }
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
 
-	                if (!lifeSupport.containsRobotOccupant(robot)) {
-	                    lifeSupport.addRobot(robot);
+	                if (!roboticStation.containsRobotOccupant(robot)) {
+	                	roboticStation.addRobot(robot);
 	                }
                 }
 
             }
             catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
             }
         }
         else throw new IllegalStateException("Building is null");
@@ -833,11 +933,11 @@ public class BuildingManager implements Serializable {
                 throw new IllegalArgumentException(building.getNickName() + " does not contain location x: " +
                         xLocation + ", y: " + yLocation);
             }
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
             try {
             	 if (unit instanceof Person) {
                  	Person person = (Person) unit;
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
 	                if (!lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.addPerson(person);
@@ -848,9 +948,10 @@ public class BuildingManager implements Serializable {
             	 }
             	 else if (unit instanceof Robot) {
                  	Robot robot = (Robot) unit;
+                 	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
 
-                 	if (lifeSupport.containsRobotOccupant(robot)) {
- 	                    lifeSupport.addRobot(robot);
+                 	if (roboticStation.containsRobotOccupant(robot)) {
+                 		roboticStation.addRobot(robot);
  	                }
                  	robot.setXLocation(xLocation);
                  	robot.setYLocation(yLocation);
@@ -875,8 +976,6 @@ public class BuildingManager implements Serializable {
     public static void addPersonOrRobotToBuildingRandomLocation(Unit unit, Building building)  {
         if (building != null) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-
                 // Add person to random location within building.
                 // TODO: Modify this when implementing active locations in buildings.
                 Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
@@ -885,6 +984,8 @@ public class BuildingManager implements Serializable {
 
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+
                 	if (!lifeSupport.containsOccupant(person)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(person) is true");
                 		lifeSupport.addPerson(person);
@@ -895,9 +996,11 @@ public class BuildingManager implements Serializable {
 
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	if (!lifeSupport.containsRobotOccupant(robot)) {
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+                	if (!roboticStation.containsRobotOccupant(robot)) {
                 		//System.out.println("!lifeSupport.containsRobotOccupant(robot) is true");
-	                    lifeSupport.addRobot(robot);
+                		roboticStation.addRobot(robot);
 	                }
                 	robot.setXLocation(settlementLoc.getX());
                 	robot.setYLocation(settlementLoc.getY());
@@ -905,7 +1008,7 @@ public class BuildingManager implements Serializable {
                 }
             }
             catch (Exception e) {
-                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
+                throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
             }
         }
         else {
@@ -921,10 +1024,10 @@ public class BuildingManager implements Serializable {
     public static void removePersonOrRobotFromBuilding(Unit unit, Building building) {
         if (building != null) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
                 if (unit instanceof Person) {
                 	Person person = (Person) unit;
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 
 	                if (lifeSupport.containsOccupant(person)) {
 	                    lifeSupport.removePerson(person);
@@ -932,8 +1035,10 @@ public class BuildingManager implements Serializable {
                 }
                 else if (unit instanceof Robot) {
                 	Robot robot = (Robot) unit;
-                	if (lifeSupport.containsRobotOccupant(robot)) {
-	                    lifeSupport.removeRobot(robot);
+                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+                	if (roboticStation.containsRobotOccupant(robot)) {
+                		roboticStation.removeRobot(robot);
 	                }
 
                 }

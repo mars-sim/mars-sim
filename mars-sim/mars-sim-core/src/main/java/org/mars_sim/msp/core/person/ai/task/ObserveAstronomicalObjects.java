@@ -49,7 +49,7 @@ implements ResearchScientificStudy, Serializable {
             "Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.2D; 
+    private static final double STRESS_MODIFIER = -.2D;
 
     /** Task phases. */
     private static final TaskPhase OBSERVING = new TaskPhase(Msg.getString(
@@ -71,7 +71,7 @@ implements ResearchScientificStudy, Serializable {
      */
     public ObserveAstronomicalObjects(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true, 
+        super(NAME, person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(300D));
 
         // Determine study.
@@ -138,13 +138,13 @@ implements ResearchScientificStudy, Serializable {
      * @param observatory the astronomical observatory.
      * @return crowding modifier.
      */
-    public static double getObservatoryCrowdingModifier(Person observer, 
+    public static double getObservatoryCrowdingModifier(Person observer,
             AstronomicalObservation observatory) {
         double result = 1D;
         if (observer.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building observatoryBuilding = observatory.getBuilding();  
+            Building observatoryBuilding = observatory.getBuilding();
             if (observatoryBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(observer, observatoryBuilding);     
+                result *= Task.getCrowdingProbabilityModifier(observer, observatoryBuilding);
                 result *= Task.getRelationshipModifier(observer, observatoryBuilding);
             }
         }
@@ -185,7 +185,7 @@ implements ResearchScientificStudy, Serializable {
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
                 if (astronomy == primaryStudy.getScience()) {
                     // Primary study added twice to double chance of random selection.
@@ -199,7 +199,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 if (astronomy == collabStudy.getCollaborativeResearchers().get(person)) {
                     possibleStudies.add(collabStudy);
@@ -276,7 +276,7 @@ implements ResearchScientificStudy, Serializable {
 
         // Check sunlight and end the task if sunrise
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        double sunlight = surface.getSurfaceSunlight(person.getCoordinates()); 
+        double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
         if (sunlight > 0) {
             endTask();
         }

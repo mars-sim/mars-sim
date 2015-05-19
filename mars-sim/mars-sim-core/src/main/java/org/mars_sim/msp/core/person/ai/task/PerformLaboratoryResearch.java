@@ -52,7 +52,7 @@ implements ResearchScientificStudy, Serializable {
             "Task.description.performLaboratoryResearch"); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D; 
+    private static final double STRESS_MODIFIER = -.1D;
 
     /** Task phases. */
     private static final TaskPhase RESEARCHING = new TaskPhase(Msg.getString(
@@ -76,7 +76,7 @@ implements ResearchScientificStudy, Serializable {
      */
     public PerformLaboratoryResearch(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, 
+        super(NAME, person, true, false, STRESS_MODIFIER,
                 true, 10D + RandomUtil.getRandomDouble(50D));
 
         researchAssistant = null;
@@ -86,7 +86,7 @@ implements ResearchScientificStudy, Serializable {
         if (study != null) {
             science = getScience(person, study);
             if (science != null) {
-                setDescription(Msg.getString("Task.description.performLaboratoryResearch.detail", 
+                setDescription(Msg.getString("Task.description.performLaboratoryResearch.detail",
                         science.getName())); //$NON-NLS-1$
                 lab = getLocalLab(person, science);
                 if (lab != null) {
@@ -106,7 +106,7 @@ implements ResearchScientificStudy, Serializable {
             logger.info("study could not be determined");
             endTask();
         }
-        
+
         // Check if person is in a moving rover.
         if (inMovingRover(person)) {
             endTask();
@@ -131,9 +131,9 @@ implements ResearchScientificStudy, Serializable {
     public static double getLabCrowdingModifier(Person researcher, Lab lab) {
         double result = 1D;
         if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building labBuilding = ((Research) lab).getBuilding();  
+            Building labBuilding = ((Research) lab).getBuilding();
             if (labBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
+                result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);
                 result *= Task.getRelationshipModifier(researcher, labBuilding);
             }
         }
@@ -153,7 +153,7 @@ implements ResearchScientificStudy, Serializable {
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
 
                 // Check that a lab is available for primary study science.
@@ -171,7 +171,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
 
                 // Check that a lab is available for collaborative study science.
@@ -261,12 +261,12 @@ implements ResearchScientificStudy, Serializable {
     }
 
     /**
-     * Gets a list of research buildings with available research space from a list of buildings 
+     * Gets a list of research buildings with available research space from a list of buildings
      * with the research function.
      * @param buildingList list of buildings with research function.
      * @return research buildings with available lab space.
      */
-    private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList) 
+    private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList)
     {
         List<Building> result = new ArrayList<Building>();
 
@@ -283,13 +283,13 @@ implements ResearchScientificStudy, Serializable {
     }
 
     /**
-     * Gets a list of research buildings with a given science specialty from a list of 
+     * Gets a list of research buildings with a given science specialty from a list of
      * buildings with the research function.
      * @param science the science specialty.
      * @param buildingList list of buildings with research function.
      * @return research buildings with science specialty.
      */
-    private static List<Building> getSettlementLabsWithSpecialty(ScienceType science, 
+    private static List<Building> getSettlementLabsWithSpecialty(ScienceType science,
             List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
 
@@ -462,7 +462,7 @@ implements ResearchScientificStudy, Serializable {
                 endTask();
             }
         }
-        
+
         // Check if person is in a moving rover.
         if (inMovingRover(person)) {
             endTask();
@@ -527,16 +527,16 @@ implements ResearchScientificStudy, Serializable {
             }
         }
     }
-    
+
     /**
      * Checks if the person is in a moving vehicle.
      * @param person the person.
      * @return true if person is in a moving vehicle.
      */
     public static boolean inMovingRover(Person person) {
-        
+
         boolean result = false;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle.getStatus().equals(Vehicle.MOVING)) {
@@ -550,7 +550,7 @@ implements ResearchScientificStudy, Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 

@@ -53,7 +53,7 @@ implements ResearchScientificStudy, Serializable {
             "Task.description.performMathematicalModeling"); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.2D; 
+    private static final double STRESS_MODIFIER = -.2D;
 
     /** Task phases. */
     private static final TaskPhase MODELING = new TaskPhase(Msg.getString(
@@ -75,7 +75,7 @@ implements ResearchScientificStudy, Serializable {
      */
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, 
+        super(NAME, person, true, false, STRESS_MODIFIER,
                 true, 10D + RandomUtil.getRandomDouble(30D));
 
         // Determine study.
@@ -94,7 +94,7 @@ implements ResearchScientificStudy, Serializable {
             logger.info("study could not be determined");
             endTask();
         }
-        
+
         // Check if person is in a moving rover.
         if (inMovingRover(person)) {
             endTask();
@@ -116,13 +116,13 @@ implements ResearchScientificStudy, Serializable {
      * @param lab the laboratory.
      * @return crowding modifier.
      */
-    public static double getLabCrowdingModifier(Person researcher, Lab lab) 
+    public static double getLabCrowdingModifier(Person researcher, Lab lab)
     {
         double result = 1D;
         if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building labBuilding = ((Research) lab).getBuilding();  
+            Building labBuilding = ((Research) lab).getBuilding();
             if (labBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
+                result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);
                 result *= Task.getRelationshipModifier(researcher, labBuilding);
             }
         }
@@ -144,7 +144,7 @@ implements ResearchScientificStudy, Serializable {
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
-            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
                 if (mathematics == primaryStudy.getScience()) {
                     // Primary study added twice to double chance of random selection.
@@ -158,7 +158,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
                 if (mathematics == collabScience) {
@@ -221,7 +221,7 @@ implements ResearchScientificStudy, Serializable {
     }
 
     /**
-     * Gets a list of research buildings with available research space from a list of buildings 
+     * Gets a list of research buildings with available research space from a list of buildings
      * with the research function.
      * @param buildingList list of buildings with research function.
      * @return research buildings with available lab space.
@@ -243,7 +243,7 @@ implements ResearchScientificStudy, Serializable {
     }
 
     /**
-     * Gets a list of research buildings with mathematics specialty from a list of 
+     * Gets a list of research buildings with mathematics specialty from a list of
      * buildings with the research function.
      * @param buildingList list of buildings with research function.
      * @return research buildings with mathematics specialty.
@@ -424,7 +424,7 @@ implements ResearchScientificStudy, Serializable {
                 endTask();
             }
         }
-        
+
         // Check if person is in a moving rover.
         if (inMovingRover(person)) {
             endTask();
@@ -483,22 +483,22 @@ implements ResearchScientificStudy, Serializable {
             chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                logger.info(person.getName() + " has a lab accident while performing " + 
+                logger.info(person.getName() + " has a lab accident while performing " +
                         "mathematical modeling");
                 entity.getMalfunctionManager().accident();
             }
         }
     }
-    
+
     /**
      * Checks if the person is in a moving vehicle.
      * @param person the person.
      * @return true if person is in a moving vehicle.
      */
     public static boolean inMovingRover(Person person) {
-        
+
         boolean result = false;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle.getStatus().equals(Vehicle.MOVING)) {
@@ -512,7 +512,7 @@ implements ResearchScientificStudy, Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 
