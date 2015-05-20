@@ -96,8 +96,9 @@ extends ToolWindow {
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		
 		// 2014-12-27 Added preferred size and initial location
-		setPreferredSize(new Dimension(800, 600));
-		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
+		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+		setMaximizable(true);
+//		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
 		setLocation(600,600);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());

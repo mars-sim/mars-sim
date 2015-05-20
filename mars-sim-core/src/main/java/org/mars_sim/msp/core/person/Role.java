@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Role.java
- * @version 3.08 2015-04-28
+ * @version 3.08 2015-05-19
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -32,8 +32,9 @@ public class Role implements Serializable {
 
 	public void relinquishOldRoleType() {
 		RoleType type = getType();
-		if (type != null)
-		person.getSettlement().getChainOfCommand().releaseJobRoleMap(type);
+		if (type != null) {
+		    person.getAssociatedSettlement().getChainOfCommand().releaseJobRoleMap(type);
+		}
 	}
 
 	/**
@@ -46,7 +47,7 @@ public class Role implements Serializable {
 	        relinquishOldRoleType();
 //	        System.out.println("New RoleType is "+ type);
 	        this.type = type;
-	        person.getSettlement().getChainOfCommand().addJobRoleMap(type);
+	        person.getAssociatedSettlement().getChainOfCommand().addJobRoleMap(type);
 	    }
 /*
 		if (type == RoleType.SAFETY_SPECIALIST)
