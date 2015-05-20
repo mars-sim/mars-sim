@@ -2404,6 +2404,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="9" />
 			<part name="wire connector" number="9" />
+			<part name="fiberglass" number="2" />
+			<part name="small semiconductor wafer" number="2" />
 		</inputs>
 		<outputs>
 			<part name="solar panel" number="3" />
@@ -2831,7 +2833,25 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="3" />
 		</inputs>
 		<outputs>
-			<part name="small water pump" number="5" />
+			<part name="small water pump" number="2" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing heat pump. -->
+	<process name="heat pump manufacturing" tech="4" skill="4" work-time="200" process-time="50"
+			power-required="5.0">
+		<inputs>
+			<part name="iron ingot" number="1" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="5" />
+			<part name="ventilation fan" number="1" />
+			<part name="condenser coil" number="1" />
+			<part name="steel pipe" number="2" />
+		</inputs>
+		<outputs>
+			<part name="heat pump" number="2" />
 		</outputs>
 	</process>
 
@@ -2943,6 +2963,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
 			<part name="small water pump" number="4" />
+			<part name="heat pump" number="1" />
 		</inputs>
 		<outputs>
 			<part name="refrigerator" number="1" />
@@ -2968,9 +2989,10 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+
 	<!-- 2015-02-16 Added making a mushroom containment kit. -->
 	<process name="make mushroom containment kit" tech="1" skill="2" work-time="50" process-time="50"
-			power-required="0">
+			power-required=".5">
 		<inputs>
 			<part name="oxygen pump" number="3" />
 			<part name="carbon dioxide pump" number="3" />
@@ -2988,6 +3010,145 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="mushroom containment kit" number="1" />
 		</outputs>
 	</process>
+
+	<!-- 2015-05-19 Added manufacturing navigation circuit board. -->
+	<process name="navigation circuit board manufacturing" tech="4" skill="4" work-time="800" process-time="1400"
+			power-required="5.0">
+		<inputs>
+			<part name="microcontroller" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="1" />
+			<part name="light emitting diode bulb" number="10" />
+			<part name="plastic sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="navigation circuit board" number="1" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing communications circuit board. -->
+	<process name="communications circuit board manufacturing" tech="4" skill="4" work-time="800" process-time="1400"
+			power-required="5.0">
+		<inputs>
+			<part name="microcontroller" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="1" />
+			<part name="light emitting diode bulb" number="10" />
+			<part name="plastic sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="communications circuit board" number="1" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing small semiconductor wafer. -->
+	<process name="small semiconductor wafer manufacturing" tech="4" skill="4" work-time="800" process-time="1200"
+			power-required="5.0">
+		<inputs>
+			<resource name="silicon" amount="1.2" />
+		</inputs>
+		<outputs>
+			<part name="small semiconductor wafer" number="1" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing led bulb. -->
+	<process name="light emitting diode bulb manufacturing" tech="3" skill="3" work-time="200" process-time="500"
+			power-required="1.0">
+		<inputs>
+			<part name="small semiconductor wafer" number="1" />
+		</inputs>
+		<outputs>
+			<part name="light emitting diode bulb" number="40" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing led kits. -->
+	<process name="light emitting diode kit manufacturing" tech="3" skill="3" work-time="200" process-time="500"
+			power-required="1.0">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="1" />
+			<part name="light emitting diode bulb" number="20" />
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="light emitting diode kit" number="5" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing carbon dioxide laser. -->
+	<process name="carbon dioxide laser manufacturing" tech="4" skill="4" work-time="800" process-time="1200"
+			power-required="5.0">
+		<inputs>
+			<part name="small semiconductor wafer" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="1" />
+			<part name="light emitting diode kit" number="1" />
+			<part name="glass sheet" number="1" />
+			<part name="optical lens" number="3" />
+			<part name="plastic sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="carbon dioxide laser" number="5" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing optical lens . -->
+	<process name="optical lens manufacturing" tech="3" skill="3" work-time="200" process-time="500"
+			power-required="5.0">
+		<inputs>
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="optical lens" number="5" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing a helium–neon laser. -->
+	<process name="helium neon laser manufacturing" tech="4" skill="4" work-time="600" process-time="1000"
+			power-required="5.0">
+		<inputs>
+			<part name="small semiconductor wafer" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="1" />
+			<part name="wire connector" number="1" />
+			<part name="light emitting diode kit" number="1" />
+			<part name="glass sheet" number="1" />
+			<part name="optical lens" number="3" />
+			<part name="plastic sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="helium neon laser" number="5" />
+		</outputs>
+	</process>
+
+	<!-- 2015-05-19 Added manufacturing an sls 3D printer. -->
+	<process name="sls 3D printer manufacturing" tech="4" skill="4" work-time="2000" process-time="2000"
+			power-required="15.0">
+		<inputs>
+			<part name="aluminum wire" number="10" />
+			<part name="steel sheet" number="10" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic sheet" number="2" />
+			<part name="small water pump" number="2" />
+			<part name="electric heating element" number="2" />
+			<part name="microcontroller" number="2" />
+			<part name="ventilation fan" number="1" />
+			<part name="carbon dioxide laser" number="2" />
+			<part name="fiberglass" number="2" />
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="selective laser sintering 3d printer" number="1" />
+		</outputs>
+	</process>
+
 
 
 

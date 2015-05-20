@@ -30,7 +30,7 @@
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="valve" mass=".2">
 		<maintenance-entity-list>
 			<entity name="rover" probability="20" max-number="2" />
@@ -42,7 +42,7 @@
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="epoxy resin bottle" mass=".2">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="50" max-number="6" />
@@ -53,19 +53,19 @@
 			<entity name="settlement" probability="20" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="spark plug" mass=".1">
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="2" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="coolant bottle" mass=".2">
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="electrical wire" mass=".2">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="30" max-number="6" />
@@ -74,14 +74,14 @@
 			<entity name="settlement" probability="10" max-number="8" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="power cable" mass="2.0">
 		<maintenance-entity-list>
 			<entity name="power generation" probability="10" max-number="2" />
 			<entity name="settlement" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="wire connector" mass=".1">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="30" max-number="6" />
@@ -90,7 +90,7 @@
 			<entity name="settlement" probability="10" max-number="8" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="plastic tubing" mass=".1">
 		<maintenance-entity-list>
 			<entity name="rover" probability="10" max-number="4" />
@@ -99,60 +99,54 @@
 			<entity name="settlement" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="lubricant bottle" mass=".2">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="10" max-number="4" />
 			<entity name="manufacture" probability="10" max-number="2" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover battery" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="light utility vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="radio antenna" mass="2.0">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="10" max-number="1" />
 			<entity name="communication" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="satellite dish" mass="10.0">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="timing belt" mass=".2">
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="communications circuit board" mass=".5">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="navigation circuit board" mass=".5">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
-	<part name="suit heating unit" mass="2.0">
-		<maintenance-entity-list>
-			<entity name="eva suit" probability="5" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-	
+
 	<part name="plastic pipe" mass="1.0">
 		<maintenance-entity-list>
 			<entity name="living accommodations" probability="10" max-number="2" />
@@ -162,7 +156,7 @@
 			<entity name="settlement" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="steel pipe" mass="10.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="10" max-number="2" />
@@ -171,7 +165,7 @@
 			<entity name="settlement" probability="10" max-number="2" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="iron pipe" mass="10.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="10" max-number="2" />
@@ -180,7 +174,7 @@
 			<entity name="settlement" probability="10" max-number="2" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="copper pipe" mass="5.0">
 		<maintenance-entity-list>
 			<entity name="living accommodations" probability="10" max-number="1" />
@@ -189,204 +183,210 @@
 			<entity name="settlement" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="iron ingot" mass="5.0" />
-	
+
 	<part name="steel ingot" mass="5.0" />
-	
+
 	<part name="aluminum ingot" mass="1.0" />
-	
+
 	<part name="steel canister" mass="10.0" />
-	
+
 	<part name="bottle" mass=".1" />
-	
+
 	<part name="steel sheet" mass="15.0">
 		<description>1m x 2m x 1mm sheet of steel</description>
 	</part>
-	
+
 	<!-- 1m x 2m x 1mm sheet of iron -->
 	<part name="iron sheet" mass="15.0" />
-	
+
 	<!-- 1m x 2m x 1mm sheet of aluminum -->
 	<part name="aluminum sheet" mass="5.0" />
-	
+
 	<!-- 1kg spool of thick steel wire -->
 	<part name="steel wire" mass="1.0" />
-	
+
 	<!-- 5kg spool of thick steel cable -->
 	<part name="steel cable" mass="5.0" />
-	
+
 	<!-- 1kg spool of thin aluminum wire -->
 	<part name="aluminum wire" mass="1.0" />
-	
+
 	<!-- 1kg spool of thin fiberglass -->
 	<part name="fiberglass" mass="1.0" />
-	
+
 	<!-- 1m x 1m square of woven fiberglass cloth -->
 	<part name="fiberglass cloth" mass=".1" />
-	
+
 	<!-- 1m x 1m square of thin plastic sheet -->
 	<part name="plastic sheet" mass=".1" />
-	
+
 	<!-- 1m x 1m x 1cm square of glass  -->
 	<part name="glass sheet" mass="26.0" />
-	
+
 	<part name="eva helmet" mass="2.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="helmet visor" mass="2.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="counter pressure suit" mass="1.0" >
 		<description>Spandex inner EVA suit for counter pressure.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="coveralls" mass="2.0" >
 		<description>Outer EVA suit with insulative liner.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
+	<part name="suit heating unit" mass="2.0">
+		<maintenance-entity-list>
+			<entity name="eva suit" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
 	<part name="eva gloves" mass="1.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva boots" mass="4.0" >
 		<description>steel soled and tipped.  Fiberglass insulated.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva pads" mass="2.0" >
 		<description>steel plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva backpack" mass="15.0" >
 		<description>made with polyethylene and a steel frame.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva antenna" mass=".5" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva battery" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="eva radio" mass="2.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="large vehicle frame" mass="5000.0">
 		<description>Heavy steel frame</description>
 	</part>
-	
+
 	<part name="rover chassis panel" mass="100.0" >
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="10" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover windshield" mass="100.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover window" mass="50.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="winch" mass="75.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover generator" mass="500.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="fuel power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="large electric motor" mass="100.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover control panel" mass="100.0" >
 		<description>Made from polyethelene and reinforced fiberglass.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover fuel tank" mass="50.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover oxygen tank" mass="20.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="rover water tank" mass="20.0" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="fuel pump" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="oxygen pump" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="copper sheet" mass="5.0">
 		<description>1m x 2m x 1mm sheet of copper</description>
 	</part>
-	
+
 	<part name="copper wire" mass="1.0" />
-	
+
 	<part name="electric heating element" mass="1.0" >
 		<description>Ceramic, magnesium and wire heating element.</description>
 		<maintenance-entity-list>
@@ -394,19 +394,19 @@
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="pneumatic drill" mass="25.0">
 		<description>Attachment part for light utility vehicle.</description>
 	</part>
-	
+
 	<part name="backhoe" mass="35.0" >
 		<description>Attachment part for light utility vehicle.</description>
 	</part>
-	
+
 	<part name="bulldozer blade" mass="40.0">
 		<description>Attachment part for light utility vehicle.</description>
 	</part>
-	
+
 	<part name="soil compactor" mass="100.0">
 		<description>Attachment part for light utility vehicle.</description>
 	</part>
@@ -420,36 +420,36 @@
 			<entity name="light utility vehicle" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="small vehicle frame" mass="250.0" />
-	
+
 	<part name="small wheel" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="utility vehicle control panel" mass="10" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="steel truss" mass="50.0">
 		<description>Large steel bar used for construction.</description>
 	</part>
-	
+
 	<part name="steel post" mass="5.0">
 		<description>A small, light steel bar used for construction.</description>
 	</part>
-	
+
 	<part name="wind turbine blade" mass="2.0" >
 		<description>Blade for a wind turbine.</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="turbine generator" mass="50.0" >
 		<description>Turbine power generator.</description>
 		<maintenance-entity-list>
@@ -457,21 +457,23 @@
 			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="solar panel" mass="10.0" >
 		<description>Solar photovoltaic panel.</description>
 		<maintenance-entity-list>
-			<entity name="solar power source" probability="5" max-number="1" />
+			<entity name="solar power source" probability="3" max-number="1" />
+			<entity name="electric heat source" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="solar parabolic mirror" mass="50.0" >
 		<description>Mirror for solar thermal power source.</description>
 		<maintenance-entity-list>
-			<entity name="solar thermal power source" probability="5" max-number="1" />
+			<entity name="solar thermal power source" probability="3" max-number="1" />
+			<entity name="solar heat source" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="glass tube" mass="5.0" >
 		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
@@ -490,51 +492,51 @@
 		<!-- (UK Standard according to Wikipedia) -->
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
 	</part>
-	
+
 	<part name="steel scrap" mass="25.0">
 		<description>A 25 kg piece of salvaged steel scrap.</description>
 	</part>
-	
+
 	<part name="aluminum scrap" mass="5.0">
 		<description>A 5 kg piece of salvaged aluminum scrap.</description>
 	</part>
-	
+
 	<part name="bore drill bit" mass="25.0">
 		<description>A steel drill bit for drilling bore holes.</description>
 	</part>
-	
+
 	<part name="bore drill pipe" mass="50.0">
 		<description>A steel pipe for drilling and lining bore holes.</description>
 	</part>
-	
+
 	<part name="drilling rig" mass="135.0">
 		<description>
 			A light utility vehicle attachment with a motor for supporting drilling.
 			Should be used in conjunction with the crane boom.
 		</description>
 	</part>
-	
+
 	<part name="condenser coil" mass="10.0" >
 		<description>Copper tube coil used to condense steam into liquid water.</description>
 		<maintenance-entity-list>
 			<entity name="areothermal power source" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<!-- An electric water pump. -->
 	<part name="water pump" mass="5.0" >
 		<maintenance-entity-list>
-			<entity name="areothermal power source" probability="10" max-number="1" />
+			<entity name="areothermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<!-- 2014-11-19 Added a small water pump for greenhouse. -->
 	<part name="small water pump" mass="1.0" >
 		<maintenance-entity-list>
 			<entity name="farming" probability="5" max-number="10" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<!-- 2014-11-19 Added carbon dioxide pump for greenhouse. -->
 	<part name="carbon dioxide pump" mass="1.0" >
 		<maintenance-entity-list>
@@ -542,14 +544,14 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- 2014-11-19 Added water tank for greenhouse. -->	
+	<!-- 2014-11-19 Added water tank for greenhouse. -->
 	<part name="water tank" mass="2.0" >
 	 	<maintenance-entity-list>
 			<entity name="farming" probability="5" max-number="5" />
 		</maintenance-entity-list>
 	</part>
-	
-	<!-- 2014-11-19 Added an air compressor. -->	
+
+	<!-- 2014-11-19 Added an air compressor. -->
 	<part name="air compressor" mass="2.0" >
 	 	<maintenance-entity-list>
 			<entity name="farming" probability="5" max-number="3" />
@@ -557,81 +559,120 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- 2014-11-19 Added a magnetron tube. -->	
+	<!-- 2014-11-19 Added a magnetron tube. -->
 	<part name="magnetron tube" mass="0.5" >
-	</part>	
-	
-	<!-- 2014-11-19 Added a microcontroller. -->	
+	</part>
+
+	<!-- 2014-11-19 Added a microcontroller. -->
 	<part name="microcontroller" mass="0.1" >
-	</part>	
-	
-		<!-- 2014-11-19 Added a small transformer. -->	
+		<maintenance-entity-list>
+		<entity name="farming" probability="3" max-number="2" />
+		<entity name="vehicle" probability="3" max-number="2" />
+		<entity name="manufacture" probability="3" max-number="3" />
+		<entity name="living accommodations" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<!-- 2014-11-19 Added a small transformer. -->
 	<part name="small transformer" mass="0.5" >
-	</part>	
-	
+		<maintenance-entity-list>
+		<entity name="farming" probability="3" max-number="1" />
+		<entity name="vehicle" probability="3" max-number="1" />
+		<entity name="manufacture" probability="3" max-number="2" />
+		<entity name="living accommodations" probability="3" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
 	<!-- 2014-11-19 Added 7 kitchen equipment below -->
 	<part name="blender" mass="2.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
+
 	<part name="oven" mass="10.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
-	
+	</part>
+
 	<part name="microwave" mass="3.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
-	
+	</part>
+
 	<part name="ventilation fan" mass="0.2">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
+			<entity name="farming" probability="3" max-number="3" />
+			<entity name="vehicle" probability="3" max-number="1" />
+			<entity name="manufacture" probability="3" max-number="3" />
+			<entity name="living accommodations" probability="3" max-number="2" />
 		</maintenance-entity-list>
-	</part>	
-	
+	</part>
+
 	<part name="stove" mass="20.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
-	
+	</part>
+
 	<part name="refrigerator" mass="70.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
-		
+	</part>
+
 	<part name="autoclave" mass="20.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
+	</part>
 
 	<part name="light emitting diode kit" mass="1.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="5" />
-			<entity name="farming" probability="3" max-number="10" />	
-			<entity name="vehicle" probability="5" max-number="3" />	
-			<entity name="manufacture" probability="5" max-number="10" />
-			<entity name="living accommodations" probability="3" max-number="10" />		
+			<entity name="farming" probability="3" max-number="15" />
+			<entity name="vehicle" probability="3" max-number="3" />
+			<entity name="manufacture" probability="3" max-number="10" />
+			<entity name="living accommodations" probability="3" max-number="10" />
 		</maintenance-entity-list>
-	</part>	
+	</part>
 
-	<part name="light emitting diode bulb" mass="0.2">
-		<description>Solid state light bulb</description>
-	</part>	
-	
+	<part name="light emitting diode bulb" mass="0.1">
+		<description>Solid State Light bulb</description>
+	</part>
+
 	<part name="mushroom containment kit" mass="1.0">
 		<maintenance-entity-list>
-			<entity name="farming" probability="1" max-number="1" />		
+			<entity name="farming" probability="1" max-number="1" />
 		</maintenance-entity-list>
-	</part>	
-		
-		
-		
+	</part>
+
+	<part name="small semiconductor wafer" mass="1"/>
+
+	<part name="heat pump" mass="1.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="3" max-number="2" />
+			<entity name="vehicle" probability="3" max-number="1" />
+			<entity name="manufacture" probability="3" max-number="2" />
+			<entity name="living accommodations" probability="3" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="selective laser sintering 3d printer" mass="50.0">
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="3" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="carbon dioxide laser" mass="5.0"/>
+
+	<part name="helium neon laser" mass="1.0"/>
+
+	<part name="optical lens" mass=".1"/>
+
+
+
 </part-list>

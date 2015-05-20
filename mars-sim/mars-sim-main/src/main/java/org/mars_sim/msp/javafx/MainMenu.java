@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
-import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -96,11 +95,9 @@ public class MainMenu {
 
 	private MultiplayerMode multiplayerMode;
 
-    public MainMenu(MarsProjectFX mpFX) { //, String[] args, boolean cleanUI) {
-    	//this.args = args;
+    public MainMenu(MarsProjectFX mpFX) {
     	this.mpFX = mpFX;
     	//System.out.println("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
-
 	}
 
     public boolean exitDialog(Stage stage) {
@@ -125,13 +122,6 @@ public class MainMenu {
     	    return false;
     	}
     }
-
-
-    //public void start(Stage arg0) {
-     // 	System.out.println("MainMenu's start() is on " + Thread.currentThread().getName() + " Thread");
-//
-    //	initAndShowGUI(primaryStage);
-    //}
 
    void initAndShowGUI(Stage primaryStage) {
 		//System.out.println("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
@@ -262,8 +252,8 @@ public class MainMenu {
 		}
 		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 		executor.execute(multiplayerMode.getModeTask());
-	   //pool.shutdown();
-	   //primaryStage.toFront();
+	    //pool.shutdown();
+	     //primaryStage.toFront();
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();

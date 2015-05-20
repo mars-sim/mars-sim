@@ -76,7 +76,7 @@
           </VBox>
          </center>
          <top>
-            <Label alignment="CENTER_RIGHT" text="Mars Simulation Project" textFill="#FFB03B" BorderPane.alignment="CENTER">
+            <Label alignment="CENTER_RIGHT" text="MARS SIMULATION PROJECT" textFill="#FFB03B" BorderPane.alignment="CENTER">
                <font>
                   <Font name="Aharoni Bold" size="36.0" />
                </font>
