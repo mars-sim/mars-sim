@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionProcessItem.java
- * @version 3.07 2014-12-04
+ * @version 3.08 2015-05-19
  * @author Manny Kung
  */
 
@@ -52,4 +52,38 @@ public class FoodProductionProcessItem implements Serializable {
 	public String toString() {
 		return name;
 	}
+	
+    /**
+     * Checks if another object is equal to this one.
+     */
+    public boolean equals(Object object) {
+        boolean result = false;
+        if (object instanceof FoodProductionProcessItem) {
+            FoodProductionProcessItem item = (FoodProductionProcessItem) object;
+            result = true;
+            if (!name.equals(item.getName())) {
+                result = false;
+            }
+            else if (!type.equals(item.getType())) {
+                result = false;
+            }
+            else if (amount != item.getAmount()) {
+                result = false;
+            }
+        }
+        
+        return result;
+    }
+
+    /**
+     * Gets the hash code for this object.
+     * @return hash code.
+     */
+    public int hashCode() {
+        StringBuffer buff = new StringBuffer("");
+        buff.append(name);
+        buff.append(type);
+        buff.append(amount);
+        return buff.hashCode();
+    }
 }

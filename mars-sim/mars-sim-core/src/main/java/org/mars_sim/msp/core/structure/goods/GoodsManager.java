@@ -1683,7 +1683,9 @@ public class GoodsManager implements Serializable {
             Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
-                outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
+                if (!process.getInputList().contains(item)) {
+                    outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
+                }
             }
 
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
@@ -1751,7 +1753,9 @@ public class GoodsManager implements Serializable {
             Iterator<FoodProductionProcessItem> j = process.getOutputList().iterator();
             while (j.hasNext()) {
             	FoodProductionProcessItem item = j.next();
-                outputsValue += FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true);
+            	if (!process.getInputList().contains(item)) {
+            	    outputsValue += FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true);
+            	}
             }
 
             double totalInputsValue = outputsValue * FOOD_PRODUCTION_INPUT_FACTOR;

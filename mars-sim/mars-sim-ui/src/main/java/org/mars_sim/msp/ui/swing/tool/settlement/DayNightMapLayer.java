@@ -51,8 +51,11 @@ public class DayNightMapLayer implements SettlementMapLayer {
 		// TODO: overlay a red/orange mask if having local dust storm
 
 		if (mapPanel.isShowDayNightLayer()) {
-			int width = SettlementWindow.HORIZONTAL;
-			int height = SettlementWindow.VERTICAL;
+//			int width = SettlementWindow.HORIZONTAL;
+//			int height = SettlementWindow.VERTICAL;
+			
+			int width = mapWidth;
+			int height = mapHeight;
 
 			// Get the map center point.
 	        //int centerX =  width / 2;
@@ -97,12 +100,20 @@ public class DayNightMapLayer implements SettlementMapLayer {
 		                int sunlightInt = (int) (127 * sunlight);
 		                int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000; // 0xFF000000 is the alpha mask
 
-		                shadingArray[x + (y * width)] = shadeColor;
-		                shadingArray[x + 1 + (y * width)] = shadeColor;
+		                int index1 = x + (y * width);
+		                shadingArray[index1] = shadeColor;
+		                index1++;
+		                if (index1 < shadingArray.length) {
+		                    shadingArray[x + 1 + (y * width)] = shadeColor;
+		                }
 
 		                if (y < height - 1) {
-		                    shadingArray[x + ((y + 1) * width)] = shadeColor;
-		                    shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
+		                    int index2 = x + ((y + 1) * width);
+		                    shadingArray[index2] = shadeColor;
+		                    index2++;
+		                    if (index2 < shadingArray.length) {
+		                        shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
+		                    }
 		                }
 
 		                //if (sunlight > 0) nightTime = false;

@@ -319,7 +319,12 @@ implements Serializable {
         chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.fine(person.getName() + " has accident while making dessert");
+            if (person != null) {
+                logger.fine(person.getName() + " has accident while making dessert");
+            }
+            else if (robot != null) {
+                logger.fine(robot.getName() + " has accident while making dessert");
+            }
             kitchen.getBuilding().getMalfunctionManager().accident();
         }
     }	
