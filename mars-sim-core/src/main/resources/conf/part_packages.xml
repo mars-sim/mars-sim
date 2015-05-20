@@ -10,32 +10,36 @@
 	<!-- Part package -->
 	<!-- name: the unique name of the package. -->
 	<part-package name="package 1" >
-		
+
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
-		
-				
-		<part type="light emitting diode bulb" number="100" />	
-		<part type="mushroom containment kit" number="5" />
-				
-		<!-- 2014-11-20 Added the following new parts -->		
-		<part type="microcontroller" number="30" />	
+
+		<!-- 2015-05-18 Added the following new parts -->
+		<part type="selective laser sintering 3d printer" number="2"/>
+		<part type="heat pump" number="2"/>
+		<part type="carbon dioxide laser" number="5"/>
+		<part type="helium neon laser" number="5"/>
+		<part type="optical lens" number="20"/>
+		<!-- 2015-03-09 Added the following new parts -->
+		<part type="light emitting diode kit" number="100" />
+		<part type="mushroom containment kit" number="3" />
+		<!-- 2014-11-20 Added the following new parts -->
+		<part type="microcontroller" number="30" />
 		<part type="microwave" number="3" />
-		<part type="water tank" number="5" />	
+		<part type="water tank" number="5" />
 		<part type="small water pump" number="3" />
-		<part type="carbon dioxide pump" number="3" />	
+		<part type="carbon dioxide pump" number="3" />
 		<part type="small transformer" number="5" />
-		<part type="magnetron tube" number="10" />	
+		<part type="magnetron tube" number="10" />
 		<part type="autoclave" number="3" />
-		<part type="blender" number="3" />	
-		<part type="air compressor" number="3" />		
-		<part type="oven" number="5" />	
+		<part type="blender" number="3" />
+		<part type="air compressor" number="3" />
+		<part type="oven" number="5" />
 		<part type="refrigerator" number="3" />
-		<part type="stove" number="3" />	
-		<part type="ventilation fan" number="3" />								
- 		<!-- 2014-11-20 --> 				
- 		
+		<part type="stove" number="3" />
+		<part type="ventilation fan" number="3" />
+
 		<part type="airleak patch" number="160" />
 		<part type="co2 extinguisher" number="26" />
 		<part type="rover wheel" number="12" />
@@ -53,8 +57,8 @@
 		<part type="rover battery" number="4" />
 		<part type="radio antenna" number="8" />
 		<part type="satellite dish" number="4" />
-		<part type="communications circuit board" number="4" />
-		<part type="navigation circuit board" number="2" />
+		<part type="communications circuit board" number="6" />
+		<part type="navigation circuit board" number="4" />
 		<part type="suit heating unit" number="8" />
 		<part type="plastic pipe" number="18" />
 		<part type="steel pipe" number="12" />
@@ -98,30 +102,36 @@
 		<part type="drilling rig" number="1" />
 		<part type="condenser coil" number="1" />
 		<part type="water pump" number="1" />
-		
+
 	</part-package>
-	
+
 	<part-package name="package 2" >
-	
-		<part type="light emitting diode bulb" number="200" />
-			
-		<!-- 2014-11-20 Added the following new parts -->		
-		<part type="microcontroller" number="60" />	
+
+		<!-- 2015-05-18 Added the following new parts -->
+		<part type="selective laser sintering 3d printer" number="3"/>
+		<part type="heat pump" number="5"/>
+		<part type="carbon dioxide laser" number="10"/>
+		<part type="helium neon laser" number="10"/>
+		<part type="optical lens" number="40"/>
+		<!-- 2015-03-09 Added the following new parts -->
+		<part type="light emitting diode kit" number="40" />
+		<!-- 2014-11-20 Added the following new parts -->
+		<part type="microcontroller" number="60" />
 		<part type="microwave" number="10" />
-		<part type="water tank" number="10" />	
+		<part type="water tank" number="10" />
 		<part type="small water pump" number="10" />
-		<part type="carbon dioxide pump" number="10" />	
+		<part type="carbon dioxide pump" number="10" />
 		<part type="small transformer" number="10" />
-		<part type="magnetron tube" number="10" />	
+		<part type="magnetron tube" number="10" />
 		<part type="autoclave" number="10" />
-		<part type="blender" number="10" />	
-		<part type="air compressor" number="10" />		
-		<part type="oven" number="10" />	
+		<part type="blender" number="10" />
+		<part type="air compressor" number="10" />
+		<part type="oven" number="10" />
 		<part type="refrigerator" number="10" />
-		<part type="stove" number="10" />	
-		<part type="ventilation fan" number="10" />								
- 		<!-- 2014-11-20 --> 				
- 		
+		<part type="stove" number="10" />
+		<part type="ventilation fan" number="10" />
+ 		<!-- 2014-11-20 -->
+
 		<part type="airleak patch" number="306" />
 		<part type="co2 extinguisher" number="46" />
 		<part type="rover wheel" number="12" />
@@ -186,30 +196,36 @@
 		<part type="water pump" number="2" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
-	
+
 	</part-package>
-	
+
 	<part-package name="package 3">
-	
-		<part type="light emitting diode bulb" number="300" />
-			
-		<!-- 2014-11-20 Added the following new parts -->		
-		<part type="microcontroller" number="80" />	
+
+		<!-- 2015-05-18 Added the following new parts -->
+		<part type="selective laser sintering 3d printer" number="4"/>
+		<part type="heat pump" number="10"/>
+		<part type="carbon dioxide laser" number="20"/>
+		<part type="helium neon laser" number="20"/>
+		<part type="optical lens" number="60"/>
+		<!-- 2015-03-09 Added the following new parts -->
+		<part type="light emitting diode kit" number="60" />
+		<!-- 2014-11-20 Added the following new parts -->
+		<part type="microcontroller" number="80" />
 		<part type="microwave" number="15" />
-		<part type="water tank" number="15" />	
+		<part type="water tank" number="15" />
 		<part type="small water pump" number="15" />
-		<part type="carbon dioxide pump" number="15" />	
+		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="15" />
-		<part type="magnetron tube" number="20" />	
+		<part type="magnetron tube" number="20" />
 		<part type="autoclave" number="15" />
-		<part type="blender" number="15" />	
-		<part type="air compressor" number="15" />		
-		<part type="oven" number="15" />	
+		<part type="blender" number="15" />
+		<part type="air compressor" number="15" />
+		<part type="oven" number="15" />
 		<part type="refrigerator" number="15" />
-		<part type="stove" number="15" />	
-		<part type="ventilation fan" number="15" />								
- 		<!-- 2014-11-20 --> 				
- 		
+		<part type="stove" number="15" />
+		<part type="ventilation fan" number="15" />
+ 		<!-- 2014-11-20 -->
+
 		<part type="airleak patch" number="468" />
 		<part type="co2 extinguisher" number="72" />
 		<part type="rover wheel" number="22" />
@@ -274,30 +290,36 @@
 		<part type="water pump" number="4" />
 		<part type="steel post" number="15" />
 		<part type="plastic sheet" number="6" />
-		
+
 	</part-package>
-	
+
 	<part-package name="package 4">
-	
-		<part type="light emitting diode bulb" number="400" />
-			
-		<!-- 2014-11-20 Added the following new parts -->		
-		<part type="microcontroller" number="200" />	
+
+		<!-- 2015-05-18 Added the following new parts -->
+		<part type="selective laser sintering 3d printer" number="5"/>
+		<part type="heat pump" number="20"/>
+		<part type="carbon dioxide laser" number="30"/>
+		<part type="helium neon laser" number="30"/>
+		<part type="optical lens" number="80"/>
+		<!-- 2015-03-09 Added the following new parts -->
+		<part type="light emitting diode bulb" number="100" />
+		<!-- 2014-11-20 Added the following new parts -->
+		<part type="microcontroller" number="200" />
 		<part type="microwave" number="10" />
-		<part type="water tank" number="25" />	
+		<part type="water tank" number="25" />
 		<part type="small water pump" number="20" />
-		<part type="carbon dioxide pump" number="15" />	
+		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="25" />
-		<part type="magnetron tube" number="40" />	
+		<part type="magnetron tube" number="40" />
 		<part type="autoclave" number="15" />
-		<part type="blender" number="15" />	
-		<part type="air compressor" number="15" />	
-		<part type="oven" number="15" />	
+		<part type="blender" number="15" />
+		<part type="air compressor" number="15" />
+		<part type="oven" number="15" />
 		<part type="refrigerator" number="15" />
-		<part type="stove" number="15" />	
-		<part type="ventilation fan" number="15" />								
- 		<!-- 2014-11-20 --> 				
- 		
+		<part type="stove" number="15" />
+		<part type="ventilation fan" number="15" />
+ 		<!-- 2014-11-20 -->
+
 		<part type="airleak patch" number="536" />
 		<part type="co2 extinguisher" number="78" />
 		<part type="rover wheel" number="38" />
@@ -362,7 +384,7 @@
 		<part type="water pump" number="6" />
 		<part type="steel post" number="40" />
 		<part type="plastic sheet" number="16" />
-	
+
 	</part-package>
-	
+
 </part-package-list>

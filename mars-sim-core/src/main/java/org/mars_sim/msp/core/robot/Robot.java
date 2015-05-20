@@ -115,6 +115,11 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 
     private RobotType robotType;
 
+    private RobotConfig config ;
+
+    private LifeSupportType support ;
+
+
     /**
      * Constructs a robot object at a given settlement.
      * @param name the robot's name
@@ -140,6 +145,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         xLoc = 0D;
         yLoc = 0D;
         isBuried = false;
+
+        config = SimulationConfig.instance().getRobotConfiguration();
+        support = getLifeSupportType();
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -314,6 +322,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
      */
     public void timePassing(double time) {
 
+/*
+
+    	// convert to using owner
 
 		Unit container = getContainerUnit();
 		if (container instanceof Person) {
@@ -323,12 +334,11 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 			}
 		}
 		malfunctionManager.timePassing(time);
-
+*/
         // If robot is dead, then skip
         if (health.getDeathDetails() == null) {
 
-            RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
-            LifeSupportType support = getLifeSupportType();
+        	support = getLifeSupportType();
 
             // Pass the time in the physical condition first as this may
             // result in death.
