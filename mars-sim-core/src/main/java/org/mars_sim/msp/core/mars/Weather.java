@@ -229,7 +229,7 @@ implements Serializable {
 			return newP;
 		}
 
-		else return getCachedReading(airPressureCacheMap, location, AIR_PRESSURE);
+		else return getCachedReading(airPressureCacheMap, location);//, AIR_PRESSURE);
 
 	}
 
@@ -292,12 +292,12 @@ implements Serializable {
 
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
-			temperatureCacheMap.put(location,newT);
+			temperatureCacheMap.put(location, newT);
 			//System.out.println("Weather.java: temperatureCache is " + temperatureCache);
 			return newT;
 		}
 
-		else return getCachedReading(temperatureCacheMap, location, TEMPERATURE);
+		else return getCachedReading(temperatureCacheMap, location);//, TEMPERATURE);
 
 	}
 
@@ -321,11 +321,16 @@ implements Serializable {
 		} else {
 			// 2015-01-28 We arrived at this temperature model based on Viking 1 & Opportunity Rover
 			// by assuming the temperature is the linear combination of the following factors:
-			// 1. Time of day and longitude,
+			// 1. Time of day and longitude and solar irradiance,
 			// 2. Terrain elevation,
 			// 3. Latitude,
 			// 4. Seasonal variation (dependent upon latitude)
 			// 5. Randomness
+			/*
+			if (masterClock == null)
+				masterClock = Simulation.instance().getMasterClock();
+
+			marsClock = masterClock.getMarsClock();
 
 			// (1). Time of day and longitude
 			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
@@ -334,10 +339,23 @@ implements Serializable {
 	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0;
+			System.out.println("factor : " + Math.sin  ( Math.PI * x_offset / 500D) + "\tequatorial T: "+ equatorial_temperature);
 			//System.out.print("Time: " + Math.round (time) + "  T: " + standard_temperature);
+*/
+			double light_factor = 0;
+			double sunlight = 0 ;
+			sunlight = surfaceFeatures.getPreviousSolarIrradiance(location);
+
+			light_factor = 2D * ( sunlight / 400D - .5);
+
+			// Equation below is modeled after viking data.
+			double equatorial_temperature = 27.5D * light_factor - 58.5D ;
+			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0;
+			//System.out.println("sunlight : " + sunlight + "\t\tequatorial T: "+ equatorial_temperature);
+
 
 		/*
-			// + getSurfaceSunlight * (80D / 127D (max sun))
+			// ...getSurfaceSunlight * (80D / 127D (max sun))
 			// if sun full we will get -40D the avg, if night or twilight we will get
 			// a smooth temperature change and in the night -120D
 		    temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 80D;
@@ -352,7 +370,7 @@ implements Serializable {
 			double elevation =  terrainElevation.getElevation(location); // in km from getElevation(location)
 			double terrain_dt;
 
-			// assume a typical temperature of -31 deg celsiu
+			// Assume a typical temperature of -31 deg celsius
 			if (elevation < 7)
 				terrain_dt = - 0.000998 * elevation * 1000;
 			else // delta = -31 + 23.4 = 7.6
@@ -372,7 +390,9 @@ implements Serializable {
 
 			// (4). Seasonal variation
 			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess
-	        int solElapsed = MarsClock.getSolOfYear(marsClock);
+			//marsClock = masterClock.getMarsClock();
+			//System.out.println(marsClock);
+			int solElapsed = MarsClock.getSolOfYear(marsClock);
 			double seasonal_dt = lat_adjustment * Math.sin( 2 * Math.PI/1000D * ( solElapsed - 142));
 			seasonal_dt = Math.round (seasonal_dt * 100.0)/ 100.0;
 			//System.out.println("  seasonal_dt: " + seasonal_dt );
@@ -383,9 +403,15 @@ implements Serializable {
 			double down = RandomUtil.getRandomDouble(2);
 
 			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
-			final_temperature = Math.round (final_temperature * 100.0)/100.0;
+
+			double previous_t = 0;
+			if (temperatureCacheMap.get(location) != null)
+				previous_t = temperatureCacheMap.get(location);
+			final_temperature = Math.round ((final_temperature + previous_t )/2.0 *100.0)/100.0;
 			//System.out.println("  final T: " + final_temperature );
 		}
+
+		//temperatureCacheMap.put(location, final_temperature);
 
 		return final_temperature;
 	}
@@ -405,7 +431,7 @@ implements Serializable {
 	 * @return temperature or pressure
 	 */
 	// 2015-03-06 Added getCachedReading()
-    public double getCachedReading(Map<Coordinates, Double> map, Coordinates location, int value) {
+    public double getCachedReading(Map<Coordinates, Double> map, Coordinates location) {//, int value) {
     	double result;
 
        	if (map.containsKey(location)) {
@@ -413,9 +439,11 @@ implements Serializable {
     	}
     	else {
     		double cache = 0;
-    		if (value == TEMPERATURE )
+    		//if (value == TEMPERATURE )
+    		if (map.equals(temperatureCacheMap))
     			cache = calculateTemperature(location);
-    		else if (value == AIR_PRESSURE )
+    		//else if (value == AIR_PRESSURE )
+    		else  if (map.equals(airPressureCacheMap))
     			cache = calculateAirPressure(location);
 
 			map.put(location, cache);
@@ -438,16 +466,21 @@ implements Serializable {
 		//computeAirDensity();
 		//comuteSolarIrradiance();
 
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
 
-	    // Sample a data point every 100 milliseconds, (compute the average) and store the data
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+
+	    // Sample a data point every 50 millisols, (compute the average) and store the data
 	    double currentMillisols =  (int) marsClock.getMillisol();
-	    if (currentMillisols % 100 == 0) {
+	    if (currentMillisols % 50 == 0) {
 	    	//List<DailyWeather> todayWeather = new ArrayList<>();
 	    	//Iterator<Coordinates> list = coordinateList.iterator();
 	    	coordinateList.forEach(location -> {
-	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location), getAirDensity(location), surfaceFeatures.getSolarIrradiance(location));
+	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location),
+	    				getAirDensity(location), getWindSpeed(location),
+	    				surfaceFeatures.getPreviousSolarIrradiance(location), surfaceFeatures.getOpticalDepth(location));
 		    	todayWeather.add(weather);
 	    	});
 	    }

@@ -18,26 +18,34 @@ public class DailyWeather implements Serializable {
 	private double temperature, dailyAverageT;
 	private double pressure, dailyAverageP;
 	private double airDensity, dailyAverageD;
+	private double windSpeed, dailyAverageW;
 	private double solarIrradiance, dailyAverageS;
+	private double opticalDepth, dailyAverageO;
 
 	private MarsClock clock;
 	//private Coordinates location;
 
-	public DailyWeather(MarsClock clock, double temperature, double pressure, double airDensity, double solarIrradiance) {
+	public DailyWeather(MarsClock clock, double temperature, double pressure,
+			double airDensity, double windSpeed,
+			double solarIrradiance, double opticalDepth) {
 
 		this.clock = clock; //(MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		//this.location = location;
 		this.temperature = temperature;
 		this.pressure = pressure;
 		this.airDensity = airDensity;
+		this.windSpeed = windSpeed;
 		this.solarIrradiance = solarIrradiance;
+		this.opticalDepth = opticalDepth;
 	}
 
-	public void setDailyAverage(double t, double p, double d, double s) {
+	public void setDailyAverage(double t, double p, double d, double s, double o, double w) {
 			dailyAverageT = t;
 			dailyAverageP = p;
 			dailyAverageD = d;
 			dailyAverageS = s;
+			dailyAverageO = o;
+			dailyAverageW = w;
 	}
 
 	public double getPressure() {

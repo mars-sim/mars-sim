@@ -53,7 +53,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 		if (mapPanel.isShowDayNightLayer()) {
 //			int width = SettlementWindow.HORIZONTAL;
 //			int height = SettlementWindow.VERTICAL;
-			
+
 			int width = mapWidth;
 			int height = mapHeight;
 
@@ -69,8 +69,11 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	        //boolean dayTime = true;
 	        if (location == null)
 	        	location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
+	        	//location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
+
 	        //double sunlight = surfaceFeatures.getSurfaceSunlight(location);
-	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / 500D; // normalized to 500 W/m2
+	        // normalized to 400 W/m2 instead of 590 W/m2 so as to make the map brighter on screen
+	        double sunlight = surfaceFeatures.getPreviousSolarIrradiance(location) / 400D;
         	//System.out.println(" sunlight is " + sunlight);
 
 	        //if (sunlight > 0)
@@ -147,7 +150,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	            try {
 	                mt.waitForID(0);
 	    	        //System.out.println("mt.waitForID(0)");
-	                Thread.sleep(40);
+	                Thread.sleep(20);
 	            }
 	            catch (InterruptedException e) {
 	                logger.log(Level.SEVERE,"ShadingMapLayer interrupted: " + e);
@@ -167,6 +170,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	public void destroy() {
 	    shadingArray = null;
 	    surfaceFeatures = null;
-		mapPanel= null;
+		mapPanel = null;
+		location = null;
 	}
 }
