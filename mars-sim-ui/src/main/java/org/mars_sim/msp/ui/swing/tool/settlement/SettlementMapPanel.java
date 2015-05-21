@@ -88,6 +88,8 @@ implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 
+        //System.out.println("SettlementMapPanel's constructor");
+
 		setLayout(new BorderLayout());
 
 		// Initialize data members.
@@ -126,7 +128,6 @@ implements ClockListener {
 
 	// 2015-02-09 Added init()
 	public void init(MainDesktopPane desktop) {
-
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
@@ -137,7 +138,7 @@ implements ClockListener {
 		mapLayers.add(new LabelMapLayer(this));
 		mapLayers.add(new DayNightMapLayer(this));
 
-        new SettlementTransparentPanel(desktop, this);
+	    new SettlementTransparentPanel(desktop, this);
 
 	}
 

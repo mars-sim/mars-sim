@@ -39,6 +39,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
         surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
+        //System.out.println("DayNightMapLayer's constructor");
 		// Initialize data members.
 		this.mapPanel = mapPanel;
     }
@@ -48,6 +49,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			Building building, double xPos, double yPos, int mapWidth,
 			int mapHeight, double rotation, double scale) {
 
+		//System.out.println("DayNightMapLayer : settlement is " + settlement);
 		// TODO: overlay a red/orange mask if having local dust storm
 
 		if (mapPanel.isShowDayNightLayer()) {
@@ -67,11 +69,15 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 	        //boolean nightTime = true;
 	        //boolean dayTime = true;
-	        if (location == null)
-	        	location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
-	        	//location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
 
-	        //double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+			// NOTE: whenever the user uses the combobox to switch to another settlement in Settlement Map Tool,
+			// the corresponding location instance of the new settlement will be reloaded
+			// in order to get the correct day light effect.
+	        //if (location == null)
+			location = mapPanel.getSettlement().getCoordinates(); // new Coordinates(0D, 0D);
+        	//location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
+
+	        // double sunlight = surfaceFeatures.getSurfaceSunlight(location);
 	        // normalized to 400 W/m2 instead of 590 W/m2 so as to make the map brighter on screen
 	        double sunlight = surfaceFeatures.getPreviousSolarIrradiance(location) / 400D;
         	//System.out.println(" sunlight is " + sunlight);

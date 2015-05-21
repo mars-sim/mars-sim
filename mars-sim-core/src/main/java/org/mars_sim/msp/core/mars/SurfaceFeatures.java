@@ -214,18 +214,17 @@ public class SurfaceFeatures implements Serializable {
 
 	    	if (weather == null)
 	    		weather = Simulation.instance().getMars().getWeather();
-	    	double yestersolAirPressureVariation =  0.2237 * weather.getDailyVariationAirPressure(location);
+	    	double newTau =  0.2237 * weather.getDailyVariationAirPressure(location);
     		// System.out.println("DailyVariationAirPressure : " + weather.getDailyVariationAirPressure(location));
 	    	// Initially, weather.getDailyVariationAirPressure() = 0.009773345677998181
 
 	    	// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
     		// the starting value for opticalDepth is 0.2342. See Ref below
 	    	if (opticalDepthMap.containsKey(location))
-	    		tau = opticalDepthMap.get(location) + yestersolAirPressureVariation;
+	    		tau = (opticalDepthMap.get(location) + opticalDepthStartingValue + newTau) / 2D;
 	    	else {
-	    		tau = opticalDepthStartingValue + yestersolAirPressureVariation;
+	    		tau = opticalDepthStartingValue + newTau;
 	    	}
-
 
 			if (tau > 6)
 				tau = 6;
