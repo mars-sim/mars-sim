@@ -27,7 +27,9 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -46,7 +48,7 @@ extends TabPanel {
 	private static final String SUNNY = Msg.getString("img.sunny"); //$NON-NLS-1$
 	private static final String HOT = Msg.getString("img.hot"); //$NON-NLS-1$
 	private static final String LIGHTNING = Msg.getString("img.lightning"); //$NON-NLS-1$
-
+	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, EXTREME COLD,
 
 
 	 /** default logger.   */
@@ -54,14 +56,21 @@ extends TabPanel {
 
 	// 2014-11-11 Added new panels and labels
 	private JPanel tpPanel;
-	private JLabel windSpeedLabel, windDirLabel, windSpeedValueLabel, windDirValueLabel;
-	private JLabel temperatureValueLabel, pressureValueLabel, airDensityValueLabel, monitorLabel;
+	private JLabel windSpeedLabel, windSpeedValueLabel;
+	private JLabel solarIrradianceLabel, solarIrradianceValueLabel;
+	private JLabel windDirLabel, windDirValueLabel;
+	private JLabel opticalDepthValueLabel, opticalDepthLabel;
+	private JLabel temperatureValueLabel, pressureValueLabel, airDensityValueLabel;
+	private JLabel monitorLabel;
 	//private Color THEME_COLOR = Color.ORANGE;
 	private double airPressureCache;
 	private int temperatureCache;
 	private double windSpeedCache;
 	private int windDirectionCache;
 	private double airDensityCache;
+	private double opticalDepthCache;
+	private double solarIrradianceCache;
+
 
 	//private Unit containerCache;
 
@@ -74,8 +83,11 @@ extends TabPanel {
 
 	private Coordinates locationCache;
 	private Weather weather;
+	private SurfaceFeatures surfaceFeatures;
+	private MasterClock masterClock;
 
 	DecimalFormat fmt = new DecimalFormat("##0");
+	DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	DecimalFormat fmt2 = new DecimalFormat("#0.00");
     /**
      * Constructor.
@@ -89,7 +101,11 @@ extends TabPanel {
     			Msg.getString("TabPanelWeather.tooltip"), //$NON-NLS-1$
     			unit, desktop);
 
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+
         weather = Simulation.instance().getMars().getWeather();
+        surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
@@ -170,7 +186,7 @@ extends TabPanel {
         temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         tpPanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
 
-        JPanel dataP = new JPanel(new GridLayout(4, 2));
+        JPanel dataP = new JPanel(new GridLayout(6, 2));
         tpPanel.add(dataP);
 
         // Prepare air pressure label
@@ -223,8 +239,32 @@ extends TabPanel {
         //windSpeedValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(windDirValueLabel);
 
-        // TODO: have a meteorologist or Areologist visit the weather station daily to fine tuen the equipment
-        String personName = "Robert Zubrin";
+        solarIrradianceLabel = new JLabel(Msg.getString("TabPanelWeather.solarIrradiance.label"), JLabel.RIGHT);
+        solarIrradianceLabel.setOpaque(false);
+        solarIrradianceLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //solarIrradianceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(solarIrradianceLabel);
+
+        solarIrradianceValueLabel = new JLabel(" " + (int) surfaceFeatures.getSolarIrradiance(unit.getCoordinates()), JLabel.LEFT);
+        solarIrradianceValueLabel.setOpaque(false);
+        solarIrradianceValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //solarIrradianceValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(solarIrradianceValueLabel);
+
+        opticalDepthLabel = new JLabel(Msg.getString("TabPanelWeather.opticalDepth.label"), JLabel.RIGHT);
+        opticalDepthLabel.setOpaque(false);
+        opticalDepthLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //opticalDepthLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(opticalDepthLabel);
+
+        opticalDepthValueLabel = new JLabel();
+        opticalDepthValueLabel.setOpaque(false);
+        opticalDepthValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //opticalDepthValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(opticalDepthValueLabel);
+
+        // TODO: have a meteorologist or Areologist visit the weather station daily to fine tune the equipment
+        String personName = "ABC";
         // Prepare temperature label
         monitorLabel = new JLabel("Station last maintained and monitored by " + personName, JLabel.CENTER);
         monitorLabel.setOpaque(false);
@@ -273,23 +313,37 @@ extends TabPanel {
 		return (int) weather.getWindSpeed(unit.getCoordinates());
     }
 
-    public String getWindDirectionString(double value) {
-     	return fmt.format(value) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-    }
-
     public int getWindDirection() {
 		return weather.getWindDirection(unit.getCoordinates());
     }
 
-    public String getAirDensityString(double value) {
-     	return fmt.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+    public String getWindDirectionString(double value) {
+     	return fmt.format(value) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+    }
+
+    public double getOpticalDepth() {
+ 		return surfaceFeatures.getOpticalDepth(unit.getCoordinates());
+     }
+
+    public String getOpticalDepthString(double value) {
+     	return fmt2.format(value);
     }
 
     public double getAirDensity() {
 		return weather.getAirDensity(unit.getCoordinates());
     }
 
+    public String getAirDensityString(double value) {
+     	return fmt1.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+    }
 
+    public int getSolarIrradiance() {
+  		return (int) surfaceFeatures.getPreviousSolarIrradiance(unit.getCoordinates());
+      }
+
+     public String getSolarIrradianceString(double value) {
+      	return fmt.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+     }
 
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
@@ -299,52 +353,68 @@ extends TabPanel {
 		return locationCache.getFormattedLongitudeString();
 	}
 
-
     /**
      * Updates the info on this panel.
      */
     // 2014-11-11 Overhauled update()
     public void update() {
 
-        // If unit's location has changed, update location display.
-    	// TODO: if a person goes outside the settlement for servicing an equipment
-    	// does the coordinate (down to how many decimal) change?
-        if (!locationCache.equals(unit.getCoordinates())) {
-            locationCache.setCoords(unit.getCoordinates());
-            latitudeLabel.setText(getLatitudeString());
-            longitudeLabel.setText(getLongitudeString());
-        }
+        if (!masterClock.isPaused()) {
+
+	        // If unit's location has changed, update location display.
+	    	// TODO: if a person goes outside the settlement for servicing an equipment
+	    	// does the coordinate (down to how many decimal) change?
+	        if (!locationCache.equals(unit.getCoordinates())) {
+	            locationCache.setCoords(unit.getCoordinates());
+	            latitudeLabel.setText(getLatitudeString());
+	            longitudeLabel.setText(getLongitudeString());
+	        }
 
 
-		double p = getAirPressure();
-        if (airPressureCache != p) {
-        	airPressureCache = p;
-        	pressureValueLabel.setText(" " + getAirPressureString(airPressureCache));
-        }
+			double p = getAirPressure();
+	        if (airPressureCache != p) {
+	        	airPressureCache = p;
+	        	pressureValueLabel.setText(" " + getAirPressureString(airPressureCache));
+	        }
 
-        int t = getTemperature();
-        if (temperatureCache != t) {
-        	temperatureCache = t;
-        	temperatureValueLabel.setText(getTemperatureString(temperatureCache));
-        }
+	        int t = getTemperature();
+	        if (temperatureCache != t) {
+	        	temperatureCache = t;
+	        	temperatureValueLabel.setText(getTemperatureString(temperatureCache));
+	        }
 
-        int wd = getWindDirection();
-        if (windDirectionCache != wd) {
-        	windDirectionCache = wd;
-        	windDirValueLabel.setText(" " + getWindDirectionString(windDirectionCache));
-        }
+	        int wd = getWindDirection();
+	        if (windDirectionCache != wd) {
+	        	windDirectionCache = wd;
+	        	windDirValueLabel.setText(" " + getWindDirectionString(windDirectionCache));
+	        }
 
-        int s = getWindSpeed();
-        if (windSpeedCache != s) {
-        	windSpeedCache = s;
-        	windSpeedValueLabel.setText(" " + getWindSpeedString(windSpeedCache));
-        }
+	        int s = getWindSpeed();
+	        if (windSpeedCache != s) {
+	        	windSpeedCache = s;
+	        	windSpeedValueLabel.setText(" " + getWindSpeedString(windSpeedCache));
+	        }
 
-        double ad = getAirDensity();
-        if (airDensityCache != ad) {
-        	airDensityCache = ad;
-        	airDensityValueLabel.setText(" " + getAirDensityString(airDensityCache));
-        }
+
+	        double ad = getAirDensity();
+	        if (airDensityCache != ad) {
+	        	airDensityCache = ad;
+	        	airDensityValueLabel.setText(" " + getAirDensityString(airDensityCache));
+	        }
+
+	        double od = getOpticalDepth();
+	        if (opticalDepthCache != od) {
+	        	opticalDepthCache = od;
+	        	opticalDepthValueLabel.setText(" " + getOpticalDepthString(opticalDepthCache));
+	        }
+
+	        double ir = getSolarIrradiance();
+	        if (solarIrradianceCache != ir) {
+	        	solarIrradianceCache = ir;
+	        	solarIrradianceValueLabel.setText(" " + getSolarIrradianceString(solarIrradianceCache));
+	        }
+
+	    }
     }
 
 }
