@@ -685,8 +685,9 @@
 
 	<part name="large air duct" mass=".3">
 		<maintenance-entity-list>
-		<entity name="farming" probability="1" max-number="5" />
-	</maintenance-entity-list>
+			<entity name="farming" probability="1" max-number="5" />
+		</maintenance-entity-list>
+	</part>
 
 	<part name="flexible hose" mass=".1"/>
 
