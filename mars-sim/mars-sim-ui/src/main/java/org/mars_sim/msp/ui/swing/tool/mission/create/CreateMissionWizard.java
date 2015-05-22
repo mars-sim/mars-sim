@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A dialog wizard for creating new missions.
+ * A wizard for creating new missions.
  */
+// 2015-03-24 Converted CreateMissionWizard from JDialog to JInternalFrame
 public class CreateMissionWizard
 extends JInternalFrame
 implements ActionListener {
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// Data members
@@ -35,60 +36,60 @@ implements ActionListener {
 	private MissionDataBean missionBean;
 	private List<WizardPanel> wizardPanels;
 	private int displayPanelIndex;
-	
+
 	/**
 	 * Constructor.
 	 * @param owner The owner frame.
 	 */
 	public CreateMissionWizard(MainDesktopPane desktop) {
-	
+
 		// Use JInternalFrame constructor
         super("Create Mission Wizard", false, true, false, true);
-	
+
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
-				
+
 		// Create info panel.
 		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
-		
+
 		//setContentPane(infoPane);
 
 		add(infoPane, BorderLayout.CENTER);
-		
+
 		// Create wizard panels list.
 		wizardPanels = new ArrayList<WizardPanel>();
 		displayPanelIndex = 0;
-		
+
 		// Create initial set of wizard panels.
 		addWizardPanel(new TypePanel(this));
-        
-        // Note: This panel is added so that next and final buttons are 
+
+        // Note: This panel is added so that next and final buttons are
         // enabled/disabled properly initially.
         addWizardPanel(new StartingSettlementPanel(this));
-		
+
 		// Create bottom button panel.
 		JPanel bottomButtonPane = new JPanel();
 		add(bottomButtonPane, BorderLayout.SOUTH);
-		
+
 		// Create prevous button.
 		prevButton = new JButton("Previous");
 		prevButton.addActionListener(this);
 		prevButton.setEnabled(false);
 		bottomButtonPane.add(prevButton);
-		
+
 		// Create next button.
 		nextButton = new JButton("Next");
 		nextButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		bottomButtonPane.add(nextButton);
-		
+
 		// Create final button.
 		finalButton = new JButton("Final");
 		finalButton.addActionListener(this);
 		finalButton.setEnabled(false);
 		bottomButtonPane.add(finalButton);
-		
+
 		// Create cancel button.
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
@@ -99,7 +100,7 @@ implements ActionListener {
         			}
 				});
 		bottomButtonPane.add(cancelButton);
-		
+
 		// Finish and display wizard.
 		//pack();
         setSize(new Dimension(700, 550));
@@ -107,18 +108,18 @@ implements ActionListener {
 		//setResizable(false);
 		//setVisible(true);
 
-	    desktop.add(this);	    
-	    
+	    desktop.add(this);
+
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
 	    setVisible(true);
-	    
-		
+
+
 	}
-	
+
 	/**
 	 * Gets the current displayed wizard panel.
 	 * @return wizard panel.
@@ -126,7 +127,7 @@ implements ActionListener {
 	private WizardPanel getCurrentWizardPanel() {
 		return wizardPanels.get(displayPanelIndex);
 	}
-	
+
 	/**
 	 * Sets the final wizard panel for the mission type.
 	 */
@@ -134,7 +135,7 @@ implements ActionListener {
 		// Remove old final panels if any.
         int numPanels = wizardPanels.size();
 		for (int x = 1; x < numPanels; x++) wizardPanels.remove(1);
-		
+
 		// Add mission type appropriate final panels.
 		if (missionBean.getType().equals(MissionDataBean.TRAVEL_MISSION)) {
             addWizardPanel(new StartingSettlementPanel(this));
@@ -207,7 +208,7 @@ implements ActionListener {
             addWizardPanel(new VehiclePanel(this));
             // TODO: Change members panel to use lead researcher as member.
             addWizardPanel(new MembersPanel(this));
-            //addWizardPanel(new BotMembersPanel(this)); 
+            //addWizardPanel(new BotMembersPanel(this));
             addWizardPanel(new FieldSitePanel(this));
         }
         else if (missionBean.getType().equals(MissionDataBean.BIOLOGY_FIELD_MISSION)) {
@@ -228,7 +229,7 @@ implements ActionListener {
             addWizardPanel(new EmergencySupplyPanel(this));
         }
 	}
-	
+
 	/**
 	 * Adds a wizard panel to the list.
 	 * @param newWizardPanel the wizard panel to add.
@@ -237,24 +238,24 @@ implements ActionListener {
 		wizardPanels.add(newWizardPanel);
 		infoPane.add(newWizardPanel, newWizardPanel.getPanelName());
 	}
-	
-	/** 
+
+	/**
 	 * Get the mission data bean.
 	 * @return mission data bean.
 	 */
 	MissionDataBean getMissionData() {
 		return missionBean;
 	}
-	
+
 	/**
 	 * Sets previous, next and final buttons to be enabled or disabled.
 	 * @param nextEnabled true if next/final button is enabled.
 	 */
 	void setButtons(boolean nextEnabled) {
-		
+
 		// Enable previous button if after first panel.
 		prevButton.setEnabled(displayPanelIndex > 0);
-		
+
 		if (nextEnabled) {
 			nextButton.setEnabled(displayPanelIndex < (wizardPanels.size() - 1));
 			finalButton.setEnabled(displayPanelIndex == (wizardPanels.size() - 1));
