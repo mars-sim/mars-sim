@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIceMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -57,6 +57,43 @@ public class DigLocalIceMeta implements MetaTask {
         
         double result = 0D;
 
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = person.getSettlement();
+            Inventory inv = settlement.getInventory(); 
+
+            try {
+                // Factor the value of ice at the settlement.
+                GoodsManager manager = settlement.getGoodsManager();
+                AmountResource iceResource = AmountResource.findAmountResource("ice");
+                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+                result = value * ICE_VALUE_MODIFIER;
+
+                if (result > 100D) {
+                    result = 100D;	
+                }
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error checking good value of ice.");
+            }
+
+            // Check if at least one empty bag at settlement.
+            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
+            if (numEmptyBags == 0) {
+                result = 0D;
+            }
+
+            // Check at least one EVA suit at settlement.
+            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
+            if (numSuits == 0) {
+                result = 0D;
+            }
+            
+            // Crowded settlement modifier
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+        }
+        
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
             result = 0D;
@@ -64,64 +101,25 @@ public class DigLocalIceMeta implements MetaTask {
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0)
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
-
+            }
+        }
         
-	        if (result != 0 && person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = person.getSettlement();
-	            Inventory inv = settlement.getInventory();
-	            
-	            
-	            // Check if at least one empty bag at settlement.
-	            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
-	            if (numEmptyBags == 0)
-	                result = 0D;
-	            
-	            
-		        // Check at least one EVA suit at settlement.
-		        int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
-		        if (numSuits == 0)
-		            result = 0D;
-		        
-	            if (result != 0) {	 
-	            
-		            try {
-		                // Factor the value of ice at the settlement.
-		                GoodsManager manager = settlement.getGoodsManager();
-		                AmountResource iceResource = AmountResource.findAmountResource("ice");
-		                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-		                result = value * ICE_VALUE_MODIFIER;
-	    		        
-		                if (result > 100D) {
-		                    result = 100D;	
-		                }
-		            }
-		            catch (Exception e) {
-		                logger.log(Level.SEVERE, "Error checking good value of ice.");
-		            }
-		
-		            // Crowded settlement modifier
-		            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-		                result *= 2D;
-		            }
-		
-		            // Effort-driven task modifier.
-		            result *= person.getPerformanceRating();
-		            
-		            // Job modifier.
-		            Job job = person.getMind().getJob();
-		            if (job != null) {
-		                result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);   
-		            }
-		            
-		            // Modify if field work is the person's favorite activity.
-		            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
-                        result *= 2D;
-		            }
-	            }
-	        }
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);   
+        }
+
+        // Modify if field work is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
+            result *= 2D;
+        }
     
         return result;
     }
