@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.07 2015-02-02
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -409,6 +409,12 @@ implements Serializable {
 
                 // Check if person is the airlock operator.
                 if (person.equals(airlock.getOperator())) {
+                    
+                    // If airlock has not been activated, activate it.
+                    if (!airlock.isActivated()) {
+                        airlock.activateAirlock(person);
+                    }
+                    
                     // If person is airlock operator, add cycle time to airlock.
                     double activationTime = remainingTime;
                     if (airlock.getRemainingCycleTime() < remainingTime) {
@@ -440,6 +446,12 @@ implements Serializable {
 
                 // Check if robot is the airlock operator.
                 if (robot.equals(airlock.getOperator())) {
+                    
+                    // If airlock has not been activated, activate it.
+                    if (!airlock.isActivated()) {
+                        airlock.activateAirlock(robot);
+                    }
+                    
                     // If robot is airlock operator, add cycle time to airlock.
                     double activationTime = remainingTime;
                     if (airlock.getRemainingCycleTime() < remainingTime) {

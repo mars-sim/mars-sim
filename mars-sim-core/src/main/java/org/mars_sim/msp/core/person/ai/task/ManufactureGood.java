@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.07 2015-03-05
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -129,6 +129,12 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MANUFACTURE;
     }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
+        return BuildingFunction.MANUFACTURE;
+    }
+    
 	/**
 	 * Cancel any manufacturing processes that's beyond the skill of any people
 	 * associated with the settlement.

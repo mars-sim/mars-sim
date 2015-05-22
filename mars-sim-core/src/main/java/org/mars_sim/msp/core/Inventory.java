@@ -1021,6 +1021,10 @@ implements Serializable {
             if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
                 result = true;
             }
+            else {
+                result = false;
+            }
+            
             if (unit == owner) {
                 result = false;
             }

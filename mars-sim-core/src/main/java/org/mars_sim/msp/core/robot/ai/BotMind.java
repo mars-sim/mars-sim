@@ -266,8 +266,6 @@ implements Serializable {
             }
         }
 
-
-
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
         double missionWeights = 0D;
