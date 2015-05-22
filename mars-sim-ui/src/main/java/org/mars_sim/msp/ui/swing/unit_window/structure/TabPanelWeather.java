@@ -14,10 +14,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -30,9 +33,12 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -44,18 +50,18 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	private static final String DUST_STORM = Msg.getString("img.dust"); //$NON-NLS-1$
+	private static final String DUSTY_SKY = Msg.getString("img.dust"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny"); //$NON-NLS-1$
-	private static final String HOT = Msg.getString("img.hot"); //$NON-NLS-1$
+	private static final String BALMY = Msg.getString("img.hot"); //$NON-NLS-1$
 	private static final String LIGHTNING = Msg.getString("img.lightning"); //$NON-NLS-1$
-	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, EXTREME COLD,
+	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, FRIGID, DRY
 
 
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	// 2014-11-11 Added new panels and labels
-	private JPanel tpPanel;
+	private JPanel bottomPanel;
 	private JLabel windSpeedLabel, windSpeedValueLabel;
 	private JLabel solarIrradianceLabel, solarIrradianceValueLabel;
 	private JLabel windDirLabel, windDirValueLabel;
@@ -122,7 +128,6 @@ extends TabPanel {
         titlePanel.add(titleLabel);
         topContentPanel.add(titlePanel);//, BorderLayout.NORTH);
 
-
         locationCoordsPanel = new JPanel();
         locationCoordsPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locationCoordsPanel.setLayout(new BorderLayout(0, 0));
@@ -164,30 +169,53 @@ extends TabPanel {
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 		mainPanel.setBorder(new MarsPanelBorder());
         mainPanel.add(locationPanel, BorderLayout.NORTH);
+
         centerContentPanel.add(mainPanel, BorderLayout.NORTH);
 
+      	// Create weatherPanel and imgPanel.
+        JPanel weatherPanel = new JPanel(new BorderLayout(0, 0));//new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER));
 
-        JPanel weatherPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    	weatherLabel = new JLabel();
-    	weatherPanel.add(weatherLabel);
+       	// Create the button panel.
+		JPanel buttonPane = new JPanel(new FlowLayout());
+		weatherPanel.add(buttonPane, BorderLayout.NORTH);
+
+		// Create the Storm Tracking button.
+		JButton stormButton = new JButton("Track Dust Storm");
+		stormButton.setToolTipText("Click to open dust storm tracking panel");
+		stormButton.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// Open storm tracking window.
+					openStormTracking();
+				}
+			});
+		buttonPane.add(stormButton);
+
+    	JPanel imgPanel = new JPanel(new FlowLayout());
+        weatherLabel = new JLabel();
+    	imgPanel.add(weatherLabel, JLabel.CENTER);
+    	weatherPanel.add(imgPanel, BorderLayout.CENTER);
     	// TODO: calculate the average, high and low temperature during the day to determine
     	// if it is hot, sunny, dusty, stormy...
     	// Sets up if else clause to choose the proper weather image
     	setImage(SUNNY);
         mainPanel.add(weatherPanel, BorderLayout.CENTER);
 
-        tpPanel = new JPanel(new GridLayout(3, 1));//new BorderLayout(0, 0));
-        mainPanel.add(tpPanel, BorderLayout.SOUTH);
+        bottomPanel = new JPanel(new BorderLayout(0, 0));//new FlowLayout());//new GridLayout(3, 1));//new BorderLayout(0, 0));
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        JPanel tPanel = new JPanel(new FlowLayout());
+        bottomPanel.add(tPanel, BorderLayout.NORTH);
 
         // Prepare temperature label
         temperatureValueLabel = new JLabel(getTemperatureString(getTemperature()), JLabel.CENTER);
         temperatureValueLabel.setOpaque(false);
         temperatureValueLabel.setFont(new Font("Serif", Font.BOLD, 28));
         temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        tpPanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
+        tPanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
 
-        JPanel dataP = new JPanel(new GridLayout(6, 2));
-        tpPanel.add(dataP);
+        JPanel dataP = new JPanel(new GridLayout(8, 2));
+        bottomPanel.add(dataP, BorderLayout.CENTER);
 
         // Prepare air pressure label
         JLabel airPressureLabel = new JLabel("Pressure : ", JLabel.RIGHT);
@@ -263,6 +291,7 @@ extends TabPanel {
         //opticalDepthValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(opticalDepthValueLabel);
 
+/*
         // TODO: have a meteorologist or Areologist visit the weather station daily to fine tune the equipment
         String personName = "ABC";
         // Prepare temperature label
@@ -270,9 +299,39 @@ extends TabPanel {
         monitorLabel.setOpaque(false);
         monitorLabel.setFont(new Font("Serif", Font.ITALIC, 11));
         monitorLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        tpPanel.add(monitorLabel);//, BorderLayout.NORTH);
+        dataP.add(monitorLabel);//, BorderLayout.NORTH);
+*/
 
     }
+
+
+	/**
+	 * Open storm tracking window
+	 */
+    // 2015-05-21 Added openStormTracking()
+	private void openStormTracking() {
+
+		MainWindow mw = desktop.getMainWindow();
+		if (mw !=null )  {
+			// Pause simulation.
+			mw.pauseSimulation();
+			// Create Storm Tracking Window.
+			new StormTrackingWindow(desktop);
+			// Unpause simulation.
+			mw.unpauseSimulation();
+		}
+
+		MainScene ms = desktop.getMainScene();
+		if (ms !=null )  {
+			// Pause simulation.
+			ms.pauseSimulation();
+			// Create Storm Tracking Window..
+			new StormTrackingWindow(desktop);
+			// Unpause simulation.
+			ms.unpauseSimulation();
+		}
+
+	}
 
 	/**
 	 * Sets weather image.
