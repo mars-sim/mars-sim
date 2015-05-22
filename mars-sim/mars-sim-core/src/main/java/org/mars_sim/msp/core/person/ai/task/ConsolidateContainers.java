@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @version 3.07 2015-01-06
+ * @version 3.08 2015-05-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -201,10 +201,12 @@ implements Serializable {
         
         // Determine consolidation load rate.
     	int strength = 0;
-    	if (person != null) 
-    	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
-		else if (robot != null)
+    	if (person != null) {
+    	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);	
+    	}
+		else if (robot != null) {
 			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+		}
         
         double strengthModifier = .1D + (strength * .018D);
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
@@ -288,6 +290,11 @@ implements Serializable {
         }
         
         double remainingTime = (remainingAmountLoading / totalAmountLoading) * time;
+        
+        // If nothing has been loaded, end task.
+        if (remainingAmountLoading == totalAmountLoading) {
+            endTask();
+        }
         
         return remainingTime;
     }

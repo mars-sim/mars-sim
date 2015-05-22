@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2015-03-06
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -125,20 +125,38 @@ public class Sleep extends Task implements Serializable {
         // If robot is in a settlement, try to find a living accommodations building.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-	
         	// TODO: if power is below a certain threshold, go to robotic station for recharge, else stay at the same place
-           
-        	Building building = getAvailableRoboticStationBuilding(robot);
-            if (building != null) {
-                //System.out.println("building.toString() is " + building.toString() );
-                walkToActivitySpotInBuilding(building, true);
-                station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-                station.addSleeper();
-                walkSite = true;
+            
+            // If currently in a building with a robotic station, go to a station activity spot.
+            boolean atStation = false;
+            Building currentBuilding = BuildingManager.getBuilding(robot);
+            if (currentBuilding != null) {
+                if (currentBuilding.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
+                    RoboticStation currentStation = (RoboticStation) currentBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+                    if (currentStation.getSleepers() < currentStation.getSlots()) {
+                        atStation = true;
+                        walkToActivitySpotInBuilding(currentBuilding, true);
+                        station = currentStation;
+                        station.addSleeper();
+                        walkSite = true;
+                    }
+                }
             }
             
-            else 
-            	walkToAssignedDutyLocation(robot, true);
+            if (!atStation) {
+                Building building = getAvailableRoboticStationBuilding(robot);
+                if (building != null) {
+                    //System.out.println("building.toString() is " + building.toString() );
+                    walkToActivitySpotInBuilding(building, true);
+                    station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+                    station.addSleeper();
+                    walkSite = true;
+                }
+                else {
+                    walkToAssignedDutyLocation(robot, true);
+                    walkSite = true;
+                }
+            }
             
         	//walkToActivitySpotInBuilding(building, BuildingFunction.ROBOTIC_STATION, true);
             
@@ -163,7 +181,6 @@ public class Sleep extends Task implements Serializable {
                 walkToRandomLocation(true);
             }
         }
-
 
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
 

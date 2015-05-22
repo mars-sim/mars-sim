@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.07 2014-08-15
+ * @version 3.08 2015-05-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -50,7 +50,8 @@ implements Serializable {
 	// Cache variables.
 	private transient Person personCache;
 	private transient Robot robotCache;
-	private transient MarsClock timeCache;
+	private transient MarsClock personTimeCache;
+	private transient MarsClock robotTimeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	private transient double totalProbCache;
@@ -62,7 +63,8 @@ implements Serializable {
 		// Initialize cache values.
 		personCache = null;
 		robotCache = null;
-		timeCache = null;
+		personTimeCache = null;
+		robotTimeCache = null;
 		totalProbCache = 0D;
 
 		// Initialize data members
@@ -268,7 +270,7 @@ implements Serializable {
 		result = selectedMetaMission.constructInstance(person);
 
 		// Clear time cache.
-		timeCache = null;
+		personTimeCache = null;
 
 		return result;
 	}
@@ -312,7 +314,7 @@ implements Serializable {
 		result = selectedMetaMission.constructInstance(robot);
 
 		// Clear time cache.
-		timeCache = null;
+		robotTimeCache = null;
 
 		return result;
 	}
@@ -441,7 +443,7 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		personCache = person;
 	}
 
@@ -470,7 +472,7 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		robotCache = robot;
 	}
 
@@ -481,12 +483,12 @@ implements Serializable {
 	 */
 	private boolean useCache(Person person) {
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(timeCache) && (person == personCache);
+		return currentTime.equals(personTimeCache) && (person == personCache);
 	}
 
 	private boolean useCache(Robot robot) {
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(timeCache) && (robot == robotCache);
+		return currentTime.equals(robotTimeCache) && (robot == robotCache);
 	}
 	/**
 	 * Updates mission based on passing time.
@@ -513,7 +515,8 @@ implements Serializable {
 			listeners = null;
 		}
 		personCache = null;
-		timeCache = null;
+		personTimeCache = null;
+		robotTimeCache = null;
 		if (missionProbCache != null) {
 			missionProbCache.clear();
 			missionProbCache = null;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2015-03-15
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -262,6 +262,11 @@ implements Serializable {
     
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     }
     
