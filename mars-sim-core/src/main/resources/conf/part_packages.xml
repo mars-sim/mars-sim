@@ -15,6 +15,13 @@
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
 
+		<!-- 2015-05-22 Added the following new parts -->
+		<part type="pathogen filtering system" number="3"/>
+		<part type="coarse charcoal filter" number="5"/>
+		<part type="electrostatic precipitator" number="5"/>
+		<part type="large air duct" number="10"/>
+		<part type="flexible hose" number="10"/>
+
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="selective laser sintering 3d printer" number="2"/>
 		<part type="heat pump" number="2"/>
@@ -39,7 +46,7 @@
 		<part type="refrigerator" number="3" />
 		<part type="stove" number="3" />
 		<part type="ventilation fan" number="3" />
-
+ 		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="160" />
 		<part type="co2 extinguisher" number="26" />
 		<part type="rover wheel" number="12" />
@@ -107,6 +114,12 @@
 
 	<part-package name="package 2" >
 
+		<!-- 2015-05-22 Added the following new parts -->
+		<part type="pathogen filtering system" number="6"/>
+		<part type="coarse charcoal filter" number="10"/>
+		<part type="electrostatic precipitator" number="10"/>
+		<part type="large air duct" number="20"/>
+		<part type="flexible hose" number="20"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="selective laser sintering 3d printer" number="3"/>
 		<part type="heat pump" number="5"/>
@@ -130,8 +143,7 @@
 		<part type="refrigerator" number="10" />
 		<part type="stove" number="10" />
 		<part type="ventilation fan" number="10" />
- 		<!-- 2014-11-20 -->
-
+ 		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="306" />
 		<part type="co2 extinguisher" number="46" />
 		<part type="rover wheel" number="12" />
@@ -201,6 +213,12 @@
 
 	<part-package name="package 3">
 
+		<!-- 2015-05-22 Added the following new parts -->
+		<part type="pathogen filtering system" number="9"/>
+		<part type="coarse charcoal filter" number="15"/>
+		<part type="electrostatic precipitator" number="15"/>
+		<part type="large air duct" number="30"/>
+		<part type="flexible hose" number="30"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="selective laser sintering 3d printer" number="4"/>
 		<part type="heat pump" number="10"/>
@@ -224,8 +242,7 @@
 		<part type="refrigerator" number="15" />
 		<part type="stove" number="15" />
 		<part type="ventilation fan" number="15" />
- 		<!-- 2014-11-20 -->
-
+ 		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="468" />
 		<part type="co2 extinguisher" number="72" />
 		<part type="rover wheel" number="22" />
@@ -295,6 +312,12 @@
 
 	<part-package name="package 4">
 
+		<!-- 2015-05-22 Added the following new parts -->
+		<part type="pathogen filtering system" number="12"/>
+		<part type="coarse charcoal filter" number="20"/>
+		<part type="electrostatic precipitator" number="20"/>
+		<part type="large air duct" number="40"/>
+		<part type="flexible hose" number="40"/>
 		<!-- 2015-05-18 Added the following new parts -->
 		<part type="selective laser sintering 3d printer" number="5"/>
 		<part type="heat pump" number="20"/>
@@ -318,8 +341,7 @@
 		<part type="refrigerator" number="15" />
 		<part type="stove" number="15" />
 		<part type="ventilation fan" number="15" />
- 		<!-- 2014-11-20 -->
-
+ 		<!-- Prior to 2014-11-20 -->
 		<part type="airleak patch" number="536" />
 		<part type="co2 extinguisher" number="78" />
 		<part type="rover wheel" number="38" />

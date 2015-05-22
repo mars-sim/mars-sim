@@ -673,6 +673,23 @@
 
 	<part name="optical lens" mass=".1"/>
 
+	<part name="pathogen filtering system" mass="3.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="3" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="coarse charcoal filter" mass="1"/>
+
+	<part name="electrostatic precipitator" mass=".7"/>
+
+	<part name="large air duct" mass=".3">
+		<maintenance-entity-list>
+		<entity name="farming" probability="1" max-number="5" />
+	</maintenance-entity-list>
+
+	<part name="flexible hose" mass=".1"/>
+
 
 
 </part-list>

@@ -7,54 +7,55 @@
 
 	<!-- Small air leak -->
 	<malfunction name="Air Leak">
-		
+
 		<!-- Relative severity of the malfunction. (required) -->
 		<!-- Values: 1 to 100 (100 = most severe) -->
 		<severity value="100" />
-		
+
 		<!-- Relative probability of this malfunction occurring. (required) -->
 		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
 		<probability value="10.0" />
-		
+
 		<!-- Normal (non-EVA) repair time to fix. (millisols) (optional) -->
 		<repair-time value="100.0" />
-		
+
 		<!-- Emergency repair time to fix. (millisols) (optional) -->
 		<emergency-repair-time value="10.0" />
-		
+
 		<!-- EVA repair time to fix. (millisols) (optional) -->
 		<eva-repair-time value="0.0" />
-		
+
 		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
 		<entity-list>
 			<entity name="life support" />
 			<entity name="rover" />
 			<entity name="eva suit" />
+			<entity name="farming" />
 		</entity-list>
-		
+
 		<!-- List of effects this malfunction can produce. (optional) -->
 		<effect-list>
-		
+
 			<!-- Resource effects have a change rate for a given resource in inventory. -->
 			<!-- Values: Change rate of resource in inventory. (kg/millisol) -->
 			<!-- See resources.txt -->
 			<effect type="resource" name="Oxygen" change-rate="-.1" />
-			
+
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (kg/millisol) -->
 			<!-- See resources.txt -->
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
-			
+
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (atm/millisol) -->
 			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
 		</effect-list>
-		
+
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
 		<!-- See medical complaint list in medical.xml. -->
 		<medical-complaint-list>
 		</medical-complaint-list>
-		
+
 		<!-- Repair parts required to fix this malfunction. (optional) -->
 		<!-- See parts.xml -->
 		<repair-parts-list>
@@ -63,9 +64,9 @@
 			<!-- Values: probability - the percentage probability that the part will be needed for repair. -->
 			<part name="airleak patch" number="1" probability="60" />
 		</repair-parts-list>
-		
+
 	</malfunction>
-	
+
 	<!-- Small electrical or chemical fire. -->
 	<malfunction name="Minor Fire">
 		<severity value="60" />
@@ -75,9 +76,10 @@
 		<entity-list>
 			<entity name="life support" />
 			<entity name="rover" />
-			<entity name="eva suit" />	
+			<entity name="eva suit" />
 			<!-- 2014-11-19 Added cooking -->
-			<entity name="cooking" />				
+			<entity name="cooking" />
+			<entity name="farming" />
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
@@ -86,7 +88,7 @@
 			<part name="co2 extinguisher" number="1" probability="50" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Medium electrical or chemical fire. -->
 	<malfunction name="Fire">
 		<severity value="80" />
@@ -96,6 +98,7 @@
 		<entity-list>
 			<entity name="life support" />
 			<entity name="rover" />
+			<entity name="farming" />
 		</entity-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
@@ -109,7 +112,7 @@
 			<part name="co2 extinguisher" number="1" probability="50" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Large electrical or chemical fire. -->
 	<malfunction name="Major Fire">
 		<severity value="100" />
@@ -132,7 +135,7 @@
 			<part name="co2 extinguisher" number="2" probability="50" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Damaged wheel on rover. -->
 	<malfunction name="Damaged Wheel">
 		<severity value="20" />
@@ -186,7 +189,7 @@
 			<part name="timing belt" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Battery failure. -->
 	<malfunction name="Battery Failure">
 		<severity value="40" />
@@ -195,6 +198,8 @@
 		<entity-list>
 			<entity name="rover" />
 			<entity name="light utility vehicle" />
+			<entity name="solar power source" />
+			<entity name="electric heat source" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
@@ -202,7 +207,7 @@
 			<part name="rover battery" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Communication system failure. -->
 	<malfunction name="Communication System Failure">
 		<severity value="20" />
@@ -221,7 +226,7 @@
 			<part name="communications circuit board" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Navigation system failure. -->
 	<malfunction name="Navigation System Failure">
 		<severity value="15" />
@@ -238,7 +243,7 @@
 			<part name="navigation circuit board" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<malfunction name="Control Panel Malfunction">
 		<severity value="35" />
 		<probability value="2.0" />
@@ -252,7 +257,7 @@
 			<part name="electrical wire" number="2" probability="40" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Leak in the water reserves. -->
 	<malfunction name="Water Leak">
 		<severity value="50" />
@@ -276,12 +281,12 @@
 			<part name="plastic tubing" number="2" probability="20" />
 			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="copper pipe" number="1" probability="10" />
-		<!-- 2014-11-19 Added water tank and small water pump --> 
+		<!-- 2014-11-19 Added water tank and small water pump -->
 			<part name="water tank" number="1" probability="5" />
-			<part name="small water pump" number="1" probability="5" />			
+			<part name="small water pump" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Failure of life support heating unit.  -->
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
@@ -300,7 +305,7 @@
 			<part name="suit heating unit" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Contamination of the water supply. -->
 	<malfunction name="Water Contamination">
 		<severity value="60" />
@@ -317,7 +322,7 @@
 		<effect-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
 			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
-			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />			
+			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />
 		</effect-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
@@ -327,7 +332,7 @@
 			<part name="plastic pipe" number="2" probability="5" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Contamination of the food supply. -->
 	<malfunction name="Food Contamination">
 		<severity value="60" />
@@ -360,7 +365,7 @@
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 		</effect-list>
 	</malfunction>
-	
+
 	<!-- EVA suit tear. -->
 	<malfunction name="Suit Tear">
 		<severity value="70" />
@@ -378,7 +383,7 @@
 			<part name="airleak patch" number="1" probability="100" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<malfunction name="EVA Radio Failure">
 		<severity value="50" />
 		<probability value="20.0" />
@@ -391,7 +396,7 @@
 			<part name="eva radio" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Electrical wire short. -->
 	<malfunction name="Electrical Short">
 		<severity value="20" />
@@ -409,7 +414,7 @@
 			<part name="electrical wire" number="4" probability="100" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Problems with one of the rover's electric motors. -->
 	<malfunction name="Electric Motor Failure">
 		<severity value="50" />
@@ -426,7 +431,7 @@
 			<part name="lubricant bottle" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Problems with the rover's fuel pump. -->
 	<malfunction name="Fuel Pump Failure">
 		<severity value="50" />
@@ -442,7 +447,7 @@
 			<part name="fuel pump" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- Water pump failure. -->
 	<malfunction name="Water Pump Failure">
 		<severity value="50" />
@@ -459,7 +464,7 @@
 			<part name="lubricant bottle" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
 	<malfunction name="Carbon Dioxide Failure">
 		<severity value="40" />
@@ -486,10 +491,10 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="1" probability="20" />
-			<part name="wire connector" number="1" probability="20" />
-			<part name="blender" number="1" probability="10" />
-			<part name="lubricant bottle" number="1" probability="30" />			
+			<part name="electrical wire" number="1" probability="3" />
+			<part name="wire connector" number="1" probability="3" />
+			<part name="blender" number="1" probability="3" />
+			<part name="lubricant bottle" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -503,12 +508,12 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="oven" number="1" probability="10" />
+			<part name="electrical wire" number="2" probability="3" />
+			<part name="wire connector" number="2" probability="3" />
+			<part name="oven" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2014-11-19 Added Kitchen Ventilation Fan Failure. -->
 	<malfunction name="Kitchen Ventilation Fan Failure">
 		<severity value="40" />
@@ -519,13 +524,13 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="ventilation fan" number="1" probability="10" />
-			<part name="lubricant bottle" number="1" probability="30" />
+			<part name="electrical wire" number="2" probability="3" />
+			<part name="wire connector" number="2" probability="3" />
+			<part name="ventilation fan" number="1" probability="3" />
+			<part name="lubricant bottle" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2014-11-19 Added Kitchen Stove Failure. -->
 	<malfunction name="Kitchen Stove Failure">
 		<severity value="40" />
@@ -536,13 +541,13 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="gasket" number="1" probability="10" />			
-			<part name="stove" number="1" probability="10" />
+			<part name="electrical wire" number="2" probability="3" />
+			<part name="wire connector" number="2" probability="3" />
+			<part name="gasket" number="1" probability="3" />
+			<part name="stove" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2014-11-19 Added Kitchen Autoclave Failure. -->
 	<malfunction name="Kitchen Autoclave Failure">
 		<severity value="40" />
@@ -553,12 +558,12 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="autoclave" number="1" probability="10" />	
+			<part name="electrical wire" number="2" probability="3" />
+			<part name="wire connector" number="2" probability="3" />
+			<part name="autoclave" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2014-11-19 Added Kitchen Refrigerator Failure. -->
 	<malfunction name="Kitchen Refrigerator Failure">
 		<severity value="40" />
@@ -569,12 +574,12 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="refrigerator" number="1" probability="10" />
-			<part name="valve" number="3" probability="10" />
-			<part name="air compressor" number="1" probability="10" />		
-			<part name="lubricant bottle" number="1" probability="3" />								
+			<part name="electrical wire" number="2" probability="3" />
+			<part name="wire connector" number="2" probability="3" />
+			<part name="refrigerator" number="1" probability="3" />
+			<part name="valve" number="3" probability="3" />
+			<part name="air compressor" number="1" probability="3" />
+			<part name="lubricant bottle" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -588,12 +593,12 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="solar parabolic mirror" number="1" probability="10" />	
+			<part name="solar parabolic mirror" number="1" probability="10" />
 			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />							
+			<part name="wire connector" number="2" probability="20" />
 		</repair-parts-list>
 	</malfunction>
-	
+
 	<!-- 2015-02-16 Added light emitting diode Kit failure. -->
 	<malfunction name="light emitting diode Lighting Kit failure">
 		<severity value="10" />
@@ -602,18 +607,18 @@
 		<emergency-repair-time value="0.0" />
 		<entity-list>
 			<entity name="cooking" />
-			<entity name="farming" />	
-			<entity name="vehicle" />	
+			<entity name="farming" />
+			<entity name="vehicle" />
 			<entity name="manufacture" />
-			<entity name="living accommodations" />	
+			<entity name="living accommodations" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="light emitting diode kit" number="1" probability="10" />	
+			<part name="light emitting diode kit" number="1" probability="10" />
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
-			<part name="light emitting diode bulb" number="5" probability="20" />								
+			<part name="light emitting diode bulb" number="5" probability="20" />
 		</repair-parts-list>
-	</malfunction>	
+	</malfunction>
 
 	<!-- 2015-02-16 Added mushroom containment kit failure. -->
 	<malfunction name="mushroom containment kit failure">
@@ -622,21 +627,21 @@
 		<repair-time value="20.0" />
 		<emergency-repair-time value="10" />
 		<entity-list>
-			<entity name="farming" />	
+			<entity name="farming" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="mushroom containment kit" number="1" probability="3" />
-			<part name="oxygen pump" number="3" probability="3" />	
-			<part name="carbon dioxide pump" number="3" probability="3" />	
-			<part name="small water pump" number="3" probability="3" />		
-			<part name="electric heating element" number="3" probability="20" />	
-			<part name="electrical wire" number="3" probability="10" />
-			<part name="wire connector" number="6" probability="10" />			
-			<part name="fiberglass cloth" number="3" probability="5" />
-			<part name="valve" number="10" probability="5"  />
-			<part name="gasket" number="10" probability="5"  />
-			<part name="plastic tubing" number="10" probability="5"  />													
+			<part name="oxygen pump" number="3" probability="3" />
+			<part name="carbon dioxide pump" number="3" probability="3" />
+			<part name="small water pump" number="3" probability="3" />
+			<part name="electric heating element" number="3" probability="3" />
+			<part name="electrical wire" number="3" probability="1" />
+			<part name="wire connector" number="6" probability="1" />
+			<part name="fiberglass cloth" number="3" probability="1" />
+			<part name="valve" number="10" probability="2"  />
+			<part name="gasket" number="10" probability="2"  />
+			<part name="plastic tubing" number="10" probability="2"  />
 		</repair-parts-list>
-	</malfunction>	
-		
+	</malfunction>
+
 </malfunction-list>
