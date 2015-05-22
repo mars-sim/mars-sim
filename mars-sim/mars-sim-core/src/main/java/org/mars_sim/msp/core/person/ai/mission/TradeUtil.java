@@ -52,7 +52,7 @@ public final class TradeUtil {
 	public static final double SELL_CREDIT_LIMIT = 10000000D;
 
 	/** Estimated mission parts mass. */
-	private static final double MISSION_BASE_MASS = 1000D;
+	private static final double MISSION_BASE_MASS = 2000D;
 
 	/** Minimum mass (kg) of life support resources to leave at settlement. */
 	private static final int MIN_LIFE_SUPPORT_RESOURCES = 100;

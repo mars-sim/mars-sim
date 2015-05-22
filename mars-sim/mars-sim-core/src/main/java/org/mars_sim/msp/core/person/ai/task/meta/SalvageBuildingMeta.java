@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuildingMeta.java
- * @version 3.08 2015-05-14
+ * @version 3.08 2015-05-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -50,22 +50,8 @@ public class SalvageBuildingMeta implements MetaTask {
     public double getProbability(Person person) {
         
         double result = 0D;
-        
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                result = 0D;
-        } 
-
-
-        if (result != 0 && person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             
             // Check all building salvage missions occurring at the settlement.
             try {
@@ -97,6 +83,18 @@ public class SalvageBuildingMeta implements MetaTask {
                 result *= 2D;
             }
         }  
+        
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+                result = 0D;
+        }
     
         return result;
     }
@@ -112,41 +110,36 @@ public class SalvageBuildingMeta implements MetaTask {
         double result = 0D;
         
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
-     
-	        // Check if it is night time.
-	        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0)
-	            if (!surface.inDarkPolarRegion(robot.getCoordinates()))
-	                result = 0D;
    	
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-		        // Check if an airlock is available
-		        if (EVAOperation.getWalkableAvailableAirlock(robot) == null)
-		            result = 0D;
-		        
-		        if (result != 0)  { // if task penalty is not zero
 		        	
-		            // Check all building salvage missions occurring at the settlement.
-		            try {
-		                List<BuildingSalvageMission> missions = SalvageBuilding.
-		                        getAllMissionsNeedingAssistance(robot.getSettlement());
-		                result = 50D * missions.size();
-		            }
-		            catch (Exception e) {
-		                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
-		            }
-		        }
-	        
-		        // Crowded settlement modifier
-	            Settlement settlement = robot.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
-	                result *= 2D;
-		        
-		        // Effort-driven task modifier.
-		        result *= robot.getPerformanceRating();
-        
+	            // Check all building salvage missions occurring at the settlement.
+	            try {
+	                List<BuildingSalvageMission> missions = SalvageBuilding.
+	                        getAllMissionsNeedingAssistance(robot.getSettlement());
+	                result = 50D * missions.size();
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
+	            }    
 	        }
+	        
+	        // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
+	        
+	        // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+                result = 0D;
+            }
         
+	        // Check if it is night time.
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+                    result = 0D;
+                }
+            }
+	        
         }
         return result;
     }

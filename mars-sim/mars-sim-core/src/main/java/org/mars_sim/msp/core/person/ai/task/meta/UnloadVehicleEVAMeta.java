@@ -114,45 +114,38 @@ public class UnloadVehicleEVAMeta implements MetaTask {
 
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
 
-	        // TODO: should  mission continue at night time?
-	        // Check if it is night time.
-	        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0)
-	            if (!surface.inDarkPolarRegion(robot.getCoordinates()))
-	                result = 0D;
-        	   
-        	if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-		
-        		// Check if an airlock is available
-        		if (EVAOperation.getWalkableAvailableAirlock(robot) == null)
-		                result = 0D;
-        		
-        		if (result != 0) {
-		        		
-		            // Check all vehicle missions occurring at the settlement.
-		            try {
-		                int numVehicles = 0;
-		                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
-		                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-		                result = 50D * numVehicles;
-		            }
-		            catch (Exception e) {
-		                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-		                e.printStackTrace(System.err);
-		            }
-		       
-		            Settlement settlement = robot.getSettlement();
-		            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-		                result *= 2D;
-		            }
-		            
-			        // Effort-driven task modifier.
-			        result *= robot.getPerformanceRating();
-		
-		        }
-        	}
-        
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+                // Check all vehicle missions occurring at the settlement.
+                try {
+                    int numVehicles = 0;
+                    numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+                    numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
+                    result = 50D * numVehicles;
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+                    e.printStackTrace(System.err);
+                }
+            }
+
+            // Effort-driven task modifier.
+            result *= robot.getPerformanceRating();
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+                result = 0D;
+            }
+
+            // Check if it is night time.
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+                    result = 0D;
+                }
+            }
         }
+        
         return result;
     }
 }
