@@ -84,8 +84,43 @@ implements ClockListener, Serializable {
             ); //$NON-NLS-1$
 
 
-    /** Singleton instance. */
-    private static final Simulation instance = new Simulation();
+    /** Eager Initialization Singleton instance. */
+    // private static final Simulation instance = new Simulation();
+    /**
+     * Gets a Eager Initialization Singleton instance of the simulation.
+     * @return Simulation instance
+     */
+    //public static Simulation instance() {
+    //    return instance;
+    //}
+
+    /**
+     * Creates an inner static helper class for Bill Pugh Singleton Pattern
+     * Note: as soon as the instance() method is called the first time, the class
+     * is loaded into memory and an instance gets created.
+     * Advantage: it supports multiple threads calling instance() simultaneously with
+     * no synchronized keyword needed (which slows down the VM)
+     */
+    private static class SingletonHelper{
+    	private static final Simulation INSTANCE = new Simulation();
+    }
+
+    /**
+     * Gets a Bill Pugh Singleton instance of the simulation.
+     * @return Simulation instance
+     */
+    public static Simulation instance() {
+    	return SingletonHelper.INSTANCE;
+    }
+
+    /**
+     * Prevents the singleton pattern from being destroyed
+     * at the time of serialization
+     * @return Simulation instance
+     */
+    protected Object readResolve() {
+    	return instance();
+    }
 
     // Transient data members (aren't stored in save file)
     /** All historical info. */
@@ -130,14 +165,6 @@ implements ClockListener, Serializable {
     public Simulation() {
         //System.out.println("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
         initializeTransientData();
-    }
-
-    /**
-     * Gets a singleton instance of the simulation.
-     * @return Simulation instance
-     */
-    public static Simulation instance() {
-        return instance;
     }
 
     /**
@@ -701,7 +728,7 @@ implements ClockListener, Serializable {
             managerExecutor.shutdownNow();
             managerExecutor = null;
         }
-        
+
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
             malfunctionFactory = null;
