@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -118,7 +119,7 @@ implements ClockListener, Serializable {
      * at the time of serialization
      * @return Simulation instance
      */
-    protected Object readResolve() {
+    protected Object readResolve() throws ObjectStreamException {
     	return instance();
     }
 

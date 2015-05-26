@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2015-03-28
+ * @version 3.08 2015-05-26
  * @author Lars Næsbye Christensen
  */
 
@@ -12,6 +12,10 @@ import static javafx.geometry.Orientation.VERTICAL;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
+import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
+import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
+import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
+import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 import java.io.File;
 import java.util.Optional;
@@ -47,6 +51,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -69,6 +74,7 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 
 /**
  * The MainScene class is the primary Stage for MSP. It is the container for housing
@@ -111,8 +117,12 @@ public class MainScene {
     private Scene scene;
 
     private Tab swingTab;
-    private Tab settlementTab;
-    private TabPane tp;
+    private Tab nodeTab;
+
+    //private TabPane tp;
+    private DndTabPane dndTabPane;
+    private FXDesktopPane fxDesktopPane;
+
     private Timeline timeline;
     private NotificationPane notificationPane;
 
@@ -233,15 +243,28 @@ public class MainScene {
 	    borderPane.setBottom(bottomBox);
 	    //borderPane.setStyle("-fx-background-color: palegorange");
 
+	    // 2015-05-26 Create fxDesktopPane
+	    fxDesktopPane = marsNode.createFXDesktopPane();
 
-	    //TabPane tpFX = new TabPane();
-	    settlementTab = new Tab();
-	    settlementTab.setClosable(false);
-	    //tpFX.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
-	    settlementTab.setText("Nodes");
-	    //settlementTab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
-	    settlementTab.setContent(marsNode.createPane("black"));
-	    //tpFX.getTabs().add(settlementTab);
+	    // 2015-05-26 Create the dndTabPane.
+	    dndTabPane = new DndTabPane();
+	    StackPane containerPane = new StackPane(dndTabPane);
+
+	    // We need to create the skin manually, could also be your custom skin.
+	    DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
+
+	    // Setup the dragging.
+	    DndTabPaneFactory.setup(FeedbackType.MARKER, containerPane, skin);
+
+	    // Set the skin.
+	    dndTabPane.setSkin(skin);
+	    dndTabPane.setSide(Side.RIGHT);
+
+	    nodeTab = new Tab();
+	    nodeTab.setClosable(false);
+	    nodeTab.setText("JavaFX UI");
+	    nodeTab.setContent(fxDesktopPane);
+
 
 /*
 	    // create a button to toggle floating.
@@ -256,21 +279,16 @@ public class MainScene {
 	      }
 	    });
 */
-	    // layout the stage.
-	    //VBox layout = new VBox(10);
-	    //layout.getChildren().addAll(tabPane);
-	    //VBox.setVgrow(tabPane, Priority.ALWAYS);
-	    //layout.setStyle("-fx-padding: 10;");
 
-	    tp = new TabPane();
-	    tp.setSide(Side.RIGHT);
+	    // Create swing tab to hold classic UI
 	    swingTab = new Tab();
 	    swingTab.setClosable(false);
-	    swingTab.setText("Classic");
+	    swingTab.setText("Classic UI");
 	    swingTab.setContent(swingPane);
 
-	    tp.getSelectionModel().select(swingTab);
-	    tp.getTabs().addAll(swingTab,settlementTab);
+	    // Set to select the swing tab at the start of simulation
+	    dndTabPane.getSelectionModel().select(swingTab);
+	    dndTabPane.getTabs().addAll(swingTab, nodeTab);
 /*
 	    splitPane = new SplitPane();
 	    //splitPane.setPrefWidth(100);
@@ -393,7 +411,7 @@ public class MainScene {
 	public Node createNotificationPane() {
 
         //notificationPane = new NotificationPane(splitPane);
-        notificationPane = new NotificationPane(tp);
+        notificationPane = new NotificationPane(dndTabPane);
         String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
         ImageView image = new ImageView(imagePath);
         notificationPane.setGraphic(image);
@@ -846,7 +864,7 @@ public class MainScene {
 	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
-		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		//String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 		//System.out.println("CurrentTheme is " + currentTheme);
 		if (nativeLookAndFeel) {
 			try {
@@ -925,12 +943,12 @@ public class MainScene {
 
 	public void closeMarsNet() {
 		//splitPane.setDividerPositions(1.0f);
-	    tp.getSelectionModel().select(swingTab);
+	    dndTabPane.getSelectionModel().select(swingTab);
 	}
 
 	public void openMarsNet() {
 		//splitPane.setDividerPositions(0.8f);
-	    tp.getSelectionModel().select(settlementTab);
+	    dndTabPane.getSelectionModel().select(nodeTab);
 	}
 
 
@@ -1000,8 +1018,8 @@ public class MainScene {
 	    memUsedText = null;
 	    stage = null;
 	    swingTab = null;
-	    settlementTab = null;
-	    tp = null;
+	    nodeTab = null;
+	    dndTabPane = null;
 	    timeline = null;
 	    notificationPane = null;
 	    desktop.destroy();

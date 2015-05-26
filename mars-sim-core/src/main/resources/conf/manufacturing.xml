@@ -3129,7 +3129,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing an sls 3D printer. -->
-	<process name="sls 3D printer manufacturing" tech="4" skill="4" work-time="2000" process-time="2000"
+	<process name="sls 3d printer manufacturing" tech="4" skill="4" work-time="2000" process-time="2000"
 			power-required="15.0">
 		<inputs>
 			<part name="aluminum wire" number="10" />
@@ -3144,6 +3144,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
 			<part name="glass sheet" number="1" />
+			<part name="small electric motor" number="3" />
 		</inputs>
 		<outputs>
 			<part name="selective laser sintering 3d printer" number="1" />
