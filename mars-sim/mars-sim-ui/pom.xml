@@ -117,5 +117,15 @@
 		<artifactId>nimrodlf</artifactId>
 		<version>1.2c</version>
 	</dependency>
+	<dependency>
+		<groupId>com.sibvisions.external.jvxfx</groupId>
+		<artifactId>dndtabpane</artifactId>
+		<version>0.1</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.sibvisions.jvx</groupId>
+	    <artifactId>jfxtensions</artifactId>
+	    <version>0.9_beta</version>
+	</dependency>
   </dependencies>
 </project>

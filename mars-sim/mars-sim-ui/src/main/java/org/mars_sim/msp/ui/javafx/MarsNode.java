@@ -47,6 +47,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXDesktopWindowManager;
+
 /**
  * The MarsNode class is the is the container for housing
  * new javaFX UI tools.
@@ -57,11 +61,34 @@ public class MarsNode {
 
 	private MainScene mainScene;
 	private Stage stage;
+	private FXDesktopWindowManager windowManager;
 
 	public MarsNode(MainScene mainScene, Stage stage) {
 		this.mainScene = mainScene;
 		this.stage = stage;
 
+		Pane pane = createPane("black");
+
+
+		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
+		fxInternalWindow.setContent(pane);
+		fxInternalWindow.setActive(true);
+
+		windowManager = new FXDesktopWindowManager();
+		windowManager.addWindow(fxInternalWindow);
+
+	}
+
+
+	public FXDesktopPane createFXDesktopPane() {
+		FXDesktopPane fxDesktopPane = new FXDesktopPane();
+
+		fxDesktopPane.setWindowManager(windowManager);
+
+		//fxDesktopPane.setBackgroundPane(pane);
+		fxDesktopPane.getActiveWindow();
+
+		return fxDesktopPane;
 	}
 
 
@@ -90,6 +117,7 @@ public class MarsNode {
 		}
 
 		pane.getChildren().add(v);
+
 
 	    return pane;
 	  }
