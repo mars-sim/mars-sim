@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProduceFoodMeta.java
- * @version 3.08 2015-05-14
+ * @version 3.08 2015-05-29
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -73,7 +73,9 @@ public class ProduceFoodMeta implements MetaTask {
 	                // If foodProduction building has process requiring work, add
 	                // modifier.
 	                SkillManager skillManager = person.getMind().getSkillManager();
-	                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+	                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+	                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+	                skill = (int) Math.round(skill / 7D);
 	                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
 	                    result += 10D;
 	                }
@@ -125,7 +127,9 @@ public class ProduceFoodMeta implements MetaTask {
 		
 		                // If foodProduction building has process requiring work, add modifier.
 		                SkillManager skillManager = robot.getBotMind().getSkillManager();
-		                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+		                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+		                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+		                skill = (int) Math.round(skill / 7D);
 		                
 		                if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
 		                    result += 100D;

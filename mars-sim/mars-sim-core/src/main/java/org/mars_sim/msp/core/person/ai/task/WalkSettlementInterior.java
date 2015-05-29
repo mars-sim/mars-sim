@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-05-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -190,6 +190,8 @@ implements Serializable {
     	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
                 logger.severe(person.getName() + " unable to continue walking due to missing path objects.");
+                endTask();
+                return time;
             }
     	}
     	else if (robot != null) {
@@ -197,6 +199,8 @@ implements Serializable {
     	    // Check that remaining path locations are valid.
             if (!checkRemainingPathLocations()) {
                 logger.severe(robot.getName() + " unable to continue walking due to missing path objects.");
+                endTask();
+                return time;
             }
     	}
 
