@@ -77,7 +77,7 @@ import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
-public class ScenarioConfigEditorFX implements Runnable {
+public class ScenarioConfigEditorFX { //implements Runnable {
 //{
 
 	/** default logger. */
@@ -132,6 +132,7 @@ public class ScenarioConfigEditorFX implements Runnable {
 	private SimulationConfig config;
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
+	private MarsProjectFX marsProjectFX;
 
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
@@ -143,18 +144,20 @@ public class ScenarioConfigEditorFX implements Runnable {
 	 * @param mainMenu
 	 * @param config the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MainMenu mainMenu, SimulationConfig config) {
-		// Initialize data members.
-		this.config = config;
-		this.mainMenu = mainMenu;
+	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { //, SimulationConfig config) {
+	    logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() + " Thread");
 
-		hasError = false;
-		//System.out.println("ScenarioConfigEditorFX is on " + Thread.currentThread().getName() + " Thread");
+		// Initialize data members.
+		this.config = SimulationConfig.instance();
+		this.mainMenu = mainMenu;
+		this.marsProjectFX = marsProjectFX;
+
+	    hasError = false;
+	    createGUI();
 	}
 
-	public void run() {
+	public void createGUI() {
 	   	Platform.setImplicitExit(false);
-		//System.out.println("ScenarioConfigEditorFX's run() is on " + Thread.currentThread().getName() + " Thread");
 /*
 		try {
 			UIManager.setLookAndFeel(new NimRODLookAndFeel());
@@ -453,21 +456,17 @@ public class ScenarioConfigEditorFX implements Runnable {
 			}
 
 			if (!hasError) {
+			    logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
 				stage.hide();
 				setConfiguration();
 				//System.out.println("calling Simulation.createNewSimulation()");
 				//Runnable r = new SimulationTask();
 				//(new Thread(r)).start();
-				if (executor == null) {
-		    		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-		    		executor.execute(new SimulationTask());
-				}
-				//mainMenu.runMainScene();
+				Simulation.instance().getSimExecutor().submit(new SimulationTask());
 				closeWindow();
 			}
 
 		});
-		//bottomButtonPanel.getChildren().add(createButton);
 
 		// 2014-12-15 Added Edit Alpha Crew button.
 		alphaButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
@@ -1607,12 +1606,18 @@ public class ScenarioConfigEditorFX implements Runnable {
 	}
 
 	public class SimulationTask implements Runnable {
-		  public void run() {
-				Simulation.createNewSimulation();
-				Simulation.instance().start();
-				mainMenu.runMainScene();
-				if (multiplayerClient != null)
-					multiplayerClient.prepareListeners();
-		  }
+		public void run() {
+			Simulation.createNewSimulation();
+			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
+			Simulation.instance().start();
+			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().start()");
+			Platform.runLater(() -> {
+				mainMenu.prepareStage();
+				//System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
+			});
+			if (multiplayerClient != null)
+				multiplayerClient.prepareListeners();
+			//System.out.println("ScenarioConfigEditorFX : done calling SimulationTask");
 		}
+	}
 }

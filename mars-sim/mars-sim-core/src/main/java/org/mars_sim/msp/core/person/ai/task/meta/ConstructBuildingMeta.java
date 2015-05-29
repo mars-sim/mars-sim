@@ -28,14 +28,14 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Meta task for the ConstructBuilding task.
  */
 public class ConstructBuildingMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.constructBuilding"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(ConstructBuildingMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -48,9 +48,9 @@ public class ConstructBuildingMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
-	            
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             try {
@@ -76,7 +76,7 @@ public class ConstructBuildingMeta implements MetaTask {
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);        
+            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);
         }
 
         // Modify if construction is the person's favorite activity.
@@ -91,12 +91,12 @@ public class ConstructBuildingMeta implements MetaTask {
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
-        } 
-    
+        }
+
         return result;
     }
 
@@ -105,41 +105,38 @@ public class ConstructBuildingMeta implements MetaTask {
 	}
 
 	public double getProbability(Robot robot) {
-	       
+
         double result = 0D;
-        
+
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
-	
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {               
 
-                // Check all building construction missions occurring at the settlement.
-                try {
-                    List<BuildingConstructionMission> missions = ConstructBuilding.
-                            getAllMissionsNeedingAssistance(robot.getSettlement());
-                    result = 50D * missions.size();
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error finding building construction missions.", e);
-                }
-            }
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // Effort-driven task modifier.
-            result *= robot.getPerformanceRating();
+                // Check if it is night time.
+                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-                result = 0D;
-            }
+                if (( surface.getPreviousSolarIrradiance(robot.getCoordinates()) != 0)
+                    && !(surface.inDarkPolarRegion(robot.getCoordinates()))) {
 
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
-                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                    result = 0D;
+    	            // Check if an airlock is available
+    	            if (EVAOperation.getWalkableAvailableAirlock(robot) != null) {
+
+		                // Check all building construction missions occurring at the settlement.
+		                try {
+		                    List<BuildingConstructionMission> missions = ConstructBuilding.
+		                            getAllMissionsNeedingAssistance(robot.getSettlement());
+		                    result = 50D * missions.size();
+		                }
+		                catch (Exception e) {
+		                    logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+		                }
+		            }
                 }
             }
         }
-        
+
+        // Effort-driven task modifier.
+        result *= robot.getPerformanceRating();
         return result;
     }
 }

@@ -36,6 +36,7 @@ implements Serializable {
 	 * @throws Exception if Mars could not be constructed.
 	 */
 	public Mars() {
+		//logger.info("Mars' constructor is in "+Thread.currentThread().getName() + " Thread");
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info

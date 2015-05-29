@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -84,6 +85,18 @@ implements ClockListener, Serializable {
             + " - " + Runtime.getRuntime().availableProcessors() + " CPU thread(s)"
             ); //$NON-NLS-1$
 
+    private static final boolean debug = logger.isLoggable(Level.FINE);
+
+    /** Flag to indicate that a new simulation is being created or loaded. */
+    private static boolean isUpdating = false;
+
+    // 2014-12-26 Added useGUI
+    /** true if displaying graphic user interface. */
+    private static boolean useGUI = true;
+
+    private boolean defaultLoad = false;
+
+    private boolean initialSimulationCreated = false;
 
     /** Eager Initialization Singleton instance. */
     // private static final Simulation instance = new Simulation();
@@ -124,12 +137,16 @@ implements ClockListener, Serializable {
     }
 
     // Transient data members (aren't stored in save file)
+
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
+
     //private transient Thread clockThread;
     private transient ThreadPoolExecutor clockExecutor;
     private transient ThreadPoolExecutor managerExecutor;
-    private static final boolean debug = logger.isLoggable(Level.FINE);
+
+    private transient ExecutorService simExecutor;
+
 
     // Intransient data members (stored in save file)
     /** Planet Mars. */
@@ -152,20 +169,20 @@ implements ClockListener, Serializable {
     private ScientificStudyManager scientificStudyManager;
     /** Manages transportation of settlements and resupplies from Earth. */
     private TransportManager transportManager;
-    private boolean defaultLoad = false;
-    private boolean initialSimulationCreated = false;
 
-    /** Flag to indicate that a new simulation is being created or loaded. */
-    private static boolean isUpdating = false;
-
-    // 2014-12-26 Added useGUI
-    /** true if displaying graphic user interface. */
-    private static boolean useGUI = true;
 
     /** constructor. */
     public Simulation() {
-        //System.out.println("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
         initializeTransientData();
+    }
+
+    public void startSimExecutor() {
+    	simExecutor = Executors.newSingleThreadExecutor();
+    }
+
+    public ExecutorService getSimExecutor() {
+    	return simExecutor;
     }
 
     /**
@@ -179,30 +196,11 @@ implements ClockListener, Serializable {
 
 
     /**
-     * Ends the current simulation
-     */
-    public void endSimulation() {
-        Simulation simulation = instance();
-        simulation.defaultLoad = false;
-        simulation.stop();
-        clockExecutor.shutdown();
-        managerExecutor.shutdown();
-        masterClock.endClockListenerExecutor();
-        // Wait until current time pulse runs its course
-        // we have no idea how long it will take it to
-        // run its course. But this might be enough.
-        Thread.yield();
-        //masterClock = null; // not an option
-        //createNewSimulation();
-        //start();
-    }
-
-    /**
      * Creates a new simulation instance.
      * @throws Exception if new simulation could not be created.
      */
     public static void createNewSimulation() {
-        //System.out.println("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
         isUpdating = true;
 
@@ -249,18 +247,12 @@ implements ClockListener, Serializable {
      */
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
-        //System.out.println("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
-        //malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
-        //malfunctionFactory.start();
+        if (eventManager == null)
+        	eventManager = new HistoricalEventManager();
 
-        //relationshipManager = new RelationshipManager();
-        //relationshipManager.start();
-
-        //medicalManager = new MedicalManager();
-        //medicalManager.start();
-
-        if (managerExecutor == null) {
+        if (managerExecutor == null || managerExecutor.isShutdown()) {
             managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool();
 
             malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
@@ -292,17 +284,6 @@ implements ClockListener, Serializable {
 
         }
 
-        // creditManager must be after unitManager
-        //creditManager = new CreditManager();
-
-
-        //scientificStudyManager = new ScientificStudyManager();
-        //scientificStudyManager.start();
-
-        //transportManager = new TransportManager();
-        //transportManager.start();
-
-
         /*
 		try {
 			malfunctionFactory.join();
@@ -323,12 +304,56 @@ implements ClockListener, Serializable {
 
 
     /**
+     *
+     * Start the simulation.
+     */
+    public void start() {
+        logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
+
+        masterClock.addClockListener(this);
+        masterClock.startClockListenerExecutor();
+
+        if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
+	        clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
+	        //System.out.println("Simulation's start() : clockExecutor was null. just made one");
+	        clockExecutor.execute(masterClock.getClockThreadTask());
+	        //logger.info("Simulation : just loading clockExecutor for masterClock");
+        }
+        //else if (clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
+	    //    System.out.println("Simulation : clockExecutor was shutdown or terminated. execute next");
+	    //    clockExecutor.submit(masterClock.getClockThreadTask());
+	    //    logger.info("Simulation : just loading clockExecutor for masterClock");
+        //}
+    }
+
+
+    /**
+     * Stop the simulation.
+     */
+    // called when loading a sim
+    public void stop() {
+        /*		if (masterClock != null) {
+			masterClock.stop();
+			masterClock.removeClockListener(this);
+		}
+		clockThread = null;
+         */
+        if (masterClock != null) {
+            //executor.shutdown();
+            masterClock.stop();
+            masterClock.removeClockListener(this);
+        }
+        //executor = null;
+    }
+
+
+    /**
      * Loads a simulation instance from a save file.
      * @param file the file to be loaded from.
      * @throws Exception if simulation could not be loaded.
      */
     public void loadSimulation(final File file) {
-        //System.out.println("Simulation : entering loadSimulation()");
+        logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
         isUpdating = true;
 
         File f = file;
@@ -363,6 +388,32 @@ implements ClockListener, Serializable {
         }
 
         isUpdating = false;
+    }
+
+
+    /**
+     * Ends the current simulation
+     */
+    public void endSimulation() {
+        Simulation sim = instance();
+        sim.defaultLoad = false;
+        sim.stop();
+
+        masterClock.endClockListenerExecutor();
+        clockExecutor.shutdownNow();
+        managerExecutor.shutdownNow();
+        // Wait until current time pulse runs its course
+        // we have no idea how long it will take it to
+        // run its course. But this might be enough.
+        //Thread.yield();
+        //worker.shutdown();
+        //masterClock = null; // not an option
+        //masterClock.exitProgram(); // not exiting main menu
+
+    }
+
+    public void endMasterClock() {
+    	masterClock = null;
     }
 
     /**
@@ -485,46 +536,6 @@ implements ClockListener, Serializable {
             masterClock.setPaused(false);
             masterClock.restart();
         }
-    }
-
-    /**
-     *
-     * Start the simulation.
-     */
-    public void start() {
-        //System.out.println("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
-        /*		if (clockThread == null) {
-			clockThread = new Thread(masterClock, Msg.getString("Simulation.thread.masterClock")); //$NON-NLS-1$
-			masterClock.addClockListener(this);
-			clockThread.start();
-		} */
-
-        masterClock.addClockListener(this);
-        masterClock.startClockListenerExecutor();
-        //System.out.println("Simulation : just started startClockListenerExecutor()");
-        clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
-        //System.out.println("Simulation : just made executor");
-        clockExecutor.execute(masterClock.getClockThreadTask());
-
-    }
-
-    /**
-     * Stop the simulation.
-     */
-    // called when loading a sim
-    public void stop() {
-        /*		if (masterClock != null) {
-			masterClock.stop();
-			masterClock.removeClockListener(this);
-		}
-		clockThread = null;
-         */
-        if (masterClock != null) {
-            //executor.shutdown();
-            masterClock.stop();
-            masterClock.removeClockListener(this);
-        }
-        //executor = null;
     }
 
     /**
@@ -720,15 +731,16 @@ implements ClockListener, Serializable {
         return useGUI;
     }
 
+
+    public ThreadPoolExecutor getClockExecutor() {
+    	return clockExecutor;
+    }
+
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
-    private void destroyOldSimulation() {
-
-        if (managerExecutor != null) {
-            managerExecutor.shutdownNow();
-            managerExecutor = null;
-        }
+    public void destroyOldSimulation() {
+    	System.out.println("starting Simulation's destroyOldSimulation()");
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
@@ -779,6 +791,12 @@ implements ClockListener, Serializable {
             eventManager.destroy();
             eventManager = null;
         }
+
+        if (managerExecutor != null) {
+            managerExecutor.shutdownNow();
+            managerExecutor = null;
+        }
+    	System.out.println("Simulation's destroyOldSimulation() is done");
     }
 
 }

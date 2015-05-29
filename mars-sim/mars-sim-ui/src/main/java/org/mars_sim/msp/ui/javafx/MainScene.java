@@ -138,39 +138,45 @@ public class MainScene {
 	 */
     public MainScene(Stage stage) {
          	this.stage = stage;
-
     }
 
 	/**
 	 * Prepares the Main Scene, sets up LookAndFeel UI, starts two timers, prepares Transport Wizard
 	 */
     public void prepareMainScene() {
-		//System.out.println("createMainScene() is in "+Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's prepareMainScene() is in "+Thread.currentThread().getName() + " Thread");
+    	Simulation.instance().getSimExecutor().submit(new MainSceneTask());
+    }
 
-		// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?
 
-		//Platform.runLater(() -> {
-	    //    scene = initializeScene();
-		//});
-		//System.out.println("done running Platform() in createMainScene()");
+	public class MainSceneTask implements Runnable {
+		public void run() {
+			logger.info("MainScene's MainSceneTask is in "+Thread.currentThread().getName() + " Thread");
 
-		// Load UI configuration.
-		//if (!cleanUI) {
-		//	UIConfig.INSTANCE.parseFile();
-		//}
+			// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?
 
-		// Set look and feel of UI.
-		UIConfig.INSTANCE.useUIDefault();
-        SwingUtilities.invokeLater(() -> {
-    		setLookAndFeel(false, true);
-        });
+			//Platform.runLater(() -> {
+		    //    scene = initializeScene();
+			//});
+			//System.out.println("done running Platform() in createMainScene()");
 
-		startAutosaveTimer();
-        //desktop.openInitialWindows(); // doesn't work here
-        startEarthTimer();
-		//System.out.println("done running the two timers");
-		//System.out.println("done running createMainScene()");
+			// Load UI configuration.
+			//if (!cleanUI) {
+			//	UIConfig.INSTANCE.parseFile();
+			//}
 
+			// Set look and feel of UI.
+			UIConfig.INSTANCE.useUIDefault();
+	        SwingUtilities.invokeLater(() -> {
+	    		setLookAndFeel(false, true);
+	        });
+
+			startAutosaveTimer();
+	        //desktop.openInitialWindows(); // doesn't work here
+	        startEarthTimer();
+			//System.out.println("done running the two timers");
+			//System.out.println("done running createMainScene()");
+		}
     }
 
     public void prepareTransportWizard() {
@@ -192,7 +198,7 @@ public class MainScene {
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
-
+		logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 	   	marsNode = new MarsNode(this, stage);
 
 		// Detect if a user hits the top-right close button
@@ -260,6 +266,7 @@ public class MainScene {
 	    dndTabPane.setSkin(skin);
 	    dndTabPane.setSide(Side.RIGHT);
 
+	    // Create nodeTab
 	    nodeTab = new Tab();
 	    nodeTab.setClosable(false);
 	    nodeTab.setText("JavaFX UI");
@@ -289,6 +296,8 @@ public class MainScene {
 	    // Set to select the swing tab at the start of simulation
 	    dndTabPane.getSelectionModel().select(swingTab);
 	    dndTabPane.getTabs().addAll(swingTab, nodeTab);
+	    //dndTabPane.getTabs().add(nodeTab);
+
 /*
 	    splitPane = new SplitPane();
 	    //splitPane.setPrefWidth(100);
@@ -504,7 +513,9 @@ public class MainScene {
 	 */
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
-        //if (earthTimer != null)
+	   	logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+
+		//if (earthTimer != null)
         //    earthTimer.stop();
         //earthTimer = null;
 
@@ -585,10 +596,10 @@ public class MainScene {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 		desktop.clearDesktop();
 
-		MasterClock clock = Simulation.instance().getMasterClock();
-		clock.loadSimulation(fileLocn);
+		MasterClock masterClock = Simulation.instance().getMasterClock();
+		Simulation.instance().getClockExecutor().submit(masterClock.getClockThreadTask());
 
-		while (clock.isLoadingSimulation()) {
+		while (masterClock.isLoadingSimulation()) {
 			try {
 				Thread.sleep(100L);
 			} catch (InterruptedException e) {
@@ -596,6 +607,7 @@ public class MainScene {
 			}
 		}
 
+		//Simulation.instance().getExecutorServiceThread().submit(new LoadSimulationTask(fileLocn));
 
 		try {
             desktop.resetDesktop();
@@ -611,16 +623,43 @@ public class MainScene {
 		UIConfig.INSTANCE.parseFile();
 
 		desktop.disposeAnnouncementWindow();
-
 		// Open Guide tool after loading.
 		desktop.openToolWindow(GuideWindow.NAME);
 
 	}
 
+/*
+	public class LoadSimulationTask implements Runnable {
+
+		File fileLocn;
+
+		public LoadSimulationTask(File fileLocn) {
+			this.fileLocn = fileLocn;
+		}
+
+		public void run() {
+
+			MasterClock clock = Simulation.instance().getMasterClock();
+			clock.loadSimulation(fileLocn);
+
+			while (clock.isLoadingSimulation()) {
+				try {
+					Thread.sleep(100L);
+				} catch (InterruptedException e) {
+					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
+				}
+			}
+
+		}
+	}
+*/
+
 	/**
 	 * Create a new simulation.
 	 */
 	public void newSimulation() {
+	   	logger.info("MainScene's newSimulation() is on " + Thread.currentThread().getName() + " Thread");
+
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
 				@Override
@@ -635,13 +674,6 @@ public class MainScene {
 			newSimThread.interrupt();
 		}
 
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
-		//if (earthTimer == null) {
-		//	//System.out.println(" newSimulation() : earthTimer == null");
-		//	delayLaunchTimer = new Timer();
-		//	int seconds = 1;
-		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
-		//}
 	}
 
 	/**
@@ -649,9 +681,15 @@ public class MainScene {
 	 */
 	private void endSim() {
 		Simulation.instance().endSimulation();
+		Simulation.instance().getSimExecutor().shutdownNow();
+
+		//Simulation.instance().destroyOldSimulation();
 		getDesktop().clearDesktop();
 		//getDesktop().resetDesktop();
+		//Simulation.instance().getMasterClock().exitProgram();
 		stage.close();
+		//Simulation.instance().endMasterClock();
+	   	Simulation.instance().startSimExecutor();
 	}
 
 	/**

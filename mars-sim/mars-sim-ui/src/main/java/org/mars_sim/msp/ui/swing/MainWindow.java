@@ -428,9 +428,13 @@ public class MainWindow extends JComponent {
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 			desktop.clearDesktop();
-			MasterClock clock = Simulation.instance().getMasterClock();
-			clock.loadSimulation(chooser.getSelectedFile());
-			while (clock.isLoadingSimulation()) {
+
+			MasterClock masterClock = Simulation.instance().getMasterClock();
+			Simulation.instance().getClockExecutor().submit(masterClock.getClockThreadTask());
+			//masterClock.loadSimulation(chooser.getSelectedFile());
+
+
+			while (masterClock.isLoadingSimulation()) {
 				try {
 					Thread.sleep(100L);
 				} catch (InterruptedException e) {

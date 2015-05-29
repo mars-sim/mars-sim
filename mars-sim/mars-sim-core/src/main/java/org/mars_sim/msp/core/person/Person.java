@@ -74,7 +74,7 @@ implements VehicleOperator, Serializable {
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
 
-    private org.mars_sim.msp.core.LifeSupportType support;
+    private LifeSupportType support;
 
     /** The gender of the person (male or female). */
     private PersonGender gender;
