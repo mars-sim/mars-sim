@@ -28,6 +28,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -62,13 +63,13 @@ public class MarsNode {
 	private MainScene mainScene;
 	private Stage stage;
 	private FXDesktopWindowManager windowManager;
+	private FXDesktopPane fxDesktopPane;
 
 	public MarsNode(MainScene mainScene, Stage stage) {
 		this.mainScene = mainScene;
 		this.stage = stage;
 
 		Pane pane = createPane("black");
-
 
 		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
 		fxInternalWindow.setContent(pane);
@@ -81,12 +82,11 @@ public class MarsNode {
 
 
 	public FXDesktopPane createFXDesktopPane() {
-		FXDesktopPane fxDesktopPane = new FXDesktopPane();
+		fxDesktopPane = new FXDesktopPane();
 
 		fxDesktopPane.setWindowManager(windowManager);
-
-		//fxDesktopPane.setBackgroundPane(pane);
-		fxDesktopPane.getActiveWindow();
+		//fxDesktopPane.setBackgroundPane();
+		//fxDesktopPane.getActiveWindow();
 
 		return fxDesktopPane;
 	}

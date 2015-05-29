@@ -36,11 +36,11 @@ implements Serializable {
 	public Deliverybot() {
 		// Use Job constructor.
 		super(Deliverybot.class);
-		
+
 		jobTasks.add(LoadVehicleEVA.class);
         jobTasks.add(LoadVehicleGarage.class);
-        jobTasks.add(UnloadVehicleEVA.class);
-        jobTasks.add(UnloadVehicleGarage.class);
+        //jobTasks.add(UnloadVehicleEVA.class);
+        //jobTasks.add(UnloadVehicleGarage.class);
         jobTasks.add(ConsolidateContainers.class);
 		//jobMissionStarts.add(Trade.class);
 		//jobMissionJoins.add(Trade.class);
@@ -48,29 +48,29 @@ implements Serializable {
 		//jobMissionJoins.add(TravelToSettlement.class);
 
 	}
-	
+
 	/**
 	 * Gets a robot's capability to perform this job.
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
 	public double getCapability(Robot robot) {
-		
+
 		double result = 0D;
-		
+
 		int tradingSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
-		
+
 		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		
+
 		// Add experience aptitude.
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
-		
+
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
-		
+
 		return result;
 	}
 
@@ -80,18 +80,18 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		
+
         double result = 0D;
-        
+
         Iterator<Settlement> i = settlement.getUnitManager().getSettlements().iterator();
         while (i.hasNext()) {
             Settlement otherSettlement = i.next();
             if (otherSettlement != settlement) {
                 double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
-                if (distance <= TRADING_RANGE) result += SETTLEMENT_MULTIPLIER; 
+                if (distance <= TRADING_RANGE) result += SETTLEMENT_MULTIPLIER;
             }
         }
-        
+
 		return result;
 	}
 }

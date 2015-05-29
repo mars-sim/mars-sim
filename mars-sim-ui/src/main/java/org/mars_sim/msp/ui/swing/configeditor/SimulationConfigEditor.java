@@ -72,6 +72,8 @@ public class SimulationConfigEditor {
 	 * @param config the simulation configuration.
 	 */
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
+        logger.info("SimulationConfigEditor's constructor is on " + Thread.currentThread().getName() + " Thread");
+
 		// Initialize data members.
 		this.config = config;
 
@@ -86,7 +88,7 @@ public class SimulationConfigEditor {
 
 	    f = new JFrame();
 
-	    f.setSize(600, 300);
+	    f.setSize(700, 500);
 
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
@@ -99,7 +101,7 @@ public class SimulationConfigEditor {
 
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(585, 200));
+		settlementScrollPane.setPreferredSize(new Dimension(485, 250));//585, 200));
 		f.add(settlementScrollPane, BorderLayout.CENTER);
 
 		// Create settlement table.
@@ -211,8 +213,8 @@ public class SimulationConfigEditor {
 				}
 			}
 		});
-		bottomButtonPanel.add(createButton);
 
+		bottomButtonPanel.add(createButton);
 
 		// 2014-12-15 Added Edit Alpha Crew button.
 		JButton alphaButton = new JButton(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
@@ -224,12 +226,11 @@ public class SimulationConfigEditor {
 		});
 		bottomButtonPanel.add(alphaButton);
 
-		f.pack();
+		//f.pack();
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
-
         f.setVisible(true);
 	}
 

@@ -29,8 +29,15 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -44,11 +51,14 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
 public class MainSceneMenu extends MenuBar  {
 
-    //private MainDesktopPane desktop;
+	private static Logger logger = Logger.getLogger(MainSceneMenu.class.getName());
+
+    private MainDesktopPane desktop;
 	private CheckMenuItem showFullScreenItem ;
 
 	private Stage stage;
 	private Stage webStage;
+	private MainScene mainScene;
 	//private GreenhouseTool greenhouseTool;
 	/**
 	 * Constructor.
@@ -57,9 +67,22 @@ public class MainSceneMenu extends MenuBar  {
 	 */
 	public MainSceneMenu(MainScene mainScene, MainDesktopPane desktop) {
 		super();
+		logger.info("MainSceneMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 
+		this.mainScene = mainScene;
+		this.desktop = desktop;
+		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
+	}
+
+	class CreateMenuTask implements Runnable {
+		public void run() {
+			createGUI();
+		}
+	}
+
+	public void createGUI() {
+		logger.info("MainSceneMenu's CreateGUI() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = mainScene.getStage();
-
         // --- Menu File
         Menu menuFile = new Menu("File");
         MenuItem newItem = new MenuItem("New...");

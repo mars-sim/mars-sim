@@ -314,7 +314,7 @@ implements ActionListener {
 		        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
 		        	settlement = vehicle.getSettlement();
 		        }
-		        
+
 		        pop = settlement.getAllAssociatedPeople().size();
 
 		        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
@@ -435,11 +435,18 @@ implements ActionListener {
 
 			    		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 						errorLabel.setForeground(Color.BLUE);
-			        	errorLabel.setText("Job Reassignment Submitted on " + clock.getTimeStamp());
+			        	errorLabel.setText("Reassignment proposal (" + selectedJobStr
+			        			+  ") submitted on " + clock.getTimeStamp());
 			        	errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+			        	// submit the new job assignment
 			        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
 			        	int size = jobAssignmentList.size();
 			        	jobAssignmentList.get(size-1).setStatus("Pending");
+
+			        	// set the combobox selection back to its previous job type
+			        	jobComboBox.setSelectedItem(jobCache);
+			        	// disable the combobox so that user cannot submit job reassignment for a period of time
 						jobComboBox.setEnabled(false);
 			        }
 

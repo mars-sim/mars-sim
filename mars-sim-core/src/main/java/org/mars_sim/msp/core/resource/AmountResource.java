@@ -18,7 +18,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.SimulationConfig;
 
 /**
- * The AmountResource class represents a type of resource that is a material 
+ * The AmountResource class represents a type of resource that is a material
  * measured in mass kg.
  */
 public final class AmountResource
@@ -34,10 +34,10 @@ implements Serializable {
 	private int hashcode = -1;
 	private String name;
 	private String description;
-		
+
 	// 2014-11-25 Added edible
 	private boolean edible;
-	
+
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
@@ -73,12 +73,12 @@ implements Serializable {
 	 * Gets the resource's description.
 	 * @return description of resource.
 	 */
-	
+
 	@Override
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
 	 * Gets the resources material phase.
 	 * @return phase value
@@ -120,7 +120,7 @@ implements Serializable {
 		if (result != null) return result;
 		else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
-	
+
 	/**
 	 * Gets a ummutable set of all the amount resources.
 	 * @return set of amount resources.

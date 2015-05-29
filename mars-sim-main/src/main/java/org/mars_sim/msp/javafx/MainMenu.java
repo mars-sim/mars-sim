@@ -86,18 +86,17 @@ public class MainMenu {
 	private Stage primaryStage;
 	private Stage stage;
 	public Scene scene;
-
+	public MainMenu mainMenu;
 	public MainScene mainScene;
 	//public ModtoolScene modtoolScene;
-	private MarsProjectFX mpFX;
-
+	private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
-
 	private MultiplayerMode multiplayerMode;
 
-    public MainMenu(MarsProjectFX mpFX) {
-    	this.mpFX = mpFX;
-    	//System.out.println("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
+    public MainMenu(MarsProjectFX marsProjectFX) {
+    	this.marsProjectFX = marsProjectFX;
+    	mainMenu = this;
+    	logger.info("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 	}
 
     public boolean exitDialog(Stage stage) {
@@ -124,7 +123,7 @@ public class MainMenu {
     }
 
    void initAndShowGUI(Stage primaryStage) {
-		//System.out.println("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
 	   this.primaryStage = primaryStage;
 
@@ -197,39 +196,40 @@ public class MainMenu {
 	   return multiplayerMode;
 	}
 
+   public void prepareStage() {
+	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+
+	   // prepare main scene
+	   mainScene.prepareMainScene();
+	   final Scene scene = mainScene.initializeScene();
+	   mainScene.prepareTransportWizard();
+
+	   // prepare stage
+	   stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
+	   stage.setResizable(true);
+	   //stage.setFullScreen(true);
+	   stage.setScene(scene);
+	   stage.show();
+  }
+
    public void runOne() {
-	   //System.out.println("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 	   primaryStage.setIconified(true);
 	   mainScene = new MainScene(stage);
 	   //primaryStage.hide();
 	   //primaryStage.close();
-	   mpFX.handleNewSimulation();
-   }
-
-   public void runMainScene() {
-	   mainScene.prepareMainScene();
-	   Platform.runLater(() -> {
-		   final Scene scene = mainScene.initializeScene();
-		   mainScene.prepareTransportWizard();
-	       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-	       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
-		   stage.setResizable(true);
-		   //stage.setFullScreen(true);
-		   stage.setScene(scene);
-		   stage.show();
-	   });
-	   //System.out.println("done running runMainScene()");
+	   marsProjectFX.handleNewSimulation();
    }
 
    public void runTwo() {
-
+	   logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 	   primaryStage.setIconified(true);
 
 	   try {
 		   mainScene = new MainScene(stage);
-		   Simulation.instance().loadSimulation(null);
-		   Simulation.instance().start();
-		   runMainScene();
+		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+		   prepareStage();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -242,9 +242,19 @@ public class MainMenu {
 */
    }
 
+	public class LoadSimulationTask implements Runnable {
+		public void run() {
+			Simulation.instance().loadSimulation(null);
+			Simulation.instance().start();
+		}
+	}
+
    public void runThree() {
+	   logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
+	   Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
 	   //primaryStage.setIconified(true);
-		try {
+/*
+	   try {
 			multiplayerMode = new MultiplayerMode(this);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -252,12 +262,26 @@ public class MainMenu {
 		}
 		executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 		executor.execute(multiplayerMode.getModeTask());
+*/
 	    //pool.shutdown();
 	     //primaryStage.toFront();
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();
    }
+
+	public class MultiplayerTask implements Runnable {
+		public void run() {
+			try {
+				multiplayerMode = new MultiplayerMode(mainMenu);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+			executor.execute(multiplayerMode.getModeTask());
+		}
+	}
 
    public void changeScene(int toscene) {
 	   //switch (toscene) {

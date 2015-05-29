@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +31,10 @@ public class AmountResourceConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
 	private static final String LIFE_SUPPORT = "life-support";
-	
+
 	// 2014-11-25 Added edible
 	private static final String EDIBLE = "edible";
-	
+
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
 
@@ -70,9 +71,9 @@ public class AmountResourceConfig implements Serializable {
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
-			// 2014-11-25 Added edible 
+			// 2014-11-25 Added edible
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
-			
+
 			// Create new amount resource.
 			// 2014-11-25 Added edible
 			AmountResource resource = new AmountResource(name, description, phase, lifeSupport, edible);
@@ -98,5 +99,6 @@ public class AmountResourceConfig implements Serializable {
 			map.put(resource.getName(),resource);
 		}
 		return map;
+
 	}
 }
