@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.07 2015-04-08
+ * @version 3.08 2015-05-29
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -512,7 +512,7 @@ implements Serializable {
 			// When L_s = 250, Mars is at perihelion--when the sun is closed to Mars.
 			// Mars has the highest liklihood of producing a global dust storm
 			// All of the observed storms have begun within 50-60 degrees of Ls of perihelion (Ls ~ 250);
-			// more often observed from mid-southern summer, between 241° and 270° Ls, with a peak period at 255° Ls.
+			// more often observed from mid-southern summer, between 241 deg and 270 deg Ls, with a peak period at 255 deg Ls.
 
 			// Assuming all storms start out as a local storm
 			// Artificially limit the # of local storm to 20

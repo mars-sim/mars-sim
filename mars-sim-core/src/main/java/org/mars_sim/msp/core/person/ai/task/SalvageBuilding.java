@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.08 2015-03-23
+ * @version 3.08 2015-05-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -417,12 +417,14 @@ implements Serializable {
         if (shouldEndEVAOperation() || stage.isComplete() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
             if (person != null) {
-            	if ((luv != null) && luv.getInventory().containsUnit(person))
+            	if ((luv != null) && luv.getInventory().containsUnit(person)) {
                     returnVehicle();
+            	}
             }   			
 			else if (robot != null) {
-				if ((luv != null) && luv.getInventory().containsUnit(robot))
+				if ((luv != null) && luv.getInventory().containsUnit(robot)) {
 					returnVehicle();
+				}
 			}
             
             setPhase(WALK_BACK_INSIDE);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.08 2015-05-22
+ * @version 3.08 2015-05-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -120,8 +120,6 @@ public class Sleep extends Task implements Serializable {
     public Sleep(Robot robot) {
         super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
 
-        boolean walkSite = false;
-
         // If robot is in a settlement, try to find a living accommodations building.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -135,10 +133,14 @@ public class Sleep extends Task implements Serializable {
                     RoboticStation currentStation = (RoboticStation) currentBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
                     if (currentStation.getSleepers() < currentStation.getSlots()) {
                         atStation = true;
-                        walkToActivitySpotInBuilding(currentBuilding, true);
                         station = currentStation;
                         station.addSleeper();
-                        walkSite = true;
+                        
+                        // Check if rover is currently at an activity spot for the robotic station.
+                        if (currentStation.hasActivitySpots() && !currentStation.isAtActivitySpot(robot)) {
+                            // Walk to an available activity spot.
+                            walkToActivitySpotInBuilding(currentBuilding, true);
+                        }
                     }
                 }
             }
@@ -150,35 +152,7 @@ public class Sleep extends Task implements Serializable {
                     walkToActivitySpotInBuilding(building, true);
                     station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
                     station.addSleeper();
-                    walkSite = true;
                 }
-                else {
-                    walkToAssignedDutyLocation(robot, true);
-                    walkSite = true;
-                }
-            }
-            
-        	//walkToActivitySpotInBuilding(building, BuildingFunction.ROBOTIC_STATION, true);
-            
-            //String b = BuildingManager.getBuilding(robot).getBuildingType();
-            //if (b.equals("Hallway")) {
-            	//walkToRandomLocation(true);	
-            //	System.out.println("hallway");
-            //}
-            
-        }
-
-        if (!walkSite) {
-
-            if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-                // If robot is in rover, walk to passenger activity spot.
-                if (robot.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
-                }
-            }
-            else {
-                // Walk to random location.
-                walkToRandomLocation(true);
             }
         }
 

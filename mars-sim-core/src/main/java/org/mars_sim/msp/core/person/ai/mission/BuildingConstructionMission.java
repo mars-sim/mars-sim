@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-05-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -900,14 +900,16 @@ implements Serializable {
         unreserveConstructionVehicles();
         
         // Store all LUV attachment parts in settlement.
-        Iterator<Part> i = luvAttachmentParts.iterator();
-        while (i.hasNext()) {
-            Part part = i.next();
-            try {
-                settlement.getInventory().storeItemResources(part, 1);
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
+        if (luvAttachmentParts != null) {
+            Iterator<Part> i = luvAttachmentParts.iterator();
+            while (i.hasNext()) {
+                Part part = i.next();
+                try {
+                    settlement.getInventory().storeItemResources(part, 1);
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
+                }
             }
         }
     }
@@ -924,14 +926,16 @@ implements Serializable {
         Map<Resource, Number> resources = new HashMap<Resource, Number>();
 
         // Add construction LUV attachment parts.
-        Iterator<Part> i = luvAttachmentParts.iterator();
-        while (i.hasNext()) {
-            Part part = i.next();
-            if (resources.containsKey(part)) {
-                resources.put(part, (resources.get(part).intValue() + 1));
-            }
-            else {
-                resources.put(part, 1);
+        if (luvAttachmentParts != null) {
+            Iterator<Part> i = luvAttachmentParts.iterator();
+            while (i.hasNext()) {
+                Part part = i.next();
+                if (resources.containsKey(part)) {
+                    resources.put(part, (resources.get(part).intValue() + 1));
+                }
+                else {
+                    resources.put(part, 1);
+                }
             }
         }
 
@@ -1002,7 +1006,9 @@ implements Serializable {
                 Inventory sInv = settlement.getInventory();
                 
                 // Store construction vehicle in settlement.
-                sInv.storeUnit(vehicle);
+                if (sInv.canStoreUnit(vehicle, false)) {
+                    sInv.storeUnit(vehicle);
+                }
                 vehicle.determinedSettlementParkedLocationAndFacing();
                 
                 // Store all construction vehicle attachments in settlement.

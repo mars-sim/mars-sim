@@ -142,16 +142,7 @@ implements Serializable {
 
 		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
-			int highestSkillLevel = 0;
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				Person tempPerson = i.next();
-				SkillManager skillManager = tempPerson.getMind().getSkillManager();
-				int skill = skillManager.getSkillLevel(SkillType.COOKING);
-				if (skill > highestSkillLevel) {
-					highestSkillLevel = skill;
-				}
-			}
+		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
@@ -177,16 +168,7 @@ implements Serializable {
 
 		Settlement settlement = robot.getSettlement();
 		if (settlement != null) {
-			int highestSkillLevel = 0;
-			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
-			while (i.hasNext()) {
-				Robot tempRobot = i.next();
-				SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
-				int skill = skillManager.getSkillLevel(SkillType.COOKING);
-				if (skill > highestSkillLevel) {
-					highestSkillLevel = skill;
-				}
-			}
+			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
 			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
@@ -207,6 +189,45 @@ implements Serializable {
 			}
 		}
 	}
+	
+	/**
+	 * Gets the highest skill level for food production at a settlement.
+	 * @param settlement the settlement.
+	 * @return the highest person or robot skill level.
+	 */
+	private static int getHighestSkillAtSettlement(Settlement settlement) {
+	    
+	    int highestSkillLevel = 0;
+	    
+	    // Get highest person skill level.
+	    Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+        while (i.hasNext()) {
+            Person tempPerson = i.next();
+            SkillManager skillManager = tempPerson.getMind().getSkillManager();
+            int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
+            skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+            skill = (int) Math.round(skill / 7D);
+            if (skill > highestSkillLevel) {
+                highestSkillLevel = skill;
+            }
+        }
+	    
+        // Get highest robot skill level.
+        Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+        while (j.hasNext()) {
+            Robot tempRobot = j.next();
+            SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
+            int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
+            skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+            skill = (int) Math.round(skill / 7D);
+            if (skill > highestSkillLevel) {
+                highestSkillLevel = skill;
+            }
+        }
+        
+        return highestSkillLevel;
+	}
+	
 	/**
 	 * Gets an available foodProduction building that the person can use. Returns
 	 * null if no foodProduction building is currently available.
@@ -218,7 +239,9 @@ implements Serializable {
 		Building result = null;
 
 		SkillManager skillManager = person.getMind().getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+        int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+        skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+        skill = (int) Math.round(skill / 7D);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
@@ -244,7 +267,9 @@ implements Serializable {
 		Building result = null;
 
 		SkillManager skillManager = robot.getBotMind().getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING);
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+        skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+        skill = (int) Math.round(skill / 7D);
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
@@ -385,17 +410,23 @@ implements Serializable {
 	public static double getHighestFoodProductionProcessValue(Person person, 
 			Building foodProductionBuilding) {
 
-		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		SkillManager skillManager = person.getMind().getSkillManager();
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+        skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+        skill = (int) Math.round(skill / 7D);
 
-		return getHighestProcessValue(skillLevel, foodProductionBuilding);
+		return getHighestProcessValue(skill, foodProductionBuilding);
 	}
 
 	public static double getHighestFoodProductionProcessValue(Robot robot, 
 			Building foodProductionBuilding) {
 
-		int skillLevel = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+	    SkillManager skillManager = robot.getBotMind().getSkillManager();
+        int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+        skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+        skill = (int) Math.round(skill / 7D);
 
-		return getHighestProcessValue(skillLevel, foodProductionBuilding);
+		return getHighestProcessValue(skill, foodProductionBuilding);
 	}
 	
 	public static double getHighestProcessValue(int skillLevel, Building foodProductionBuilding) {
