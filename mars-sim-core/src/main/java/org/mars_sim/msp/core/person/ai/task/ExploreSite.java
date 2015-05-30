@@ -88,7 +88,7 @@ implements Serializable {
 
             // If specimen containers are not available, end task.
             if (!hasSpecimenContainer()) {
-                logger.fine(person.getName() + 
+                logger.fine(person.getName() +
                         " not able to find specimen container to collect rock samples.");
                 endTask();
             }
@@ -115,9 +115,9 @@ implements Serializable {
                 double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
                 Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                         person.getCoordinates());
             }
         }
@@ -181,7 +181,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // Check if site duration has ended or there is reason to cut the exploring 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
+        // Check if site duration has ended or there is reason to cut the exploring
         // phase short and return to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
@@ -217,7 +220,7 @@ implements Serializable {
                 AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
                         rockSamples, true, false);
-                if (rockSampleMass < rockSampleCapacity) 
+                if (rockSampleMass < rockSampleCapacity)
                     inv.storeAmountResource(rockSamples, rockSampleMass, true);
    			 		// 2015-01-15 Add addSupplyAmount()
                 	inv.addAmountSupplyAmount(rockSamples, rockSampleMass);
@@ -230,7 +233,7 @@ implements Serializable {
      * @param time the amount of time available (millisols).
      */
     private void improveMineralConcentrationEstimates(double time) {
-        double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel() * 
+        double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel() *
                 ESTIMATE_IMPROVEMENT_FACTOR;
         if (RandomUtil.getRandomDouble(1.0D) <= probability) {
             MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
@@ -250,7 +253,7 @@ implements Serializable {
 
             // Add to site mineral concentration estimation improvement number.
             site.addEstimationImprovement();
-            logger.fine("Explored site " + site.getLocation().getFormattedString() + " estimation improvement: " + 
+            logger.fine("Explored site " + site.getLocation().getFormattedString() + " estimation improvement: " +
                     site.getNumEstimationImprovement() + " from exploring site");
         }
     }
@@ -344,7 +347,7 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
     }
 
     @Override

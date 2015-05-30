@@ -73,7 +73,7 @@ implements Serializable {
      * @param rover the rover used for the EVA operation.
      * @param luv the light utility vehicle used for mining.
      */
-    public MineSite(Person person, Coordinates site, Rover rover, 
+    public MineSite(Person person, Coordinates site, Rover rover,
             LightUtilityVehicle luv) {
 
         // Use EVAOperation parent constructor.
@@ -92,7 +92,7 @@ implements Serializable {
         // Add task phase
         addPhase(MINING);
     }
-    public MineSite(Robot robot, Coordinates site, Rover rover, 
+    public MineSite(Robot robot, Coordinates site, Rover rover,
             LightUtilityVehicle luv) {
 
         // Use EVAOperation parent constructor.
@@ -128,13 +128,13 @@ implements Serializable {
                 double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
                 Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), rover);
                 if (person != null)
-                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                             person.getCoordinates());
                 else if (robot != null)
-	                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+	                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
 	                        robot.getCoordinates());
 	          }
         }
@@ -182,7 +182,7 @@ implements Serializable {
 
         return (exitable && (sunlight || darkRegion) && !medical);
     }
-    
+
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return MINING;
@@ -215,19 +215,22 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
         // Check if there is reason to cut the mining phase short and return
         // to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             // End operating light utility vehicle.
         	if (person != null) {
-        		if (luv.getInventory().containsUnit(person)) { 
+        		if (luv.getInventory().containsUnit(person)) {
 	                luv.getInventory().retrieveUnit(person);
 	                luv.setOperator(null);
 	                operatingLUV = false;
 	            }
         	}
             else if (robot != null) {
-	        	if (luv.getInventory().containsUnit(robot)) { 
+	        	if (luv.getInventory().containsUnit(robot)) {
 	                luv.getInventory().retrieveUnit(robot);
 	                luv.setOperator(null);
 	                operatingLUV = false;
@@ -241,42 +244,42 @@ implements Serializable {
         // Operate light utility vehicle if no one else is operating it.
         if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0))
         	if (person != null) {
-              	
+
             	if (luv.getInventory().canStoreUnit(person, false)) {
                     luv.getInventory().storeUnit(person);
 
                     Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-                    Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                    Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
                             vehicleLoc.getY(), luv);
-                   
+
     	                person.setXLocation(settlementLoc.getX());
     	                person.setYLocation(settlementLoc.getY());
     	                luv.setOperator(person);
-                    
+
                     operatingLUV = true;
-                    setDescription(Msg.getString("Task.description.mineSite.detail", 
+                    setDescription(Msg.getString("Task.description.mineSite.detail",
                             luv.getName())); //$NON-NLS-1$
                 }
                 else {
                     logger.info(person.getName() + " could not operate " + luv.getName());
                 }
-        		
+
         	}
             else if (robot != null) {
-            	
+
 	        	if (luv.getInventory().canStoreUnit(robot, false)) {
 	                luv.getInventory().storeUnit(robot);
-	
+
 	                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
-	                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+	                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
 	                        vehicleLoc.getY(), luv);
-	                
+
 		                robot.setXLocation(settlementLoc.getX());
 		                robot.setYLocation(settlementLoc.getY());
 		                luv.setOperator(robot);
-	                
+
 	                operatingLUV = true;
-	                setDescription(Msg.getString("Task.description.mineSite.detail", 
+	                setDescription(Msg.getString("Task.description.mineSite.detail",
 	                        luv.getName())); //$NON-NLS-1$
 	            }
 	            else {
@@ -322,7 +325,7 @@ implements Serializable {
                 mission = (Mining) person.getMind().getMission();
             else if (robot != null)
             	mission = (Mining) robot.getBotMind().getMission();
-            
+
             mission.excavateMineral(mineralResource, amountExcavated);
         }
     }
@@ -385,7 +388,7 @@ implements Serializable {
     public int getEffectiveSkillLevel() {
         int result = 0;
 
-        SkillManager manager = null; 
+        SkillManager manager = null;
         if (person != null)
         	manager = person.getMind().getSkillManager();
         else if (robot != null)
@@ -394,7 +397,7 @@ implements Serializable {
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         if (operatingLUV) {
             int drivingSkill = manager.getEffectiveSkillLevel(SkillType.DRIVING);
-            result = (int) Math.round((double)(EVAOperationsSkill + areologySkill + drivingSkill) / 3D); 
+            result = (int) Math.round((double)(EVAOperationsSkill + areologySkill + drivingSkill) / 3D);
         }
         else {
             result = (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);

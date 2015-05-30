@@ -122,7 +122,7 @@ implements Serializable {
      * @param vehicles the construction vehicles.
      * @throws Exception if error constructing task.
      */
-    public ConstructBuilding(Person person, ConstructionStage stage, 
+    public ConstructBuilding(Person person, ConstructionStage stage,
             ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
@@ -139,7 +139,7 @@ implements Serializable {
         // Add task phase
         addPhase(CONSTRUCTION);
     }
-    public ConstructBuilding(Robot robot, ConstructionStage stage, 
+    public ConstructBuilding(Robot robot, ConstructionStage stage,
             ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
         super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
@@ -165,7 +165,7 @@ implements Serializable {
 
         // Check if person can exit the settlement airlock.
         boolean exitable = false;
-        Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
+        Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(),
                 site.getYLocation());
         if (airlock != null) {
             exitable = ExitAirlock.canExitAirlock(person, airlock);
@@ -181,7 +181,7 @@ implements Serializable {
 
         // Check if person's medical condition will not allow task.
         boolean medical = person.getPerformanceRating() < .5D;
-        
+
         // Check if there is work that can be done on the construction stage.
         ConstructionStage stage = site.getCurrentConstructionStage();
         boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
@@ -192,7 +192,7 @@ implements Serializable {
 
         // Check if robot can exit the settlement airlock.
         boolean exitable = false;
-        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), 
+        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(),
                 site.getYLocation());
         if (airlock != null) {
             exitable = ExitAirlock.canExitAirlock(robot, airlock);
@@ -208,14 +208,14 @@ implements Serializable {
 
         // Check if robot's medical condition will not allow task.
         boolean medical = robot.getPerformanceRating() < .5D;
-        
+
         // Check if there is work that can be done on the construction stage.
         ConstructionStage stage = site.getCurrentConstructionStage();
         boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
-    
+
     /**
      * Gets a random building construction mission that needs assistance.
      * @return construction mission or null if none found.
@@ -225,7 +225,7 @@ implements Serializable {
         BuildingConstructionMission result = null;
 
         List<BuildingConstructionMission> constructionMissions = null;
-        
+
         if (person != null) {
         	constructionMissions = getAllMissionsNeedingAssistance(
                 person.getAssociatedSettlement());
@@ -234,7 +234,7 @@ implements Serializable {
         	constructionMissions = getAllMissionsNeedingAssistance(
                 robot.getAssociatedSettlement());
         }
-        
+
         if (constructionMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
             result = (BuildingConstructionMission) constructionMissions.get(index);
@@ -242,7 +242,7 @@ implements Serializable {
 
         return result;
     }
- 
+
     /**
      * Gets a list of all building construction missions that need assistance at a settlement.
      * @param settlement the settlement.
@@ -272,7 +272,7 @@ implements Serializable {
     private Point2D determineConstructionLocation() {
 
         Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site, false);
-        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
                 relativeLocSite.getY(), site);
 
         return settlementLocSite;
@@ -310,9 +310,12 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
         boolean availableWork = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
-        
-        // Check if site duration has ended or there is reason to cut the construction 
+
+        // Check if site duration has ended or there is reason to cut the construction
         // phase short and return to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time) || stage.isComplete() || !availableWork) {
 
@@ -369,23 +372,23 @@ implements Serializable {
                 if (vehicle instanceof LightUtilityVehicle) {
                     LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
                     if (tempLuv.getOperator() == null) {
-                    	
-                    	 if (person != null) {                   		 
+
+                    	 if (person != null) {
                     		 tempLuv.getInventory().storeUnit(person);
                              tempLuv.setOperator(person);
                     	 }
-                         	
+
                          else if (robot != null) {
 	                        tempLuv.getInventory().storeUnit(robot);
 	                        tempLuv.setOperator(robot);
 	                     }
-                        
+
                         luv = tempLuv;
                         operatingLUV = true;
 
                         // Place light utility vehicles at random location in construction site.
                         Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
-                        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+                        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(),
                                 relativeLocSite.getY(), site);
                         luv.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), RandomUtil.getRandomDouble(360D));
 
@@ -401,11 +404,11 @@ implements Serializable {
      * @throws Exception if error returning construction vehicle.
      */
     private void returnVehicle() {
-    	if (person != null) 
-            luv.getInventory().retrieveUnit(person);			
+    	if (person != null)
+            luv.getInventory().retrieveUnit(person);
 		else if (robot != null)
 	        luv.getInventory().retrieveUnit(robot);
-        
+
         luv.setOperator(null);
         operatingLUV = false;
     }
@@ -413,14 +416,14 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
     	SkillManager manager = null;
-    	if (person != null) 
-    	   	manager = person.getMind().getSkillManager();			
-		else if (robot != null)        
+    	if (person != null)
+    	   	manager = person.getMind().getSkillManager();
+		else if (robot != null)
 			manager = robot.getBotMind().getSkillManager();
-        
+
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-        return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D);
     }
 
     @Override
@@ -434,9 +437,9 @@ implements Serializable {
     @Override
     protected void addExperience(double time) {
     	SkillManager manager = null;
-    	if (person != null) 
-        	manager = person.getMind().getSkillManager();			
-		else if (robot != null)    	
+    	if (person != null)
+        	manager = person.getMind().getSkillManager();
+		else if (robot != null)
         	manager = robot.getBotMind().getSkillManager();
 
         // Add experience to "EVA Operations" skill.
@@ -445,11 +448,11 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = null;
-        if (person != null) 
+        if (person != null)
             nManager = person.getNaturalAttributeManager();
-      	else if (robot != null)        
+      	else if (robot != null)
       		nManager = robot.getNaturalAttributeManager();
-        
+
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
@@ -485,11 +488,11 @@ implements Serializable {
 
             // Driving skill modification.
             int skill = 0;
-            if (person != null) 
-				skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);			
+            if (person != null)
+				skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 			else if (robot != null)
 				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-            
+
             if (skill <= 3) {
                 chance *= (4 - skill);
             }

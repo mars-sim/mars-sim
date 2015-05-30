@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * A task for the EVA operation of performing biology field work at a research site 
+ * A task for the EVA operation of performing biology field work at a research site
  * for a scientific study.
  */
 public class BiologyStudyFieldWork
@@ -38,7 +38,7 @@ implements Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.biologyFieldWork"); //$NON-NLS-1$
-    
+
     /** Task phases. */
     private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString(
             "Task.phase.fieldWork")); //$NON-NLS-1$
@@ -55,7 +55,7 @@ implements Serializable {
      * @param study the scientific study the field work is for.
      * @param rover the rover
      */
-    public BiologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study, 
+    public BiologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study,
             Rover rover) {
 
         // Use EVAOperation parent constructor.
@@ -69,7 +69,7 @@ implements Serializable {
         // Determine location for field work.
         Point2D fieldWorkLoc = determineFieldWorkLocation();
         setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
-        
+
         // Add task phases
         addPhase(FIELD_WORK);
     }
@@ -91,9 +91,9 @@ implements Serializable {
                 double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
                 Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                         person.getCoordinates());
             }
         }
@@ -129,12 +129,12 @@ implements Serializable {
     protected TaskPhase getOutsideSitePhase() {
         return FIELD_WORK;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
-        
+
         time = super.performMappedPhase(time);
-        
+
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
@@ -145,7 +145,7 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Perform the field work phase of the task.
      * @param time the time available (millisols).
@@ -157,7 +157,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // Check if site duration has ended or there is reason to cut the field 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
+        // Check if site duration has ended or there is reason to cut the field
         // work phase short and return to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
@@ -239,7 +242,7 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int biologySkill = manager.getEffectiveSkillLevel(SkillType.BIOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D);
     }
 
     @Override

@@ -284,7 +284,7 @@ extends TabPanel {
 
 		private RadiationExposure radiation;
 
-		private int dose[][];
+		private double dose[][];
 
 		private RadiationTableModel(Person person) {
 			radiation = person.getPhysicalCondition().getRadiationExposure();
@@ -342,7 +342,7 @@ extends TabPanel {
 					str = "Career";
 			}
 			else
-				str = dose[row][column-1] + "";
+				str = Math.round(dose[row][column-1] * 100.0D)/100.0D + "";
 			return str;
 		}
 
