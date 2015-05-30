@@ -74,6 +74,11 @@ public class MarsNode {
 		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
 		fxInternalWindow.setContent(pane);
 		fxInternalWindow.setActive(true);
+		fxInternalWindow.setCloseable(false);
+		fxInternalWindow.setMinimizable(true);
+		fxInternalWindow.setPrefSize(185, 165);
+		fxInternalWindow.setMinHeight(165);
+		fxInternalWindow.setMinWidth(185);
 
 		windowManager = new FXDesktopWindowManager();
 		windowManager.addWindow(fxInternalWindow);
@@ -91,7 +96,37 @@ public class MarsNode {
 		return fxDesktopPane;
 	}
 
+	public FXDesktopPane getFXDesktopPane() {
+		return fxDesktopPane;
+	}
 
+
+	public FXInternalWindow createFXInternalWindow(String title, Pane pane,
+			double prefWidth, double prefHeight, boolean resizable) {
+		FXInternalWindow fxInternalWindow = new FXInternalWindow(title);
+
+		fxInternalWindow.setActive(true);
+		fxInternalWindow.setCloseable(false);
+		fxInternalWindow.setMinimizable(true);
+		//fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
+		fxInternalWindow.setMinHeight(prefHeight);
+		fxInternalWindow.setMinWidth(prefWidth);
+		fxInternalWindow.setResizeable(resizable);
+
+		//ScrollPane scrollPane = new ScrollPane();
+	    //scrollPane.setFitToWidth(true);
+	    //scrollPane.setContent(pane);
+		//fxInternalWindow.setContent(scrollPane);
+		fxInternalWindow.setContent(pane);
+
+		windowManager.addWindow(fxInternalWindow);
+		windowManager.updateActiveWindow();
+		return fxInternalWindow;
+	}
+
+	public void removeFXInternalWindow(FXInternalWindow fxInternalWindow ) {
+		windowManager.removeWindow(fxInternalWindow);
+	}
 	/**
 	 * Creates settlement nodes
 	 *@param color

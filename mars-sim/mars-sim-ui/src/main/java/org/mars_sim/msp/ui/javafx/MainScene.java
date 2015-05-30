@@ -1048,6 +1048,10 @@ public class MainScene {
     	});
     }
 
+	public MarsNode getMarsNode() {
+		return marsNode;
+	}
+
 	public void destroy() {
 		newSimThread = null;
 		loadSimThread = null;
