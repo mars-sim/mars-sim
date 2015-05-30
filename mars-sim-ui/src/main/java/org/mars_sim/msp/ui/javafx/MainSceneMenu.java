@@ -27,6 +27,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -48,6 +49,9 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+
 
 public class MainSceneMenu extends MenuBar  {
 
@@ -59,7 +63,11 @@ public class MainSceneMenu extends MenuBar  {
 	private Stage stage;
 	private Stage webStage;
 	private MainScene mainScene;
+	private Browser browser;
+	private FXDesktopPane fxDesktopPane;
+	private FXInternalWindow fxInternalWindow ;
 	//private GreenhouseTool greenhouseTool;
+
 	/**
 	 * Constructor.
 	 * @param mainWindow the main window pane
@@ -72,6 +80,9 @@ public class MainSceneMenu extends MenuBar  {
 		this.mainScene = mainScene;
 		this.desktop = desktop;
 		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
+
+		fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
+		browser = new Browser(mainScene);
 	}
 
 	class CreateMenuTask implements Runnable {
@@ -121,9 +132,9 @@ public class MainSceneMenu extends MenuBar  {
         scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
         CheckMenuItem resupplyToolItem = new CheckMenuItem("Resupply Tool");
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
-        CheckMenuItem marsNetItem = new CheckMenuItem("Mars Net");
+        CheckMenuItem marsNetItem = new CheckMenuItem("Node Tool");
         marsNetItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
-        CheckMenuItem webToolItem = new CheckMenuItem("Online Tool");
+        CheckMenuItem webToolItem = new CheckMenuItem("Web Tool");
         webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
@@ -137,7 +148,7 @@ public class MainSceneMenu extends MenuBar  {
 
         showFullScreenItem = new CheckMenuItem("Full Screen Mode");
         showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
-		showFullScreenItem.setSelected(true);
+		showFullScreenItem.setSelected(false);
 
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
@@ -330,11 +341,16 @@ public class MainSceneMenu extends MenuBar  {
 
         webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {
-    				webStage = startWebTool();
-    				webStage.show();
+    				mainScene.openMarsNet();
+    				if (fxDesktopPane == null)
+    					fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
+    				fxInternalWindow = browser.startMSPWebSite();
+    				//webStage = browser.startWebTool();
+    				//webStage.show();
     			}
     			else
-    				webStage.close() ;
+    				mainScene.getMarsNode().removeFXInternalWindow(fxInternalWindow);
+
         });
 
         showFullScreenItem.setOnAction(e -> {
@@ -426,36 +442,6 @@ public class MainSceneMenu extends MenuBar  {
         });
 	}
 
-	public Stage startWebTool() {
-
-	    Stage webStage = new Stage();
-
-	    final WebView browser = new WebView();
-	    final WebEngine webEngine = browser.getEngine();
-
-	    ScrollPane scrollPane = new ScrollPane();
-	    scrollPane.setFitToWidth(true);
-	    scrollPane.setContent(browser);
-
-	    webEngine.getLoadWorker().stateProperty()
-	        .addListener(new ChangeListener<State>() {
-	          @Override
-	          public void changed(@SuppressWarnings("rawtypes") ObservableValue ov, State oldState, State newState) {
-	            if (newState == Worker.State.SUCCEEDED) {
-	            	webStage.setTitle(webEngine.getLocation());
-	            }
-	          }
-	        });
-
-	    //webEngine.load("http://mars-sim.sourceforge.net/#development");
-	    webEngine.load("http://jquerymy.com/");
-
-
-	    Scene webScene = new Scene(scrollPane);
-	    webStage.setScene(webScene);
-
-	    return webStage;
-	}
 
 	// Toggle the full screen mode off
 	public void exitFullScreen() {
