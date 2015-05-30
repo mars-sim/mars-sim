@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
@@ -31,8 +32,8 @@ import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
- * The EVAOperation class is an abstract task that involves an extra vehicular activity. 
+/**
+ * The EVAOperation class is an abstract task that involves an extra vehicular activity.
  */
 public abstract class EVAOperation
 extends Task
@@ -67,19 +68,19 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param name the name of the task
 	 * @param person the person to perform the task
 	 */
-    public EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration) { 
+    public EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration) {
         super(name, person, true, false, STRESS_MODIFIER, false, 0D);
-        
+
         // Initialize data members
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
-        
+
         // Check if person is in a settlement or a rover.
         if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
             interiorObject = BuildingManager.getBuilding(person);
@@ -92,31 +93,31 @@ implements Serializable {
                 interiorObject = (Rover) person.getVehicle();
             }
             else {
-                throw new IllegalStateException(person.getName() + " not in a rover vehicle: " + 
+                throw new IllegalStateException(person.getName() + " not in a rover vehicle: " +
                         person.getVehicle());
             }
         }
         else {
-            throw new IllegalStateException(person.getName() + 
-                    " not in a valid location situation to start EVA task: " + 
+            throw new IllegalStateException(person.getName() +
+                    " not in a valid location situation to start EVA task: " +
                     person.getLocationSituation());
         }
-        
+
         // Add task phases.
         addPhase(WALK_TO_OUTSIDE_SITE);
         addPhase(WALK_BACK_INSIDE);
-        
+
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
-    public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) { 
+    public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
         super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
-        
+
         // Initialize data members
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
-        
+
         // Check if person is in a settlement or a rover.
         if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
             interiorObject = BuildingManager.getBuilding(robot);
@@ -129,54 +130,54 @@ implements Serializable {
                 interiorObject = (Rover) robot.getVehicle();
             }
             else {
-                throw new IllegalStateException(robot.getName() + " not in a rover vehicle: " + 
+                throw new IllegalStateException(robot.getName() + " not in a rover vehicle: " +
                 		robot.getVehicle());
             }
         }
         else {
-            throw new IllegalStateException(robot.getName() + 
-                    " not in a valid location situation to start EVA task: " + 
+            throw new IllegalStateException(robot.getName() +
+                    " not in a valid location situation to start EVA task: " +
                     robot.getLocationSituation());
         }
-        
+
         // Add task phases.
         addPhase(WALK_TO_OUTSIDE_SITE);
         addPhase(WALK_BACK_INSIDE);
-        
+
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
-    }    
+    }
     /**
      * Check if EVA should end.
      */
     public void endEVA() {
     	endEVA = true;
     }
-    
+
     /**
      * Add time at EVA site.
      * @param time the time to add (millisols).
      * @return true if site phase should end.
      */
     protected boolean addTimeOnSite(double time) {
-        
+
         boolean result = false;
-        
+
         timeOnSite += time;
-        
+
         if (hasSiteDuration && (timeOnSite >= siteDuration)) {
             result = true;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the outside site phase.
      * @return task phase.
      */
     protected abstract TaskPhase getOutsideSitePhase();
-    
+
     /**
      * Set the outside side local location.
      * @param xLoc the X location.
@@ -186,10 +187,10 @@ implements Serializable {
         outsideSiteXLoc = xLoc;
         outsideSiteYLoc = yLoc;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
-        
+
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
@@ -203,7 +204,7 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Perform the walk to outside site phase.
      * @param time the time to perform the phase.
@@ -211,14 +212,14 @@ implements Serializable {
      */
     private double walkToOutsideSitePhase(double time) {
     	if (person != null) {
-    	 	
+
             // If not outside, create walk outside subtask.
             if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-                
+
                 setPhase(getOutsideSitePhase());
             }
             else {
-                
+
                 if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
                     Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
                     addSubTask(walkingTask);
@@ -230,14 +231,14 @@ implements Serializable {
             }
     	}
     	else if (robot != null) {
-    	 	
+
             // If not outside, create walk outside subtask.
             if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
-                
-                setPhase(getOutsideSitePhase());   
+
+                setPhase(getOutsideSitePhase());
             }
             else {
-                
+
                 if (Walk.canWalkAllSteps(robot, outsideSiteXLoc, outsideSiteYLoc, null)) {
                     Task walkingTask = new Walk(robot, outsideSiteXLoc, outsideSiteYLoc, null);
                     addSubTask(walkingTask);
@@ -248,25 +249,25 @@ implements Serializable {
                 }
             }
     	}
-   
-        
+
+
         return time;
     }
-    
+
     /**
      * Perform the walk back inside phase.
      * @param time the time to perform the phase.
      * @return remaining time after performing the phase.
      */
     private double walkBackInsidePhase(double time) {
-    	
+
     	if (person != null) {
 
     	    if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
     	            returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	        // Set return location.        
+    	        // Set return location.
     	        Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
     	                rawReturnInsideLoc.getY(), interiorObject);
     	    }
 
@@ -290,9 +291,9 @@ implements Serializable {
 
     	    if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
     	            returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-    	        // Set return location.        
+    	        // Set return location.
     	        Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+    	        returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
     	                rawReturnInsideLoc.getY(), interiorObject);
     	    }
 
@@ -318,7 +319,7 @@ implements Serializable {
     }
 
     /**
-     * Checks if situation requires the EVA operation to end prematurely 
+     * Checks if situation requires the EVA operation to end prematurely
      * and the person should return to the airlock.
      * @return true if EVA operation should end
      */
@@ -326,7 +327,7 @@ implements Serializable {
 
         boolean result = false;
     	if (person != null) {
-    	       
+
             // Check end EVA flag.
             if (endEVA) {
                 result = true;
@@ -340,21 +341,21 @@ implements Serializable {
     	else if (robot != null) {
 
     	}
- 
-	
+
+
         return result;
     }
-    
+
     /**
      * Checks if there is an EVA problem for a person.
      * @param person the person.
      * @return true if an EVA problem.
      */
     public static boolean checkEVAProblem(Person person) {
-        
+
         boolean result = false;
-        
-        // Check if it is night time. 
+
+        // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
             logger.fine(person.getName() + " should end EVA: night time.");
@@ -368,14 +369,14 @@ implements Serializable {
             return true;
         }
         Inventory suitInv = suit.getInventory();
-    
+
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
             AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
             double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
             if (oxygen <= (oxygenCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%"); 
+                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
                 result = true;
             }
 
@@ -384,13 +385,13 @@ implements Serializable {
             double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
             double water = suitInv.getAmountResourceStored(waterResource, false);
             if (water <= (waterCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");  
+                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
                 result = true;
             }
 
             // Check if life support system in suit is working properly.
             if (!suit.lifeSupportCheck()) {
-                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check."); 
+                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");
                 result = true;
             }
         }
@@ -400,24 +401,24 @@ implements Serializable {
 
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
-            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");   
+            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");
             result = true;
         }
-    
+
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() == 0D) {
-            logger.fine(person.getName() + " should end EVA: medical problems.");   
+            logger.fine(person.getName() + " should end EVA: medical problems.");
             result = true;
         }
-        
+
         return result;
     }
 
     public static boolean checkEVAProblem(Robot robot) {
-        
+
         boolean result = false;
-        
-        // Check if it is night time. 
+
+        // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(robot.getCoordinates()) == 0) {
             logger.fine(robot.getName() + " should end EVA: night time.");
@@ -426,12 +427,13 @@ implements Serializable {
         }
 
         if (robot.getPerformanceRating() == 0D) {
-            logger.fine(robot.getName() + " should end EVA: low performance rating.");   
+            logger.fine(robot.getName() + " should end EVA: low performance rating.");
             result = true;
         }
-        
+
         return result;
     }
+
     /**
      * Check for accident with EVA suit.
      * @param time the amount of time on EVA (in millisols)
@@ -441,7 +443,7 @@ implements Serializable {
     	if (person != null) {
     	       EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
     	        if (suit != null) {
-    		    
+
     	            double chance = BASE_ACCIDENT_CHANCE;
 
     	            // EVA operations skill modification.
@@ -451,7 +453,7 @@ implements Serializable {
 
     	            // Modify based on the suit's wear condition.
     	            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-    	            
+
     	            if (RandomUtil.lessThanRandPercent(chance * time)) {
     	                logger.fine(person.getName() + " has accident during EVA operation.");
     	                suit.getMalfunctionManager().accident();
@@ -461,22 +463,65 @@ implements Serializable {
     	else if (robot != null) {
 
     	}
- 
     }
-    
+
+
     /**
-     * Gets the closest available airlock to a given location that has a walkable path 
+     * Check for radiation exposure of the person performing this EVA.
+     * @param time the amount of time on EVA (in millisols)
+     */
+    protected void checkForRadiation(double time) {
+
+    	if (person != null) {
+
+    		RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
+    	    //double chance = Math.round(RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA
+    	    //		* 100D * time/1000D * 1000D/100D* 100.0)/100.0;
+    	    double chance = Math.round(RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA
+    	    		* 100D * time)/100.0;
+
+    	    boolean exposed = false;
+
+    	    double rand = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
+
+    	    if (rand < chance)
+    	    	exposed = true;
+    	    //if (RandomUtil.lessThanRandPercent(chance));
+    	    //	exposed = true;
+    	    double exposure = 0; // in milli-Sievert [mSv]
+       	    //System.out.println("chance is " + chance + " rand is "+ rand);
+    	    if (exposed) {
+    	    	// each body region receive a random max dosage
+        	    for (int i = 0; i < 3 ; i++) {
+	    	    	double baselevel = RadiationExposure.RAD_PER_SOL * time/1000D/2D;
+	    	    	exposure = baselevel + RandomUtil.getRandomDouble(baselevel);
+	    	    	exposure = Math.round(exposure*10000.0)/10000.0;
+	    	    	rad.addDose(i, 0, exposure);
+	    	    	//System.out.println("rand is "+ rand);
+	    	    	//System.out.println(person.getName() + " just received a radiation exposure of "
+	    	    	//+ exposure + " mSv in body region " + i);
+        	    }
+    	    }
+
+    	} else if (robot != null) {
+
+    	}
+
+    }
+
+    /**
+     * Gets the closest available airlock to a given location that has a walkable path
      * from the person's current location.
      * @param person the person.
      * @param double xLocation the destination's X location.
      * @param double yLocation the destination's Y location.
      * @return airlock or null if none available
      */
-    public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, 
+    public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation,
             double yLocation) {
         Airlock result = null;
         LocationSituation location = person.getLocationSituation();
-        
+
         if (location == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
@@ -488,15 +533,15 @@ implements Serializable {
                 result = ((Airlockable) vehicle).getAirlock();
             }
         }
-        
+
         return result;
     }
-    
-    public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, 
+
+    public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation,
             double yLocation) {
         Airlock result = null;
         LocationSituation location = robot.getLocationSituation();
-        
+
         if (location == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = robot.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
@@ -507,28 +552,28 @@ implements Serializable {
                 result = ((Airlockable) vehicle).getAirlock();
             }
         }
-        
+
         return result;
     }
-    
+
     /**
-     * Gets an available airlock to a given location that has a walkable path 
+     * Gets an available airlock to a given location that has a walkable path
      * from the person's current location.
      * @param person the person.
      * @return airlock or null if none available
      */
-    public static Airlock getWalkableAvailableAirlock(Person person) { 
+    public static Airlock getWalkableAvailableAirlock(Person person) {
         return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
     }
-    
-   public static Airlock getWalkableAvailableAirlock(Robot robot) {      
+
+   public static Airlock getWalkableAvailableAirlock(Robot robot) {
         return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
-    }    
-   
+    }
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         interiorObject = null;
     }
 }

@@ -58,59 +58,59 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     /** The malfunctionable entity being repaired. */
     private Malfunctionable entity;
-    
+
     /** Problem being fixed. */
     private Malfunction malfunction;
-    
+
     /**
      * Constructor
      * @param person the person to perform the task
      */
     public RepairEmergencyMalfunctionEVA(Person person) {
         super(NAME, person, false, 0D);
-        
+
         init();
-        
+
         // Create starting task event if needed.
-        if (getCreateEvents() && !isDone()) {        	
+        if (getCreateEvents() && !isDone()) {
             TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
-        
+
         init2();
-        
+
         logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
     }
-    
+
     public RepairEmergencyMalfunctionEVA(Robot robot) {
         super(NAME, robot, false, 0D);
 
         init();
-        
+
         // Create starting task event if needed.
-        if (getCreateEvents() && !isDone()) {        	
+        if (getCreateEvents() && !isDone()) {
             TaskEvent startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
             Simulation.instance().getEventManager().registerNewEvent(startingEvent);
         }
-        
+
         init2();
-        
+
         logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
-    }    
-    
+    }
+
     public void init() {
-    	
+
         // Get the malfunctioning entity.
         claimMalfunction();
         if (entity == null) {
             endTask();
             return;
         }
-        
+
     }
 
     public void init2() {
-        	
+
         // Determine location for repairing malfunction.
         Point2D malfunctionLoc = determineMalfunctionLocation();
         setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
@@ -119,16 +119,16 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         addPhase(REPAIRING);
 
     }
-    
+
     /**
      * Checks if the emergency repair requires an EVA.
      * @param person the person to perform the repair.
      * @return true if repair requires EVA.
      */
     public static boolean requiresEVARepair(Person person) {
-        
+
         boolean result = false;
-        
+
         Malfunction malfunction = null;
         Malfunctionable entity = null;
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -140,7 +140,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 entity = e;
             }
         }
-        
+
         if (entity != null) {
             if (entity instanceof Vehicle) {
                 // Perform EVA emergency repair on outside vehicles that the person isn't inside.
@@ -159,14 +159,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     public static boolean requiresEVARepair(Robot robot) {
-        
+
         boolean result = false;
-        
+
         Malfunction malfunction = null;
         Malfunctionable entity = null;
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
@@ -197,19 +197,19 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if a person can perform an EVA for the emergency repair.
      * @param person the person.
      * @return true if person can perform the EVA.
      */
     public static boolean canPerformEVA(Person person) {
-        
+
         boolean result = true;
-        
+
         // Check if an airlock is available
         Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
         if (airlock == null) {
@@ -222,8 +222,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = false;
             }
-        } 
-        
+        }
+
         // Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
@@ -238,14 +238,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (person.getPerformanceRating() == 0D) {
             result = false;
         }
-        
+
         return result;
     }
- 
+
     public static boolean canPerformEVA(Robot robot) {
-        
+
         boolean result = true;
-        
+
         // Check if an airlock is available
         Airlock airlock = EVAOperation.getWalkableAvailableAirlock(robot);
         if (airlock == null) {
@@ -258,8 +258,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                 result = false;
             }
-        } 
-        
+        }
+
         // Check if robot is outside.
         if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
@@ -274,16 +274,16 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (robot.getPerformanceRating() == 0D) {
             result = false;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets a local emergency malfunction.
      */
     private void claimMalfunction() {
         malfunction = null;
-        
+
         if (person != null) {
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
             while (i.hasNext() && (malfunction == null)) {
@@ -292,7 +292,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 if (manager.hasEmergencyMalfunction()) {
                     malfunction = manager.getMostSeriousEmergencyMalfunction();
                     entity = e;
-                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail", 
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
@@ -305,14 +305,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 if (manager.hasEmergencyMalfunction()) {
                     malfunction = manager.getMostSeriousEmergencyMalfunction();
                     entity = e;
-                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail", 
+                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
         }
- 
+
     }
-    
+
     /**
      * Determine location to repair malfunction.
      * @return location.
@@ -327,15 +327,15 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             for (int x = 0; (x < 50) && !goodLocation; x++) {
                 Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(
                         bounds, 1D);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), bounds);
-                
+
                 if (person != null) {
-                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), 
+                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
                              newLocation.getY(), person.getCoordinates());
                 }
                 else if (robot != null) {
-                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), 
+                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
                              newLocation.getY(), robot.getCoordinates());
                 }
             }
@@ -343,7 +343,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         return newLocation;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
 
@@ -359,7 +359,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             return time;
         }
     }
-    
+
     /**
      * Perform the repair malfunction phase of the task.
      * @param time the time to perform this phase (in millisols)
@@ -371,7 +371,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
-        
+
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
                 malfunction.getCompletedEmergencyWorkTime();
@@ -380,24 +380,24 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             return time;
         }
 
-        
+
         double workTime = 0;
-    	
-		if (person != null) {			
+
+		if (person != null) {
 	        workTime = time;
 		}
 		else if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
 	        workTime = time/2;
 		}
-        
+
         // Determine effective work time based on "Mechanic" skill.
         int mechanicSkill = 0;
-        if (person != null) 
-            mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);        
+        if (person != null)
+            mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         else if (robot != null)
             mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-              
+
         if (mechanicSkill == 0) {
             workTime /= 2;
         }
@@ -414,9 +414,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
         return remainingWorkTime;
     }
-    
+
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return REPAIRING;
@@ -424,16 +427,16 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     @Override
     public int getEffectiveSkillLevel() {
-    	
+
         SkillManager manager = null;
-        if (person != null) 
+        if (person != null)
             manager = person.getMind().getSkillManager();
         else if (robot != null)
         	manager = robot.getBotMind().getSkillManager();
-         
+
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-        return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
     }
 
     @Override
@@ -496,7 +499,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public Malfunctionable getEntity() {
         return entity;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();

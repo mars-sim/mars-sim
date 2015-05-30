@@ -144,7 +144,7 @@ public class HelpGenerator {
 		.append(escape(vehicle))
 		.append(SUFFIX);
 	}
-	
+
 	private static final StringBuffer getPathVehicles() {
 		return new StringBuffer()
 		.append(VEHICLES)
@@ -302,7 +302,7 @@ public class HelpGenerator {
 	 */
 	private static final void generateVehicleDescriptions() {
 		List<String> vehicles = SupplyTableModel.getSortedVehicleTypes();
-		
+
 		// first generate "vehicles.html" with a list of defined vehicles
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Vehicles</h2>\n")
@@ -313,7 +313,7 @@ public class HelpGenerator {
 			.append(getLinkVehicle(vehicle))
 			.append("</li>\n");
 		}
-		content.append("</ul>");		
+		content.append("</ul>");
 		helpFileHeader(content,"vehicles");
 		helpFileFooter(content);
 		generateFile(getPathVehicles(),content);
@@ -325,6 +325,7 @@ public class HelpGenerator {
 			LifeSupportType.OXYGEN,
 			LifeSupportType.WATER,
 			LifeSupportType.FOOD,
+			"dessert",
 			"rock samples",
 			"ice"
 		};
@@ -390,9 +391,9 @@ public class HelpGenerator {
 			}
 			helpFileTableRow(content,new String[] {"width",Double.toString(v.getWidth())});
 			helpFileTableRow(content,new String[] {"length",Double.toString(v.getLength())});
-			
+
 			content.append("</table>\n");
-			
+
 			helpFileHeader(content,"vehicle \"" + vehicle + "\"");
 			helpFileFooter(content);
 			generateFile(getPathVehicle(vehicle),content);
@@ -426,11 +427,11 @@ public class HelpGenerator {
 		}
 
 		content.append("</table>\n");
-		
+
 		helpFileHeader(content,"resources");
 		helpFileFooter(content);
 		generateFile(getPathResources(),content);
-		
+
 		// second: loop over resource types to generate a help file for each one
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
@@ -508,7 +509,7 @@ public class HelpGenerator {
 		helpFileHeader(content,"parts");
 		helpFileFooter(content);
 		generateFile(getPathParts(),content);
-		
+
 		// second: loop over part types to generate a help file for each one
 		for (Entry<String,Part> entry : parts.entrySet()) {
 			Part part = entry.getValue();
@@ -724,7 +725,7 @@ public class HelpGenerator {
 	 */
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"starting to generate help files");
-		HelpGenerator.generateVehicleDescriptions();
+		//HelpGenerator.generateVehicleDescriptions();
 		HelpGenerator.generateResourceDescriptions();
 		HelpGenerator.generatePartsDescriptions();
 		HelpGenerator.generateProcessDescriptions();

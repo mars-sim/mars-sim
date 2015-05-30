@@ -37,8 +37,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
- * The UnloadVehicleEVA class is a task for unloading fuel and supplies from a vehicle 
+/**
+ * The UnloadVehicleEVA class is a task for unloading fuel and supplies from a vehicle
  * when the vehicle is outside.
  */
 public class UnloadVehicleEVA
@@ -95,7 +95,7 @@ implements Serializable {
             Point2D unloadingLoc = determineUnloadingLocation();
             setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-            setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+            setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail",
                     vehicle.getName()));  //$NON-NLS-1$
 
             // Initialize task phase
@@ -128,7 +128,7 @@ implements Serializable {
             Point2D unloadingLoc = determineUnloadingLocation();
             setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-            setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+            setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail",
                     vehicle.getName()));  //$NON-NLS-1$
 
             // Initialize task phase
@@ -138,7 +138,7 @@ implements Serializable {
             endTask();
         }
     }
-    /** 
+    /**
      * Constructor
      * @param person the person to perform the task
      * @param vehicle the vehicle to be unloaded
@@ -147,7 +147,7 @@ implements Serializable {
         // Use EVAOperation constructor.
         super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+        setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail",
                 vehicle.getName()));  //$NON-NLS-1$
         this.vehicle = vehicle;
 
@@ -166,7 +166,7 @@ implements Serializable {
         // Use EVAOperation constructor.
         super("Unloading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+        setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail",
                 vehicle.getName()));  //$NON-NLS-1$
         this.vehicle = vehicle;
 
@@ -209,7 +209,7 @@ implements Serializable {
                             }
                         }
                     }
-                    
+
                     int robotsOnboard = CollectionUtils.getRobot(
                             vehicle.getInventory().getContainedUnits()).size();
                     if (robotsOnboard == 0) {
@@ -223,8 +223,8 @@ implements Serializable {
                                 }
                             }
                         }
-                    }                         
-                    
+                    }
+
                 }
                 if (needsUnloading) {
                     result.add(vehicle);
@@ -263,8 +263,8 @@ implements Serializable {
                                     }
                                 }
                             }
-                            
-                            
+
+
                             int robotsOnboard = CollectionUtils.getRobot(
                                     vehicle.getInventory().getContainedUnits()).size();
                             if (robotsOnboard == 0) {
@@ -291,8 +291,8 @@ implements Serializable {
 
         VehicleMission result = null;
         List<Mission> unloadingMissions = null;
-		if (person != null) 
-        	unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());			
+		if (person != null)
+        	unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
 		else if (robot != null)
         	unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
 
@@ -322,13 +322,13 @@ implements Serializable {
         boolean goodLocation = false;
         for (int x = 0; (x < 50) && !goodLocation; x++) {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), vehicle);
-			if (person != null) 
-		           goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-		                    person.getCoordinates());		 				
+			if (person != null)
+		           goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+		                    person.getCoordinates());
 			else if (robot != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
 						robot.getCoordinates());
         }
 
@@ -366,6 +366,9 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
         // Check if person should end EVA operation.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
@@ -374,8 +377,8 @@ implements Serializable {
 
         // Determine unload rate.
         int strength = 0;
-		if (person != null) 
-        	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
+		if (person != null)
+        	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
 		else if (robot != null)
         	strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
@@ -494,7 +497,7 @@ implements Serializable {
         }
     }
 
-    /** 
+    /**
      * Returns true if the vehicle is fully unloaded.
      * @param vehicle Vehicle to check.
      * @return is vehicle fully unloaded?
@@ -506,12 +509,12 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
     	SkillManager manager = null;
-		if (person != null) 
-	       	manager = person.getMind().getSkillManager();			
+		if (person != null)
+	       	manager = person.getMind().getSkillManager();
 		else if (robot != null)
         	manager = robot.getBotMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        return EVAOperationsSkill; 
+        return EVAOperationsSkill;
     }
 
     @Override
@@ -530,18 +533,18 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = null;
-		if (person != null) 
-	       	nManager = person.getNaturalAttributeManager();			
+		if (person != null)
+	       	nManager = person.getNaturalAttributeManager();
 		else if (robot != null)
         	nManager = robot.getNaturalAttributeManager();
-        
+
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-		if (person != null) 
-	        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);			
-		else if (robot != null)        
+		if (person != null)
+	        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		else if (robot != null)
 			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 

@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -73,7 +74,7 @@ implements Serializable {
     private double destinationXLocation;
     private double destinationYLocation;
     private boolean obstaclesInPath;
-    private List<Point2D> walkingPath; 
+    private List<Point2D> walkingPath;
     private int walkingPathIndex;
     private double[] obstacleSearchLimits;
     private boolean ignoreEndEVA;
@@ -87,7 +88,7 @@ implements Serializable {
      * @param destinationYLocation the destination local Y location.
      * @param ignoreEndEVA ignore end EVA situations and continue walking task.
      */
-    public WalkOutside(Person person, double startXLocation, double startYLocation, 
+    public WalkOutside(Person person, double startXLocation, double startYLocation,
             double destinationXLocation, double destinationYLocation, boolean ignoreEndEVA) {
 
         // Use Task constructor.
@@ -106,11 +107,11 @@ implements Serializable {
             throw new IllegalStateException(
                     "WalkOutside task started when " + person + " is not outside.");
         }
-        
+
         init();
     }
 
-    public WalkOutside(Robot robot, double startXLocation, double startYLocation, 
+    public WalkOutside(Robot robot, double startXLocation, double startYLocation,
             double destinationXLocation, double destinationYLocation, boolean ignoreEndEVA) {
 
         // Use Task constructor.
@@ -131,7 +132,7 @@ implements Serializable {
 
         init();
     }
-    
+
     public void init() {
 
         obstaclesInPath = false;
@@ -144,8 +145,8 @@ implements Serializable {
         addPhase(WALKING);
         setPhase(WALKING);
     }
-    
-    
+
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -172,13 +173,13 @@ implements Serializable {
         result.add(startLoc);
 
         // Check if direct walking path to destination is free of obstacles.
-        Line2D line = new Line2D.Double(startXLocation, startYLocation, destinationXLocation, 
+        Line2D line = new Line2D.Double(startXLocation, startYLocation, destinationXLocation,
                 destinationYLocation);
-        
+
         boolean freePath = false;
-        
-		if (person != null) 
-        	freePath = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);			
+
+		if (person != null)
+        	freePath = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
 		else if (robot != null)
         	freePath = LocalAreaUtil.checkLinePathCollision(line, robot.getCoordinates(), true);
 
@@ -221,21 +222,21 @@ implements Serializable {
         // Return null if either are within obstacles.
         boolean startLocWithinObstacle = false;
         boolean destinationLocWithinObstacle = false;
-        
+
 		if (person != null) {
-	        startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation, 
+	        startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation,
 	                startYLocation, person.getCoordinates());
-	        destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation, 
+	        destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation,
 	                destinationYLocation, person.getCoordinates());
-	        
+
 		}
 		else if (robot != null) {
-	        startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation, 
+	        startLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(startXLocation,
 	                startYLocation, robot.getCoordinates());
-	        destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation, 
+	        destinationLocWithinObstacle = !LocalAreaUtil.checkLocationCollision(destinationXLocation,
 	                destinationYLocation, robot.getCoordinates());
 		}
-		
+
 
         if (startLocWithinObstacle || destinationLocWithinObstacle) {
             return null;
@@ -292,7 +293,7 @@ implements Serializable {
 
                 double tentativeGScore = currentGScore + NEIGHBOR_DISTANCE;
                 double neighborGScore = getGScore(neighborLoc);
-                if ((!openSet.contains(neighborLoc) || (tentativeGScore < neighborGScore)) && 
+                if ((!openSet.contains(neighborLoc) || (tentativeGScore < neighborGScore)) &&
                         withinObstacleSearch(neighborLoc)) {
 
                     // Map neighbor location from current location in cameFrom.
@@ -312,7 +313,7 @@ implements Serializable {
     /**
      * Find location in openSet with lowest fScore value.
      * The fScore value is the distance (m) from start through location to destination.
-     * @param openSet a set of locations. 
+     * @param openSet a set of locations.
      * @return location with lowest fScore value.
      */
     private Point2D getLowestFScore(Set<Point2D> openSet) {
@@ -341,18 +342,18 @@ implements Serializable {
     boolean checkClearPathToDestination(Point2D currentLoc, Point2D endLoc) {
 
     	boolean result = false;
-    	
-        Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(), 
+
+        Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(),
                 endLoc.getY());
-        
+
 		if (person != null) {
 			result = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
 		}
 		else if (robot != null) {
 			result = LocalAreaUtil.checkLinePathCollision(line, robot.getCoordinates(), true);
 		}
-		
-		 return result; 
+
+		 return result;
     }
 
     /**
@@ -404,11 +405,11 @@ implements Serializable {
                 Point2D prevLoc = optimizedPath.get(locIndex - 1);
                 Point2D nextLoc = optimizedPath.get(locIndex + 1);
 
-                // If clear path between previous and next location, 
+                // If clear path between previous and next location,
                 // remove this location from path.
-                Line2D line = new Line2D.Double(prevLoc.getX(), prevLoc.getY(), 
+                Line2D line = new Line2D.Double(prevLoc.getX(), prevLoc.getY(),
                         nextLoc.getX(), nextLoc.getY());
-                
+
 				if (person != null) {
 	                if (LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true)) {
 	                    i.remove();
@@ -419,9 +420,9 @@ implements Serializable {
 	                    i.remove();
 	                }
 				}
-				
 
-                
+
+
             }
         }
 
@@ -447,7 +448,7 @@ implements Serializable {
      */
     private double getFScore(Point2D loc) {
         double gScore = getGScore(loc);
-        double fScore = gScore + Point2D.distance(loc.getX(), loc.getY(), destinationXLocation, 
+        double fScore = gScore + Point2D.distance(loc.getX(), loc.getY(), destinationXLocation,
                 destinationYLocation);
         return fScore;
     }
@@ -465,7 +466,7 @@ implements Serializable {
 
         // Get location North of currentLoc.
         Point2D northLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
-        Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(), 
+        Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(),
                 northLoc.getY());
 		if (person != null) {
 	        if (LocalAreaUtil.checkLinePathCollision(northLine, person.getCoordinates(), true)) {
@@ -477,12 +478,12 @@ implements Serializable {
 	            result.add(northLoc);
 	        }
 		}
-		
+
 
 
         // Get location East of currentLoc.
         Point2D eastLoc = new Point2D.Double(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
-        Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(), 
+        Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(),
                 eastLoc.getY());
 		if (person != null) {
 	        if (LocalAreaUtil.checkLinePathCollision(eastLine, person.getCoordinates(), true)) {
@@ -494,15 +495,15 @@ implements Serializable {
 	            result.add(eastLoc);
 	        }
 		}
-		
 
 
-        
+
+
         // Get location South of currentLoc.
         Point2D southLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
-        Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(), 
+        Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(),
                 southLoc.getY());
-        
+
 		if (person != null) {
 	        if (LocalAreaUtil.checkLinePathCollision(southLine, person.getCoordinates(), true)) {
 	            result.add(southLoc);
@@ -513,14 +514,14 @@ implements Serializable {
 	            result.add(southLoc);
 	        }
 		}
-		
+
 
 
         // Get location West of currentLoc.
         Point2D westLoc = new Point2D.Double(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
-        Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(), 
+        Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(),
                 westLoc.getY());
-        
+
 		if (person != null) {
 	        if (LocalAreaUtil.checkLinePathCollision(westLine, person.getCoordinates(), true)) {
 	            result.add(westLoc);
@@ -531,7 +532,7 @@ implements Serializable {
 	            result.add(westLoc);
 	        }
 		}
-		
+
 
 
         return result;
@@ -631,10 +632,10 @@ implements Serializable {
 	            obstacleSearchLimits = getLocalObstacleSearchLimits(robot.getCoordinates());
 	        }
 		}
-		
 
 
-        
+
+
         boolean result = true;
 
         // Check if X value is larger than X max limit.
@@ -678,6 +679,9 @@ implements Serializable {
         // Check for accident.
         checkForAccident(time);
 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
 		if (person != null) {
 	        // If there are any EVA problems, end walking outside task.
 	        if (!ignoreEndEVA && EVAOperation.checkEVAProblem(person)) {
@@ -692,7 +696,7 @@ implements Serializable {
 	            return time;
 	        }
 		}
-		
+
 
 
         double walkingSpeed = getWalkingSpeed();
@@ -715,28 +719,28 @@ implements Serializable {
 
             // Walk to next path location.
             Point2D location = walkingPath.get(walkingPathIndex);
-            
+
             double distanceToLocation = 0;
 
 			if (person != null) {
-				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(), 
+				distanceToLocation = Point2D.distance(person.getXLocation(), person.getYLocation(),
 		                    location.getX(), location.getY());
 
 			}
 			else if (robot != null) {
-				distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(), 
+				distanceToLocation = Point2D.distance(robot.getXLocation(), robot.getYLocation(),
 		                    location.getX(), location.getY());
 
 			}
-			
- 
+
+
             if (distanceMeters >= distanceToLocation) {
-            	
+
 				if (person != null) {
 	                // Set person at next path location.
 					person.setXLocation(location.getX());
 	                person.setYLocation(location.getY());
-					
+
 				}
 				else if (robot != null) {
 	                // Set robot at next path location.
@@ -744,7 +748,7 @@ implements Serializable {
 	                robot.setYLocation(location.getY());
 				}
 
-                
+
                 distanceMeters -= distanceToLocation;
                 if (walkingPath.size() > (walkingPathIndex + 1)) {
                     walkingPathIndex++;
@@ -765,12 +769,12 @@ implements Serializable {
 
         // If path destination is reached, end task.
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
-        	
+
 			if (person != null) {
 	            logger.fine(person.getName() + " finished walking to new location outside.");
 	            Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
 	            person.setXLocation(finalLocation.getX());
-	            person.setYLocation(finalLocation.getY());	            
+	            person.setYLocation(finalLocation.getY());
 			}
 			else if (robot != null) {
 	            logger.fine(robot.getName() + " finished walking to new location outside.");
@@ -778,11 +782,48 @@ implements Serializable {
 	            robot.setXLocation(finalLocation.getX());
 	            robot.setYLocation(finalLocation.getY());
 			}
-			
+
             endTask();
         }
 
-        return timeLeft; 
+        return timeLeft;
+    }
+
+
+    /**
+     * Check for radiation exposure of the person performing this EVA.
+     * @param time the amount of time on EVA (in millisols)
+     */
+    protected void checkForRadiation(double time) {
+
+    	if (person != null) {
+
+    		RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
+
+    	    double chance = RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA;
+
+    	    boolean exposed = false;
+
+    	    if (RandomUtil.lessThanRandPercent(chance * time/1000D))
+    	    	exposed = true;
+
+    	    double exposure = 0; // in milli-Sievert [mSv]
+
+    	    if (exposed) {
+    	    	// each body region receive a random max dosage
+        	    for (int i = 0; i < 3 ; i++) {
+	    	    	double base = RadiationExposure.RAD_PER_SOL/2;
+	    	    	exposure = base + RandomUtil.getRandomDouble(base);
+	    	    	rad.addDose(i, 0, exposure);
+	    	    	System.out.println(person.getName() + "just received a radiation exposure of "
+	    	    	+ exposure + " mSv in body region " + i);
+        	    }
+    	    }
+
+    	} else if (robot != null) {
+
+    	}
+
     }
 
     /**
@@ -814,18 +855,18 @@ implements Serializable {
      */
     private double determineDirection(double destinationXLocation, double destinationYLocation) {
     	double result = 0;
-    	
+
 		if (person != null) {
-	        result = Math.atan2(person.getXLocation() - destinationXLocation, 
+	        result = Math.atan2(person.getXLocation() - destinationXLocation,
 	                destinationYLocation - person.getYLocation());
 		}
 		else if (robot != null) {
-	        result = Math.atan2(robot.getXLocation() - destinationXLocation, 
+	        result = Math.atan2(robot.getXLocation() - destinationXLocation,
 	                destinationYLocation - robot.getYLocation());
 		}
-		
 
-        
+
+
         while (result > (Math.PI * 2D)) {
             result -= (Math.PI * 2D);
         }
@@ -845,22 +886,22 @@ implements Serializable {
     private void walkInDirection(double direction, double distance) {
 
 		if (person != null) {
-			
+
 	        double newXLoc = (-1D * Math.sin(direction) * distance) + person.getXLocation();
 	        double newYLoc = (Math.cos(direction) * distance) + person.getYLocation();
 
 	        person.setXLocation(newXLoc);
 	        person.setYLocation(newYLoc);
-	        
+
 		}
 		else if (robot != null) {
-			
+
 	        double newXLoc = (-1D * Math.sin(direction) * distance) + robot.getXLocation();
 	        double newYLoc = (Math.cos(direction) * distance) + robot.getYLocation();
 
 	        robot.setXLocation(newXLoc);
 	        robot.setYLocation(newYLoc);
-	        
+
 		}
 
     }
@@ -872,10 +913,10 @@ implements Serializable {
     private double getRemainingPathDistance() {
 
         double result = 0D;
-		
+
         double prevXLoc = 0;
         double prevYLoc = 0;
-        
+
 		if (person != null) {
 			prevXLoc = person.getXLocation();
 	        prevYLoc = person.getYLocation();
@@ -888,7 +929,7 @@ implements Serializable {
 
         for (int x = walkingPathIndex; x < walkingPath.size(); x++) {
             Point2D nextLoc = walkingPath.get(x);
-            double distance = Point2D.Double.distance(prevXLoc, prevYLoc, 
+            double distance = Point2D.Double.distance(prevXLoc, prevYLoc,
                     nextLoc.getX(), nextLoc.getY());
             result += distance;
             prevXLoc = nextLoc.getX();
@@ -944,21 +985,21 @@ implements Serializable {
 		            }
 		        }
 		}
- 
+
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = null;	
+        SkillManager manager = null;
 		if (person != null) {
 	        manager = person.getMind().getSkillManager();
 		}
 		else if (robot != null) {
 	        manager = robot.getBotMind().getSkillManager();
 		}
-		
+
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        return EVAOperationsSkill; 
+        return EVAOperationsSkill;
     }
 
     @Override
@@ -975,18 +1016,18 @@ implements Serializable {
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
         NaturalAttributeManager nManager = null;
-		if (person != null) 
+		if (person != null)
 	        // Experience points adjusted by person's "Experience Aptitude" attribute.
-	        nManager = person.getNaturalAttributeManager();			
+	        nManager = person.getNaturalAttributeManager();
 		else if (robot != null)
 	        // Experience points adjusted by robot's "Experience Aptitude" attribute.
 	        nManager = robot.getNaturalAttributeManager();
-        
+
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-		if (person != null) 
+		if (person != null)
 	        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		else if (robot != null)
         	robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);

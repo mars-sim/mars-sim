@@ -30,12 +30,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
-/** 
+/**
  * The DigLocalRegolith class is a task for performing
  * collecting regolith outside a settlement.
  */
-public class DigLocalRegolith 
-extends EVAOperation 
+public class DigLocalRegolith
+extends EVAOperation
 implements Serializable {
 
 	/** default serial id. */
@@ -47,7 +47,7 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
             "Task.phase.collectRegolith")); //$NON-NLS-1$
@@ -69,36 +69,36 @@ implements Serializable {
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super(NAME, person, false, 0D);
-        
+
         settlement = person.getSettlement();
-        
+
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
             endTask();
         }
-        
+
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
         setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
-        
+
         // Take bags for collecting regolith.
         if (!hasBags()) {
             takeBag();
-            
+
             // If bags are not available, end task.
             if (!hasBags()) {
                 logger.fine(person.getName() + " not able to find bag to collect regolith.");
                 endTask();
             }
         }
-        
+
         // Add task phases
         addPhase(COLLECT_REGOLITH);
-        
+
         logger.finest(person.getName() + " starting DigLocalRegolith task.");
     }
-    
+
     /**
      * Checks if the person is carrying any bags.
      * @return true if carrying bags.
@@ -119,7 +119,7 @@ implements Serializable {
                 emptyBag = foundBag;
             }
         }
-        
+
         if (emptyBag != null) {
             if (person.getInventory().canStoreUnit(emptyBag, false)) {
                 settlement.getInventory().retrieveUnit(emptyBag);
@@ -134,21 +134,21 @@ implements Serializable {
             logger.severe("Unable to find empty bag in settlement inventory");
         }
     }
-    
+
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return COLLECT_REGOLITH;
     }
-    
+
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      */
     protected double performMappedPhase(double time) {
-        
+
         time = super.performMappedPhase(time);
-        
+
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
@@ -159,13 +159,13 @@ implements Serializable {
             return time;
         }
     }
-    
+
     @Override
     protected void addExperience(double time) {
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
-        
+
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
@@ -173,7 +173,7 @@ implements Serializable {
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
-        
+
         // If phase is collect regolith, add experience to areology skill.
         if (COLLECT_REGOLITH.equals(getPhase())) {
             // 1 base experience point per 10 millisols of collection time spent.
@@ -189,7 +189,7 @@ implements Serializable {
         List<SkillType> results = new ArrayList<SkillType>(2);
         results.add(SkillType.EVA_OPERATIONS);
         results.add(SkillType.AREOLOGY);
-        return results; 
+        return results;
     }
 
     @Override
@@ -197,49 +197,49 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
     }
-    
+
     /**
      * Determine location for digging regolith.
      * @return digging X and Y location outside settlement.
      */
     private Point2D.Double determineDiggingLocation() {
-        
+
         Point2D.Double newLocation = null;
         boolean goodLocation = false;
         for (int x = 0; (x < 5) && !goodLocation; x++) {
             for (int y = 0; (y < 10) && !goodLocation; y++) {
                 if (airlock.getEntity() instanceof LocalBoundedObject) {
                     LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
-                    
+
                     double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
                     double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
                     double newXLoc = boundedObject.getXLocation() - (distance * Math.sin(radianDirection));
                     double newYLoc = boundedObject.getYLocation() + (distance * Math.cos(radianDirection));
                     Point2D.Double boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
-                    
-                    newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+
+                    newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                             boundedLocalPoint.getY(), boundedObject);
-                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                             person.getCoordinates());
                 }
             }
         }
-        
+
         return newLocation;
     }
-    
+
     @Override
     public void endTask() {
-        
+
         // Unload bag to rover's inventory.
         if (bag != null) {
             AmountResource regolithResource = AmountResource.findAmountResource("regolith");
             double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
                     regolithResource, false, false);
-            
+
             // Try to store regolith in settlement.
             if (collectedAmount < settlementCap) {
                 bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
@@ -251,15 +251,15 @@ implements Serializable {
             // Store bag.
             person.getInventory().retrieveUnit(bag);
             settlement.getInventory().storeUnit(bag);
-            
+
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
             goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithResource), false);
         }
-        
+
         super.endTask();
     }
-    
+
     /**
      * Perform collect regolith phase.
      * @param time time (millisol) to perform phase.
@@ -267,43 +267,46 @@ implements Serializable {
      * @throws Exception
      */
     private double collectRegolith(double time) {
-        
+
         // Check for an accident during the EVA operation.
         checkForAccident(time);
-        
+
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
         if (shouldEndEVAOperation()) {
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
-        
+
         AmountResource regolith = AmountResource.findAmountResource("regolith");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
                 regolith, true, false);
-        
+
         double regolithCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
         if (regolithCollected >= remainingPersonCapacity) {
             regolithCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
-        
+
         person.getInventory().storeAmountResource(regolith, regolithCollected, true);
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
         }
-        
+
         // Add experience points
         addExperience(time);
-        
+
         return 0D;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         airlock = null;
         bag = null;
         settlement = null;

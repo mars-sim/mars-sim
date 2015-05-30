@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * The CollectResources class is a task for collecting resources at a site with an EVA from a rover.
  */
 public class CollectResources
@@ -40,9 +40,9 @@ implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     private static Logger logger = Logger.getLogger(CollectResources.class.getName());
-    
+
     /** Task phases. */
     private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString(
             "Task.phase.collectResources")); //$NON-NLS-1$
@@ -72,7 +72,7 @@ implements Serializable {
      * @param startingCargo The starting amount (kg) of resource in the rover cargo.
      * @param containerType the type of container to use to collect resource.
      */
-    public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType, 
+    public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType,
             double collectionRate, double targettedAmount, double startingCargo, Class containerType) {
 
         // Use EVAOperation parent constructor.
@@ -89,28 +89,28 @@ implements Serializable {
         // Determine location for collection site.
         Point2D collectionSiteLoc = determineCollectionSiteLocation();
         setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
-        
+
         // Take container for collecting resource.
         if (!hasContainers()) {
             takeContainer();
-            
+
             // If container is not available, end task.
             if (!hasContainers()) {
                 logger.fine(person.getName() + " not able to find container to collect resources.");
                 endTask();
             }
         }
-        
+
         // Add task phases
         addPhase(COLLECT_RESOURCES);
     }
-    
+
     /**
      * Determine location for the collection site.
      * @return site X and Y location outside rover.
      */
     private Point2D determineCollectionSiteLocation() {
-        
+
         Point2D newLocation = null;
         boolean goodLocation = false;
         for (int x = 0; (x < 5) && !goodLocation; x++) {
@@ -122,16 +122,16 @@ implements Serializable {
                 double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
                 Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                         boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                         person.getCoordinates());
             }
         }
 
         return newLocation;
     }
-    
+
     @Override
     protected TaskPhase getOutsideSitePhase() {
         return COLLECT_RESOURCES;
@@ -143,9 +143,9 @@ implements Serializable {
      * @return the remaining time after the phase has been performed.
      */
     protected double performMappedPhase(double time) {
-        
+
         time = super.performMappedPhase(time);
-        
+
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
@@ -214,7 +214,7 @@ implements Serializable {
      * @param resourceType the resource for capacity.
      * @return container.
      */
-    private static Unit findLeastFullContainer(Inventory inv, Class containerType, 
+    private static Unit findLeastFullContainer(Inventory inv, Class containerType,
             AmountResource resource) {
         Unit result = null;
         double mostCapacity = 0D;
@@ -232,7 +232,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Perform the collect resources phase of the task.
      * @param time the time to perform this phase (in millisols)
@@ -244,7 +244,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // Check if site duration has ended or there is reason to cut the collect 
+        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        checkForRadiation(time);
+
+        // Check if site duration has ended or there is reason to cut the collect
         // resources phase short and return to the rover.
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
@@ -254,7 +257,7 @@ implements Serializable {
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
                 resourceType, true, false);
         double currentSamplesCollected = rover.getInventory().getAmountResourceStored(
-                resourceType, false) - startingCargo; 
+                resourceType, false) - startingCargo;
         double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
         double sampleLimit = remainingPersonCapacity;
         if (remainingSamplesNeeded < remainingPersonCapacity) {
@@ -298,12 +301,12 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
             return time - (sampleLimit / collectionRate);
         }
-        
+
     }
-    
+
     @Override
     public void endTask() {
-        
+
         // Unload containers to rover's inventory.
         Inventory pInv = person.getInventory();
         if (pInv.containsUnitClass(containerType)) {
@@ -315,7 +318,7 @@ implements Serializable {
                 rover.getInventory().storeUnit(container);
             }
         }
-        
+
         super.endTask();
     }
 
@@ -327,7 +330,7 @@ implements Serializable {
      * @param resourceType the resource to collect.
      * @return true if person can perform the task.
      */
-    public static boolean canCollectResources(Person person, Rover rover, Class containerType, 
+    public static boolean canCollectResources(Person person, Rover rover, Class containerType,
             AmountResource resourceType) {
 
         // Check if person can exit the rover.
@@ -347,7 +350,7 @@ implements Serializable {
         // Checks if available container with remaining capacity for resource.
         Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
         boolean containerAvailable = (container != null);
-        
+
         // Check if container and full EVA suit can be carried by person or is too heavy.
         double carryMass = 0D;
         if (container != null) {
@@ -375,7 +378,7 @@ implements Serializable {
         SkillManager manager = person.getMind().getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
+        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
     }
 
     /**

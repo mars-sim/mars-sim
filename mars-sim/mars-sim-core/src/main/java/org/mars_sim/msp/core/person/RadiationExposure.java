@@ -18,6 +18,11 @@ public class RadiationExposure implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    // probability of getting hit by GCG/SPE radiation in an interval of 100 milliSol during an EVA
+    public static final double CHANCE_PER_100MSOL_DURING_EVA = .5; // (arbitrary for now)
+
+    public static final double RAD_PER_SOL = .4087; // = 150 mSv / 365 days
+
 	// COLUMNS of the 2-D dose array
 	// Organ dose equivalent limits, per NCRP guidelines
 	int BFO_dose_equivalent = 0; // BFO = blood-forming organs
@@ -42,7 +47,7 @@ public class RadiationExposure implements Serializable {
 			{ whole_body_dose_effective, 4000, 6000 }	};
 
 	// randomize dose at the start of the sim when a settler arrives on Mars
-	int [][] dose;
+	double [][] dose;
 
 	@SuppressWarnings("unused")
 	private PhysicalCondition condition;
@@ -51,11 +56,11 @@ public class RadiationExposure implements Serializable {
 	public RadiationExposure(PhysicalCondition condition) {
 		//this.person = person;
 		this.condition = condition;
-		dose = new int[3][3];
+		dose = new double[3][3];
 	}
 
 
-	public void addDose(int bodyRegion, int interval, int amount) {
+	public void addDose(int bodyRegion, int interval, double amount) {
 		if (interval == 0) {
 			dose[bodyRegion][thirtyDay] = dose[bodyRegion][thirtyDay] + amount;
 			dose[bodyRegion][annual] = dose[bodyRegion][annual] + amount;
@@ -122,7 +127,7 @@ public class RadiationExposure implements Serializable {
 		int bodyRegion = -1;
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                final int dosage = dose[x][y];
+                final double dosage = dose[x][y];
                 final int limit = DOSE_LIMITS[x][y];
                 if (dosage > limit) {
                 	interval = x;
@@ -142,7 +147,7 @@ public class RadiationExposure implements Serializable {
 
 	}
 
-	public int[][] getDose() {
+	public double[][] getDose() {
 		return dose;
 	}
 
