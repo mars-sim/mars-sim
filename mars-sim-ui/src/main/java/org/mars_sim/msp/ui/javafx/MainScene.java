@@ -56,6 +56,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import javax.swing.SwingUtilities;
@@ -112,6 +113,8 @@ public class MainScene {
 
     private Text timeText;
     private Text memUsedText;
+    private Text memMaxText;
+    private Button memBtn, clkBtn;
 
     private Stage stage;
     private Scene scene;
@@ -324,21 +327,36 @@ public class MainScene {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode().equals(KeyCode.F11)) {
+                if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
                 	if (theme == 1) {
                 		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/themeskin.css").toExternalForm());
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
                 		theme = 2;
+                	    memUsedText.setFill(Color.GREEN);
+                	    memMaxText.setFill(Color.GREEN);
+                	    timeText.setFill(Color.GREEN);
+                	    memBtn.setTextFill(Color.GREEN);
+                	    clkBtn.setTextFill(Color.GREEN);
                 	}
                 	else if (theme == 2) {
                 		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/settlementskin.css").toExternalForm());
+                		scene.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
                 		theme = 3;
+                	    memUsedText.setFill(Color.ORANGERED);
+                	    memMaxText.setFill(Color.ORANGERED);
+                	    timeText.setFill(Color.ORANGERED);
+                	    memBtn.setTextFill(Color.YELLOW);
+                	    clkBtn.setTextFill(Color.YELLOW);
                 	}
                 	else if (theme == 3) {
                 		scene.getStylesheets().clear();
                 		scene.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
                 		theme = 1;
+                	    memUsedText.setFill(Color.GREY);
+                	    memMaxText.setFill(Color.GREY);
+                	    timeText.setFill(Color.GREY);
+                	    memBtn.setTextFill(Color.ORANGE);
+                	    clkBtn.setTextFill(Color.ORANGE);
                 	}
                 }
             }
@@ -376,20 +394,25 @@ public class MainScene {
 	    //statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth()  + 10);
 
 
-	    Button button1 = new Button(" [Memory] ");
-        button1.setBackground(new Background(new BackgroundFill(Color.ORANGE,
-                new CornerRadii(2), new Insets(4))));
+	    memBtn = new Button(" [Memory] ");
+        memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE,
+                new CornerRadii(2), new Insets(1))));
+	    memBtn.setTextFill(Color.ORANGE);
         statusBar.getRightItems().add(new Separator(VERTICAL));
-	    statusBar.getRightItems().add(button1);
+	    statusBar.getRightItems().add(memBtn);
 
         memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	    Text memMaxText = new Text(" Total Designated : " + memMax +  " MB ");
+	    memMaxText = new Text(" Total Designated : " + memMax +  " MB ");
+	    memMaxText.setFill(Color.GREY);
 	    statusBar.getRightItems().add(memMaxText);
 
 	    memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 	    memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	    memUsed = memTotal - memFree;
 	    memUsedText = new Text(" Currently Used : " + memUsed +  " MB ");
+	    memUsedText.setId("mem-text");
+	    //memUsedText.setStyle("-fx-text-inner-color: orange;");
+	    memUsedText.setFill(Color.GREY);
 	    statusBar.getRightItems().add(memUsedText);
 	    statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -403,10 +426,15 @@ public class MainScene {
         }
 
 	    timeText =  new Text(" Earth Time : " + timeStamp + "  ");
-	    Button button2 = new Button(" [Clock] ");
-        button2.setBackground(new Background(new BackgroundFill(Color.ORANGE,
-                new CornerRadii(2), new Insets(4))));
-	    statusBar.getRightItems().add(button2);
+	    //timeText.setStyle("-fx-text-inner-color: orange;");
+	    timeText.setId("time-text");
+	    timeText.setFill(Color.GREY);
+
+	    clkBtn = new Button(" [Clock] ");
+	    clkBtn.setTextFill(Color.ORANGE);
+        clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE,
+                new CornerRadii(2), new Insets(1))));
+	    statusBar.getRightItems().add(clkBtn);
 	    statusBar.getRightItems().add(timeText);
 	    statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -476,12 +504,14 @@ public class MainScene {
 	    //    ee.printStackTrace(System.err);
 	    //}
 		timeText.setText(" Earth Time : " + t + "  ");
+	    //timeText.setStyle("-fx-text-inner-color: orange;");
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	    memUsed = memTotal - memFree;
 	    //int mem = ( memUsedCache + memUsed ) /2;
 	    if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
 	    	memUsedText.setText(" Currently Used : " + memUsed +  " MB ");
+		    //memUsedText.setStyle("-fx-text-inner-color: orange;");
 	    }
     	memUsedCache = memUsed;
 
@@ -1050,6 +1080,14 @@ public class MainScene {
 
 	public MarsNode getMarsNode() {
 		return marsNode;
+	}
+
+	public int getTheme() {
+		return theme;
+	}
+
+	public void setTheme(int skin) {
+		theme = skin;
 	}
 
 	public void destroy() {
