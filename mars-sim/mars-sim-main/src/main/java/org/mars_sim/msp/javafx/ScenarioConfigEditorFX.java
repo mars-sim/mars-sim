@@ -527,7 +527,7 @@ public class ScenarioConfigEditorFX { //implements Runnable {
 				    	if (hasSettlement && row < settlementList.size())
 				    		c.setForeground(java.awt.Color.YELLOW);
 				    	else
-				    		c.setForeground(java.awt.Color.BLUE);
+				    		c.setForeground(new java.awt.Color(6,79,64)); // dark green
 				        return c;
 				    }
 				};

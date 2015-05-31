@@ -1,44 +1,35 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-03-28
+ * @version 3.08 2015-05-30
  * @author Lars Næsbye Christensen
  */
 
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker;
-import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ScrollPane;
+
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.Modality;
+
 import javafx.stage.Stage;
 
-import java.io.File;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -59,6 +50,7 @@ public class MainSceneMenu extends MenuBar  {
 
     private MainDesktopPane desktop;
 	private CheckMenuItem showFullScreenItem ;
+	private MenuItem skinThemeItem;
 
 	private Stage stage;
 	private Stage webStage;
@@ -150,6 +142,21 @@ public class MainSceneMenu extends MenuBar  {
         showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		showFullScreenItem.setSelected(false);
 
+		skinThemeItem = new MenuItem("Skin Theme");
+		skinThemeItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+		//skinThemeItem.setSelected(false);
+
+		//CheckMenuItem skin1 = new CheckMenuItem("Dark-Grey Skin");
+		//skin1.setSelected(true);
+
+		//CheckMenuItem skin2 = new CheckMenuItem("Burgundy Skin");
+		//skin2.setSelected(false);
+
+		//CheckMenuItem skin3 = new CheckMenuItem("Olive Skin");
+		//skin3.setSelected(false);
+
+		//skinThemeItem.getItems().addAll(skin1, skin2, skin3);
+
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
@@ -164,7 +171,7 @@ public class MainSceneMenu extends MenuBar  {
         CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
-        menuSettings.getItems().addAll(showFullScreenItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
+        menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
 
         // --- Menu Notification
         Menu menuNotification = new Menu("Notification");
@@ -365,7 +372,43 @@ public class MainSceneMenu extends MenuBar  {
 	            	mainScene.getStage().setFullScreen(false);
             	}
         });
+/*
+        skinThemeItem.setOnAction(e -> {
+        	int theme = mainScene.getTheme();
+        	if (theme == 1) {
+        		skin1.setSelected(true);
+        		skin2.setSelected(false);
+        		skin3.setSelected(false);
+        	}
+        	else if (theme == 2) {
+        		skin1.setSelected(false);
+        		skin2.setSelected(true);
+        		skin3.setSelected(false);
+        	}
+        	else if (theme == 3) {
+        		skin1.setSelected(false);
+        		skin2.setSelected(false);
+        		skin3.setSelected(true);
+        	}
 
+        });
+
+        skin1.setOnAction(e -> {
+        	if (skin1.isSelected())
+        		mainScene.setTheme(1);
+        });
+
+        skin2.setOnAction(e -> {
+        	if (skin2.isSelected())
+        		mainScene.setTheme(2);
+        });
+
+        skin3.setOnAction(e -> {
+        	if (skin3.isSelected())
+        		mainScene.setTheme(3);
+        });
+
+*/
 		showHideNewsPane.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowing()) {
                 	mainScene.getNotificationPane().show(); // setNotificationPane(true);

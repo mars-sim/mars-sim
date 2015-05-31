@@ -18,7 +18,9 @@ import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
@@ -28,6 +30,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -100,8 +103,7 @@ public class MarsNode {
 		return fxDesktopPane;
 	}
 
-
-	public FXInternalWindow createFXInternalWindow(String title, Pane pane,
+	public FXInternalWindow createFXInternalWindow(String title, StackPane pane, //Pane pane, //Parent parent,
 			double prefWidth, double prefHeight, boolean resizable) {
 		FXInternalWindow fxInternalWindow = new FXInternalWindow(title);
 
@@ -111,6 +113,8 @@ public class MarsNode {
 		//fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
 		fxInternalWindow.setMinHeight(prefHeight);
 		fxInternalWindow.setMinWidth(prefWidth);
+		fxInternalWindow.setMaxHeight(fxDesktopPane.getHeight());
+		fxInternalWindow.setMaxWidth(fxDesktopPane.getWidth());
 		fxInternalWindow.setResizeable(resizable);
 
 		//ScrollPane scrollPane = new ScrollPane();

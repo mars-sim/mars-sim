@@ -20,6 +20,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -27,8 +28,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -78,12 +82,14 @@ public class Browser {
 
 	public FXInternalWindow startMSPWebSite() {
 
-		Pane pane = new Pane();
+
 		FXInternalWindow fxInternalWindow = new FXInternalWindow();
 		//Stage webStage = new Stage();
 	    //Group root = new Group();
 	    //webStage.setTitle("Mars Simulation Project Website");
 	    //webStage.initModality(Modality.APPLICATION_MODAL);
+
+		BorderPane borderPane = new BorderPane();
 
 		VBox vbox = new VBox(10);
 		vbox.setPadding(new Insets(5,5,5,5));
@@ -96,7 +102,9 @@ public class Browser {
 		TextField textField = new TextField();
 		textField.setStyle("-fx-text-inner-color: orange;");
 		textField.setPadding(new Insets(5,5,5,5));
-		textField.setPrefColumnCount(80);
+		textField.setPrefColumnCount(800);
+		//textField.setPrefSize( Double.MAX_VALUE, Double.MAX_VALUE );
+		textField.setMaxWidth(800);
 		textField.setTooltip(new Tooltip("Enter your URL here"));
 		textField.setPromptText("mars-sim.sourceforge.net/#development");
 		//textField.setOnAction(eh);
@@ -131,7 +139,9 @@ public class Browser {
 		hbox.getChildren().addAll(homeButton, textField, reloadButton);
 		vbox.getChildren().add(hbox);
 
-	    vbox.getChildren().add(webView);
+		borderPane.setTop(vbox);
+		borderPane.setCenter(webView);
+	    //vbox.getChildren().add(webView);
 
 	    reloadButton.defaultButtonProperty().bind(reloadButton.focusedProperty());
 		//button.setDefaultButton(true);
@@ -140,23 +150,25 @@ public class Browser {
 		homeButton.setOnAction(buttonAction(new TextField("http://mars-sim.sourceforge.net/#development"), webEngine, webView));
 
 
-        textField.setOnKeyPressed(new EventHandler<KeyEvent>()
-        {
+        textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
-            public void handle(KeyEvent ke)
-            {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
                     //loadPage(textField, progressBar, webEngine, webView);
-                    loadPage(textField, webEngine, webView);
+            		if (textField.getText() !=null)
+            			loadPage(textField, webEngine, webView);
                 }
             }
         });
 
 	    //ObservableList<Node> children = root.getChildren();
         //children.add(webView);
-        pane.getChildren().addAll(vbox);
-		//StackedScenePane stackedScenePane = new StackedScenePane(webStage, root);
+
+		StackPane pane = new StackPane();
+        pane.getChildren().add(borderPane);
+		//Parent parent = new Region();
+        //parent.getChildrenUnmodifiable().add(vbox);
+        //StackedScenePane stackedScenePane = new StackedScenePane(webStage, root);
  	    fxInternalWindow = mainScene.getMarsNode().createFXInternalWindow("Web Tool", pane, 800, 600, false);
 
 	    return fxInternalWindow;
@@ -167,10 +179,11 @@ public class Browser {
 			WebEngine webEngine, WebView webView) {
 
 		String route = textField.getText();
-		if (!route.substring(0, 7).equals("http://")) {
-			route = "http://" + route;
-			textField.setText(route);
-		}
+		if (route !=null)
+			if (!route.substring(0, 7).equals("http://")) {
+				route = "http://" + route;
+				textField.setText(route);
+			}
 
 		System.out.println("Loading route: " + route);
 		//progressBar.progressProperty().bind(webEngine.getLoadWorker().progressProperty());
@@ -195,9 +208,11 @@ public class Browser {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				loadPage(textField, //progressBar,
-						webEngine,
-						webView);
+				if (textField.getText() != null) {
+					loadPage(textField, //progressBar,
+							webEngine,
+							webView);
+				}
 			}
 		};
 	}
