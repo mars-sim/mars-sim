@@ -41,8 +41,8 @@ public class MarsProjectStarter {
         command.append(" -cp .").append(File.pathSeparator);
         command.append("*").append(File.pathSeparator);
         command.append("jars").append(File.separator).append("*");
-        command.append(" org.mars_sim.msp.MarsProject");
-        //command.append(" org.mars_sim.msp.javafx.MarsProjectFX");
+        //command.append(" org.mars_sim.msp.MarsProject");
+        command.append(" org.mars_sim.msp.javafx.MarsProjectFX");
 
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);

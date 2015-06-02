@@ -23,14 +23,16 @@
 		<part type="flexible hose" number="10"/>
 
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="selective laser sintering 3d printer" number="2"/>
+		<part type="laser sintering 3d printer" number="2"/>
 		<part type="heat pump" number="2"/>
 		<part type="carbon dioxide laser" number="5"/>
 		<part type="helium neon laser" number="5"/>
 		<part type="optical lens" number="20"/>
+		<part type="optical prism" number="20"/>
 		<!-- 2015-03-09 Added the following new parts -->
-		<part type="light emitting diode kit" number="100" />
-		<part type="mushroom containment kit" number="3" />
+		<part type="light emitting diode kit" number="20" />
+		<part type="light emitting diode bulb" number="50" />
+		<part type="mushroom containment kit" number="5" />
 		<!-- 2014-11-20 Added the following new parts -->
 		<part type="microcontroller" number="30" />
 		<part type="microwave" number="3" />
@@ -121,13 +123,16 @@
 		<part type="large air duct" number="20"/>
 		<part type="flexible hose" number="20"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="selective laser sintering 3d printer" number="3"/>
+		<part type="laser sintering 3d printer" number="3"/>
 		<part type="heat pump" number="5"/>
 		<part type="carbon dioxide laser" number="10"/>
 		<part type="helium neon laser" number="10"/>
 		<part type="optical lens" number="40"/>
+		<part type="optical prism" number="40"/>
 		<!-- 2015-03-09 Added the following new parts -->
 		<part type="light emitting diode kit" number="40" />
+		<part type="light emitting diode bulb" number="100" />
+		<part type="mushroom containment kit" number="10" />
 		<!-- 2014-11-20 Added the following new parts -->
 		<part type="microcontroller" number="60" />
 		<part type="microwave" number="10" />
@@ -220,13 +225,16 @@
 		<part type="large air duct" number="30"/>
 		<part type="flexible hose" number="30"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="selective laser sintering 3d printer" number="4"/>
+		<part type="laser sintering 3d printer" number="4"/>
 		<part type="heat pump" number="10"/>
 		<part type="carbon dioxide laser" number="20"/>
 		<part type="helium neon laser" number="20"/>
 		<part type="optical lens" number="60"/>
+		<part type="optical prism" number="60"/>
 		<!-- 2015-03-09 Added the following new parts -->
 		<part type="light emitting diode kit" number="60" />
+		<part type="light emitting diode bulb" number="150" />
+		<part type="mushroom containment kit" number="15" />
 		<!-- 2014-11-20 Added the following new parts -->
 		<part type="microcontroller" number="80" />
 		<part type="microwave" number="15" />
@@ -319,13 +327,16 @@
 		<part type="large air duct" number="40"/>
 		<part type="flexible hose" number="40"/>
 		<!-- 2015-05-18 Added the following new parts -->
-		<part type="selective laser sintering 3d printer" number="5"/>
+		<part type="laser sintering 3d printer" number="8"/>
 		<part type="heat pump" number="20"/>
 		<part type="carbon dioxide laser" number="30"/>
 		<part type="helium neon laser" number="30"/>
 		<part type="optical lens" number="80"/>
+		<part type="optical prism" number="80"/>
 		<!-- 2015-03-09 Added the following new parts -->
-		<part type="light emitting diode bulb" number="100" />
+		<part type="light emitting diode kit" number="100" />
+		<part type="light emitting diode bulb" number="200" />
+		<part type="mushroom containment kit" number="20" />
 		<!-- 2014-11-20 Added the following new parts -->
 		<part type="microcontroller" number="200" />
 		<part type="microwave" number="10" />

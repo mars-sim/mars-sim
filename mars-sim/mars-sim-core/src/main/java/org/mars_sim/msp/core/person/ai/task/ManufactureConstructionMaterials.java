@@ -588,6 +588,7 @@ implements Serializable {
             if (chosenProcess != null) {
                 result = new ManufactureProcess(chosenProcess, workshop);
                 workshop.addProcess(result);
+
             }
         }
 

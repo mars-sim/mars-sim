@@ -16,24 +16,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Structure;
@@ -80,7 +76,7 @@ LocalBoundedObject, InsidePathLocation {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
-	//private static Logger logger = Logger.getLogger(Building.class.getName());
+	private static Logger logger = Logger.getLogger(Building.class.getName());
 
 	DecimalFormat fmt = new DecimalFormat("###.####");
 
@@ -124,6 +120,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected MalfunctionManager malfunctionManager;
 	protected LifeSupport lifeSupport;
 	private EVA eva;
+    private Inventory itemInventory;
 
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
@@ -145,6 +142,11 @@ LocalBoundedObject, InsidePathLocation {
 		this.manager = manager;
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
+
+		//if (!buildingType.equals("Hallway") || !buildingType.equals("Tunnel")) {
+			itemInventory = new Inventory(this);
+			itemInventory.addGeneralCapacity(100000);
+		//}
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.HEAT_OFF;
@@ -175,6 +177,7 @@ LocalBoundedObject, InsidePathLocation {
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 
 		super(nickName, manager.getSettlement().getCoordinates());
+	    //logger.info("Building's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		this.id = id;
 		this.buildingType = buildingType;
@@ -222,10 +225,10 @@ LocalBoundedObject, InsidePathLocation {
 		basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(buildingType);
 		wearLifeTime = config.getWearLifeTime(buildingType);
 		maintenanceTime = config.getMaintenanceTime(buildingType);
+
+		// Set room temperature
 		roomTemperature = config.getRoomTemperature(buildingType);
-
-
-		// TODO: determine the benefit of adding base heat requirements.
+		// TODO: determine the benefit of adding other heat requirements.
 		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
 		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
 
@@ -249,6 +252,7 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 		}
+
 	}
 
 	//Constructor 3
@@ -257,6 +261,9 @@ LocalBoundedObject, InsidePathLocation {
 		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
+    public Inventory getItemInventory() {
+    	return itemInventory;
+    }
 
 	/**
      * Gets the description of a building.

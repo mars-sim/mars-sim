@@ -44,6 +44,7 @@ public final class PartConfig implements Serializable {
      */
     public PartConfig(Document itemResourceDoc) {
         loadItemResources(itemResourceDoc);
+        //System.out.println("done with PartConfig constructor");
     }
 
     /**
@@ -61,7 +62,7 @@ public final class PartConfig implements Serializable {
 
             // Get name.
             name = partElement.getAttributeValue(NAME);
-            
+
             // get description
             Element descriptElem = partElement.getChild(DESCRIPTION);
             if (descriptElem != null) {

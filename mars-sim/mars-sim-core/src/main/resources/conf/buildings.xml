@@ -1703,6 +1703,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</food-production>
 
 			<life-support capacity="6" power-required="12.0" />
+
+			<manufacture tech-level="2" concurrent-processes="1">
+				<activity>
+					<activity-spot xloc="-1.43" yloc="-1.87" />
+				</activity>
+			</manufacture>
+
 			<medical-care tech-level="2" beds="1">
 				<activity>
 					<activity-spot xloc="3.7" yloc="4.2" />

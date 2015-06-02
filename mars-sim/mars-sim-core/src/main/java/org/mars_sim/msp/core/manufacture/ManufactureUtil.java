@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.manufacture;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.mars_sim.msp.core.Inventory;
@@ -45,8 +47,13 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  */
 public final class ManufactureUtil {
 
+
+    private static ItemResource printerItem;
+
     /** Private constructor. */
-    private ManufactureUtil() {}
+    private ManufactureUtil() {
+        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
+    }
 
     /**
      * Gets all manufacturing processes.
@@ -145,7 +152,7 @@ public final class ManufactureUtil {
         Iterator<ManufactureProcessInfo> i = config.getManufactureProcessList().iterator();
         while (i.hasNext()) {
             ManufactureProcessInfo process = i.next();
-            if ((process.getTechLevelRequired() <= techLevel) && 
+            if ((process.getTechLevelRequired() <= techLevel) &&
                     (process.getSkillLevelRequired() <= skillLevel)) result.add(process);
         }
 
@@ -167,7 +174,7 @@ public final class ManufactureUtil {
         Iterator<SalvageProcessInfo> i = config.getSalvageList().iterator();
         while (i.hasNext()) {
             SalvageProcessInfo process = i.next();
-            if ((process.getTechLevelRequired() <= techLevel) && 
+            if ((process.getTechLevelRequired() <= techLevel) &&
                     (process.getSkillLevelRequired() <= skillLevel)) result.add(process);
         }
 
@@ -335,22 +342,72 @@ public final class ManufactureUtil {
      */
     public static boolean canProcessBeStarted(ManufactureProcessInfo process,
             Manufacture workshop) {
-        boolean result = true;
+        // settlement's inventory
+        Inventory inv = workshop.getBuilding().getBuildingManager().getSettlement().getInventory();
 
         // Check to see if workshop is full of processes.
-        if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) result = false;
+        if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) {
+        	return false;
+        }
 
         // Check to see if process tech level is above workshop tech level.
-        if (workshop.getTechLevel() < process.getTechLevelRequired()) result = false;
+        else if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+        	return false;
+        }
 
-        Inventory inv = workshop.getBuilding().getInventory();
+        // Check to see if there is an available printer in this building
+        else if (!isAn3DPrinterAvailable(workshop)) {
+        	return false;
+        }
 
         // Check to see if process input items are available at settlement.
-        if (!areProcessInputsAvailable(process, inv)) result = false;
+        else if (!areProcessInputsAvailable(process, inv)) {
+        	return false;
+        }
 
         // Check to see if room for process output items at settlement.
         // if (!canProcessOutputsBeStored(process, inv)) result = false;
+        else
+        	return true;
+    }
 
+	/**
+	 * Check to see if there is an available printer in this building
+	 * @param inv
+	 * @param workshop
+	 * @return true if there is an available 3D Printer.
+	 */
+    //2015-06-01 isAn3DPrinterAvailable()
+    public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
+    	boolean result = false;
+    	int inBldg = 0;
+    	Building building = workshop.getBuilding();
+        //System.out.println("ManufactureUtil : starting isAn3DPrinterAvailable()");
+
+        //if (workshop.getNumPrinterInUse() == 0)
+        //	workshop.set3DPrinterLocation(building);
+
+    	if (building.getItemInventory() != null) {
+	        Inventory itemInventory = building.getItemInventory();
+	        //System.out.println("ManufactureUtil. itemInventory is " + itemInventory);
+
+	        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
+	        if (itemInventory.hasItemResource(printerItem))
+		        if (itemInventory.getItemResourceNum(printerItem)>0) {
+		        	inBldg = itemInventory.getItemResourceNum(printerItem);
+
+			        int inUse = workshop.getNumPrinterInUse();
+			        //System.out.println("ManufactureUtil.  " + inBldg + " : inBldg    " + inUse + " : inUse ");
+
+			        if (inBldg > inUse) {
+			        	result = true;
+			        	//System.out.println("ManufactureUtil.java isAn3DPrinterAvailable() : Yes");
+			        }
+
+		        }
+	        // TODO: check if one of them is not malfunction or down for maintenance
+    	}
+        //System.out.println("ManufactureUtil : isAn3DPrinterAvailable() : "+ result);
         return result;
     }
 
@@ -428,7 +485,7 @@ public final class ManufactureUtil {
 			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
 				AmountResource resource = AmountResource.findAmountResource(item.getName());
 				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
-				if (item.getAmount() > capacity) result = false; 
+				if (item.getAmount() > capacity) result = false;
 			}
 			else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
 				Part part = (Part) ItemResource.findItemResource(item.getName());
@@ -439,7 +496,7 @@ public final class ManufactureUtil {
 			else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
 				String equipmentType = item.getName();
 				int number = (int) item.getAmount();
-				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
+				Equipment equipment = EquipmentFactory.getEquipment(equipmentType,
 						new Coordinates(0D, 0D), true);
 				double mass = equipment.getBaseMass() * number;
 				double capacity = inv.getGeneralCapacity();
@@ -448,7 +505,7 @@ public final class ManufactureUtil {
 			else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
 				// Vehicles are stored outside a settlement.
 			}
-			else throw new BuildingException("Manufacture.addProcess(): output: " + 
+			else throw new BuildingException("Manufacture.addProcess(): output: " +
 					item.getType() + " not a valid type.");
 		}
 
@@ -482,7 +539,7 @@ public final class ManufactureUtil {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
-            if (manufacturingFunction.getTechLevel() > highestTechLevel) 
+            if (manufacturingFunction.getTechLevel() > highestTechLevel)
                 highestTechLevel = manufacturingFunction.getTechLevel();
         }
 

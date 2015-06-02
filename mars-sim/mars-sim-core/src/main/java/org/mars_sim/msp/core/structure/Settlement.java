@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -179,6 +180,7 @@ implements LifeSupportType {
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         chainOfCommand = new ChainOfCommand(this);
+
     }
 
 	/**

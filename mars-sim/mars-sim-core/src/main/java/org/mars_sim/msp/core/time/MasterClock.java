@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.time;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 
 import java.io.File;
 import java.io.IOException;
@@ -634,12 +636,12 @@ public class MasterClock implements Serializable { // Runnable,
 	            }
 	       }
 
-	  //if (clockListenerTaskList.isEmpty())
-		setupClockListenerTask();
-*/
-		if (!clockListenerTaskList.isEmpty() || clockListenerTaskList != null)
+		/////
+
+		if (!clockListenerTaskList.isEmpty() || clockListenerTaskList != null) {
 			// run all clockListener Tasks
-		  	clockListenerTaskList.forEach(t -> {
+
+			clockListenerTaskList.forEach(t -> {
 				// TODO: check if the thread for t is running
 		  			try {
 		  		  		if ( t != null || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() ) {
@@ -654,6 +656,24 @@ public class MasterClock implements Serializable { // Runnable,
 	                }
 
 			});
+*/
+		Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
+		while (i.hasNext()) {
+			try {
+				ClockListenerTask task = i.next();
+
+  		  		if ( task != null || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() ) {
+	  		  		task.addTime(time);
+  		  			clockListenerExecutor.execute(task);
+  		  		}
+  		  		else
+  		  			return;
+  				//}
+            } catch (Exception e) {
+				e.printStackTrace();
+        		//throw new IllegalStateException("Error while firing clock pulse", e);
+            }
+        }
 
 	  	//endClockListenerExecutor();
 
