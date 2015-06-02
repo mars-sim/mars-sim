@@ -85,17 +85,12 @@ public class MarsNode {
 
 		windowManager = new FXDesktopWindowManager();
 		windowManager.addWindow(fxInternalWindow);
-
 	}
 
 
 	public FXDesktopPane createFXDesktopPane() {
 		fxDesktopPane = new FXDesktopPane();
-
 		fxDesktopPane.setWindowManager(windowManager);
-		//fxDesktopPane.setBackgroundPane();
-		//fxDesktopPane.getActiveWindow();
-
 		return fxDesktopPane;
 	}
 
@@ -117,10 +112,6 @@ public class MarsNode {
 		fxInternalWindow.setMaxWidth(fxDesktopPane.getWidth());
 		fxInternalWindow.setResizeable(resizable);
 
-		//ScrollPane scrollPane = new ScrollPane();
-	    //scrollPane.setFitToWidth(true);
-	    //scrollPane.setContent(pane);
-		//fxInternalWindow.setContent(scrollPane);
 		fxInternalWindow.setContent(pane);
 
 		windowManager.addWindow(fxInternalWindow);
@@ -149,27 +140,19 @@ public class MarsNode {
 		Iterator<Settlement> i = settlementList.iterator();
 		while(i.hasNext()) {
 			Settlement settlement = i.next();
-			//String sname = settlement.getName();
-			//Label label = new Label(" ");
 			v.getChildren().addAll(createEach(settlement));
-
 		}
 
 		pane.getChildren().add(v);
-
 
 	    return pane;
 	  }
 
 	public Label createEach(Settlement settlement) {
-		//VBox v = new VBox(10);
-	    //v.setSpacing(10);
-	    //v.setPadding(new Insets(0, 20, 10, 20));
-	    //v.getChildren().addAll();
 		Label l = new Label(settlement.getName());
-		//Button b = new Button("Detail");
 
 		l.setPadding(new Insets(20));
+		l.setAlignment(Pos.CENTER);
 		l.setMaxWidth(Double.MAX_VALUE);
 
 		l.setId("settlement-node");
@@ -179,65 +162,20 @@ public class MarsNode {
       	PopOver popOver = null;
           @Override
           public void handle(MouseEvent evt) {
-          	if (popOver == null) {
-          		// TODO: the new popover will go to the front, pushing the old popover to the background
-                  popOver = createPopOver(l, settlement);
+        	if (popOver == null ) {
+                 popOver = createPopOver(l, settlement);
           	}
-
-          	else if (popOver.isShowing() && !popOver.isDetached()) {
-                  popOver.hide(Duration.seconds(.5));  // (Duration.ZERO)
-                  //popOver = null;
-              }
-
-          	else if (popOver.isShowing() && popOver.isDetached()) {
-                  popOver.hide(Duration.ZERO);  // (Duration.ZERO)
-                  //popOver.show(b);
-                  //popOver.setDetached(true);
-              }
-
-          	else if (!popOver.isShowing()) {
-                  popOver = createPopOver(l, settlement);
-                  //popOver.setDetached(false);
-          		//popOver.show(b);
-              }
-
-          	else if (evt.getClickCount() == 2 ) {
-          		if (!popOver.isShowing()) {
-          			popOver = createPopOver(l, settlement);
-          			popOver.setDetached(false);
-          		}
-          		//popOver.show(b);
-              }
-
+        	else if (evt.getClickCount() >= 1) {
+                popOver.hide(Duration.seconds(.5));
+         	}
+        	else if (popOver.isShowing()) {
+          		popOver.hide(Duration.seconds(.5));
+          	}
+        	else if (!popOver.isShowing()) {
+          		popOver = createPopOver(l, settlement);
+          	}
           }
       });
-      /*
-		// Handle Button event.
-		b.setOnAction((event) -> {
-
-			if (popover == null)
-				popover = createPopOver(b);
-			else
-				popover.hide();
-			//System.out.println("create popover");
-		});
-
-
-		b.setOnMouseDragged(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent t) {
-	            if (t.isPrimaryButtonDown()) {
-	                System.out.println("rockets armed");
-	            }
-	            if (t.isSecondaryButtonDown()) {
-	                System.out.println("autoaim engaged");
-	            }
-	        }
-	    });
-		*/
-
-		//b.setStyle("-fx-background-color: orange");
-
 		return l;
 	}
 
@@ -249,47 +187,22 @@ public class MarsNode {
 		else if (unit instanceof Person)
 			person = (Person) unit;
 
-		//isPopped = true;
 		String title = l.getText();
 		PopOver popover = new PopOver();
 		popover.setDetachedTitle(title);
 		popover.setDetachable(true);
 		popover.show(l);
 
-		/*
-      popover.setOnShown(evt -> {
-      // The user clicked somewhere into the transparent background. If
-      // this is the case the hide the window (when attached).
-	    	popover.getScene().addEventHandler(MOUSE_CLICKED, mouseEvent -> {
-	            if (mouseEvent.getTarget().equals(popover.getScene().getRoot())) {
-	                if (!popover.isDetached()) {
-	                	popover.hide();
-	                }
-	            }
-	        });
+		HBox root = new HBox();
+		root.setSpacing(2);
+		root.setPadding(new Insets(10, 10, 10, 10));
 
-	    });
-	      */
-      HBox root = new HBox();
-	  root.setSpacing(2);
-	  root.setPadding(new Insets(10, 10, 10, 10));
+		if (settlement != null) {
 
-      if (settlement != null) {
-			//String sname = settlement.getName();
-			//Label sideLabel = new Label("Settlement Dashboard");
-			//sideLabel.setRotate(-90);
 			Label topLabel = new Label("Settlement Dashboard");
-			//topLabel.setFont(new Font("Cambria", 20));
 			topLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-			//topLabel.setSpacing(10);
+			topLabel.setLineSpacing(1);
 			topLabel.setPadding(new Insets(5, 5, 5, 5));
-
-			//topLabel.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			 //   @Override public void handle(MouseEvent e) {
-			//    	topLabel.setScaleX(1.5);
-			//    	topLabel.setScaleY(1.5);
-			//    }
-			//});
 
 			topLabel.setTextFill(Color.FIREBRICK);
 			topLabel.setAlignment(Pos.BOTTOM_CENTER);
@@ -304,19 +217,19 @@ public class MarsNode {
       }
 
       else if (person != null) {
-			//String sname = person.getName();
-			//Label label = new Label("Your Rating : ");
-			//Rating rating = new Rating();
-			Pane pane = new Pane();
+    	  System.out.println("inside createPopOver() if person...");
 
+			Label topLabel = new Label("Settler Dashboard");
+			topLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18)); //"Cambria"
+			topLabel.setLineSpacing(1);
+			topLabel.setPadding(new Insets(5, 5, 5, 5));
+			topLabel.setTextFill(Color.FIREBRICK);
+			topLabel.setAlignment(Pos.BOTTOM_CENTER);
 
+	        VBox vBox = new VBox();
 
-			//pane.getChildren().add(rating);
-			//rating.setMaxSize(200, 20);
-			root.getChildren().addAll(pane);
-
-
-
+	        vBox.getChildren().addAll(topLabel);
+	        root.getChildren().addAll(vBox);
       }
 
       // Fade In
@@ -420,7 +333,6 @@ public class MarsNode {
 	    v.setSpacing(10);
 	    v.setPadding(new Insets(0, 20, 10, 20));
 
-
 	    Collection<Person> persons = settlement.getInhabitants();
 		List<Person> personList = new ArrayList<Person>(persons);
 		Iterator<Person> i = personList.iterator();
@@ -445,36 +357,18 @@ public class MarsNode {
       	PopOver popOver = null;
           @Override
           public void handle(MouseEvent evt) {
-          	if (popOver == null) {
-          		// TODO: the new popover will go to the front, pushing the old popover to the background
-                  popOver = createPopOver(l, person);
-          	}
-
-          	else if (popOver.isShowing() && !popOver.isDetached()) {
-                  popOver.hide(Duration.seconds(.5));  // (Duration.ZERO)
-                  //popOver = null;
-              }
-
-          	else if (popOver.isShowing() && popOver.isDetached()) {
-                  popOver.hide(Duration.ZERO);  // (Duration.ZERO)
-                  //popOver.show(b);
-                  //popOver.setDetached(true);
-              }
-
-          	else if (!popOver.isShowing()) {
-                  popOver = createPopOver(l, person);
-                  //popOver.setDetached(false);
-          		//popOver.show(b);
-              }
-
-          	else if (evt.getClickCount() == 2 ) {
-          		if (!popOver.isShowing()) {
-          			popOver = createPopOver(l, person);
-          			popOver.setDetached(false);
-          		}
-          		//popOver.show(b);
-              }
-
+              	if (popOver == null ) {
+                       popOver = createPopOver(l, person);
+              	}
+              	else if (evt.getClickCount() >= 1) {
+                      popOver.hide(Duration.seconds(.5));
+               	}
+              	else if (popOver.isShowing()) {
+                		popOver.hide(Duration.seconds(.5));
+              	}
+              	else if (!popOver.isShowing()) {
+                		popOver = createPopOver(l, person);
+              	}
           }
       });
 

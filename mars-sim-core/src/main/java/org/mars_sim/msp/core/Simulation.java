@@ -315,12 +315,12 @@ implements ClockListener, Serializable {
 
         if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
 	        clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
-	        //System.out.println("Simulation's start() : clockExecutor was null. just made one");
+	        //logger.info("Simulation's start() : clockExecutor was null. just made one");
 	        clockExecutor.execute(masterClock.getClockThreadTask());
 	        //logger.info("Simulation : just loading clockExecutor for masterClock");
         }
         //else if (clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
-	    //    System.out.println("Simulation : clockExecutor was shutdown or terminated. execute next");
+	    //    logger.info("Simulation : clockExecutor was shutdown or terminated. execute next");
 	    //    clockExecutor.submit(masterClock.getClockThreadTask());
 	    //    logger.info("Simulation : just loading clockExecutor for masterClock");
         //}
@@ -740,7 +740,7 @@ implements ClockListener, Serializable {
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
     public void destroyOldSimulation() {
-    	System.out.println("starting Simulation's destroyOldSimulation()");
+    	logger.info("starting Simulation's destroyOldSimulation()");
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
@@ -796,7 +796,7 @@ implements ClockListener, Serializable {
             managerExecutor.shutdownNow();
             managerExecutor = null;
         }
-    	System.out.println("Simulation's destroyOldSimulation() is done");
+    	logger.info("Simulation's destroyOldSimulation() is done");
     }
 
 }

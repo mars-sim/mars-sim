@@ -452,8 +452,8 @@
 	<malfunction name="Water Pump Failure">
 		<severity value="50" />
 		<probability value="10.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="0.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="40.0" />
 		<entity-list>
 			<entity name="areothermal power source" />
 		</entity-list>
@@ -466,11 +466,11 @@
 	</malfunction>
 
 	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
-	<malfunction name="Carbon Dioxide Failure">
+	<malfunction name="Carbon Dioxide Pump Failure">
 		<severity value="40" />
 		<probability value="5.0" />
-		<repair-time value="100.0" />
-		<emergency-repair-time value="0.0" />
+		<repair-time value="80.0" />
+		<emergency-repair-time value="40.0" />
 		<entity-list>
 			<entity name="farming" />
 		</entity-list>
@@ -485,16 +485,16 @@
 	<malfunction name="Kitchen Food Blender Failure">
 		<severity value="40" />
 		<probability value="3.0" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="0.0" />
+		<repair-time value="40.0" />
+		<emergency-repair-time value="20.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="1" probability="3" />
-			<part name="wire connector" number="1" probability="3" />
-			<part name="blender" number="1" probability="3" />
-			<part name="lubricant bottle" number="1" probability="3" />
+			<part name="electrical wire" number="1" probability="20" />
+			<part name="wire connector" number="1" probability="20" />
+			<part name="blender" number="1" probability="5" />
+			<part name="lubricant bottle" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -503,14 +503,14 @@
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="80.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="40.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="3" />
-			<part name="wire connector" number="2" probability="3" />
-			<part name="oven" number="1" probability="3" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="oven" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -518,16 +518,15 @@
 	<malfunction name="Kitchen Ventilation Fan Failure">
 		<severity value="40" />
 		<probability value="3.0" />
-		<repair-time value="80.0" />
-		<emergency-repair-time value="0.0" />
+		<repair-time value="40.0" />
+		<emergency-repair-time value="20.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="3" />
-			<part name="wire connector" number="2" probability="3" />
-			<part name="ventilation fan" number="1" probability="3" />
-			<part name="lubricant bottle" number="1" probability="3" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="ventilation fan" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -536,14 +535,14 @@
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="80.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="40.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="3" />
-			<part name="wire connector" number="2" probability="3" />
-			<part name="gasket" number="1" probability="3" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="gasket" number="1" probability="20" />
 			<part name="stove" number="1" probability="3" />
 		</repair-parts-list>
 	</malfunction>
@@ -553,14 +552,17 @@
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="80.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="40.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="3" />
-			<part name="wire connector" number="2" probability="3" />
-			<part name="autoclave" number="1" probability="3" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="small water pump" number="1"  probability="10"/>
+			<part name="electric heating element" number="1" probability="20" />
+			<part name="microcontroller" number="1"  probability="5"/>
+			<part name="ventilation fan" number="1"  probability="10"/>
 		</repair-parts-list>
 	</malfunction>
 
@@ -569,17 +571,16 @@
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="200.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="3" />
-			<part name="wire connector" number="2" probability="3" />
-			<part name="refrigerator" number="1" probability="3" />
-			<part name="valve" number="3" probability="3" />
-			<part name="air compressor" number="1" probability="3" />
-			<part name="lubricant bottle" number="1" probability="3" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="valve" number="3" probability="20" />
+			<part name="air compressor" number="1" probability="10" />
+			<part name="lubricant bottle" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -588,7 +589,7 @@
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="200.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="cooking" />
 		</entity-list>
@@ -604,7 +605,7 @@
 		<severity value="10" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />
-		<emergency-repair-time value="0.0" />
+		<emergency-repair-time value="25.0" />
 		<entity-list>
 			<entity name="cooking" />
 			<entity name="farming" />
@@ -613,7 +614,6 @@
 			<entity name="living accommodations" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="light emitting diode kit" number="1" probability="10" />
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
 			<part name="light emitting diode bulb" number="5" probability="20" />
@@ -630,17 +630,40 @@
 			<entity name="farming" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="mushroom containment kit" number="1" probability="3" />
-			<part name="oxygen pump" number="3" probability="3" />
-			<part name="carbon dioxide pump" number="3" probability="3" />
-			<part name="small water pump" number="3" probability="3" />
-			<part name="electric heating element" number="3" probability="3" />
-			<part name="electrical wire" number="3" probability="1" />
-			<part name="wire connector" number="6" probability="1" />
-			<part name="fiberglass cloth" number="3" probability="1" />
-			<part name="valve" number="10" probability="2"  />
-			<part name="gasket" number="10" probability="2"  />
-			<part name="plastic tubing" number="10" probability="2"  />
+			<part name="oxygen pump" number="3" probability="10" />
+			<part name="carbon dioxide pump" number="3" probability="10" />
+			<part name="small water pump" number="3" probability="10" />
+			<part name="electric heating element" number="3" probability="10" />
+			<part name="electrical wire" number="3" probability="20" />
+			<part name="wire connector" number="6" probability="20" />
+			<part name="fiberglass cloth" number="3" probability="5" />
+			<part name="valve" number="10" probability="20"  />
+			<part name="gasket" number="10" probability="20"  />
+			<part name="plastic tubing" number="10" probability="20"  />
+		</repair-parts-list>
+	</malfunction>
+
+
+	<!-- 2015-05-31 Added ls 3d printer failure. -->
+	<malfunction name="ls 3d printer failure">
+		<severity value="30" />
+		<probability value="3.0" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="100" />
+		<entity-list>
+			<entity name="manufacturing" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="aluminum wire" number="2" probability="10"  />
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
+			<part name="small water pump" number="1" probability="5" />
+			<part name="electric heating element" number="1" probability="5" />
+			<part name="microcontroller" number="1" probability="5" />
+			<part name="ventilation fan" number="1" probability="5" />
+			<part name="carbon dioxide laser" number="1" probability="20" />
+			<part name="small electric motor" number="3" probability="5" />
+			<part name="optical prism" number="3" probability="3" />
 		</repair-parts-list>
 	</malfunction>
 

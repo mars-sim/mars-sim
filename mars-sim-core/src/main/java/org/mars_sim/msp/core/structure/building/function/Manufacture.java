@@ -70,8 +70,17 @@ implements Serializable {
     // Data members.
     private int techLevel;
     private int concurrentProcesses;
+    private int numPrinterInUse;
+    private int cacheNumPrinters;
+    private boolean checkNumPrinter;
+
     private List<ManufactureProcess> processes;
     private List<SalvageProcess> salvages;
+
+    private Building bldg;
+    private Inventory inv;
+    private ItemResource printerItem;
+    private Inventory itemInventory;
 
     /**
      * Constructor.
@@ -81,6 +90,10 @@ implements Serializable {
     public Manufacture(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
+
+        this.bldg = building;
+        inv = bldg.getInventory();
+        itemInventory = building.getItemInventory();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -92,6 +105,50 @@ implements Serializable {
 
         processes = new ArrayList<ManufactureProcess>();
         salvages = new ArrayList<SalvageProcess>();
+
+        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
+
+		numPrinterInUse = 0;
+		checkNumPrinter = true;
+        //System.out.println("Manufacture : done with Manufacture constructor");
+    }
+
+    /**
+     * Retrieves 3D printer(s) from the settlement and moves them to the building
+     * @param building
+     */
+    public void move3DPrinterToBuilding(Building building, int av) {
+        //System.out.println("Manufacture : starting set3DPrinterLocation()");
+        int processes = concurrentProcesses;
+
+        // TODO: do the following two statement differently to save effort
+        itemInventory = building.getItemInventory(); //
+        //printerItem = ItemResource.findItemResource("laser sintering 3d printer");
+        int inBldg = itemInventory.getItemResourceNum(printerItem);
+        //int av = inv.getItemResourceNum(printerItem);
+
+        if (inBldg == 0) {
+	        if (av <= processes) {  // if there is not enough printers
+	        	inv.retrieveItemResources(printerItem, av);
+	            itemInventory.storeItemResources(printerItem, av);
+	        } else {
+	        	inv.retrieveItemResources(printerItem, processes);
+	            itemInventory.storeItemResources(printerItem, processes);
+	        }
+        } else {
+        	 if (av + inBldg <= processes) {  // if there is not enough printers
+ 	        	inv.retrieveItemResources(printerItem, av);
+ 	        	itemInventory.storeItemResources(printerItem, av);
+        	 } else {
+ 	        	inv.retrieveItemResources(printerItem, processes-inBldg);
+ 	        	itemInventory.storeItemResources(printerItem, processes-inBldg);
+        	 }
+        }
+        checkNumPrinter = false;
+    }
+
+    public int getNumPrinterInUse() {
+    	return numPrinterInUse;
     }
 
     /**
@@ -145,7 +202,7 @@ implements Serializable {
 
         result = manufactureValue * baseManufactureValue;
 
-        // If building has higher tech level than other buildings at settlement, 
+        // If building has higher tech level than other buildings at settlement,
         // add difference between best manufacturing processes.
         if (buildingTech > highestExistingTechLevel) {
             double bestExistingProcessValue = 0D;
@@ -239,13 +296,13 @@ implements Serializable {
         }
         processes.add(process);
 
+
         // Consume inputs.
-        Inventory inv = getBuilding().getInventory();
         for (ManufactureProcessItem item : process.getInfo().getInputList()) {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
                 inv.retrieveAmountResource(resource, item.getAmount());
-                
+
 				// 2015-02-13 addAmountDemand()
 				inv.addAmountDemand(resource, item.getAmount());
             }
@@ -269,9 +326,9 @@ implements Serializable {
         if (logger.isLoggable(Level.FINEST)) {
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             logger.finest(
-                    getBuilding() + " at " 
+                    getBuilding() + " at "
                             + settlement
-                            + " starting manufacturing process: " 
+                            + " starting manufacturing process: "
                             + process.getInfo().getName()
                     );
         }
@@ -293,7 +350,7 @@ implements Serializable {
     public void addSalvageProcess(SalvageProcess process) {
         if (process == null) throw new IllegalArgumentException("process is null");
 
-        if (getTotalProcessNumber() >= concurrentProcesses) 
+        if (getTotalProcessNumber() >= concurrentProcesses)
             throw new IllegalStateException("No space to add new salvage process.");
 
         salvages.add(process);
@@ -326,9 +383,9 @@ implements Serializable {
         // Log salvage process starting.
         if (logger.isLoggable(Level.FINEST)) {
             Settlement stl = getBuilding().getBuildingManager().getSettlement();
-            logger.finest(getBuilding() + " at " 
+            logger.finest(getBuilding() + " at "
                     + stl
-                    + " starting salvage process: " 
+                    + " starting salvage process: "
                     + process.toString());
         }
     }
@@ -360,6 +417,17 @@ implements Serializable {
     @Override
     public void timePassing(double time) {
 
+    	int updatedNumPrinters = inv.getItemResourceNum(printerItem);
+    	if (updatedNumPrinters != cacheNumPrinters) {
+    		checkNumPrinter = true;
+    		cacheNumPrinters = updatedNumPrinters;
+    	}
+
+    	if (checkNumPrinter) {
+			// 2015-06-01 Configure the location of 3D printer
+	        move3DPrinterToBuilding(bldg, updatedNumPrinters);
+    	}
+
         List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
 
         Iterator<ManufactureProcess> i = processes.iterator();
@@ -367,7 +435,7 @@ implements Serializable {
             ManufactureProcess process = i.next();
             process.addProcessTime(time);
 
-            if ((process.getProcessTimeRemaining() == 0D) && 
+            if ((process.getProcessTimeRemaining() == 0D) &&
                     (process.getWorkTimeRemaining() == 0D)) {
                 finishedProcesses.add(process);
             }
@@ -449,8 +517,8 @@ implements Serializable {
                         double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
-                            logger.fine("Not enough storage capacity to store " + overAmount + " of " + 
-                                    item.getName() + " from " + process.getInfo().getName() + " at " + 
+                            logger.fine("Not enough storage capacity to store " + overAmount + " of " +
+                                    item.getName() + " from " + process.getInfo().getName() + " at " +
                                     settlement.getName());
                             amount = capacity;
                         }
@@ -519,8 +587,8 @@ implements Serializable {
                         double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
-                            logger.severe("Not enough storage capacity to store " + overAmount + " of " + 
-                                    item.getName() + " from " + process.getInfo().getName() + " at " + 
+                            logger.severe("Not enough storage capacity to store " + overAmount + " of " +
+                                    item.getName() + " from " + process.getInfo().getName() + " at " +
                                     settlement.getName());
                             amount = capacity;
                         }
@@ -572,10 +640,15 @@ implements Serializable {
 
         processes.remove(process);
 
+        // 2015-06-01 Untag an 3D Printer (upon the process is ended or discontinued)
+        if (numPrinterInUse >= 1)
+        	numPrinterInUse--;
+
+
         // Log process ending.
-        if (logger.isLoggable(Level.FINEST)) { 
+        if (logger.isLoggable(Level.FINEST)) {
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            logger.finest(getBuilding() + " at " + settlement + " ending manufacturing process: " + 
+            logger.finest(getBuilding() + " at " + settlement + " ending manufacturing process: " +
                     process.getInfo().getName());
         }
     }
@@ -590,7 +663,7 @@ implements Serializable {
 
         Map<Part, Integer> partsSalvaged = new HashMap<Part, Integer>(0);
 
-        if (!premature) {    
+        if (!premature) {
             // Produce salvaged parts.
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             GoodsManager goodsManager = settlement.getGoodsManager();
@@ -639,9 +712,9 @@ implements Serializable {
         salvages.remove(process);
 
         // Log salvage process ending.
-        if (logger.isLoggable(Level.FINEST)) { 
+        if (logger.isLoggable(Level.FINEST)) {
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            logger.finest(getBuilding() + " at " + settlement + " ending salvage process: " + 
+            logger.finest(getBuilding() + " at " + settlement + " ending salvage process: " +
                     process.toString());
         }
     }
@@ -659,6 +732,22 @@ implements Serializable {
         return result;
     }
 
+    public void setCheckNumPrinter(boolean value) {
+    	checkNumPrinter = value;
+    }
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
     @Override
     public void destroy() {
         super.destroy();
@@ -674,15 +763,4 @@ implements Serializable {
         }
     }
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

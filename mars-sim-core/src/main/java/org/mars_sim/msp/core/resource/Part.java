@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * The Part class represents a type of unit resource that is used for maintenance and repairs.
@@ -21,7 +22,7 @@ public class Part extends ItemResource {
 	private static final long serialVersionUID = 1L;
 
 	private double mass;
-	
+
 	// Domain members
 	private List<MaintenanceEntity> maintenanceEntities;
 
@@ -35,14 +36,15 @@ public class Part extends ItemResource {
         // Use ItemResource constructor.
         super(name,description,mass);
         this.mass = mass;
-        
+
         maintenanceEntities = new ArrayList<MaintenanceEntity>();
     }
 
     public double getMass() {
     	return mass;
     }
-    
+
+
     /**
      * Adds a maintenance entity for the part.
      * @param name the name of the entity.
@@ -130,6 +132,7 @@ public class Part extends ItemResource {
         return result;
     }
 
+
     public final List<MaintenanceEntity> getMaintenanceEntities() {
     	return this.maintenanceEntities;
     }
@@ -146,7 +149,7 @@ public class Part extends ItemResource {
 		private String name;
 		private int probability;
 		private int maxNumber;
-		
+
 		/**
 		 * Constructor
 		 * @param name name of the entity.

@@ -661,7 +661,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="selective laser sintering 3d printer" mass="50.0">
+	<part name="laser sintering 3d printer" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="3" max-number="2" />
 		</maintenance-entity-list>
@@ -672,6 +672,8 @@
 	<part name="helium neon laser" mass="1.0"/>
 
 	<part name="optical lens" mass=".1"/>
+
+	<part name="optical prism" mass=".1"/>
 
 	<part name="pathogen filtering system" mass="3.0">
 		<maintenance-entity-list>
