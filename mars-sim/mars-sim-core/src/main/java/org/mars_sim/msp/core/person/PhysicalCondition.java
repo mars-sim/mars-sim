@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2015-04-24
+ * @version 3.08 2015-06-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -69,10 +69,10 @@ implements Serializable {
     public static double ENERGY_FACTOR = 0.8D;
 
     /** Performance modifier for hunger. */
-    private static final double HUNGER_PERFORMANCE_MODIFIER = .005D;
+    private static final double HUNGER_PERFORMANCE_MODIFIER = .001D;
 
     /** Performance modifier for fatigue. */
-    private static final double FATIGUE_PERFORMANCE_MODIFIER = .01D;
+    private static final double FATIGUE_PERFORMANCE_MODIFIER = .001D;
 
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
@@ -978,7 +978,6 @@ implements Serializable {
                 tempPerformance -= (hunger - 1000D) * HUNGER_PERFORMANCE_MODIFIER;
             }
 
-            // TODO: change health status as well in all of the following cases
             // High fatigue reduces performance.
             if (fatigue > 1000D) {
                 tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER;
@@ -990,7 +989,6 @@ implements Serializable {
             }
 
         }
-
         else if (robot != null) {
 
              if (kJoules < 200D) {
@@ -998,7 +996,6 @@ implements Serializable {
             }
 
         }
-
 
         if (tempPerformance < 0D) {
             tempPerformance = 0D;
