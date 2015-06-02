@@ -23,10 +23,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/notification/trident-7.2.1-swing.jar"/>
-	<classpathentry kind="lib" path="lib/notification/TimingFramework-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/notification/trident-7.2.1-base.jar"/>
-	<classpathentry kind="lib" path="lib/notification/miglayout-swing-4.3-20121116.151626-3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

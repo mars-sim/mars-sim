@@ -154,6 +154,16 @@ implements Serializable {
 					highestSkillLevel = skill;
 				}
 			}
+			
+			Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
+            while (l.hasNext()) {
+                Robot tempRobot = l.next();
+                SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
+                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (skill > highestSkillLevel) {
+                    highestSkillLevel = skill;
+                }
+            }
 
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			Iterator<Building> j = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
@@ -180,15 +190,25 @@ implements Serializable {
 		Settlement settlement = robot.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = 0;
-			Iterator<Robot> i = settlement.getAllAssociatedRobots().iterator();
-			while (i.hasNext()) {
-				Robot tempRobot = i.next();
-				SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
-				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-				if (skill > highestSkillLevel) {
-					highestSkillLevel = skill;
-				}
-			}
+			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+            while (i.hasNext()) {
+                Person tempPerson = i.next();
+                SkillManager skillManager = tempPerson.getMind().getSkillManager();
+                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (skill > highestSkillLevel) {
+                    highestSkillLevel = skill;
+                }
+            }
+            
+            Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
+            while (l.hasNext()) {
+                Robot tempRobot = l.next();
+                SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
+                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+                if (skill > highestSkillLevel) {
+                    highestSkillLevel = skill;
+                }
+            }
 
 			BuildingManager manager = robot.getSettlement().getBuildingManager();
 			Iterator<Building> j = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
