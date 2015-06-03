@@ -21,7 +21,13 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -64,6 +70,8 @@ import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The Building class is a settlement's building.
@@ -77,6 +85,10 @@ LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
+
+	public static final double PROBABILITY_IMPACT_PER_SQM_PER_YR = .007;
+	// Source: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
+	// assuming the impact is from meteorites having 16 um in diameter and building roof thickness of 0.0000254 m or 0.001 inch
 
 	DecimalFormat fmt = new DecimalFormat("###.####");
 
@@ -92,6 +104,7 @@ LocalBoundedObject, InsidePathLocation {
     // Data members
 	protected int id;
 	protected int baseLevel;
+	private int solCache;
 
 	protected double width;
 	protected double length;
@@ -121,6 +134,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected LifeSupport lifeSupport;
 	private EVA eva;
     private Inventory itemInventory;
+	private MarsClock marsClock;
+	private MasterClock masterClock;
 
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
@@ -187,6 +202,8 @@ LocalBoundedObject, InsidePathLocation {
 		this.yLoc = yLoc;
 		this.facing = facing;
 
+		if (Simulation.instance().getMasterClock() != null)
+			masterClock = Simulation.instance().getMasterClock();
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
@@ -252,6 +269,7 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 		}
+
 
 	}
 
@@ -840,6 +858,9 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) i.next().timePassing(time);
 
+		// 2015-06-02 determine if a meteorite impact occurs within the next sol
+		checkForMeteoriteImpact();
+
 		// Update malfunction manager.
 		malfunctionManager.timePassing(time);
 		// If powered up, active time passing.
@@ -855,6 +876,71 @@ LocalBoundedObject, InsidePathLocation {
 
 	public Map<Integer, ItemResource> getItemMap() {
 		return itemMap;
+	}
+
+	public void checkForMeteoriteImpact() {
+		//if (marsClock == null)
+		marsClock = masterClock.getMarsClock();
+
+        // check for the passing of each day
+        int solElapsed = MarsClock.getSolOfYear(marsClock);
+
+		boolean meteoritePuncture = false;
+
+        if (solElapsed != solCache) {
+        	solCache = solElapsed;
+			double probability  = PROBABILITY_IMPACT_PER_SQM_PER_YR /668.6 * width * length;
+			// add randomness
+			probability = probability
+					+ probability * RandomUtil.getRandomDouble(2D)
+					- probability * RandomUtil.getRandomDouble(2D);
+			double rand = RandomUtil.getRandomDouble(1D);
+			if (rand <= probability)
+				meteoritePuncture = true;
+		}
+
+        int impactTimeInMillisol = 0;
+        if (meteoritePuncture) {
+        	// set a time for the impact to happen within the next sol
+        	impactTimeInMillisol = RandomUtil.getRandomInt(1000);
+        }
+
+        if (meteoritePuncture && (int) marsClock.getMillisol() == impactTimeInMillisol) {
+        	Malfunction item = getMeteoriteImpactMalfunction();
+        	// Simulate the meteorite impact with a malfunction event
+			try {
+				malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+			HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			//check if someone under this roof may get hurt by the impact
+			double probabilityGettingHurt = 0.1; // assuming 10% chance getting hurt for each person
+			Iterator<Person> i = getInhabitants().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				if (RandomUtil.getRandomDouble(1D) < probabilityGettingHurt) {
+					// TODO: someone got hurt, declare medical emergency
+					// TODO: delineate the accidents from those listed in malfunction.xml
+				}
+			}
+        }
+
+	}
+
+	public Malfunction getMeteoriteImpactMalfunction() {
+		Malfunction item = null;
+		List<Malfunction> list = SimulationConfig.instance().getMalfunctionConfiguration().getMalfunctionList() ;
+		Iterator<Malfunction> i = list.iterator();
+		while (i.hasNext()) {
+			Malfunction m = i.next();
+			if (m.getName().equals("meteorite impact"))
+				item = m;
+		}
+		return item;
 	}
 
 	/**

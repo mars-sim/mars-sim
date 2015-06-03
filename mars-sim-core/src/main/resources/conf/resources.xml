@@ -133,33 +133,35 @@
 
 
 <!-- Chemical or Mineral Compounds -->
-	<resource name="Aluminum Oxide" phase="solid" />
-	<resource name="Ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
-	<resource name="Beeswax" phase="solid" />
-	<resource name="Calcium Carbonate" phase="solid" />
-	<resource name="Gypsum" phase="solid" />
-	<resource name="Honey" phase="liquid" />
-	<resource name="Fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
-	<resource name="Iron Oxide" phase="solid">also known as rust</resource>
-	<resource name="Iron Powder" phase="solid" />
-	<resource name="Lime" phase="solid" />
-	<resource name="Nitrate" phase="solid"> NO3- is an essential nutrient for plants</resource>
-	<resource name="Nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
-	<resource name="Potash Lye" phase="solid">Potassium Hydroxide</resource>
-	<resource name="Polyester Resin" phase="liquid" />
-	<resource name="Propolis" phase="solid"> Propolis or bee glue is a resinous mixture collected by honey bees from tree buds,
+	<resource name="aluminum oxide" phase="solid" />
+	<resource name="ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
+	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing plastic and for making polycarbonate</resource>
+	<resource name="beeswax" phase="solid" />
+	<resource name="calcium Carbonate" phase="solid" />
+	<resource name="gypsum" phase="solid" />
+	<resource name="honey" phase="liquid" />
+	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
+	<resource name="iron Oxide" phase="solid">also known as rust</resource>
+	<resource name="iron Powder" phase="solid" />
+	<resource name="lime" phase="solid" />
+	<resource name="nitrate" phase="solid"> NO3- is an essential nutrient for plants</resource>
+	<resource name="nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
+	<resource name="potash Lye" phase="solid">Potassium Hydroxide</resource>
+	<resource name="polycarbonate resin" phase="liquid" />
+	<resource name="polyester resin" phase="liquid" />
+	<resource name="propolis" phase="solid"> Propolis or bee glue is a resinous mixture collected by honey bees from tree buds,
 	sap flows, or other botanical sources. Used as a sealant for unwanted open spaces in the hive,
 	Propolis is the focus of a large number of research projects published in the biomedical literature
 	as an oral hygiene product, emollient, antioxidant or an antimicrobial agent, as a treatment for allergies,
 	in cancer treatment and cancer prevention.	</resource>
 
-	<resource name="Polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
-	<resource name="Regolith" phase="solid">Martian soil</resource>
-	<resource name="Rock Samples" phase="solid">Rock samples collected from explored sites.</resource>
-	<resource name="Sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
-	<resource name="Sodium Hypochlorite" phase="liquid">Sodium Hypochlorite is one of the bleaching chemical for sanitization of Soybean as well as pulp bleaching during paper making </resource>
-	<resource name="Styrene" phase="solid" />
-	<resource name="Rock Salt" phase="solid">Halite, commonly known as rock salt, is the mineral form of sodium chloride (NaCl). It is typically colorless or white, but may also be light blue, dark blue, purple, pink, red, orange, yellow or gray depending on the amount and type of impurities.</resource>
+	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
+	<resource name="regolith" phase="solid">Martian soil</resource>
+	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="sodium hypochlorite" phase="liquid">Sodium Hypochlorite is one of the bleaching chemical for sanitization of Soybean as well as pulp bleaching during paper making </resource>
+	<resource name="styrene" phase="solid" />
+	<resource name="rock salt" phase="solid">Halite, commonly known as rock salt, is the mineral form of sodium chloride (NaCl). It is typically colorless or white, but may also be light blue, dark blue, purple, pink, red, orange, yellow or gray depending on the amount and type of impurities.</resource>
 
 
 <!-- Paper related products. -->
