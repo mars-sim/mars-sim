@@ -1343,13 +1343,11 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Epoxy uses bisphenol-A (C15H16O2) -->
+	<!-- Epoxy uses bisphenol-a (C15H16O2) -->
 	<process name="epoxy resin bottle manufacturing" tech="3" skill="3" work-time="100" process-time="300"
 			power-required="0.5">
 		<inputs>
-			<resource name="carbon" amount=".38" />
-			<resource name="hydrogen" amount=".04" />
-			<resource name="oxygen" amount=".08" />
+			<resource name="bisphenol-a" amount=".5" />
 			<part name="bottle" number="5" />
 		</inputs>
 		<outputs>
@@ -3230,6 +3228,46 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+<!-- Produces polycarbonate roofing.
+Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via methanolysis of ethylene carbonate.
+Ethylene carbonate is produced by the reaction between ethylene oxide and carbon dioxide.-->
+	<process name="polycarbonate resin manufacturing" tech="3" skill="3" work-time="100" process-time="200"
+			power-required="1.0">
+		<inputs>
+			<resource name="ethylene" amount="3.0" />
+			<resource name="carbon dioxide" amount="3.0" />
+			<resource name="bisphenol-a" amount="2.0" />
+		</inputs>
+		<outputs>
+			<resource name="polycarbonate resin" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="polycarbonate roofing manufacturing" tech="3" skill="3" work-time="100" process-time="200"
+			power-required="1.0">
+		<inputs>
+			<resource name="polycarbonate resin" amount="3.5" />
+		</inputs>
+		<outputs>
+			<part name="polycarbonate roofing" number="3" />
+		</outputs>
+	</process>
+
+	<process name="making bisphenol-a" tech="3" skill="3" work-time="100" process-time="600"
+			power-required="1.0">
+		<description>
+		Bisphenol A (BPA), a colourless crystalline solid belonging to the family of organic compounds;
+		its molecular formula is C15H16O2. BPA is best known for its use in the manufacture of polycarbonate plastics and epoxy resins
+		</description>
+		<inputs>
+			<resource name="hydrogen" amount="1.6" />
+			<resource name="carbon" amount="18" />
+			<resource name="oxygen" amount="3.2" />
+		</inputs>
+		<outputs>
+			<resource name="bisphenol-a" amount="22.8" />
+		</outputs>
+	</process>
 
 	<!-- 2015-05-31 Added manufacturing ceramic tile. -->
 

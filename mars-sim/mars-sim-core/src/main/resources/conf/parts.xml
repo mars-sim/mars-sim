@@ -693,6 +693,9 @@
 
 	<part name="flexible hose" mass=".1"/>
 
+	<part name="polycarbonate roofing" mass="1">
+		<description>highly transparent, "bullet-resistant" plastic cladding roofing for greenhouses</description>
+	</part>
 
 
 </part-list>

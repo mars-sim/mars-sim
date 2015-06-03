@@ -97,12 +97,12 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 * @param entity the malfunctionable entity.
-	 * @param wearLifeTime the expected life time (millisols) of active use 
+	 * @param wearLifeTime the expected life time (millisols) of active use
 	 * before the entity is worn out.
-	 * @param maintenanceWorkTime the amount of work time (millisols) required for 
+	 * @param maintenanceWorkTime the amount of work time (millisols) required for
 	 * maintenance.
 	 */
-	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, 
+	public MalfunctionManager(Malfunctionable entity, double wearLifeTime,
 			double maintenanceWorkTime) {
 
 		// Initialize data members
@@ -292,7 +292,7 @@ implements Serializable {
 		Iterator<Malfunction> i = malfunctions.iterator();
 		while (i.hasNext()) {
 			Malfunction malfunction = i.next();
-			if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) 
+			if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -333,7 +333,7 @@ implements Serializable {
 		Iterator<Malfunction> i = malfunctions.iterator();
 		while (i.hasNext()) {
 			Malfunction malfunction = i.next();
-			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) 
+			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -394,9 +394,9 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
-			logger.info(entity.getName() + 
-					" has a lack  of maintenance and wear condition malfunction: " + 
-					"time since late maintenance: " + 
+			logger.info(entity.getName() +
+					" has a lack  of maintenance and wear condition malfunction: " +
+					"time since late maintenance: " +
 					solsLastMaint + " Sols, wear condition: " + wearCondition + "%");
 			addMalfunction();
 		}
@@ -515,19 +515,13 @@ implements Serializable {
 						double amountDepleted = amount * time;
 						Inventory inv = entity.getInventory();
 						double amountStored = inv.getAmountResourceStored(resource, false);
-				    	
-						// 2015-01-09 Added addDemandTotalRequest()
-				    	inv.addAmountDemandTotalRequest(resource);
-						
+
 						if (amountStored < amountDepleted) {
 						    amountDepleted = amountStored;
 						}
 						if(amountDepleted >= 0) {
 						    inv.retrieveAmountResource(resource, amountDepleted);
-						    
-							// 2015-01-09 addDemandRealUsage()
-						   	inv.addAmountDemand(resource, amountDepleted);
-						    
+
 						}
 					}
 				}
@@ -685,9 +679,9 @@ implements Serializable {
 	 * @return associated unit.
 	 * @throws Exception if error finding associated unit.
 	 */
-	private Unit getUnit() {
+	public Unit getUnit() {
 		if (entity instanceof Unit) return (Unit) entity;
-		else if (entity instanceof Building) 
+		else if (entity instanceof Building)
 			return ((Building) entity).getBuildingManager().getSettlement();
 		else throw new IllegalStateException("Could not find unit associated with malfunctionable.");
 	}
@@ -734,7 +728,7 @@ implements Serializable {
 		if (part == null) throw new IllegalArgumentException("part is null");
 		if (partsNeededForMaintenance.containsKey(part)) {
 			int numberNeeded = partsNeededForMaintenance.get(part);
-			if (number > numberNeeded) throw new IllegalArgumentException("number " + number + 
+			if (number > numberNeeded) throw new IllegalArgumentException("number " + number +
 					" is greater that number of parts needed: " + numberNeeded);
 			else {
 				numberNeeded -= number;
@@ -785,7 +779,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the estimated number of periodic maintenances this entity will 
+	 * Gets the estimated number of periodic maintenances this entity will
 	 * have in one Martian orbit.
 	 * @return number of maintenances.
 	 */
@@ -837,7 +831,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the multiplying modifier for the chance of an accident due to the 
+	 * Gets the multiplying modifier for the chance of an accident due to the
 	 * malfunctionable entity's wear condition.
 	 * @return accident modifier.
 	 */

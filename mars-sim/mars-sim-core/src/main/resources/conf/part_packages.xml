@@ -15,6 +15,7 @@
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
 
+		<part type="polycarbonate roofing" number="10"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="3"/>
 		<part type="coarse charcoal filter" number="5"/>
@@ -116,6 +117,7 @@
 
 	<part-package name="package 2" >
 
+		<part type="polycarbonate roofing" number="20"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="6"/>
 		<part type="coarse charcoal filter" number="10"/>
@@ -218,6 +220,7 @@
 
 	<part-package name="package 3">
 
+		<part type="polycarbonate roofing" number="30"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="9"/>
 		<part type="coarse charcoal filter" number="15"/>
@@ -320,6 +323,7 @@
 
 	<part-package name="package 4">
 
+		<part type="polycarbonate roofing" number="50"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="12"/>
 		<part type="coarse charcoal filter" number="20"/>
