@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.08 2015-05-22
+ * @version 3.08 2015-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -57,7 +57,7 @@ public class ConstructBuildingMeta implements MetaTask {
                 // Check all building construction missions occurring at the settlement.
                 List<BuildingConstructionMission> missions = ConstructBuilding.
                         getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 50D * missions.size();
+                result = 100D * missions.size();
 
                 // Crowded settlement modifier
                 Settlement settlement = person.getSettlement();
@@ -91,7 +91,7 @@ public class ConstructBuildingMeta implements MetaTask {
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
@@ -115,7 +115,7 @@ public class ConstructBuildingMeta implements MetaTask {
                 // Check if it is night time.
                 SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-                if (( surface.getPreviousSolarIrradiance(robot.getCoordinates()) != 0)
+                if (( surface.getPreviousSolarIrradiance(robot.getCoordinates()) != 0D)
                     && !(surface.inDarkPolarRegion(robot.getCoordinates()))) {
 
     	            // Check if an airlock is available
@@ -125,7 +125,7 @@ public class ConstructBuildingMeta implements MetaTask {
 		                try {
 		                    List<BuildingConstructionMission> missions = ConstructBuilding.
 		                            getAllMissionsNeedingAssistance(robot.getSettlement());
-		                    result = 50D * missions.size();
+		                    result = 100D * missions.size();
 		                }
 		                catch (Exception e) {
 		                    logger.log(Level.SEVERE, "Error finding building construction missions.", e);

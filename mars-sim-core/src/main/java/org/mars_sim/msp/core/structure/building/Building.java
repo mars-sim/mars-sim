@@ -86,7 +86,7 @@ LocalBoundedObject, InsidePathLocation {
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
-	// The influx of meteorites entering Mar’s atmosphere can be estimated as
+	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
 	// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).
 	public static final double PROBABILITY_IMPACT_PER_SQM_PER_YR = .007;

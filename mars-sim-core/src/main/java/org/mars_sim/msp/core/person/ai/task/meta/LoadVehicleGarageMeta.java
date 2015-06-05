@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarageMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -52,7 +52,7 @@ public class LoadVehicleGarageMeta implements MetaTask {
             // Check all vehicle missions occurring at the settlement.
             try {
                 List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement());
-                result = 50D * missions.size();
+                result = 100D * missions.size();
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error finding loading missions.", e);
@@ -93,7 +93,7 @@ public class LoadVehicleGarageMeta implements MetaTask {
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
-	                result = 50D * missions.size();
+	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error finding loading missions.", e);

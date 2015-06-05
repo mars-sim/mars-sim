@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.08 2015-05-14
+ * @version 3.08 2015-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -56,7 +56,7 @@ public class UnloadVehicleEVAMeta implements MetaTask {
                 int numVehicles = 0;
                 numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
                 numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
-                result = 50D * numVehicles;
+                result = 100D * numVehicles;
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
@@ -71,7 +71,7 @@ public class UnloadVehicleEVAMeta implements MetaTask {
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
@@ -121,7 +121,7 @@ public class UnloadVehicleEVAMeta implements MetaTask {
                     int numVehicles = 0;
                     numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
                     numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-                    result = 50D * numVehicles;
+                    result = 100D * numVehicles;
                 }
                 catch (Exception e) {
                     logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
@@ -139,7 +139,7 @@ public class UnloadVehicleEVAMeta implements MetaTask {
 
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (surface.getPreviousSolarIrradiance(robot.getCoordinates()) == 0) {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }
