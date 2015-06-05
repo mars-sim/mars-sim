@@ -662,7 +662,8 @@
 			<part name="microcontroller" number="1" probability="5" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="20" />
-			<part name="small electric motor" number="3" probability="5" />
+			<part name="small stepper motor" number="3" probability="15" />
+			<part name="timing belt" number="3" probability="10" />
 			<part name="optical prism" number="3" probability="3" />
 		</repair-parts-list>
 	</malfunction>

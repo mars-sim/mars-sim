@@ -275,10 +275,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "24">
-		<description> The Inflatable Greenhouse is made of flexible, UV-resistant, bullet-resistant polycarbonate rooftop with an
-		aluminized Mylar reflector curtain on top of interwoven layers of Kevlar around a flexible air bladder. It retains
-		an atmosphere adequate for growing a limited number of crops as the food source for the settlers. It also
-	 	houses one workbench with instruments for botany research.
+		<description> The Inflatable Greenhouse is essentially a flexible air bladder
+		made with interwoven layers of Polyurethane, Kevlar, polyester, Saran and Tedlar materials to retain an atmosphere adequate
+		for growing a limited number of crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
+		has an aluminized Mylar reflector curtain. It also houses one workbench with instruments for botany research.
 		</description>
 
 		<power-required base-power="0.0" base-power-down-power="0.0"/>

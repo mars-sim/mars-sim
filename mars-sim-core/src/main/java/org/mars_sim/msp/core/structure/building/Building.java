@@ -86,9 +86,20 @@ LocalBoundedObject, InsidePathLocation {
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
+	// The influx of meteorites entering Mar’s atmosphere can be estimated as
+	// log N = -0.689* log(m) + 4.17
+	// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).
 	public static final double PROBABILITY_IMPACT_PER_SQM_PER_YR = .007;
+	public static final double PROBABILITY_IMPACT = PROBABILITY_IMPACT_PER_SQM_PER_YR/365.24; // not 668.6 ?;
+	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; //in meters
+	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211; //in meters
+
 	// Source: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
-	// assuming the impact is from meteorites having 16 um in diameter and building roof thickness of 0.0000254 m or 0.001 inch
+	// Assumptions:
+	// a. Meteorites having a spherical sphere with 8 um radius
+	// b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that particles from 10 to 1000 mm in diameter are slowed
+	// below 1 km/s before impacting the surface of the planet (Flynn and McKay, 1990).
+
 
 	DecimalFormat fmt = new DecimalFormat("###.####");
 
@@ -269,8 +280,6 @@ LocalBoundedObject, InsidePathLocation {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 		}
-
-
 	}
 
 	//Constructor 3
@@ -858,7 +867,7 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) i.next().timePassing(time);
 
-		// 2015-06-02 determine if a meteorite impact occurs within the next sol
+		// 2015-06-03 determine if a meteorite impact occurs within the next sol
 		checkForMeteoriteImpact();
 
 		// Update malfunction manager.
@@ -878,7 +887,7 @@ LocalBoundedObject, InsidePathLocation {
 		return itemMap;
 	}
 
-	public void checkForMeteoriteImpact() {
+	public void checkForMeteoriteImpact() { //Building building) {
 		//if (marsClock == null)
 		marsClock = masterClock.getMarsClock();
 
@@ -889,7 +898,8 @@ LocalBoundedObject, InsidePathLocation {
 
         if (solElapsed != solCache) {
         	solCache = solElapsed;
-			double probability  = PROBABILITY_IMPACT_PER_SQM_PER_YR /668.6 * width * length;
+			double probability  = width * length * getBuildingManager().getProbabilityOfImpactPerSQMPerSol();
+
 			// add randomness
 			probability = probability
 					+ probability * RandomUtil.getRandomDouble(2D)
@@ -942,6 +952,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 		return item;
 	}
+
 
 	/**
 	 * Prepare object for garbage collection.

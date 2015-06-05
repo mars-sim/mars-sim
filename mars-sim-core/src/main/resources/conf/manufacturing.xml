@@ -3151,7 +3151,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
 			<part name="glass sheet" number="1" />
-			<part name="small electric motor" number="3" />
+			<part name="small stepper motor" number="3" />
+			<part name="timing belt" number="3" />
 			<part name="optical prism" number="3" />
 		</inputs>
 		<outputs>
