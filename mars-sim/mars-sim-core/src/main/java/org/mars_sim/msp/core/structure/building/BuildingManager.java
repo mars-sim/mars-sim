@@ -25,6 +25,10 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.mars.Meteorite;
+import org.mars_sim.msp.core.mars.MeteoriteImpact;
+import org.mars_sim.msp.core.mars.MeteoriteImpactImpl;
+import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -72,6 +76,9 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 /**
  * The BuildingManager manages the settlement's buildings.
  */
@@ -85,19 +92,22 @@ public class BuildingManager implements Serializable {
     private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
     // Data members
-    private Settlement settlement; // The manager's settlement.
+	private double probabilityOfImpactPerSQMPerSol;
+
     private List<Building> buildings;
     // 2014-10-29 Added buildingsNickNames
     // A list of the settlement's buildings with their nicknames.
     private List<Building> buildingsNickNames;
-
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
+    private Settlement settlement; // The manager's settlement.
     private MarsClock lastBuildingValuesUpdateTime;
 
     // 2014-12-23 Added resupply
     private Resupply resupply;
     private BuildingConfig buildingConfig;
+    private Meteorite meteorite;
+    //private MeteoriteImpact meteoriteImpact;
 
     /**
      * Constructor to construct buildings from settlement config template.
@@ -136,7 +146,33 @@ public class BuildingManager implements Serializable {
 
         // 2014-12-19 Added listeners
     	//listeners = Collections.synchronizedList(new ArrayList<BuildingListener>());
+
+        // 2015-06-04 Made use of Guice for Meteorite
+        Injector injector = Guice.createInjector(new MeteoriteModule());
+        Meteorite meteorite = injector.getInstance(Meteorite.class);
+        meteorite.startMeteoriteImpact(this);
+        //meteoriteImpact = new MeteoriteImpact(this);
+        //meteoriteImpact.calculateMeteoriteProbability();
+
     }
+
+	public void setProbabilityOfImpactPerSQMPerSol(double value) {
+		probabilityOfImpactPerSQMPerSol = value;
+	}
+
+	public double getProbabilityOfImpactPerSQMPerSol() {
+		return probabilityOfImpactPerSQMPerSol;
+	}
+
+
+    //public MeteoriteImpact getMeteoriteImpact() {
+    //	return meteoriteImpact;
+    //}
+
+    public Meteorite getMeteorite() {
+    	return meteorite;
+    }
+
 
     /**
      * Gets the building manager's settlement.

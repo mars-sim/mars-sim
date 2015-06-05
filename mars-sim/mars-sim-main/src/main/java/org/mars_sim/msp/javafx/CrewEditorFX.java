@@ -7,6 +7,7 @@
 package org.mars_sim.msp.javafx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -205,9 +206,10 @@ public class CrewEditorFX {
 
 	public ComboBox<String> setUpGenderCB() {
 
-		List<String> genderList = new ArrayList<String>(2);
-		genderList.add("M");
-		genderList.add("F");
+		//List<String> genderList = new ArrayList<String>(2);
+		//genderList.add("M");
+		//genderList.add("F");
+		List<String> genderList = Arrays.asList("M", "F");
 
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
 		genderOListComboBox = new ComboBox<String>(genderOList);

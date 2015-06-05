@@ -697,5 +697,10 @@
 		<description>highly transparent, "bullet-resistant" plastic cladding roofing for greenhouses</description>
 	</part>
 
+	<part name="small stepper motor" mass="1.5">
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="1" max-number="5" />
+		</maintenance-entity-list>
+	</part>
 
 </part-list>
