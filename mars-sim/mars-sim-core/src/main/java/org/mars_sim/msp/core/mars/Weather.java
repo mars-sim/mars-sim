@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.08 2015-05-29
+ * @version 3.08 2015-06-05
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -90,8 +90,8 @@ implements Serializable {
 	private List<DailyWeather> todayWeather = new ArrayList<>();
 	private List<Coordinates> coordinateList = new ArrayList<>();
 
-	private static Map<Coordinates, Double> temperatureCacheMap = new HashMap<Coordinates, Double>();
-	private static Map<Coordinates, Double> airPressureCacheMap = new HashMap<Coordinates, Double>();
+	private transient Map<Coordinates, Double> temperatureCacheMap;
+	private transient Map<Coordinates, Double> airPressureCacheMap;
 
 	private static Map<Integer, DustStorm> planetEncirclingDustStormMap = new ConcurrentHashMap<>();
 	private static Map<Integer, DustStorm> regionalDustStormMap = new ConcurrentHashMap<>();
@@ -239,15 +239,20 @@ implements Serializable {
 	    millisols =  (int) marsClock.getMillisol() ;
 		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
 
+	    // Lazy instantiation of airPressureCacheMap.
+	    if (airPressureCacheMap == null) {
+	        airPressureCacheMap = new HashMap<Coordinates, Double>();
+        }
+	    
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {
 			double newP = calculateAirPressure(location);
 			airPressureCacheMap.put(location, newP);
 			//System.out.println("air pressure : "+cache);
 			return newP;
 		}
-
-		else return getCachedReading(airPressureCacheMap, location);//, AIR_PRESSURE);
-
+		else {
+		    return getCachedReading(airPressureCacheMap, location);//, AIR_PRESSURE);
+		}
 	}
 
 	/**
@@ -307,15 +312,20 @@ implements Serializable {
 
 	    millisols =  (int) marsClock.getMillisol() ;
 
+	    // Lazy instantiation of temperatureCacheMap.
+	    if (temperatureCacheMap == null) {
+            temperatureCacheMap = new HashMap<Coordinates, Double>();
+        }
+	    
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
 			//System.out.println("Weather.java: temperatureCache is " + temperatureCache);
 			return newT;
 		}
-
-		else return getCachedReading(temperatureCacheMap, location);//, TEMPERATURE);
-
+		else {
+		    return getCachedReading(temperatureCacheMap, location);//, TEMPERATURE);
+		}
 	}
 
 
@@ -422,8 +432,14 @@ implements Serializable {
 			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
 
 			double previous_t = 0;
-			if (temperatureCacheMap.get(location) != null)
+			if (temperatureCacheMap == null) {
+			    temperatureCacheMap = new HashMap<Coordinates, Double>();
+			}
+			
+			if (temperatureCacheMap.containsKey(location)) {
 				previous_t = temperatureCacheMap.get(location);
+			}
+			
 			final_temperature = Math.round ((final_temperature + previous_t )/2.0 *100.0)/100.0;
 			//System.out.println("  final T: " + final_temperature );
 		}
@@ -438,8 +454,13 @@ implements Serializable {
 	 */
 	// 2015-03-06 Added clearMap()
     public synchronized void clearMap() {
-    	temperatureCacheMap.clear();
-    	airPressureCacheMap.clear();
+        if (temperatureCacheMap != null) {
+            temperatureCacheMap.clear();
+        }
+        
+        if (airPressureCacheMap != null) {
+            airPressureCacheMap.clear();
+        }
     }
 
 	/**
@@ -709,8 +730,14 @@ implements Serializable {
 		dailyRecordMap = null;
 		todayWeather = null;
 		coordinateList = null;
-		temperatureCacheMap = null;
-		airPressureCacheMap = null;
+		if (temperatureCacheMap != null) {
+		    temperatureCacheMap.clear();
+		    temperatureCacheMap = null;
+		}
+		if (airPressureCacheMap != null) {
+		    airPressureCacheMap.clear();
+		    airPressureCacheMap = null;
+		}
 		marsClock = null;
 		surfaceFeatures = null;
 		terrainElevation = null;

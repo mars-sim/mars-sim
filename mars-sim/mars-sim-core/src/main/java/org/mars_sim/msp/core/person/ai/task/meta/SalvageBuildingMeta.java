@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuildingMeta.java
- * @version 3.08 2015-05-22
+ * @version 3.08 2015-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -57,7 +57,7 @@ public class SalvageBuildingMeta implements MetaTask {
             try {
                 List<BuildingSalvageMission> missions = SalvageBuilding.
                         getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 50D * missions.size();
+                result = 100D * missions.size();
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
@@ -91,7 +91,7 @@ public class SalvageBuildingMeta implements MetaTask {
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates()))
                 result = 0D;
         }
@@ -117,7 +117,7 @@ public class SalvageBuildingMeta implements MetaTask {
 	            try {
 	                List<BuildingSalvageMission> missions = SalvageBuilding.
 	                        getAllMissionsNeedingAssistance(robot.getSettlement());
-	                result = 50D * missions.size();
+	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
@@ -134,7 +134,7 @@ public class SalvageBuildingMeta implements MetaTask {
         
 	        // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+            if (surface.getPreviousSolarIrradiance(robot.getCoordinates()) == 0D) {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }

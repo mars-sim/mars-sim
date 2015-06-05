@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarageMeta.java
- * @version 3.08 2015-05-14
+ * @version 3.08 2015-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -53,7 +53,7 @@ public class UnloadVehicleGarageMeta implements MetaTask {
                 int numVehicles = 0;
                 numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(person.getSettlement()).size();
                 numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
-                result = 50D * numVehicles;
+                result = 100D * numVehicles;
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
@@ -96,7 +96,7 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 	                int numVehicles = 0;
 	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
 	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
-	                result = 50D * numVehicles;
+	                result = 100D * numVehicles;
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
