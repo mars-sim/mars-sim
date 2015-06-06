@@ -34,7 +34,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact{
 	//}
 
 	public void calculateMeteoriteProbability(BuildingManager buildingManager) {
-		System.out.println("starting calculateMeteoriteProbability()");
+		//System.out.println("starting calculateMeteoriteProbability()");
 		// The influx of meteorites entering Mars atmosphere can be estimated as
 		// log N = -0.689* log(m) + 4.17
 		// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).

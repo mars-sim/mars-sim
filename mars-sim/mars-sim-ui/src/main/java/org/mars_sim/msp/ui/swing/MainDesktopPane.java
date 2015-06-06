@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
+import javafx.scene.control.CheckMenuItem;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -523,6 +524,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				// ignore if setSelected is vetoed
 			}
 		}
+		window.getContentPane().validate();
+		window.getContentPane().repaint();
+		validate();
+		repaint();
 	}
 
 	/**
@@ -535,6 +540,70 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			try { window.setClosed(true); }
 			catch (java.beans.PropertyVetoException e) {}
 		}
+/*
+		if (mainScene != null) {
+
+			if (toolName.equals(NavigatorWindow.NAME)) {
+				//System.out.println("closing nav");
+				mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
+			}
+
+			else if (toolName.equals(SearchWindow.NAME)) {
+				mainScene.getMainSceneMenu().getSearchToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(MonitorWindow.NAME)) {
+				mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(MissionWindow.NAME)) {
+				mainScene.getMainSceneMenu().getMissionToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(ScienceWindow.NAME)) {
+				mainScene.getMainSceneMenu().getScienceToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(SettlementWindow.NAME)) {
+				mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(ResupplyWindow.NAME)) {
+				mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
+			}
+		}
+
+		else if (mainWindow != null) {
+
+			if (toolName.equals(NavigatorWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
+			}
+
+			else if (toolName.equals(SearchWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getSearchToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(MonitorWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getMonitorToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(MissionWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getMissionToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(ScienceWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getScienceToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(SettlementWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
+			}
+
+			else if (toolName.equals(ResupplyWindow.NAME)) {
+				mainWindow.getMainSceneMenu().getResupplyToolItem().setSelected(false);
+			}
+		}
+*/
 	}
 
 	/**
@@ -721,7 +790,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 */
 	class UnitWindowTask implements Runnable {
-		//long SLEEP_TIME = 50;
+		long SLEEP_TIME = 1000;
 		UnitWindow unitWindow;
 
 		private UnitWindowTask(UnitWindow unitWindow) {
@@ -734,14 +803,19 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			try {
 				//while (!toolWindowExecutor.isTerminated()){
 					unitWindow.update();
-					//TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+					try {
+						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				//}
 			} catch (ConcurrentModificationException e) {} // Exception e) {} //
 		}
 	}
 
 	class ToolWindowTask implements Runnable {
-		//long SLEEP_TIME = 1;
+		long SLEEP_TIME = 500;
 		ToolWindow toolWindow;
 
 		protected ToolWindow getToolWindow() {
@@ -758,7 +832,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			try {
 				//while (!toolWindowExecutor.isTerminated()){
 					toolWindow.update();
-				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
+					try {
+						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				//}
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
 		}

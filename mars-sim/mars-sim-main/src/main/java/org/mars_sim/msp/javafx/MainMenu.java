@@ -202,7 +202,7 @@ public class MainMenu {
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   final Scene scene = mainScene.initializeScene();
-	   mainScene.prepareTransportWizard();
+	   mainScene.prepareOthers();
 
 	   // prepare stage
 	   stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));

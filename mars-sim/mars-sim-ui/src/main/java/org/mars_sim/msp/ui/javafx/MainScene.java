@@ -182,8 +182,9 @@ public class MainScene {
 		}
     }
 
-    public void prepareTransportWizard() {
+    public void prepareOthers() {
     	transportWizard = new TransportWizard(this, desktop);
+    	openInitialWindows();
     }
 
 	public void openTransportWizard(BuildingManager buildingManager) {
@@ -219,7 +220,7 @@ public class MainScene {
                  	// Toggle the full screen mode to OFF in the pull-down menu under setting
                 	menuBar.exitFullScreen();
                 	// close the MarsNet side panel
-                	closeMarsNet();
+                	openSwingTab();
                 }
               }
         });
@@ -1006,10 +1007,10 @@ public class MainScene {
     		setLookAndFeel(false, true);
             //swingNode.setContent(mainWindow);
         });
-		desktop.openInitialWindows();
+		//desktop.openInitialWindows();
     }
 
-	public void closeMarsNet() {
+	public void openSwingTab() {
 		//splitPane.setDividerPositions(1.0f);
 	    dndTabPane.getSelectionModel().select(swingTab);
 	}

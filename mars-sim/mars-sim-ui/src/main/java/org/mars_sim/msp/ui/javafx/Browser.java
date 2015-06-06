@@ -41,6 +41,9 @@ import javafx.stage.Stage;
 
 public class Browser {
 
+	/** Tool name. */
+	public static final String NAME = "Web Tool";
+
 	private MainScene mainScene;
 
 	public Browser(MainScene mainScene) {
