@@ -63,6 +63,9 @@ public class MarsNode {
 
 	private static Logger logger = Logger.getLogger(MarsNode.class.getName());
 
+	/** Tool name. */
+	public static final String NAME = "Node Tool";
+
 	private MainScene mainScene;
 	private Stage stage;
 	private FXDesktopWindowManager windowManager;

@@ -7,6 +7,9 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
@@ -23,9 +26,11 @@ import javafx.scene.input.KeyCombination;
 
 import javafx.stage.Stage;
 
-
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -48,8 +53,12 @@ public class MainSceneMenu extends MenuBar  {
 
 	private static Logger logger = Logger.getLogger(MainSceneMenu.class.getName());
 
-    private MainDesktopPane desktop;
-	private CheckMenuItem showFullScreenItem ;
+	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
+							monitorToolItem, missionToolItem,settlementMapToolItem,
+							scienceToolItem, resupplyToolItem, marsNetItem, webToolItem;
+
+	private CheckMenuItem showFullScreenItem;
+
 	private MenuItem skinThemeItem;
 
 	private Stage stage;
@@ -58,6 +67,8 @@ public class MainSceneMenu extends MenuBar  {
 	private Browser browser;
 	private FXDesktopPane fxDesktopPane;
 	private FXInternalWindow fxInternalWindow ;
+	private MainDesktopPane desktop;
+
 	//private GreenhouseTool greenhouseTool;
 
 	/**
@@ -108,25 +119,36 @@ public class MainSceneMenu extends MenuBar  {
 
         // --- Menu Tools
         Menu menuTools = new Menu("Tools");
-        CheckMenuItem marsNavigatorItem = new CheckMenuItem("Mars Navigator");
+
+        // 2015-06-05 Switched to using method createMenuItem()
+        marsNavigatorItem = createMenuItem("Mars Navigator", NavigatorWindow.NAME);
         marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
-        CheckMenuItem searchToolItem = new CheckMenuItem("Search Tool");
+
+        searchToolItem = createMenuItem("Search Tool", SearchWindow.NAME);
         searchToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F2));
-        CheckMenuItem timeToolItem = new CheckMenuItem("Time Tool");
+
+        timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
         timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
-        CheckMenuItem monitorToolItem = new CheckMenuItem("Monitor Tool");
+
+        monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
         monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
-        CheckMenuItem missionToolItem = new CheckMenuItem("Mission Tool");
+
+        missionToolItem = createMenuItem("Mission Tool", MissionWindow.NAME);
         missionToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
-        CheckMenuItem settlementMapToolItem = new CheckMenuItem("Settlement Map Tool");
+
+        settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
         settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F6));
-        CheckMenuItem scienceToolItem = new CheckMenuItem("Science Tool");
+
+        scienceToolItem = createMenuItem("Science Tool", ScienceWindow.NAME);
         scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
-        CheckMenuItem resupplyToolItem = new CheckMenuItem("Resupply Tool");
+
+        resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
-        CheckMenuItem marsNetItem = new CheckMenuItem("Node Tool");
+
+        marsNetItem = new CheckMenuItem("Node Tool");
         marsNetItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
-        CheckMenuItem webToolItem = new CheckMenuItem("Web Tool");
+
+        webToolItem = new CheckMenuItem("Web Tool");
         webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
@@ -274,11 +296,19 @@ public class MainSceneMenu extends MenuBar  {
       	   }
       	});
 
+/*
         marsNavigatorItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
-    			else desktop.closeToolWindow(NavigatorWindow.NAME);
+    			if (marsNavigatorItem.isSelected()) {
+    				marsNavigatorItem.setSelected(true);
+    				desktop.openToolWindow(NavigatorWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
+    			else {
+    				marsNavigatorItem.setSelected(false);
+    				desktop.closeToolWindow(NavigatorWindow.NAME);
+    			}
     			//if (desktop == null) System.out.println("MainWindowFXMenu : marsNav. ");
             }
         });
@@ -286,7 +316,10 @@ public class MainSceneMenu extends MenuBar  {
         searchToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
+    			if (searchToolItem.isSelected()) {
+    				desktop.openToolWindow(SearchWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
     			else desktop.closeToolWindow(SearchWindow.NAME);
             }
         });
@@ -294,7 +327,10 @@ public class MainSceneMenu extends MenuBar  {
         timeToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
+    			if (timeToolItem.isSelected()) {
+    				desktop.openToolWindow(TimeWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
     			else desktop.closeToolWindow(TimeWindow.NAME);
             }
         });
@@ -302,7 +338,10 @@ public class MainSceneMenu extends MenuBar  {
         monitorToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
+    			if (monitorToolItem.isSelected()) {
+    				desktop.openToolWindow(MonitorWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
     			else desktop.closeToolWindow(MonitorWindow.NAME);
             }
         });
@@ -310,7 +349,10 @@ public class MainSceneMenu extends MenuBar  {
         missionToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
+    			if (missionToolItem.isSelected()) {
+    				desktop.openToolWindow(MissionWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
     			else desktop.closeToolWindow(MissionWindow.NAME);
             }
         });
@@ -318,7 +360,10 @@ public class MainSceneMenu extends MenuBar  {
         settlementMapToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (settlementMapToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
+    			if (settlementMapToolItem.isSelected()) {
+    				desktop.openToolWindow(SettlementWindow.NAME);
+    				mainScene.openSwingTab();
+    			}
     			else desktop.closeToolWindow(SettlementWindow.NAME);
             }
         });
@@ -334,17 +379,28 @@ public class MainSceneMenu extends MenuBar  {
         resupplyToolItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-    			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
-    			else desktop.closeToolWindow(ResupplyWindow.NAME);
+    			if (resupplyToolItem.isSelected()) {
+    				desktop.openToolWindow(ResupplyWindow.NAME);
+    				mainScene.openSwingTab();
+    				resupplyToolItem.setSelected(true);
+    			}
+    			else {
+    				desktop.closeToolWindow(ResupplyWindow.NAME);
+    				//resupplyToolItem.setSelected(false);
+    			}
             }
         });
-
+*/
         marsNetItem.setOnAction(e ->  {
-    			if (marsNetItem.isSelected())
+    			if (marsNetItem.isSelected()) {
+    				marsNetItem.setSelected(true);
     				mainScene.openMarsNet();
-    			else
-    				mainScene.closeMarsNet();
-        });
+    			}
+    			else {
+    				mainScene.openSwingTab();
+    				marsNetItem.setSelected(false);
+    			}
+    	});
 
         webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {
@@ -352,12 +408,13 @@ public class MainSceneMenu extends MenuBar  {
     				if (fxDesktopPane == null)
     					fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
     				fxInternalWindow = browser.startMSPWebSite();
-    				//webStage = browser.startWebTool();
-    				//webStage.show();
+    				webToolItem.setSelected(true);
     			}
-    			else
-    				mainScene.getMarsNode().removeFXInternalWindow(fxInternalWindow);
-
+    			else {
+    				mainScene.openSwingTab();
+    				//mainScene.getMarsNode().removeFXInternalWindow(fxInternalWindow);
+    				webToolItem.setSelected(false);
+    			}
         });
 
         showFullScreenItem.setOnAction(e -> {
@@ -491,5 +548,145 @@ public class MainSceneMenu extends MenuBar  {
 		showFullScreenItem.setSelected(false);
 	}
 
+    // 2015-06-05 Added 8 get_() method below
+	public CheckMenuItem getMarsNavigatorItem() {
+		return marsNavigatorItem;
+	}
 
+	public CheckMenuItem getSearchToolItem() {
+		return searchToolItem;
+	}
+
+	public CheckMenuItem getTimeToolItem() {
+		return timeToolItem;
+	}
+
+	public CheckMenuItem getMonitorToolItem() {
+		return monitorToolItem;
+	}
+
+	public CheckMenuItem getMissionToolItem() {
+		return missionToolItem;
+	}
+
+	public CheckMenuItem getScienceToolItem() {
+		return scienceToolItem;
+	}
+
+	public CheckMenuItem getSettlementMapToolItem() {
+		return settlementMapToolItem;
+	}
+
+	public CheckMenuItem getResupplyToolItem() {
+		return resupplyToolItem;
+	}
+
+    // 2015-06-05 Added createMenuItem()
+    private CheckMenuItem createMenuItem(String title, String toolName){
+        CheckMenuItem cmi = new CheckMenuItem(title);
+        cmi.setSelected(false);
+
+        cmi.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue ov,
+            Boolean old_val, Boolean new_val) {
+            	if (new_val) {
+            		long SLEEP_TIME = 100;
+            		cmi.setSelected(true);
+                	Platform.runLater(() -> {
+                		mainScene.openSwingTab();
+					});
+                	try {
+						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	SwingUtilities.invokeLater(() -> {
+                   	 	desktop.openToolWindow(toolName);
+                   	 	//desktop.repaint();
+                	});
+                	//desktop.repaint();
+            	} else {
+	                cmi.setSelected(false);
+	            	desktop.closeToolWindow(toolName);
+            	}
+            }
+        });
+
+        return cmi;
+    }
+
+    // 2015-06-05 Added setCheckMenuItem()
+    public void setCheckMenuItem(String toolName) {
+
+		if (toolName.equals(NavigatorWindow.NAME)) {
+			//System.out.println("closing nav");
+			getMarsNavigatorItem().setSelected(false);
+		}
+
+		else if (toolName.equals(SearchWindow.NAME)) {
+			getSearchToolItem().setSelected(false);
+		}
+
+		else if (toolName.equals(MonitorWindow.NAME)) {
+			getMonitorToolItem().setSelected(false);
+		}
+
+		else if (toolName.equals(MissionWindow.NAME)) {
+			getMissionToolItem().setSelected(false);
+		}
+
+		else if (toolName.equals(ScienceWindow.NAME)) {
+			getScienceToolItem().setSelected(false);
+		}
+
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			getSettlementMapToolItem().setSelected(false);
+		}
+
+		else if (toolName.equals(ResupplyWindow.NAME)) {
+			getResupplyToolItem().setSelected(false);
+		}
+    }
+
+    public CheckMenuItem getCheckMenuItem(String toolName) {
+		if (toolName.equals(NavigatorWindow.NAME)) {
+			//System.out.println("closing nav");
+			return getMarsNavigatorItem();
+		}
+
+		else if (toolName.equals(SearchWindow.NAME)) {
+			return getSearchToolItem();
+		}
+
+		else if (toolName.equals(MonitorWindow.NAME)) {
+			return getMonitorToolItem();
+		}
+
+		else if (toolName.equals(MissionWindow.NAME)) {
+			return getMissionToolItem();
+		}
+
+		else if (toolName.equals(ScienceWindow.NAME)) {
+			return getScienceToolItem();
+		}
+
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			return getSettlementMapToolItem();
+		}
+
+		else if (toolName.equals(ResupplyWindow.NAME)) {
+			return getResupplyToolItem();
+		}
+
+		else if (toolName.equals(MarsNode.NAME)) {
+			return getSettlementMapToolItem();
+		}
+
+		else if (toolName.equals(Browser.NAME)) {
+			return getResupplyToolItem();
+		}
+		else
+			return null;
+    }
 }
