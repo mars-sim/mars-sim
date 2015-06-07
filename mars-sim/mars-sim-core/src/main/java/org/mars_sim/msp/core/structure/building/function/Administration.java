@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 /**
- * An administration building function.  The building facilitates report writing and other 
+ * An administration building function.  The building facilitates report writing and other
  * administrative paperwork.
  */
 public class Administration extends Function implements Serializable {
@@ -27,7 +27,7 @@ public class Administration extends Function implements Serializable {
 
     // Data members
     private int populationSupport;
-    
+    private int staff, staffCapacity;
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -43,7 +43,7 @@ public class Administration extends Function implements Serializable {
         // Load activity spots
         loadActivitySpots(config.getAdministrationActivitySpots(building.getName()));
     }
-    
+
     /**
      * Gets the value of the function for a named building.
      * @param buildingName the building name.
@@ -84,7 +84,49 @@ public class Administration extends Function implements Serializable {
     public int getPopulationSupport() {
         return populationSupport;
     }
-    
+
+
+    /**
+     * Gets the number of people this administration facility can be used all at a time.
+     * @return population that can be supported.
+     */
+    public int getStaffCapacity() {
+        return staffCapacity;
+    }
+
+
+    /**
+     * Gets the current number of people using the office space.
+     * @return number of people.
+     */
+    public int getNumStaff() {
+        return staff;
+    }
+
+    /**
+     * Adds a person to the office space.
+     * @throws BuildingException if person would exceed office space capacity.
+     */
+    public void addstaff() {
+        staff++;
+        if (staff > staffCapacity) {
+            staff = staffCapacity;
+            throw new IllegalStateException("The office space is full.");
+        }
+    }
+
+    /**
+     * Removes a person from the office space.
+     * @throws BuildingException if nobody is using the office space.
+     */
+    public void removeStaff() {
+        staff--;
+        if (staff < 0) {
+            staff = 0;
+            throw new IllegalStateException("The office space is empty.");
+        }
+    }
+
     @Override
     public double getMaintenanceTime() {
         return populationSupport * 1D;

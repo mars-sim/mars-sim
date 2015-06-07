@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -62,10 +63,11 @@ implements Serializable {
 		jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleGarage.class);
 		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);	
+		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
@@ -110,7 +112,7 @@ implements Serializable {
 		// Add number of vehicles parked at settlement.
 		result+= settlement.getParkedVehicleNum() / 3D;
 
-		return result;	
+		return result;
 	}
 
 	/**

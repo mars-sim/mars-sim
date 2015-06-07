@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Manager
@@ -36,8 +37,7 @@ implements Serializable {
 		super(Manager.class);
 
 		// Add Manager-related tasks.
-		//jobTasks.add(LoadVehicleEVA.class);
-        //jobTasks.add(LoadVehicleGarage.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add Manager-related missions.
 		jobMissionStarts.add(Trade.class);
