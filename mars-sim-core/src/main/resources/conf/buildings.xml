@@ -37,6 +37,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<!-- The functions the building is capable of performing/fulfilling. -->
 		<functions>
+		<!-- The building has administrative capabilities. -->
+			<administration population-support="2">
+				<activity>
+					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
+					<activity-spot xloc="1.54" yloc="-2.34" />
+					<activity-spot xloc=".55" yloc="-2.34" />
+				</activity>
+			</administration>
 
 			<!-- The building has communication capabilities. -->
 			<communication>
@@ -1672,6 +1680,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 
 		<functions>
+			<administration population-support="2">
+				<activity>
+					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
+					<activity-spot xloc="-.75" yloc="2.67" />
+					<activity-spot xloc="-3.73" yloc="2.67" />
+				</activity>
+			</administration>
 			<communication>
 				<activity>
 					<activity-spot xloc="3.2" yloc="-3.6" />

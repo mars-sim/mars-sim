@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
+import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -44,6 +45,7 @@ implements Serializable {
 		jobTasks.add(ManufactureConstructionMaterials.class);
 		jobTasks.add(ConstructBuilding.class);
 		jobTasks.add(SalvageBuilding.class);
+		jobTasks.add(WriteReport.class);
 
 		// Add architect-related missions.
 		jobMissionStarts.add(BuildingConstructionMission.class);

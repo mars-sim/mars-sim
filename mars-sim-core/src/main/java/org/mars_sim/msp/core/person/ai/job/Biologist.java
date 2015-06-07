@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
+import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -80,6 +81,7 @@ implements Serializable {
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
 		jobTasks.add(StudyFieldSamples.class);
+		jobTasks.add(WriteReport.class);
 
 		//2014-11-23 Added ProduceFood.class
 		jobTasks.add(ProduceFood.class);
