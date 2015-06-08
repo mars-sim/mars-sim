@@ -41,6 +41,8 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -49,7 +51,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 
 
-/** 
+/**
  * This is a tab panel for displaying a settlement's Food Menu.
  */
 public class TabPanelCooking
@@ -63,14 +65,14 @@ extends TabPanel {
 
     private static final BuildingFunction COOK_MEAL = BuildingFunction.COOKING;
     private static final BuildingFunction PREPARE_DESSERT = BuildingFunction.PREPARING_DESSERT;
-    
+
 	// Data Members
 private CookingTableModel cookingTableModel;
 
 	private int numRow = 0;
 	private int dayCache = 1;
 	//private MarsClock expirationCache = null;
-	
+
 	private Set<String> nameSet;
 	private List<String> nameList;
 
@@ -78,43 +80,43 @@ private CookingTableModel cookingTableModel;
 	//private boolean sortAscending = true;
 	/** Sort column is defined. */
 	//private int sortedColumn = 0;
-	
+
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
 	private int availableMealsCache= 0;
 	/** The number of meals cooked today. */
 	private JLabel mealsTodayLabel;
 	private int mealsTodayCache= 0;
-	
+
 	/** The number of available Desserts. */
 	private JLabel availableDessertsLabel;
 	private int availableDessertsCache= 0;
 	/** The number of Desserts cooked today. */
 	private JLabel dessertsTodayLabel;
 	private int dessertsTodayCache= 0;
-	
+
 	private JLabel mealsReplenishmentLabel;
 	private double mealsReplenishmentCache= 0;
 	private JLabel dessertsReplenishmentLabel;
 	private double dessertsReplenishmentCache= 0;
-	
-	
+
+
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
 	private int numCooksCache= 0;
-	
-	/** The cook capacity label. */	
+
+	/** The cook capacity label. */
 	private JLabel cookCapacityLabel;
 	private int cookCapacityCache= 0;
-	
+
 	private Settlement settlement;
-	
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelCooking(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelCooking(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
 		super(
@@ -125,31 +127,31 @@ private CookingTableModel cookingTableModel;
 		);
 
 		settlement = (Settlement) unit;
-		
+
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
-        while (i.hasNext()) { 		
+        while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(COOK_MEAL)) {      		
-				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
-				
-				availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();				
+        	if (building.hasFunction(COOK_MEAL)) {
+				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+
+				availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();
 				mealsTodayCache += kitchen.getTotalNumberOfCookedMealsToday();
 				cookCapacityCache += kitchen.getCookCapacity();
-				numCooksCache += kitchen.getNumCooks();	
+				numCooksCache += kitchen.getNumCooks();
         	}
         }
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
-        while (j.hasNext()) { 		
+        while (j.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = j.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(PREPARE_DESSERT)) {      		
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
-				
-				availableDessertsCache += kitchen.getAvailableServingsDesserts();				
+        	if (building.hasFunction(PREPARE_DESSERT)) {
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);
+
+				availableDessertsCache += kitchen.getAvailableServingsDesserts();
 				dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
         	}
         }
@@ -161,14 +163,14 @@ private CookingTableModel cookingTableModel;
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		
+
 		JPanel topPanel = new JPanel(new GridLayout(3,1,0,0));
 		topPanel.add(titleLabel);
 		cookingLabelPanel.add(topPanel, BorderLayout.NORTH);
-		
+
 		// Prepare cook number label
 
-		// Prepare cook capacity label		
+		// Prepare cook capacity label
 		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		topPanel.add(cookCapacityLabel);
 
@@ -176,7 +178,7 @@ private CookingTableModel cookingTableModel;
 		numCooksLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache), JLabel.CENTER); //$NON-NLS-1$
 		topPanel.add(numCooksLabel);
 
-				
+
 		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));
 		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
 
@@ -198,7 +200,7 @@ private CookingTableModel cookingTableModel;
 		dessertsReplenishmentLabel = new JLabel(Msg.getString("TabPanelCooking.dessertsReplenishment", dessertsReplenishmentCache), JLabel.LEFT); //$NON-NLS-1$
 		d.add(dessertsReplenishmentLabel);
 		splitPanel.add(d);
-		
+
 		JPanel m = new JPanel(new GridLayout(3,1,0,0));
 		TitledBorder mealBorder = BorderFactory.createTitledBorder(
 				null, "Meals", javax.swing.border.
@@ -209,7 +211,7 @@ private CookingTableModel cookingTableModel;
 
 		// Prepare # of available meals label
 		availableMealsLabel = new JLabel(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache), JLabel.LEFT); //$NON-NLS-1$
-		m.add(availableMealsLabel);				
+		m.add(availableMealsLabel);
 		// Prepare # of cooked meals label
 		mealsTodayLabel = new JLabel(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache), JLabel.LEFT); //$NON-NLS-1$
 		m.add(mealsTodayLabel);
@@ -232,19 +234,19 @@ private CookingTableModel cookingTableModel;
 
 		// Prepare cooking table.
 		JTable table = new JTable(cookingTableModel) {
-		
+
         public String getToolTipText(java.awt.event.MouseEvent e) {
             String personName = null;
             MarsClock time = null;
             java.awt.Point p = e.getPoint();
             int rowIndex = rowAtPoint(p);
             int colIndex = columnAtPoint(p);
-            
+
             java.util.List<CookedMeal> meals;
 			StringBuilder result = new StringBuilder("<html>");
-			
+
 			try {
-				
+
                	result.append("&emsp;&nbsp;Eaten by :&emsp;");
             	result.append(personName);
               	result.append("&emsp;&nbsp;Time :&emsp;");
@@ -269,11 +271,11 @@ private CookingTableModel cookingTableModel;
                 	result.append("<br>&emsp;Edible Mass:&emsp;");
                 	result.append(mass0).append(" kg");
                 	result.append("<br>&nbsp;Inedible Mass:&emsp;");
-                	result.append(mass1).append(" kg");              
+                	result.append(mass1).append(" kg");
                 	result.append("<br>&nbsp;Growing Days:&emsp;");
-                	result.append(time); 
+                	result.append(time);
                 	result.append("<br>&nbsp;Water Content:&emsp;");
-                	result.append(water).append(" %"); 	                	
+                	result.append(water).append(" %");
   */
 	            } catch (RuntimeException e1) {
 	                //catch null pointer exception if mouse is over an empty line
@@ -281,10 +283,10 @@ private CookingTableModel cookingTableModel;
 				result.append("</html>");
 				return result.toString();
 	        }
-	        
+
 		};
-		
-		
+
+
 
 		scrollPane.setViewportView(table);
 		table.setCellSelectionEnabled(false);
@@ -298,11 +300,19 @@ private CookingTableModel cookingTableModel;
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		// 2014-12-30 Added setTableStyle()
-		setTableStyle(table);
-		
+		//setTableStyle(table);
+
+		// 2015-06-08 Added sorting
+		table.setAutoCreateRowSorter(true);
+		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(table);
+
+
 		repaint();
 	}
-	
+
 	/**
 	 * Sets the style for the table
 	 * @param table
@@ -313,7 +323,7 @@ private CookingTableModel cookingTableModel;
 		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
 		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
 		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
-		headerRenderer.setForeground( Color.WHITE); 
+		headerRenderer.setForeground( Color.WHITE);
 		headerRenderer.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 
 		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
@@ -325,18 +335,18 @@ private CookingTableModel cookingTableModel;
 		table.setShowGrid(true);
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
-	
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
+
 /*
         final JTable ctable = table;
 	    SwingUtilities.invokeLater(new Runnable(){
 	        public void run()  {
-	        	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
+	        	ColumnResizer.adjustColumnPreferredWidths(ctable);
 	         } });
 		*/
 	}
 
-	
+
 	/**
 	 * Delegates the rendering of the table cell header to add
 	 *  in an icon on the cells that can be sorted.
@@ -348,7 +358,7 @@ private CookingTableModel cookingTableModel;
 		public TableHeaderRenderer(TableCellRenderer theRenderer) {
 			defaultRenderer = theRenderer;
 		}
-		
+
 		 //Renderer the specified Table Header cell
 		public Component getTableCellRendererComponent(JTable table,
 				Object value,
@@ -361,11 +371,11 @@ private CookingTableModel cookingTableModel;
 					row, column);
 			if (theResult instanceof JLabel) {
 				JLabel cell = (JLabel)theResult;
-				cell.setOpaque(true); 
+				cell.setOpaque(true);
 				MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.white);
 				cell.setBorder(border);
 				//cell.setBackground(new Color(205, 133, 63));//Color.ORANGE);
-				//cell.setForeground( Color.WHITE); 
+				//cell.setForeground( Color.WHITE);
 				//cell.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 
 			}
@@ -382,14 +392,14 @@ private CookingTableModel cookingTableModel;
 		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		cookingTableModel.update();
-		
+
 		updateMeals();
 		updateDesserts();
-		
-	}
-	
 
-	
+	}
+
+
+
 	// 2015-01-06 Added updateMeals()
 	public void updateMeals() {
 		int numCooks = 0;
@@ -398,21 +408,21 @@ private CookingTableModel cookingTableModel;
 		int mealsToday = 0;
 		double mealsReplenishment = 0D;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
-        while (i.hasNext()) { 		
+        while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(COOK_MEAL)) {      		
-				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
-				
-				availableMeals += kitchen.getNumberOfAvailableCookedMeals();				
+        	if (building.hasFunction(COOK_MEAL)) {
+				Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+
+				availableMeals += kitchen.getNumberOfAvailableCookedMeals();
 				mealsToday += kitchen.getTotalNumberOfCookedMealsToday();
 				cookCapacity += kitchen.getCookCapacity();
 				numCooks += kitchen.getNumCooks();
 				mealsReplenishment = settlement.getMealsReplenishmentRate();;
         	}
         }
-  
+
         mealsReplenishment = Math.round(mealsReplenishment * 100.0)/100.0;
 
 		// Update # of meals replenishment rate
@@ -420,7 +430,7 @@ private CookingTableModel cookingTableModel;
 			mealsReplenishmentCache = mealsReplenishment;
 			mealsReplenishmentLabel.setText(Msg.getString("TabPanelCooking.mealsReplenishment", mealsReplenishmentCache)); //$NON-NLS-1$
 		}
-        
+
 		// Update # of available meals
 		if (availableMealsCache != availableMeals) {
 			availableMealsCache = availableMeals;
@@ -431,8 +441,8 @@ private CookingTableModel cookingTableModel;
 		if (mealsTodayCache != mealsToday) {
 			mealsTodayCache = mealsToday;
 			mealsTodayLabel.setText(Msg.getString("TabPanelCooking.mealsToday", mealsTodayCache)); //$NON-NLS-1$
-		}	
-		
+		}
+
 		// Update cook number
 		if (numCooksCache != numCooks) {
 			numCooksCache = numCooks;
@@ -453,21 +463,21 @@ private CookingTableModel cookingTableModel;
 		int dessertsToday = 0;
 		double dessertsReplenishment = 0;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(PREPARE_DESSERT).iterator();
-        while (i.hasNext()) { 		
+        while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
-        	if (building.hasFunction(PREPARE_DESSERT)) {      		
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);			
-				
-				availableDesserts += kitchen.getAvailableServingsDesserts();				
+        	if (building.hasFunction(PREPARE_DESSERT)) {
+				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARE_DESSERT);
+
+				availableDesserts += kitchen.getAvailableServingsDesserts();
 				dessertsToday += kitchen.getTotalServingsOfDessertsToday();
 				dessertsReplenishment = settlement.getDessertsReplenishmentRate();
         	}
         }
-        
+
 		dessertsReplenishment = Math.round(dessertsReplenishment * 100.0)/100.0;
-		
+
 		// Update # of desserts replenishment rate
 		if (dessertsReplenishmentCache != dessertsReplenishment) {
 			dessertsReplenishmentCache = dessertsReplenishment;
@@ -483,11 +493,11 @@ private CookingTableModel cookingTableModel;
 		if (dessertsTodayCache != dessertsToday) {
 			dessertsTodayCache = dessertsToday;
 			dessertsTodayLabel.setText(Msg.getString("TabPanelCooking.dessertsToday", dessertsTodayCache)); //$NON-NLS-1$
-		}	
-		
+		}
+
 	}
-	
-	/** 
+
+	/**
 	 * Internal class used as model for the cooking table.
 	 */
 	private class CookingTableModel extends AbstractTableModel {
@@ -502,19 +512,19 @@ private CookingTableModel cookingTableModel;
 		//private ImageIcon dotGreen; // meal available
 
 		private Multiset<String> allServingsSet;
-		
+
 		private Multimap<String, Integer> qualityMap;
 		private Multimap<String, Integer> allQualityMap;
-		
-		private Multimap<String, MarsClock> timeMap;	
+
+		private Multimap<String, MarsClock> timeMap;
 		private Multimap<String, MarsClock> allTimeMap;
-			
+
 		private Collection<Map.Entry<String,Integer>> allQualityMapE ;
 		private Collection<Entry<String, MarsClock>> allTimeMapE;
-				
+
 		private CookingTableModel(Settlement settlement) {
 			this.settlement = settlement;
-	
+
 			//dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			//dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			//dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
@@ -545,14 +555,14 @@ private CookingTableModel cookingTableModel;
 		}
 
 		public String getColumnName(int columnIndex) {
-			
+
 			String[] columnNames = {
 				    "<html>Meal<br>Name</html>",
 				    "<html># of<br>Servings</html>",
 				    "<html>Best<br>Quality</html>",
 				    "<html>Worst<br>Quality</html>"
 				};
-			
+
 			//if (columnIndex == 0) return Msg.getString("TabPanelCooking.column.s"); //$NON-NLS-1$
 			if (columnIndex == 0) return columnNames[0];
 					// Msg.getString("TabPanelCooking.column.nameOfMeal"); //$NON-NLS-1$
@@ -569,20 +579,20 @@ private CookingTableModel cookingTableModel;
 			//System.out.println("entering getValueAt()");
 			Object result = null;
 			/* if (column == 0) {
-				if (haveAllIngredients) 
+				if (haveAllIngredients)
 					return dotGreen;
 				else return dotRed;
 			} else */
 
-	    	
+
 			String name = nameList.get(row);
 
-			if (column == 0) 
+			if (column == 0)
 				result = name;
-			
-			else if (column == 1) {		
-			    // use Multimap.get(key) returns a view of the values associated with the specified key				
-				//int numServings = servingsList.addAll(timeMap.get(name));	
+
+			else if (column == 1) {
+			    // use Multimap.get(key) returns a view of the values associated with the specified key
+				//int numServings = servingsList.addAll(timeMap.get(name));
 		        int numServings = allServingsSet.count(name);
 		        //System.out.println(" numServings is "+ numServings);
 				result = numServings;
@@ -598,7 +608,7 @@ private CookingTableModel cookingTableModel;
 				    	if (value > best )
 				    		best = value;
 				    }
-				    result = best; 
+				    result = best;
 				    //allQualityMap.clear();
 				    	//System.out.println(" best is " +best);
 				}
@@ -610,11 +620,11 @@ private CookingTableModel cookingTableModel;
 				    String key = entry.getKey();
 				    if (name == key) {
 				    	value = entry.getValue();
-				    	
+
 				    	if (value < worst )
 				    		worst = value;
 				    }
-				    	result = worst;  
+				    	result = worst;
 				    	//allTimeMap.clear();
 				    	//System.out.println(" worst is " + worst);
 				}
@@ -630,39 +640,39 @@ private CookingTableModel cookingTableModel;
 			cleanUpTable();
 			getMultimap();
 			fireTableDataChanged();
-	
+
 		}
-		
+
 		public void getMultimap() {
-		
+
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOK_MEAL).iterator();
-			
+
 	        while (i.hasNext()) { 		// for each building's kitchen in the settlement
 
 	        	Building building = i.next();
 	    		//System.out.println("Building is " + building.getNickName());
-	            
-	        	if (building.hasFunction(COOK_MEAL)) {      		
-					Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);			
-					
+
+	        	if (building.hasFunction(COOK_MEAL)) {
+					Cooking kitchen = (Cooking) building.getFunction(COOK_MEAL);
+
 					qualityMap = kitchen.getQualityMap();
 					timeMap = kitchen.getTimeMap();
-					
+
 					allQualityMap.putAll(qualityMap);
 					allTimeMap.putAll(timeMap);
 	        	}
 	        }
-	
+
 	    	allQualityMapE = allQualityMap.entries();
 	    	allTimeMapE = allTimeMap.entries();
 			allServingsSet = allQualityMap.keys();
-	    	
+
 	    	numRow = allTimeMap.keySet().size();
 			//System.out.println(" numRow : " + numRow);
-	    	nameSet = allTimeMap.keySet(); 
+	    	nameSet = allTimeMap.keySet();
 	        //nameSet = servingsSet.elementSet(); // or using servingsSet
 	    	nameList = new ArrayList<String>(nameSet);
-	    	
+
 	    	//nameList.addAll(listOfNames);
 	    	//System.out.println("nameSet's size : " + nameSet.size());
 		}
@@ -671,16 +681,16 @@ private CookingTableModel cookingTableModel;
 		 * Removes all entries on all maps at the beginning of each new sol.
 		 */
 		public void cleanUpTable() {
-			// 1. find any expired meals  
+			// 1. find any expired meals
 			// 2. remove any expired meals from all 3 maps
 			// 3. call cookingTableModel.update()
-		    
+
 			// TODO: optimize it so that it doesn't have to check it on every update
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			int currentDay  = currentTime.getSolOfMonth();
 			//logger.info
 			//System.out.println("cleanUpTable() : Today is sol " + currentDay);
-		
+
 			if (dayCache != currentDay) {
 				if (!allTimeMap.isEmpty()) {
 					allTimeMap.clear();
@@ -690,7 +700,7 @@ private CookingTableModel cookingTableModel;
 					allQualityMap.clear();
 					allQualityMapE.clear();
 				}
-				if (!allServingsSet.isEmpty()) 
+				if (!allServingsSet.isEmpty())
 					allServingsSet.clear();
 				//System.out.println("cleanUpTable() : all maps deleted");
 				/*
@@ -700,13 +710,13 @@ private CookingTableModel cookingTableModel;
 					bestQualityMap.remove(key, value);
 					bestQualityMapE.remove(key);
 					worstQualityMap.remove(key, value);
-					worstQualityMapE.remove(key);	
+					worstQualityMapE.remove(key);
 					servingsSet.remove(key);
 		*/
 				dayCache = currentDay;
-				
+
 			}
-			
+
 		}
 	}
 }

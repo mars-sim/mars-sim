@@ -30,10 +30,12 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
-/** 
+/**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
  */
 public class TabPanelAttribute
@@ -44,13 +46,13 @@ extends TabPanel {
 	private AttributeTableModel attributeTableModel;
 	//private Person person;
 	//private Robot robot;
-	
+
 	/**
 	 * Constructor 1.
 	 * @param person {@link Person} the person.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public TabPanelAttribute(Person person, MainDesktopPane desktop) { 
+	public TabPanelAttribute(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
@@ -60,19 +62,19 @@ extends TabPanel {
 			desktop
 		);
 		//this.person = person;
-		
+
 		// Create attribute table model
 		attributeTableModel = new AttributeTableModel(person);
 
 		init();
 	}
-	
+
 	/**
 	 * Constructor 2.
 	 * @param robot{@link Robot} the robot.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public TabPanelAttribute(Robot robot, MainDesktopPane desktop) { 
+	public TabPanelAttribute(Robot robot, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
@@ -81,17 +83,17 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-		
+
 		//this.robot = robot;
-		
+
 		// Create attribute table model
 		attributeTableModel = new AttributeTableModel(robot);
-	
+
 		init();
 	}
-	
+
 	public void init() {
-		
+
 		// Create attribute label panel.
 		JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(attributeLabelPanel);
@@ -113,6 +115,13 @@ extends TabPanel {
 		attributeTable.setCellSelectionEnabled(false);
 		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		attributeScrollPanel.setViewportView(attributeTable);
+
+		// 2015-06-08 Added sorting
+		attributeTable.setAutoCreateRowSorter(true);
+		attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(attributeTable);
 	}
 
 	/**
@@ -121,7 +130,7 @@ extends TabPanel {
 	@Override
 	public void update() {}
 
-	/** 
+	/**
 	 * Internal class used as model for the attribute table.
 	 */
 	private static class AttributeTableModel
@@ -139,16 +148,16 @@ extends TabPanel {
 		 */
 		private AttributeTableModel(Unit unit) {
 	        Person person = null;
-	        Robot robot = null;     
+	        Robot robot = null;
 	        if (unit instanceof Person) {
-	         	person = (Person) unit;  
+	         	person = (Person) unit;
 	         	manager = person.getNaturalAttributeManager();
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
 	        	manager = robot.getNaturalAttributeManager();
 	        }
-			
+
 			attributes = new ArrayList<Map<String,NaturalAttribute>>();
 			for (NaturalAttribute value : NaturalAttribute.values()) {
 				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();

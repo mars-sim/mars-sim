@@ -26,6 +26,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -47,7 +49,7 @@ implements ListSelectionListener {
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSocial(Person person, MainDesktopPane desktop) { 
+	public TabPanelSocial(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
@@ -80,7 +82,14 @@ implements ListSelectionListener {
 		relationshipTable.setCellSelectionEnabled(true);
 		relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		relationshipTable.getSelectionModel().addListSelectionListener(this);
-		relationshipScrollPanel.setViewportView(relationshipTable);		
+		relationshipScrollPanel.setViewportView(relationshipTable);
+
+		// 2015-06-08 Added sorting
+		//relationshipTable.setAutoCreateRowSorter(true);
+		//relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(relationshipTable);
 	}
 
 	/**
@@ -100,7 +109,7 @@ implements ListSelectionListener {
 		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the relationship table.
 	 */
 	private static class RelationshipTableModel extends AbstractTableModel {
@@ -144,7 +153,7 @@ implements ListSelectionListener {
 			else if (column == 1) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);
-			} 
+			}
 			else return null;
 		}
 

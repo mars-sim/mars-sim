@@ -51,20 +51,20 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 		this.transportItem = transportItem;
 
 		this.setSize(500,500);
-		
+
 		 // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
         setContentPane(mainPane);
 
         initEditingPanel();
-		
+
 		mainPane.add(editingPanel, BorderLayout.CENTER);
 
 		// Create the button pane.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-		
+
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
-		
+
 		// Create modify button.
 		// 9/29/2014 by mkung: Changed button text from "Modify" to "Commit Changes"
 		JButton modifyButton = new JButton("Commit Changes");
@@ -86,23 +86,22 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 			}
 
 		});
-		buttonPane.add(cancelButton);		
-	    
-	    //SwingUtilities.invokeLater(() -> desktop.add(this)) ; //createSwing(swingNode));
-	    //if(isFX) 
-	    desktop.add(this);	    
-	    
+		buttonPane.add(cancelButton);
+
+	    desktop.add(this);
+
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    this.setLocation(width, height);
-	    this.setVisible(true);
+
+	    setLocation(width, height);
+	    setVisible(true);
 
 	}
-	
-	public void initEditingPanel() {	
-		
+
+	public void initEditingPanel() {
+
 		// Create editing panel.
 		editingPanel = null;
 		if (transportItem instanceof ArrivingSettlement) {
@@ -114,10 +113,10 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 		else {
 			throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");
 		}
-		
+
 	}
-		
-	
+
+
 	/**
 	 * Modify the transport item and close the dialog.
 	 */

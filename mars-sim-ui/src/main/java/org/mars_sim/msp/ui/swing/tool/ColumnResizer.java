@@ -1,64 +1,77 @@
 /**
  * Mars Simulation Project
  * ColumnResizer.java
- * @version 3.07 2014-12-28
+ * @version 3.08 2015-06-08
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool;
 
+import java.awt.Component;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 public class ColumnResizer {
 
     public static void adjustColumnPreferredWidths(JTable table) {
+
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();
         for (int col=0; col<table.getColumnCount(); col++) {
             // System.out.println ("--- col " + col + " ---");
-            int maxwidth = 0;
+            int maxwidth = 40;
+            //int minwidth = 40;
+            int colWidth = 0;
             for (int row=0; row<table.getRowCount(); row++) {
                 TableCellRenderer rend = table.getCellRenderer (row, col);
-                Object value = table.getValueAt (row, col);
+/*                Object value = table.getValueAt (row, col);
                 Component comp =
-                    rend.getTableCellRendererComponent (table, 
+                    rend.getTableCellRendererComponent (table,
                                                         value,
                                                         false,
                                                         false,
                                                         row,
                                                         col);
-                maxwidth = Math.max (comp.getPreferredSize().width,
-                                     maxwidth);
-                //System.out.println ("col " + col +
-                //                    " pref width now " + 
-                //                    maxwidth);
-            } 
+*/
+                Component comp = table.prepareRenderer(rend, row, col);
+                colWidth = comp.getPreferredSize().width;
+                //minwidth = colWidth;
+                //if (colWidth > maxwidth) maxwidth = colWidth;
+                //if (colWidth < minwidth) minwidth = colWidth;
+                maxwidth = Math.max (colWidth, maxwidth);
+                //minwidth = Math.max (colWidth, minwidth);
 
-            // Version 1: doesn't consider the column header's preferred width         
-            // TableColumn column = columnModel.getColumn (col);
-            // column.setPreferredWidth (maxwidth);
-             
-            
-            // Version 2: considers the column header's preferred width too
+                //System.out.println ("col " + col +
+                //                    " pref width now " +
+                //                    maxwidth);
+            }
+
+            // Considers the column header's preferred width too
             TableColumn column = columnModel.getColumn (col);
+/*
+            int headerWidth = 0;
             TableCellRenderer headerRenderer = column.getHeaderRenderer();
             if (headerRenderer == null)
                 headerRenderer = table.getTableHeader().getDefaultRenderer();
             Object headerValue = column.getHeaderValue();
-            Component headerComp = 
-                    headerRenderer.getTableCellRendererComponent (table, 
+            Component headerComp =
+                    headerRenderer.getTableCellRendererComponent (table,
                                                                   headerValue,
                                                                   false,
                                                                   false,
                                                                   0,
                                                                   col);
-            maxwidth = Math.max (maxwidth, 
-                                 headerComp.getPreferredSize().width);
+            headerWidth = headerComp.getPreferredSize().width;
+
+            maxwidth = Math.max (colWidth, headerWidth);
+            minwidth = Math.min (colWidth, headerWidth);
+*/
             column.setPreferredWidth (maxwidth);
-            
+            //column.setMaxWidth(maxwidth); // very bad!
+            column.setMinWidth(maxwidth);
 
         }
     }

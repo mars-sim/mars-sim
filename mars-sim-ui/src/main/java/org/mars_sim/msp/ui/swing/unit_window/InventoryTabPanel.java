@@ -42,8 +42,10 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-/** 
+/**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
@@ -54,40 +56,40 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
     private JTable equipmentTable;
-    
+
     /**
      * Constructor
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public InventoryTabPanel(Unit unit, MainDesktopPane desktop) { 
+    public InventoryTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
- 
+
         Inventory inv = unit.getInventory();
- 
+
         // Create inventory label panel.
         JPanel inventoryLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topContentPanel.add(inventoryLabelPanel);
-        
+
         // Create inventory label
         JLabel titleLabel = new JLabel("Inventory", JLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         inventoryLabelPanel.add(titleLabel);
-        
+
         // Create inventory content panel
         JPanel inventoryContentPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         centerContentPanel.add(inventoryContentPanel, BorderLayout.CENTER);
-        
+
         // Create resources panel
         JScrollPane resourcesPanel = new JScrollPane();
         resourcesPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(resourcesPanel);
-        
+
         // Create resources table model
         resourceTableModel = new ResourceTableModel(inv);
-            
+
         // Create resources table
         JTable resourcesTable = new JTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
@@ -96,15 +98,22 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.setCellSelectionEnabled(false);
         resourcesPanel.setViewportView(resourcesTable);
-        
+
+		// 2015-06-08 Added sorting
+        resourcesTable.setAutoCreateRowSorter(true);
+        resourcesTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(resourcesTable);
+
         // Create equipment panel
         JScrollPane equipmentPanel = new JScrollPane();
         equipmentPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(equipmentPanel);
-        
+
         // Create equipment table model
         equipmentTableModel = new EquipmentTableModel(inv);
-        
+
         // Create equipment table
         equipmentTable = new JTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
@@ -112,8 +121,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         equipmentTable.getSelectionModel().addListSelectionListener(this);
         equipmentPanel.setViewportView(equipmentTable);
+
+		// 2015-06-08 Added sorting
+        equipmentTable.setAutoCreateRowSorter(true);
+        equipmentTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(equipmentTable);
     }
-    
+
     /**
      * Updates the info on this panel.
      */
@@ -122,7 +138,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTableModel.update();
         equipmentTable.repaint();
     }
-    
+
     /**
      * Called whenever the value of the selection changes.
      *
@@ -131,11 +147,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public void valueChanged(ListSelectionEvent e) {
         int index = equipmentTable.getSelectedRow();
         Object selectedEquipment = equipmentTable.getValueAt(index, 0);
-        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment)) 
+        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
             desktop.openUnitWindow((Equipment) selectedEquipment, false);
     }
-    
-	/** 
+
+	/**
 	 * Internal class used as model for the resource table.
 	 */
 	private static class ResourceTableModel extends AbstractTableModel {
@@ -148,13 +164,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
 		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
-        
+
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             capacity = new HashMap<Resource, Number>();
-            
+
             keys.addAll(inventory.getAllAmountResourcesStored(false));
             Iterator<Resource> iAmount = keys.iterator();
             while (iAmount.hasNext()) {
@@ -175,29 +191,29 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             // Sort resources alphabetically by name.
             Collections.sort(keys);
         }
-        
+
         public int getRowCount() {
             return keys.size();
         }
-        
+
         public int getColumnCount() {
             return 3;
         }
-        
+
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 1) dataType = Double.class;
             return dataType;
         }
-        
+
         public String getColumnName(int columnIndex) {
-			// 2014-11-17 Internationalized and capitalized column headers 
+			// 2014-11-17 Internationalized and capitalized column headers
             if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Resource.header.name");
             else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Resource.header.quantity");
             else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Resource.header.capacity");
             else return "unknown";
         }
-        
+
         public Object getValueAt(int row, int column) {
             if (column == 0) {
     			// 2014-11-17 Capitalize Resource Names
@@ -221,7 +237,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             }
             else return "unknown";
         }
-  
+
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
@@ -234,7 +250,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         			newResources.put(resource, inventory.getAmountResourceStored(resource, false));
         			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
         		}
-        		
+
         		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
         		newResourceKeys.addAll(itemResources);
             	Iterator<ItemResource> iItem = itemResources.iterator();
@@ -246,7 +262,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
             	// Sort resources alphabetically by name.
                 Collections.sort(newResourceKeys);
-            
+
         		if (!resources.equals(newResources)) {
         			resources = newResources;
         			capacity = newCapacity;
@@ -255,12 +271,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         		}
         	}
         	catch(Exception e) {
-        	    e.printStackTrace(System.err);   
+        	    e.printStackTrace(System.err);
             }
         }
     }
 
-	/** 
+	/**
 	 * Internal class used as model for the equipment table.
 	 */
 	private static class EquipmentTableModel extends AbstractTableModel {
@@ -337,7 +353,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 			// Sort equipment alphabetically by name.
 			Collections.sort(newList);
-		
+
 			if (!list.equals(newList)) {
 				list = newList;
 				equipment = newMap;
