@@ -26,14 +26,16 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
  * Meta task for the ObserveAstronomicalObjects task.
  */
 public class ObserveAstronomicalObjectsMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(ObserveAstronomicalObjectsMeta.class.getName());
-    
+
+    private SurfaceFeatures surface;
+
     @Override
     public String getName() {
         return NAME;
@@ -46,7 +48,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         // Get local observatory if available.
@@ -54,22 +56,25 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
         if (observatory != null) {
 
             // Check if it is completely dark outside.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
+            if (surface == null)
+            	surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+            double sunlight = surface.getPreviousSolarIrradiance(person.getCoordinates());
+
             if (sunlight == 0D) {
-                
+
                 ScienceType astronomy = ScienceType.ASTRONOMY;
-                
+
                 // Add probability for researcher's primary study (if any).
                 ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                 ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(
                         primaryStudy.getPhase())) {
-                    if (!primaryStudy.isPrimaryResearchCompleted() && 
+                    if (!primaryStudy.isPrimaryResearchCompleted() &&
                             astronomy == primaryStudy.getScience()) {
                         try {
                             double primaryResult = 100D;
-           
+
                             // Get observatory building crowding modifier.
                             primaryResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
@@ -81,7 +86,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                     primaryResult /= 2D;
                                 }
                             }
-                            
+
                             result += primaryResult;
                         }
                         catch (Exception e) {
@@ -100,7 +105,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                 try {
                                     double collabResult = 50D;
 
-                                    
+
                                     // Get observatory building crowding modifier.
                                     collabResult *= ObserveAstronomicalObjects.getObservatoryCrowdingModifier(person, observatory);
 
@@ -112,7 +117,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                                             collabResult /= 2D;
                                         }
                                     }
-                                    
+
                                     result += collabResult;
                                 }
                                 catch (Exception e) {
@@ -122,22 +127,29 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask {
                         }
                     }
                 }
+
+                // Effort-driven task modifier.
+                result *= person.getPerformanceRating();
+
+                // Job modifier.
+                Job job = person.getMind().getJob();
+                if (job != null) {
+                    result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class);
+                }
+
+                // Modify if research is the person's favorite activity.
+                if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+                    result *= 2D;
+                }
+
+    	        // 2015-06-07 Added Preference modifier
+    	        if (result > 0)
+    	        	result += person.getPreference().getPreferenceScore(this);
+    	        if (result < 0) result = 0;
             }
         }
 
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
 
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class);
-        }
-        
-        // Modify if research is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
-            result *= 2D;
-        }
 
         return result;
     }

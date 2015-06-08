@@ -18,11 +18,11 @@ import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
  * Meta task for the ConsolidateContainers task.
  */
 public class ConsolidateContainersMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.consolidateContainers"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -35,24 +35,30 @@ public class ConsolidateContainersMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
-        
-        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation() || 
+
+        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation() ||
                 LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
-        
+
             // Check if there are local containers that need resource consolidation.
             if (ConsolidateContainers.needResourceConsolidation(person)) {
                 result = 10D;
             }
-        
+
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
-            
+
             // Modify if operations is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
                 result *= 2D;
             }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
         }
 
         return result;
@@ -65,18 +71,18 @@ public class ConsolidateContainersMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        
+
         double result = 0D;
-        
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
-	        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation() || 
+
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
+	        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation() ||
 	                LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
-	        
+
 	            // Check if there are local containers that need resource consolidation.
 	            if (ConsolidateContainers.needResourceConsolidation(robot)) {
 	                result = 10D;
 	            }
-	        
+
 	            // Effort-driven task modifier.
 	            result *= robot.getPerformanceRating();
 	        }

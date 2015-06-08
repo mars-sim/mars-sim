@@ -35,7 +35,7 @@ public class TreatMedicalPatientMeta implements MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -48,12 +48,16 @@ public class TreatMedicalPatientMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-       
+
         double result = 0D;
-        
+
         // Get the local medical aids to use.
         if (hasNeedyMedicalAids(person)) {
             result = 300D;
+
+            // 2015-06-07 Added Preference modifier
+            result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+
         }
 
         // Effort-driven task modifier.
@@ -65,28 +69,30 @@ public class TreatMedicalPatientMeta implements MetaTask {
             result *= job.getStartTaskProbabilityModifier(TreatMedicalPatient.class);
         }
 
+        if (result < 0) result = 0;
+
         return result;
     }
-    
+
     /**
      * Checks if there are local medical aids that have people waiting for treatment.
      * @param person the person.
      * @return true if needy medical aids.
      */
     private boolean hasNeedyMedicalAids(Person person) {
-        
+
         boolean result = false;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             result = hasNeedyMedicalAidsAtSettlement(person, person.getSettlement());
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             result = hasNeedyMedicalAidsInVehicle(person, person.getVehicle());
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if there are medical aids at a settlement that have people waiting for treatment.
      * @param person the person.
@@ -94,20 +100,20 @@ public class TreatMedicalPatientMeta implements MetaTask {
      * @return true if needy medical aids.
      */
     private boolean hasNeedyMedicalAidsAtSettlement(Person person, Settlement settlement) {
-        
+
         boolean result = false;
-        
+
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();
-            
+
             // Check if building currently has a malfunction.
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            
+
             if (!malfunction) {
-                
+
                 // Check if there are any treatable medical problems at building.
                 MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
                 if (hasTreatableHealthProblems(person, medicalCare)) {
@@ -115,10 +121,10 @@ public class TreatMedicalPatientMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if there are medical aids in a vehicle that have people waiting for treatment.
      * @param person the person.
@@ -126,9 +132,9 @@ public class TreatMedicalPatientMeta implements MetaTask {
      * @return true if needy medical aids.
      */
     private boolean hasNeedyMedicalAidsInVehicle(Person person, Vehicle vehicle) {
-        
+
         boolean result = false;
-        
+
         if (person.getVehicle() instanceof Rover) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
@@ -138,10 +144,10 @@ public class TreatMedicalPatientMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if a medical aid has waiting people with health problems that the person can treat.
      * @param person the person.
@@ -149,12 +155,12 @@ public class TreatMedicalPatientMeta implements MetaTask {
      * @return true if treatable health problems.
      */
     private boolean hasTreatableHealthProblems(Person person, MedicalAid aid) {
-        
+
         boolean result = false;
-        
+
         // Get the person's medical skill.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-        
+
         // Check if there are any treatable health problems awaiting treatment.
         Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();
         while (j.hasNext() && !result) {
@@ -167,7 +173,7 @@ public class TreatMedicalPatientMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
 

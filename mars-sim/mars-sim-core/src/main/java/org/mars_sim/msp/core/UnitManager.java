@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -526,6 +527,7 @@ implements Serializable {
     private void createConfiguredPeople() {
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
         int size = personConfig.getNumberOfConfiguredPeople();
         // Create all configured people.
         for (int x = 0; x < size; x++) {
@@ -651,10 +653,15 @@ implements Serializable {
                             );
                 }
             }
+
+            // 2015-06-07 Added Preference
+            person.getPreference().initializePreference();
+
         }
 
         // Create all configured relationships.
         createConfiguredRelationships();
+
     }
 
     /**
@@ -697,6 +704,9 @@ implements Serializable {
                     person.getFavorite().setFavoriteSideDish(sideDish);
                     person.getFavorite().setFavoriteDessert(dessert);
                     person.getFavorite().setFavoriteActivity(activity);
+
+                    // 2015-06-07 Added Preference
+                    person.getPreference().initializePreference();
 
                     // 2015-04-30 Assign a job to everyone
                     person.getMind().assignJob();
@@ -1093,7 +1103,6 @@ implements Serializable {
 	            }
             }
         }
-
     }
 
 

@@ -73,11 +73,16 @@ public class RepairMalfunctionMeta implements MetaTask {
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);
         }
-        
+
         // Modify if tinkering is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
             result *= 2D;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
 
         return result;
     }

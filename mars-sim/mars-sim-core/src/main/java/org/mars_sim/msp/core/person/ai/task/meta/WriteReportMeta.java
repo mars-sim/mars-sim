@@ -83,7 +83,10 @@ public class WriteReportMeta implements MetaTask {
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();
 
-	            //System.out.println("WriteReport's result is : " +result);
+		        // 2015-06-07 Added Preference modifier
+		        if (result > 0)
+		        	result += person.getPreference().getPreferenceScore(this);
+		        if (result < 0) result = 0;
             }
         }
 

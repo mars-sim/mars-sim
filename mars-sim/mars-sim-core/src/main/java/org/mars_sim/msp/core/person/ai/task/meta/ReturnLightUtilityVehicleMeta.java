@@ -18,11 +18,11 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
  * Meta task for the ReturnLightUtilityVehicle task.
  */
 public class ReturnLightUtilityVehicleMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -38,9 +38,14 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            
+
             if (person.getVehicle() instanceof LightUtilityVehicle) {
                 result = 500D;
+
+    	        // 2015-06-07 Added Preference modifier
+    	        if (result > 0)
+    	        	result += person.getPreference().getPreferenceScore(this);
+    	        if (result < 0) result = 0;
             }
         }
 
@@ -57,7 +62,7 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask {
         double result = 0D;
 
         if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            
+
             if (robot.getVehicle() instanceof LightUtilityVehicle) {
                 result = 500D;
             }

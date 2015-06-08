@@ -32,10 +32,10 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.salvageBuilding"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -48,7 +48,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         // Check if person is in a settlement.
@@ -71,14 +71,14 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                 }
             }
             boolean enoughPeople = (availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE);
-            
+
             // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
             boolean firstTenSols = (totalTimeSols < 10D);
-            
+
             // Check if settlement has construction override flag set.
             boolean constructionOverride = settlement.getConstructionOverride();
 
@@ -95,7 +95,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                     }
                 } catch (Exception e) {
                     logger.log(Level.SEVERE,
-                            "Error getting salvage construction site.", e);
+                            "Error getting salvage construction site by a person.", e);
                 }
             }
 
@@ -104,7 +104,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                     .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE) {
                 result = 0D;
             }
-            
+
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
@@ -122,15 +122,15 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 	@Override
 	public double getProbability(Robot robot) {
-        
+
         double result = 0D;
 
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
-	
+
 	        // Check if robot is in a settlement.
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = robot.getSettlement();
-	
+
 	            // Check if available light utility vehicles.
 	            boolean reservableLUV = BuildingSalvageMission.isLUVAvailable(settlement);
 	/*
@@ -147,17 +147,17 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 	                }
 	            }
 	            boolean enoughPeople = (availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE);
-	  */          
+	  */
 	            // No construction until after the first ten sols of the simulation.
 	            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
 	            double totalTimeSols = totalTimeMillisols / 1000D;
 	            boolean firstTenSols = (totalTimeSols < 10D);
-	            
+
 	            // Check if settlement has construction override flag set.
 	            boolean constructionOverride = settlement.getConstructionOverride();
-	
+
 	            if (reservableLUV && !constructionOverride && !firstTenSols) { // && enoughPeople
 	                try {
 	                    int constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
@@ -171,16 +171,16 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 	                    }
 	                } catch (Exception e) {
 	                    logger.log(Level.SEVERE,
-	                            "Error getting salvage construction site.", e);
+	                            "Error getting salvage construction site by a robot.", e);
 	                }
 	            }
-	
+
 	            // Check if min number of EVA suits at settlement.
 	            if (Mission.getNumberAvailableEVASuitsAtSettlement(robot
 	                    .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE)
 	                result = 0D;
-	            	            
-	  
+
+
 	        }
 
         return result;

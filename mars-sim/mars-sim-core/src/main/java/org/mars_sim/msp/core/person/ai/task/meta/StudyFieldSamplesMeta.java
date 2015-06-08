@@ -30,14 +30,14 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
  * Meta task for the StudyFieldSamples task.
  */
 public class StudyFieldSamplesMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.studyFieldSamples"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(StudyFieldSamplesMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -50,7 +50,7 @@ public class StudyFieldSamplesMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         // Create list of possible sciences for studying field samples.
@@ -139,7 +139,7 @@ public class StudyFieldSamplesMeta implements MetaTask {
         catch (Exception e) {
             logger.severe("getProbability(): " + e.getMessage());
         }
-        
+
         // Check if person is in a moving rover.
         if (PerformLaboratoryExperiment.inMovingRover(person)) {
             result = 0D;
@@ -153,11 +153,16 @@ public class StudyFieldSamplesMeta implements MetaTask {
         if (job != null) {
             result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
         }
-        
+
         // Modify if research is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
             result *= 2D;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
 
         return result;
     }

@@ -23,14 +23,14 @@ import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
  * Meta task for the UnloadVehicleGarage task.
  */
 public class UnloadVehicleGarageMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -43,11 +43,11 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
+
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
@@ -63,18 +63,23 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
-        
+
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
+            result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);
         }
-        
+
         // Modify if operations is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
             result *= 2D;
         }
-    
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
+
         return result;
     }
 
@@ -85,12 +90,12 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        
+
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            
+
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                int numVehicles = 0;
@@ -102,13 +107,13 @@ public class UnloadVehicleGarageMeta implements MetaTask {
 	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
 	                e.printStackTrace(System.err);
 	            }
-	        
-	
+
+
 	        // Effort-driven task modifier.
 	        result *= robot.getPerformanceRating();
-	        
+
 	        }
-    
+
         return result;
     }
 }

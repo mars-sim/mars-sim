@@ -36,6 +36,8 @@ public class ConstructBuildingMeta implements MetaTask {
     /** default logger. */
     private static Logger logger = Logger.getLogger(ConstructBuildingMeta.class.getName());
 
+    private SurfaceFeatures surface;
+
     @Override
     public String getName() {
         return NAME;
@@ -51,6 +53,22 @@ public class ConstructBuildingMeta implements MetaTask {
 
         double result = 0D;
 
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        if (surface == null)
+        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                result = 0D;
+            }
+        }
+
+        if (result != 0)
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             try {
@@ -84,18 +102,11 @@ public class ConstructBuildingMeta implements MetaTask {
             result *= 2D;
         }
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
 
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0D) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
-            }
-        }
 
         return result;
     }

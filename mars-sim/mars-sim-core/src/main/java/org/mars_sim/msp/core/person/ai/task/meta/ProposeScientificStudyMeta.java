@@ -43,55 +43,65 @@ public class ProposeScientificStudyMeta implements MetaTask {
 
         double result = 0D;
 
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
-        if (study != null) {
-
-            // Check if study is in proposal phase.
-            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-
-                // Increase probability if person's current job is related to study's science.
-                Job job = person.getMind().getJob();
-                ScienceType science = study.getScience();
-                if ((job != null) && science == ScienceType.getJobScience(job)) {
-                    result = 50D;
-                }
-                else {
-                    result = 10D;
-                }
-            }
-        }
-        else {
-            // Probability of starting a new scientific study.
-
-            // Check if scientist job.
-            if (ScienceType.isScienceJob(person.getMind().getJob())) {
-                result = 1D;
-            }
-
-            // Modify if researcher is already collaborating in studies.
-            int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
-            result /= (numCollabStudies + 1D);
-        }
-
-        // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = ProposeScientificStudy.getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
-            }
-        }
+        	//|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class);
-        }
-        
-        // Modify if research is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
-            result *= 2D;
+	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
+	        if (study != null) {
+
+	            // Check if study is in proposal phase.
+	            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+
+	                // Increase probability if person's current job is related to study's science.
+	                Job job = person.getMind().getJob();
+	                ScienceType science = study.getScience();
+	                if ((job != null) && science == ScienceType.getJobScience(job)) {
+	                    result = 50D;
+	                }
+	                else {
+	                    result = 10D;
+	                }
+	            }
+	        }
+	        else {
+	            // Probability of starting a new scientific study.
+
+	            // Check if scientist job.
+	            if (ScienceType.isScienceJob(person.getMind().getJob())) {
+	                result = 1D;
+	            }
+
+	            // Modify if researcher is already collaborating in studies.
+	            int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
+	            result /= (numCollabStudies + 1D);
+	        }
+
+	        // Crowding modifier
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Building adminBuilding = ProposeScientificStudy.getAvailableAdministrationBuilding(person);
+	            if (adminBuilding != null) {
+
+	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
+	                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
+	            }
+	        }
+
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class);
+	        }
+
+	        // Modify if research is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	            result *= 2D;
+	        }
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
         }
 
         return result;

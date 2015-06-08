@@ -78,6 +78,7 @@ public class MetaTaskUtil {
         metaTasks.add(new WalkMeta());
         metaTasks.add(new WorkoutMeta());
         metaTasks.add(new WriteReportMeta());
+        metaTasks.add(new YogaMeta());
 
     }
 

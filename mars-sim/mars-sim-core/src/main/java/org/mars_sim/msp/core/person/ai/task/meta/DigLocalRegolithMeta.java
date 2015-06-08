@@ -31,17 +31,19 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
  * Meta task for the DigLocalRegolith task.
  */
 public class DigLocalRegolithMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
-    
+
     /** Regolith value probability modifier. */
     private static double REGOLITH_VALUE_MODIFIER = 10D;
-    
+
+    private SurfaceFeatures surface;
+
     @Override
     public String getName() {
         return NAME;
@@ -54,73 +56,83 @@ public class DigLocalRegolithMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            Inventory inv = settlement.getInventory();
-            		            
-            try {
-                // Factor the value of regolith at the settlement.
-                GoodsManager manager = settlement.getGoodsManager();
-                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-                result = value * REGOLITH_VALUE_MODIFIER;
-
-                if (result > 100D) {
-                    result = 100D;  
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error checking good value of regolith.");
-            }
-
-            // Crowded settlement modifier
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-            
-            // Check at least one EVA suit at settlement.
-            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
-            if (numSuits == 0) {
-                result = 0D;
-            }
-            
-            // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
-            if (numEmptyBags == 0) {
-                result = 0D;
-            }
-        }
-        
         // Check if an airlock is available
         if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
             result = 0D;
         }
 
         // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface == null)
+        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
         }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);   
-        }
-        
-        // Modify if field work is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
-            result *= 2D;
-        }
-    
+
+        if (result != 0)
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = person.getSettlement();
+	            Inventory inv = settlement.getInventory();
+
+	            try {
+	                // Factor the value of regolith at the settlement.
+	                GoodsManager manager = settlement.getGoodsManager();
+	                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+	                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+	                result = value * REGOLITH_VALUE_MODIFIER;
+
+	                if (result > 100D) {
+	                    result = 100D;
+	                }
+	            }
+	            catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error checking good value of regolith.");
+	            }
+
+	            // Crowded settlement modifier
+	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+	                result *= 2D;
+	            }
+
+	            // Check at least one EVA suit at settlement.
+	            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
+	            if (numSuits == 0) {
+	                result = 0D;
+	            }
+
+	            // Check if at least one empty bag at settlement.
+	            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
+	            if (numEmptyBags == 0) {
+	                result = 0D;
+	            }
+
+
+	            // Effort-driven task modifier.
+	            result *= person.getPerformanceRating();
+
+	            // Job modifier.
+	            Job job = person.getMind().getJob();
+	            if (job != null) {
+	                result *= job.getStartTaskProbabilityModifier(DigLocalRegolith.class);
+	            }
+
+	            // Modify if field work is the person's favorite activity.
+	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
+	                result *= 2D;
+	            }
+
+                // 2015-06-07 Added Preference modifier
+                if (result > 0)
+                	result += person.getPreference().getPreferenceScore(this);
+                if (result < 0) result = 0;
+
+	        }
+
         return result;
     }
 

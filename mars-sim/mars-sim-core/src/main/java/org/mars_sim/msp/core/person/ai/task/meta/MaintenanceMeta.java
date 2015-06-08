@@ -28,14 +28,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Meta task for the Maintenance task.
  */
 public class MaintenanceMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintenance"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(MaintenanceMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -84,13 +84,18 @@ public class MaintenanceMeta implements MetaTask {
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
+            result *= job.getStartTaskProbabilityModifier(Maintenance.class);
         }
-        
+
         // Modify if tinkering is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
             result *= 2D;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
 
         return result;
     }
@@ -105,9 +110,9 @@ public class MaintenanceMeta implements MetaTask {
         double result = 0D;
 
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-	
+
 	        //if (result != 0 )  { // if task penalty is not zero
-	      
+
 		        try {
 		            // Total probabilities for all malfunctionable entities in robot's local.
 		            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
@@ -135,10 +140,10 @@ public class MaintenanceMeta implements MetaTask {
 		        catch (Exception e) {
 		            logger.log(Level.SEVERE,"getProbability()",e);
 		        }
-		
+
 		        // Effort-driven task modifier.
 		        result *= robot.getPerformanceRating();
-	
+
 	        }
 
         return result;
