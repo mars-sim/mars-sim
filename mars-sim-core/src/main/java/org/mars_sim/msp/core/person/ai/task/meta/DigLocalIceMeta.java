@@ -31,17 +31,19 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
  * Meta task for the DigLocalIce task.
  */
 public class DigLocalIceMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
-    
+
     /** Ice value probability modifier. */
     private static double ICE_VALUE_MODIFIER = 10D;
-    
+
+    private SurfaceFeatures surface;
+
     @Override
     public String getName() {
         return NAME;
@@ -54,12 +56,28 @@ public class DigLocalIceMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        if (surface == null)
+        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                result = 0D;
+            }
+        }
+
+        if (result != 0)
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
-            Inventory inv = settlement.getInventory(); 
+            Inventory inv = settlement.getInventory();
 
             try {
                 // Factor the value of ice at the settlement.
@@ -69,7 +87,7 @@ public class DigLocalIceMeta implements MetaTask {
                 result = value * ICE_VALUE_MODIFIER;
 
                 if (result > 100D) {
-                    result = 100D;	
+                    result = 100D;
                 }
             }
             catch (Exception e) {
@@ -87,40 +105,34 @@ public class DigLocalIceMeta implements MetaTask {
             if (numSuits == 0) {
                 result = 0D;
             }
-            
+
             // Crowded settlement modifier
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }
-        }
-        
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
 
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);
             }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
 
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);   
+            // 2015-06-07 Added Preference modifier
+            result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
         }
 
-        // Modify if field work is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Field Work")) {
-            result *= 2D;
-        }
-    
+
         return result;
     }
 

@@ -20,11 +20,11 @@ import org.mars_sim.msp.core.robot.ai.job.Medicbot;
  * Meta task for the PrescribeMedication task.
  */
 public class PrescribeMedicationMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -38,23 +38,27 @@ public class PrescribeMedicationMeta implements MetaTask {
     public Task constructInstance(Robot robot) {
         return new PrescribeMedication(robot);
     }
-    
+
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         // Only doctor job allowed to perform this task.
         Job job = person.getMind().getJob();
         if (job instanceof Doctor) {
-            
+
             // Determine patient needing medication.
             Person patient = PrescribeMedication.determinePatient(person);
             if (patient != null) {
                 result = 100D;
+                // 2015-06-07 Added Preference modifier
+                if (result > 0)
+                	result += person.getPreference().getPreferenceScore(this);
+                if (result < 0) result = 0;
             }
         }
-        
+
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 
@@ -62,26 +66,26 @@ public class PrescribeMedicationMeta implements MetaTask {
     }
 
     public double getProbability(Robot robot) {
-        
+
         double result = 0D;
-        
+
         if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
-        	
+
 	        // Only medicbot or a doctor is allowed to perform this task.
 	        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
-	            
+
 	            // Determine patient needing medication.
 	            Person patient = PrescribeMedication.determinePatient(robot);
 	            if (patient != null) {
 	                result = 100D;
 	            }
 	        }
-	        
+
 	        // Effort-driven task modifier.
 	        result *= robot.getPerformanceRating();
-	
+
 	    }
-        
+
         return result;
     }
 

@@ -25,11 +25,11 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
  * Meta task for the ToggleResourceProcess task.
  */
 public class ToggleResourceProcessMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.toggleResourceProcess"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -42,7 +42,7 @@ public class ToggleResourceProcessMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -84,11 +84,11 @@ public class ToggleResourceProcessMeta implements MetaTask {
 
                 // Check if it is night time.
                 SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+                if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
                     if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                         result = 0D;
                     }
-                } 
+                }
 
                 // Crowded settlement modifier
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -104,13 +104,18 @@ public class ToggleResourceProcessMeta implements MetaTask {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(ToggleResourceProcess.class);    
+                result *= job.getStartTaskProbabilityModifier(ToggleResourceProcess.class);
             }
-            
+
             // Modify if tinkering is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
                 result *= 2D;
             }
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
         }
 
         return result;

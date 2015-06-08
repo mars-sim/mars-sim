@@ -21,14 +21,14 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the Relax task.
  */
 public class RelaxMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.relax"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -60,6 +60,11 @@ public class RelaxMeta implements MetaTask {
             }
         }
 
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
+
         return result;
     }
 
@@ -72,11 +77,11 @@ public class RelaxMeta implements MetaTask {
 	public double getProbability(Robot robot) {
         double result = 0D;
 
-        // TODO: in what case should a bot "relax" or slow down its pace?  
+        // TODO: in what case should a bot "relax" or slow down its pace?
         // result += robot.getPhysicalCondition().getStress();
-        
+
         /*
-  
+
 
         // Crowding modifier
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

@@ -29,7 +29,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.restingMedicalRecovery"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -44,7 +44,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask {
     public double getProbability(Person person) {
 
         double result = 0D;
-        
+
         // Check if person has a health problem that requires bed rest for recovery.
         boolean bedRestNeeded = false;
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
@@ -54,79 +54,86 @@ public class RestingMedicalRecoveryMeta implements MetaTask {
                 bedRestNeeded = true;
             }
         }
-    
+
         if (bedRestNeeded) {
-        
+
             // Determine if any available medical aids can be used for bed rest.
             if (hasUsefulMedicalAids(person)) {
-                
+
                 result = 300D;
+
+                // 2015-06-07 Added Preference modifier
+                if (result > 0)
+                	result += person.getPreference().getPreferenceScore(this);
+                if (result < 0) result = 0;
             }
         }
-        
+
+
+
         return result;
     }
-    
+
     /**
      * Checks if there is a useful medical aid at person's location for bed rest.
      * @param person the person.
      * @return true if useful medical aid.
      */
     private boolean hasUsefulMedicalAids(Person person) {
-        
+
         boolean result = false;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             result = hasUsefulMedicalAidsAtSettlement(person);
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             result = hasUsefulMedicalAidsInVehicle(person);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if there is a useful medical aid at person's settlement for bed rest.
      * @param person the person.
      * @return true if useful medical aid.
      */
     private boolean hasUsefulMedicalAidsAtSettlement(Person person) {
-        
+
         boolean result = false;
-        
+
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();
-            
+
             // Check if building currently has a malfunction.
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            
+
             // Check if building has enough bed space.
             MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             boolean enoughBedSpace = (numPatients < numBeds);
-            
+
             if (!malfunction && enoughBedSpace) {
                 result = true;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if there is a useful medical aid in person's vehicle for bed rest.
      * @param person the person.
      * @return true if useful medical aid.
      */
     private boolean hasUsefulMedicalAidsInVehicle(Person person) {
-        
+
         boolean result = false;
-        
+
         if (person.getVehicle() instanceof Rover) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
@@ -138,7 +145,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
 

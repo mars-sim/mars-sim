@@ -46,7 +46,7 @@ implements Serializable {
 	private static final String ENTJ = "ENTJ";
 	private static final String ENFP = "ENFP";
 	private static final String ENFJ = "ENFJ";
-	
+
 	// The solitude stress modifier per millisol.
 	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
 
@@ -62,12 +62,12 @@ implements Serializable {
 	 * Constructor
 	 */
 	PersonalityType(Person person) {
-		
+
 		this.person = person;
-		
+
 		// Load personality type map if necessary.
 		if (personalityTypes == null) loadPersonalityTypes();
-		
+
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
 		Iterator<String> i = personalityTypes.keySet().iterator();
@@ -82,11 +82,11 @@ implements Serializable {
 				randValue-= percentage;
 			}
 		}
-		
-		if (personalityType == null) 
+
+		if (personalityType == null)
 			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
 	}
-	
+
 	/**
 	 * Gets the personality type as a four letter code.
 	 * Ex. "ISTJ"
@@ -95,7 +95,7 @@ implements Serializable {
 	public String getTypeString() {
 		return personalityType;
 	}
-	
+
 	/**
 	 * Sets the personality type
 	 * @param newPersonalityType for letter MBTI code.
@@ -104,14 +104,14 @@ implements Serializable {
 		if (personalityTypes.containsKey(newPersonalityType)) personalityType = newPersonalityType;
 		else throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
 	}
-	
+
 	/**
 	 * Get this object as a string.
 	 */
 	public String toString() {
 		return personalityType;
 	}
-	
+
 	/**
 	 * Get the numerical difference between two personality types (0 - 4)
 	 * @param otherPersonality the other MBTI personality to check.
@@ -119,13 +119,13 @@ implements Serializable {
 	 */
 	public int getPersonalityDifference(String otherPersonality) {
 		int diff = 0;
-		
-		for (int x=0; x < 4; x++) 
+
+		for (int x=0; x < 4; x++)
 			if (!personalityType.substring(x, (x + 1)).equals(otherPersonality.substring(x, (x + 1)))) diff++;
-		
+
 		return diff;
 	}
-	
+
 	/**
 	 * Checks if the personality is introvert.
 	 * @return true if introvert
@@ -133,7 +133,7 @@ implements Serializable {
 	public boolean isIntrovert() {
         return personalityType.substring(0, 1).equals("I");
 	}
-	
+
 	/**
 	 * Checks if the personality is extrovert.
 	 * @return true if extrovert
@@ -141,7 +141,7 @@ implements Serializable {
 	public boolean isExtrovert() {
         return personalityType.substring(0, 1).equals("E");
 	}
-	
+
 	/**
 	 * Checks if the personality is sensor.
 	 * @return true if sensor
@@ -149,7 +149,7 @@ implements Serializable {
 	public boolean isSensor() {
         return personalityType.substring(1, 2).equals("S");
 	}
-	
+
 	/**
 	 * Checks if the personality is intuitive.
 	 * @return true if intuitive
@@ -157,7 +157,7 @@ implements Serializable {
 	public boolean isIntuitive() {
         return personalityType.substring(1, 2).equals("N");
 	}
-	
+
 	/**
 	 * Checks if the personality is thinker.
 	 * @return true if thinker
@@ -165,7 +165,7 @@ implements Serializable {
 	public boolean isThinker() {
         return personalityType.substring(2, 3).equals("T");
 	}
-	
+
 	/**
 	 * Checks if the personality is feeler.
 	 * @return true if feeler
@@ -173,7 +173,7 @@ implements Serializable {
 	public boolean isFeeler() {
         return personalityType.substring(2, 3).equals("F");
 	}
-	
+
 	/**
 	 * Checks if the personality is judger.
 	 * @return true if judger
@@ -181,7 +181,7 @@ implements Serializable {
 	public boolean isJudger() {
         return personalityType.substring(3, 4).equals("J");
 	}
-	
+
 	/**
 	 * Checks if the personality is perceiver.
 	 * @return true if perceiver
@@ -189,7 +189,7 @@ implements Serializable {
 	public boolean isPerceiver() {
         return personalityType.substring(3, 4).equals("P");
 	}
-	
+
 	/**
 	 * Loads the average percentages for personality types into a map.
 	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
@@ -197,7 +197,7 @@ implements Serializable {
 	private void loadPersonalityTypes() {
 		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		personalityTypes = new HashMap<String, Double>(16);
-		
+
 //		try {
 			personalityTypes.put(ISTP, config.getPersonalityTypePercentage(ISTP));
 			personalityTypes.put(ISTJ, config.getPersonalityTypePercentage(ISTJ));
@@ -214,35 +214,35 @@ implements Serializable {
 			personalityTypes.put(ENTP, config.getPersonalityTypePercentage(ENTP));
 			personalityTypes.put(ENTJ, config.getPersonalityTypePercentage(ENTJ));
 			personalityTypes.put(ENFP, config.getPersonalityTypePercentage(ENFP));
-			personalityTypes.put(ENFJ, config.getPersonalityTypePercentage(ENFJ));			
+			personalityTypes.put(ENFJ, config.getPersonalityTypePercentage(ENFJ));
 //		}
 //		catch (Exception e) {
 //			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
 //		}
-		
+
 		Iterator<String> i = personalityTypes.keySet().iterator();
 		double count = 0D;
 		while (i.hasNext()) count+= personalityTypes.get(i.next());
-		if (count != 100D) 
+		if (count != 100D)
 			throw new IllegalStateException("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
 	}
-	
+
 	/**
 	 * Updates a person's stress based on his/her personality.
 	 * @param time the time passing (millisols)
 	 * @throws Exception if problem updating stress.
 	 */
 	public void updateStress(double time) {
-		
+
 		Collection<Person> localGroup = person.getLocalGroup();
 		PhysicalCondition condition = person.getPhysicalCondition();
-		
-		// Introverts reduce stess when alone.
+
+		// Introverts reduce stress when alone.
 		if (isIntrovert() && (localGroup.size() == 0)) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
 			condition.setStress(condition.getStress() - solitudeStressModifier);
 		}
-		
+
 		// Extroverts reduce stress when with company.
 		if (isExtrovert() && (localGroup.size() > 0)) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;

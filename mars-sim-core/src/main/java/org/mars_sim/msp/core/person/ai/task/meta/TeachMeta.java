@@ -21,11 +21,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * Meta task for the Teach task.
  */
 public class TeachMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.teach"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -38,28 +38,36 @@ public class TeachMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
-        // Find potential students.
-        Collection<Person> potentialStudents = Teach.getBestStudents(person);
-        if (potentialStudents.size() > 0) {
-            result = 50D;
+        // If teacher is in a settlement, use crowding modifier.
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // If teacher is in a settlement, use crowding modifier.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                Person student = (Person) potentialStudents.toArray()[0];
+	        // Find potential students.
+	        Collection<Person> potentialStudents = Teach.getBestStudents(person);
+	        if (potentialStudents.size() > 0) {
+
+	            result = 50D;
+
+	            Person student = (Person) potentialStudents.toArray()[0];
                 Building building = BuildingManager.getBuilding(student);
+
                 if (building != null) {
+
+        	        // 2015-06-07 Added Preference modifier
+        	        if (result > 0)
+        	        	result += person.getPreference().getPreferenceScore(this);
+        	        if (result < 0) result = 0;
+
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
                             building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                } 
-                else {
-                    result = 0D;
+
                 }
             }
         }
+
 
         return result;
     }

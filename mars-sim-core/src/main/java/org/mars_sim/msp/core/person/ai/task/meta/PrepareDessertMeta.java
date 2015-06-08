@@ -24,17 +24,17 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
  */
 //2014-11-28 Changed Class name from MakeSoyMeta to PrepareDessertMeta
 public class PrepareDessertMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$
-    
+
     /** default logger. */
     //private static Logger logger = Logger.getLogger(PrepareDessertMeta.class.getName());
-    
+
     public PrepareDessertMeta() {
     }
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -50,35 +50,35 @@ public class PrepareDessertMeta implements MetaTask {
     public Task constructInstance(Robot robot) {
         return new PrepareDessert(robot);
     }
-    
-    
+
+
     @Override
     public double getProbability(Person person) {
-             
+
         double result = 0D;
-        
+
         // Desserts should be prepared during meal times.
         if (CookMeal.isMealTime(person.getCoordinates())) {
-        		
+
             // See if there is an available kitchen.
             Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
             if (kitchenBuilding != null) {
-                
+
                 PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
 
                 // Check if there are enough ingredients to prepare a dessert.
                 int numGoodRecipes = kitchen.getAListOfDesserts().size();
-                
+
                 // Check if enough desserts have been prepared at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getMakeNoMoreDessert();
-                
+
                 if ((numGoodRecipes > 0) && !enoughMeals) {
 
                     result = 200D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);                    
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, kitchenBuilding);
 
                     // Effort-driven task modifier.
                     result *= person.getPerformanceRating();
@@ -86,26 +86,31 @@ public class PrepareDessertMeta implements MetaTask {
                     // Job modifier.
                     Job job = person.getMind().getJob();
                     if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(CookMeal.class);                
+                        result *= job.getStartTaskProbabilityModifier(CookMeal.class);
                     }
 
                     // Modify if cooking is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Cooking")) {
                         result *= 2D;
                     }
+
+                    // 2015-06-07 Added Preference modifier
+                    if (result > 0)
+                    	result += person.getPreference().getPreferenceScore(this);
+        	        if (result < 0) result = 0;
                 }
             }
         }
-           
+
         return result;
     }
 
-		
+
 	@Override
 	public double getProbability(Robot robot) {
 
        double result = 0D;
-       
+
        if (CookMeal.isMealTime(robot)) {
            if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
 
@@ -122,7 +127,7 @@ public class PrepareDessertMeta implements MetaTask {
                    // Check if enough desserts have been prepared at kitchen for this meal time.
                    boolean enoughMeals = kitchen.getMakeNoMoreDessert();
 
-                   if ((numGoodRecipes > 0) && !enoughMeals) {                 
+                   if ((numGoodRecipes > 0) && !enoughMeals) {
 
                        result = 300D;
 
@@ -130,7 +135,7 @@ public class PrepareDessertMeta implements MetaTask {
                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, kitchenBuilding);
 
                        // Effort-driven task modifier.
-                       result *= robot.getPerformanceRating(); 
+                       result *= robot.getPerformanceRating();
                    }
                }
            }

@@ -276,7 +276,7 @@ implements ResearchScientificStudy, Serializable {
 
         // Check sunlight and end the task if sunrise
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
+        double sunlight = surface.getPreviousSolarIrradiance(person.getCoordinates());
         if (sunlight > 0) {
             endTask();
         }

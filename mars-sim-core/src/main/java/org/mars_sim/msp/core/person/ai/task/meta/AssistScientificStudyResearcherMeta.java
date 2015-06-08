@@ -42,13 +42,13 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
 
         double result = 0D;
 
-        // Find potential researchers.
-        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
-        if (potentialResearchers.size() > 0) {
-            result = 50D;
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        // Find potential researchers.
+	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
+	        if (potentialResearchers.size() > 0) {
+	            result = 50D;
 
-            // If assistant is in a settlement, use crowding modifier.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            // If assistant is in a settlement, use crowding modifier.
                 Person researcher = (Person) potentialResearchers.toArray()[0];
 
                 Building building = BuildingManager.getBuilding(researcher);
@@ -56,18 +56,24 @@ public class AssistScientificStudyResearcherMeta implements MetaTask {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                 }
-            }
-            
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
-            }
 
-            // Modify if research is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
-                result *= 2D;
-            }
+	            // Job modifier.
+	            Job job = person.getMind().getJob();
+	            if (job != null) {
+	                result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
+	            }
+
+	            // Modify if research is the person's favorite activity.
+	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
+	                result *= 2D;
+	            }
+
+                // 2015-06-07 Added Preference modifier
+                if (result > 0)
+                	result += person.getPreference().getPreferenceScore(this);
+                if (result < 0) result = 0;
+
+	        }
         }
 
         return result;

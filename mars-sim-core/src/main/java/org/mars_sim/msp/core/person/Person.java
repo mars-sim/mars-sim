@@ -97,6 +97,7 @@ implements VehicleOperator, Serializable {
     private JobHistory jobHistory;
     private Settlement buriedSettlement;
     private Role role;
+    private Preference preference;
 
     /**
      * Constructs a Person object at a given settlement.
@@ -140,6 +141,10 @@ implements VehicleOperator, Serializable {
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
 
+        // 2015-06-07 Added Preference
+        preference = new Preference(this);
+        //preference.initializePreference();
+
         // Set base mass of person from 58 to 76, peaking at 67.
         setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
         // Set height of person as gender-correlated curve.
@@ -158,6 +163,10 @@ implements VehicleOperator, Serializable {
 
         support = getLifeSupportType();
 
+    }
+
+    public Preference getPreference() {
+    	return preference;
     }
 
     /**

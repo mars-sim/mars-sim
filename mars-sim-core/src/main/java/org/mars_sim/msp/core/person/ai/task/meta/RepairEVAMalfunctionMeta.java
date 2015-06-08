@@ -26,11 +26,13 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 
 public class RepairEVAMalfunctionMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.repairEVAMalfunction"); //$NON-NLS-1$
-    
+
+    private SurfaceFeatures surface;
+
     @Override
     public String getName() {
         return NAME;
@@ -46,44 +48,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 
         double result = 0D;
 
-        // Add probability for all malfunctionable entities in person's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            MalfunctionManager manager = entity.getMalfunctionManager();
-
-            // Check if entity has any EVA malfunctions.
-            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                try {
-                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
-                            malfunction)) {
-                        result += 100D;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-
-            // Check if entity requires an EVA and has any normal malfunctions.
-            if (RepairEVAMalfunction.requiresEVA(person, entity)) {
-                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
-                while (k.hasNext()) {
-                    Malfunction malfunction = k.next();
-                    try {
-                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-                            result += 100D;
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace(System.err);
-                    }
-                }
-            }
-        }
-
         // Check if an airlock is available if in settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
             if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
@@ -91,25 +55,74 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
             }
 
         // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface == null)
+        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
-        } 
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier if not in vehicle.
-        Job job = person.getMind().getJob();
-        if ((job != null)) {
-            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
         }
 
-        // Modify if tinkering is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
-            result *= 2D;
+        if (result != 0) {
+
+	        // Add probability for all malfunctionable entities in person's local.
+	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+	        while (i.hasNext()) {
+	            Malfunctionable entity = i.next();
+	            MalfunctionManager manager = entity.getMalfunctionManager();
+
+	            // Check if entity has any EVA malfunctions.
+	            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+	            while (j.hasNext()) {
+	                Malfunction malfunction = j.next();
+	                try {
+	                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
+	                            malfunction)) {
+	                        result += 100D;
+	                    }
+	                }
+	                catch (Exception e) {
+	                    e.printStackTrace(System.err);
+	                }
+	            }
+
+	            // Check if entity requires an EVA and has any normal malfunctions.
+	            if (RepairEVAMalfunction.requiresEVA(person, entity)) {
+	                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+	                while (k.hasNext()) {
+	                    Malfunction malfunction = k.next();
+	                    try {
+	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+	                            result += 100D;
+	                        }
+	                    }
+	                    catch (Exception e) {
+	                        e.printStackTrace(System.err);
+	                    }
+	                }
+	            }
+	        }
+
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+
+	        // Job modifier if not in vehicle.
+	        Job job = person.getMind().getJob();
+	        if ((job != null)) {
+	            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);
+	        }
+
+	        // Modify if tinkering is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+	            result *= 2D;
+	        }
+
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
         }
 
         return result;
@@ -122,9 +135,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-	      
+
         double result = 0D;
-        
+
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
 
             // Add probability for all malfunctionable entities in person's local.
@@ -138,7 +151,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
                 while (j.hasNext()) {
                     Malfunction malfunction = j.next();
                     try {
-                        if (RepairEVAMalfunction.hasRepairPartsForMalfunction(robot, robot.getTopContainerUnit(), 
+                        if (RepairEVAMalfunction.hasRepairPartsForMalfunction(robot, robot.getTopContainerUnit(),
                                 malfunction)) {
                             result += 100D;
                         }
@@ -171,9 +184,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }
-            }   
+            }
 
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {             
+            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 // Check if an airlock is available
                 if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
                     result = 0D;
@@ -183,7 +196,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask {
             // Effort-driven task modifier.
             result *= robot.getPerformanceRating();
         }
-        
+
         return result;
 	}
 }

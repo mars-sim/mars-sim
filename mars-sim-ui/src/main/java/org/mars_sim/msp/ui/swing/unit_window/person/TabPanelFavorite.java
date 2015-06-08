@@ -1,26 +1,41 @@
 /**
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.07 2015-02-27
-
+ * @version 3.08 2015-06-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Preference;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -31,6 +46,8 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private PreferenceTableModel tableModel;
 
 	/**
 	 * Constructor.
@@ -59,7 +76,7 @@ extends TabPanel {
 		// Prepare info panel.
 		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		topContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare main dish name label
 		JLabel mainDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.mainDish"), JLabel.RIGHT); //$NON-NLS-1$
@@ -112,6 +129,31 @@ extends TabPanel {
 		infoPanel.add(activityTF);
 		//JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
 		//infoPanel.add(activityLabel);
+
+
+		// Create label panel.
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		centerContentPanel.add(labelPanel);
+
+		// Create preference label
+		JLabel label = new JLabel("Preferences");
+		labelPanel.add(label);
+
+		// Create scroll panel
+		JScrollPane scrollPanel = new JScrollPane();
+		scrollPanel.setBorder(new MarsPanelBorder());
+		centerContentPanel.add(scrollPanel);
+
+		// Create skill table
+		tableModel = new PreferenceTableModel(person);
+		JTable table = new JTable(tableModel);
+		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
+		table.getColumnModel().getColumn(0).setPreferredWidth(120);
+		table.getColumnModel().getColumn(1).setPreferredWidth(30);
+		table.setCellSelectionEnabled(false);
+		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+		scrollPanel.setViewportView(table);
+
 	}
 
 	/**
@@ -119,7 +161,81 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		// Person person = (Person) unit;
-		// Fill in as we have more to update on this panel.
+		//tableModel.update();
+	}
+
+
+	/**
+	 * Internal class used as model for the skill table.
+	 */
+	private static class PreferenceTableModel
+	extends AbstractTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private Preference manager;
+		private List<String> metaTaskStringList;
+		private Map<String, Integer> metaTaskStringMap;
+
+		private PreferenceTableModel(Unit unit) {
+			Person person = null;
+	        Robot robot = null;
+
+	        if (unit instanceof Person) {
+	         	person = (Person) unit;
+				manager = person.getPreference();
+	        }
+	        else if (unit instanceof Robot) {
+
+	        }
+
+	        metaTaskStringList = manager.getMetaTaskStringList();
+	        metaTaskStringMap = manager.getMetaTaskStringMap();
+
+		}
+
+		public int getRowCount() {
+			return metaTaskStringMap.size();
+		}
+
+		public int getColumnCount() {
+			return 2;
+		}
+
+		public Class<?> getColumnClass(int columnIndex) {
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 0) dataType = String.class;
+			if (columnIndex == 1) dataType = Integer.class;
+			return dataType;
+		}
+
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0) return Msg.getString("TabPanelFavorite.column.metaTask"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelFavorite.column.like"); //$NON-NLS-1$
+			else return null;
+		}
+
+		public Object getValueAt(int row, int column) {
+			Object name = metaTaskStringList.get(row);
+			if (column == 0) return name;
+			else if (column == 1) return metaTaskStringMap.get(name);
+			else return null;
+		}
+
+		public void update() {
+
+/*
+			List<String> n = manager.getMetaTaskNameList();
+	        Map<String, Integer> m = manager.getMetaTaskMap();
+
+			if (!metaTaskMap.equals(m)) {
+				metaTaskNameList = n;
+				metaTaskMap = m;
+				fireTableDataChanged();
+			}
+*/
+
+		}
 	}
 }

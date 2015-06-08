@@ -54,19 +54,23 @@ public class WorkoutMeta implements MetaTask {
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            }
-            else {
-                result = 0D;
-            }
+            } // a person can still have workout on his own without a gym in MDP Phase 1-3
+            //else
+            //    result = 0D;
         }
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
-        
+
         // Modify if working out is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
             result *= 2D;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
 
         return result;
     }

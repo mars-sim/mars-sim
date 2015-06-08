@@ -37,7 +37,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -65,7 +65,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
         while (i.hasNext()) {
             HealthProblem problem = i.next();
             if (problem.getDegrading()) {
-                
+
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
                 if (treatment != null) {
 
@@ -117,71 +117,78 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
             if (usefulMedicalAids) {
                 result = 300D;
             }
+
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
+
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the local medical aids that are available for treatment.
      * @param person the person.
      * @return list of available medical aids.
      */
     private List<MedicalAid> getAvailableMedicalAids(Person person) {
-        
+
         List<MedicalAid> result = new ArrayList<MedicalAid>();
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             result = getAvailableMedicalAidsAtSettlement(person);
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             result = getAvailableMedicalAidsInVehicle(person);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the medical aids at a settlement that are available for treatment.
      * @param person the person.
      * @return list of available medical aids.
      */
     private List<MedicalAid> getAvailableMedicalAidsAtSettlement(Person person) {
-        
+
         List<MedicalAid> result = new ArrayList<MedicalAid>();
-        
+
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            
+
             // Check if building currently has a malfunction.
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            
+
             // Check if building has enough bed space.
             MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
             boolean enoughBedSpace = (numPatients < numBeds);
-            
+
             if (!malfunction && enoughBedSpace) {
                 result.add(medicalCare);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the medical aids in a rover that are available for treatment.
      * @param person the person.
      * @return list of available medical aids.
      */
     private List<MedicalAid> getAvailableMedicalAidsInVehicle(Person person) {
-        
+
         List<MedicalAid> result = new ArrayList<MedicalAid>();
-        
+
         if (person.getVehicle() instanceof Rover) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
@@ -193,31 +200,31 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the highest medical skill of all other local people.
      * @param person the person.
      * @return highest medical skill (-1 if no one else around).
      */
     private int getBestLocalMedicalSkill(Person person) {
-        
+
         int result = -1;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
+
             result = getBestLocalMedicalSkillAtSettlement(person, person.getSettlement());
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
             result = getBestLocalMedicalSkillInVehicle(person, person.getVehicle());
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the highest medical skill of all other people at a settlement.
      * @param person the person.
@@ -225,9 +232,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
      * @return highest medical skill (-1 if no one else around).
      */
     private int getBestLocalMedicalSkillAtSettlement(Person person, Settlement settlement) {
-        
+
         int result = -1;
-        
+
         Iterator<Person> i = settlement.getInhabitants().iterator();
         while (i.hasNext()) {
             Person inhabitant = i.next();
@@ -239,10 +246,10 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Get the highest medical skill of all other people in a vehicle.
      * @param person the person.
@@ -250,9 +257,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
      * @return highest medical skill (-1 if no one else around).
      */
     private int getBestLocalMedicalSkillInVehicle(Person person, Vehicle vehicle) {
-        
+
         int result = -1;
-        
+
         if (vehicle instanceof Crewable) {
             Crewable crewVehicle = (Crewable) person.getVehicle();
             Iterator<Person> i = crewVehicle.getCrew().iterator();
@@ -267,7 +274,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask {
                 }
             }
         }
-        
+
         return result;
     }
 

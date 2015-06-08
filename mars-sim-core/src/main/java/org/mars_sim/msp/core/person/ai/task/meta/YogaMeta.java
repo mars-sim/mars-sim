@@ -17,11 +17,11 @@ import org.mars_sim.msp.core.robot.Robot;
  * Meta task for the Yoga task.
  */
 public class YogaMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.yoga"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -34,22 +34,26 @@ public class YogaMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
-        // Stress modifier
-        result += person.getPhysicalCondition().getStress() / 2D;
-        
         // No yoga outside.
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-            result = 0D;
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+            // Stress modifier
+            result += person.getPhysicalCondition().getStress() / 2D;
+
+	        // Modify if working out is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
+	            result *= 2D;
+	        }
+
+	        // 2015-06-07 Added Preference modifier
+	        result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
+
         }
 
-        // Modify if working out is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
-            result *= 2D;
-        }
-        
         return result;
     }
 

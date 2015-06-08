@@ -25,11 +25,11 @@ import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
  * Meta task for the ToggleFuelPowerSource task.
  */
 public class ToggleFuelPowerSourceMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.toggleFuelPowerSource"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -42,7 +42,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -85,7 +85,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask {
                     if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                         result = 0D;
                     }
-                } 
+                }
 
                 // Crowded settlement modifier
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -103,11 +103,16 @@ public class ToggleFuelPowerSourceMeta implements MetaTask {
             if (job != null) {
                 result *= job.getStartTaskProbabilityModifier(ToggleFuelPowerSource.class);
             }
-            
+
             // Modify if tinkering is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
                 result *= 2D;
             }
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
         }
 
         return result;

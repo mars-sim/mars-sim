@@ -29,14 +29,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Meta task for the MaintainGroundVehicleGarage task.
  */
 public class MaintainGroundVehicleGarageMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarageMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -49,7 +49,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         try {
@@ -76,11 +76,11 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask {
         catch (Exception e) {
             logger.log(Level.SEVERE,"getProbability()",e);
         }
-        
+
         // Determine if settlement has available space in garage.
         boolean garageSpace = false;
         boolean needyVehicleInGarage = false;
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) { 
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Iterator<Building> j = settlement.getBuildingManager().getBuildings(
                     BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
@@ -92,7 +92,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask {
                     if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
                         garageSpace = true;
                     }
-                    
+
                     Iterator<Vehicle> i = garage.getVehicles().iterator();
                     while (i.hasNext()) {
                         if (i.next().isReservedForMaintenance()) {
@@ -109,18 +109,23 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask {
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
-        
+
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
+            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);
         }
-        
+
         // Modify if tinkering is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
             result *= 2D;
         }
-    
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0)
+        	result += person.getPreference().getPreferenceScore(this);
+        if (result < 0) result = 0;
+
         return result;
     }
 

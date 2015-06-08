@@ -70,6 +70,11 @@ public class RespondToStudyInvitationMeta implements MetaTask {
 	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Research")) {
 	            result *= 2D;
 	        }
+
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0)
+	        	result += person.getPreference().getPreferenceScore(this);
+	        if (result < 0) result = 0;
         }
 
         return result;

@@ -73,6 +73,11 @@ public class TendGreenhouseMeta implements MetaTask {
                     if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tending Plants")) {
                         result *= 2D;
                     }
+
+        	        // 2015-06-07 Added Preference modifier
+        	        if (result > 0)
+        	        	result += person.getPreference().getPreferenceScore(this);
+        	        if (result < 0) result = 0;
                 }
             }
             catch (Exception e) {

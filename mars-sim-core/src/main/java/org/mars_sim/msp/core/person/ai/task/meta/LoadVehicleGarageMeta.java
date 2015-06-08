@@ -24,14 +24,14 @@ import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
  * Meta task for the LoadVehicleGarage task.
  */
 public class LoadVehicleGarageMeta implements MetaTask {
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.loadVehicleGarage"); //$NON-NLS-1$
-    
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(LoadVehicleGarageMeta.class.getName());
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -44,11 +44,11 @@ public class LoadVehicleGarageMeta implements MetaTask {
 
     @Override
     public double getProbability(Person person) {
-        
+
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
+
             // Check all vehicle missions occurring at the settlement.
             try {
                 List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement());
@@ -57,22 +57,28 @@ public class LoadVehicleGarageMeta implements MetaTask {
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error finding loading missions.", e);
             }
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
+            }
+
+            // Modify if operations is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+                result *= 2D;
+            }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
         }
 
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
-        }
-        
-        // Modify if operations is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-            result *= 2D;
-        }
-    
         return result;
     }
 
@@ -83,13 +89,13 @@ public class LoadVehicleGarageMeta implements MetaTask {
 
 	@Override
 	public double getProbability(Robot robot) {
-        
+
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot) 
-        	
+        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
+
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            
+
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
@@ -98,13 +104,13 @@ public class LoadVehicleGarageMeta implements MetaTask {
 	            catch (Exception e) {
 	                logger.log(Level.SEVERE, "Error finding loading missions.", e);
 	            }
-	            
+
 
 	            // Effort-driven task modifier.
 	            result *= robot.getPerformanceRating();
-	            
+
 	        }
-    
+
         return result;
     }
 }
