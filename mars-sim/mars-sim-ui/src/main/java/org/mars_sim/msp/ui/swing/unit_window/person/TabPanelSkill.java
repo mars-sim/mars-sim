@@ -29,9 +29,11 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * The SkillTabPanel is a tab panel for the skills of a person.
  */
 public class TabPanelSkill
@@ -47,7 +49,7 @@ extends TabPanel {
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSkill(Person person, MainDesktopPane desktop) { 
+	public TabPanelSkill(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
@@ -55,21 +57,21 @@ extends TabPanel {
 			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
-		
+
 		//this.person = person;
-		
+
 		// Create skill table model
 		skillTableModel = new SkillTableModel(person);
 
 		init();
 	}
-	
+
 	/**
 	 * Constructor 2.
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSkill(Robot robot, MainDesktopPane desktop) { 
+	public TabPanelSkill(Robot robot, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
@@ -77,17 +79,17 @@ extends TabPanel {
 			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
 			robot, desktop
 		);
-		
+
 		//this.robot = robot;
-		
+
 		// Create skill table model
 		skillTableModel = new SkillTableModel(robot);
 
 		init();
 	}
-	
+
 	public void init() {
-			
+
 		// Create skill label panel.
 		JPanel skillLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(skillLabelPanel);
@@ -109,6 +111,13 @@ extends TabPanel {
 		skillTable.setCellSelectionEnabled(false);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		skillScrollPanel.setViewportView(skillTable);
+
+		// 2015-06-08 Added sorting
+		skillTable.setAutoCreateRowSorter(true);
+		skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(skillTable);
 	}
 
 	/**
@@ -118,7 +127,7 @@ extends TabPanel {
 		skillTableModel.update();
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the skill table.
 	 */
 	private static class SkillTableModel
@@ -134,14 +143,14 @@ extends TabPanel {
 		private SkillTableModel(Unit unit) {
 			Person person = null;
 	        Robot robot = null;
-	        
+
 	        if (unit instanceof Person) {
 	         	person = (Person) unit;
-				manager = person.getMind().getSkillManager();	        
+				manager = person.getMind().getSkillManager();
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-				manager = robot.getBotMind().getSkillManager();	       
+				manager = robot.getBotMind().getSkillManager();
 	        }
 
 

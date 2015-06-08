@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 public class Preference {
 
 	/** default serial id. */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	private NaturalAttributeManager naturalAttributeManager;

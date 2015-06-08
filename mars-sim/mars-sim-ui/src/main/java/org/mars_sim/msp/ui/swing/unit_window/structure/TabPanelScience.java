@@ -39,6 +39,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -116,7 +118,14 @@ extends TabPanel {
 				}
 			}
 		});
-		studyScrollPane.setViewportView(studyTable);     
+		studyScrollPane.setViewportView(studyTable);
+
+		// 2015-06-08 Added sorting
+		studyTable.setAutoCreateRowSorter(true);
+		studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -169,7 +178,16 @@ extends TabPanel {
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setCellSelectionEnabled(false);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
-		achievementScrollPane.setViewportView(achievementTable);     
+		achievementScrollPane.setViewportView(achievementTable);
+
+		// 2015-06-08 Added sorting
+		achievementTable.setAutoCreateRowSorter(true);
+		achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(achievementTable);
+
+
 	}
 
 	@Override
@@ -185,7 +203,7 @@ extends TabPanel {
 		// Reselect study in table.
 		if (selectedStudy != null) {
 			int newStudyIndex = studyTableModel.getStudyIndex(selectedStudy);
-			if (newStudyIndex >= 0) 
+			if (newStudyIndex >= 0)
 				studyTable.getSelectionModel().setSelectionInterval(newStudyIndex, newStudyIndex);
 		}
 
@@ -307,7 +325,7 @@ extends TabPanel {
 		 */
 		private ScientificStudy getStudy(int rowIndex) {
 			ScientificStudy result = null;
-			if ((rowIndex >= 0) && (rowIndex < studies.size())) 
+			if ((rowIndex >= 0) && (rowIndex < studies.size()))
 				result = studies.get(rowIndex);
 			return result;
 		}

@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.structure.goods.CreditListener;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelCredit
@@ -69,12 +71,12 @@ extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		JScrollPane creditScrollPanel = new JScrollPane();
 		creditScrollPanel.setPreferredSize(new Dimension(280, 280));
-		centerContentPanel.add(creditScrollPanel);         
+		centerContentPanel.add(creditScrollPanel);
 
 		// Prepare outer table panel.
 		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//creditScrollPanel.setViewportView(outerTablePanel);   
+		//creditScrollPanel.setViewportView(outerTablePanel);
 
 		// Prepare credit table panel.
 		//JPanel creditTablePanel = new JPanel(new BorderLayout(0, 0));
@@ -97,6 +99,14 @@ extends TabPanel {
 		creditTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		//creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
 		//creditTablePanel.add(creditTable, BorderLayout.CENTER);
+
+		// 2015-06-08 Added sorting
+		creditTable.setAutoCreateRowSorter(true);
+		creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(creditTable);
+
 	}
 
 	/**
@@ -107,10 +117,10 @@ extends TabPanel {
 		// Do nothing.
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the credit table.
 	 */
-	private static class CreditTableModel extends AbstractTableModel implements CreditListener, 
+	private static class CreditTableModel extends AbstractTableModel implements CreditListener,
 	UnitManagerListener {
 
 		/** default serial id. */
@@ -190,7 +200,7 @@ extends TabPanel {
 						else if (credit < 0D) return Msg.getString("TabPanelCredit.column.debt"); //$NON-NLS-1$
 						else return null;
 					}
-					else return null;	
+					else return null;
 				}
 			}
 			else return null;
@@ -203,7 +213,7 @@ extends TabPanel {
 		@Override
 		public void creditUpdate(CreditEvent event) {
 			if (
-				(thisSettlement == event.getSettlement1()) || 
+				(thisSettlement == event.getSettlement1()) ||
 				(thisSettlement == event.getSettlement2())
 			) {
 				SwingUtilities.invokeLater(

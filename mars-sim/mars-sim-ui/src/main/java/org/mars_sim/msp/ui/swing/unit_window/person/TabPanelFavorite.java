@@ -36,6 +36,8 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -133,26 +135,36 @@ extends TabPanel {
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		centerContentPanel.add(labelPanel);
+		centerContentPanel.add(labelPanel, BorderLayout.NORTH);
 
 		// Create preference label
 		JLabel label = new JLabel("Preferences");
 		labelPanel.add(label);
 
 		// Create scroll panel
-		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(scrollPanel);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBorder(new MarsPanelBorder());
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
 
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
 		JTable table = new JTable(tableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(120);
+		table.getColumnModel().getColumn(0).setPreferredWidth(100);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
 		table.setCellSelectionEnabled(false);
 		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-		scrollPanel.setViewportView(table);
+
+		// 2015-06-08 Added sorting
+		table.setAutoCreateRowSorter(true);
+		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(table);
+
+		scrollPane.setViewportView(table);
 
 	}
 

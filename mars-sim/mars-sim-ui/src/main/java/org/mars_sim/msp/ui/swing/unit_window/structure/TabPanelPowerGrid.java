@@ -43,6 +43,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -177,7 +179,8 @@ extends TabPanel {
 		// Prepare power table.
 		JTable powerTable = new JTable(powerTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
-		powerTable.setCellSelectionEnabled(false);
+
+	    powerTable.setCellSelectionEnabled(false);
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
@@ -185,11 +188,18 @@ extends TabPanel {
 		powerTable.getColumnModel().getColumn(3).setPreferredWidth(10);
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
-		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//powerTablePanel.add(powerTable.getTableHeader(), BorderLayout.NORTH);
-		//powerTablePanel.add(powerTable, BorderLayout.CENTER);
+		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+		// 2015-06-08 Added sorting
+		//powerTable.setAutoCreateRowSorter(true);
+		//powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(powerTable);
+
 		powerScrollPane.setViewportView(powerTable);
+
 	}
 
 	public double getAverageEfficiency() {
@@ -280,7 +290,7 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private Settlement settlement;
-		private java.util.List<Building> buildings;
+		private List<Building> buildings;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
@@ -366,8 +376,9 @@ extends TabPanel {
 		}
 
 		public void update() {
-			if (!buildings.equals(settlement.getBuildingManager().getBuildings()))
-				buildings = settlement.getBuildingManager().getBuildings();
+			List<Building> newList = settlement.getBuildingManager().getBuildings();
+			if (!buildings.equals(newList))
+				buildings = newList;
 
 			fireTableDataChanged();
 		}

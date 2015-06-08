@@ -27,6 +27,8 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelGoods
@@ -72,7 +74,7 @@ extends TabPanel {
 		// Prepare outer table panel.
 		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//goodsScrollPane.setViewportView(outerTablePanel);   
+		//goodsScrollPane.setViewportView(outerTablePanel);
 
 		// Prepare goods table panel.
 		//JPanel goodsTablePanel = new JPanel(new BorderLayout(0, 0));
@@ -94,6 +96,14 @@ extends TabPanel {
 		goodsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		//goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
 		//goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
+
+		// 2015-06-08 Added sorting
+		goodsTable.setAutoCreateRowSorter(true);
+		goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(goodsTable);
+
 	}
 
 	/**
@@ -102,9 +112,9 @@ extends TabPanel {
 	@Override
 	public void update() {
 		goodsTableModel.update();
-	} 
+	}
 
-	/** 
+	/**
 	 * Internal class used as model for the power table.
 	 */
 	private static class GoodsTableModel

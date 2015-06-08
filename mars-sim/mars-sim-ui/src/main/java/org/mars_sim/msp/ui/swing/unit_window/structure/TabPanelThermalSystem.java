@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,6 +44,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -181,7 +184,7 @@ extends TabPanel {
 		// Prepare thermal control table.
 		JTable heatTable = new JTable(heatTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
-		heatScrollPane.setViewportView(heatTable);
+
 		heatTable.setCellSelectionEnabled(false);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -193,9 +196,17 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		// 2015-06-08 Added sorting
+		heatTable.setAutoCreateRowSorter(true);
+		heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(heatTable);
+
+		heatScrollPane.setViewportView(heatTable);
 
 	}
+
 
 	public double getAverageEfficiencySolarHeating() {
 		double eff_solar_heat = 0;

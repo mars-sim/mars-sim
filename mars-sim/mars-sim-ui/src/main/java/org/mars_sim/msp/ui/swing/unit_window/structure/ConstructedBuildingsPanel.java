@@ -19,6 +19,8 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 public class ConstructedBuildingsPanel
 extends JPanel {
@@ -50,12 +52,12 @@ extends JPanel {
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(200, 75));
 		scrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		add(scrollPanel, BorderLayout.CENTER);         
+		add(scrollPanel, BorderLayout.CENTER);
 
 		// Prepare outer table panel.
 		//JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//outerTablePanel.setBorder(new MarsPanelBorder());
-		//scrollPanel.setViewportView(outerTablePanel);   
+		//scrollPanel.setViewportView(outerTablePanel);
 
 		// Prepare constructed table panel.
 		//JPanel constructedTablePanel = new JPanel(new BorderLayout(0, 0));
@@ -70,12 +72,21 @@ extends JPanel {
 		constructedTable.setCellSelectionEnabled(false);
 		constructedTable.getColumnModel().getColumn(0).setPreferredWidth(105);
 		constructedTable.getColumnModel().getColumn(1).setPreferredWidth(105);
+
 		// 2014-12-03 Added the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
 		constructedTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		constructedTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		//constructedTablePanel.add(constructedTable.getTableHeader(), BorderLayout.NORTH);
 		//constructedTablePanel.add(constructedTable, BorderLayout.CENTER);
+
+		// 2015-06-08 Added sorting
+		constructedTable.setAutoCreateRowSorter(true);
+		constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		TableStyle.setTableStyle(constructedTable);
+
 	}
 
 	/**
@@ -85,7 +96,7 @@ extends JPanel {
 		constructedTableModel.update();
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the constructed table.
 	 */
 	private static class ConstructedBuildingTableModel
@@ -124,7 +135,7 @@ extends JPanel {
 				ConstructedBuildingLogEntry logEntry = manager.getConstructedBuildingLog().get(row);
 				if (column == 0) return logEntry.getBuildingName();
 				else if (column == 1) return logEntry.getBuiltTime().toString();
-				else return null;  
+				else return null;
 			}
 			else return null;
 		}
