@@ -496,7 +496,7 @@ implements Serializable {
 	    	    	double baselevel = RadiationExposure.RAD_PER_SOL * time/1000D/2D;
 	    	    	exposure = baselevel + RandomUtil.getRandomDouble(baselevel);
 	    	    	exposure = Math.round(exposure*10000.0)/10000.0;
-	    	    	rad.addDose(i, 0, exposure);
+	    	    	rad.addDose(i, exposure);
 	    	    	//System.out.println("rand is "+ rand);
 	    	    	//System.out.println(person.getName() + " just received a radiation exposure of "
 	    	    	//+ exposure + " mSv in body region " + i);

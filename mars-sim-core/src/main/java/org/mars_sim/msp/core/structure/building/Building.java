@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Structure;
@@ -127,6 +126,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
 
+	boolean isImpactImminent = false;
+
 	protected String buildingType;
 	protected String nickName;
 	// 2014-11-27 Added description for each building
@@ -213,7 +214,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.yLoc = yLoc;
 		this.facing = facing;
 
-		if (Simulation.instance().getMasterClock() != null)
+		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
 		powerMode = PowerMode.FULL_POWER;
@@ -867,16 +868,15 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) i.next().timePassing(time);
 
-		// 2015-06-03 determine if a meteorite impact occurs within the next sol
+		// 2015-06-03 determine if a meteorite impact will occur within the new sol
 		checkForMeteoriteImpact();
 
 		// Update malfunction manager.
 		malfunctionManager.timePassing(time);
+
 		// If powered up, active time passing.
-		//if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
-		//2014-10-17  Added HeatMode
-		// If heat is on, active time passing.
-		//if (heatMode == HeatMode.ONLINE) malfunctionManager.activeTimePassing(time);
+		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
+
 	}
 
 	public List<Function> getFunctions() {
@@ -887,14 +887,16 @@ LocalBoundedObject, InsidePathLocation {
 		return itemMap;
 	}
 
-	public void checkForMeteoriteImpact() { //Building building) {
-		//if (marsClock == null)
+	public void checkForMeteoriteImpact() {
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+
 		marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(marsClock);
 
-		boolean meteoritePuncture = false;
+        int impactTimeInMillisol = 0;
 
         if (solElapsed != solCache) {
         	solCache = solElapsed;
@@ -902,22 +904,35 @@ LocalBoundedObject, InsidePathLocation {
 
 			// add randomness
 			probability = probability
-					+ probability * RandomUtil.getRandomDouble(2D)
-					- probability * RandomUtil.getRandomDouble(2D);
-			double rand = RandomUtil.getRandomDouble(1D);
-			if (rand <= probability)
-				meteoritePuncture = true;
+					+ probability * RandomUtil.getRandomDouble(1D)
+					- probability * RandomUtil.getRandomDouble(1D);
+			// probability is in percentage unit between 0% and 100%
+
+			double rand = RandomUtil.getRandomDouble(100D);
+
+			//System.out.println("probability : "+ probability + "    rand : "+ rand);
+
+			if (rand <= probability) {
+				isImpactImminent = true;
+	        	// set a time for the impact to happen any time between 0 and 1000 milisols
+				impactTimeInMillisol = RandomUtil.getRandomInt(1000);
+			}
 		}
 
-        int impactTimeInMillisol = 0;
-        if (meteoritePuncture) {
-        	// set a time for the impact to happen within the next sol
-        	impactTimeInMillisol = RandomUtil.getRandomInt(1000);
-        }
+        if (isImpactImminent)
+            // Note: at the fastest sim speed, ~5 millisols may be skipped. need to set up detection of the impactTimeInMillisol with a +/- 5 range.
+        	if (marsClock.getMillisol() > impactTimeInMillisol - 5 && marsClock.getMillisol() < impactTimeInMillisol + 5) {
 
-        if (meteoritePuncture && (int) marsClock.getMillisol() == impactTimeInMillisol) {
+        	// reset the boolean
+			isImpactImminent = false;
+
+			// TODO: still need to build a credible model in relating HOW the size of the meteorites and its speed of impact would damage a building.
+
+			// e.g. if the mass of a single meteorite is .001 gram, at 1km/s, would it cause any damage?
+
         	Malfunction item = getMeteoriteImpactMalfunction();
-        	// Simulate the meteorite impact with a malfunction event
+
+        	// Simulate the meteorite impact as a malfunction event for now
 			try {
 				malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
 			}
@@ -937,8 +952,8 @@ LocalBoundedObject, InsidePathLocation {
 					// TODO: delineate the accidents from those listed in malfunction.xml
 				}
 			}
-        }
 
+		}
 	}
 
 	public Malfunction getMeteoriteImpactMalfunction() {
@@ -947,7 +962,7 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Malfunction> i = list.iterator();
 		while (i.hasNext()) {
 			Malfunction m = i.next();
-			if (m.getName().equals("meteorite impact"))
+			if (m.getName().equals("meteorite impact damage"))
 				item = m;
 		}
 		return item;
