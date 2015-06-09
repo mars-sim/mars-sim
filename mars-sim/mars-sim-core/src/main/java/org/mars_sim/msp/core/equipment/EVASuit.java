@@ -16,10 +16,11 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 
-/** 
+/**
  * The EVASuit class represents an EVA suit which provides life support
  * for a person during a EVA operation.
  */
@@ -53,6 +54,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	// Data members
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
+	private Weather weather ;
 
 	/**
 	 * Constructor.
@@ -87,7 +89,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		return malfunctionManager;
 	}
 
-	/** 
+	/**
 	 * Returns true if life support is working properly and is not out
 	 * of oxygen or water.
 	 * @return true if life support is OK
@@ -126,7 +128,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Gets the number of people the life support can provide for.
 	 * @return the capacity of the life support system.
 	 */
@@ -134,7 +136,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		return 1;
 	}
 
-	/** 
+	/**
 	 * Gets oxygen from system.
 	 * @param amountRequested the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
@@ -144,7 +146,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		double oxygenTaken = amountRequested;
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
-    	
+
 
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
@@ -156,7 +158,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		getInventory().addAmountDemandTotalRequest(oxygen);
 		// 2015-01-09 addDemandRealUsage()
 		getInventory().addAmountDemand(oxygen, oxygenTaken);
-		
+
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
@@ -170,18 +172,18 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		double waterTaken = amountRequested;
 		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterLeft = getInventory().getAmountResourceStored(water, false);
-		
+
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
 		getInventory().retrieveAmountResource(water, waterTaken);
-		
+
 		// 2015-01-09 Added addDemandTotalRequest()
 		getInventory().addAmountDemandTotalRequest(water);
 		// 2015-01-09 addDemandRealUsage()
 		getInventory().addAmountDemand(water, waterTaken);
-		
+
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 
@@ -207,7 +209,15 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double getTemperature() {
 		double result = NORMAL_TEMP
 				* (malfunctionManager.getTemperatureModifier() / 100D);
-		double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
+		double ambient = 0;
+		if (weather == null) {
+			weather = Simulation.instance().getMars().getWeather();
+			// For the first time calling, use calculateTemperature()
+			ambient = weather.calculateTemperature(getCoordinates());
+		}
+		else
+			ambient = weather.getTemperature(getCoordinates());
+
 		// the temperature of the suit will not be lower than the ambient temperature
 		if (result < ambient) {
 			return ambient;
@@ -216,7 +226,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		}
 	}
 
-	/** 
+	/**
 	 * Checks to see if the inventory is at full capacity with oxygen and water.
 	 * @return true if oxygen and water stores at full capacity
 	 * @throws Exception if error checking inventory.

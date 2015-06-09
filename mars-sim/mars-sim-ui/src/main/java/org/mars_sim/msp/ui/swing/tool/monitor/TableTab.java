@@ -32,11 +32,15 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -53,6 +57,7 @@ extends MonitorTab {
 
 	private TableHeaderRenderer theRenderer;
 
+	private TableCellRenderer tableCellRenderer;
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
 	 * object. It represents an arrow Icon that can be other ascending or
@@ -245,6 +250,7 @@ extends MonitorTab {
     				}
     			}
     		);
+
             sortedModel.addTableModelListener(table);
 
         	// 2014-12-30 Added setTableStyle()
@@ -260,6 +266,7 @@ extends MonitorTab {
         			table.getTableHeader().repaint();
         		}
         	});
+
         }
         else {
             // Simple JTable
@@ -309,18 +316,30 @@ extends MonitorTab {
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
         scroller.setBorder(new MarsPanelBorder());
+
+		// 2015-06-08 Added RowNumberTable
+        JTable rowTable = new RowNumberTable(table);
+        setTableStyle(rowTable);
+        scroller.setRowHeaderView(rowTable);
+        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER,
+            rowTable.getTableHeader());
+
+
         add(scroller, BorderLayout.CENTER);
 
         setName(model.getName());
         setSortColumn(0);
 
         // 2014-12-29 Added ColumnResizer
-        final JTable ctable = table;
-	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(ctable));
+        //final JTable ctable = table;
+	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(ctable));
     }
 
 	// 2014-12-30 Added setTableStyle()
     public void setTableStyle(JTable table) {
+
+        // 2014-12-29 Added ColumnResizer
+    	SwingUtilities.invokeLater(() -> adjustColumnPreferredWidths(table));
 
     	// Get the TableColumn header to display sorted column
     	theHeader = table.getTableHeader();
@@ -328,7 +347,8 @@ extends MonitorTab {
     	theHeader.setDefaultRenderer(theRenderer);
 
 	    // 2014-11-11 Added auto resize
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    	//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.getTableHeader().setOpaque(false);
 		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
@@ -346,6 +366,21 @@ extends MonitorTab {
 		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
 
 	}
+
+    public void adjustColumnPreferredWidths(JTable table) {
+        // Gets max width for cells in column as the preferred width
+        TableColumnModel columnModel = table.getColumnModel();
+        for (int col = 0; col < table.getColumnCount(); col++) {
+            int width = 100;
+            for (int row = 0; row < table.getRowCount(); row++) {
+            	if (tableCellRenderer == null)
+            		tableCellRenderer = table.getCellRenderer (row, col);
+                Component comp = table.prepareRenderer(tableCellRenderer, row, col);
+                width = Math.max (comp.getPreferredSize().width, width);
+            }
+            columnModel.getColumn(col).setPreferredWidth(width);
+        }
+    }
 
     /**
      * Display property window anchored to a main desktop.
