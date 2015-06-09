@@ -401,7 +401,9 @@ implements ClockListener, Serializable {
 
         masterClock.endClockListenerExecutor();
         clockExecutor.shutdownNow();
-        managerExecutor.shutdownNow();
+        if (managerExecutor != null) {
+            managerExecutor.shutdownNow();
+        }
         // Wait until current time pulse runs its course
         // we have no idea how long it will take it to
         // run its course. But this might be enough.

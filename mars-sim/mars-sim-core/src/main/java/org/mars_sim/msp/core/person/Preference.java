@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,7 +45,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 
-public class Preference {
+public class Preference implements Serializable {
 
 	/** default serial id. */
 	@SuppressWarnings("unused")

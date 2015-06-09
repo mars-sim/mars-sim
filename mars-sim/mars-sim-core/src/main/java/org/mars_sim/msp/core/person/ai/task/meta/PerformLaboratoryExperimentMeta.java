@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,8 +27,11 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 /**
  * Meta task for the PerformLaboratoryExperiment task.
  */
-public class PerformLaboratoryExperimentMeta implements MetaTask {
+public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$

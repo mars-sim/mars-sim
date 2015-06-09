@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * RestingMedicalRecoveryMeta.java
- * @version 3.07 2014-11-11
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -24,8 +25,11 @@ import org.mars_sim.msp.core.vehicle.SickBay;
 /**
  * Meta task for the RestingMedicalRecoveryMeta task.
  */
-public class RestingMedicalRecoveryMeta implements MetaTask {
+public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.restingMedicalRecovery"); //$NON-NLS-1$

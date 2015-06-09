@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * TreatMedicalPatientMeta.java
- * @version 3.07 2014-11-13
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,8 +31,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the TreatMedicalPatient task.
  */
-public class TreatMedicalPatientMeta implements MetaTask {
+public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$

@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcherMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
@@ -21,8 +22,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 /**
  * Meta task for the AssistScientificStudyResearcher task.
  */
-public class AssistScientificStudyResearcherMeta implements MetaTask {
+public class AssistScientificStudyResearcherMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.assistScientificStudyResearcher"); //$NON-NLS-1$

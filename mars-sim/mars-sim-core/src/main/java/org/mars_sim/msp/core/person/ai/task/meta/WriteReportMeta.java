@@ -1,10 +1,12 @@
 /**
  * Mars Simulation Project
  * WriteReportMeta.java
- * @version 3.08 2015-06-06
+ * @version 3.08 2015-06-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
+
+import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -19,8 +21,11 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the WriteReport task.
  */
-public class WriteReportMeta implements MetaTask {
+public class WriteReportMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.writeReport"); //$NON-NLS-1$
