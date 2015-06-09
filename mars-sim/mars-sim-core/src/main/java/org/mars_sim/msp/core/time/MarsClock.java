@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.OrbitInfo;
 
 /** The MarsClock class keeps track of Martian time.
  *  This uses Shaun Moss's Mars Calendar, which is
@@ -71,6 +72,8 @@ public class MarsClock implements Serializable {
     private int sol;
     private double millisol;
 
+    private OrbitInfo orbitInfo;
+
     /**
      * Constructor with date string parameter.
      * @param dateString format: "orbit-month-sol:millisol"
@@ -99,6 +102,9 @@ public class MarsClock implements Serializable {
         millisol = Double.parseDouble(millisolStr);
         if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
 
+        if (orbitInfo == null)
+        	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+
     }
 
     /** Constructs a MarsClock object with a given time
@@ -115,6 +121,10 @@ public class MarsClock implements Serializable {
         this.month = month;
         this.sol = sol;
         this.millisol = millisol;
+
+        if (orbitInfo == null)
+        	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+
     }
 
     /** Converts seconds to millisols
@@ -480,6 +490,59 @@ public class MarsClock implements Serializable {
      *  NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE valid parameters
      *  @return season as String ("Spring", "Summer", "Autumn" or "Winter")
      */
+	// 2015-02-24 Reconstructed getSeason() based on value of L_s
+    public String getSeason(int hemisphere) {
+    	String season = "";
+    	if (orbitInfo == null)
+			orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+		double L_s = orbitInfo.getL_s();
+    	//System.out.println("    L_s  :" +  L_s );
+    	String modifier = "";
+
+		if (L_s == 360 || L_s < 90 ){
+			if (L_s < 30 )
+				modifier = "Early ";
+			else if (L_s < 60)
+				modifier = "Mid ";
+			else
+				modifier = "Late ";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Spring";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Autumn";
+        }
+		else if (L_s < 180) {
+			if (L_s < 120)
+				modifier = "Early ";
+			else if (L_s < 150)
+				modifier = "Mid ";
+			else
+				modifier = "Late ";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Summer";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Winter";
+        }
+		else if (L_s < 270){
+			if (L_s < 210)
+				modifier = "Early ";
+			else if (L_s < 240)
+				modifier = "Mid ";
+			else
+				modifier = "Late ";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Autumn";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Spring";
+        }
+		else if (L_s < 360) {
+			if (L_s < 300)
+				modifier = "Early ";
+			else if (L_s < 330)
+				modifier = "Mid ";
+			else
+				modifier = "Late ";
+            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Winter";
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Summer";
+        }
+
+		return season;
+    }
+/*
     public String getSeason(int hemisphere) {
     	String season = "";
     	int solElapsed = MarsClock.getSolOfYear(Simulation.instance().getMasterClock().getMarsClock());
@@ -533,6 +596,7 @@ public class MarsClock implements Serializable {
 
 		return season;
     }
+*/
 
     /**
      * Creates a clone of this MarsClock object, with the time set the same.

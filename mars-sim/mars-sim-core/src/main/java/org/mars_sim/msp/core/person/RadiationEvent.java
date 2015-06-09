@@ -7,9 +7,14 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.time.MarsClock;
 
-public class RadiationEvent {
+public class RadiationEvent implements Serializable {
+
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
 
 	MarsClock clock;
 	BodyRegionType region;
