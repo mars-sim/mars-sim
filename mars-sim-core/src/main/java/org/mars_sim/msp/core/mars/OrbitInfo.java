@@ -29,7 +29,7 @@ implements Serializable {
 	/** Mars orbit period in seconds. */
 	private static final double ORBIT_PERIOD = 59355072D;
 	/** Mars orbit eccentricity. */
-	public static final double ECCENTRICITY = .0934D;
+	public static final double ECCENTRICITY = .093377D;
 
 	// INSTANTANEOUS_RADIUS_NUMERATOR = 1.510818924D
 	public static final double INSTANTANEOUS_RADIUS_NUMERATOR = SEMI_MAJOR_AXIS *(1 - ECCENTRICITY * ECCENTRICITY);
@@ -48,18 +48,21 @@ implements Serializable {
 	/** The angle of Mars's position to the Sun (in radians). */
 	private double theta;
 	/** The distance from the Sun to Mars (in au). */
-	private double instantaneousSunMarsDistance;
+	private double instantaneousSunMarsDistance = 1.3817913894302327;
 
 	/** The areocentric longitude (or the orbital position of Mars).
 	 *  0 corresponding to Mars' Northern Spring Equinox.
 	 */
-	private double L_s;
+	private double L_s = 252.5849107170493; // L_s = 252.58 (which corresponds to Earth date 2043-Sep-30) was arbitrarily chosen for mars-sim at the start of the sim
 	// Note 1 : The apparent seasonal advance of the Sun at Mars is commonly measured in terms of the areocentric longitude L_s,
 	//as referred to the planet's vernal equinox (the ascending node of the apparent seasonal motion of the Sun on the planet's equator).
 	//
 	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
 	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
-	// The areocentric longitude at perihelion, L_s = 251.000 + 0.00645 * (yr - 2000),
+	// The areocentric longitude at perihelion, L_s = 251 + 0.00645 * (yr - 2000),
+	private double L_s_perihelion = 251D + 0.00645 * (2043- 2000);
+	private double L_s_aphelion = L_s_perihelion - 180D;
+
 	// indicates a near alignment of the planet's closest approach to the Sun in its orbit with its winter solstice season,
 	// as related to the occasional onset of global dust storms within the advance of this season.
 	// see http://www.giss.nasa.gov/tools/mars24/help/notes.html
@@ -81,6 +84,8 @@ implements Serializable {
 		theta = 0D;
 		instantaneousSunMarsDistance = 1.665732D;
 		sunDirection = new Coordinates((Math.PI / 2D) + TILT, Math.PI);
+		//L_s_perihelion = 251D + 0.00645 * ( Simulation.instance().getMasterClock().getEarthClock().getYear() - 2000);
+		//L_s_aphelion = L_s_perihelion - 180D;
 
 	}
 
@@ -100,22 +105,29 @@ implements Serializable {
 		// Determine new theta
 		double area = ORBIT_AREA * orbitTime / ORBIT_PERIOD;
 		double areaTemp = 0D;
-		if (area > (ORBIT_AREA / 2D)) areaTemp = area - (ORBIT_AREA / 2D);
-		else areaTemp = (ORBIT_AREA / 2D) - area;
+
+		if (area > (ORBIT_AREA / 2D))
+			areaTemp = area - (ORBIT_AREA / 2D);
+		else
+			areaTemp = (ORBIT_AREA / 2D) - area;
+
 		theta = Math.abs(2D * Math.atan(1.097757562D * Math.tan(.329512059D * areaTemp)));
-		if (area < (ORBIT_AREA / 2D)) theta = 0D - theta;
+
+		if (area < (ORBIT_AREA / 2D))
+			theta = 0D - theta;
+
 		theta += Math.PI;
-		if (theta >= (2 * Math.PI)) theta -= (2 * Math.PI);
+
+		if (theta >= (2 * Math.PI))
+			theta -= (2 * Math.PI);
+
+		// Determine new radius
+		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
+		//instantaneousSunMarsDistance = INSTANTANEOUS_RADIUS_NUMERATOR / (1 + (ECCENTRICITY * Math.cos((L_s-248D) * DEGREE_TO_RADIAN)));
+		//System.out.println("instantaneousSunMarsDistance is " + instantaneousSunMarsDistance);
 
 		// Recompute the areocentric longitude of Mars
 		computeL_s();
-
-		// Determine new radius
-		//instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
-		instantaneousSunMarsDistance = INSTANTANEOUS_RADIUS_NUMERATOR / (1 + (ECCENTRICITY * Math.cos((L_s-248) * DEGREE_TO_RADIAN)));
-
-		//System.out.println("radius is " + radius);
-
 
 		// Determine Sun direction
 
@@ -132,6 +144,12 @@ implements Serializable {
 		sunDirection.setPhi(sunPhi);
 		//System.out.println("sunPhi is " + sunPhi);
 
+	}
+
+	public double computePerihelion() {
+		L_s_perihelion = 251D + 0.00645 * (Simulation.instance().getMasterClock().getEarthClock().getYear() - 2000);
+		L_s_aphelion = L_s_perihelion - 180D;
+		return L_s_perihelion;
 	}
 
 	/**
@@ -258,7 +276,7 @@ implements Serializable {
 	 */
 	// 2015-03-17 Added getTrueAnomaly()
 	public double getTrueAnomaly() {
-		// r = a (1 - e * e) / ( 1 + e * cos (ta) )
+		// r = a (1 - e * e) / ( 1 + e * cos (v) )
 		double part1 = SEMI_MAJOR_AXIS * (1 - ECCENTRICITY *  ECCENTRICITY) / instantaneousSunMarsDistance;//   radius is in A.U.  no need of * 149597871000D
 		//System.out.println("part1 is " + part1);
 		double part2 = ( part1 - 1 ) / ECCENTRICITY ;
@@ -274,11 +292,13 @@ implements Serializable {
 	// 2015-03-17 Added computeL_s()
 	public void computeL_s() {
 		double v = getTrueAnomaly();
-		double L_s = v / DEGREE_TO_RADIAN + 248D;
-		if (L_s >= 360)
-			L_s = L_s - 360;
-		//System.out.println("L_s is " + L_s);
-		this.L_s = L_s;
+		double newL_s = v / DEGREE_TO_RADIAN + 248D;
+		if (newL_s > 360D)
+			newL_s = newL_s - 360D;
+		//if (newL_s != L_s) {
+			//System.out.println("Old L_s : " + L_s + "    New L_s : " + newL_s);
+			L_s = newL_s;
+		//}
 	}
 
 	/**

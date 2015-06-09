@@ -127,9 +127,10 @@ implements Serializable {
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
 
-		if (Simulation.instance().getMasterClock() != null)
-			masterClock = Simulation.instance().getMasterClock();
-
+		if (masterClock == null) {
+			if (Simulation.instance().getMasterClock() != null)
+				masterClock = Simulation.instance().getMasterClock();
+		}
 		//orbitInfo = Simulation.instance().getMars().getOrbitInfo();
 	}
 
@@ -234,17 +235,23 @@ implements Serializable {
 	// 2015-03-06 Added getCachedAirPressure()
 	public double getCachedAirPressure(Coordinates location) {
 		checkLocation(location);
+/*
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 	    millisols =  (int) marsClock.getMillisol() ;
 		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
-
+*/
 	    // Lazy instantiation of airPressureCacheMap.
 	    if (airPressureCacheMap == null) {
 	        airPressureCacheMap = new HashMap<Coordinates, Double>();
         }
-	    
+
+
 		if (millisols % MILLISOLS_PER_UPDATE == 1) {
+			//System.out.println("marsClock : "+ marsClock);
+			//System.out.println("millisols : "+ millisols);
 			double newP = calculateAirPressure(location);
 			airPressureCacheMap.put(location, newP);
 			//System.out.println("air pressure : "+cache);
@@ -306,17 +313,18 @@ implements Serializable {
 	 */
 	public double getCachedTemperature(Coordinates location) {
 		checkLocation(location);
-
+/*
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
+			marsClock = masterClock.getMarsClock();
 	    millisols =  (int) marsClock.getMillisol() ;
-
+*/
 	    // Lazy instantiation of temperatureCacheMap.
 	    if (temperatureCacheMap == null) {
             temperatureCacheMap = new HashMap<Coordinates, Double>();
         }
-	    
+
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
@@ -435,11 +443,11 @@ implements Serializable {
 			if (temperatureCacheMap == null) {
 			    temperatureCacheMap = new HashMap<Coordinates, Double>();
 			}
-			
+
 			if (temperatureCacheMap.containsKey(location)) {
 				previous_t = temperatureCacheMap.get(location);
 			}
-			
+
 			final_temperature = Math.round ((final_temperature + previous_t )/2.0 *100.0)/100.0;
 			//System.out.println("  final T: " + final_temperature );
 		}
@@ -457,7 +465,7 @@ implements Serializable {
         if (temperatureCacheMap != null) {
             temperatureCacheMap.clear();
         }
-        
+
         if (airPressureCacheMap != null) {
             airPressureCacheMap.clear();
         }
@@ -509,10 +517,10 @@ implements Serializable {
 
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-
 	    // Sample a data point every 50 millisols, (compute the average) and store the data
-	    double currentMillisols =  (int) marsClock.getMillisol();
-	    if (currentMillisols % 50 == 0) {
+	    millisols =  (int) marsClock.getMillisol();
+
+	    if (millisols % 50 == 0) {
 	    	//List<DailyWeather> todayWeather = new ArrayList<>();
 	    	//Iterator<Coordinates> list = coordinateList.iterator();
 	    	coordinateList.forEach(location -> {

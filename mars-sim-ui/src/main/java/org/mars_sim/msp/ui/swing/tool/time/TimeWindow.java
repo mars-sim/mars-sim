@@ -367,6 +367,14 @@ implements ClockListener {
 		}
 	}
 
+	public void setSeason() {
+		northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
+					marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)));
+
+		southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
+					marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)));
+	}
+
 	@Override
 	public void clockPulse(double time) {
 		SwingUtilities.invokeLater(
@@ -377,8 +385,6 @@ implements ClockListener {
 						//System.out.println("TimeWindow : master is null");
 						master = Simulation.instance().getMasterClock();
 					}
-					//if (master.getMarsClock() == null) System.out.println(" master.getMarsClock() is null");
-					//if (master == null) return;
 
 			    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
 
@@ -387,18 +393,9 @@ implements ClockListener {
 						// 2015-02-24 Added solElapsedCache
 						if (solElapsed != solElapsedCache) {
 							martianMonthLabel.setText(marsTime.getMonthName());
-							northernSeasonLabel.setText(
-								Msg.getString(
-									"TimeWindow.northernHemisphere",  //$NON-NLS-1$
-									marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)
-								)
-							);
-							southernSeasonLabel.setText(
-								Msg.getString(
-									"TimeWindow.southernHemisphere", //$NON-NLS-1$
-									marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)
-								)
-							);
+
+							setSeason();
+
 							solElapsedCache = solElapsed;
 						}
 					}
