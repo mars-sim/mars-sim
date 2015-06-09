@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * PrepareDessertMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-06-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 //import java.util.logging.Logger;
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -22,9 +24,11 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 /**
  * Meta task for the PrepareSoymilk task.
  */
-//2014-11-28 Changed Class name from MakeSoyMeta to PrepareDessertMeta
-public class PrepareDessertMeta implements MetaTask {
+public class PrepareDessertMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$

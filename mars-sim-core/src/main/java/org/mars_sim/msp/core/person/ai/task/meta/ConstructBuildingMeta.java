@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ConstructBuildingMeta.java
- * @version 3.08 2015-06-02
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * Meta task for the ConstructBuilding task.
  */
-public class ConstructBuildingMeta implements MetaTask {
+public class ConstructBuildingMeta implements MetaTask, Serializable {
+    
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(

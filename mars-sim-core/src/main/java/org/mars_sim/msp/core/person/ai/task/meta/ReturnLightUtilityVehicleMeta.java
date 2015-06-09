@@ -1,10 +1,12 @@
 /**
  * Mars Simulation Project
  * ReturnLightUtilityVehicleMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
+
+import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -17,8 +19,11 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 /**
  * Meta task for the ReturnLightUtilityVehicle task.
  */
-public class ReturnLightUtilityVehicleMeta implements MetaTask {
+public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$

@@ -1,10 +1,12 @@
 /**
  * Mars Simulation Project
  * SleepMeta.java
- * @version 3.08 2015-05-14
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
+
+import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -20,8 +22,11 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * Meta task for the Sleep task.
  */
-public class SleepMeta implements MetaTask {
+public class SleepMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.sleep"); //$NON-NLS-1$

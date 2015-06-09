@@ -662,7 +662,7 @@ public class MasterClock implements Serializable { // Runnable,
 			try {
 				ClockListenerTask task = i.next();
 
-  		  		if ( task != null || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() ) {
+  		  		if ((task != null) && !(clockListenerExecutor.isTerminating() || clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown())) {
 	  		  		task.addTime(time);
   		  			clockListenerExecutor.execute(task);
   		  		}

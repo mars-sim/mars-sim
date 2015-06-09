@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarageMeta.java
- * @version 3.08 2015-05-13
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +29,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Meta task for the MaintainGroundVehicleGarage task.
  */
-public class MaintainGroundVehicleGarageMeta implements MetaTask {
+public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$

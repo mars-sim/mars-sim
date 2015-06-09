@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * SelfTreatMedicalProblemMeta.java
- * @version 3.07 2014-11-13
+ * @version 3.08 2015-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +29,11 @@ import org.mars_sim.msp.core.vehicle.SickBay;
 /**
  * Meta task for the SelfTreatHealthProblem task.
  */
-public class SelfTreatHealthProblemMeta implements MetaTask {
+public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.selfTreatHealthProblem"); //$NON-NLS-1$
