@@ -37,6 +37,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact{
 		//System.out.println("starting calculateMeteoriteProbability()");
 		// The influx of meteorites entering Mars atmosphere can be estimated as
 		// log N = -0.689* log(m) + 4.17
+
 		// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).
 
 		// Currently Assumptions:
@@ -53,13 +54,20 @@ public class MeteoriteImpactImpl implements MeteoriteImpact{
 
 		sphericalVolume = 4D * Math.PI / 3D * meteoriteCriticalDiameter*meteoriteCriticalDiameter*meteoriteCriticalDiameter*.5*.5*.5;
 		massPerMeteorite = averageDensity * sphericalVolume;
+
 		logN = -0.689 * Math.log10(massPerMeteorite) + 4.17;
+
+		// per 10^6 km2, need to convert to per sq meter by dividing 10^12
 		numMeteoritesPerYearPerMeter = Math.pow(10, logN-12D); // = epsilon
+
 		probabilityOfImpactPerSQMPerYear = Math.exp(-numMeteoritesPerYearPerMeter);
 
 		probabilityOfImpactPerSQMPerSol = probabilityOfImpactPerSQMPerYear/365.24;
 
 		buildingManager.setProbabilityOfImpactPerSQMPerSol(probabilityOfImpactPerSQMPerSol);
+
+
+		// TODO: still need helps in finding equations of the probability distribution of different sizes of the meteorites
 
 		penetrationRate = numMeteoritesPerYearPerMeter/365.24;
 		penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite*impactVelocity, 1/3D);

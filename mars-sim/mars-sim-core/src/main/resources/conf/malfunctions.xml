@@ -669,7 +669,7 @@
 	</malfunction>
 
 	<!-- Meteorite Impact -->
-	<malfunction name="meteorite impact">
+	<malfunction name="meteorite impact damage">
 		<severity value="100" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
 		<repair-time value="80.0" />

@@ -814,7 +814,7 @@ implements Serializable {
         	    for (int i = 0; i < 3 ; i++) {
 	    	    	double base = RadiationExposure.RAD_PER_SOL/2;
 	    	    	exposure = base + RandomUtil.getRandomDouble(base);
-	    	    	rad.addDose(i, 0, exposure);
+	    	    	rad.addDose(i, exposure);
 	    	    	System.out.println(person.getName() + "just received a radiation exposure of "
 	    	    	+ exposure + " mSv in body region " + i);
         	    }

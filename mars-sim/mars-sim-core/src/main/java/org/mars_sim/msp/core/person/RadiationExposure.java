@@ -8,10 +8,16 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 public class RadiationExposure implements Serializable {
 
@@ -23,31 +29,40 @@ public class RadiationExposure implements Serializable {
 
     public static final double RAD_PER_SOL = .4087; // = 150 mSv / 365 days
 
+	// ROWS of the 2-D dose array
+	private static final int THIRTY_DAY = 0;
+	private static final int ANNUAL = 1;
+	private static final int CAREER = 2;
+
 	// COLUMNS of the 2-D dose array
 	// Organ dose equivalent limits, per NCRP guidelines
-	int BFO_dose_equivalent = 0; // BFO = blood-forming organs
-	int ocular_lens_dose_equivalent = 1;
-	int skin_dose_equivalent = 2;
+	private static final int BFO = 0; // BFO = blood-forming organs
+	private static final int OCULAR = 1;
+	private static final int SKIN = 2;
 
 	// Career whole-body effective dose limits, per NCRP guidelines
-	int whole_body_dose_effective = 1000; // TODO: it varies with age and differs in male and female
-
-	// ROWS of the 2-D dose array
-	int thirtyDay = 0;
-	int annual = 1;
-	int career = 2;
+	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
 	private int solCache = 1;
-	private int sol = 1;
+
+	private boolean isExposureChecked = false;
+
+	private RadiationEvent event;
 
 	// dose equivalent limits in mSv (milliSieverts)
-	int [][] DOSE_LIMITS = {
+	private int [][] DOSE_LIMITS = {
 			{ 250, 1000, 1500 },
 			{ 500, 2000, 3000 },
-			{ whole_body_dose_effective, 4000, 6000 }	};
+			{ WHOLE_BODY_DOSE, 4000, 6000 }	};
 
 	// randomize dose at the start of the sim when a settler arrives on Mars
-	double [][] dose;
+	private double [][] dose;
+
+	private MarsClock clock;
+	private MasterClock masterClock;
+
+	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
+	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
 	@SuppressWarnings("unused")
 	private PhysicalCondition condition;
@@ -59,13 +74,38 @@ public class RadiationExposure implements Serializable {
 		dose = new double[3][3];
 	}
 
+	//public List<RadiationEvent> getRadiationEventList() {
+	//	return eventList;
+	//}
 
-	public void addDose(int bodyRegion, int interval, double amount) {
-		if (interval == 0) {
-			dose[bodyRegion][thirtyDay] = dose[bodyRegion][thirtyDay] + amount;
-			dose[bodyRegion][annual] = dose[bodyRegion][annual] + amount;
-			dose[bodyRegion][career] = dose[bodyRegion][career] + amount;
-		}
+	public Map<RadiationEvent, Integer> getRadiationEventMap() {
+		return eventMap;
+	}
+
+	public void addDose(int bodyRegion, double amount) {
+
+		// amount is cumulative
+		dose[bodyRegion][THIRTY_DAY] = dose[bodyRegion][THIRTY_DAY] + amount;
+		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
+		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
+
+		if (masterClock == null )
+			masterClock = Simulation.instance().getMasterClock();
+
+		clock = masterClock.getMarsClock();
+
+		BodyRegionType region = null;
+
+		if (bodyRegion == 0)
+			region = BodyRegionType.BFO;
+		else if (bodyRegion == 1)
+			region = BodyRegionType.OCULAR;
+		else if (bodyRegion == 2)
+			region = BodyRegionType.SKIN;
+
+		event = new RadiationEvent(clock, region, amount);
+		eventMap.put(event, solCache);
+
 	}
 
 	public void initializeWithRandomDose() {
@@ -95,31 +135,47 @@ public class RadiationExposure implements Serializable {
 
 	public void timePassing(double time) {
 
-		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+		if (masterClock == null )
+			masterClock = Simulation.instance().getMasterClock();
+
+		clock = masterClock.getMarsClock();
+
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(clock);
-        if ( solElapsed != solCache) {
-        	// check on the effect of the expose only once a day
-        	checkExposure();
+        if (solElapsed != solCache) {
         	solCache = solElapsed;
+        	// set the boolean
+        	isExposureChecked = false;
         }
+
+		//System.out.println("millisol : " + clock.getMillisol());
+        if (!isExposureChecked && clock.getMillisol() > 100 && clock.getMillisol() < 110) {
+        	// check on the effect of the exposure once a day at between 100 & 110 millisols
+            // Note: at fastest simulation speed, it can skip as much as ~5 millisols
+        	checkExposure();
+        	// reset the boolean
+        	isExposureChecked = true;
+        }
+
 
 	}
 
 	public void checkExposure() {
-		// clear the annual interval dosage exposure
-		if (sol%30 == 0) {
-			dose[BFO_dose_equivalent][annual] = 0;
-			dose[ocular_lens_dose_equivalent][annual] = 0;
-			dose[skin_dose_equivalent][annual] = 0;
-		}
 
-		if (sol == 365) {
-			dose[BFO_dose_equivalent][thirtyDay] = 0;
-			dose[ocular_lens_dose_equivalent][thirtyDay] = 0;
-			dose[skin_dose_equivalent][thirtyDay] = 0;
-			sol = 0;
-		}
+		if (solCache > 30)
+			carryOverDosage(THIRTY_DAY);
+
+		// use 360 days instead of 365 days for simplicity and synchronization with the 30-day carryover
+		if (solCache > 360)
+			carryOverDosage(ANNUAL);
+
+		// clear the annual counter
+		//if (solCache%365 == 0) {
+		//}
+
+		// clear the 30-day counter
+		//if (solCache%30 == 0) {
+		//}
 
 		// Compare if any element in a person's dose matrix exceeds the limit
 		boolean sick = false;
@@ -137,14 +193,49 @@ public class RadiationExposure implements Serializable {
             }
         }
 
-        // if sick is true, call methods in HealthProblem...
+        // TODO if sick is true, call methods in HealthProblem...
         if (sick) {
         	//Complaint nausea = new Complaint();
         	//condition.addMedicalComplaint(complaint);
             //condition.getPerson().fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
         }
-		solCache++;
+	}
 
+	public void carryOverDosage(int interval) {
+
+		double dosage = 0;
+		BodyRegionType region = null;
+
+		Iterator<Map.Entry<RadiationEvent, Integer>> entries = eventMap.entrySet().iterator();
+
+		while (entries.hasNext()) {
+			Map.Entry<RadiationEvent, Integer> entry = entries.next();
+			RadiationEvent key = entry.getKey();
+			Integer value = entry.getValue();
+
+			if (solCache - (int)value == interval + 1 )  {
+				dosage = key.getAmount();
+				region = key.getBodyRegion();
+
+				int type = 0;
+
+				if (region == BodyRegionType.BFO )
+					type = 0;
+				else if (region == BodyRegionType.OCULAR )
+					type = 1;
+				else if (region == BodyRegionType.SKIN )
+					type = 2;
+
+				if (interval == 0) {
+					dose[type][THIRTY_DAY] = dose[type][THIRTY_DAY] - dosage;
+					//dose[type][ANNUAL] = dose[type][ANNUAL] + dosage;
+				}
+				else if (interval == 1) {
+					dose[type][ANNUAL] = dose[type][ANNUAL] - dosage;
+					//dose[type][CAREER] = dose[type][CAREER] + dosage;
+				}
+			}
+		}
 	}
 
 	public double[][] getDose() {
