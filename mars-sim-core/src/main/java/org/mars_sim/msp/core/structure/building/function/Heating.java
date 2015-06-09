@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.ThermalSystem;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -108,6 +109,8 @@ implements Serializable {
 	private Building building;
 	private Weather weather;
 	private Coordinates coordinates;
+	private MasterClock masterClock;
+	private MarsClock clock;
 
 	/**
 	 * Constructor.
@@ -141,12 +144,13 @@ implements Serializable {
 		//SHC_Area = floorArea * SHC * floorArea;
 		SHC_Area = floorArea * meter2Feet * meter2Feet * SHC ;
 
-
 		t_initial = building.getInitialTemperature();
 		currentTemperature = t_initial;
 		deltaTemperature = 0;
 		//t_factor = vol / R_GAS_CONSTANT / n;
 
+		masterClock = Simulation.instance().getMasterClock();
+		clock = masterClock.getMarsClock();
 		weather = Simulation.instance().getMars().getWeather();
 		coordinates = building.getBuildingManager().getSettlement().getCoordinates();
 		thermalSystem = building.getBuildingManager().getSettlement().getThermalSystem();
@@ -289,7 +293,7 @@ implements Serializable {
 	/**
 	 * Applies a "mathematical" heat buffer to artificially stabilize temperature fluctuation due to rapid simulation time
 	 * @return temperature (degree C)
-	 */
+
 	// 2014-10-17 Added applyHeatBuffer()
 	public void applyHeatBuffer(double t) {
 		// 2015-02-18 Added heat trap
@@ -332,8 +336,9 @@ implements Serializable {
 
 	    deltaTemperature = t;
 
-
 	}
+*/
+
 
 	/**
 	 * Gets the value of the function for a named building.
@@ -356,18 +361,29 @@ implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	// 2014-10-25 Currently skip calling for thermal control for Hallway
 	public void timePassing(double time) {
 
-		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-	    int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
-
-		if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 1)
-			// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
-			//if (!building.getBuildingType().equals("Hallway"))
-			//System.out.println("ID: " + building.getID() + "\t" + building.getName());
+		if ((int)time >= 1) {
+			// if time >= 1 millisols, need to call adjustThermalControl() right away to update the temperature
 			adjustThermalControl(time);
+		}
 
+		else {
+			// if time < 1 millisols, may skip calling adjustThermalControl() for several cycle to reduce CPU utilization.
+			if (masterClock == null)
+				masterClock = Simulation.instance().getMasterClock();
+
+			if (clock == null)
+				clock = masterClock.getMarsClock();
+
+			int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
+			//System.out.println(" oneTenthmillisols : " + oneTenthmillisols);
+			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 0)
+				//System.out.println(" oneTenthmillisols % 10 == 0 ");
+				// Skip calling for thermal control for Hallway (coded as "virtual" building as of 3.07)
+				//if (!building.getBuildingType().equals("Hallway"))
+				adjustThermalControl(time);
+		}
 	}
 
 	/**

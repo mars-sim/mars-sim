@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -196,9 +195,10 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
 		// 2015-06-08 Added sorting
-		heatTable.setAutoCreateRowSorter(true);
-		heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//heatTable.setAutoCreateRowSorter(true);
+		//heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(heatTable);
@@ -334,7 +334,7 @@ extends TabPanel {
 		private Settlement settlement;
 		// Make sure it's from java.util.List, not java.awt.List
 		//private List<Building> buildings; // java.util.List, not java.awt.List
-		private List<Building> buildingsWithThermal = new ArrayList<Building>();;
+		private List<Building> buildingsWithThermal = new ArrayList<>();;
 		private ImageIcon dotRed;
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen;
@@ -344,7 +344,7 @@ extends TabPanel {
 			this.settlement = settlement;
 
 			//2014-11-02 Included only buildings having Thermal control system
-			selectBuildingsWithThermal();
+			buildingsWithThermal = selectBuildingsWithThermal();
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
@@ -352,13 +352,9 @@ extends TabPanel {
 		}
 
 		//2015-04-02 Revised selectBuildingsWithThermal()
-		public void selectBuildingsWithThermal() {
+		public List<Building> selectBuildingsWithThermal() {
 			List<Building> buildings = settlement.getBuildingManager().getBuildingsWithThermal();
-			// use of arraylist.removeAll(arraylist) vs. arraylist.clear()
-			//buildingsWithThermal.removeAll(buildingsWithThermal);
-
-			//buildingsWithThermal.clear();
-			buildingsWithThermal = buildings;
+			return buildings;
 		}
 
 		//2014-11-02 Included only buildings having Thermal control system
@@ -461,13 +457,11 @@ extends TabPanel {
 
 		public void update() {
 			//2014-11-02 Included only buildings having Thermal control system
-			//List<Building> buildingsCache = new ArrayList<>(buildingsWithThermal);
-			// update the list of buildings with thermal
-			selectBuildingsWithThermal();
-			// Note: buildingsWithThermal just got updated with a new list of buildings with thermal
-			//if (!buildingsWithThermal.equals(buildingsCache))
-			//	buildingsCache = buildingsWithThermal;
-			fireTableDataChanged();
+			List<Building> newBuildings = selectBuildingsWithThermal();
+			if (!buildingsWithThermal.equals(newBuildings)) {
+				buildingsWithThermal = newBuildings;
+				fireTableDataChanged();
+			}
 		}
 	}
 }
