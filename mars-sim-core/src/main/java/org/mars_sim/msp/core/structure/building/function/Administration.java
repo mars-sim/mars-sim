@@ -70,7 +70,7 @@ public class Administration extends Function implements Serializable {
 
         if (!newBuilding) {
             BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            supply -= config.getManagementPopulationSupport(buildingName);
+            supply -= config.getAdministrationPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }
 
