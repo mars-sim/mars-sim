@@ -606,6 +606,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 */
 	}
 
+	public void refreshTheme() {
+		Unit unit = Simulation.instance().getUnitManager().getFirstSettlement();
+		openUnitWindow(unit, true);
+		UnitWindow w = findUnitWindow(unit);
+		disposeUnitWindow(w);
+		System.out.println("MainDesktopPane : done with refreshTheme()");
+	}
+
 	/**
 	 * Creates and opens a window for a unit if it isn't
 	 * already in existence and open.
@@ -1078,6 +1086,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow.pack();
 		announcementWindow.setVisible(true);
 	}
+
 	/**
 	 * Removes the popup announcement window from the desktop.
 	 */
@@ -1114,6 +1123,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//transportWizard.pack();
 		//transportWizard.setVisible(true);
 	}
+
 	/**
 	 * Removes the transport wizard from the desktop.
 	 */
@@ -1157,6 +1167,27 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
+
+	public void updateUnitWindowLF() {
+		Iterator<UnitWindow> i = unitWindows.iterator();
+		while (i.hasNext()) {
+			UnitWindow window = i.next();
+			SwingUtilities.updateComponentTreeUI(window);
+		}
+	}
+
+	/**
+	 * Closes the look & feel for all tool windows.
+	 */
+	public void closeAllToolWindow() {
+		Iterator<ToolWindow> i = toolWindows.iterator();
+		while (i.hasNext()) {
+		    ToolWindow toolWindow = i.next();
+			remove(toolWindow);
+		}
+		disposeAnnouncementWindow();
+		//disposing transportWizard
+	}
 
 	/**
 	 * Opens all initial windows based on UI configuration.
@@ -1245,8 +1276,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return announcementWindow;
 	}
 
-
-
 	public Settlement getSettlement() {
 		return settlement;
 	}
@@ -1258,8 +1287,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public boolean getIsTransportingBuilding() {
 		return isTransportingBuilding;
 	}
-
-
 
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {
@@ -1343,6 +1370,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 	}
+
 
 	public void destroy() {
 		updateThread = null;

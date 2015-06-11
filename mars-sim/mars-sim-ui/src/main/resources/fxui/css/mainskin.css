@@ -24,32 +24,8 @@
 	-fx-font-family: "Noto";
 }
 
-#time-text {
-	-fx-background-color: orange;
-	-fx-text-fill: orange;
-}
-
-#mem-text {
-	-fx-background-color: orange;
-	-fx-text-fill: orange;
-}
-
 .tab {
 -fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
-}
-
-.menu-bar {
--fx-font-weight: bold;
--fx-font-family: "Jura";
--fx-font-size: 12pt;
--fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
-}
-
-.menu-item {
--fx-font-weight: normal;
--fx-font-family: "Noto";
--fx-font-size: 10pt;
-
 }
 
 .tool-bar:horizontal {
@@ -61,19 +37,6 @@
 -fx-border-style: dotted;
 -fx-padding: 4px 4px 4px 4px;
     }
-
-.button {
-	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, grey 0%, black 100%),
-        grey,
-        white,
-        radial-gradient(center 50% 50%, radius 100%, white, black);
-
-    -fx-text-fill: rgb(49, 89, 23);
-    -fx-border-color: rgb(49, 89, 23);
-    -fx-border-radius: 2;
-    -fx-padding: 1 1 1 1;
-}
 
 .button:hover{
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;

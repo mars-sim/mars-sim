@@ -1,18 +1,24 @@
 /**
  * Mars Simulation Project
  * DustStorm.java
- * @version 3.08 2015-05-22
+ * @version 3.08 2015-06-10
  * @author Manny Kung
  */
 
-
 package org.mars_sim.msp.core.mars;
+
+import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
-public class DustStorm {
+public class DustStorm implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 
 	private static final int NORTHERN = 0;
 	private static final int SOUTHERN = 1;
@@ -54,6 +60,9 @@ public class DustStorm {
 		else if (type == DustStormType.LOCAL) {
 			// Assume the start size between 0 to 100 km
 			size = RandomUtil.getRandomInt(100);
+
+			if (weather == null)
+				weather = Simulation.instance().getMars().getWeather();
 
 			// Check if this is the first dust storm of this year
 			if (weather.getLocalDustStormMap().size() == 0)

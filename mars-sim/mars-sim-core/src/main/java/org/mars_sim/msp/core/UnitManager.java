@@ -95,6 +95,8 @@ implements Serializable {
 
     private MasterClock masterClock;
 
+    private Settlement firstSettlement;
+
     /**
      * Constructor.
      */
@@ -130,6 +132,7 @@ implements Serializable {
         createInitialParts();
         createInitialRobots();
         createInitialPeople();
+
     }
 
     /**
@@ -388,6 +391,8 @@ implements Serializable {
             e.printStackTrace(System.err);
             throw new IllegalStateException("Settlements could not be created: " + e.getMessage(), e);
         }
+
+        firstSettlement = getASettlement();
     }
 
     /**
@@ -1317,6 +1322,17 @@ implements Serializable {
      */
     public Collection<Settlement> getSettlements() {
         return CollectionUtils.getSettlement(units);
+    }
+
+
+    public Settlement getASettlement() {
+    	List<Settlement> list = new ArrayList<>();
+    	list.addAll(getSettlements());
+        return list.get(0);
+    }
+
+    public Settlement getFirstSettlement() {
+    	return firstSettlement;
     }
 
     /** Get number of vehicles

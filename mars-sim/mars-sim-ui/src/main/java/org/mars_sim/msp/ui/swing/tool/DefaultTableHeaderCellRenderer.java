@@ -66,10 +66,11 @@ public class DefaultTableHeaderCellRenderer extends DefaultTableCellRenderer {
             isSelected, hasFocus, row, column);
     JTableHeader tableHeader = table.getTableHeader();
     if (tableHeader != null) {
-      setForeground(tableHeader.getForeground());
-      setBackground(new Color(205, 133, 63));//Color.ORANGE);
-      //setForeground(new Color(255, 255, 120));
+     	setForeground(tableHeader.getForeground());
+    	setBackground(tableHeader.getBackground()); // new Color(205, 133, 63));//Color.ORANGE);
+      setForeground(new Color(255, 255, 120));
     }
+    //TableStyle.setTableStyle(table);
 
     setIcon(getIcon(table, column));
     setBorder(UIManager.getBorder("TableHeader.cellBorder"));

@@ -32,6 +32,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -43,7 +44,6 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -51,14 +51,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -75,6 +74,7 @@ import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 
 /**
@@ -94,18 +94,15 @@ public class MainScene {
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
-    private int theme = 1;
+    private static int theme = 1; // 7 is the standard nimrod theme
     private int memMax;
     private int memTotal;
     private int memUsed, memUsedCache;
     private int memFree;
 
-    private boolean cleanUI = true;
-	//private boolean useDefault;
-
     private StringProperty timeStamp;
-	// 2015-05-02 Added lookAndFeelTheme
-	private String lookAndFeelTheme;
+
+	private String lookAndFeelTheme = "nimrod";
 
 	private Thread newSimThread;
 	private Thread loadSimThread;
@@ -122,18 +119,18 @@ public class MainScene {
     private Tab swingTab;
     private Tab nodeTab;
 
-    //private TabPane tp;
     private DndTabPane dndTabPane;
     private FXDesktopPane fxDesktopPane;
 
     private Timeline timeline;
-    private NotificationPane notificationPane;
+    private static NotificationPane notificationPane;
 
-    private MainDesktopPane desktop;
-    //private MainWindow mainWindow;
+    private static MainDesktopPane desktop;
     private MainSceneMenu menuBar;
     private MarsNode marsNode;
 	private TransportWizard transportWizard;
+	private StackPane rootStackPane;
+	private SwingNode swingNode;
 
 	/**
 	 * Constructor for MainScene
@@ -151,18 +148,12 @@ public class MainScene {
     	Simulation.instance().getSimExecutor().submit(new MainSceneTask());
     }
 
-
+	/**
+	 * Sets up the UI theme and the two timers as a thread pool task
+	 */
 	public class MainSceneTask implements Runnable {
 		public void run() {
 			logger.info("MainScene's MainSceneTask is in "+Thread.currentThread().getName() + " Thread");
-
-			// TODO: how to remove artifact and refresh the pull down menu and statusBar whenever clicking the maximize/iconify/restore button on top-right?
-
-			//Platform.runLater(() -> {
-		    //    scene = initializeScene();
-			//});
-			//System.out.println("done running Platform() in createMainScene()");
-
 			// Load UI configuration.
 			//if (!cleanUI) {
 			//	UIConfig.INSTANCE.parseFile();
@@ -171,7 +162,7 @@ public class MainScene {
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
 	        SwingUtilities.invokeLater(() -> {
-	    		setLookAndFeel(false, true);
+	    		setLookAndFeel(1);
 	        });
 
 			startAutosaveTimer();
@@ -197,7 +188,7 @@ public class MainScene {
 	}
 
 	/**
-	 * Sets up the Main Scene
+	 * initializes the scene
 	 *@return Scene
 	 */
 	@SuppressWarnings("unchecked")
@@ -231,8 +222,8 @@ public class MainScene {
 
 		// Create group to hold swingNode1 which holds the swing desktop
 		StackPane swingPane = new StackPane();
-		SwingNode swingNode = new SwingNode();
-		createSwingNode(swingNode);
+		swingNode = new SwingNode();
+		createSwingNode();
 		swingPane.getChildren().add(swingNode);
 		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
@@ -300,65 +291,28 @@ public class MainScene {
 	    // Set to select the swing tab at the start of simulation
 	    dndTabPane.getSelectionModel().select(swingTab);
 	    dndTabPane.getTabs().addAll(swingTab, nodeTab);
-	    //dndTabPane.getTabs().add(nodeTab);
 
-/*
-	    splitPane = new SplitPane();
-	    //splitPane.setPrefWidth(100);
-	    splitPane.setOrientation(Orientation.HORIZONTAL);
-	    //splitPane.setMinWidth(Region.USE_PREF_SIZE);
-	    splitPane.setDividerPositions(1.0f);
-	    splitPane.getItems().addAll(swingPane, layout);
-*/
 		Node notificationNode = createNotificationPane();
-		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-        notificationPane.setText("Breaking news for mars-simmers !!");
-        notificationPane.hide();
 
-	    //borderPane.setCenter(splitPane);
 	    borderPane.setCenter(notificationNode);
 
-	    StackPane rootStackPane = new StackPane(borderPane);
+	    rootStackPane = new StackPane(borderPane);
 
 	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
 	    borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-	    scene.getStylesheets().add("/fxui/css/mainskin.css");
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
+        rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
-                	if (theme == 1) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-                		theme = 2;
-                	    memUsedText.setFill(Color.GREEN);
-                	    memMaxText.setFill(Color.GREEN);
-                	    timeText.setFill(Color.GREEN);
-                	    memBtn.setTextFill(Color.GREEN);
-                	    clkBtn.setTextFill(Color.GREEN);
-                	}
-                	else if (theme == 2) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-                		theme = 3;
-                	    memUsedText.setFill(Color.ORANGERED);
-                	    memMaxText.setFill(Color.ORANGERED);
-                	    timeText.setFill(Color.ORANGERED);
-                	    memBtn.setTextFill(Color.YELLOW);
-                	    clkBtn.setTextFill(Color.YELLOW);
-                	}
-                	else if (theme == 3) {
-                		scene.getStylesheets().clear();
-                		scene.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-                		theme = 1;
-                	    memUsedText.setFill(Color.GREY);
-                	    memMaxText.setFill(Color.GREY);
-                	    timeText.setFill(Color.GREY);
-                	    memBtn.setTextFill(Color.ORANGE);
-                	    clkBtn.setTextFill(Color.ORANGE);
-                	}
+                	setTheme();
+	                SwingUtilities.invokeLater(() -> {
+	                	//desktop.closeAllToolWindow();
+	                	setLookAndFeel(1);
+	                	swingNode.setContent(desktop);
+	                });
                 }
             }
         });
@@ -366,6 +320,103 @@ public class MainScene {
         //System.out.println("done running initializeScene()");
 
         return scene;
+	}
+
+	public static void notifyThemeChange(String text) {
+		if (desktop != null) {
+			//desktop.refreshTheme();
+			System.out.println("deskop != null , calling notifyThemeChange()");
+			//if (notificationPane != null) {
+				//notificationPane.setText("Skin is set to " + text);
+				notificationPane.show("Skin is set to " + text);
+			//}
+		}
+	}
+
+	public void setTheme() {
+		if (theme == 1) {
+			rootStackPane.getStylesheets().clear();
+    		theme = 2;
+			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+            notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.GREEN);
+    	    memMaxText.setFill(Color.GREEN);
+    	    timeText.setFill(Color.GREEN);
+    	    memBtn.setTextFill(Color.PALEGREEN);
+    	    clkBtn.setTextFill(Color.PALEGREEN);
+    	    lookAndFeelTheme = "LightTabaco";
+    	}
+    	else if (theme == 2) {
+    		rootStackPane.getStylesheets().clear();
+    		theme = 3;
+    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+            notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.ORANGERED);
+    	    memMaxText.setFill(Color.ORANGERED);
+    	    timeText.setFill(Color.ORANGERED);
+    	    memBtn.setTextFill(Color.YELLOW);
+    	    clkBtn.setTextFill(Color.YELLOW);
+    	    lookAndFeelTheme = "Burdeos";
+    	}
+    	else if (theme == 3) { //dark olive
+    		rootStackPane.getStylesheets().clear();
+    		theme = 4;
+    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.LIGHTCYAN);
+    	    memMaxText.setFill(Color.LIGHTCYAN);
+    	    timeText.setFill(Color.LIGHTCYAN);
+    	    memBtn.setTextFill(Color.DARKOLIVEGREEN);
+    	    clkBtn.setTextFill(Color.DARKOLIVEGREEN);
+    	    lookAndFeelTheme = "DarkTabaco";
+    	}
+    	else if (theme == 4) {
+    		//rootStackPane.getStylesheets().clear();
+    		theme = 5;
+    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.BLANCHEDALMOND);
+    	    memMaxText.setFill(Color.BLANCHEDALMOND);
+    	    timeText.setFill(Color.BLANCHEDALMOND);
+    	    memBtn.setTextFill(Color.GREY);
+    	    clkBtn.setTextFill(Color.GREY);
+    	    lookAndFeelTheme = "DarkGrey";
+    	}
+    	else if (theme == 5) { // + purple
+    		//rootStackPane.getStylesheets().clear();
+    		theme = 6;
+    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.PALEGOLDENROD);
+    	    memMaxText.setFill(Color.PALEGOLDENROD);
+    	    timeText.setFill(Color.PALEGOLDENROD);
+    	    memBtn.setTextFill(Color.BLUEVIOLET);
+    	    clkBtn.setTextFill(Color.BLUEVIOLET);
+    	    lookAndFeelTheme = "Night";
+    	}
+    	else if (theme == 6) { // + skyblue
+    		//rootStackPane.getStylesheets().clear();
+    		theme = 7;
+    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+            notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+    	    memUsedText.setFill(Color.CADETBLUE);
+    	    memMaxText.setFill(Color.CADETBLUE);
+    	    timeText.setFill(Color.CADETBLUE);
+    	    memBtn.setTextFill(Color.LIGHTBLUE);
+    	    clkBtn.setTextFill(Color.LIGHTBLUE);
+    	    lookAndFeelTheme = "Snow";
+    	}
+    	else if (theme == 7) {
+    		rootStackPane.getStylesheets().clear();
+    		theme = 1;
+    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+    	    memUsedText.setFill(Color.ORANGE);
+    	    memMaxText.setFill(Color.ORANGE);
+    	    timeText.setFill(Color.ORANGE);
+    	    memBtn.setTextFill(Color.LIGHTSALMON);
+    	    clkBtn.setTextFill(Color.LIGHTSALMON);
+    	    lookAndFeelTheme = "nimrod";
+    	}
 	}
 
 	/**
@@ -448,16 +499,19 @@ public class MainScene {
 
 	public Node createNotificationPane() {
 
-        //notificationPane = new NotificationPane(splitPane);
         notificationPane = new NotificationPane(dndTabPane);
         String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
         ImageView image = new ImageView(imagePath);
         notificationPane.setGraphic(image);
-        notificationPane.getActions().addAll(new Action("Sync", ae -> {
+        notificationPane.getActions().addAll(new Action("Close", ae -> {
                 // do sync, then hide...
                 notificationPane.hide();
         }));
 
+        notificationPane.setShowFromTop(false);
+		//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+        //notificationPane.setText("Breaking news for mars-simmers !!");
+        //notificationPane.hide();
 
         return notificationPane;
     }
@@ -931,11 +985,11 @@ public class MainScene {
 	 * @param nativeLookAndFeel true if native look and feel should be used.
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
-	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
+	public void setLookAndFeel(int choice) { //boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
 		//String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 		//System.out.println("CurrentTheme is " + currentTheme);
-		if (nativeLookAndFeel) {
+		if (choice == 0) { // theme == "nativeLookAndFeel"
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
@@ -943,15 +997,33 @@ public class MainScene {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (nimRODLookAndFeel) {
+		} else if (choice == 1) { // theme == "nimRODLookAndFeel"
 			try {
-				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-				changed = true;
-				lookAndFeelTheme = "nimrod";
+
+				if (lookAndFeelTheme.equals("nimrod"))
+					// Use default theme
+					UIManager.setLookAndFeel(new NimRODLookAndFeel());
+				else {
+	/*
+	  				//TODO: let user customize theme in future
+					NimRODTheme nt = new NimRODTheme();
+					nt.setPrimary1(new java.awt.Color(10,10,10));
+					nt.setPrimary2(new java.awt.Color(20,20,20));
+					nt.setPrimary3(new java.awt.Color(30,30,30));
+					NimRODLookAndFeel NimRODLF = new NimRODLookAndFeel();
+					NimRODLF.setCurrentTheme( nt);
+	*/
+					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
+					NimRODLookAndFeel nf = new NimRODLookAndFeel();
+					nf.setCurrentTheme(nt);
+					UIManager.setLookAndFeel(nf);
+					changed = true;
+				}
+
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else {
+		} else if (choice == 2) {
 			try {
 				// Set Nimbus look & feel if found in JVM.
 				boolean foundNimbus = false;
@@ -978,15 +1050,13 @@ public class MainScene {
 		}
 
 		if (changed) {
-
-			//SwingUtilities.updateComponentTreeUI(frame);
-
+			//SwingUtilities.updateComponentTreeUI(desktop);
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
+				desktop.updateUnitWindowLF();
 				desktop.updateAnnouncementWindowLF();
 				//desktop.updateTransportWizardLF();
 			}
-
 		}
 	}
 
@@ -999,16 +1069,18 @@ public class MainScene {
 		return stage;
 	}
 
-	private void createSwingNode(final SwingNode swingNode) {
+	private void createSwingNode() {
 		desktop = new MainDesktopPane(this);
-		//mainWindow = new MainWindow(true, true);
         SwingUtilities.invokeLater(() -> {
             swingNode.setContent(desktop);
-    		setLookAndFeel(false, true);
-            //swingNode.setContent(mainWindow);
+    		setLookAndFeel(1);
         });
 		//desktop.openInitialWindows();
     }
+
+	public SwingNode getSwingNode() {
+		return swingNode;
+	}
 
 	public void openSwingTab() {
 		//splitPane.setDividerPositions(1.0f);
@@ -1049,6 +1121,9 @@ public class MainScene {
 		}
 		else if (result.get() == buttonTypeThree)
 			exitSimulation();
+		else
+			return;
+
     }
 
 	/**
@@ -1083,12 +1158,12 @@ public class MainScene {
 		return marsNode;
 	}
 
-	public int getTheme() {
+	public static int getTheme() {
 		return theme;
 	}
 
-	public void setTheme(int skin) {
-		theme = skin;
+	public Scene getScene() {
+		return scene;
 	}
 
 	public void destroy() {
