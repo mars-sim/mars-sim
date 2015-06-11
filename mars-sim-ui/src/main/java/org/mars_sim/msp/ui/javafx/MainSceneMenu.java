@@ -23,7 +23,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
@@ -201,13 +201,16 @@ public class MainSceneMenu extends MenuBar  {
         Menu newsPaneItem = new Menu("News Pane");
 
         CheckMenuItem slideFromTop = new CheckMenuItem("Slide from Top");
-        slideFromTop.setSelected(true);
+        slideFromTop.setSelected(false);
+
+        CheckMenuItem slideFromBottom = new CheckMenuItem("Slide from Bottom");
+        slideFromBottom.setSelected(true);
 
         CheckMenuItem showHideNewsPane = new CheckMenuItem("Toggle Show/Hide");
 		//showNewsPaneItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 		showHideNewsPane.setSelected(false);
 
-		newsPaneItem.getItems().addAll(slideFromTop, showHideNewsPane);
+		newsPaneItem.getItems().addAll(slideFromTop, slideFromBottom, showHideNewsPane);
 
         Menu messageTypeItem = new Menu("Message Type");
         CheckMenuItem medicalItem = new CheckMenuItem("Medical");
@@ -429,43 +432,42 @@ public class MainSceneMenu extends MenuBar  {
 	            	mainScene.getStage().setFullScreen(false);
             	}
         });
-/*
+
         skinThemeItem.setOnAction(e -> {
-        	int theme = mainScene.getTheme();
-        	if (theme == 1) {
-        		skin1.setSelected(true);
-        		skin2.setSelected(false);
-        		skin3.setSelected(false);
-        	}
-        	else if (theme == 2) {
-        		skin1.setSelected(false);
-        		skin2.setSelected(true);
-        		skin3.setSelected(false);
-        	}
-        	else if (theme == 3) {
-        		skin1.setSelected(false);
-        		skin2.setSelected(false);
-        		skin3.setSelected(true);
-        	}
-
+        	mainScene.setTheme();
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
         });
 
-        skin1.setOnAction(e -> {
-        	if (skin1.isSelected())
-        		mainScene.setTheme(1);
+		slideFromTop.setOnAction(e -> {
+                if (!mainScene.getNotificationPane().isShowFromTop()) {
+                	// there is no check mark on slideFromTop
+                	mainScene.getNotificationPane().setShowFromTop(true);
+                	slideFromTop.setSelected(true);
+                	slideFromBottom.setSelected(false);
+                } else {
+                	mainScene.getNotificationPane().setShowFromTop(true);
+                	slideFromTop.setSelected(true);
+                	slideFromBottom.setSelected(false);
+                }
         });
 
-        skin2.setOnAction(e -> {
-        	if (skin2.isSelected())
-        		mainScene.setTheme(2);
-        });
+		slideFromBottom.setOnAction(e -> {
+            if (mainScene.getNotificationPane().isShowFromTop()) {
+            	// there is a check mark on slideFromTop
+            	mainScene.getNotificationPane().setShowFromTop(false);
+            	slideFromTop.setSelected(false);
+            	slideFromBottom.setSelected(true);
+            } else {
+            	mainScene.getNotificationPane().setShowFromTop(false);
+            	slideFromTop.setSelected(false);
+            	slideFromBottom.setSelected(true);
+            }
+		});
 
-        skin3.setOnAction(e -> {
-        	if (skin3.isSelected())
-        		mainScene.setTheme(3);
-        });
 
-*/
 		showHideNewsPane.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowing()) {
                 	mainScene.getNotificationPane().show(); // setNotificationPane(true);
@@ -476,17 +478,6 @@ public class MainSceneMenu extends MenuBar  {
                 }
         });
 
-		slideFromTop.setOnAction(e -> {
-                if (!mainScene.getNotificationPane().isShowFromTop()) {
-                	mainScene.getNotificationPane().setShowFromTop(true);
-                	slideFromTop.setText("Slide from Top");
-                	slideFromTop.setSelected(true);
-                } else {
-                	mainScene.getNotificationPane().setShowFromTop(false);
-                	slideFromTop.setText("Slide from Bottom");
-                	slideFromTop.setSelected(true);
-                }
-        });
 
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override

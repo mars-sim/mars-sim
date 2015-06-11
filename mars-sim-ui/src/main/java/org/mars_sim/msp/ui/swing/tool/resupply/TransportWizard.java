@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;

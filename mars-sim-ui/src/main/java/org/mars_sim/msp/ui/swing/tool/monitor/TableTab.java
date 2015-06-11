@@ -41,6 +41,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -148,13 +149,7 @@ extends MonitorTab {
 						icon = descendingIcon;
 				}
 				cell.setIcon(icon);
-				// 2014-12-17 Added
 				cell.setOpaque(true);
-				//cell.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-				//cell.setForeground(Color.WHITE);
-				//cell.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
-				MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
-				cell.setBorder(border);
 			}
 			return theResult;
 		}
@@ -195,7 +190,6 @@ extends MonitorTab {
         if (!model.getOrdered()) {
             // Create a sortable model to act as a proxy
             sortedModel = new TableSorter(model);
-
             // Create scrollable table window
             table = new JTable(sortedModel) {
             	/** default serial id. */
@@ -253,11 +247,17 @@ extends MonitorTab {
 
             sortedModel.addTableModelListener(table);
 
-        	// 2014-12-30 Added setTableStyle()
-            setTableStyle(table);
+        	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+            //TableStyle.setTableStyle(table);
 
          	// Add a mouse listener for the mouse event selecting the sorted column
          	// Not the best way but no double click is provided on Header class
+        	// Get the TableColumn header to display sorted column
+
+           	theHeader = table.getTableHeader();
+        	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
+        	theHeader.setDefaultRenderer(theRenderer);
+
         	theHeader.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) {
         			// Find the column at this point
@@ -306,8 +306,9 @@ extends MonitorTab {
                     return getCellText(e);
                 };
             };
-           	// 2015-01-13 Added setTableStyle()
-            setTableStyle(table);
+
+        	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+            //TableStyle.setTableStyle(table);
         }
 
         // Set single selection mode if necessary.
@@ -317,24 +318,26 @@ extends MonitorTab {
         JScrollPane scroller = new JScrollPane(table);
         scroller.setBorder(new MarsPanelBorder());
 
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        TableStyle.setTableStyle(table);
+
 		// 2015-06-08 Added RowNumberTable
         JTable rowTable = new RowNumberTable(table);
-        setTableStyle(rowTable);
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        TableStyle.setTableStyle(rowTable);
+
         scroller.setRowHeaderView(rowTable);
-        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER,
-            rowTable.getTableHeader());
-
-
+        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER,rowTable.getTableHeader());
         add(scroller, BorderLayout.CENTER);
 
         setName(model.getName());
         setSortColumn(0);
 
         // 2014-12-29 Added ColumnResizer
-        //final JTable ctable = table;
-	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(ctable));
-    }
+     	SwingUtilities.invokeLater(() -> adjustColumnPreferredWidths(table));
 
+    }
+/*
 	// 2014-12-30 Added setTableStyle()
     public void setTableStyle(JTable table) {
 
@@ -366,7 +369,7 @@ extends MonitorTab {
 		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
 
 	}
-
+*/
     public void adjustColumnPreferredWidths(JTable table) {
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();
