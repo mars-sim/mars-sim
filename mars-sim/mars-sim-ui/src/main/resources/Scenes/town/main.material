@@ -1,0 +1,195 @@
+material rooftiles.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture rooftiles.jpg
+			}
+		}
+	}
+}
+material passeio-tile.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture passeio-tile.jpg
+			}
+		}
+	}
+}
+material Yellowhouse.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture Yellowhouse.jpg
+			}
+		}
+	}
+}
+material estrada.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture estrada.jpg
+			}
+		}
+	}
+}
+material CasaRosa.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture CasaRosa.jpg
+			}
+		}
+	}
+}
+material casaamarela.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture casaamarela.jpg
+			}
+		}
+	}
+}
+material grass.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture grass.jpg
+			}
+		}
+	}
+}
+material toit.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture toit.jpg
+			}
+		}
+	}
+}
+material passeio-side.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture passeio-side.jpg
+			}
+		}
+	}
+}
+material estrada-cruz.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture estrada-cruz.jpg
+			}
+		}
+	}
+}
+material whitehouselittle.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture whitehouselittle.jpg
+			}
+		}
+	}
+}
+material metal-tiles-dirt.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture metal-tiles-dirt.jpg
+			}
+		}
+	}
+}
+material passeio-corner.jpg
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 12.500000
+			texture_unit
+			{
+				texture passeio-corner.jpg
+			}
+		}
+	}
+}
