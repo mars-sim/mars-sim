@@ -17,8 +17,8 @@ public class AngledLinesWindowsCornerIcon implements Icon {
     private static final Color GRAY_LINE_COLOR = new Color(172, 168, 153);
 
     //Dimensions
-    private static final int WIDTH = 13;
-    private static final int HEIGHT = 13;
+    private static final int WIDTH = 12;
+    private static final int HEIGHT = 12;
 
 
 

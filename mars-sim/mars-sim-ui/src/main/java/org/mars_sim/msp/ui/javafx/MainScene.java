@@ -137,7 +137,8 @@ public class MainScene {
 	 *@param stage
 	 */
     public MainScene(Stage stage) {
-         	this.stage = stage;
+    	logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
+    	this.stage = stage;
     }
 
 	/**
@@ -174,6 +175,7 @@ public class MainScene {
     }
 
     public void prepareOthers() {
+    	logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
     	transportWizard = new TransportWizard(this, desktop);
     	openInitialWindows();
     }

@@ -1,5 +1,7 @@
 package org.mars_sim.msp.ui.jme3;
 
+import java.util.logging.Logger;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -13,13 +15,17 @@ import com.jme3.scene.shape.Box;
 * The Root Node is special: Only what is attached to the Root Node appears in the scene. */
 public class HelloNode extends SimpleApplication {
 
-   public static void main(String[] args){
-       HelloNode app = new HelloNode();
-       app.start();
-   }
+    /** initialized logger for this class. */
+    private static Logger logger = Logger.getLogger(HelloJME3.class.getName());
+
+   //public static void main(String[] args){
+   //    HelloNode app = new HelloNode();
+   //    app.start();
+   //}
 
    @Override
    public void simpleInitApp() {
+   	logger.info("MarsProjectFX's simpleInitApp() is in " + Thread.currentThread().getName() + " Thread");
 
        /** create a blue box at coordinates (1,-1,1) */
        Box box1 = new Box(1,1,1);

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.jme3.MarsViewer;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -91,6 +92,8 @@ extends TabPanel {
 	private Weather weather;
 	private SurfaceFeatures surfaceFeatures;
 	private MasterClock masterClock;
+
+	private StormTrackingWindow stormWin;
 
 	DecimalFormat fmt = new DecimalFormat("##0");
 	DecimalFormat fmt1 = new DecimalFormat("#0.0");
@@ -305,6 +308,10 @@ extends TabPanel {
     }
 
 
+    public void setViewer(StormTrackingWindow w) {
+    	this.stormWin = w;
+    }
+
 	/**
 	 * Open storm tracking window
 	 */
@@ -316,7 +323,8 @@ extends TabPanel {
 			// Pause simulation.
 			mw.pauseSimulation();
 			// Create Storm Tracking Window.
-			new StormTrackingWindow(desktop);
+			if (stormWin == null)
+				stormWin = new StormTrackingWindow(desktop, this);
 			// Unpause simulation.
 			mw.unpauseSimulation();
 		}
@@ -326,7 +334,8 @@ extends TabPanel {
 			// Pause simulation.
 			ms.pauseSimulation();
 			// Create Storm Tracking Window..
-			new StormTrackingWindow(desktop);
+			if (stormWin == null)
+				stormWin = new StormTrackingWindow(desktop, this);
 			// Unpause simulation.
 			ms.unpauseSimulation();
 		}
