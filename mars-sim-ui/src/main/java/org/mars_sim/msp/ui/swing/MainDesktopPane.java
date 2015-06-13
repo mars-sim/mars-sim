@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.jme3.MarsViewer;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -410,6 +411,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
+
+		// Prepare Mars Viewer window
+		MarsViewer marsViewer = new MarsViewer(this);
+		try { marsViewer.setClosed(true); }
+		catch (PropertyVetoException e) { }
+		toolWindows.add(marsViewer);
 
 	   	logger.info("MainDesktopPane's prepareToolWindows() is done ");
 	}

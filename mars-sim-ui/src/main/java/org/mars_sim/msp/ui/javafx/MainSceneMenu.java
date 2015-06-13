@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.ui.jme3.MarsViewer;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -55,7 +56,7 @@ public class MainSceneMenu extends MenuBar  {
 
 	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
 							monitorToolItem, missionToolItem,settlementMapToolItem,
-							scienceToolItem, resupplyToolItem, marsNetItem, webToolItem;
+							scienceToolItem, resupplyToolItem, marsViewerItem, webToolItem;
 
 	private CheckMenuItem showFullScreenItem;
 
@@ -82,6 +83,7 @@ public class MainSceneMenu extends MenuBar  {
 
 		this.mainScene = mainScene;
 		this.desktop = desktop;
+		// Puts the background task of responding to the pull down menu in a thread pool
 		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
 
 		fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
@@ -145,8 +147,8 @@ public class MainSceneMenu extends MenuBar  {
         resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
 
-        marsNetItem = new CheckMenuItem("Node Tool");
-        marsNetItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
+        marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
+        marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
         webToolItem = new CheckMenuItem("Web Tool");
         webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
@@ -154,7 +156,7 @@ public class MainSceneMenu extends MenuBar  {
 
         menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,
         		monitorToolItem, missionToolItem,settlementMapToolItem,
-        		scienceToolItem, resupplyToolItem, marsNetItem, webToolItem);
+        		scienceToolItem, resupplyToolItem, marsViewerItem, webToolItem);
 
 
         // --- Menu Settings
@@ -393,17 +395,18 @@ public class MainSceneMenu extends MenuBar  {
     			}
             }
         });
-*/
-        marsNetItem.setOnAction(e ->  {
-    			if (marsNetItem.isSelected()) {
-    				marsNetItem.setSelected(true);
+
+        marsViewerItem.setOnAction(e ->  {
+    			if (marsViewerItem.isSelected()) {
+    				marsViewerItem.setSelected(true);
     				mainScene.openMarsNet();
     			}
     			else {
     				mainScene.openSwingTab();
-    				marsNetItem.setSelected(false);
+    				marsViewerItem.setSelected(false);
     			}
     	});
+*/
 
         webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {
@@ -572,6 +575,10 @@ public class MainSceneMenu extends MenuBar  {
 		return resupplyToolItem;
 	}
 
+	public CheckMenuItem getMarsViewerItem() {
+		return marsViewerItem;
+	}
+
     // 2015-06-05 Added createMenuItem()
     private CheckMenuItem createMenuItem(String title, String toolName){
         CheckMenuItem cmi = new CheckMenuItem(title);
@@ -638,6 +645,11 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(ResupplyWindow.NAME)) {
 			getResupplyToolItem().setSelected(false);
 		}
+
+		else if (toolName.equals(MarsViewer.NAME)) {
+			getMarsViewerItem().setSelected(false);
+		}
+
     }
 
     public CheckMenuItem getCheckMenuItem(String toolName) {
@@ -677,6 +689,11 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(Browser.NAME)) {
 			return getResupplyToolItem();
 		}
+
+		else if (toolName.equals(MarsViewer.NAME)) {
+			return getMarsViewerItem();
+		}
+
 		else
 			return null;
     }

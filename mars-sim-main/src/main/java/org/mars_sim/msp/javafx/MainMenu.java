@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -50,6 +52,7 @@ import javafx.util.Duration;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.jme3.HelloNode;
 
 public class MainMenu {
 
@@ -211,14 +214,19 @@ public class MainMenu {
 	   //stage.setFullScreen(true);
 	   stage.setScene(scene);
 	   stage.show();
+
+	   mainScene.getMarsNode().createSettlementWindow();
+	   //mainScene.getMarsNode().createJMEWindow(stage);
+
   }
 
    public void runOne() {
 	   logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+
 	   primaryStage.setIconified(true);
+
 	   mainScene = new MainScene(stage);
-	   //primaryStage.hide();
-	   //primaryStage.close();
+
 	   marsProjectFX.handleNewSimulation();
    }
 
@@ -232,14 +240,11 @@ public class MainMenu {
 		   prepareStage();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-/*      menuScene = new MenuScene().createMenuScene();
-	    stage.setScene(menuScene);
-        stage.show();
-*/
+      //menuScene = new MenuScene().createMenuScene();
+
    }
 
 	public class LoadSimulationTask implements Runnable {

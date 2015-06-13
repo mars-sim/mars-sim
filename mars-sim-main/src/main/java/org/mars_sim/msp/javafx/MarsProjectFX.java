@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -27,6 +25,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
+import org.mars_sim.msp.ui.jme3.JmeCanvas;
+import org.mars_sim.msp.ui.jme3.HelloNode;
 
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
@@ -326,12 +326,18 @@ public class MarsProjectFX extends Application  {
 		  }
 	}
 
+
     public static void main(String[] args) {
     	logger.info("MarsProjectFX's main() is in " + Thread.currentThread().getName() + " Thread");
     	MarsProjectFX.args = args;
     	//marsProjectFX = new MarsProjectFX();
     	//marsProjectFX.mainThread();
     	//mainThread();
+
+        //HelloNode app = new HelloNode();
+        //app.setShowSettings(false);
+        //app.start();
+
         launch(args);
     }
 }

@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import java.awt.BorderLayout;
+import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,13 +16,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import javafx.animation.FadeTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
@@ -30,6 +39,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -42,6 +52,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import org.bushe.swing.event.EventBus;
 import org.controlsfx.control.PopOver;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -50,6 +61,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.ui.jme3.JmeCanvas;
+import org.mars_sim.msp.ui.jme3.JmeRepositionEvent;
 
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
@@ -68,13 +81,21 @@ public class MarsNode {
 
 	private MainScene mainScene;
 	private Stage stage;
+	private Scene scene;
 	private FXDesktopWindowManager windowManager;
 	private FXDesktopPane fxDesktopPane;
+	private Pane jmePane;
+	private FXInternalWindow jmeWindow;
 
 	public MarsNode(MainScene mainScene, Stage stage) {
 		this.mainScene = mainScene;
 		this.stage = stage;
 
+		windowManager = new FXDesktopWindowManager();
+
+	}
+
+	public void createSettlementWindow() {
 		Pane pane = createPane("black");
 
 		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
@@ -86,11 +107,64 @@ public class MarsNode {
 		fxInternalWindow.setMinHeight(165);
 		fxInternalWindow.setMinWidth(185);
 
-		windowManager = new FXDesktopWindowManager();
 		windowManager.addWindow(fxInternalWindow);
 	}
+/*
+	public void createJMEWindow(Stage stage) {
+		this.scene = stage.getScene();
 
+		JmeCanvas jmeCanvas = new JmeCanvas();
+		JPanel panel = new JPanel(new BorderLayout(0, 0));
+		panel.add(jmeCanvas.setupJME());
 
+		jmePane = new Pane();
+		//ChangeListener<Object> repoListener = new RepositionListener();
+
+		SwingNode swingNode = new SwingNode();
+
+        SwingUtilities.invokeLater(() -> {
+    		swingNode.setContent(panel);
+        });
+
+		jmePane.getChildren().add(swingNode);
+
+		jmeWindow = new FXInternalWindow("Mars Viewer");
+		jmeWindow.setContent(jmePane);
+		jmeWindow.setActive(true);
+		jmeWindow.setCloseable(false);
+		jmeWindow.setMinimizable(true);
+		jmeWindow.setPrefSize(512, 512);
+		jmeWindow.setMinHeight(480);
+		jmeWindow.setMinWidth(480);
+
+		//fxDesktopPane.widthProperty().addListener(repoListener);
+		//fxDesktopPane.heightProperty().addListener(repoListener);
+
+		//stage.xProperty().addListener(repoListener);
+		//stage.yProperty().addListener(repoListener);
+		//stage.getScene().xProperty().addListener(repoListener);
+		//stage.getScene().yProperty().addListener(repoListener);
+
+		//jmePane.widthProperty().addListener(repoListener);
+		//jmePane.heightProperty().addListener(repoListener);
+
+		windowManager.addWindow(jmeWindow);
+	}
+
+	private class RepositionListener implements ChangeListener<Object> {
+
+		@Override
+		public void changed(ObservableValue<? extends Object> arg0, Object arg1, Object arg2) {
+			int x = (int) (fxDesktopPane.getLayoutX() + jmePane.getLocalToParentTransform().getTx());
+			int y = (int) (fxDesktopPane.getLayoutY() + jmePane.getLocalToParentTransform().getTy());
+			//int y = (int) (stage.getX() + jmePane.getLocalToSceneTransform().getTx()); //+ scene.getX()
+			//int y = (int) (stage.getY() + jmePane.getLocalToSceneTransform().getTy()); // scene.getY()
+			int w = (int) jmePane.getWidth();
+			int h = (int) jmePane.getHeight();
+			EventBus.publish(new JmeRepositionEvent(x, y, w, h));
+		}
+	}
+*/
 	public FXDesktopPane createFXDesktopPane() {
 		fxDesktopPane = new FXDesktopPane();
 		fxDesktopPane.setWindowManager(windowManager);

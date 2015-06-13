@@ -103,7 +103,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-api</artifactId>
-		<version>1.6.1</version>
+		<version>1.7.7</version>
 	</dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>
@@ -161,12 +161,39 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<artifactId>jme3-plugins</artifactId>
 		<version>3.0.10</version>
   	</dependency>
+    <dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.7</version>
+		<scope>compile</scope>
+    </dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-jdk14</artifactId>
+		<version>1.7.7</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.jme3x</groupId>
+		<artifactId>jfx</artifactId>
+		<version>1.158.2015-05-08_141516-3ff16e5</version>
+  	</dependency>
+	<dependency>
+		<groupId>org.bushe</groupId>
+		<artifactId>eventbus</artifactId>
+		<version>1.4</version>
+	</dependency>
   </dependencies>
 	<repositories>
         <repository>
             <id>jme3-repo</id>
             <name>JME3 maven repo</name>
             <url>http://updates.jmonkeyengine.org/maven/</url>
+        </repository>
+        <repository>
+            <id>jme3-jfx</id>
+            <name>JME3 maven repo</name>
+            <url>http://dl.bintray.com/jmonkeyengine/contrib/</url>
         </repository>
     </repositories>
 </project>
