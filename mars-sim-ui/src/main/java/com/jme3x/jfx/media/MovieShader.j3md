@@ -1,0 +1,24 @@
+MaterialDef MovieShader {
+
+    MaterialParameters {
+        Texture2D ColorMap
+        Int SwizzleMode;
+		// Alpha threshold for fragment discarding
+        Float AlphaDiscardThreshold (AlphaTestFallOff)
+    }
+
+    Technique {
+        VertexShader GLSL100:   com/jme3x/jfx/media/MovieShader.vert
+        FragmentShader GLSL100: com/jme3x/jfx/media/MovieShader.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+
+        Defines {
+            SWIZZLE_MODE : SwizzleMode
+			DISCARD_ALPHA : AlphaDiscardThreshold
+        }
+    }
+
+}

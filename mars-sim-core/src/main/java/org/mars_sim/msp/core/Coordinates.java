@@ -450,8 +450,8 @@ implements Serializable {
 	 * @param phi in radians
 	 * @return latitude in degrees
 	 */
-	public double getPhi2Lat(double phi) {
-
+	public double getPhi2Lat() {
+		double phi = getPhi();
 		double piHalf = Math.PI / 2.0;
 		double lat_degree = 0;
 		if (phi < piHalf) {
@@ -462,6 +462,25 @@ implements Serializable {
 			//hemisphere = 2;
 		}
 		return lat_degree;
+	}
+
+	/**
+	 * Converts phi in radian to lat in radian
+	 * @param lat in radians
+	 * @return latitude in radian
+	 */
+	public double getPhi2LatRadian() {
+		double phi = getPhi();
+		double piHalf = Math.PI / 2.0;
+		double lat_radian = 0;
+		if (phi < piHalf) {
+		    lat_radian = piHalf - phi ;
+		    //hemisphere = 1;
+		} else if (phi > piHalf){
+			lat_radian = phi - piHalf;
+			//hemisphere = 2;
+		}
+		return lat_radian;
 	}
 
 	/** Converts spherical coordinates to rectangular coordinates.

@@ -416,7 +416,7 @@ implements Serializable {
 
 
 			// (3). Latitude
-			double lat_degree = location.getPhi2Lat(location.getPhi());
+			double lat_degree = location.getPhi2Lat();
 
 			//System.out.print("  degree: " + Math.round (degree * 10.0)/10.0 );
 			double lat_dt = -15D - 15D * Math.sin( 2D * lat_degree * Math.PI/180D + Math.PI/2D) ;

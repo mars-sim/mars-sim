@@ -20,7 +20,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-import org.mars_sim.msp.ui.jme3.JmeCanvas;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -57,7 +56,7 @@ implements InternalFrameListener, ActionListener {
 
 		setSize(new Dimension(400, 400));
 
-		setContentPane(createJMEWindow());
+		//setContentPane(createJMEWindow());
 
 		desktop.add(this);
 
@@ -68,16 +67,6 @@ implements InternalFrameListener, ActionListener {
 	    setLocation(width, height);
 	    setVisible(true);
 
-	}
-
-
-	public JPanel createJMEWindow() {
-
-		JmeCanvas jmeCanvas = new JmeCanvas();
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.add(jmeCanvas.setupJME());
-
-		return panel;
 	}
 
 

@@ -205,7 +205,7 @@ implements Serializable {
 	/**
 	 * Gets the cosine solar zenith angle from a given coordinate
 	 * @param location
-	 * @return angle in radians (0 - PI).
+	 * @return cosine of solar zenith angle (from -1 to 1).
 	 */
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	// 2015-03-17 Added getCosineSolarZenithAngle()
@@ -213,10 +213,12 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		//double theta = location.getTheta();
-		double theta_offset = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
+		double theta_offset =
+				location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
 		//System.out.println(" theta_offset: " + theta_offset);
-		double lat = location.getPhi2Lat(location.getPhi());
-		double dec = getSolarDeclinationAngle(L_s); //getL_s());
+		double lat = location.getPhi2LatRadian();
+		//System.out.println("location.getPhi2LatRadian() : " + lat);
+		double dec = getSolarDeclinationAngle(); //getL_s());
 		//System.out.println("solar dec angle is " + dec);
 		double solar_time = marsClock.getMillisol() ;
 		//System.out.println("solar_time is " + (int) solar_time);
@@ -303,7 +305,7 @@ implements Serializable {
 
 	/**
 	 * Gets the instantaneous areocentric longitude
-	 * @return angle in radians (0 - 360).
+	 * @return angle in degrees (0 - 360).
 	 */
 	// 2015-04-08 Added getL_s()
 	public double getL_s() {
@@ -313,12 +315,32 @@ implements Serializable {
 
 	/**
 	 * Gets the solar declination angle from a given areocentric longitude.
-	 * @param L_s areocentric longitude in degrees (0 -360).
-	 * @return angle in radians (0 - PI).
+	 * @return angle in radians (0 - 2 PI).
 	 */
 	// 2015-03-17 Added getSolarZenithAngle()
-	public double getSolarDeclinationAngle(double L_s) {
+	public double getSolarDeclinationAngle() {
 		return Math.asin ( Math.sin (TILT) * Math.sin (L_s * DEGREE_TO_RADIAN) );
+	}
+
+	/**
+	 * Gets the solar declination angle from a given areocentric longitude.
+	 * @return angle in radians (0 - 2 PI).
+	 */
+	// 2015-03-17 Added getSolarZenithAngleDegree()
+	public double getSolarDeclinationAngleDegree() {
+		return getSolarDeclinationAngle() * 57.2975;
+	}
+
+	/**
+	 * Gets the mars daylight hour angle in millisols from a given location's latitude.
+	 * @param location.
+	 * @return millisols.
+	 */
+	// 2015-06-15 Added getDaylightMillisols()
+	public double getDaylightMillisols(Coordinates location) {
+		//double delta = getSolarDeclinationAngle(getL_s());
+		//double lat = location.getPhi2Lat(location.getPhi());
+		return Math.acos ( -Math.tan (location.getPhi2LatRadian()) * Math.tan (getSolarDeclinationAngle()) );
 	}
 
 	/**

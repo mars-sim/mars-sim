@@ -53,8 +53,10 @@ public class HelloPicking extends AbstractAppState {
 		assetManager = app.getAssetManager();
 		cam = app.getCamera();
 
-		initCrossHairs(); // a "+" in the middle of the screen to help aiming
 		initKeys();       // load custom key mappings
+
+		initCrossHairs(); // a "+" in the middle of the screen to help aiming
+		//initKeys();       // load custom key mappings
 		initMark();       // a red sphere to mark the hit
 
 

@@ -14,6 +14,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
@@ -52,7 +55,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import org.bushe.swing.event.EventBus;
 import org.controlsfx.control.PopOver;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -61,8 +63,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
-import org.mars_sim.msp.ui.jme3.JmeCanvas;
-import org.mars_sim.msp.ui.jme3.JmeRepositionEvent;
 
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
@@ -72,6 +72,7 @@ import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXDesktopWindowManage
  * The MarsNode class is the is the container for housing
  * new javaFX UI tools.
  */
+
 public class MarsNode {
 
 	private static Logger logger = Logger.getLogger(MarsNode.class.getName());
@@ -86,13 +87,30 @@ public class MarsNode {
 	private FXDesktopPane fxDesktopPane;
 	private Pane jmePane;
 	private FXInternalWindow jmeWindow;
+	JPanel panel;
 
 	public MarsNode(MainScene mainScene, Stage stage) {
 		this.mainScene = mainScene;
 		this.stage = stage;
 
+ 		panel = new JPanel(new BorderLayout(0, 0));
+
 		windowManager = new FXDesktopWindowManager();
 
+	}
+
+	public class JmeTask implements Runnable {
+
+		JPanel panel;
+		public JmeTask(JPanel panel) {
+			this.panel = panel;
+		}
+
+		@Override
+		public void run() {
+	 		//JmeCanvas jmeCanvas = new JmeCanvas();
+	 		//panel.add(jmeCanvas.setupJME());
+		}
 	}
 
 	public void createSettlementWindow() {
@@ -109,9 +127,53 @@ public class MarsNode {
 
 		windowManager.addWindow(fxInternalWindow);
 	}
-/*
+
 	public void createJMEWindow(Stage stage) {
 		this.scene = stage.getScene();
+
+		jmePane = new Pane();
+
+		//SwingNode swingNode = new SwingNode();
+
+        //SwingUtilities.invokeLater(() -> {
+    	//	swingNode.setContent(panel);
+        //});
+
+		Runnable jmeTask = new JmeTask(panel);
+
+        SwingUtilities.invokeLater(jmeTask);
+
+        SwingNode swingNode = new SwingNode();
+		swingNode.setContent(panel);
+
+
+		jmePane.getChildren().add(swingNode);
+
+		jmeWindow = new FXInternalWindow("Mars Viewer");
+		jmeWindow.setContent(jmePane);
+		jmeWindow.setActive(true);
+		jmeWindow.setCloseable(false);
+		jmeWindow.setMinimizable(true);
+		jmeWindow.setPrefSize(512, 512);
+		jmeWindow.setMinHeight(480);
+		jmeWindow.setMinWidth(480);
+
+		windowManager.addWindow(jmeWindow);
+	}
+
+    public void jmeCall() {
+
+ 		//JmeCanvas jmeCanvas = new JmeCanvas();
+ 		//JPanel panel = new JPanel(new BorderLayout(0, 0));
+ 		//panel.add(jmeCanvas.setupJME());
+    }
+
+
+/*
+ *
+	public void createJMEWindow(Stage stage) {
+		this.scene = stage.getScene();
+
 
 		JmeCanvas jmeCanvas = new JmeCanvas();
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
@@ -537,3 +599,5 @@ public class MarsNode {
 	*/
 
 }
+
+
