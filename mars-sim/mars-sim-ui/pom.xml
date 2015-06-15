@@ -174,14 +174,15 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<scope>test</scope>
 	</dependency>
 	<dependency>
-		<groupId>com.jme3x</groupId>
-		<artifactId>jfx</artifactId>
-		<version>1.158.2015-05-08_141516-3ff16e5</version>
-  	</dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>1.16.4</version>
+		<scope>provided</scope>
+	</dependency>
 	<dependency>
-		<groupId>org.bushe</groupId>
-		<artifactId>eventbus</artifactId>
-		<version>1.4</version>
+		<groupId>org.jfxtras</groupId>
+		<artifactId>jfxtras-labs</artifactId>
+		<version>8.0-r3</version>
 	</dependency>
   </dependencies>
 	<repositories>
@@ -189,11 +190,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <id>jme3-repo</id>
             <name>JME3 maven repo</name>
             <url>http://updates.jmonkeyengine.org/maven/</url>
-        </repository>
-        <repository>
-            <id>jme3-jfx</id>
-            <name>JME3 maven repo</name>
-            <url>http://dl.bintray.com/jmonkeyengine/contrib/</url>
         </repository>
     </repositories>
 </project>

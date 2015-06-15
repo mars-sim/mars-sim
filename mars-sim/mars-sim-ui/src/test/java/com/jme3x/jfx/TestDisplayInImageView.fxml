@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.embed.swing.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane prefHeight="400.0" prefWidth="477.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jme3x.jfx.TestDisplayInImageView$Controller">
+   <bottom>
+      <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="96.0" prefWidth="223.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="NEVER" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints fillHeight="false" maxHeight="116.0" minHeight="10.0" prefHeight="38.0" vgrow="NEVER" />
+            <RowConstraints fillHeight="false" maxHeight="116.0" minHeight="10.0" prefHeight="38.0" vgrow="NEVER" />
+            <RowConstraints fillHeight="false" maxHeight="116.0" minHeight="10.0" prefHeight="38.0" vgrow="NEVER" />
+        </rowConstraints>
+         <children>
+            <ColorPicker fx:id="bgColor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+            <Label text="Background" />
+            <Label text="Show Stats" GridPane.rowIndex="1" />
+            <CheckBox fx:id="showStats" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Slider fx:id="fpsReq" max="240.0" min="1.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="fpsLabel" text="Label" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
+   </bottom>
+   <center>
+      <VBox minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="image" fitHeight="308.0" fitWidth="477.0" pickOnBounds="true" smooth="false" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

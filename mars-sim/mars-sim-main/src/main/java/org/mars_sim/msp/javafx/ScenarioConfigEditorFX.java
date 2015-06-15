@@ -68,7 +68,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.ui.jme3.JmeCanvas;
+
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 

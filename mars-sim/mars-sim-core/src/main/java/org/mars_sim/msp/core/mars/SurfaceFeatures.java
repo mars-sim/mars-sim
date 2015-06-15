@@ -226,8 +226,8 @@ public class SurfaceFeatures implements Serializable {
 	    		tau = opticalDepthStartingValue + newTau;
 	    	}
 
-			if (tau > 6)
-				tau = 6;
+			if (tau > 5)
+				tau = 5;
 			if (tau < .1)
 				tau = .1;
 
@@ -259,14 +259,15 @@ public class SurfaceFeatures implements Serializable {
 	    	opticalDepthMap.put(location, tau);
 
 	    	G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
-	    	// note that one can estimate m(z), the air mass, m(z) ~ 1/cos_z
+
+	    	// Note:  one can estimate m(z), the air mass, as ~ 1/cos_z
 
 			// Part 5 : Diffuse solar irradiance.
 	    	// G_h = G_direct + G_diffuse
 	    	// On earth, the direct solar irradiance plays the major role of bringing in sunlight
 	    	// On Mars, the role of diffuse solar irradiance is more prominent than that on Earth.
 
-	    	// Modeling the diffuse effect of solar irradiance
+	    	// TODO: Modeling the diffuse effect of solar irradiance with formula
 	    	// Note: the value of G_dh to decrease more slowly when value cos_z is diminishing
 
 	    	if (cos_z > .9)
@@ -299,7 +300,7 @@ public class SurfaceFeatures implements Serializable {
 	    	//				+ "   G_dh : " + fmt3.format(G_dh)
 	    	//				+ "   G_h : " + fmt3.format(G_h));
 
-	    	// TODO: Part 6 : calculate other solar irradiance components on Mars :
+	    	// TODO: Part 6 : calculate other components on Mars such as scattering and reflective irradiance
     	}
 
     	// save solar irradiance onto the solarIrradianceMap

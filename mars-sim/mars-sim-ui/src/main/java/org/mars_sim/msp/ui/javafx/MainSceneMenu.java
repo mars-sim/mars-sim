@@ -34,8 +34,9 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.jme3.MarsViewer;
+import org.mars_sim.msp.ui.jme3.jme3FX.MarsPanel;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -46,6 +47,7 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
+import com.jme3x.jfx.MarsFire;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
@@ -395,18 +397,21 @@ public class MainSceneMenu extends MenuBar  {
     			}
             }
         });
-
+*/
         marsViewerItem.setOnAction(e ->  {
     			if (marsViewerItem.isSelected()) {
     				marsViewerItem.setSelected(true);
-    				mainScene.openMarsNet();
+    				//mainScene.openMarsNet();
+    				new MarsPanel(desktop);
+    				//MarsFire f = new MarsFire();
+    				//f.createMarsFire();
     			}
     			else {
-    				mainScene.openSwingTab();
+    				//mainScene.openSwingTab();
     				marsViewerItem.setSelected(false);
     			}
     	});
-*/
+
 
         webToolItem.setOnAction(e -> {
     			if (webToolItem.isSelected())  {

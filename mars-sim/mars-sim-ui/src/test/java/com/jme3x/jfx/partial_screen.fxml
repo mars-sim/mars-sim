@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+
+<StackPane fx:id="rootObject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="400.0" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jme3x.jfx.EmptyController">
+      <children>
+        <BorderPane prefHeight="200.0" prefWidth="200.0">
+          <bottom>
+            <BorderPane prefHeight="200.0" prefWidth="200.0">
+              <center>
+                <Pane maxHeight="-Infinity" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #333333;&#10;" />
+              </center>
+              <top>
+                <BorderPane prefHeight="100.0" prefWidth="200.0">
+                  <center>
+                    <Polygon scaleX="3.0" scaleY="1.0" scaleZ="1.0" stroke="$x1" strokeType="INSIDE" style="-fx-background-color: #333333;">
+                      <fill>
+                        <Color blue="0.200" green="0.200" red="0.200" fx:id="x1" />
+                      </fill>
+                      <points>
+                        <Double fx:value="-50.0" />
+                        <Double fx:value="40.0" />
+                        <Double fx:value="50.0" />
+                        <Double fx:value="40.0" />
+                        <Double fx:value="0.0" />
+                        <Double fx:value="-60.0" />
+                      </points>
+                    </Polygon>
+                  </center>
+                </BorderPane>
+              </top>
+            </BorderPane>
+          </bottom>
+          <top>
+            <BorderPane prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #333333;&#10;&#10;">
+              <center>
+                <Label id="LoadingText" fx:id="loading_text" text="Example JFX" textFill="WHITE">
+                  <font>
+                    <Font name="Liberation Mono" size="50.0" />
+                  </font>
+<effect>
+<Glow level="1.0" />
+</effect>
+                </Label>
+              </center>
+            </BorderPane>
+          </top>
+<left><TextField text="I'm a textfield" BorderPane.alignment="CENTER" />
+</left>
+<right><ProgressBar prefWidth="200.0" BorderPane.alignment="CENTER" />
+</right>
+        </BorderPane>
+        <ProgressIndicator fx:id="loading_indicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="150.0" progress="0.3" StackPane.alignment="BOTTOM_CENTER">
+          <StackPane.margin>
+            <Insets />
+          </StackPane.margin>
+<cursor>
+<Cursor fx:constant="DEFAULT" />
+</cursor>
+<effect>
+<DropShadow />
+</effect>
+        </ProgressIndicator>
+      </children>
+    </StackPane>

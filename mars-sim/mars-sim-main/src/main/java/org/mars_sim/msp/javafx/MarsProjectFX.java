@@ -25,8 +25,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
-import org.mars_sim.msp.ui.jme3.JmeCanvas;
-import org.mars_sim.msp.ui.jme3.HelloNode;
 
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.

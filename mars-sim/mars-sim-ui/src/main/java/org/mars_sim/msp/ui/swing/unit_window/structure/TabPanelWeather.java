@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -30,15 +31,16 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.jme3.MarsViewer;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -51,11 +53,19 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	private static final String DUSTY_SKY = Msg.getString("img.dust"); //$NON-NLS-1$
-	private static final String SUNNY = Msg.getString("img.sunny"); //$NON-NLS-1$
-	private static final String BALMY = Msg.getString("img.hot"); //$NON-NLS-1$
-	private static final String LIGHTNING = Msg.getString("img.lightning"); //$NON-NLS-1$
-	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, FRIGID, DRY
+	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
+	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
+	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
+	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
+
+	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
+	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
+	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
+	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
+	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
+	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+
+	// TODO: LOCAL_DUST_STORM, GLOBAL_DUST_STORM, DUSTY_SKY, CLEAR_SKY, WARM, COLD, DRY
 
 
 	 /** default logger.   */
@@ -63,21 +73,23 @@ extends TabPanel {
 
 	// 2014-11-11 Added new panels and labels
 	private JPanel bottomPanel;
-	private JLabel windSpeedLabel, windSpeedValueLabel;
-	private JLabel solarIrradianceLabel, solarIrradianceValueLabel;
-	private JLabel windDirLabel, windDirValueLabel;
-	private JLabel opticalDepthValueLabel, opticalDepthLabel;
-	private JLabel temperatureValueLabel, pressureValueLabel, airDensityValueLabel;
-	private JLabel monitorLabel;
-	//private Color THEME_COLOR = Color.ORANGE;
+	private JTextField airDensityTF, pressureTF, solarIrradianceTF, windSpeedTF, windDirTF, opticalDepthTF, zenithAngleTF, solarDeclinationTF;
+	//private JLabel airDensityLabel, airPressureLabel, solarIrradianceLabel, windSpeedLabel, windDirLabel, opticalDepthLabel, zenithAngleLabel, solarDeclinationLabel;
+
+	private JLabel temperatureValueLabel;
+	//private JLabel monitorLabel;
+
 	private double airPressureCache;
 	private int temperatureCache;
 	private double windSpeedCache;
 	private int windDirectionCache;
 	private double airDensityCache;
 	private double opticalDepthCache;
+	private double zenithAngleCache;
+	private double solarDeclinationCache;
 	private double solarIrradianceCache;
 
+	private String iconCache;
 
 	//private Unit containerCache;
 
@@ -92,6 +104,7 @@ extends TabPanel {
 	private Weather weather;
 	private SurfaceFeatures surfaceFeatures;
 	private MasterClock masterClock;
+	private OrbitInfo orbitInfo;
 
 	private StormTrackingWindow stormWin;
 
@@ -115,6 +128,7 @@ extends TabPanel {
 
         weather = Simulation.instance().getMars().getWeather();
         surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+        orbitInfo = Simulation.instance().getMars().getOrbitInfo();
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
@@ -217,82 +231,109 @@ extends TabPanel {
         temperatureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         tPanel.add(temperatureValueLabel);//, BorderLayout.NORTH);
 
-        JPanel dataP = new JPanel(new GridLayout(8, 2));
+        JPanel dataP = new JPanel(new GridLayout(10, 2));
         bottomPanel.add(dataP, BorderLayout.CENTER);
 
         // Prepare air pressure label
         JLabel airPressureLabel = new JLabel("Pressure : ", JLabel.RIGHT);
         airPressureLabel.setOpaque(false);
         airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //windSpeedLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(airPressureLabel);
 
-        pressureValueLabel = new JLabel(getAirPressureString(getAirPressure()), JLabel.LEFT);
-        pressureValueLabel.setOpaque(false);
-        pressureValueLabel.setFont(new Font("Serif", Font.ITALIC, 12));
-        //pressureValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(pressureValueLabel);//, BorderLayout.CENTER);
+        pressureTF = new JTextField();
+        pressureTF.setEditable(false);
+        pressureTF.setColumns(8);
+        pressureTF.setFont(new Font("Serif", Font.ITALIC, 12));
+        dataP.add(pressureTF);//, BorderLayout.CENTER);
 
         // Prepare air density label
         JLabel airDensityLabel = new JLabel(Msg.getString("TabPanelWeather.airDensity.label"), JLabel.RIGHT);
         airDensityLabel.setOpaque(false);
         airDensityLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //windSpeedLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(airDensityLabel);
 
-        airDensityValueLabel = new JLabel(Msg.getString("airDensity.unit.gperm3"), JLabel.LEFT);
-        airDensityValueLabel.setOpaque(false);
-        airDensityValueLabel.setFont(new Font("Serif", Font.ITALIC, 12));
+        airDensityTF = new JTextField();
+        airDensityTF.setEditable(false);
+        airDensityTF.setColumns(8);
+        airDensityTF.setOpaque(false);
+        airDensityTF.setFont(new Font("Serif", Font.ITALIC, 12));
         //airDensityValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(airDensityValueLabel);//, BorderLayout.CENTER);
+        dataP.add(airDensityTF);//, BorderLayout.CENTER);
 
-        windSpeedLabel = new JLabel(Msg.getString("TabPanelWeather.windspeed.label"), JLabel.RIGHT);
+        JLabel windSpeedLabel = new JLabel(Msg.getString("TabPanelWeather.windspeed.label"), JLabel.RIGHT);
         windSpeedLabel.setOpaque(false);
         windSpeedLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //windSpeedLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(windSpeedLabel);
 
-        windSpeedValueLabel = new JLabel(Msg.getString("windspeed.unit.meterpersec"), JLabel.LEFT);
-        windSpeedValueLabel.setOpaque(false);
-        windSpeedValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //windSpeedValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(windSpeedValueLabel);
+        windSpeedTF = new JTextField();
+        windSpeedTF.setEditable(false);
+        windSpeedTF.setColumns(8);
+        windSpeedTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        dataP.add(windSpeedTF);
 
-        windDirLabel = new JLabel(Msg.getString("TabPanelWeather.windDirection.label"), JLabel.RIGHT);
+        JLabel windDirLabel = new JLabel(Msg.getString("TabPanelWeather.windDirection.label"), JLabel.RIGHT);
         windDirLabel.setOpaque(false);
         windDirLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-       // windSpeedLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(windDirLabel);
 
-        windDirValueLabel = new JLabel(Msg.getString("windDirection.unit.deg"), JLabel.LEFT);
-        windDirValueLabel.setOpaque(false);
-        windDirValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //windSpeedValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(windDirValueLabel);
+        windDirTF = new JTextField();
+        windDirTF.setEditable(false);
+        windDirTF.setColumns(8);
+        windDirTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        dataP.add(windDirTF);
 
-        solarIrradianceLabel = new JLabel(Msg.getString("TabPanelWeather.solarIrradiance.label"), JLabel.RIGHT);
+        JLabel solarIrradianceLabel = new JLabel(Msg.getString("TabPanelWeather.solarIrradiance.label"), JLabel.RIGHT);
         solarIrradianceLabel.setOpaque(false);
         solarIrradianceLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //solarIrradianceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(solarIrradianceLabel);
 
-        solarIrradianceValueLabel = new JLabel(" " + (int) surfaceFeatures.getSolarIrradiance(unit.getCoordinates()), JLabel.LEFT);
-        solarIrradianceValueLabel.setOpaque(false);
-        solarIrradianceValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //solarIrradianceValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(solarIrradianceValueLabel);
 
-        opticalDepthLabel = new JLabel(Msg.getString("TabPanelWeather.opticalDepth.label"), JLabel.RIGHT);
+        solarIrradianceCache = getSolarIrradiance();
+        solarIrradianceTF = new JTextField(getSolarIrradianceString(solarIrradianceCache));
+        solarIrradianceTF.setEditable(false);
+        solarIrradianceTF.setColumns(8);
+        solarIrradianceTF.setOpaque(false);
+        solarIrradianceTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        dataP.add(solarIrradianceTF);
+
+        JLabel opticalDepthLabel = new JLabel(Msg.getString("TabPanelWeather.opticalDepth.label"), JLabel.RIGHT);
         opticalDepthLabel.setOpaque(false);
         opticalDepthLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //opticalDepthLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(opticalDepthLabel);
 
-        opticalDepthValueLabel = new JLabel();
-        opticalDepthValueLabel.setOpaque(false);
-        opticalDepthValueLabel.setFont(new Font("Serif", Font.PLAIN, 12));
-        //opticalDepthValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(opticalDepthValueLabel);
+        opticalDepthTF = new JTextField();
+        opticalDepthTF.setEditable(false);
+        opticalDepthTF.setColumns(8);
+        opticalDepthTF.setOpaque(false);
+        opticalDepthTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        dataP.add(opticalDepthTF);
+
+        JLabel zenithAngleLabel = new JLabel(Msg.getString("TabPanelWeather.zenithAngle.label"), JLabel.RIGHT);
+        zenithAngleLabel.setOpaque(false);
+        zenithAngleLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //zenithAngleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(zenithAngleLabel);
+
+        zenithAngleTF = new JTextField();
+        zenithAngleTF.setEditable(false);
+        zenithAngleTF.setColumns(8);
+        zenithAngleTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        //zenithAngleValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(zenithAngleTF);
+
+        JLabel solarDeclinationLabel = new JLabel(Msg.getString("TabPanelWeather.solarDeclination.label"), JLabel.RIGHT);
+        solarDeclinationLabel.setOpaque(false);
+        solarDeclinationLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+        //solarDeclinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(solarDeclinationLabel);
+
+        solarDeclinationTF = new JTextField();
+        solarDeclinationTF.setEditable(false);
+        solarDeclinationTF.setColumns(8);
+        solarDeclinationTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        //solarDeclinationValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        dataP.add(solarDeclinationTF);
+
 
 /*
         // TODO: have a meteorologist or Areologist visit the weather station daily to fine tune the equipment
@@ -361,7 +402,7 @@ extends TabPanel {
     }
 
     public int getTemperature() {
-		return (int) weather.getTemperature(unit.getCoordinates());
+		return (int) weather.getTemperature(locationCache);
     }
 
     // 2014-11-07 Added temperature and pressure panel
@@ -370,7 +411,7 @@ extends TabPanel {
     }
 
     public double getAirPressure() {
-    	return Math.round(weather.getAirPressure(unit.getCoordinates()) *100.0) / 100.0;
+    	return Math.round(weather.getAirPressure(locationCache) *100.0) / 100.0;
     }
 
     public String getWindSpeedString(double value) {
@@ -378,11 +419,11 @@ extends TabPanel {
     }
 
     public int getWindSpeed() {
-		return (int) weather.getWindSpeed(unit.getCoordinates());
+		return (int) weather.getWindSpeed(locationCache);
     }
 
     public int getWindDirection() {
-		return weather.getWindDirection(unit.getCoordinates());
+		return weather.getWindDirection(locationCache);
     }
 
     public String getWindDirectionString(double value) {
@@ -390,15 +431,31 @@ extends TabPanel {
     }
 
     public double getOpticalDepth() {
- 		return surfaceFeatures.getOpticalDepth(unit.getCoordinates());
+ 		return surfaceFeatures.getOpticalDepth(locationCache);
      }
 
     public String getOpticalDepthString(double value) {
      	return fmt2.format(value);
     }
 
+    public double getZenithAngle() {
+ 		return orbitInfo.getSolarZenithAngle(locationCache);
+     }
+
+    public String getZenithAngleString(double value) {
+     	return fmt2.format(value/ Math.PI*180D) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+    }
+
+    public double getSolarDeclination() {
+ 		return orbitInfo.getSolarDeclinationAngleDegree();
+     }
+
+    public String getSolarDeclinationString(double value) {
+     	return fmt2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+    }
+
     public double getAirDensity() {
-		return weather.getAirDensity(unit.getCoordinates());
+		return weather.getAirDensity(locationCache);
     }
 
     public String getAirDensityString(double value) {
@@ -406,7 +463,7 @@ extends TabPanel {
     }
 
     public int getSolarIrradiance() {
-  		return (int) surfaceFeatures.getPreviousSolarIrradiance(unit.getCoordinates());
+  		return (int) surfaceFeatures.getPreviousSolarIrradiance(locationCache);
       }
 
      public String getSolarIrradianceString(double value) {
@@ -427,13 +484,18 @@ extends TabPanel {
     // 2014-11-11 Overhauled update()
     public void update() {
 
+    	Coordinates location = unit.getCoordinates();
+		//System.out.println("solar declination angle : " + 57.2975 * orbitInfo.getSolarDeclinationAngle());
+		//System.out.println("sunset hour angle : " + 5.5556 * orbitInfo.getDaylightMillisols(location));
+
+
         if (!masterClock.isPaused()) {
 
 	        // If unit's location has changed, update location display.
 	    	// TODO: if a person goes outside the settlement for servicing an equipment
 	    	// does the coordinate (down to how many decimal) change?
-	        if (!locationCache.equals(unit.getCoordinates())) {
-	            locationCache.setCoords(unit.getCoordinates());
+	        if (!locationCache.equals(location)) {
+	            locationCache.setCoords(location);
 	            latitudeLabel.setText(getLatitudeString());
 	            longitudeLabel.setText(getLongitudeString());
 	        }
@@ -442,7 +504,7 @@ extends TabPanel {
 			double p = getAirPressure();
 	        if (airPressureCache != p) {
 	        	airPressureCache = p;
-	        	pressureValueLabel.setText(" " + getAirPressureString(airPressureCache));
+	        	pressureTF.setText(" " + getAirPressureString(airPressureCache));
 	        }
 
 	        int t = getTemperature();
@@ -451,35 +513,81 @@ extends TabPanel {
 	        	temperatureValueLabel.setText(getTemperatureString(temperatureCache));
 	        }
 
+
 	        int wd = getWindDirection();
 	        if (windDirectionCache != wd) {
 	        	windDirectionCache = wd;
-	        	windDirValueLabel.setText(" " + getWindDirectionString(windDirectionCache));
+	        	windDirTF.setText(" " + getWindDirectionString(windDirectionCache));
 	        }
 
 	        int s = getWindSpeed();
 	        if (windSpeedCache != s) {
 	        	windSpeedCache = s;
-	        	windSpeedValueLabel.setText(" " + getWindSpeedString(windSpeedCache));
+	        	windSpeedTF.setText(" " + getWindSpeedString(windSpeedCache));
 	        }
 
 
 	        double ad = getAirDensity();
 	        if (airDensityCache != ad) {
 	        	airDensityCache = ad;
-	        	airDensityValueLabel.setText(" " + getAirDensityString(airDensityCache));
+	        	airDensityTF.setText(" " + getAirDensityString(airDensityCache));
 	        }
 
 	        double od = getOpticalDepth();
 	        if (opticalDepthCache != od) {
 	        	opticalDepthCache = od;
-	        	opticalDepthValueLabel.setText(" " + getOpticalDepthString(opticalDepthCache));
+	        	opticalDepthTF.setText(" " + getOpticalDepthString(opticalDepthCache));
+	        }
+
+	       	String icon = null;
+
+	    	if (temperatureCache <= 0) {
+	    		if (temperatureCache < -40)
+	    			icon = FRIGID;
+	    		else {
+	    			if (windSpeedCache > 4D)
+	    				icon = SNOW_BLOWING;
+	    			else
+	    				icon = SNOWFLAKE;
+	    		}
+	    	}
+	    	else if (temperatureCache >= 26)
+	    		icon = BALMY;
+	    	else { //if (temperatureCache >= 0) {
+	    		if (windSpeedCache > 10D) {
+	    			icon = SUN_STORM;
+	    		}
+	    		else if (opticalDepthCache > 1D) {
+			    	if (opticalDepthCache > 3D)
+			    		icon = DUSTY_SKY;
+			    	else
+			    		icon = HAZE;
+		    	}
+	    		else
+	    			icon = SUNNY;
+	    	}
+
+	    	if (!icon.equals(iconCache)) {
+	    		iconCache = icon;
+	    		setImage(icon);
+	    	}
+
+	        double za = getZenithAngle();
+	        if (zenithAngleCache != za) {
+	        	zenithAngleCache = za;
+	        	zenithAngleTF.setText(" " + getZenithAngleString(zenithAngleCache));
+	        }
+
+	        double sd = getSolarDeclination();
+	        if (solarDeclinationCache != sd) {
+	        	solarDeclinationCache = sd;
+	        	solarDeclinationTF.setText(" " + getSolarDeclinationString(solarDeclinationCache));
 	        }
 
 	        double ir = getSolarIrradiance();
 	        if (solarIrradianceCache != ir) {
 	        	solarIrradianceCache = ir;
-	        	solarIrradianceValueLabel.setText(" " + getSolarIrradianceString(solarIrradianceCache));
+	        	solarIrradianceTF.setText(" " + getSolarIrradianceString(solarIrradianceCache));
 	        }
 
 	    }

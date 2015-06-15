@@ -52,7 +52,6 @@ import javafx.util.Duration;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.jme3.HelloNode;
 
 public class MainMenu {
 
@@ -126,7 +125,7 @@ public class MainMenu {
     }
 
    void initAndShowGUI(Stage primaryStage) {
-		//logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
 	   this.primaryStage = primaryStage;
 
@@ -147,11 +146,6 @@ public class MainMenu {
        switcher.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
        switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        switcher.setScreen(MainMenu.screen1ID);
-
-       //Parent globe = createMarsGlobe();
-       //VBox vbox = ((VBox) switcher.lookup("#globe"));
-       //vbox.getChildren().add(globe);
-       //Scene scene = new Scene(switcher);
 
        Group root = new Group();
        Parent parent = createMarsGlobe();
@@ -216,7 +210,7 @@ public class MainMenu {
 	   stage.show();
 
 	   mainScene.getMarsNode().createSettlementWindow();
-	   //mainScene.getMarsNode().createJMEWindow(stage);
+	   mainScene.getMarsNode().createJMEWindow(stage);
 
   }
 
