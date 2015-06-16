@@ -37,7 +37,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * This is a tab panel for population information.
  */
 public class TabPanelPopulation
@@ -46,7 +46,6 @@ implements MouseListener, ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 
 	private JLabel populationNumLabel;
 	private JLabel populationCapLabel;
@@ -61,7 +60,7 @@ implements MouseListener, ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelPopulation(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelPopulation(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelPopulation.title"), //$NON-NLS-1$
@@ -75,24 +74,24 @@ implements MouseListener, ActionListener {
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		topContentPanel.add(titleLabel);      
- 
-		
+		topContentPanel.add(titleLabel);
+
+
 		// Create population count panel
 		JPanel populationCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		populationCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationCountPanel);
 
-	
+
 		// Create population num label
 		populationNumCache = settlement.getCurrentPopulationNum();
-		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population", 
+		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population",
 		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
 		populationCountPanel.add(populationNumLabel);
 
 		// Create population capacity label
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapLabel = new JLabel(Msg.getString("TabPanelPopulation.populationCapacity", 
+		populationCapLabel = new JLabel(Msg.getString("TabPanelPopulation.populationCapacity",
 		        populationCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		populationCountPanel.add(populationCapLabel);
 
@@ -132,15 +131,15 @@ implements MouseListener, ActionListener {
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
-			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population", 
+			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population",
 			        populationNumCache)); //$NON-NLS-1$
 		}
 
-		int cap = settlement.getPopulationCapacity(); 
+		int cap = settlement.getPopulationCapacity();
 		// Update population capacity
 		if (populationCapacityCache != cap) {
 			populationCapacityCache = cap;
-			populationCapLabel.setText(Msg.getString("TabPanelPopulation.populationCapacity", 
+			populationCapLabel.setText(Msg.getString("TabPanelPopulation.populationCapacity",
 			        populationCapacityCache)); //$NON-NLS-1$
 		}
 
@@ -148,7 +147,7 @@ implements MouseListener, ActionListener {
 		populationListModel.update();
 		populationScrollPanel.validate();
 	}
-	
+
 	/**
 	 * List model for settlement population.
 	 */
@@ -156,26 +155,26 @@ implements MouseListener, ActionListener {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
-	    
+
 	    private Settlement settlement;
 	    private List<Person> populationList;
-	    
+
 	    private PopulationListModel(Settlement settlement) {
 	        this.settlement = settlement;
-	        
+
 	        populationList = new ArrayList<Person>(settlement.getInhabitants());
 	        Collections.sort(populationList);
 	    }
-	    
+
         @Override
         public Person getElementAt(int index) {
-            
+
             Person result = null;
-            
+
             if ((index >= 0) && (index < populationList.size())) {
                 result = populationList.get(index);
             }
-            
+
             return result;
         }
 
@@ -183,29 +182,29 @@ implements MouseListener, ActionListener {
         public int getSize() {
             return populationList.size();
         }
-        
+
         /**
          * Update the population list model.
          */
         public void update() {
-            
-            if (!populationList.containsAll(settlement.getInhabitants()) || 
+
+            if (!populationList.containsAll(settlement.getInhabitants()) ||
                     !settlement.getInhabitants().containsAll(populationList)) {
-                
+
                 List<Person> oldPopulationList = populationList;
-                
+
                 List<Person> tempPopulationList = new ArrayList<Person>(settlement.getInhabitants());
                 Collections.sort(tempPopulationList);
-                
+
                 populationList = tempPopulationList;
                 fireContentsChanged(this, 0, getSize());
-                
+
                 oldPopulationList.clear();
             }
         }
 	}
 
-	/** 
+	/**
 	 * Action event occurs.
 	 * @param event the action event
 	 */
@@ -214,7 +213,7 @@ implements MouseListener, ActionListener {
 		desktop.addModel(new PersonTableModel((Settlement) unit, false));
 	}
 
-	/** 
+	/**
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */

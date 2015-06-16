@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.UnitEventType;
+
 public class Role implements Serializable {
 
     /** default serial id. */
@@ -42,12 +44,13 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType type) {
-	    
+
 	    if (type != getType()) {
 	        relinquishOldRoleType();
 //	        System.out.println("New RoleType is "+ type);
 	        this.type = type;
 	        person.getAssociatedSettlement().getChainOfCommand().addJobRoleMap(type);
+	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, type);
 	    }
 /*
 		if (type == RoleType.SAFETY_SPECIALIST)

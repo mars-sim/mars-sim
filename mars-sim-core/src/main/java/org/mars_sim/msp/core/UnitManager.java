@@ -67,6 +67,7 @@ implements Serializable {
 
     public static final int POPULATION_WITH_SUB_COMMANDER = 12;
     public static final int POPULATION_WITH_MAYOR = 48;
+	public static final int POPULATION_WITH_COMMANDER = 4;
 
     // Data members
 	private int solCache;
@@ -610,7 +611,7 @@ implements Serializable {
             if (jobName != null) {
                 Job job = JobManager.getJob(jobName);
                 if (job != null) {
-                    person.getMind().setJob(job, true, JobManager.MISSION_CONTROL);
+                    person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, "Approved", JobManager.MISSION_CONTROL);
                 }
             }
 
@@ -714,7 +715,7 @@ implements Serializable {
                     person.getPreference().initializePreference();
 
                     // 2015-04-30 Assign a job to everyone
-                    person.getMind().assignJob();
+                    person.getMind().assignJob("Approved", JobManager.MISSION_CONTROL);
 
                     ChainOfCommand cc = settlement.getChainOfCommand();
 

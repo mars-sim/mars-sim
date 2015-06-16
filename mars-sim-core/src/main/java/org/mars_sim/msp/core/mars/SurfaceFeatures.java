@@ -144,7 +144,7 @@ public class SurfaceFeatures implements Serializable {
      * @return solar irradiance (W/m2)
      */
     public double getSolarIrradiance(Coordinates location) {
-        
+
         // Lazy instantiation of solarIrradianceMapCache.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((solarIrradianceMapCacheTime == null) || !currentTime.equals(solarIrradianceMapCacheTime)) {
@@ -154,7 +154,7 @@ public class SurfaceFeatures implements Serializable {
             solarIrradianceMapCache.clear();
             solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
         }
-        
+
         // If location is not in cache, calculate solar irradiance.
         if (!solarIrradianceMapCache.containsKey(location)) {
             if (mars == null) {
@@ -164,7 +164,7 @@ public class SurfaceFeatures implements Serializable {
             //double lat = location.getPhi2Lat(location.getPhi());
             //System.out.println("lat is " + lat);
             /*
-// Approach 1  (more cumbersome)
+// Approach 1
 		double s1 = 0;
         double L_s = mars.getOrbitInfo().getL_s();
         double e = OrbitInfo.ECCENTRICITY;
@@ -175,7 +175,7 @@ public class SurfaceFeatures implements Serializable {
     	System.out.println("solar irradiance s1 is " + s1);
              */
 
-            // Approach 2 consists of 5 parts
+// Approach 2 consists of 5 parts
             // Part 1: get cosine solar zenith angle
             double G_0 = 0;
             double G_h = 0;
@@ -240,11 +240,6 @@ public class SurfaceFeatures implements Serializable {
                     tau = opticalDepthStartingValue + newTau;
                 }
 
-                if (tau > 5)
-                    tau = 5;
-                if (tau < .1)
-                    tau = .1;
-
                 // Reference :
                 // see Chapter 2.3.1 and equation (2.44,45) on page 63 from the book "Mars: Prospective Energy and Material Resources" by Badescu, Springer 2009.
                 // Optical depth is well correlated to the daily variation of surface pressure and to the standard deviation of daily surface pressure
@@ -258,6 +253,12 @@ public class SurfaceFeatures implements Serializable {
                 // (2) typical observable range is between .32 and .52 (average is 42%).
                 // (3) From Viking data, at no time did the optical depth fall below 0.18,
 
+                // tau is usually between .1 and 6, Page 860, Table IV  of R. M. Haberlet Et al.
+      			if (tau > 6)
+      				tau = 6;
+      			if (tau < .1)
+      				tau = .1;
+
                 // TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust storm
 
                 // The extinction of radiation through the Martian atmosphere is caused mainly by suspended dust particles.
@@ -269,10 +270,22 @@ public class SurfaceFeatures implements Serializable {
                 // Duration of a global dust storm is 35 - 70 sols. Local dust storms last a few days.
 
 
+                // Choice 1 : if using Beer's law : transmissivity = Math.exp(-tau/cos_z);
+                //G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
+
+    	    	// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
+
+     	    	G_bh = G_0 * cos_z / (1 + tau / 2 / cos_z);
+
+      			// assuming the reflection from the surface is negligible
+    	    	// ref: http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources30.pdf
+
+
+    	    	// Note: m(z), the air mass, is estimated as ~ 1/cos_z
+
                 // save tau onto opticalDepthMap
                 opticalDepthMap.put(location, tau);
 
-                G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
                 // Note:  one can estimate m(z), the air mass, as ~ 1/cos_z
 
@@ -284,28 +297,28 @@ public class SurfaceFeatures implements Serializable {
                 // TODO: Modeling the diffuse effect of solar irradiance with formula
                 // Note: the value of G_dh to decrease more slowly when value cos_z is diminishing
 
-                if (cos_z > .9)
-                    G_dh = G_bh / 4;
-                else if (cos_z > .8)
-                    G_dh = G_bh / 3.5;
-                else if (cos_z > .7)
-                    G_dh = G_bh / 3D;
-                else if (cos_z > .6)
-                    G_dh = G_bh / 2.5;
-                else if (cos_z > .5)
-                    G_dh = G_bh / 2.2D;
-                else if (cos_z > .4)
-                    G_dh = G_bh / 1.8D;
-                else if (cos_z > .3)
-                    G_dh = G_bh / 1.6D;
-                else if (cos_z > .2)
-                    G_dh = G_bh / 1.4D;
-                else if (cos_z > .1)
-                    G_dh = G_bh / 1.2D;
-                else if (cos_z > .05)
-                    G_dh = G_bh;
-                // Finally,
-                G_h = G_bh + G_dh;
+    	    	if (cos_z > .9)
+    	    		G_dh = G_bh / 6;
+    	    	else if (cos_z > .8)
+    	    		G_dh = G_bh / 4.8;
+    	    	else if (cos_z > .7)
+    	    		G_dh = G_bh / 3.7D;
+    	    	else if (cos_z > .6)
+    	    		G_dh = G_bh / 2.5;
+    	    	else if (cos_z > .5)
+    	    		G_dh = G_bh / 2.2D;
+    	    	else if (cos_z > .4)
+    	    		G_dh = G_bh / 1.8D;
+    	    	else if (cos_z > .3)
+    	    		G_dh = G_bh / 1.6D;
+    	    	else if (cos_z > .2)
+    	    		G_dh = G_bh / 1.4D;
+    	    	else if (cos_z > .1)
+    	    		G_dh = G_bh / 1.2D;
+    	    	else if (cos_z > .05)
+    	    		G_dh = G_bh;
+    	    	// Finally,
+    	    	G_h = G_bh + G_dh;
 
                 //System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
                 //				+ "   cos_z : "+ fmt3.format(cos_z)
@@ -319,7 +332,7 @@ public class SurfaceFeatures implements Serializable {
 
             solarIrradianceMapCache.put(location, G_h);
         }
-        
+
     	return solarIrradianceMapCache.get(location);
     }
 

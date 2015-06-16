@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,7 +109,7 @@ implements Serializable {
     	if (job instanceof Manager)
     		jobLock = true;
 
-    	assignJob();
+    	assignJob("Approved", "Settlement");
 
         // Take action as necessary.
         takeAction(time);
@@ -122,7 +123,7 @@ implements Serializable {
     }
 
     // 2015-04-30 Added assignJob() Note: first called by UnitManager at the start of the sim
-    public void assignJob() {
+    public void assignJob(String status, String approvedBy) {
         // Check if this person needs to get a new job or change jobs.
         if (!jobLock || job == null) {
         	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
@@ -137,7 +138,7 @@ implements Serializable {
         	if (newJob != null) //System.out.println("timePassing() : newJob is null");
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
-	           		setJob(newJob, false, JobManager.SETTLEMENT);
+	           		setJob(newJob, false, JobManager.SETTLEMENT, status, approvedBy);
 	           	}
         	//System.out.println(person.getName() + "'s jobLock is false.");
         }
@@ -237,12 +238,29 @@ implements Serializable {
         return jobLock;
     }
 
+
     /**
      * Sets the person's job.
      * @param newJob the new job
      * @param bypassingJobLock
      */
-    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy) {
+    public void setJob(String selectedJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+	    Iterator<Job> i = JobManager.getJobs().iterator();
+		while (i.hasNext()) {
+		    Job job = i.next();
+		    String n = job.getName(person.getGender());
+			if (selectedJobStr.equals(n))
+				// gets selectedJob by running through iterator to match it
+				setJob(job, bypassingJobLock, assignedBy, status, approvedBy);
+		}
+    }
+
+    /**
+     * Sets the person's job.
+     * @param newJob the new job
+     * @param bypassingJobLock
+     */
+    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
     	// if (newJob == null) System.out.println("setJob() : newJob is null");
     	// TODO : if jobLock is true, will it allow the job to be changed?
     	String newJobStr = newJob.getName(person.getGender());
@@ -256,7 +274,7 @@ implements Serializable {
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 		        // 2015-03-30 Added saveJob()
-		        person.getJobHistory().saveJob(newJob, assignedBy);
+		        person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy);
 		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 		    	// the new job will be Locked in until the beginning of the next day
 		        jobLock = true;

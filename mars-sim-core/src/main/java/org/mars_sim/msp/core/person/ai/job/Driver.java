@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
@@ -64,7 +65,10 @@ implements Serializable {
 		jobTasks.add(UnloadVehicleGarage.class);
 		jobTasks.add(LoadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleEVA.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
+
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);

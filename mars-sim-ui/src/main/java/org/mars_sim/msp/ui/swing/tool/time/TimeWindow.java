@@ -147,7 +147,7 @@ implements ClockListener {
 		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Martian time label
-		martianTimeLabel = new JLabel(marsTime.getTimeStamp(), JLabel.CENTER);
+		martianTimeLabel = new JLabel(marsTime.getDateTimeStamp(), JLabel.CENTER);
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
 
 		// Create Martian calendar panel
@@ -389,7 +389,7 @@ implements ClockListener {
 			    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
 
 					if (marsTime != null) {
-						martianTimeLabel.setText(marsTime.getTimeStamp());
+						martianTimeLabel.setText(marsTime.getDateTimeStamp());
 						// 2015-02-24 Added solElapsedCache
 						if (solElapsed != solElapsedCache) {
 							martianMonthLabel.setText(marsTime.getMonthName());

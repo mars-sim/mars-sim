@@ -103,7 +103,8 @@ implements Serializable {
 		while (orbitTime > ORBIT_PERIOD) orbitTime -= ORBIT_PERIOD;
 
 		// Determine new theta
-		double area = ORBIT_AREA * orbitTime / ORBIT_PERIOD;
+		double area = 0.00000016063 * orbitTime;
+		// 0.00000016063 = ORBIT_AREA * orbitTime / ORBIT_PERIOD;
 		double areaTemp = 0D;
 
 		if (area > (ORBIT_AREA / 2D))
@@ -133,7 +134,8 @@ implements Serializable {
 
 		// Determine Sun theta
 		double sunTheta = sunDirection.getTheta();
-		sunTheta -= (2D * Math.PI) * (seconds / SOLAR_DAY);
+		sunTheta -= 0.000070774 * seconds;
+		// 0.000070774 = 2D * Math.PI  / SOLAR_DAY;
 
 		while (sunTheta < 0D) sunTheta += 2D * Math.PI;
 		sunDirection.setTheta(sunTheta);
@@ -212,62 +214,69 @@ implements Serializable {
 	public double getCosineSolarZenithAngle(Coordinates location) {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		//double theta = location.getTheta();
-		double theta_offset =
-				location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
-		//System.out.println(" theta_offset: " + theta_offset);
+
 		double lat = location.getPhi2LatRadian();
 		//System.out.println("location.getPhi2LatRadian() : " + lat);
 		double dec = getSolarDeclinationAngle(); //getL_s());
 		//System.out.println("solar dec angle is " + dec);
+
+		// TODO: figure out a more compact Equation of Time (EOT) using numerical model of the analemma.
+		// Mars has an EOT varying between -51.1min and +39.9min, since Mars has more than five times larger orbital eccentricity than the Earth's,
+		// see http://www.giss.nasa.gov/research/briefs/allison_02/
+		// also http://www.giss.nasa.gov/tools/mars24/help/notes.html
+		double equation_of_time_offset = 0;
+		double Ls = L_s;
+		if (Ls <= 90 )
+			equation_of_time_offset = (43.4783 - dec / DEGREE_TO_RADIAN) * 23D / 25D ; // y = (-25/23 ) x + 25/23*40
+		else if (Ls <= 180)
+			equation_of_time_offset = (dec / DEGREE_TO_RADIAN - 21D) * 59D / 25D; // y = 25/59 x + 21 ; use DEGREE_TO_RADIAN = Math.PI *180D
+		else if (Ls <= 230)
+			equation_of_time_offset = 40D - (Ls-180D)*.15;
+		else if (Ls <= 240)
+			equation_of_time_offset = 35D - (Ls-230D)*.18;
+		else if (Ls <= 250)
+			equation_of_time_offset = 28D - (Ls-240D) * .18;
+		else if (Ls <= 260)
+			equation_of_time_offset = 20D - (Ls-250D) * .18;
+		else if (Ls <= 270)
+			equation_of_time_offset = -10D + (Ls-260D) * .1;
+		else if (Ls <= 280)
+			equation_of_time_offset = -25D + (Ls-270D) * .1;
+		else if (Ls <= 290)
+			equation_of_time_offset = -42D + (Ls-280D) * .1;
+		else if (Ls <= 300)
+			equation_of_time_offset = -50D + (Ls-290D) * .1;
+		else if (Ls <= 310)
+			equation_of_time_offset = -50D + (Ls-300D) * .1;
+		else if (Ls <= 320)
+			equation_of_time_offset = -50D + (Ls-310D) * .1;
+		else if (Ls <= 330)
+			equation_of_time_offset = -50D + (Ls-320D) * .1;
+		else if (Ls <= 340)
+			equation_of_time_offset = -48D + (Ls-330D) * .1;
+		else if (Ls <= 350)
+			equation_of_time_offset = -46D + (Ls-340D) * .1;
+		else if (Ls <= 360)
+			equation_of_time_offset = -44D + (Ls-350D) * .1;
+
 		double solar_time = marsClock.getMillisol() ;
 		//System.out.println("solar_time is " + (int) solar_time);
-		// TODO: figure out a more compact Equation of Time (EOT) using numerical model of the analemma.
-		// Mars has an EOT varying between -51.1min and +39.9min, with its more than five times larger orbital eccentricity than the Earth's,
-		// see http://www.giss.nasa.gov/research/briefs/allison_02/  http://www.giss.nasa.gov/tools/mars24/help/notes.html
-		double equation_of_time_offset = 0;
-		if (L_s <= 90 )
-			equation_of_time_offset = (43.4783 - dec / DEGREE_TO_RADIAN) * 23D / 25D ; // y = (-25/23 ) x + 25/23*40
-		else if (L_s <= 180)
-			equation_of_time_offset = (dec / DEGREE_TO_RADIAN - 21D) * 59D / 25D; // y = 25/59 x + 21 ; use DEGREE_TO_RADIAN = Math.PI *180D
-		else if (L_s <= 230)
-			equation_of_time_offset = 40D - (L_s-180D)*.15;
-		else if (L_s <= 240)
-			equation_of_time_offset = 35D - (L_s-230D)*.18;
-		else if (L_s <= 250)
-			equation_of_time_offset = 28D - (L_s-240D) * .18;
-		else if (L_s <= 260)
-			equation_of_time_offset = 20D - (L_s-250D) * .18;
-		else if (L_s <= 270)
-			equation_of_time_offset = -10D + (L_s-260D) * .1;
-		else if (L_s <= 280)
-			equation_of_time_offset = -25D + (L_s-270D) * .1;
-		else if (L_s <= 290)
-			equation_of_time_offset = -42D + (L_s-280D) * .1;
-		else if (L_s <= 300)
-			equation_of_time_offset = -50D + (L_s-290D) * .1;
-		else if (L_s <= 310)
-			equation_of_time_offset = -50D + (L_s-300D) * .1;
-		else if (L_s <= 320)
-			equation_of_time_offset = -50D + (L_s-310D) * .1;
-		else if (L_s <= 330)
-			equation_of_time_offset = -50D + (L_s-320D) * .1;
-		else if (L_s <= 340)
-			equation_of_time_offset = -48D + (L_s-330D) * .1;
-		else if (L_s <= 350)
-			equation_of_time_offset = -46D + (L_s-340D) * .1;
-		else if (L_s <= 360)
-			equation_of_time_offset = -44D + (L_s-350D) * .1;
 
-		double EOT_in_millisol = equation_of_time_offset * 60D /SOLAR_DAY * 1000D;
+		double theta_offset =
+				location.getTheta() * 159.1519; // 159.1519 = 1000D / 2D / Math.PI  ; // convert theta (longitude) from radians to millisols;
+		//System.out.println(" theta_offset: " + theta_offset);
+
+		double EOT_in_millisol = equation_of_time_offset * 0.6759; // 0.6759 = 60D / SOLAR_DAY * 1000D;
 		double modified_solar_time = solar_time + theta_offset + EOT_in_millisol ;
-		double h = Math.PI * Math.abs(modified_solar_time - 500D) / 500D ;
+		// The hour angle is measured from the true noon westward, represented by h = 2 * pi * t / P, t is time past noon in seconds
+		double h = 0.0063 * Math.abs(modified_solar_time - 500D);
+		// 0.0063 = 2D * Math.PI / 1000D;
 		//System.out.println("h is " + h);
 		// Determine the solar zenith angle
-		double cosine_z =  Math.sin (lat) * Math.sin (dec) +  Math.cos (lat)  *Math.cos (dec) * Math.cos (h) ;
+		//double cosine_z =  Math.sin (lat) * getSolarDeclinationAngle() +  Math.cos (lat)  * Math.cos (dec) * Math.cos (h) ;
 		//System.out.println("Math.cos (h) is " + Math.cos (h));
 		//System.out.println("solar zenith angle is " + z);
-		return cosine_z;
+		return Math.sin (lat) * getSolarDeclinationAngle() +  Math.cos (lat)  * Math.cos (dec) * Math.cos (h) ;
 	}
 
 
@@ -314,12 +323,21 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the solar declination angle from a given areocentric longitude.
+	 * Gets the solar declination angle of a given areocentric longitude.
 	 * @return angle in radians (0 - 2 PI).
 	 */
 	// 2015-03-17 Added getSolarZenithAngle()
 	public double getSolarDeclinationAngle() {
-		return Math.asin ( Math.sin (TILT) * Math.sin (L_s * DEGREE_TO_RADIAN) );
+		return Math.asin ( getSineSolarDeclinationAngle() );
+	}
+
+	/**
+	 * Gets the sine of the solar declination angle of a given areocentric longitude.
+	 * @return -1 to +1
+	 */
+	// 2015-06-15 Added getSineSolarZenithAngle()
+	public double getSineSolarDeclinationAngle() {
+		return Math.sin (TILT) * Math.sin (L_s * DEGREE_TO_RADIAN) ;
 	}
 
 	/**
@@ -336,11 +354,12 @@ implements Serializable {
 	 * @param location.
 	 * @return millisols.
 	 */
-	// 2015-06-15 Added getDaylightMillisols()
-	public double getDaylightMillisols(Coordinates location) {
+	// 2015-06-15 Added getDaylightinMillisols()
+	public double getDaylightinMillisols(Coordinates location) {
 		//double delta = getSolarDeclinationAngle(getL_s());
 		//double lat = location.getPhi2Lat(location.getPhi());
-		return Math.acos ( -Math.tan (location.getPhi2LatRadian()) * Math.tan (getSolarDeclinationAngle()) );
+		return 318.3152 * Math.acos ( -Math.tan (location.getPhi2LatRadian()) * Math.tan (getSolarDeclinationAngle()) );
+		// Note: 318.3152 = 1000 millisols / 24 hours / DEGREE_TO_RADIAN * 2 / 360 degrees * 24 hours
 	}
 
 	/**
