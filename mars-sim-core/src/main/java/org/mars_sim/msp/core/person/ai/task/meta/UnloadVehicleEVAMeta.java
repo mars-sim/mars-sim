@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -55,60 +55,60 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-        // Check if it is night time.
-        if (surface == null)
-        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                int numVehicles = 0;
+                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
+                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
+                result = 100D * numVehicles;
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
+
+            // Crowded settlement modifier
+            Settlement settlement = person.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
                 result = 0D;
             }
-        }
 
-        if (result != 0)
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            // Check if it is night time.
+            if (surface == null) {
+                surface = Simulation.instance().getMars().getSurfaceFeatures();
+            }
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                }
+            }
 
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                int numVehicles = 0;
-	                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
-	                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
-	                result = 100D * numVehicles;
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-	                e.printStackTrace(System.err);
-	            }
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
 
-	            // Crowded settlement modifier
-	            Settlement settlement = person.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-	                result *= 2D;
-	            }
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);
+            }
 
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-
-	            // Job modifier.
-	            Job job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);
-	            }
-
-	            // Modify if operations is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-	                result *= 2D;
-	            }
+            // Modify if operations is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+                result *= 2D;
+            }
 
 
-		        // 2015-06-07 Added Preference modifier
-		        if (result > 0)
-		        	result += person.getPreference().getPreferenceScore(this);
-		        if (result < 0) result = 0;
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+                result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
         }
 
         return result;
@@ -151,7 +151,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getPreviousSolarIrradiance(robot.getCoordinates()) == 0) {
+            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }

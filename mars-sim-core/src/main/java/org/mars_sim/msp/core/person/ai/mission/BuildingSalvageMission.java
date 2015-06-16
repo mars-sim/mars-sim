@@ -119,6 +119,7 @@ implements Serializable {
 			int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			ConstructionManager manager = settlement.getConstructionManager();
 			SalvageValues values = manager.getSalvageValues();
+			values.clearCache();
 			double existingSitesProfit = values
 					.getAllSalvageSitesProfit(constructionSkill);
 			double newSiteProfit = values
@@ -221,6 +222,7 @@ implements Serializable {
 			int constructionSkill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			ConstructionManager manager = settlement.getConstructionManager();
 			SalvageValues values = manager.getSalvageValues();
+			values.clearCache();
 			double existingSitesProfit = values
 					.getAllSalvageSitesProfit(constructionSkill);
 			double newSiteProfit = values
