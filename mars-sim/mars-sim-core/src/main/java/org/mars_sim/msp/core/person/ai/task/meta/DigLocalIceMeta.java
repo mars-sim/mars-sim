@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIceMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,22 +63,6 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        if (surface == null)
-        	surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
-            }
-        }
-
-        if (result != 0)
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
@@ -115,6 +99,20 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+                result = 0D;
+            }
+
+            // Check if it is night time.
+            if (surface == null) {
+                surface = Simulation.instance().getMars().getSurfaceFeatures();
+            }
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                }
+            }
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
@@ -126,16 +124,14 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             }
 
             // 2015-06-07 Added Preference modifier
-            result += person.getPreference().getPreferenceScore(this);
-            if (result < 0) result = 0;
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0)
-            	result += person.getPreference().getPreferenceScore(this);
-            if (result < 0) result = 0;
-
+            if (result > 0D) {
+                result += person.getPreference().getPreferenceScore(this);
+            }
+            
+            if (result < 0D) {
+                result = 0D;
+            }
         }
-
 
         return result;
     }

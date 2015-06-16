@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -58,68 +58,69 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
+            // Check all vehicle missions occurring at the settlement.
+            try {
+                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getSettlement());
+                result += 100D * missions.size();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding loading missions.", e);
+            }
 
-        // Check if it is night time.
-        // Check if it is night time.
-        if (surface == null)
-        	surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+            // Check if any rovers are in need of EVA suits to allow occupants to exit.
+            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
+                int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+                if (numEVASuits >= 2) {
+                    result += 100D;
+                }
+            }
+
+            // Crowded settlement modifier
+            Settlement settlement = person.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
                 result = 0D;
             }
+
+            // Check if it is night time.
+            if (surface == null) {
+                surface = Simulation.instance().getMars().getSurfaceFeatures();
+            }
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                }
+            }
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);
+            }
+
+            // Modify if operations is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+                result *= 2D;
+            }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0) {
+                result += person.getPreference().getPreferenceScore(this);
+            }
+            if (result < 0) {
+                result = 0;
+            }
+
         }
-
-        if (result != 0)
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-	            // Check all vehicle missions occurring at the settlement.
-	            try {
-	                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getSettlement());
-	                result += 100D * missions.size();
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error finding loading missions.", e);
-	            }
-
-	            // Check if any rovers are in need of EVA suits to allow occupants to exit.
-	            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
-	                int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
-	                if (numEVASuits >= 2) {
-	                    result += 100D;
-	                }
-	            }
-
-	            // Crowded settlement modifier
-	            Settlement settlement = person.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-	                result *= 2D;
-	            }
-
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-
-	            // Job modifier.
-	            Job job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);
-	            }
-
-	            // Modify if operations is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-	                result *= 2D;
-	            }
-
-	            // 2015-06-07 Added Preference modifier
-	            if (result > 0)
-	            	result += person.getPreference().getPreferenceScore(this);
-	            if (result < 0) result = 0;
-
-	        }
 
         return result;
     }
@@ -165,7 +166,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getPreviousSolarIrradiance(robot.getCoordinates()) == 0) {
+            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0) {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }

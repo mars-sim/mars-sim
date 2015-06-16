@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageValues.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-06-13
 
  * @author Scott Davis
  */
@@ -13,12 +13,18 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -47,6 +53,16 @@ implements Serializable {
 	 */
 	public SalvageValues(Settlement settlement) {
 		this.settlement = settlement;
+	}
+	
+	/**
+	 * Clears the salvage value cache.
+	 */
+	public void clearCache() {
+	    if (settlementSalvageValueCache != null) {
+	        settlementSalvageValueCache.clear();
+	        settlementSalvageValueCacheTime = null;
+	    }
 	}
 
 	/**
@@ -183,7 +199,9 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			double salvageProfit = getNewBuildingSalvageProfit(building, constructionSkill);
-			if (salvageProfit > result) result = salvageProfit;
+			if (salvageProfit > result) {
+			    result = salvageProfit;
+			}
 		}
 
 		return result;
@@ -240,7 +258,54 @@ implements Serializable {
 
 		// Check that building doesn't have only airlock at settlement.
 		if (building.hasFunction(BuildingFunction.EVA)) {
-			if (settlement.getAirlockNum() == 1) result = 0D;
+			if (settlement.getAirlockNum() == 1) {
+			    result = 0D;
+			}
+		}
+		
+		// Check that the building doesn't currently have any people in it.
+		if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+		    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+		    if (lifeSupport.getOccupantNumber() > 0) {
+		        result = 0D;
+		    }
+		}
+		
+		// Check that the building isn't on any person's walking path.
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		while (i.hasNext() && (result > 0D)) {
+		    Person person = i.next();
+		    TaskManager taskManager = person.getMind().getTaskManager();
+		    if (taskManager.isWalkingThroughBuilding(building)) {
+		        result = 0D;
+		    }
+		}
+		
+		// Check that the building doesn't currently have any robots in it.
+		if (building.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
+            RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+            if (roboticStation.getRobotOccupantNumber() > 0) {
+                result = 0D;
+            }
+        } 
+		
+		// Check that the building isn't on any robot's walking path.
+		Iterator<Robot> j = Simulation.instance().getUnitManager().getRobots().iterator();
+        while (j.hasNext() && (result > 0D)) {
+            Robot robot = j.next();
+            TaskManager taskManager = robot.getBotMind().getTaskManager();
+            if (taskManager.isWalkingThroughBuilding(building)) {
+                result = 0D;
+            }
+        }
+		
+		// Check that the building doesn't currently have any vehicles in it.
+		if (building.hasFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+		    GroundVehicleMaintenance vehicleMaint = (GroundVehicleMaintenance) building.getFunction(
+		            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+		    if (vehicleMaint.getCurrentVehicleNumber() > 0) {
+		        result = 0D;
+		    }
 		}
 
 		return result;

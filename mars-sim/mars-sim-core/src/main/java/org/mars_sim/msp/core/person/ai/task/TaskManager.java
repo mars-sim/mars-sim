@@ -23,7 +23,9 @@ import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -276,6 +278,52 @@ implements Serializable {
 		}
 		
 		return hasAirlockTask;
+	}
+	
+	/**
+	 * Checks if the person or robot is walking through a given building.
+	 * @param building the building.
+	 * @return true if walking through building.
+	 */
+	public boolean isWalkingThroughBuilding(Building building) {
+	    
+	    boolean result = false;
+	    
+	    Task task = currentTask;
+	    while ((task != null) && !result) {
+	        if (task instanceof Walk) {
+	            Walk walkTask = (Walk) task;
+	            if (walkTask.isWalkingThroughBuilding(building)) {
+	                result = true;
+	            }
+	        }
+	        task = task.getSubTask();
+	    }
+	    
+	    return result;
+	}
+	
+	/**
+	 * Checks if the person or robot is walking through a given vehicle.
+	 * @param vehicle the vehicle.
+	 * @return true if walking through vehicle.
+	 */
+	public boolean isWalkingThroughVehicle(Vehicle vehicle) {
+	    
+	    boolean result = false;
+        
+        Task task = currentTask;
+        while ((task != null) && !result) {
+            if (task instanceof Walk) {
+                Walk walkTask = (Walk) task;
+                if (walkTask.isWalkingThroughVehicle(vehicle)) {
+                    result = true;
+                }
+            }
+            task = task.getSubTask();
+        }
+        
+        return result;
 	}
 	
 	/**

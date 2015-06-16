@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjectsMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -63,7 +63,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
             if (surface == null)
             	surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-            double sunlight = surface.getPreviousSolarIrradiance(person.getCoordinates());
+            double sunlight = surface.getSolarIrradiance(person.getCoordinates());
 
             if (sunlight == 0D) {
 

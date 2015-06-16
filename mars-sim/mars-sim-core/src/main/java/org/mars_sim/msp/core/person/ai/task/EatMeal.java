@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.08 2015-04-13
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -94,6 +94,8 @@ public class EatMeal extends Task implements Serializable {
     private double mealEatingDuration = 0D;
     private double totalDessertEatingTime = 0D;
     private double dessertEatingDuration = 0D;
+    private double startingHunger;
+    private double currentHunger;
 
     /**
      * Constructor.
@@ -113,7 +115,9 @@ public class EatMeal extends Task implements Serializable {
         // Initialize data members.
         mealEatingDuration = getDuration() * MEAL_EATING_PROPORTION;
         dessertEatingDuration = getDuration() * DESSERT_EATING_PROPORTION;
-
+        startingHunger = person.getPhysicalCondition().getHunger();
+        currentHunger = startingHunger;
+        
         // Take napkin from inventory if available.
         Unit container = person.getTopContainerUnit();
         if (container != null) {
@@ -285,9 +289,11 @@ public class EatMeal extends Task implements Serializable {
 
         // Reduce person's hunger by proportion of meal eaten.
         // Entire meal will reduce person's hunger to 0.
-        double hunger = condition.getHunger();
-        double newHunger = hunger - (hunger * mealProportion);
-        condition.setHunger(newHunger);
+        currentHunger -= (startingHunger * mealProportion);
+        if (currentHunger < 0D) {
+            currentHunger = 0D;
+        }
+        condition.setHunger(currentHunger);
 
         // Reduce person's stress over time from eating a cooked meal.
         // This is in addition to normal stress reduction from eating task.
@@ -341,9 +347,11 @@ public class EatMeal extends Task implements Serializable {
 
                     // Reduce person's hunger by proportion of meal eaten.
                     // Entire meal will reduce person's hunger to 0.
-                    double hunger = condition.getHunger();
-                    double newHunger = hunger - (hunger * mealProportion);
-                    condition.setHunger(newHunger);
+                    currentHunger -= (startingHunger * mealProportion);
+                    if (currentHunger < 0D) {
+                        currentHunger = 0D;
+                    }
+                    condition.setHunger(currentHunger);
 
                     // Add caloric energy from meal.
                     condition.addEnergy(foodAmount);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.07 2014-10-10
+ * @version 3.08 2015-06-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -72,9 +73,6 @@ implements Serializable {
     private WalkingSteps walkingSteps;
     private Map<Integer, TaskPhase> walkingStepPhaseMap;
     private int walkingStepIndex;
-
-   //private Person person;
-    //private Robot robot;
 
     /**
      * Constructor.
@@ -1094,6 +1092,47 @@ implements Serializable {
         }
 
         return timeLeft;
+    }
+    
+    /**
+     * Checks if the person or robot is walking through a given building.
+     * @param building the building.
+     * @return true if walking through building.
+     */
+    public boolean isWalkingThroughBuilding(Building building) {
+        boolean result = false;
+        
+        // Check if any walk steps are in building.
+        Iterator<WalkStep> i = walkingSteps.getWalkingStepsList().iterator();
+        while (i.hasNext() && !result) {
+            WalkStep step = i.next();
+            if (building.equals(step.building)) {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Checks if the person or robot is walking through a given vehicle.
+     * @param vehicle the vehicle.
+     * @return true if walking through vehicle.
+     */
+    public boolean isWalkingThroughVehicle(Vehicle vehicle) {
+        
+        boolean result = false;
+        
+        // Check if any walk steps are in vehicle.
+        Iterator<WalkStep> i = walkingSteps.getWalkingStepsList().iterator();
+        while (i.hasNext() && !result) {
+            WalkStep step = i.next();
+            if (vehicle.equals(step.rover)) {
+                result = true;
+            }
+        }
+        
+        return result;
     }
 
     @Override

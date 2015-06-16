@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 3.08 2015-06-05
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  * @author Hartmut Prochaska
  */
@@ -379,7 +379,7 @@ implements Serializable {
 */
 			double light_factor = 0;
 			double sunlight = 0 ;
-			sunlight = surfaceFeatures.getPreviousSolarIrradiance(location);
+			sunlight = surfaceFeatures.getSolarIrradiance(location);
 
 			light_factor = 2D * ( sunlight / 400D - .5);
 
@@ -526,7 +526,7 @@ implements Serializable {
 	    	coordinateList.forEach(location -> {
 	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location),
 	    				getAirDensity(location), getWindSpeed(location),
-	    				surfaceFeatures.getPreviousSolarIrradiance(location), surfaceFeatures.getOpticalDepth(location));
+	    				surfaceFeatures.getSolarIrradiance(location), surfaceFeatures.getOpticalDepth(location));
 		    	todayWeather.add(weather);
 	    	});
 	    }

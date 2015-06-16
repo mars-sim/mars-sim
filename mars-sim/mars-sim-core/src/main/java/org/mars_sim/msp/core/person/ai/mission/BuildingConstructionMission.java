@@ -186,6 +186,7 @@ implements Serializable {
 			
         ConstructionManager manager = settlement.getConstructionManager();
         ConstructionValues values = manager.getConstructionValues();
+        values.clearCache();
         double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
         double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);    
         ConstructionStageInfo stageInfo = null;
@@ -204,7 +205,7 @@ implements Serializable {
 		        }
 		    }
 		}
-		else {
+		else if (newSiteProfit > 0D) {
 		    
 		    // Create new site.
 		    constructionSite = manager.createNewConstructionSite();

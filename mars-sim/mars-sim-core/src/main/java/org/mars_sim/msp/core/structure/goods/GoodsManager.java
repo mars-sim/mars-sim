@@ -116,12 +116,12 @@ public class GoodsManager implements Serializable {
     private static final double LIFE_SUPPORT_FACTOR = 4D;
     private static final double VEHICLE_FUEL_FACTOR = 10D;
 //    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = 1D;
-    private static final double MANUFACTURING_INPUT_FACTOR = 1D;
+    private static final double MANUFACTURING_INPUT_FACTOR = .5D;
     private static final double CONSTRUCTING_INPUT_FACTOR = .0005D;
-    private static final double COOKED_MEAL_INPUT_FACTOR = 1D;
-    private static final double DESSERT_FACTOR = 1D;
+    private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
+    private static final double DESSERT_FACTOR = .5D;
     // 2014-12-04 Added FOOD_PRODUCTION_INPUT_FACTOR
-    private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1D;
+    private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	// 2015-01-10 Added FARMING_FACTOR
     private static final double FARMING_FACTOR = 1D;
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
@@ -386,17 +386,17 @@ public class GoodsManager implements Serializable {
             // 2015-01-10 Called getRealTimeDemand()
             totalDemand = getTotalDemandAmount(resource, projectedDemand, solElapsed);
             // 2015-03-02 Added REGOLITH_INPUT_FACTOR adjustment
-            if (r.equals("regolith")) {
-            	//System.out.println("regolith's unadjusted totalDemand was " + totalDemand);
-            	if (totalDemand < 10D)
-            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR * 10D;
-            	else if (totalDemand < 100D)
-            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR;
-            	else if (totalDemand < 1000D)
-            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
-            	else if (totalDemand < 10000D)
-            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
-            }
+//            if (r.equals("regolith")) {
+//            	//System.out.println("regolith's unadjusted totalDemand was " + totalDemand);
+//            	if (totalDemand < 10D)
+//            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR * 10D;
+//            	else if (totalDemand < 100D)
+//            		totalDemand =  (totalDemand + 1) * REGOLITH_INPUT_FACTOR;
+//            	else if (totalDemand < 1000D)
+//            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 10D;
+//            	else if (totalDemand < 10000D)
+//            		totalDemand =  (totalDemand + 1) *  REGOLITH_INPUT_FACTOR / 100D;
+//            }
 
 
             // 2015-02-13 Added MINIMUM_TOTAL_DEMAND

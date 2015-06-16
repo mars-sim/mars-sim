@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunctionMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -52,6 +52,44 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        // Add probability for all malfunctionable entities in person's local.
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+
+            // Check if entity has any EVA malfunctions.
+            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+            while (j.hasNext()) {
+                Malfunction malfunction = j.next();
+                try {
+                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
+                            malfunction)) {
+                        result += 100D;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+
+            // Check if entity requires an EVA and has any normal malfunctions.
+            if (RepairEVAMalfunction.requiresEVA(person, entity)) {
+                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+                while (k.hasNext()) {
+                    Malfunction malfunction = k.next();
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+                            result += 100D;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            }
+        }
+
         // Check if an airlock is available if in settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
             if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
@@ -59,74 +97,36 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
             }
 
         // Check if it is night time.
-        if (surface == null)
-        	surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0) {
+        if (surface == null) {
+            surface = Simulation.instance().getMars().getSurfaceFeatures();
+        }
+        if (surface.getSolarIrradiance(person.getCoordinates()) == 0) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
             }
         }
 
-        if (result != 0) {
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
 
-	        // Add probability for all malfunctionable entities in person's local.
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	        while (i.hasNext()) {
-	            Malfunctionable entity = i.next();
-	            MalfunctionManager manager = entity.getMalfunctionManager();
+        // Job modifier if not in vehicle.
+        Job job = person.getMind().getJob();
+        if ((job != null)) {
+            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);
+        }
 
-	            // Check if entity has any EVA malfunctions.
-	            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-	            while (j.hasNext()) {
-	                Malfunction malfunction = j.next();
-	                try {
-	                    if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
-	                            malfunction)) {
-	                        result += 100D;
-	                    }
-	                }
-	                catch (Exception e) {
-	                    e.printStackTrace(System.err);
-	                }
-	            }
+        // Modify if tinkering is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+            result *= 2D;
+        }
 
-	            // Check if entity requires an EVA and has any normal malfunctions.
-	            if (RepairEVAMalfunction.requiresEVA(person, entity)) {
-	                Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
-	                while (k.hasNext()) {
-	                    Malfunction malfunction = k.next();
-	                    try {
-	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-	                            result += 100D;
-	                        }
-	                    }
-	                    catch (Exception e) {
-	                        e.printStackTrace(System.err);
-	                    }
-	                }
-	            }
-	        }
-
-	        // Effort-driven task modifier.
-	        result *= person.getPerformanceRating();
-
-	        // Job modifier if not in vehicle.
-	        Job job = person.getMind().getJob();
-	        if ((job != null)) {
-	            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);
-	        }
-
-	        // Modify if tinkering is the person's favorite activity.
-	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
-	            result *= 2D;
-	        }
-
-
-	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	        	result += person.getPreference().getPreferenceScore(this);
-	        if (result < 0) result = 0;
+        // 2015-06-07 Added Preference modifier
+        if (result > 0) {
+            result += person.getPreference().getPreferenceScore(this);
+        }
+        
+        if (result < 0) {
+            result = 0;
         }
 
         return result;

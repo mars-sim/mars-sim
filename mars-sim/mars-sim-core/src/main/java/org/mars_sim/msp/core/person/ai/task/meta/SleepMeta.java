@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SleepMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -61,7 +61,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
             // Dark outside modifier.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            boolean isDark = (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0);
+            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) == 0);
             if (isDark && !isAstronomer) {
                 // Non-astronomers more likely to sleep when it's dark out.
                 result *= 4D;

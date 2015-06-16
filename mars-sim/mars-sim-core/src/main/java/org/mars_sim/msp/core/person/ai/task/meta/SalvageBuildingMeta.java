@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuildingMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -57,60 +57,60 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Check if an airlock is available
-        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        // Check if it is night time.
-        if (surface == null)
-        	surface = Simulation.instance().getMars().getSurfaceFeatures();
+            // Check all building salvage missions occurring at the settlement.
+            try {
+                List<BuildingSalvageMission> missions = SalvageBuilding.
+                        getAllMissionsNeedingAssistance(person.getSettlement());
+                result = 100D * missions.size();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
+            }
 
-        if (surface.getPreviousSolarIrradiance(person.getCoordinates()) == 0D) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+            // Crowded settlement modifier
+            Settlement settlement = person.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
                 result = 0D;
+            }
+
+            // Check if it is night time.
+            if (surface == null)
+                surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates()))
+                    result = 0D;
+            }
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(SalvageBuilding.class);
+            }
+
+            // Modify if construction is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+                result *= 2D;
+            }
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0D) {
+                result += person.getPreference().getPreferenceScore(this);
+            }
+            if (result < 0D) {
+                result = 0D;
+            }
         }
-
-        if (result != 0)
-
-        	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-	            // Check all building salvage missions occurring at the settlement.
-	            try {
-	                List<BuildingSalvageMission> missions = SalvageBuilding.
-	                        getAllMissionsNeedingAssistance(person.getSettlement());
-	                result = 100D * missions.size();
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.SEVERE, "Error finding building salvage missions.", e);
-	            }
-
-	            // Crowded settlement modifier
-	            Settlement settlement = person.getSettlement();
-	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-	                result *= 2D;
-	            }
-
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-
-	            // Job modifier.
-	            Job job = person.getMind().getJob();
-	            if (job != null) {
-	                result *= job.getStartTaskProbabilityModifier(SalvageBuilding.class);
-	            }
-
-	            // Modify if construction is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
-	                result *= 2D;
-	            }
-
-		        // 2015-06-07 Added Preference modifier
-		        if (result > 0)
-		        	result += person.getPreference().getPreferenceScore(this);
-		        if (result < 0) result = 0;
-	        }
-
 
         return result;
     }
@@ -150,7 +150,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
 	        // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getPreviousSolarIrradiance(robot.getCoordinates()) == 0D) {
+            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
                 if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                     result = 0D;
                 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.08 2015-04-30
+ * @version 3.08 2015-06-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -247,15 +247,15 @@ implements Serializable, Comparable<Task> {
      * @param description the task description.
      */
     protected void setDescription(String description) {
-        this.description = description;
-        if (person != null) {
-            person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+        if (!this.description.equals(description)) {
+            this.description = description;
+            if (person != null) {
+                person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+            }
+            else if (robot != null) {
+                robot.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
+            }
         }
-        else if (robot != null) {
-            robot.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
-        }
-        
-
     }
 
     /** Returns a boolean whether this task should generate events
@@ -367,18 +367,6 @@ implements Serializable, Comparable<Task> {
      */
     public Task getSubTask() {
         return subTask;
-    }
-
-    /** Returns the weighted probability that a person might perform this task.
-     *  It should return a 0 if there is no chance to perform this task given the person and the situation.
-     *  @param person the person to perform the task
-     *  @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) { 
-        return 0D; 
-    }
-    public static double getProbability(Robot robot) { 
-        return 0D; 
     }
 
     /** 
