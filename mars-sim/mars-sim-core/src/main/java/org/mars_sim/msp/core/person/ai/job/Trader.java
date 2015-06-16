@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
@@ -50,7 +51,9 @@ implements Serializable {
         jobTasks.add(UnloadVehicleEVA.class);
         jobTasks.add(UnloadVehicleGarage.class);
         jobTasks.add(ConsolidateContainers.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);

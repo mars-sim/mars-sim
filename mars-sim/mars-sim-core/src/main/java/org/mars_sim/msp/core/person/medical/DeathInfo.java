@@ -75,7 +75,7 @@ implements Serializable {
     public DeathInfo(Person person) {
 
         // Initialize data members
-        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getName();
@@ -130,7 +130,7 @@ implements Serializable {
     public DeathInfo(Robot robot) {
 
         // Initialize data members
-        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 /*
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getName();

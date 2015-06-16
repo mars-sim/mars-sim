@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Role;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -52,40 +54,42 @@ extends UnitTableModel {
 	//private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
 
 	private static MainDesktopPane desktop;
-	
+
 	// Column indexes
 	/** Person name column. */
 	private final static int NAME = 0;
-	/** Gender column. */
-	private final static int GENDER = 1;
 	/** Location column. */
-	private final static int LOCATION = 2;
-	/** Personality column. */
-	private final static int PERSONALITY = 3;
-	/** Health column. */
-	private final static int HEALTH = 4;
-	/** Hunger column. */
-	private final static int HUNGER = 5;
-	/** Fatigue column. */
-	private final static int FATIGUE = 6;
-	/** Stress column. */
-	private final static int STRESS = 7;
-	/** Performance column. */
-	private final static int PERFORMANCE = 8;
+	private final static int LOCATION = 1;
+	/** Role column. */
+	private final static int ROLE = 2;
 	/** Job column. */
-	private final static int JOB = 9;
+	private final static int JOB = 3;
 	/** Task column. */
-	private final static int TASK = 10;
+	private final static int TASK = 4;
 	/** Mission column. */
-	private final static int MISSION = 11;
+	private final static int MISSION = 5;
+	/** Gender column. */
+	private final static int GENDER = 6;
+	/** Personality column. */
+	private final static int PERSONALITY = 7;
+	/** Health column. */
+	private final static int HEALTH = 8;
+	/** Hunger column. */
+	private final static int HUNGER = 9;
+	/** Fatigue column. */
+	private final static int FATIGUE = 10;
+	/** Stress column. */
+	private final static int STRESS = 11;
+	/** Performance column. */
+	private final static int PERFORMANCE = 12;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 12;
+	private final static int COLUMNCOUNT = 13;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
-	
+
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -97,7 +101,7 @@ extends UnitTableModel {
 		columnNames[GENDER] = Msg.getString("PersonTableModel.column.gender"); //$NON-NLS-1$
 		columnTypes[GENDER] = String.class;
 		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
-		columnTypes[PERSONALITY] = String.class; 
+		columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[HUNGER] = Msg.getString("PersonTableModel.column.hunger"); //$NON-NLS-1$
@@ -110,6 +114,8 @@ extends UnitTableModel {
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
+		columnNames[ROLE] = Msg.getString("PersonTableModel.column.role"); //$NON-NLS-1$
+		columnTypes[ROLE] = String.class;
 		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
 		columnNames[MISSION] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
@@ -159,7 +165,7 @@ extends UnitTableModel {
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
 	private UnitManagerListener unitManagerListener;
-	
+
 	/** Map for caching a person's hunger, fatigue, stress and performance status strings. */
 	private Map<Unit, Map<Integer, String>> performanceValueCache;
 
@@ -180,7 +186,7 @@ extends UnitTableModel {
 		setSource(unitManager.getPeople());
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-		
+
 		//2014-12-30 Added desktop
 		this.desktop = desktop;
 
@@ -210,7 +216,7 @@ extends UnitTableModel {
 	}
 
 	/**
-	 * Constructs a PersonTableModel that displays residents are all associated people with 
+	 * Constructs a PersonTableModel that displays residents are all associated people with
 	 * a specified settlement.
 	 * @param settlement the settlement to check.
 	 * @param allAssociated Are all people associated with this settlement to be displayed?
@@ -281,38 +287,38 @@ extends UnitTableModel {
 		Iterator<Person> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
 	}
-	
+
 	@Override
 	protected void addUnit(Unit newUnit) {
-	    
+
 	    if (performanceValueCache == null) {
 	        performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
 	    }
-	    
+
 	    if (!performanceValueCache.containsKey(newUnit)) {
 	        try {
 	            Map<Integer, String> performanceItemMap = new HashMap<Integer, String>(4);
-	            
+
 	            Person person = (Person) newUnit;
 	            PhysicalCondition condition = person.getPhysicalCondition();
-	            
+
 	            double hunger = condition.getHunger();
 	            double energy = condition.getEnergy();
 	            String hungerString = getHungerStatus(hunger, energy);
 	            performanceItemMap.put(HUNGER, hungerString);
-	            
+
 	            double fatigue = condition.getFatigue();
 	            String fatigueString = getFatigueStatus(fatigue);
 	            performanceItemMap.put(FATIGUE, fatigueString);
-	            
+
 	            double stress = condition.getStress();
 	            String stressString = getStressStatus(stress);
 	            performanceItemMap.put(STRESS, stressString);
-	            
+
 	            double performance = condition.getPerformanceFactor() * 100D;
 	            String performanceString = getPerformanceStatus(performance);
 	            performanceItemMap.put(PERFORMANCE, performanceString);
-	            
+
 	            performanceValueCache.put(newUnit, performanceItemMap);
 	        }
 	        catch (Exception e) {}
@@ -322,7 +328,7 @@ extends UnitTableModel {
 
 	@Override
 	protected void removeUnit(Unit oldUnit) {
-	    
+
 	    if (performanceValueCache == null) {
 	        performanceValueCache = new HashMap<Unit, Map<Integer, String>>();
 	    }
@@ -378,7 +384,7 @@ extends UnitTableModel {
 
 			Boolean isDead = person.getPhysicalCondition().isDead();
 			Boolean isStarving = person.getPhysicalCondition().isStarving();
-			
+
 			switch (columnIndex) {
 			case NAME : {
 				result = person.getName();
@@ -427,7 +433,7 @@ extends UnitTableModel {
 			} break;
 
 			case HEALTH : {
-				
+
 				result = person.getPhysicalCondition().getHealthSituation();
 			} break;
 
@@ -442,14 +448,25 @@ extends UnitTableModel {
 				else result = locationSituation.getName();
 			} break;
 
+			case ROLE : {
+				if (person.getPhysicalCondition().isDead())
+					result = "N/A";
+				else {
+					Role role = person.getRole();
+					RoleType type = role.getType();
+					if (role != null) result = type;
+					else result = null;
+				}
+			} break;
+
 			case JOB : {
 				// If person is dead, get job from death info.
-				if (person.getPhysicalCondition().isDead()) 
+				if (person.getPhysicalCondition().isDead())
 					result = person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
 					if (person.getMind().getJob() != null) result = person.getMind().getJob().getName(person.getGender());
 					else result = null;
-				} 
+				}
 			} break;
 
 			case TASK : {
@@ -469,7 +486,7 @@ extends UnitTableModel {
 
 		return result;
 	}
-	
+
 	/**
 	 * Give the status of a person's hunger level
 	 * @param hunger
@@ -562,7 +579,7 @@ extends UnitTableModel {
 			settlementListener = null;
 			settlement = null;
 		}
-		
+
 		if (performanceValueCache != null) {
 		    performanceValueCache.clear();
         }
@@ -598,6 +615,7 @@ extends UnitTableModel {
 			m.put(UnitEventType.STRESS_EVENT, STRESS);
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 			m.put(UnitEventType.JOB_EVENT, JOB);
+			m.put(UnitEventType.ROLE_EVENT, ROLE);
 			m.put(UnitEventType.TASK_EVENT, TASK);
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
@@ -635,7 +653,7 @@ extends UnitTableModel {
 			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
 			else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
 			*/
-			
+
 			if (eventType == UnitEventType.DEATH_EVENT) {
 				if (event.getTarget() instanceof Person) {
 					Unit unit = (Unit) event.getTarget();
@@ -660,7 +678,7 @@ extends UnitTableModel {
 			    double hunger = person.getPhysicalCondition().getHunger();
 			    double energy = person.getPhysicalCondition().getEnergy();
 			    String hungerString = tableModel.getHungerStatus(hunger, energy);
-			    if ((tableModel.performanceValueCache != null) && 
+			    if ((tableModel.performanceValueCache != null) &&
 			            tableModel.performanceValueCache.containsKey(person)) {
 			        Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
 			        String oldHungerString = performanceItemMap.get(HUNGER);
@@ -676,7 +694,7 @@ extends UnitTableModel {
                 Person person = (Person) event.getSource();
                 double fatigue = person.getPhysicalCondition().getFatigue();
                 String fatigueString = tableModel.getFatigueStatus(fatigue);
-                if ((tableModel.performanceValueCache != null) && 
+                if ((tableModel.performanceValueCache != null) &&
                         tableModel.performanceValueCache.containsKey(person)) {
                     Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
                     String oldFatigueString = performanceItemMap.get(FATIGUE);
@@ -692,7 +710,7 @@ extends UnitTableModel {
                 Person person = (Person) event.getSource();
                 double stress = person.getPhysicalCondition().getStress();
                 String stressString = tableModel.getStressStatus(stress);
-                if ((tableModel.performanceValueCache != null) && 
+                if ((tableModel.performanceValueCache != null) &&
                         tableModel.performanceValueCache.containsKey(person)) {
                     Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
                     String oldStressString = performanceItemMap.get(STRESS);
@@ -708,7 +726,7 @@ extends UnitTableModel {
                 Person person = (Person) event.getSource();
                 double performance = person.getPhysicalCondition().getPerformanceFactor() * 100D;
                 String performanceString = tableModel.getPerformanceStatus(performance);
-                if ((tableModel.performanceValueCache != null) && 
+                if ((tableModel.performanceValueCache != null) &&
                         tableModel.performanceValueCache.containsKey(person)) {
                     Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
                     String oldStressString = performanceItemMap.get(PERFORMANCE);
@@ -720,7 +738,7 @@ extends UnitTableModel {
                     }
                 }
             }
-			 
+
 			if (column != null && column> -1) {
 				Unit unit = (Unit) event.getSource();
 				tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);
@@ -824,7 +842,7 @@ extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT) 
+			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)
 				addUnit((Unit) event.getTarget());
 			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT)
 				removeUnit((Unit) event.getTarget());

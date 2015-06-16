@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -51,7 +52,9 @@ implements Serializable {
 		jobTasks.add(PrepareDessert.class);
 		//2014-11-23 Added ProduceFood.class
 		jobTasks.add(ProduceFood.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add chef-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

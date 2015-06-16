@@ -3,12 +3,12 @@ package org.mars_sim.msp.core;
 /**
  * Mars Simulation Project
  * UnitEventType.java
- * @version 3.07 2014-12-19 
+ * @version 3.07 2014-12-19
  * @author stpa
- * 
+ *
  */
 public enum UnitEventType {
-	
+
 	// from Crewable.java but was never used
 	CREW_CAPACITY_EVENT				("crew capacity event"),
 
@@ -31,7 +31,7 @@ public enum UnitEventType {
 	ADD_ASSOCIATED_ROBOT_EVENT		("add associated robot"),
 	REMOVE_ASSOCIATED_ROBOT_EVENT	("remove associated robot"),
 
-	
+
 	// from PhysicalCondition.java
 	FATIGUE_EVENT					("fatigue event"),
 	HUNGER_EVENT					("hunger event"),
@@ -67,6 +67,8 @@ public enum UnitEventType {
 	// from Farming.java
 	CROP_EVENT						("crop event"),
 
+	ROLE_EVENT						("role event"),
+
 	// from Mind.java
 	JOB_EVENT						("job event"),
 	MISSION_EVENT					("mission event"),
@@ -99,7 +101,7 @@ public enum UnitEventType {
 	STORED_HEAT_CAPACITY_EVENT		("stored heat capacity"),
 	REQUIRED_HEAT_EVENT				("required heat"),
 	HEAT_VALUE_EVENT				("heat value");
-	
+
 	private String name;
 
 	private UnitEventType(String name) {

@@ -476,7 +476,7 @@ public class LocalAreaUtil {
         boolean cached = false;
         Area obstacleArea = null;
         if (useCache && obstacleAreaCache.containsKey(coordinates)) {
-            String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+            String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
             String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
             if (currentTimestamp.equals(cachedTimestamp)) {
                 cached = true;
@@ -520,7 +520,7 @@ public class LocalAreaUtil {
         // Store cached obstacle area for location with current timestamp if needed.
         if (useCache && !cached && (obstacleArea != null)) {
             obstacleAreaCache.put(coordinates, obstacleArea);
-            String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
+            String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
             obstacleAreaTimestamps.put(coordinates, currentTimestamp);
         }
         

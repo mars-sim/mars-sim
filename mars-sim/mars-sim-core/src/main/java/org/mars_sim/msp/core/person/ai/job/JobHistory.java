@@ -49,15 +49,21 @@ public class JobHistory implements Serializable  {
      * Saves the new job assignment for a person.
      */
     // 2015-03-30 Added saveJob()
-    public void saveJob(Job newJob, String initiator) {
+    public void saveJob(Job newJob, String initiator, String status, String approvedBy) {
     	//if (job == null) System.out.println("saveJob() : job is null");
     	//if (person.getGender() == null) System.out.println("saveJob() : person.getGender() is null");
     	String newJobStr = newJob.getName(person.getGender());
+    	processNewJob(newJobStr, initiator, status, approvedBy);
+    }
+
+
+    public void processNewJob(String newJobStr, String initiator, String status, String approvedBy) {
 
     	if (jobAssignmentList.isEmpty()) {
     		MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
-    		jobAssignmentList.add(new JobAssignment(startClock, newJobStr, initiator));
+    		jobAssignmentList.add(new JobAssignment(startClock, newJobStr, initiator, status, approvedBy));
     	}
+
     	else {
     		int size = jobAssignmentList.size();
 			// Obtain last entry's lastJobStr
@@ -65,10 +71,16 @@ public class JobHistory implements Serializable  {
     		// Compare lastJobStr with newJobStr
     		if (!lastJobStr.equals(newJobStr)) {
 	        	MarsClock clock = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	    		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator));
+	    		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator, status, approvedBy));
     		}
     	}
-    	//System.out.println("JobHistory : saveJob(). " + person.getName() + "'s size of jobAssignmentList is " + jobAssignmentList.size());
+    }
+    /**
+     * Saves the new job assignment for a person.
+     */
+    // 2015-03-30 Added saveJob()
+    public void saveJob(String newJobStr, String initiator, String status, String approvedBy) {
+    	processNewJob(newJobStr, initiator, status, approvedBy);
     }
 
 }

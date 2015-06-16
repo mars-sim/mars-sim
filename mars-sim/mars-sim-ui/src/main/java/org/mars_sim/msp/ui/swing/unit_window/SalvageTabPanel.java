@@ -63,14 +63,14 @@ public class SalvageTabPanel extends TabPanel {
         salvageInfoPanel.add(timePanel, BorderLayout.NORTH);
         
         // Create the start time label.
-        String startTimeString = salvageInfo.getStartTime().getTimeStamp();
+        String startTimeString = salvageInfo.getStartTime().getDateTimeStamp();
         JLabel startTimeLabel = new JLabel("Start Time: " + startTimeString, JLabel.LEFT);
         timePanel.add(startTimeLabel);
         
         // Create the finish time label.
         MarsClock finishTime = salvageInfo.getFinishTime();
         finishTimeString = "";
-        if (finishTime != null) finishTimeString = finishTime.getTimeStamp();
+        if (finishTime != null) finishTimeString = finishTime.getDateTimeStamp();
         finishTimeLabel = new JLabel("Finish Time: " + finishTimeString, JLabel.LEFT);
         timePanel.add(finishTimeLabel);
 
@@ -123,7 +123,7 @@ public class SalvageTabPanel extends TabPanel {
         SalvageInfo salvageInfo = ((Salvagable) unit).getSalvageInfo();
         MarsClock finishTime = salvageInfo.getFinishTime();
         String newFinishTimeString = "";
-        if (finishTime != null) newFinishTimeString = finishTime.getTimeStamp();
+        if (finishTime != null) newFinishTimeString = finishTime.getDateTimeStamp();
         if (!finishTimeString.equals(newFinishTimeString)) {
             finishTimeString = newFinishTimeString;
             finishTimeLabel.setText("Finish Time: " + finishTimeString);

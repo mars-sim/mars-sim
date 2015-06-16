@@ -288,19 +288,21 @@ public class MarsClock implements Serializable {
     }
 
     /** Returns formatted time stamp string.
-     *  ex. "13-Adir-05  056.349"
-     *  @return formatted timestamp string
+     *  e.g.. "13-Adir-05  056.349"
+     *  @return formatted time stamp string
      */
-    public String getTimeStamp() {
+    public String getDateTimeStamp() {
         return new StringBuilder(getDateString()).append("  ").append(getTimeString()).toString();
     }
 
-    /** Returns formatted time stamp string such as "13-Adir-05 0056"
+    /** Returns formatted time stamp string
+     *  e.g. "13-Adir-05 0056"
      *  @return formatted String
      */
     public static String getDateTimeStamp(MarsClock time) {
         return new StringBuilder(getDateString(time)).append(" ").append(getMillisolString(time)).toString();
     }
+
 
     /**
      * Gets the current date string.
@@ -611,7 +613,7 @@ public class MarsClock implements Serializable {
      * @return time stamp string.
      */
     public String toString() {
-    	return getTimeStamp();
+    	return getDateTimeStamp();
     }
 
     /**

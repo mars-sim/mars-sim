@@ -62,6 +62,7 @@ public class MetaTaskUtil {
         metaTasks.add(new RequestMedicalTreatmentMeta());
         metaTasks.add(new RespondToStudyInvitationMeta());
         metaTasks.add(new RestingMedicalRecoveryMeta());
+        metaTasks.add(new ReviewJobReassignmentMeta());
         metaTasks.add(new ReturnLightUtilityVehicleMeta());
         metaTasks.add(new SalvageBuildingMeta());
         metaTasks.add(new SalvageGoodMeta());

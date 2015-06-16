@@ -135,7 +135,7 @@ extends ToolWindow {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-			    	marsTimeString = marsClock.getTimeStamp();
+			    	marsTimeString = marsClock.getDateTimeStamp();
 			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0 
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
 					timeLabel.setText("Martian Time : " + marsTimeString + " UMST");

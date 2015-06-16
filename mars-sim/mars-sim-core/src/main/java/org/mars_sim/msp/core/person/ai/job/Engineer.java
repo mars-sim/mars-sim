@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
@@ -59,7 +60,9 @@ implements Serializable {
 		jobTasks.add(DigLocalRegolith.class);
 		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(SalvageGood.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

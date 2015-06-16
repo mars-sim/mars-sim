@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
@@ -63,7 +64,9 @@ implements Serializable {
 		jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleGarage.class);
 		jobTasks.add(ConsolidateContainers.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

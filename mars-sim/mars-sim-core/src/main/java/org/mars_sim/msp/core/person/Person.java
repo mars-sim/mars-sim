@@ -70,7 +70,6 @@ implements VehicleOperator, Serializable {
     private String birthplace;
     /** The person's name. */
     private String name;
-
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
 
@@ -179,7 +178,7 @@ implements VehicleOperator, Serializable {
 			getRole().setNewRoleType(type);
 			Job job = JobManager.getJob("Manager");
             if (job != null) {
-                mind.setJob(job, true, JobManager.SETTLEMENT);
+                mind.setJob(job, true, JobManager.SETTLEMENT, "Approved", JobManager.SETTLEMENT);
             }
 		}
 		else

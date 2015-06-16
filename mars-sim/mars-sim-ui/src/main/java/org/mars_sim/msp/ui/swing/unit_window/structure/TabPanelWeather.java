@@ -486,7 +486,7 @@ extends TabPanel {
 
     	Coordinates location = unit.getCoordinates();
 		//System.out.println("solar declination angle : " + 57.2975 * orbitInfo.getSolarDeclinationAngle());
-		//System.out.println("sunset hour angle : " + 5.5556 * orbitInfo.getDaylightMillisols(location));
+		//System.out.println("Duration of Mars daylight in millisols : " + orbitInfo.getDaylightinMillisols(location));
 
 
         if (!masterClock.isPaused()) {
@@ -545,7 +545,7 @@ extends TabPanel {
 	    		if (temperatureCache < -40)
 	    			icon = FRIGID;
 	    		else {
-	    			if (windSpeedCache > 4D)
+	    			if (windSpeedCache > 6D)
 	    				icon = SNOW_BLOWING;
 	    			else
 	    				icon = SNOWFLAKE;

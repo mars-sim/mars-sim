@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -80,7 +81,9 @@ implements Serializable {
 		jobTasks.add(ResearchScientificStudy.class);
 		jobTasks.add(RespondToStudyInvitation.class);
 		jobTasks.add(StudyFieldSamples.class);
+
 		jobTasks.add(WriteReport.class);
+		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add areologist-related missions.
 		jobMissionStarts.add(Exploration.class);
