@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DayNightMapLayer.java
- * @version 3.08 2015-03-18
+ * @version 3.08 2015-06-15
  * @author Manny Kung
  */
 
@@ -79,7 +79,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 	        // double sunlight = surfaceFeatures.getSurfaceSunlight(location);
 	        // normalized to 400 W/m2 instead of 590 W/m2 so as to make the map brighter on screen
-	        double sunlight = surfaceFeatures.getPreviousSolarIrradiance(location) / 400D;
+	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / 400D;
         	//System.out.println(" sunlight is " + sunlight);
 
 	        //if (sunlight > 0)
