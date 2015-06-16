@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelWeather.java
- * @version 3.08 2015-05-01
+ * @version 3.08 2015-06-15
  * @author Manny Kung
  */
 
@@ -463,7 +463,7 @@ extends TabPanel {
     }
 
     public int getSolarIrradiance() {
-  		return (int) surfaceFeatures.getPreviousSolarIrradiance(locationCache);
+  		return (int) surfaceFeatures.getSolarIrradiance(locationCache);
       }
 
      public String getSolarIrradianceString(double value) {
