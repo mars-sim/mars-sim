@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.07 2015-01-14
+ * @version 3.08 2015-06-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -249,7 +249,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				// although disliked by some
 				switch (columnIndex) {
 				case TIMESTAMP : {
-					result = event.getTimestamp().getTimeStamp();
+					result = event.getTimestamp();
 					//System.out.println("getValueAt() : timestamp is " + result);
 				} break;
 
