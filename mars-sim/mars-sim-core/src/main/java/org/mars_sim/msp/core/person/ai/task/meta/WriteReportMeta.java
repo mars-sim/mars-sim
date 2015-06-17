@@ -25,7 +25,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.writeReport"); //$NON-NLS-1$
@@ -74,7 +74,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            if (roleType.equals(RoleType.PRESIDENT)
 	                	|| roleType.equals(RoleType.MAYOR)
 	            		|| roleType.equals(RoleType.COMMANDER) )
-	            	result += 150D;
+	            	result += 100D;
 
 	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 	            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -83,7 +83,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
-	            	result += 100D;
+	            	result += 50D;
 
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();

@@ -52,18 +52,21 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
         double result = 0D;
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-                //System.out.println("ReviewJobReassignmentMeta's little fatigue and stress");
+        	if (roleType == null)
+            	roleType = person.getRole().getType();
 
-	            if (roleType == null)
-	            	roleType = person.getRole().getType();
+            if (roleType.equals(RoleType.PRESIDENT)
+                	|| roleType.equals(RoleType.MAYOR)
+            		|| roleType.equals(RoleType.COMMANDER)
+        			|| roleType.equals(RoleType.SUB_COMMANDER) ) {
 
-	            if (roleType.equals(RoleType.PRESIDENT)
-	                	|| roleType.equals(RoleType.MAYOR)
-	            		|| roleType.equals(RoleType.COMMANDER) ) {
-	                System.out.println("ReviewJobReassignmentMeta's roleType : " + roleType);
+	            // Probability affected by the person's stress and fatigue.
+	            PhysicalCondition condition = person.getPhysicalCondition();
+	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
+	                //System.out.println("ReviewJobReassignmentMeta's little fatigue and stress");
+
+
+	                //System.out.println("ReviewJobReassignmentMeta's roleType : " + roleType);
 
 		            	//result += 150D;
 	/*
@@ -77,6 +80,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 		            	result += 100D;
 	*/
 
+	            	double preference = person.getPreference().getPreferenceScore(this);
 		       	    // Get highest person skill level.
 	        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
@@ -85,12 +89,13 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                    String status = list.get(list.size()-1).getStatus();
 
 	                    if (status != null)
-		                    if (status.equals("Pending"))
-		                    	result += 200D;
-
-	                    if (result > 0) System.out.println("ReviewJobReassignmentMeta's result : " + result);
+		                    if (status.equals("Pending")) {
+		                    	//System.out.println("ReviewJobReassignmentMeta status equals pending");
+		                    	result += 300D;
+		                    	result += result * preference / 6D ;
+		                    }
+	                    //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result : " + result);
 	    	            // Note: if an office space is not available, one can still write reports
-
 	                }
 
     	            // Get an available office space.
@@ -111,13 +116,13 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 		            result *= person.getPerformanceRating();
 
 			        // 2015-06-07 Added Preference modifier
-			        if (result > 0)
-			        	result += person.getPreference().getPreferenceScore(this);
-			        if (result < 0) result = 0;
+			        //if (result > 0)
+			        //	result += result / 4D * person.getPreference().getPreferenceScore(this);
+			        //if (result < 0) result = 0;
 	            }
             }
         }
-        if (result > 0) System.out.println("ReviewJobReassignmentMeta's result is " + result);
+        //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result is " + result);
         return result;
     }
 

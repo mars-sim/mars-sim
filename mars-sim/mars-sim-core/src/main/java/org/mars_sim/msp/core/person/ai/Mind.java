@@ -244,38 +244,48 @@ implements Serializable {
      * @param newJob the new job
      * @param bypassingJobLock
      */
-    public void setJob(String selectedJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-	    Iterator<Job> i = JobManager.getJobs().iterator();
-		while (i.hasNext()) {
+    public void setJob(String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+
+    	Job newJob = null;
+    	Iterator<Job> i = JobManager.getJobs().iterator();
+	    while (i.hasNext()) {
 		    Job job = i.next();
 		    String n = job.getName(person.getGender());
-			if (selectedJobStr.equals(n))
+			if (newJobStr.equals(n))
 				// gets selectedJob by running through iterator to match it
-				setJob(job, bypassingJobLock, assignedBy, status, approvedBy);
+				newJob = job;
 		}
+
+    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+
+
     }
 
-    /**
-     * Sets the person's job.
-     * @param newJob the new job
-     * @param bypassingJobLock
-     */
-    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-    	// if (newJob == null) System.out.println("setJob() : newJob is null");
-    	// TODO : if jobLock is true, will it allow the job to be changed?
-    	String newJobStr = newJob.getName(person.getGender());
+
+    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+
+    	//System.out.println("calling assignJob()");
     	String jobStr = null;
     	if (job == null)
     		jobStr = null;
     	else
     		jobStr = job.getName(person.getGender());
     	// TODO : check if the initiator's role allows the job to be changed
-    	if (!newJobStr.equals(jobStr))
+    	if (!newJobStr.equals(jobStr)) {
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 		        // 2015-03-30 Added saveJob()
-		        person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy);
+		        if (approvedBy.equals(JobManager.SETTLEMENT)) {
+		        	if (person.getSettlement().getAllAssociatedPeople().size() <= 4)
+		        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
+		        }
+		        else  {// if (approvedBy.equals(a person)  {
+	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
+		        }
+
+		    	//System.out.println("just called JobHistory's saveJob()");
 		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+
 		    	// the new job will be Locked in until the beginning of the next day
 		        jobLock = true;
 
@@ -298,6 +308,22 @@ implements Serializable {
 	                }
 		        }
     	    }
+    	}
+    }
+
+
+    /**
+     * Sets the person's job.
+     * @param newJob the new job
+     * @param bypassingJobLock
+     */
+    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+    	// if (newJob == null) System.out.println("setJob() : newJob is null");
+    	// TODO : if jobLock is true, will it allow the job to be changed?
+    	String newJobStr = newJob.getName(person.getGender());
+
+    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+
     }
 
 

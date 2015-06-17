@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCareer.java
- * @version 3.08 2015-03-31
+ * @version 3.08 2015-06-16
  * @author Manny KUng
  */
 
@@ -68,10 +68,11 @@ implements ActionListener {
 
 	/** data cache */
 	private int solCache = 1;
-	//private int numStarsCache = 0;
 
-	private String jobCache = ""; //$NON-NLS-1$
+	private String jobCache = "";
 	private String roleCache;
+	private String statusCache = "Approved";
+
 
 	private int solRatingSubmitted = 0;
 
@@ -334,57 +335,61 @@ implements ActionListener {
 
 		        pop = settlement.getAllAssociatedPeople().size();
 
-		        if (pop >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+		        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 		        	// If this request is at least one day ago
-			        if ( solElapsed != solCache && solElapsed > solCache + 1) {
-
-			        	//String selectedJobStr = (String) jobComboBox.getSelectedItem();
-			        	//String jobStrCache = person.getMind().getJob().getName(person.getGender());
-
-			        	//List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
-			        	//int last = jobAssignmentList.size()-1;
-
-			        	//String status = jobAssignmentList.get(last).getStatus();
-			        	//String selectedJobStr = jobAssignmentList.get(last).getJobType();
-
-			        	// Check if the chief or the commander has approved the job reassignment
-			        	// if the reassignment is not pending (usch as null or approved), process with making the new job show up
-			        	//if (status.equals("Approved")) {
-			        		//System.out.println("status : approved");
-						    //jobComboBox.setSelectedItem(selectedJobStr);
-
-						    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob
-						    // as soon as the combobox selection is changed or wait for checking of "approval" ?
-
-/*
-							Job selectedJob = null;
-							Iterator<Job> i = JobManager.getJobs().iterator();
-							while (i.hasNext()) {
-							    Job job = i.next();
-							    String n = job.getName(person.getGender());
-								if (selectedJobStr.equals(n))
-									// gets selectedJob by running through iterator to match it
-							        selectedJob = job;
-							}
-*/
-						    // Sets the job to the newly selected job
-						    //person.getMind().setJob(selectedJobStr, true, JobManager.USER);
-
-							//System.out.println("Yes they are diff");
-							//jobCache = selectedJobStr;
-
-				        	jobComboBox.setEnabled(true);
-
-							errorLabel.setForeground(Color.red);
-				        	errorLabel.setText("");
+			        if ( solElapsed != solCache)
+			        	if (statusCache.equals("Pending")) {
 
 				        	solCache = solElapsed;
+				        	System.out.println("change of day and statusCache was still pending ");
+				        	//String selectedJobStr = (String) jobComboBox.getSelectedItem();
+				        	//String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
-							// updates the jobHistoryList in jobHistoryTableModel
-							jobHistoryTableModel.update();
-				        //}
+				        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+				        	int last = jobAssignmentList.size()-1;
+
+				        	String status = jobAssignmentList.get(last).getStatus();
+				        	String selectedJobStr = jobAssignmentList.get(last).getJobType();
+
+				        	// Check if the chief or the commander has approved the job reassignment
+				        	// if the reassignment is not pending (usch as null or approved), process with making the new job show up
+				        	if (status.equals("Approved")) {
+
+				        		statusCache = "Approved";
+				        		System.out.println("just set statusCache to Approved.  selectedJobStr : " + selectedJobStr);
+
+							    // Sets the job to the newly selected job
+							    //person.getMind().setJob(selectedJobStr, true, JobManager.USER);
+
+							    jobComboBox.setSelectedItem(selectedJobStr);
+
+							    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob
+							    // as soon as the combobox selection is changed or wait for checking of "approval" ?
+	/*
+								Job selectedJob = null;
+								Iterator<Job> i = JobManager.getJobs().iterator();
+								while (i.hasNext()) {
+								    Job job = i.next();
+								    String n = job.getName(person.getGender());
+									if (selectedJobStr.equals(n))
+										// gets selectedJob by running through iterator to match it
+								        selectedJob = job;
+								}
+	*/
+
+								//System.out.println("Yes they are diff");
+								//jobCache = selectedJobStr;
+
+					        	jobComboBox.setEnabled(true);
+
+								errorLabel.setForeground(Color.red);
+					        	errorLabel.setText("");
+
+								// updates the jobHistoryList in jobHistoryTableModel
+								jobHistoryTableModel.update();
+					        }
+				        }
 			        }
-		        }
 
 				String roleNew = person.getRole().toString();
 				if ( !roleCache.equals(roleNew)) {
@@ -470,12 +475,14 @@ implements ActionListener {
 			        	//int size = jobAssignmentList.size();
 
 			        	JobHistory jh = person.getJobHistory();
-			        	jh.saveJob(selectedJobStr, JobManager.USER, "Pending", null);
+			        	jh.saveJob(selectedJobStr, JobManager.USER, "Pending", null, true);
 			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setStatus("Pending");
 
+			        	statusCache = "Pending";
+
 			        	// set the combobox selection back to its previous job type for the time being until the reassignment is approved
-			        	//jobComboBox.setSelectedItem(jobCache);
-			        	jobComboBox.setSelectedItem(selectedJobStr);
+			        	jobComboBox.setSelectedItem(jobCache);
+			        	//jobComboBox.setSelectedItem(selectedJobStr);
 			        	// disable the combobox so that user cannot submit job reassignment for a period of time
 						jobComboBox.setEnabled(false);
 

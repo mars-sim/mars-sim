@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
@@ -55,6 +56,8 @@ implements Serializable {
 
     private MarsClock clock;
 
+    public RoleType roleType;
+
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -66,13 +69,27 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // If person is in a settlement, try to find an office building.
-            Building officeBuilding = getAvailableOffice(person);
-            if (officeBuilding != null) {
-                // Walk to the office building.
-                walkToActivitySpotInBuilding(officeBuilding, false);
+        	if (roleType == null)
+            	roleType = person.getRole().getType();
 
-                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
+            if (roleType.equals(RoleType.PRESIDENT)
+                	|| roleType.equals(RoleType.MAYOR)
+            		|| roleType.equals(RoleType.COMMANDER)
+        			|| roleType.equals(RoleType.SUB_COMMANDER) ) {
+
+
+	            // If person is in a settlement, try to find an office building.
+	            Building officeBuilding = getAvailableOffice(person);
+
+	            // Note: office building is optional
+	            if (officeBuilding != null) {
+	                // Walk to the office building.
+	                walkToActivitySpotInBuilding(officeBuilding, false);
+
+	                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
+	            }
+
+	            // TODO: add other workplace if administration building is not available
 
 	            // Iterates through each person's
 
@@ -86,43 +103,36 @@ implements Serializable {
 
                     if (status != null )
                     	if (status.equals("Pending")) {
-
 	                    	// Reviews user's rating
 		                	int rating = list.get(last).getJobRating();
 		                	// what TODO ?
-
 	                    	// Reviews this person's preference
 		                	// what TODO ?
-
 	                    	// have conversation
 		                	// what TODO ?
 
-		                	list.get(last).setAuthorizedBy(person.getName() + "--" + person.getRole().getType()); // or getRole().toString();
+		                	//list.get(last).setAuthorizedBy(person.getName() + "--" + person.getRole().getType()); // or getRole().toString();
 		                	// TODO : added title of the approval authority
-		                	if (clock == null)
-		                		clock = Simulation.instance().getMasterClock().getMarsClock();
-		                	list.get(last).setTimeAuthorized(clock);
-
-		                	list.get(last).setStatus("Approved");
+		                	//if (clock == null)
+		                	//	clock = Simulation.instance().getMasterClock().getMarsClock();
+		                	//list.get(last).setTimeAuthorized(clock);
+		                	//list.get(last).setStatus("Approved");
 
 		                	String selectedJobStr = list.get(last).getJobType();
 		                	// Updates the job
-		                	person.getMind().setJob(selectedJobStr, true, JobManager.USER, "Pending", null);
-	                        System.out.println("ReviewJobReassignment : done setting job");
+		                	person.getMind().setJob(selectedJobStr, true, JobManager.USER, "Approved", person.getName() + "--" + person.getRole().getType());
+	                        //System.out.println("ReviewJobReassignment : done setting job");
 	                    }
-
-                }
-
-
-
-            }
-            else {
-                endTask();
-            }
-        }
-        else {
-            endTask();
-        }
+	                } // end of while
+	            } // end of roleType
+	            else {
+	                endTask();
+	            }
+	        }
+        //}
+        //else {
+        //    endTask();
+        //}
 
         // Initialize phase
         addPhase(REVIEWING_JOB_ASSIGNMENT);

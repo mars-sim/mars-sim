@@ -220,7 +220,16 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 		// the temperature of the suit will not be lower than the ambient temperature
 		if (result < ambient) {
-			return ambient;
+			// TODO: add codes to simulate the use of cooling coil to turn on cooler to reduce the temperature inside the EVA suit.
+
+			// calculate new temperature
+
+			// return newTemperature
+
+			// if cooling coil malfunction, then return ambient only
+			return result;
+			// NOTE: for now, turn off returning ambient until new codes are added.
+			//return ambient;
 		} else {
 			return result;
 		}
