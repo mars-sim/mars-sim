@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -47,6 +48,8 @@ implements Serializable {
     /** The administration building the person is using. */
     private Administration office;
 
+    public RoleType roleType;
+
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
@@ -58,16 +61,31 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // If person is in a settlement, try to find an office building.
-            Building officeBuilding = getAvailableOffice(person);
-            if (officeBuilding != null) {
-                // Walk to the office building.
-                walkToActivitySpotInBuilding(officeBuilding, false);
+            if (roleType == null)
+            	roleType = person.getRole().getType();
 
-                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
-            }
-            else {
-                endTask();
+            if (roleType.equals(RoleType.PRESIDENT)
+                	|| roleType.equals(RoleType.MAYOR)
+            		|| roleType.equals(RoleType.COMMANDER)
+            		|| roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) ) {
+
+	            // If person is in a settlement, try to find an office building.
+	            Building officeBuilding = getAvailableOffice(person);
+	            if (officeBuilding != null) {
+	                // Walk to the office building.
+	                walkToActivitySpotInBuilding(officeBuilding, false);
+
+	                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
+	            }
+	            else {
+	                endTask();
+	            }
             }
         }
         else {

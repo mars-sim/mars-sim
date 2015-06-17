@@ -23,6 +23,7 @@ public class JobHistory implements Serializable  {
 	//private static transient Logger logger = Logger.getLogger(JobHistory.class.getName());
 
 	private Person person;
+	private MarsClock clock;
 
     /** The person's job history. */
     //private Map<MarsClock, JobAssignment> jobHistoryMap;
@@ -49,15 +50,16 @@ public class JobHistory implements Serializable  {
      * Saves the new job assignment for a person.
      */
     // 2015-03-30 Added saveJob()
-    public void saveJob(Job newJob, String initiator, String status, String approvedBy) {
+    public void saveJob(Job newJob, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
     	//if (job == null) System.out.println("saveJob() : job is null");
     	//if (person.getGender() == null) System.out.println("saveJob() : person.getGender() is null");
     	String newJobStr = newJob.getName(person.getGender());
-    	processNewJob(newJobStr, initiator, status, approvedBy);
+    	processJob(newJobStr, initiator, status, approvedBy, addNewJobAssignment);
     }
 
 
-    public void processNewJob(String newJobStr, String initiator, String status, String approvedBy) {
+    public void processJob(String newJobStr, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
+    	//System.out.println("just called JobHistory's processNewJob()");
 
     	if (jobAssignmentList.isEmpty()) {
     		MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
@@ -65,22 +67,33 @@ public class JobHistory implements Serializable  {
     	}
 
     	else {
-    		int size = jobAssignmentList.size();
+    		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
-    		String lastJobStr = jobAssignmentList.get(size - 1).getJobType();
+    		String lastJobStr = jobAssignmentList.get(last).getJobType();
+        	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
     		// Compare lastJobStr with newJobStr
-    		if (!lastJobStr.equals(newJobStr)) {
-	        	MarsClock clock = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-	    		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator, status, approvedBy));
-    		}
+    		if (!lastJobStr.equals(newJobStr)) { // for sanity check
+
+	        	if (addNewJobAssignment || status.equals("Pending"))
+	        		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator, status, approvedBy));
+
+	    		else {
+	        		jobAssignmentList.get(last).setAuthorizedBy(person.getName() + "--" + person.getRole().getType()); // or getRole().toString();
+	        		//MarsClock clock = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	            	jobAssignmentList.get(last).setStatus("Approved");
+	            	jobAssignmentList.get(last).setTimeAuthorized(clock);
+	            	System.out.println("just called JobHistory's processNewJob() and set it to Approved");
+	    		}
+        	}
     	}
     }
     /**
      * Saves the new job assignment for a person.
      */
     // 2015-03-30 Added saveJob()
-    public void saveJob(String newJobStr, String initiator, String status, String approvedBy) {
-    	processNewJob(newJobStr, initiator, status, approvedBy);
+    public void saveJob(String newJobStr, String initiator, String status, String approvedBy, boolean addAssignment) {
+    	processJob(newJobStr, initiator, status, approvedBy, addAssignment);
     }
 
 }

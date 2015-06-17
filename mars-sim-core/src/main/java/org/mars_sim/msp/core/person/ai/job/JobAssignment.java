@@ -32,7 +32,7 @@ public class JobAssignment implements Serializable {
 			MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 			this.timeAuthorized = clock;
 		}
-		this.authorizedBy = "Settlement";
+		this.authorizedBy = authorizedBy;
 
 	}
 
