@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -20,7 +21,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,6 +39,12 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
+import com.jidesoft.swing.Searchable;
+import com.jidesoft.swing.SearchableBar;
+//import com.jidesoft.swing.SearchableBar;
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.TableSearchable;
+
 /**
  * The MonitorWindow is a tool window that displays a selection of tables
  * each of which monitor a set of Units.
@@ -50,7 +59,7 @@ implements TableModelListener, ActionListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
-	final private static int STATUSHEIGHT = 17;
+	final private static int STATUSHEIGHT = 25;
 
 	// Data members
 	private JTabbedPane tabsSection;
@@ -69,7 +78,12 @@ implements TableModelListener, ActionListener {
 	private JButton buttonProps;
 
 	private MainDesktopPane desktop;
-	
+
+	private JPanel statusPanel;
+	private JTable table ;
+	private Searchable searchable ;
+	private SearchableBar _tableSearchableBar;
+
 	/**
 	 * Constructor.
 	 * @param desktop the desktop pane
@@ -82,7 +96,7 @@ implements TableModelListener, ActionListener {
 		this.setOpaque(true);
 		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
 		//this.setBackground(new Color(0, 0, 0, 0));
-		
+
 		setMaximizable(true);
 
 		// Get content pane
@@ -146,7 +160,7 @@ implements TableModelListener, ActionListener {
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Create a status panel
-		JPanel statusPanel = new JPanel();
+		statusPanel = new JPanel();
 		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
 		mainPane.add(statusPanel, BorderLayout.SOUTH);
 
@@ -155,15 +169,15 @@ implements TableModelListener, ActionListener {
 		rowCount.setHorizontalAlignment(SwingConstants.LEFT);
 		rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
 		statusPanel.add(rowCount);
-		Dimension dims = new Dimension(150, STATUSHEIGHT);
+		Dimension dims = new Dimension(120, STATUSHEIGHT);
 		rowCount.setPreferredSize(dims);
 
 		// Add the default table tabs
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		
+
 		// 2014-11-29 Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
-		
+
 		addTab(new UnitTab(this,new PersonTableModel(unitManager, desktop), true));
 		// 2015-01-21 Added RobotTableModel
 		addTab(new UnitTab(this,new RobotTableModel(unitManager, desktop), true));
@@ -174,14 +188,14 @@ implements TableModelListener, ActionListener {
 		addTab(new UnitTab(this,new CropTableModel(unitManager), true));
 		// 2014-11-25 mkung: added FoodInventoryTab()
 		addTab(new FoodInventoryTab(this));
-		
-		addTab(new MissionTab(this));	
+
+		addTab(new MissionTab(this));
 		// 2014-11-29 Added notifyBox
 		// 2015-01-15 Added desktop
 		eventsTab = new EventTab(this, notifyBox, desktop);
-		
+
 		addTab(eventsTab);
-		
+
 		addTab(new TradeTab(this));
 
 		tabsSection.setSelectedIndex(0);
@@ -196,14 +210,70 @@ implements TableModelListener, ActionListener {
 			}
 		);
 
+
+		// 2015-06-17 Added createSearchBar();
+		//setTable();
+		//createSearchableBar();
+		statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+		statusPanel.invalidate();
+		statusPanel.revalidate();
+
+
 		// Have to define a starting size
 		// 2014-10-10 mkung: changed the horizontal resolution from 600 to 800 to accommodate the addition
 		// of 3 columns (Grains, Fruits, Vegetables)
-		setSize(new Dimension(1000, 300));
+		setPreferredSize(new Dimension(1024, 512));
+		setMinimumSize(new Dimension(1024, 512));
+		setSize(new Dimension(1024, 512));
 
 	}
 
-	
+
+    public void setTable() {
+        System.out.println("setTable()");
+		MonitorTab monitorTab = getSelected();
+    	if (searchable != null)
+    		SearchableUtils.uninstallSearchable(table);
+		TableTab tableTab = (TableTab) monitorTab;
+    	table = tableTab.getTable();
+		System.out.println("tab : " + tableTab + "\n    table : " + table);
+    }
+
+    //public void switchTable() {
+    //	_tableSearchableBar.getSearchable();
+    //}
+
+    public void createSearchableBar() {
+        System.out.println("createSearchableBar()");
+    	if (searchable != null)
+    		SearchableUtils.uninstallSearchable(searchable);
+
+       	searchable = SearchableUtils.installSearchable(table);
+        searchable.setRepeats(true);
+        //searchable.setPopupTimeout(5000);
+     	searchable.setCaseSensitive(false);
+
+		if (_tableSearchableBar != null) {
+			_tableSearchableBar.setSearchingText("");
+			_tableSearchableBar = null;
+			//statusPanel.remove(_tableSearchableBar);
+		}
+
+        _tableSearchableBar = new SearchableBar(searchable);
+        _tableSearchableBar.setCompact(false);
+		_tableSearchableBar.setToolTipText("Type in your search terms");
+		((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
+		//_tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
+	    //_tableSearchableBar.setName("TableSearchableBar");
+	    _tableSearchableBar.setShowMatchCount(true);
+	    _tableSearchableBar.setVisible(true);
+
+		//statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+		//statusPanel.invalidate();
+		//statusPanel.revalidate();
+    }
+
+
 	/**
 	 * This method add the specified Unit table as a new tab in the Monitor. The
 	 * model is displayed as a table by default.
@@ -277,12 +347,13 @@ implements TableModelListener, ActionListener {
 	private MonitorTab getSelected() {
 		MonitorTab selected = null;
 		int selectedIdx = tabsSection.getSelectedIndex();
-		if ((selectedIdx != -1) && (selectedIdx < tabs.size())) 
+		if ((selectedIdx != -1) && (selectedIdx < tabs.size()))
 			selected = tabs.get(selectedIdx);
 		return selected;
 	}
 
 	private void tabChanged() {
+		//System.out.println("tabChanged()");
 		MonitorTab selected = getSelected();
 		if (selected != null) {
 			String status = selected.getCountString();
@@ -293,6 +364,11 @@ implements TableModelListener, ActionListener {
 			}
 			selected.getModel().addTableModelListener(this);
 			oldTab = selected;
+
+			// 2015-06-17 Added setTable();
+			setTable();
+			//statusPanel.remove(_tableSearchableBar);
+			createSearchableBar();
 
 			// Enable/disable buttons based on selected tab.
 			buttonMap.setEnabled(false);
@@ -324,6 +400,7 @@ implements TableModelListener, ActionListener {
 				rowCount.setText(status);
 			}
 		}
+		//System.out.println("tableChanged()");
 	}
 
 	private void addTab(MonitorTab newTab) {
@@ -412,5 +489,5 @@ implements TableModelListener, ActionListener {
 			filterCategories();
 		}
 	}
-    
+
 }

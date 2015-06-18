@@ -30,14 +30,24 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.TreeSearchable;
 
 /**
  * The TabPanelStructure is a tab panel showing the organizational structure of a settlement.
@@ -67,6 +77,12 @@ extends TabPanel {
 		);
 
 	    settlement = (Settlement) unit;
+	    AssociatedSettlementListener settlementListener = new AssociatedSettlementListener();
+		settlement.addUnitListener(settlementListener);
+
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		LocalUnitManagerListener unitManagerListener = new LocalUnitManagerListener();
+		unitManager.addUnitManagerListener(unitManagerListener);
 
 		// Create label panel.
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -196,6 +212,12 @@ extends TabPanel {
 
 		JTree tree = new JTree(root);
         tree.setVisibleRowCount(8);
+
+     	// 2015-06-17 Added treeSearchable
+        TreeSearchable searchable = SearchableUtils.installSearchable(tree);
+        searchable.setPopupTimeout(5000);
+        searchable.setCaseSensitive(false);
+
 		//String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 		//System.out.println("CurrentTheme is " + currentTheme);
 /*
@@ -348,8 +370,49 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		// TODO: if a person dies, have settlement re-elect another chief
-		// and run createTree() again here
+		createTree();
+	}
 
+	/**
+	 * UnitListener inner class for settlements for associated people list.
+	 */
+	private class AssociatedSettlementListener
+	implements UnitListener {
+
+		/**
+		 * Catch unit update event.
+		 * @param event the unit event.
+		 */
+		public void unitUpdate(UnitEvent event) {
+			UnitEventType eventType = event.getType();
+			if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)
+				update();
+			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT)
+				update();
+		}
+	}
+
+	/**
+	 * UnitManagerListener inner class.
+	 */
+	private class LocalUnitManagerListener
+	implements UnitManagerListener {
+
+		/**
+		 * Catch unit manager update event.
+		 * @param event the unit event.
+		 */
+		public void unitManagerUpdate(UnitManagerEvent event) {
+			Unit unit = event.getUnit();
+			UnitManagerEventType eventType = event.getEventType();
+			if (unit instanceof Person) {
+				if (eventType == UnitManagerEventType.ADD_UNIT) {
+						update();
+				}
+				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
+						update();
+				}
+			}
+		}
 	}
 }

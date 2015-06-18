@@ -31,6 +31,9 @@ import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.TableSearchable;
+
 public class TabPanelGoods
 extends TabPanel {
 
@@ -103,6 +106,12 @@ extends TabPanel {
 
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(goodsTable);
+
+     	// 2015-06-17 Added goodsSearchable
+     	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);
+        searchable.setPopupTimeout(5000);
+     	searchable.setCaseSensitive(false);
+        searchable.setMainIndex(0); // -1 = search for all columns
 
 	}
 

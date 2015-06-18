@@ -1004,7 +1004,12 @@ public class MainScene {
 
 				if (lookAndFeelTheme.equals("nimrod"))
 					// Use default theme
-					UIManager.setLookAndFeel(new NimRODLookAndFeel());
+					try {
+						UIManager.setLookAndFeel(new NimRODLookAndFeel());
+			        } catch (Exception e) {
+			            e.printStackTrace();
+			        }
+
 				else {
 	/*
 	  				//TODO: let user customize theme in future

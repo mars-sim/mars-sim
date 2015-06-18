@@ -45,6 +45,9 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.TableSearchable;
+
 /**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
@@ -106,6 +109,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(resourcesTable);
 
+     	// 2015-06-17 Added resourcesSearchable
+     	TableSearchable searchable = SearchableUtils.installSearchable(resourcesTable);
+        searchable.setPopupTimeout(5000);
+     	searchable.setCaseSensitive(false);
+
         // Create equipment panel
         JScrollPane equipmentPanel = new JScrollPane();
         equipmentPanel.setBorder(new MarsPanelBorder());
@@ -128,6 +136,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(equipmentTable);
+
     }
 
     /**
