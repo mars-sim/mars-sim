@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -28,18 +27,14 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
-import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -334,9 +329,17 @@ extends MonitorTab {
         setSortColumn(0);
 
         // 2014-12-29 Added ColumnResizer
-     	SwingUtilities.invokeLater(() -> adjustColumnPreferredWidths(table));
+     	SwingUtilities.invokeLater(() -> {
+	     	adjustColumnPreferredWidths(table);
+	    });
 
     }
+
+    public JTable getTable() {
+    	System.out.println("table is "+ table);
+    	return table;
+    }
+
 /*
 	// 2014-12-30 Added setTableStyle()
     public void setTableStyle(JTable table) {

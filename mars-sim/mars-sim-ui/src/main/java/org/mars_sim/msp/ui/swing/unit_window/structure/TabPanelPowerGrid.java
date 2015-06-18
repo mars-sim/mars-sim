@@ -47,6 +47,9 @@ import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.jidesoft.swing.SearchableUtils;
+import com.jidesoft.swing.TableSearchable;
+
 /**
  * This is a tab panel for a settlement's power grid information.
  */
@@ -199,6 +202,12 @@ extends TabPanel {
 		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
+
+     	// 2015-06-17 Added resourcesSearchable
+     	TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
+        searchable.setPopupTimeout(5000);
+     	searchable.setCaseSensitive(false);
+
 
 	}
 

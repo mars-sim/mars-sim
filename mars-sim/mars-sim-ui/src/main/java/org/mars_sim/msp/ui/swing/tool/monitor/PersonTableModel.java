@@ -8,6 +8,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,8 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.jidesoft.swing.SearchableBar;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
