@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -354,8 +354,8 @@ implements Serializable {
     protected double getSpeedLightConditionModifier() {
     	// Ground vehicles travel at 30% speed at night.
     	SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-    	double result = surface.getSurfaceSunlight(getVehicle().getCoordinates());
-        result = (result * .7D) + .3D;
+    	double lightConditions = surface.getSolarIrradiance(getVehicle().getCoordinates());
+        double result = ((lightConditions / 600D) * .7D) + .3D; 
         return result;
     }
     
@@ -405,8 +405,12 @@ implements Serializable {
 
         // Light condition modification.
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        double lightConditions = surface.getSurfaceSunlight(vehicle.getCoordinates());
+        double lightConditions = surface.getSolarIrradiance(vehicle.getCoordinates());
+        lightConditions /= 600D;
         chance *= (5D * (1D - lightConditions)) + 1D;
+        if (chance < 0D) {
+            chance = 0D;
+        }
 
         // Modify based on the vehicle's wear condition.
         chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();

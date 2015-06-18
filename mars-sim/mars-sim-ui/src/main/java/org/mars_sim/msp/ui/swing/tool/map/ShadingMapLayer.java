@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ShadingMapLayer.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 
@@ -66,6 +65,10 @@ public class ShadingMapLayer implements MapLayer {
             for (int y = 0; y < Map.MAP_VIS_HEIGHT; y+=2) {
                 mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
                 double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+//                double sunlight = surfaceFeatures.getSolarIrradiance(location) / 400D;
+                if (sunlight > 1D) {
+                    sunlight = 1D;
+                }
                 int sunlightInt = (int) (127 * sunlight);
                 int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
                

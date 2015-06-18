@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.08 2015-04-24
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -332,7 +332,7 @@ extends VehicleMission {
 							else {
 								// Check if it is day time.
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+								if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
 										surface.inDarkPolarRegion(person.getCoordinates())) {
 									assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
 											getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
@@ -430,7 +430,7 @@ extends VehicleMission {
 							else {
 								// Check if it is day time.
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+								if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
 										surface.inDarkPolarRegion(robot.getCoordinates())) {
 									assignTask(robot, new LoadVehicleEVA(robot, getVehicle(), 
 											getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
@@ -585,7 +585,7 @@ extends VehicleMission {
 							else {
 								// Check if it is day time.
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+								if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
 										surface.inDarkPolarRegion(person.getCoordinates())) {
 									assignTask(person, new UnloadVehicleEVA(person, rover));
 								}
@@ -697,7 +697,7 @@ extends VehicleMission {
 							else {
 								// Check if it is day time.
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+								if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
 										surface.inDarkPolarRegion(robot.getCoordinates())) {
 									assignTask(robot, new UnloadVehicleEVA(robot, rover));
 								}

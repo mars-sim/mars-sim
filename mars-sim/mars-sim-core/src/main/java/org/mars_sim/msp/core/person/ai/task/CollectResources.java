@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.07 2014-09-22
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 
@@ -339,7 +339,7 @@ implements Serializable {
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
         // Check if it is night time outside.
-        boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
+        boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
 
         // Check if in dark polar region.
         boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());

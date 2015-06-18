@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.08 2015-05-29
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -181,7 +181,7 @@ implements Serializable {
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
         // Check if it is night time outside.
-        boolean sunlight = surface.getSurfaceSunlight(person.getCoordinates()) > 0;
+        boolean sunlight = surface.getSolarIrradiance(person.getCoordinates()) > 0D;
 
         // Check if in dark polar region.
         boolean darkRegion = surface.inDarkPolarRegion(person.getCoordinates());
@@ -204,7 +204,7 @@ implements Serializable {
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
         // Check if it is night time outside.
-        boolean sunlight = surface.getSurfaceSunlight(robot.getCoordinates()) > 0;
+        boolean sunlight = surface.getSolarIrradiance(robot.getCoordinates()) > 0D;
 
         // Check if in dark polar region.
         boolean darkRegion = surface.inDarkPolarRegion(robot.getCoordinates());
