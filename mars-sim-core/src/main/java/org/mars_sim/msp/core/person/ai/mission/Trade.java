@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.07 2015-03-01
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -813,7 +813,7 @@ implements Serializable {
                     else {
                         // Check if it is day time.
                         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                        if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                        if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
                                 surface.inDarkPolarRegion(person.getCoordinates())) {
                             assignTask(person, new UnloadVehicleEVA(person, getRover()));
                         }
@@ -844,7 +844,7 @@ implements Serializable {
                     else {
                         // Check if it is day time.
                         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                        if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+                        if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
                                 surface.inDarkPolarRegion(robot.getCoordinates())) {
                             assignTask(robot, new UnloadVehicleEVA(robot, getRover()));
                         }
@@ -884,7 +884,7 @@ implements Serializable {
                         else {
                             // Check if it is day time.
                             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                            if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
                                     surface.inDarkPolarRegion(person.getCoordinates())) {
                                 assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
                                         getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
@@ -921,7 +921,7 @@ implements Serializable {
                         else {
                             // Check if it is day time.
                             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSurfaceSunlight(robot.getCoordinates()) > 0D) || 
+                            if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
                                     surface.inDarkPolarRegion(robot.getCoordinates())) {
                                 assignTask(robot, new LoadVehicleEVA(robot, getVehicle(), getRequiredResourcesToLoad(),
                                         getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));

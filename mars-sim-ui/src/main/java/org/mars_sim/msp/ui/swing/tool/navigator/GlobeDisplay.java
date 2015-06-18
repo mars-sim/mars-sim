@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-17
 
  * @author Scott Davis
  */
@@ -353,8 +353,11 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					double sunlight = mars.getSurfaceFeatures()
-							.getSurfaceSunlight(location);
+					double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+//					double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(location) / 400D;
+					if (sunlight > 1D) {
+					    sunlight = 1D;
+					}
 					int sunlightInt = (int) (127 * sunlight);
 					shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
 				} else {

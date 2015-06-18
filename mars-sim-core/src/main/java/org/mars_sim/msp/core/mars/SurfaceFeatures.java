@@ -328,8 +328,12 @@ public class SurfaceFeatures implements Serializable {
                 //				+ "   G_h : " + fmt3.format(G_h));
 
                 // TODO: Part 6 : calculate other components on Mars such as scattering and reflective irradiance
+    	    	
+    	    	// Note: A lot of code use of this method depends on dark night time = 0 solar irradiance.  If we want to 
+    	    	// have scattering produce > 0 irradiance at full night time, we need to modify code calling this method 
+    	    	// as necessary for night time indication. - Scott
             }
-
+            
             solarIrradianceMapCache.put(location, G_h);
         }
 

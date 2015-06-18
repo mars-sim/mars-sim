@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunctionEVA.java
- * @version 3.07 2015-01-14
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -218,7 +218,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = false;
             }
@@ -254,7 +254,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+        if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
                 result = false;
             }

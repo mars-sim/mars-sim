@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVAMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -178,7 +178,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
 		            // Check if it is night time.
 		            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		            if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
+		            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
 		                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
 		                    result = 0D;
 		                }

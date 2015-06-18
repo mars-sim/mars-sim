@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.07 2015-01-04
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 
@@ -542,7 +542,7 @@ extends RoverMission {
             Mars mars = Simulation.instance().getMars();
             boolean inDarkPolarRegion = mars.getSurfaceFeatures()
                     .inDarkPolarRegion(getCurrentMissionLocation());
-            double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(
+            double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(
                     getCurrentMissionLocation());
             if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
                 setPhaseEnded(true);
@@ -657,7 +657,7 @@ extends RoverMission {
             Mars mars = Simulation.instance().getMars();
             boolean inDarkPolarRegion = mars.getSurfaceFeatures()
                     .inDarkPolarRegion(getCurrentMissionLocation());
-            double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(
+            double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(
                     getCurrentMissionLocation());
             if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
                 setPhaseEnded(true);

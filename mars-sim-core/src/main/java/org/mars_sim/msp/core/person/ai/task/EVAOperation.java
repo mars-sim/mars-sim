@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.08 2015-05-11
+ * @version 3.08 2015-06-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -357,7 +357,7 @@ implements Serializable {
 
         // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
+        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
             logger.fine(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
                 result = true;
@@ -420,7 +420,7 @@ implements Serializable {
 
         // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(robot.getCoordinates()) == 0) {
+        if (mars.getSurfaceFeatures().getSolarIrradiance(robot.getCoordinates()) == 0D) {
             logger.fine(robot.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(robot.getCoordinates()))
                 result = true;
