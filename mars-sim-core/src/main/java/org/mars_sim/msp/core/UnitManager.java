@@ -113,7 +113,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Constructs initial units.
-	 * 
+	 *
 	 * @throws Exception
 	 *             in unable to load names.
 	 */
@@ -138,7 +138,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible person names.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if unable to load name list.
 	 */
@@ -165,7 +165,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible robot names.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if unable to load name list.
 	 */
@@ -183,7 +183,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible vehicle names.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if unable to load rover names.
 	 */
@@ -198,7 +198,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible settlement names.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if unable to load settlement names.
 	 */
@@ -232,7 +232,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Removes a unit from the unit manager.
-	 * 
+	 *
 	 * @param unit
 	 *            the unit to remove.
 	 */
@@ -247,7 +247,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Gets a new name for a unit.
-	 * 
+	 *
 	 * @param unitType
 	 *            {@link UnitType} the type of unit.
 	 * @param baseName
@@ -413,7 +413,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial vehicles based on settlement templates.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if vehicles could not be constructed.
 	 */
@@ -450,7 +450,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates the initial equipment at a settlement.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error constructing equipment.
 	 */
@@ -484,7 +484,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Creates the initial resources at a settlement. Note: This is in addition
 	 * to any initial resources set in buildings.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error storing resources.
 	 */
@@ -525,7 +525,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Create initial parts for a settlement.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error creating parts.
 	 */
@@ -553,7 +553,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates all configured people.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error parsing XML.
 	 */
@@ -643,8 +643,8 @@ public class UnitManager implements Serializable {
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
-					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, "Approved",
-							JobManager.MISSION_CONTROL);
+					//person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, "Approved",JobManager.MISSION_CONTROL);
+					person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 				}
 			}
 
@@ -711,7 +711,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial people based on available capacity at settlements.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if people can not be constructed.
 	 */
@@ -757,8 +757,8 @@ public class UnitManager implements Serializable {
 					// 2015-06-07 Added Preference
 					person.getPreference().initializePreference();
 
-					// 2015-04-30 Assign a job to everyone
-					person.getMind().assignJob("Approved", JobManager.MISSION_CONTROL);
+					// 2015-06-18 Assign a job by calling getInitialJob
+					person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 
 					ChainOfCommand cc = settlement.getChainOfCommand();
 
@@ -1032,7 +1032,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates all configured Robots.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error parsing XML.
 	 */
@@ -1168,7 +1168,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if Robots can not be constructed.
 	 */
@@ -1281,7 +1281,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates all configured people relationships.
-	 * 
+	 *
 	 * @throws Exception
 	 *             if error parsing XML.
 	 */
@@ -1354,7 +1354,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.
-	 * 
+	 *
 	 * @param time
 	 *            the amount time passing (in millisols)
 	 * @throws Exception
@@ -1382,7 +1382,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get number of settlements
-	 * 
+	 *
 	 * @return the number of settlements
 	 */
 	public int getSettlementNum() {
@@ -1391,7 +1391,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get settlements in virtual Mars
-	 * 
+	 *
 	 * @return Collection of settlements
 	 */
 	public Collection<Settlement> getSettlements() {
@@ -1410,7 +1410,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get number of vehicles
-	 * 
+	 *
 	 * @return the number of vehicles
 	 */
 	public int getVehicleNum() {
@@ -1419,7 +1419,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get vehicles in virtual Mars
-	 * 
+	 *
 	 * @return Collection of vehicles
 	 */
 	public Collection<Vehicle> getVehicles() {
@@ -1428,7 +1428,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get number of people
-	 * 
+	 *
 	 * @return the number of people
 	 */
 	public int getPeopleNum() {
@@ -1437,7 +1437,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get people in virtual Mars
-	 * 
+	 *
 	 * @return Collection of people
 	 */
 	public Collection<Person> getPeople() {
@@ -1446,7 +1446,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get number of Robots
-	 * 
+	 *
 	 * @return the number of Robots
 	 */
 	public int getRobotsNum() {
@@ -1455,7 +1455,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get Robots in virtual Mars
-	 * 
+	 *
 	 * @return Collection of Robots
 	 */
 	public Collection<Robot> getRobots() {
@@ -1464,7 +1464,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get the number of equipment.
-	 * 
+	 *
 	 * @return number
 	 */
 	public int getEquipmentNum() {
@@ -1473,7 +1473,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get a collection of equipment.
-	 * 
+	 *
 	 * @return collection
 	 */
 	public Collection<Equipment> getEquipment() {
@@ -1482,7 +1482,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * The total number of units
-	 * 
+	 *
 	 * @return the total number of units
 	 */
 	public int getUnitNum() {
@@ -1491,7 +1491,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get all units in virtual Mars
-	 * 
+	 *
 	 * @return Colleciton of units
 	 */
 	public Collection<Unit> getUnits() {
@@ -1500,7 +1500,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Adds a unit manager listener
-	 * 
+	 *
 	 * @param newListener
 	 *            the listener to add.
 	 */
@@ -1515,7 +1515,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Removes a unit manager listener
-	 * 
+	 *
 	 * @param oldListener
 	 *            the listener to remove.
 	 */
@@ -1530,7 +1530,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Fire a unit update event.
-	 * 
+	 *
 	 * @param eventType
 	 *            the event type.
 	 * @param unit
@@ -1549,7 +1549,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Finds a unit in the simulation that has the given name.
-	 * 
+	 *
 	 * @param name
 	 *            the name to search for.
 	 * @return unit or null if none.

@@ -18,12 +18,11 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars.
@@ -60,7 +59,7 @@ public class SurfaceFeatures implements Serializable {
     private Weather weather;
 
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
-	private Map<Coordinates, Double> totalSolarIrradianceMap = new ConcurrentHashMap<>();
+	//private Map<Coordinates, Double> totalSolarIrradianceMap = new ConcurrentHashMap<>();
 	private Map<Coordinates, Double> solarIrradianceMapCache;
 	private MarsClock solarIrradianceMapCacheTime;
 
@@ -74,7 +73,7 @@ public class SurfaceFeatures implements Serializable {
 
         surfaceTerrain = new TerrainElevation();
         mineralMap = new RandomMineralMap();
-        exploredLocations = new ArrayList<ExploredLocation>();
+        exploredLocations = new CopyOnWriteArrayList<>();
         areothermalMap = new AreothermalMap();
 
         //weather = Simulation.instance().getMars().getWeather();
@@ -151,9 +150,14 @@ public class SurfaceFeatures implements Serializable {
             if (solarIrradianceMapCache == null) {
                 solarIrradianceMapCache = new ConcurrentHashMap<Coordinates, Double>();
             }
+            //if (solarIrradianceMapCacheTime == null) solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
+            //System.out.println(" currentTime : " + currentTime.getMillisol()
+            //+ "    solarIrradianceMapCacheTime : " + solarIrradianceMapCacheTime.getMillisol());//getSolarIrradiance()'s clearing solarIrradianceMapCache");
             solarIrradianceMapCache.clear();
             solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
         }
+        //else {
+        //}
 
         // If location is not in cache, calculate solar irradiance.
         if (!solarIrradianceMapCache.containsKey(location)) {
@@ -190,15 +194,17 @@ public class SurfaceFeatures implements Serializable {
                 orbitInfo = mars.getOrbitInfo();
 
             double cos_z =  orbitInfo.getCosineSolarZenithAngle(location);
+            //System.out.println("z : " + Math.round(Math.acos(cos_z) * 180D / Math.PI * 1000D)/1000D + "   cos_z : "+ fmt3.format(cos_z));
             if (cos_z <= 0) {
-                //System.out.println("   cos_z : "+ fmt3.format(cos_z)
-                //				+ "   G_0 : " + fmt3.format(G_0));
-                // the sun is set behind the planet Mars, total darkness and no need of calculation.
-                G_0 = 0;
-
+            	// Mar is in the so-called twilight zone
+            	// Set it to a maximum of 12 degree below the horizon
+            	// indirect sunlight such as diffuse/scattering/reflective sunlight will light up the Martian sky
+            	if (cos_z >= -.2094 ) // up to 12 degree (or 12/180 * pi = .2094 radians)
+                G_0 = Math.round((0.2094-cos_z)*100D);
+            	// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
             }
 
-            else {
+            else { // if cos_z > 0
 
                 // Part 2: get the new average solar irradiance as a result of the changing distance between Mars and Sun  with respect to the value of L_s.
                 //double L_s = orbitInfo.getL_s();
@@ -235,7 +241,7 @@ public class SurfaceFeatures implements Serializable {
                 // Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
                 // the starting value for opticalDepth is 0.2342. See Ref below
                 if (opticalDepthMap.containsKey(location))
-                    tau = (opticalDepthMap.get(location) + opticalDepthStartingValue + newTau) / 2D;
+                    tau = (opticalDepthMap.get(location) + opticalDepthStartingValue + newTau) / 1.9D;
                 else {
                     tau = opticalDepthStartingValue + newTau;
                 }
@@ -247,7 +253,7 @@ public class SurfaceFeatures implements Serializable {
                 // Note: tau has an "inverse" relationship with the daily global solar irradiance in Fig 2.8.
 
                 // Add randomness to optical depth
-                tau = tau + RandomUtil.getRandomDouble(.05) - RandomUtil.getRandomDouble(.05);
+                tau = tau + RandomUtil.getRandomDouble(.03) - RandomUtil.getRandomDouble(.03);
                 // Notes:
                 // (1) during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
                 // (2) typical observable range is between .32 and .52 (average is 42%).
@@ -296,7 +302,7 @@ public class SurfaceFeatures implements Serializable {
 
                 // TODO: Modeling the diffuse effect of solar irradiance with formula
                 // Note: the value of G_dh to decrease more slowly when value cos_z is diminishing
-
+/*
     	    	if (cos_z > .9)
     	    		G_dh = G_bh / 6;
     	    	else if (cos_z > .8)
@@ -317,8 +323,17 @@ public class SurfaceFeatures implements Serializable {
     	    		G_dh = G_bh / 1.2D;
     	    	else if (cos_z > .05)
     	    		G_dh = G_bh;
+*/
+    	    	G_dh = G_bh *.4;
+
     	    	// Finally,
     	    	G_h = G_bh + G_dh;
+
+    	    	if (G_h > SurfaceFeatures.MEAN_SOLAR_IRRADIANCE)
+    	    		G_h = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+
+    	    	else if (G_h < 20.94)
+    	    		G_h = 20.94;
 
                 //System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
                 //				+ "   cos_z : "+ fmt3.format(cos_z)
@@ -327,13 +342,13 @@ public class SurfaceFeatures implements Serializable {
                 //				+ "   G_dh : " + fmt3.format(G_dh)
                 //				+ "   G_h : " + fmt3.format(G_h));
 
-                // TODO: Part 6 : calculate other components on Mars such as scattering and reflective irradiance
-    	    	
-    	    	// Note: A lot of code use of this method depends on dark night time = 0 solar irradiance.  If we want to 
-    	    	// have scattering produce > 0 irradiance at full night time, we need to modify code calling this method 
+                // TODO: Part 6 : calculate other components on Mars such as twilight and reflective irradiance
+
+    	    	// Note: A lot of code use of this method depends on dark night time = 0 solar irradiance.  If we want to
+    	    	// have scattering produce > 0 irradiance at full night time, we need to modify code calling this method
     	    	// as necessary for night time indication. - Scott
             }
-            
+
             solarIrradianceMapCache.put(location, G_h);
         }
 

@@ -37,11 +37,16 @@ implements Serializable {
 	// Data members
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
-    //private static final double ROOM_TEMPERATURE = 22.5D;
+	private static final double TRANSMITTANCE_GREENHOUSE_HIGH_PRESSURE = .55 ;
+	private static final double EMISSIVITY_DAY = .8 ;
+	private static final double EMISSIVITY_NIGHT = 1.0 ;
+	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
+
+	//private static final double ROOM_TEMPERATURE = 22.5D;
     //public static final double GREENHOUSE_TEMPERATURE = 24D;
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
-    private static final double T_LOWER_SENSITIVITY = 2D;
+    private static final double T_LOWER_SENSITIVITY = 1D;
     private static final int HEAT_CAP = 200;
     private static final double HEAT_GAIN_FROM_EQUIPMENT = 3000;
     private static final double HEAT_DISSIPATED_PER_PERSON = 350D;
