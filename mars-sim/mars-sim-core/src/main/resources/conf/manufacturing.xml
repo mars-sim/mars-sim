@@ -712,7 +712,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg steel ingots. -->
-	<process name="steel ingot alloying" tech="2" skill="5" work-time="500" process-time="500"
+	<process name="steel ingot alloying (large batch)" tech="2" skill="5" work-time="500" process-time="500"
 			power-required="10.0">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />

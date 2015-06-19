@@ -280,7 +280,7 @@ implements Serializable {
 	            job = newJob;
 		        // 2015-03-30 Added saveJob()
 		        if (approvedBy.equals(JobManager.SETTLEMENT)) {
-		        	if (person.getSettlement().getAllAssociatedPeople().size() <= 4)
+		        	if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4)
 		        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
 		        else  {// if (approvedBy.equals(a person)  {

@@ -16,18 +16,18 @@
 	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
 
-	<resource name="soil" phase="solid" life-support="true">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
+	<resource name="soil" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
 
 <!-- Wastes -->
-	<resource name="compost" phase="solid" life-support="true">Organic waste consists of decaying food waste and crop remains. </resource>
-	<resource name="crop Waste" phase="solid" life-support="true">Organic waste from a dead crop or inedible biomass after harvest. </resource>
+	<resource name="compost" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
+	<resource name="crop Waste" phase="solid">Organic waste from a dead crop or inedible biomass after harvest. </resource>
 
-	<resource name="electronic waste" phase="solid" life-support="true">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
-	<resource name="food waste" phase="solid" life-support="true">Organic waste from leftover or expired food. </resource>
-	<!-- <resource name="Manure" phase="solid" life-support="true">Human feces</resource> -->
+	<resource name="electronic waste" phase="solid">Electronic waste comprises discarded electronic devices, circuit boards and scrap components.</resource>
+	<resource name="food waste" phase="solid">Organic waste from leftover or expired food. </resource>
+	<!-- <resource name="Manure" phase="solid">Human feces</resource> -->
 
-	<resource name="solid waste" phase="solid" life-support="true">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
-	<resource name="toxic waste" phase="solid" life-support="true">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
+	<resource name="solid waste" phase="solid">Solid waste predominantly is any garbage, refuse or rubbish generated in settlement. It can be converted into other wastes.</resource>
+	<resource name="toxic waste" phase="solid">Toxic waste consists of biomedical waste, radioactive waste, hazardous material that require special handling </resource>
 
 	<resource name="grey water" phase="liquid">Sewage water from washing, bathing, cooking and cleaning and can be converted into use for crop irrigating.</resource>
 	<resource name="black water" phase="liquid">Sewage water come into contact with fecal matter and potentially hosting harmful bacteria and disease-causing pathogens.

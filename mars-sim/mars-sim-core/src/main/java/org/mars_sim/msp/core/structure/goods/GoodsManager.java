@@ -124,8 +124,8 @@ public class GoodsManager implements Serializable {
     private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
 	// 2015-01-10 Added FARMING_FACTOR
     private static final double FARMING_FACTOR = 1D;
-    private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
-    private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 1000D;
+    private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
+    private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
     private static final double REGOLITH_INPUT_FACTOR = 1000D;
 
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH;
