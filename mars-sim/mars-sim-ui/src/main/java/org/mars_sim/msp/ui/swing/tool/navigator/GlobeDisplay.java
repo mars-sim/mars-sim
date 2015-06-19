@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -93,6 +94,7 @@ implements Runnable {
 	/** stores the position for drawing lon/lat strings in {@link #drawCrossHair(Graphics)}. */
 	int rightWidth = positionMetrics.stringWidth(longitude);
 
+	private Mars mars;
 	/**
 	 * Constructor.
 	 * @param navwin the navigator window.
@@ -231,8 +233,8 @@ implements Runnable {
 		showSurf();
 	}
 
-	/** 
-	 * Displays real surface globe, regenerating if necessary 
+	/**
+	 * Displays real surface globe, regenerating if necessary
 	 */
 	public void showSurf() {
 		if (topo) {
@@ -242,8 +244,8 @@ implements Runnable {
 		showGlobe(centerCoords);
 	}
 
-	/** 
-	 * Displays topographical globe, regenerating if necessary 
+	/**
+	 * Displays topographical globe, regenerating if necessary
 	 */
 	public void showTopo() {
 		if (!topo) {
@@ -256,7 +258,7 @@ implements Runnable {
 	/**
 	 * Displays globe at given center regardless of mode, regenerating if
 	 * necessary
-	 * 
+	 *
 	 * @param newCenter
 	 *            the center location for the globe
 	 */
@@ -268,8 +270,8 @@ implements Runnable {
 		updateDisplay();
 	}
 
-	/** 
-	 * Starts display update thread (or creates a new one if necessary) 
+	/**
+	 * Starts display update thread (or creates a new one if necessary)
 	 */
 	private void updateDisplay() {
 		if ((showThread == null) || (!showThread.isAlive())) {
@@ -280,16 +282,16 @@ implements Runnable {
 		}
 	}
 
-	/** 
-	 * the run method for the runnable interface 
+	/**
+	 * the run method for the runnable interface
 	 */
 	public void run() {
 		while (update)
 			refreshLoop();
 	}
 
-	/** 
-	 * loop, refreshing the globe display when necessary 
+	/**
+	 * loop, refreshing the globe display when necessary
 	 */
 	public void refreshLoop() {
 		keepRunning = true;
@@ -342,7 +344,8 @@ implements Runnable {
 		int centerX = width / 2;
 		int centerY = height / 2;
 
-		Mars mars = Simulation.instance().getMars();
+		if (mars == null)
+			mars = Simulation.instance().getMars();
 		// Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
 		Coordinates location = new Coordinates(0D, 0D);
@@ -353,8 +356,8 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-//					double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(location) / 400D;
+					//double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+					double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
 					if (sunlight > 1D) {
 					    sunlight = 1D;
 					}

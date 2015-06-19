@@ -8,11 +8,10 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
@@ -56,10 +55,7 @@ implements Serializable {
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int MILLISOLS_PER_UPDATE = 5 ; // one update per x millisols
 
-	private int oldDir;
-
 	private int millisols;
-
 
 	private int numlocalDustStorm = 0;
 	//numRegionalDustStorm = 0;
@@ -72,8 +68,6 @@ implements Serializable {
 
 	private double sum;
 
-	private double windSpeed = 5; // TODO: need to get the base wind speed for that season
-
 	private double viking_dt;
 
 	private double final_temperature = EXTREME_COLD;
@@ -84,14 +78,17 @@ implements Serializable {
 	//TODO: compute the true dailyVariationAirPressure by the end of the day
 
 
-	private Map <Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new HashMap<>();
-	private Map <Integer, List<DailyWeather>> dailyRecordMap = new HashMap<>();
+	private Map <Coordinates, Map<Integer, List<DailyWeather>>> weatherDataMap = new ConcurrentHashMap<>();
+	private Map <Integer, List<DailyWeather>> dailyRecordMap = new ConcurrentHashMap<>();
 
-	private List<DailyWeather> todayWeather = new ArrayList<>();
-	private List<Coordinates> coordinateList = new ArrayList<>();
+	private List<DailyWeather> todayWeather = new CopyOnWriteArrayList<>();
+	private List<Coordinates> coordinateList = new CopyOnWriteArrayList<>();
 
 	private transient Map<Coordinates, Double> temperatureCacheMap;
 	private transient Map<Coordinates, Double> airPressureCacheMap;
+	private transient Map<Coordinates, Double> windSpeedCacheMap;
+	private transient Map<Coordinates, Integer> windDirCacheMap;
+
 
 	private static Map<Integer, DustStorm> planetEncirclingDustStormMap = new ConcurrentHashMap<>();
 	private static Map<Integer, DustStorm> regionalDustStormMap = new ConcurrentHashMap<>();
@@ -108,8 +105,7 @@ implements Serializable {
 	/** Constructs a Weather object */
 	public Weather() {
 
-		//count++;
-		//System.out.print(" calling Weather.java " + count + " times");
+
 
 		viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;
 		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;
@@ -176,13 +172,24 @@ implements Serializable {
 		double result = 0;
 		//checkLocation(location);
 
-		// TODO: get wind speed using theoretical model and/or empirical data
-		result = windSpeed + RandomUtil.getRandomDouble(2) - RandomUtil.getRandomDouble(2);
+		double rand = RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1);
+
+		if (windSpeedCacheMap == null)
+			windSpeedCacheMap = new ConcurrentHashMap<>();
+
+		if (windSpeedCacheMap.containsKey(location))
+			// TODO: get wind speed using theoretical model and/or empirical data
+			result = windSpeedCacheMap.get(location) + rand;
+		else {
+			result = rand;
+		}
 
 		if (result > 15)
 			result = 15;
 		if (result < 0)
 			result = 0;
+
+		windSpeedCacheMap.put(location, result);
 
 		return result;
 	}
@@ -208,13 +215,20 @@ implements Serializable {
 
 		int newDir = RandomUtil.getRandomInt(359);
 
-		// TODO: should the ratio of the weight of the past direction and present direction of the wind be 9 to 1 ?
-		result = (oldDir * 9 + newDir) / 10;
+		if (windDirCacheMap == null)
+			windDirCacheMap = new ConcurrentHashMap<>();
+
+		if (windDirCacheMap.containsKey(location))
+			// TODO: should the ratio of the weight of the past direction and present direction of the wind be 9 to 1 ?
+			result = (windDirCacheMap.get(location) * 9 + newDir) / 10;
+		else {
+			result = newDir;
+		}
 
 		if (result > 360)
 			result = result - 360;
 
-		oldDir = result;
+		windDirCacheMap.put(location, result);
 
 		return result;
 	}
@@ -245,7 +259,7 @@ implements Serializable {
 */
 	    // Lazy instantiation of airPressureCacheMap.
 	    if (airPressureCacheMap == null) {
-	        airPressureCacheMap = new HashMap<Coordinates, Double>();
+	        airPressureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
         }
 
 
@@ -322,7 +336,7 @@ implements Serializable {
 */
 	    // Lazy instantiation of temperatureCacheMap.
 	    if (temperatureCacheMap == null) {
-            temperatureCacheMap = new HashMap<Coordinates, Double>();
+            temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
         }
 
 		if (millisols % MILLISOLS_PER_UPDATE == 0) {
@@ -351,23 +365,24 @@ implements Serializable {
 
 		if (surfaceFeatures.inDarkPolarRegion(location)){
 			//known temperature for cold days at the pole
-			final_temperature = -150D;
+			final_temperature = -150D + RandomUtil.getRandomDouble(3) - RandomUtil.getRandomDouble(3);
 
 		} else {
 			// 2015-01-28 We arrived at this temperature model based on Viking 1 & Opportunity Rover
 			// by assuming the temperature is the linear combination of the following factors:
-			// 1. Time of day and longitude and solar irradiance,
+			// 1. Time of day, longitude and solar irradiance,
 			// 2. Terrain elevation,
 			// 3. Latitude,
 			// 4. Seasonal variation (dependent upon latitude)
 			// 5. Randomness
+			// 6. Wind speed
 			/*
 			if (masterClock == null)
 				masterClock = Simulation.instance().getMasterClock();
 
 			marsClock = masterClock.getMarsClock();
 
-			// (1). Time of day and longitude
+			// (1). Time of day, longitude (included inside in solar irradiance)
 			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
 			//System.out.println(" theta: " + theta);
 	        double time  = marsClock.getMillisol();
@@ -381,9 +396,10 @@ implements Serializable {
 			double sunlight = 0 ;
 			sunlight = surfaceFeatures.getSolarIrradiance(location);
 
-			light_factor = 2D * ( sunlight / 400D - .5);
+			//light_factor = 2D * ( sunlight / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE - .5);
+			light_factor = sunlight / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
 
-			// Equation below is modeled after viking data.
+			// Equation below is modeled after Viking's data.
 			double equatorial_temperature = 27.5D * light_factor - 58.5D ;
 			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0;
 			//System.out.println("sunlight : " + sunlight + "\t\tequatorial T: "+ equatorial_temperature);
@@ -437,11 +453,20 @@ implements Serializable {
 			double up = RandomUtil.getRandomDouble(2);
 			double down = RandomUtil.getRandomDouble(2);
 
-			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
+			// (6). Add Windspped
+
+			double wind_dt = 0;
+			if (windSpeedCacheMap == null)
+				windSpeedCacheMap = new ConcurrentHashMap<>();
+
+			if (windSpeedCacheMap.containsKey(location))
+				wind_dt = windSpeedCacheMap.get(location) * 1.5D;
+
+			final_temperature = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt - wind_dt + up - down;
 
 			double previous_t = 0;
 			if (temperatureCacheMap == null) {
-			    temperatureCacheMap = new HashMap<Coordinates, Double>();
+			    temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
 			}
 
 			if (temperatureCacheMap.containsKey(location)) {
@@ -521,7 +546,7 @@ implements Serializable {
 	    millisols =  (int) marsClock.getMillisol();
 
 	    if (millisols % 50 == 0) {
-	    	//List<DailyWeather> todayWeather = new ArrayList<>();
+	    	//List<DailyWeather> todayWeather = new CopyOnWriteArrayList<>();
 	    	//Iterator<Coordinates> list = coordinateList.iterator();
 	    	coordinateList.forEach(location -> {
 	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location),
@@ -578,7 +603,7 @@ implements Serializable {
 	       		weatherDataMap.put(location, dailyRecordMap);
 	    	});
     		// create a brand new list
-    		todayWeather = new ArrayList<>();
+    		todayWeather = new CopyOnWriteArrayList<>();
 			solCache = newSol;
 			//computeDailyVariationAirPressure();
 		}

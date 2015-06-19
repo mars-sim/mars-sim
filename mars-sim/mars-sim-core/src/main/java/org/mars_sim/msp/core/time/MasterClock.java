@@ -13,11 +13,11 @@ import org.mars_sim.msp.core.SimulationConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -76,7 +76,7 @@ public class MasterClock implements Serializable { // Runnable,
 
 	/** Clock listeners. */
 	private transient List<ClockListener> listeners;
-	private transient List<ClockListenerTask> clockListenerTaskList =  new ArrayList<ClockListenerTask>();
+	private transient List<ClockListenerTask> clockListenerTaskList =  new CopyOnWriteArrayList<>();
 
 	/** Martian Clock. */
 	private MarsClock marsTime;
@@ -115,7 +115,7 @@ public class MasterClock implements Serializable { // Runnable,
         uptimer = new UpTimer();
 
         // Create listener list.
-        listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
+        listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         elapsedlast = uptimer.getUptimeMillis();
         elapsedMilliseconds = 0L;
 
@@ -167,7 +167,7 @@ public class MasterClock implements Serializable { // Runnable,
     // 2015-04-02 Modified addClockListener()
     public final void addClockListener(ClockListener newListener) {
         // if listeners list does not exist, create one
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
+    	if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         // if the listeners list does not contain newListener, add it to the list
     	if (!listeners.contains(newListener)) listeners.add(newListener);
     	// will check if clockListenerTaskList already contain the newListener's task, if it doesn't, create one
@@ -181,7 +181,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
-        if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
+        if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         if (listeners.contains(oldListener)) listeners.remove(oldListener);
        	// Check if clockListenerTaskList contain the newListener's task, if it does, delete it
         ClockListenerTask task = retrieveClockListenerTask(oldListener);
@@ -198,7 +198,7 @@ public class MasterClock implements Serializable { // Runnable,
     	boolean hasIt = false;
     	//startClockListenerExecutor();
     	if (clockListenerTaskList == null)
-    		clockListenerTaskList =  new ArrayList<ClockListenerTask>();
+    		clockListenerTaskList =  new CopyOnWriteArrayList<ClockListenerTask>();
     	Iterator<ClockListenerTask> i = clockListenerTaskList.iterator();
     	while (i.hasNext()) {
     		ClockListenerTask c = i.next();

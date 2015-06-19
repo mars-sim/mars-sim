@@ -109,7 +109,7 @@ implements Serializable {
     	if (job instanceof Manager)
     		jobLock = true;
 
-    	assignJob("Approved", "Settlement");
+    	checkJob(); //"Approved", "Settlement");
 
         // Take action as necessary.
         takeAction(time);
@@ -122,8 +122,8 @@ implements Serializable {
 
     }
 
-    // 2015-04-30 Added assignJob() Note: first called by UnitManager at the start of the sim
-    public void assignJob(String status, String approvedBy) {
+    // 2015-04-30 Added assignJob()
+    public void checkJob() { //String status, String approvedBy) {
         // Check if this person needs to get a new job or change jobs.
         if (!jobLock || job == null) {
         	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
@@ -131,17 +131,21 @@ implements Serializable {
            	// 2015-04-30 Already excluded mayor/manager job from being assigned in JobManager.getNewJob()
          	String newJobStr = newJob.getName(person.getGender());
         	String jobStr = null;
-        	if (job == null)
-        		jobStr = null;
-        	else
+        	if (job != null)
         		jobStr = job.getName(person.getGender());
         	if (newJob != null) //System.out.println("timePassing() : newJob is null");
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
-	           		setJob(newJob, false, JobManager.SETTLEMENT, status, approvedBy);
+	           		setJob(newJob, false, JobManager.SETTLEMENT, "Approved", "Settlement");
 	           	}
         	//System.out.println(person.getName() + "'s jobLock is false.");
         }
+    }
+
+    //  first called by UnitManager at the start of the sim
+    public void getInitialJob(String assignedBy) {
+    	Job newJob = JobManager.getNewJob(person);
+    	setJob(newJob, true, assignedBy, "Approved", assignedBy);
     }
 
     /**

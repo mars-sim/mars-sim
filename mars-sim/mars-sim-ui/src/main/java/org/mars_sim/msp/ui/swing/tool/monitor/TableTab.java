@@ -336,7 +336,7 @@ extends MonitorTab {
     }
 
     public JTable getTable() {
-    	System.out.println("table is "+ table);
+    	//System.out.println("table is "+ table);
     	return table;
     }
 

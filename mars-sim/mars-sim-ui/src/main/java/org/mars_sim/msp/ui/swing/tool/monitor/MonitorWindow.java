@@ -230,13 +230,13 @@ implements TableModelListener, ActionListener {
 
 
     public void setTable() {
-        System.out.println("setTable()");
+        //System.out.println("setTable()");
 		MonitorTab monitorTab = getSelected();
     	if (searchable != null)
     		SearchableUtils.uninstallSearchable(table);
 		TableTab tableTab = (TableTab) monitorTab;
     	table = tableTab.getTable();
-		System.out.println("tab : " + tableTab + "\n    table : " + table);
+		//System.out.println("tab : " + tableTab + "\n    table : " + table);
     }
 
     //public void switchTable() {
@@ -244,7 +244,7 @@ implements TableModelListener, ActionListener {
     //}
 
     public void createSearchableBar() {
-        System.out.println("createSearchableBar()");
+        //System.out.println("createSearchableBar()");
     	if (searchable != null)
     		SearchableUtils.uninstallSearchable(searchable);
 

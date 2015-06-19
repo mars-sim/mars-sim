@@ -79,8 +79,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 	        // double sunlight = surfaceFeatures.getSurfaceSunlight(location);
 	        // normalized to 400 W/m2 instead of 590 W/m2 so as to make the map brighter on screen
-//	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / 400D;
-	        double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+	        double sunlight = surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+	        //double sunlight = surfaceFeatures.getSurfaceSunlight(location);
         	//System.out.println(" sunlight is " + sunlight);
 
 	        //if (sunlight > 0)
@@ -91,7 +91,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	        if (sunlight <.01D) {
 	        	// create a grey mask to cover the settlement map, simulating the darkness of the night
 	        	//TODO: during dust storm, use a red/orange mask to cover the map
-	            g2d.setColor(new Color(0, 0, 0, 128)); //(0, 0, 0, 196));
+	            g2d.setColor(new Color(0, 0, 0, 172)); //(0, 0, 0, 196));
 	            g2d.fillRect(0, 0, width, height);
 	        }
 
