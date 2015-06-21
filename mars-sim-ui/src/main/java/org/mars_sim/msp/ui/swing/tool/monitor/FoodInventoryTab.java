@@ -17,8 +17,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
- * This class represents an inventory of food at settlements displayed 
- * within the Monitor Window. 
+ * This class represents an inventory of food at settlements displayed
+ * within the Monitor Window.
  */
 public class FoodInventoryTab
 extends TableTab
@@ -27,13 +27,15 @@ implements UnitManagerListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+    public final static String ICON = "burger";
+
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public FoodInventoryTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new FoodInventoryTableModel(), true, false);
+		super(window, new FoodInventoryTableModel(), true, false, ICON);
 
 		// Override default cell renderer for format double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));

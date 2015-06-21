@@ -34,6 +34,7 @@ extends JPanel {
 	private Icon icon;
 	private boolean mandatory;
 
+
 	/**
 	 * constructor.
 	 * Create a view within a tab displaying the specified model.
@@ -50,9 +51,9 @@ extends JPanel {
 		// Create a panel
 		setLayout(new BorderLayout());
 		setBorder(MainDesktopPane.newEmptyBorder());
-		
+
 	}
-	
+
 	/**
 	 * Remove this view.
 	 */

@@ -8,7 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 /**
- * This class represents a unit table displayed within the Monitor Window. 
+ * This class represents a unit table displayed within the Monitor Window.
  */
 public class UnitTab
 extends TableTab {
@@ -16,13 +16,15 @@ extends TableTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+    //public final static String ICON = "user_32";
+
 	/**
 	 * Constructor.
 	 * @param model the table model.
 	 * @param mandatory Is this table view mandatory.
 	 */
-	public UnitTab(final MonitorWindow window, UnitTableModel model, boolean mandatory) {
+	public UnitTab(final MonitorWindow window, UnitTableModel model, boolean mandatory, String icon) {
 		// Use TableTab constructor
-		super(window, model, mandatory, false);
+		super(window, model, mandatory, false, icon);
 	}
 }

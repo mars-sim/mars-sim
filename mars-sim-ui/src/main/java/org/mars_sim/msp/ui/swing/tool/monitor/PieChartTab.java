@@ -44,7 +44,8 @@ class PieChartTab extends MonitorTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
+    //public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
+	public final static Icon PIEICON = ImageLoader.getNewIcon("pie_32"); //$NON-NLS-1$
 
     /**
      * Minimum time (milliseconds) between chart updates

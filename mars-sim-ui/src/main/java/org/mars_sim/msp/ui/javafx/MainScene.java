@@ -54,6 +54,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -78,8 +79,8 @@ import com.nilo.plaf.nimrod.NimRODTheme;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 
 /**
- * The MainScene class is the primary Stage for MSP. It is the container for housing
- * desktop swing node, javaFX UI, pull-down menu and icons for tools.
+ * The MainScene class is the primary Stage for MSP. It is the container for
+ * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
  */
 public class MainScene {
 
@@ -94,13 +95,13 @@ public class MainScene {
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
-    private static int theme = 1; // 7 is the standard nimrod theme
-    private int memMax;
-    private int memTotal;
-    private int memUsed, memUsedCache;
-    private int memFree;
+	private static int theme = 1; // 7 is the standard nimrod theme
+	private int memMax;
+	private int memTotal;
+	private int memUsed, memUsedCache;
+	private int memFree;
 
-    private StringProperty timeStamp;
+	private StringProperty timeStamp;
 
 	private String lookAndFeelTheme = "nimrod";
 
@@ -108,77 +109,83 @@ public class MainScene {
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 
-    private Text timeText;
-    private Text memUsedText;
-    private Text memMaxText;
-    private Button memBtn, clkBtn;
+	private Text timeText;
+	private Text memUsedText;
+	private Text memMaxText;
+	private Button memBtn, clkBtn;
 
-    private Stage stage;
-    private Scene scene;
+	private Stage stage;
+	private Scene scene;
 
-    private Tab swingTab;
-    private Tab nodeTab;
+	private Tab swingTab;
+	private Tab nodeTab;
 
-    private DndTabPane dndTabPane;
-    private FXDesktopPane fxDesktopPane;
+	private DndTabPane dndTabPane;
+	private FXDesktopPane fxDesktopPane;
 
-    private Timeline timeline;
-    private static NotificationPane notificationPane;
+	private Timeline timeline;
+	private static NotificationPane notificationPane;
 
-    private static MainDesktopPane desktop;
-    private MainSceneMenu menuBar;
-    private MarsNode marsNode;
+	private static MainDesktopPane desktop;
+	private MainSceneMenu menuBar;
+	private MarsNode marsNode;
 	private TransportWizard transportWizard;
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
 
-	/**
-	 * Constructor for MainScene
-	 *@param stage
-	 */
-    public MainScene(Stage stage) {
-    	logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
-    	this.stage = stage;
-    }
+	//static {
+   //     Font.loadFont(MainScene.class.getResource("/fxui/fonts/fontawesome-webfont.ttf").toExternalForm(), 10);
+    //}
 
 	/**
-	 * Prepares the Main Scene, sets up LookAndFeel UI, starts two timers, prepares Transport Wizard
+	 * Constructor for MainScene
+	 *
+	 * @param stage
 	 */
-    public void prepareMainScene() {
-		logger.info("MainScene's prepareMainScene() is in "+Thread.currentThread().getName() + " Thread");
-    	Simulation.instance().getSimExecutor().submit(new MainSceneTask());
-    }
+	public MainScene(Stage stage) {
+		logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
+		this.stage = stage;
+	}
+
+	/**
+	 * Prepares the Main Scene, sets up LookAndFeel UI, starts two timers,
+	 * prepares Transport Wizard
+	 */
+	public void prepareMainScene() {
+		logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
+		Simulation.instance().getSimExecutor().submit(new MainSceneTask());
+	}
 
 	/**
 	 * Sets up the UI theme and the two timers as a thread pool task
 	 */
 	public class MainSceneTask implements Runnable {
 		public void run() {
-			logger.info("MainScene's MainSceneTask is in "+Thread.currentThread().getName() + " Thread");
+			logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Load UI configuration.
-			//if (!cleanUI) {
-			//	UIConfig.INSTANCE.parseFile();
-			//}
+			// if (!cleanUI) {
+			// UIConfig.INSTANCE.parseFile();
+			// }
 
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
-	        SwingUtilities.invokeLater(() -> {
-	    		setLookAndFeel(1);
-	        });
+			SwingUtilities.invokeLater(() -> {
+				setLookAndFeel(1);
+			} );
 
 			startAutosaveTimer();
-	        //desktop.openInitialWindows(); // doesn't work here
-	        startEarthTimer();
-			//System.out.println("done running the two timers");
-			//System.out.println("done running createMainScene()");
+			// desktop.openInitialWindows(); // doesn't work here
+			startEarthTimer();
+			// System.out.println("done running the two timers");
+			// System.out.println("done running createMainScene()");
 		}
-    }
+	}
 
-    public void prepareOthers() {
-    	logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
-    	transportWizard = new TransportWizard(this, desktop);
-    	openInitialWindows();
-    }
+	public void prepareOthers() {
+		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		transportWizard = new TransportWizard(this, desktop);
+		openInitialWindows();
+	}
 
 	public void openTransportWizard(BuildingManager buildingManager) {
 		transportWizard.initialize(buildingManager);
@@ -191,36 +198,40 @@ public class MainScene {
 
 	/**
 	 * initializes the scene
-	 *@return Scene
+	 *
+	 * @return Scene
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
 		logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
-	   	marsNode = new MarsNode(this, stage);
+		marsNode = new MarsNode(this, stage);
 
 		// Detect if a user hits the top-right close button
-		// TODO: determine if it is necessary to exit both the simulation stage and the Main Menu
+		// TODO: determine if it is necessary to exit both the simulation stage
+		// and the Main Menu
 		// Exit not just the stage but the simulation entirely
 		stage.setOnCloseRequest(e -> {
 			alertOnExit();
+		} );
+
+		// Detect if a user hits ESC
+		stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent t) {
+				if (t.getCode() == KeyCode.ESCAPE) {
+					// Toggle the full screen mode to OFF in the pull-down menu
+					// under setting
+					menuBar.exitFullScreen();
+					// close the MarsNet side panel
+					openSwingTab();
+				}
+			}
 		});
 
-	    // Detect if a user hits ESC
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-              @Override
-              public void handle(KeyEvent t) {
-                if (t.getCode() == KeyCode.ESCAPE) {
-                 	// Toggle the full screen mode to OFF in the pull-down menu under setting
-                	menuBar.exitFullScreen();
-                	// close the MarsNet side panel
-                	openSwingTab();
-                }
-              }
-        });
-
-        //ImageView bg1 = new ImageView();
-        //bg1.setImage(new Image("/images/splash.png"));  // in lieu of the interactive Mars map
-        //root.getChildren().add(bg1);
+		// ImageView bg1 = new ImageView();
+		// bg1.setImage(new Image("/images/splash.png")); // in lieu of the
+		// interactive Mars map
+		// root.getChildren().add(bg1);
 
 		// Create group to hold swingNode1 which holds the swing desktop
 		StackPane swingPane = new StackPane();
@@ -236,261 +247,250 @@ public class MainScene {
 		bottomBox.getChildren().addAll(statusBar);
 
 		// Create menuBar
-        menuBar = new MainSceneMenu(this, desktop);
-        menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
+		menuBar = new MainSceneMenu(this, desktop);
+		menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
 
-	    // Create BorderPane
+		// Create BorderPane
 		BorderPane borderPane = new BorderPane();
-	    borderPane.setTop(menuBar);
-	    //borderPane.setTop(toolbar);
-	    borderPane.setBottom(bottomBox);
-	    //borderPane.setStyle("-fx-background-color: palegorange");
+		borderPane.setTop(menuBar);
+		// borderPane.setTop(toolbar);
+		borderPane.setBottom(bottomBox);
+		// borderPane.setStyle("-fx-background-color: palegorange");
 
-	    // 2015-05-26 Create fxDesktopPane
-	    fxDesktopPane = marsNode.createFXDesktopPane();
+		// 2015-05-26 Create fxDesktopPane
+		fxDesktopPane = marsNode.createFXDesktopPane();
 
-	    // 2015-05-26 Create the dndTabPane.
-	    dndTabPane = new DndTabPane();
-	    StackPane containerPane = new StackPane(dndTabPane);
+		// 2015-05-26 Create the dndTabPane.
+		dndTabPane = new DndTabPane();
+		StackPane containerPane = new StackPane(dndTabPane);
 
-	    // We need to create the skin manually, could also be your custom skin.
-	    DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
+		// We need to create the skin manually, could also be your custom skin.
+		DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
 
-	    // Setup the dragging.
-	    DndTabPaneFactory.setup(FeedbackType.MARKER, containerPane, skin);
+		// Setup the dragging.
+		DndTabPaneFactory.setup(FeedbackType.MARKER, containerPane, skin);
 
-	    // Set the skin.
-	    dndTabPane.setSkin(skin);
-	    dndTabPane.setSide(Side.RIGHT);
+		// Set the skin.
+		dndTabPane.setSkin(skin);
+		dndTabPane.setSide(Side.RIGHT);
 
-	    // Create nodeTab
-	    nodeTab = new Tab();
-	    nodeTab.setClosable(false);
-	    nodeTab.setText("JavaFX UI");
-	    nodeTab.setContent(fxDesktopPane);
+		// Create nodeTab
+		nodeTab = new Tab();
+		nodeTab.setClosable(false);
+		nodeTab.setText("JavaFX UI");
+		nodeTab.setContent(fxDesktopPane);
 
+		/*
+		 * // create a button to toggle floating. final RadioButton floatControl
+		 * = new RadioButton("Toggle floating");
+		 * floatControl.selectedProperty().addListener(new
+		 * ChangeListener<Boolean>() {
+		 *
+		 * @Override public void changed(ObservableValue<? extends Boolean>
+		 * prop, Boolean wasSelected, Boolean isSelected) { if (isSelected) {
+		 * tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING); } else {
+		 * tabPane.getStyleClass().remove(TabPane.STYLE_CLASS_FLOATING); } } });
+		 */
 
-/*
-	    // create a button to toggle floating.
-	    final RadioButton floatControl = new RadioButton("Toggle floating");
-	    floatControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
-	      @Override public void changed(ObservableValue<? extends Boolean> prop, Boolean wasSelected, Boolean isSelected) {
-	        if (isSelected) {
-	          tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING);
-	        } else {
-	          tabPane.getStyleClass().remove(TabPane.STYLE_CLASS_FLOATING);
-	        }
-	      }
-	    });
-*/
+		// Create swing tab to hold classic UI
+		swingTab = new Tab();
+		swingTab.setClosable(false);
+		swingTab.setText("Classic UI");
+		swingTab.setContent(swingPane);
 
-	    // Create swing tab to hold classic UI
-	    swingTab = new Tab();
-	    swingTab.setClosable(false);
-	    swingTab.setText("Classic UI");
-	    swingTab.setContent(swingPane);
-
-	    // Set to select the swing tab at the start of simulation
-	    dndTabPane.getSelectionModel().select(swingTab);
-	    dndTabPane.getTabs().addAll(swingTab, nodeTab);
+		// Set to select the swing tab at the start of simulation
+		dndTabPane.getSelectionModel().select(swingTab);
+		dndTabPane.getTabs().addAll(swingTab, nodeTab);
 
 		Node notificationNode = createNotificationPane();
 
-	    borderPane.setCenter(notificationNode);
+		borderPane.setCenter(notificationNode);
 
-	    rootStackPane = new StackPane(borderPane);
+		rootStackPane = new StackPane(borderPane);
 
-	    Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
-	    borderPane.prefHeightProperty().bind(scene.heightProperty());
-        borderPane.prefWidthProperty().bind(scene.widthProperty());
+		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-        rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
-        rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
-                	setTheme();
-	                SwingUtilities.invokeLater(() -> {
-	                	//desktop.closeAllToolWindow();
-	                	setLookAndFeel(1);
-	                	swingNode.setContent(desktop);
-	                });
-                }
-            }
-        });
+		rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
+		rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyEvent) {
+				if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
+					setTheme();
+					SwingUtilities.invokeLater(() -> {
+						// desktop.closeAllToolWindow();
+						setLookAndFeel(1);
+						swingNode.setContent(desktop);
+					} );
+				}
+			}
+		});
 
-        //System.out.println("done running initializeScene()");
+		// System.out.println("done running initializeScene()");
 
-        return scene;
+		return scene;
 	}
 
 	public static void notifyThemeChange(String text) {
 		if (desktop != null) {
-			//desktop.refreshTheme();
+			// desktop.refreshTheme();
 			System.out.println("deskop != null , calling notifyThemeChange()");
-			//if (notificationPane != null) {
-				//notificationPane.setText("Skin is set to " + text);
-				notificationPane.show("Skin is set to " + text);
-			//}
+			// if (notificationPane != null) {
+			// notificationPane.setText("Skin is set to " + text);
+			notificationPane.show("Skin is set to " + text);
+			// }
 		}
 	}
 
 	public void setTheme() {
 		if (theme == 1) {
 			rootStackPane.getStylesheets().clear();
-    		theme = 2;
+			theme = 2;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-            notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.GREEN);
-    	    memMaxText.setFill(Color.GREEN);
-    	    timeText.setFill(Color.GREEN);
-    	    memBtn.setTextFill(Color.PALEGREEN);
-    	    clkBtn.setTextFill(Color.PALEGREEN);
-    	    lookAndFeelTheme = "LightTabaco";
-    	}
-    	else if (theme == 2) {
-    		rootStackPane.getStylesheets().clear();
-    		theme = 3;
-    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-            notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.ORANGERED);
-    	    memMaxText.setFill(Color.ORANGERED);
-    	    timeText.setFill(Color.ORANGERED);
-    	    memBtn.setTextFill(Color.YELLOW);
-    	    clkBtn.setTextFill(Color.YELLOW);
-    	    lookAndFeelTheme = "Burdeos";
-    	}
-    	else if (theme == 3) { //dark olive
-    		rootStackPane.getStylesheets().clear();
-    		theme = 4;
-    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-            notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.LIGHTCYAN);
-    	    memMaxText.setFill(Color.LIGHTCYAN);
-    	    timeText.setFill(Color.LIGHTCYAN);
-    	    memBtn.setTextFill(Color.DARKOLIVEGREEN);
-    	    clkBtn.setTextFill(Color.DARKOLIVEGREEN);
-    	    lookAndFeelTheme = "DarkTabaco";
-    	}
-    	else if (theme == 4) {
-    		//rootStackPane.getStylesheets().clear();
-    		theme = 5;
-    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.BLANCHEDALMOND);
-    	    memMaxText.setFill(Color.BLANCHEDALMOND);
-    	    timeText.setFill(Color.BLANCHEDALMOND);
-    	    memBtn.setTextFill(Color.GREY);
-    	    clkBtn.setTextFill(Color.GREY);
-    	    lookAndFeelTheme = "DarkGrey";
-    	}
-    	else if (theme == 5) { // + purple
-    		//rootStackPane.getStylesheets().clear();
-    		theme = 6;
-    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.PALEGOLDENROD);
-    	    memMaxText.setFill(Color.PALEGOLDENROD);
-    	    timeText.setFill(Color.PALEGOLDENROD);
-    	    memBtn.setTextFill(Color.BLUEVIOLET);
-    	    clkBtn.setTextFill(Color.BLUEVIOLET);
-    	    lookAndFeelTheme = "Night";
-    	}
-    	else if (theme == 6) { // + skyblue
-    		//rootStackPane.getStylesheets().clear();
-    		theme = 7;
-    		//rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-            notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-    	    memUsedText.setFill(Color.CADETBLUE);
-    	    memMaxText.setFill(Color.CADETBLUE);
-    	    timeText.setFill(Color.CADETBLUE);
-    	    memBtn.setTextFill(Color.LIGHTBLUE);
-    	    clkBtn.setTextFill(Color.LIGHTBLUE);
-    	    lookAndFeelTheme = "Snow";
-    	}
-    	else if (theme == 7) {
-    		rootStackPane.getStylesheets().clear();
-    		theme = 1;
-    		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-    	    memUsedText.setFill(Color.ORANGE);
-    	    memMaxText.setFill(Color.ORANGE);
-    	    timeText.setFill(Color.ORANGE);
-    	    memBtn.setTextFill(Color.LIGHTSALMON);
-    	    clkBtn.setTextFill(Color.LIGHTSALMON);
-    	    lookAndFeelTheme = "nimrod";
-    	}
+			notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+			memUsedText.setFill(Color.GREEN);
+			memMaxText.setFill(Color.GREEN);
+			timeText.setFill(Color.GREEN);
+			memBtn.setTextFill(Color.PALEGREEN);
+			clkBtn.setTextFill(Color.PALEGREEN);
+			lookAndFeelTheme = "LightTabaco";
+		} else if (theme == 2) {
+			rootStackPane.getStylesheets().clear();
+			theme = 3;
+			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+			notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+			memUsedText.setFill(Color.ORANGERED);
+			memMaxText.setFill(Color.ORANGERED);
+			timeText.setFill(Color.ORANGERED);
+			memBtn.setTextFill(Color.YELLOW);
+			clkBtn.setTextFill(Color.YELLOW);
+			lookAndFeelTheme = "Burdeos";
+		} else if (theme == 3) { // dark olive
+			rootStackPane.getStylesheets().clear();
+			theme = 4;
+			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			memUsedText.setFill(Color.LIGHTCYAN);
+			memMaxText.setFill(Color.LIGHTCYAN);
+			timeText.setFill(Color.LIGHTCYAN);
+			memBtn.setTextFill(Color.DARKOLIVEGREEN);
+			clkBtn.setTextFill(Color.DARKOLIVEGREEN);
+			lookAndFeelTheme = "DarkTabaco";
+		} else if (theme == 4) {
+			// rootStackPane.getStylesheets().clear();
+			theme = 5;
+			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			memUsedText.setFill(Color.BLANCHEDALMOND);
+			memMaxText.setFill(Color.BLANCHEDALMOND);
+			timeText.setFill(Color.BLANCHEDALMOND);
+			memBtn.setTextFill(Color.GREY);
+			clkBtn.setTextFill(Color.GREY);
+			lookAndFeelTheme = "DarkGrey";
+		} else if (theme == 5) { // + purple
+			// rootStackPane.getStylesheets().clear();
+			theme = 6;
+			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			memUsedText.setFill(Color.PALEGOLDENROD);
+			memMaxText.setFill(Color.PALEGOLDENROD);
+			timeText.setFill(Color.PALEGOLDENROD);
+			memBtn.setTextFill(Color.BLUEVIOLET);
+			clkBtn.setTextFill(Color.BLUEVIOLET);
+			lookAndFeelTheme = "Night";
+		} else if (theme == 6) { // + skyblue
+			// rootStackPane.getStylesheets().clear();
+			theme = 7;
+			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+			memUsedText.setFill(Color.CADETBLUE);
+			memMaxText.setFill(Color.CADETBLUE);
+			timeText.setFill(Color.CADETBLUE);
+			memBtn.setTextFill(Color.LIGHTBLUE);
+			clkBtn.setTextFill(Color.LIGHTBLUE);
+			lookAndFeelTheme = "Snow";
+		} else if (theme == 7) {
+			rootStackPane.getStylesheets().clear();
+			theme = 1;
+			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			memUsedText.setFill(Color.ORANGE);
+			memMaxText.setFill(Color.ORANGE);
+			timeText.setFill(Color.ORANGE);
+			memBtn.setTextFill(Color.LIGHTSALMON);
+			clkBtn.setTextFill(Color.LIGHTSALMON);
+			lookAndFeelTheme = "nimrod";
+		}
 	}
 
 	/**
 	 * Creates and starts the earth timer
-	 *@return Scene
+	 *
+	 * @return Scene
 	 */
 	public void startEarthTimer() {
-	    // Set up earth time text update
-	    timeline = new Timeline(new KeyFrame(
-	            Duration.millis(TIME_DELAY),
-	            ae -> updateTimeText()));
-	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-	    timeline.play();
+		// Set up earth time text update
+		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeText()));
+		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		timeline.play();
 
 	}
-
-
 
 	public StatusBar createStatusBar() {
 		StatusBar statusBar = new StatusBar();
 		statusBar.setText(""); // needed for deleting the default text "OK"
-	    //statusBar.setAlignment(Pos.BASELINE_RIGHT);
-	    //statusBar.setStyle("-fx-background-color: gainsboro;");
-        //statusBar.setAlignment(Pos.CENTER);
-        //statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt; -fx-border-color:grey; -fx-font: 14 arial; -fx-text-fill: white; -fx-base: #cce6ff;");
-	    //statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() + 10);
-	    //statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth()  + 10);
+		// statusBar.setAlignment(Pos.BASELINE_RIGHT);
+		// statusBar.setStyle("-fx-background-color: gainsboro;");
+		// statusBar.setAlignment(Pos.CENTER);
+		// statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt;
+		// -fx-border-color:grey; -fx-font: 14 arial; -fx-text-fill: white;
+		// -fx-base: #cce6ff;");
+		// statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() +
+		// 10);
+		// statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth() +
+		// 10);
 
+		memBtn = new Button(" [Memory] ");
+		memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		memBtn.setTextFill(Color.ORANGE);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getRightItems().add(memBtn);
 
-	    memBtn = new Button(" [Memory] ");
-        memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE,
-                new CornerRadii(2), new Insets(1))));
-	    memBtn.setTextFill(Color.ORANGE);
-        statusBar.getRightItems().add(new Separator(VERTICAL));
-	    statusBar.getRightItems().add(memBtn);
+		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+		memMaxText = new Text(" Total Designated : " + memMax + " MB ");
+		memMaxText.setFill(Color.GREY);
+		statusBar.getRightItems().add(memMaxText);
 
-        memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-	    memMaxText = new Text(" Total Designated : " + memMax +  " MB ");
-	    memMaxText.setFill(Color.GREY);
-	    statusBar.getRightItems().add(memMaxText);
+		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+		memUsed = memTotal - memFree;
+		memUsedText = new Text(" Currently Used : " + memUsed + " MB ");
+		memUsedText.setId("mem-text");
+		// memUsedText.setStyle("-fx-text-inner-color: orange;");
+		memUsedText.setFill(Color.GREY);
+		statusBar.getRightItems().add(memUsedText);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
 
-	    memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-	    memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	    memUsed = memTotal - memFree;
-	    memUsedText = new Text(" Currently Used : " + memUsed +  " MB ");
-	    memUsedText.setId("mem-text");
-	    //memUsedText.setStyle("-fx-text-inner-color: orange;");
-	    memUsedText.setFill(Color.GREY);
-	    statusBar.getRightItems().add(memUsedText);
-	    statusBar.getRightItems().add(new Separator(VERTICAL));
+		MasterClock master = Simulation.instance().getMasterClock();
+		if (master == null) {
+			throw new IllegalStateException("master clock is null");
+		}
+		EarthClock earthclock = master.getEarthClock();
+		if (earthclock == null) {
+			throw new IllegalStateException("earthclock is null");
+		}
 
-        MasterClock master = Simulation.instance().getMasterClock();
-        if (master == null) {
-            throw new IllegalStateException("master clock is null");
-        }
-        EarthClock earthclock = master.getEarthClock();
-        if (earthclock == null) {
-            throw new IllegalStateException("earthclock is null");
-        }
+		timeText = new Text(" Earth Time : " + timeStamp + "  ");
+		// timeText.setStyle("-fx-text-inner-color: orange;");
+		timeText.setId("time-text");
+		timeText.setFill(Color.GREY);
 
-	    timeText =  new Text(" Earth Time : " + timeStamp + "  ");
-	    //timeText.setStyle("-fx-text-inner-color: orange;");
-	    timeText.setId("time-text");
-	    timeText.setFill(Color.GREY);
-
-	    clkBtn = new Button(" [Clock] ");
-	    clkBtn.setTextFill(Color.ORANGE);
-        clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE,
-                new CornerRadii(2), new Insets(1))));
-	    statusBar.getRightItems().add(clkBtn);
-	    statusBar.getRightItems().add(timeText);
-	    statusBar.getRightItems().add(new Separator(VERTICAL));
+		clkBtn = new Button(" [Clock] ");
+		clkBtn.setTextFill(Color.ORANGE);
+		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		statusBar.getRightItems().add(clkBtn);
+		statusBar.getRightItems().add(timeText);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		return statusBar;
 	}
@@ -501,97 +501,93 @@ public class MainScene {
 
 	public Node createNotificationPane() {
 
-        notificationPane = new NotificationPane(dndTabPane);
-        String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
-        ImageView image = new ImageView(imagePath);
-        notificationPane.setGraphic(image);
-        notificationPane.getActions().addAll(new Action("Close", ae -> {
-                // do sync, then hide...
-                notificationPane.hide();
-        }));
+		notificationPane = new NotificationPane(dndTabPane);
+		String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
+		ImageView image = new ImageView(imagePath);
+		notificationPane.setGraphic(image);
+		notificationPane.getActions().addAll(new Action("Close", ae -> {
+			// do sync, then hide...
+			notificationPane.hide();
+		} ));
 
-        notificationPane.setShowFromTop(false);
-		//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-        //notificationPane.setText("Breaking news for mars-simmers !!");
-        //notificationPane.hide();
+		notificationPane.setShowFromTop(false);
+		// notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+		// notificationPane.setText("Breaking news for mars-simmers !!");
+		// notificationPane.hide();
 
-        return notificationPane;
-    }
+		return notificationPane;
+	}
 
-		public String getSampleName() {
-	        return "Notification Pane";
-	    }
+	public String getSampleName() {
+		return "Notification Pane";
+	}
 
+	public String getControlStylesheetURL() {
+		return "/org/controlsfx/control/notificationpane.css";
+	}
 
-	    public String getControlStylesheetURL() {
-	        return "/org/controlsfx/control/notificationpane.css";
-	    }
-/*
-	    private void updateBar() {
-	        boolean useDarkTheme = cbUseDarkTheme.isSelected();
-	        if (useDarkTheme) {
-	            notificationPane.setText("Hello World! Using the dark theme");
-	            notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-	        } else {
-	            notificationPane.setText("Hello World! Using the light theme");
-	            notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-	        }
-	    }
-*/
+	/*
+	 * private void updateBar() { boolean useDarkTheme =
+	 * cbUseDarkTheme.isSelected(); if (useDarkTheme) {
+	 * notificationPane.setText("Hello World! Using the dark theme");
+	 * notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+	 * } else { notificationPane.setText("Hello World! Using the light theme");
+	 * notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK
+	 * ); } }
+	 */
 	public void updateTimeText() {
 
 		String t = null;
-		//try {
-	        // Check if new simulation is being created or loaded from file.
-	        if (!Simulation.isUpdating()) {
+		// try {
+		// Check if new simulation is being created or loaded from file.
+		if (!Simulation.isUpdating()) {
 
-	            MasterClock master = Simulation.instance().getMasterClock();
-	            if (master == null) {
-	                throw new IllegalStateException("master clock is null");
-	            }
-	            EarthClock earthclock = master.getEarthClock();
-	            if (earthclock == null) {
-	                throw new IllegalStateException("earthclock is null");
-	            }
-	            t = earthclock.getTimeStamp();
-	            //timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
-	        }
-	    //}
-	   // catch (Exception ee) {
-	    //    ee.printStackTrace(System.err);
-	    //}
+			MasterClock master = Simulation.instance().getMasterClock();
+			if (master == null) {
+				throw new IllegalStateException("master clock is null");
+			}
+			EarthClock earthclock = master.getEarthClock();
+			if (earthclock == null) {
+				throw new IllegalStateException("earthclock is null");
+			}
+			t = earthclock.getTimeStamp();
+			// timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+		}
+		// }
+		// catch (Exception ee) {
+		// ee.printStackTrace(System.err);
+		// }
 		timeText.setText(" Earth Time : " + t + "  ");
-	    //timeText.setStyle("-fx-text-inner-color: orange;");
+		// timeText.setStyle("-fx-text-inner-color: orange;");
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-	    memUsed = memTotal - memFree;
-	    //int mem = ( memUsedCache + memUsed ) /2;
-	    if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-	    	memUsedText.setText(" Currently Used : " + memUsed +  " MB ");
-		    //memUsedText.setStyle("-fx-text-inner-color: orange;");
-	    }
-    	memUsedCache = memUsed;
+		memUsed = memTotal - memFree;
+		// int mem = ( memUsedCache + memUsed ) /2;
+		if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
+			memUsedText.setText(" Currently Used : " + memUsed + " MB ");
+			// memUsedText.setStyle("-fx-text-inner-color: orange;");
+		}
+		memUsedCache = memUsed;
 
 	}
 
 	// 2015-01-07 Added startAutosaveTimer()
 	public void startAutosaveTimer() {
 
-	    Timeline timeline = new Timeline(new KeyFrame(
-	            Duration.millis(1000*60*AUTOSAVE_EVERY_X_MINUTE),
-	            ae -> saveSimulation(AUTOSAVE)));
-	    timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-	    timeline.play();
+		Timeline timeline = new Timeline(
+				new KeyFrame(Duration.millis(1000 * 60 * AUTOSAVE_EVERY_X_MINUTE), ae -> saveSimulation(AUTOSAVE)));
+		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		timeline.play();
 
-    }
-
+	}
 
 	/**
 	 * Gets the main desktop panel.
+	 *
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
-		//return mainWindow.getDesktop();
+		// return mainWindow.getDesktop();
 		return desktop;
 	}
 
@@ -600,13 +596,13 @@ public class MainScene {
 	 */
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
-	   	logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
-		//if (earthTimer != null)
-        //    earthTimer.stop();
-        //earthTimer = null;
+		// if (earthTimer != null)
+		// earthTimer.stop();
+		// earthTimer = null;
 
-		//timeline.stop(); // Note: no need to stop and restart at all
+		// timeline.stop(); // Note: no need to stop and restart at all
 
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
@@ -614,7 +610,7 @@ public class MainScene {
 				public void run() {
 					Platform.runLater(() -> {
 						loadSimulationProcess(type);
-					});
+					} );
 				}
 			};
 			loadSimThread.start();
@@ -624,10 +620,11 @@ public class MainScene {
 
 	}
 
-
 	/**
 	 * Performs the process of loading a simulation.
-	 * @param autosave, true if loading the autosave sim file
+	 *
+	 * @param autosave,
+	 *            true if loading the autosave sim file
 	 */
 	public void loadSimulationProcess(int type) {
 		String dir = null;
@@ -650,22 +647,21 @@ public class MainScene {
 
 		if (type == AUTOSAVE || type == OTHER) {
 			FileChooser chooser = new FileChooser();
-			//chooser.setInitialFileName(dir);
-			//Set to user directory or go to default if cannot access
-			//String userDirectoryString = System.getProperty("user.home");
+			// chooser.setInitialFileName(dir);
+			// Set to user directory or go to default if cannot access
+			// String userDirectoryString = System.getProperty("user.home");
 			File userDirectory = new File(dir);
 			chooser.setInitialDirectory(userDirectory);
-			chooser.setTitle(title); //$NON-NLS-1$
+			chooser.setTitle(title); // $NON-NLS-1$
 
-			 // Set extension filter
-	        FileChooser.ExtensionFilter simFilter =
-	                new FileChooser.ExtensionFilter("Simulation files (*.sim)", "*.sim");
-			FileChooser.ExtensionFilter allFilter =
-	                new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+			// Set extension filter
+			FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
+					"*.sim");
+			FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
 
-	        chooser.getExtensionFilters().addAll(simFilter, allFilter);
+			chooser.getExtensionFilters().addAll(simFilter, allFilter);
 
-	        // Show open file dialog
+			// Show open file dialog
 			File selectedFile = chooser.showOpenDialog(stage);
 
 			if (selectedFile != null)
@@ -679,7 +675,7 @@ public class MainScene {
 			fileLocn = null;
 		}
 
-		//fileLabel.setText(file.getPath());
+		// fileLabel.setText(file.getPath());
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 		desktop.clearDesktop();
 
@@ -694,17 +690,18 @@ public class MainScene {
 			}
 		}
 
-		//Simulation.instance().getExecutorServiceThread().submit(new LoadSimulationTask(fileLocn));
+		// Simulation.instance().getExecutorServiceThread().submit(new
+		// LoadSimulationTask(fileLocn));
 
 		try {
-            desktop.resetDesktop();
-            logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
-        }
-        catch (Exception e) {
-            // New simulation process should continue even if there's an exception in the UI.
-            logger.severe(e.getMessage());
-            e.printStackTrace(System.err);
-        }
+			desktop.resetDesktop();
+			logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
+		} catch (Exception e) {
+			// New simulation process should continue even if there's an
+			// exception in the UI.
+			logger.severe(e.getMessage());
+			e.printStackTrace(System.err);
+		}
 
 		// load UI config
 		UIConfig.INSTANCE.parseFile();
@@ -715,37 +712,12 @@ public class MainScene {
 
 	}
 
-/*
-	public class LoadSimulationTask implements Runnable {
-
-		File fileLocn;
-
-		public LoadSimulationTask(File fileLocn) {
-			this.fileLocn = fileLocn;
-		}
-
-		public void run() {
-
-			MasterClock clock = Simulation.instance().getMasterClock();
-			clock.loadSimulation(fileLocn);
-
-			while (clock.isLoadingSimulation()) {
-				try {
-					Thread.sleep(100L);
-				} catch (InterruptedException e) {
-					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
-				}
-			}
-
-		}
-	}
-*/
 
 	/**
 	 * Create a new simulation.
 	 */
 	public void newSimulation() {
-	   	logger.info("MainScene's newSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's newSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
@@ -753,7 +725,7 @@ public class MainScene {
 				public void run() {
 					Platform.runLater(() -> {
 						newSimulationProcess();
-					});
+					} );
 				}
 			};
 			newSimThread.start();
@@ -770,13 +742,13 @@ public class MainScene {
 		Simulation.instance().endSimulation();
 		Simulation.instance().getSimExecutor().shutdownNow();
 
-		//Simulation.instance().destroyOldSimulation();
+		// Simulation.instance().destroyOldSimulation();
 		getDesktop().clearDesktop();
-		//getDesktop().resetDesktop();
-		//Simulation.instance().getMasterClock().exitProgram();
+		// getDesktop().resetDesktop();
+		// Simulation.instance().getMasterClock().exitProgram();
 		stage.close();
-		//Simulation.instance().endMasterClock();
-	   	Simulation.instance().startSimExecutor();
+		// Simulation.instance().endMasterClock();
+		Simulation.instance().startSimExecutor();
 	}
 
 	/**
@@ -794,76 +766,22 @@ public class MainScene {
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
 
-		if (result.get() == buttonTypeOne)	{
+		if (result.get() == buttonTypeOne) {
 			saveOnExit();
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
-		}
-		else if (result.get() == buttonTypeTwo)	{
+		} else if (result.get() == buttonTypeTwo) {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 		}
-/*
-			getDesktop().openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
-			try {
-				Simulation.stopSimulation();
-				getDesktop().clearDesktop();
-			    //if (earthTimer != null) {
-                //    earthTimer.stop();
-			    //}
-                //earthTimer = null;
-				//timeline.stop();
-
-				Simulation.createNewSimulation();
-
-				// Start the simulation.
-				Simulation.instance().start();
-
-			}
-			catch (Exception e) {
-			    // New simulation process should continue even if there's an exception in the UI.
-			    logger.severe(e.getMessage());
-			    e.printStackTrace(System.err);
-			}
-
-			SimulationConfig.loadConfig();
-
-			// NOTE: cyclic dependency does not allow an instance of mainMenu to be referenced in MainScene
-			// Therefore, ScenarioConfigEditorFX cannot be loaded from here
-			//ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
-
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			try {
-				getDesktop().resetDesktop();
-            }
-            catch (Exception e) {
-                // New simulation process should continue even if there's an exception in the UI.
-                logger.severe(e.getMessage());
-                e.printStackTrace(System.err);
-            }
-
-			//startEarthTimer();
-			getDesktop().disposeAnnouncementWindow();
-
-			// Open user guide tool.
-			getDesktop().openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide = (GuideWindow) getDesktop().getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-			}
-*/
-
 	}
 
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
-	 * @param useDefault Should the user be allowed to override location?
+	 *
+	 * @param useDefault
+	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(int type) {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
@@ -872,7 +790,7 @@ public class MainScene {
 				public void run() {
 					Platform.runLater(() -> {
 						saveSimulationProcess(type);
-					});
+					} );
 				}
 			};
 			saveSimThread.start();
@@ -884,7 +802,7 @@ public class MainScene {
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-    // 2015-01-08 Added autosave
+	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
 		File fileLocn = null;
 		String dir = null;
@@ -892,9 +810,8 @@ public class MainScene {
 		// 2015-01-25 Added autosave
 		if (type == AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
-			//title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
-		}
-		else if (type == DEFAULT || (type == SAVE_AS)) {
+			// title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
+		} else if (type == DEFAULT || (type == SAVE_AS)) {
 			dir = Simulation.DEFAULT_DIR;
 			title = Msg.getString("MainScene.dialogSaveSim");
 		}
@@ -902,14 +819,13 @@ public class MainScene {
 		if (type == SAVE_AS) {
 			FileChooser chooser = new FileChooser();
 			File userDirectory = new File(dir);
-			chooser.setTitle(title); //$NON-NLS-1$
+			chooser.setTitle(title); // $NON-NLS-1$
 			chooser.setInitialDirectory(userDirectory);
-			 // Set extension filter
-	        FileChooser.ExtensionFilter simFilter =
-	                new FileChooser.ExtensionFilter("Simulation files (*.sim)", "*.sim");
-			FileChooser.ExtensionFilter allFilter =
-	                new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
-	        chooser.getExtensionFilters().addAll(simFilter, allFilter);
+			// Set extension filter
+			FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
+					"*.sim");
+			FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+			chooser.getExtensionFilters().addAll(simFilter, allFilter);
 			File selectedFile = chooser.showSaveDialog(stage);
 			if (selectedFile != null)
 				fileLocn = selectedFile;
@@ -922,8 +838,7 @@ public class MainScene {
 		if (type == AUTOSAVE) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation(fileLocn);
-		}
-		else if (type == SAVE_AS || type == DEFAULT) {
+		} else if (type == SAVE_AS || type == DEFAULT) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
@@ -964,19 +879,16 @@ public class MainScene {
 		logger.info("Exiting simulation");
 
 		Simulation sim = Simulation.instance();
-/*
-		// Save the UI configuration.
-		UIConfig.INSTANCE.saveFile(this);
-
-		// Save the simulation.
-
-		try {
-			sim.getMasterClock().saveSimulation(null);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
-			e.printStackTrace(System.err);
-		}
-*/
+		/*
+		 * // Save the UI configuration. UIConfig.INSTANCE.saveFile(this);
+		 *
+		 * // Save the simulation.
+		 *
+		 * try { sim.getMasterClock().saveSimulation(null); } catch (Exception
+		 * e) { logger.log(Level.SEVERE,
+		 * Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+		 * e.printStackTrace(System.err); }
+		 */
 
 		sim.getMasterClock().exitProgram();
 
@@ -984,13 +896,17 @@ public class MainScene {
 
 	/**
 	 * Sets the look and feel of the UI
-	 * @param nativeLookAndFeel true if native look and feel should be used.
+	 *
+	 * @param nativeLookAndFeel
+	 *            true if native look and feel should be used.
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
-	public void setLookAndFeel(int choice) { //boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
+	public void setLookAndFeel(int choice) { // boolean nativeLookAndFeel,
+												// boolean nimRODLookAndFeel) {
 		boolean changed = false;
-		//String currentTheme = UIManager.getLookAndFeel().getClass().getName();
-		//System.out.println("CurrentTheme is " + currentTheme);
+		// String currentTheme =
+		// UIManager.getLookAndFeel().getClass().getName();
+		// System.out.println("CurrentTheme is " + currentTheme);
 		if (choice == 0) { // theme == "nativeLookAndFeel"
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -1006,21 +922,21 @@ public class MainScene {
 					// Use default theme
 					try {
 						UIManager.setLookAndFeel(new NimRODLookAndFeel());
-			        } catch (Exception e) {
-			            e.printStackTrace();
-			        }
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 
 				else {
-	/*
-	  				//TODO: let user customize theme in future
-					NimRODTheme nt = new NimRODTheme();
-					nt.setPrimary1(new java.awt.Color(10,10,10));
-					nt.setPrimary2(new java.awt.Color(20,20,20));
-					nt.setPrimary3(new java.awt.Color(30,30,30));
-					NimRODLookAndFeel NimRODLF = new NimRODLookAndFeel();
-					NimRODLF.setCurrentTheme( nt);
-	*/
-					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
+					/*
+					 * //TODO: let user customize theme in future NimRODTheme nt
+					 * = new NimRODTheme(); nt.setPrimary1(new
+					 * java.awt.Color(10,10,10)); nt.setPrimary2(new
+					 * java.awt.Color(20,20,20)); nt.setPrimary3(new
+					 * java.awt.Color(30,30,30)); NimRODLookAndFeel NimRODLF =
+					 * new NimRODLookAndFeel(); NimRODLF.setCurrentTheme( nt);
+					 */
+					NimRODTheme nt = new NimRODTheme(
+							getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
 					NimRODLookAndFeel nf = new NimRODLookAndFeel();
 					nf.setCurrentTheme(nt);
 					UIManager.setLookAndFeel(nf);
@@ -1057,12 +973,12 @@ public class MainScene {
 		}
 
 		if (changed) {
-			//SwingUtilities.updateComponentTreeUI(desktop);
+			// SwingUtilities.updateComponentTreeUI(desktop);
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
 				desktop.updateAnnouncementWindowLF();
-				//desktop.updateTransportWizardLF();
+				// desktop.updateTransportWizardLF();
 			}
 		}
 	}
@@ -1071,39 +987,38 @@ public class MainScene {
 		return menuBar;
 	}
 
-
 	public Stage getStage() {
 		return stage;
 	}
 
 	private void createSwingNode() {
 		desktop = new MainDesktopPane(this);
-        SwingUtilities.invokeLater(() -> {
-            swingNode.setContent(desktop);
-    		setLookAndFeel(1);
-        });
-		//desktop.openInitialWindows();
-    }
+		SwingUtilities.invokeLater(() -> {
+			swingNode.setContent(desktop);
+			setLookAndFeel(1);
+		} );
+		// desktop.openInitialWindows();
+	}
 
 	public SwingNode getSwingNode() {
 		return swingNode;
 	}
 
 	public void openSwingTab() {
-		//splitPane.setDividerPositions(1.0f);
-	    dndTabPane.getSelectionModel().select(swingTab);
+		// splitPane.setDividerPositions(1.0f);
+		dndTabPane.getSelectionModel().select(swingTab);
 	}
 
 	public void openMarsNet() {
-		//splitPane.setDividerPositions(0.8f);
-	    dndTabPane.getSelectionModel().select(nodeTab);
+		// splitPane.setDividerPositions(0.8f);
+		dndTabPane.getSelectionModel().select(nodeTab);
 	}
 
-
 	/**
-	 * Creates an Alert Dialog to confirm ending or exiting the simulation or MSP
+	 * Creates an Alert Dialog to confirm ending or exiting the simulation or
+	 * MSP
 	 */
-    public void alertOnExit() {
+	public void alertOnExit() {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm on Exit");
@@ -1117,26 +1032,24 @@ public class MainScene {
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
 
-		if (result.get() == buttonTypeOne)	{
+		if (result.get() == buttonTypeOne) {
 			saveOnExit();
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
-		}
-		else if (result.get() == buttonTypeTwo)		{
+		} else if (result.get() == buttonTypeTwo) {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
-		}
-		else if (result.get() == buttonTypeThree)
+		} else if (result.get() == buttonTypeThree)
 			exitSimulation();
 		else
 			return;
 
-    }
+	}
 
 	/**
 	 * Initiates the process of saving a simulation.
 	 */
-    public void saveOnExit() {
+	public void saveOnExit() {
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
@@ -1149,17 +1062,17 @@ public class MainScene {
 			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 			e.printStackTrace(System.err);
 		}
-    }
+	}
 
-	//public void setMainMenu(MainMenu mainMenu) {
-	//	this.mainMenu = mainMenu;
-	//}
+	// public void setMainMenu(MainMenu mainMenu) {
+	// this.mainMenu = mainMenu;
+	// }
 
-    public void openInitialWindows() {
-    	SwingUtilities.invokeLater(() -> {
-    		desktop.openInitialWindows();
-    	});
-    }
+	public void openInitialWindows() {
+		SwingUtilities.invokeLater(() -> {
+			desktop.openInitialWindows();
+		} );
+	}
 
 	public MarsNode getMarsNode() {
 		return marsNode;
@@ -1177,18 +1090,18 @@ public class MainScene {
 		newSimThread = null;
 		loadSimThread = null;
 		saveSimThread = null;
-	    timeText = null;
-	    memUsedText = null;
-	    stage = null;
-	    swingTab = null;
-	    nodeTab = null;
-	    dndTabPane = null;
-	    timeline = null;
-	    notificationPane = null;
-	    desktop.destroy();
-	    desktop = null;
-	    menuBar = null;
-	    marsNode = null;
+		timeText = null;
+		memUsedText = null;
+		stage = null;
+		swingTab = null;
+		nodeTab = null;
+		dndTabPane = null;
+		timeline = null;
+		notificationPane = null;
+		desktop.destroy();
+		desktop = null;
+		menuBar = null;
+		marsNode = null;
 	}
 
 }

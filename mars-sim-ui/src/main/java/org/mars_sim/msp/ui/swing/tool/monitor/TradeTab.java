@@ -18,8 +18,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
- * This class represents a table of trade good values at settlements displayed 
- * within the Monitor Window. 
+ * This class represents a table of trade good values at settlements displayed
+ * within the Monitor Window.
  */
 public class TradeTab
 extends TableTab
@@ -28,13 +28,15 @@ implements UnitManagerListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public final static String ICON = "buy_32";
+
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public TradeTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(), true, false);
+		super(window, new TradeTableModel(), true, false, ICON);
 
 		// Override default cell renderer for format double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));

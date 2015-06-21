@@ -12,13 +12,15 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 /**
- * This class represents a historical event table displayed within the Monitor Window. 
+ * This class represents a historical event table displayed within the Monitor Window.
  */
 public class EventTab
 extends TableTab {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+    public final static String ICON = "flag_32";
 
 	/**
 	 * constructor.
@@ -28,11 +30,12 @@ extends TableTab {
 	// 2015-01-14 Changed param list to include notifyBox and desktop
 	public EventTab(final MonitorWindow window, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		// Use TableTab constructor
-		super(window, 
-			new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop), 
-			true, 
-			false);
-	
+		super(window,
+			new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop),
+			true,
+			false,
+			ICON);
+
 	}
 
 	void filterCategories(MainDesktopPane desktop) {
