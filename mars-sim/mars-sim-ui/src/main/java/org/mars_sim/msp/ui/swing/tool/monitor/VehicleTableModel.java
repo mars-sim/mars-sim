@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -52,7 +53,7 @@ extends UnitTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 
 	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
@@ -114,7 +115,7 @@ extends UnitTableModel {
 		columnNames[CREW] = "Crew";
 		columnTypes[CREW] = Integer.class;
 		columnNames[BOTS] = "Bots";
-		columnTypes[BOTS] = Integer.class;				
+		columnTypes[BOTS] = Integer.class;
 		columnNames[DESTINATION] = "Destination";
 		columnTypes[DESTINATION] = Coordinates.class;
 		columnNames[DESTDIST] = "Dest. Dist.";
@@ -150,7 +151,7 @@ extends UnitTableModel {
 	 */
 	public VehicleTableModel(UnitManager unitManager) {
 		super(
-			"All Vehicles",
+			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			columnNames,
 			columnTypes
@@ -198,7 +199,7 @@ extends UnitTableModel {
 						result = ((Crewable) vehicle).getRobotCrewNum();
 					else result = 0;
 				} break;
-				
+
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
 					result = resourceMap.get(AmountResource.findAmountResource(LifeSupportType.WATER));
@@ -206,7 +207,7 @@ extends UnitTableModel {
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result= resourceMap.get(AmountResource.findAmountResource(LifeSupportType.FOOD));				 
+					result= resourceMap.get(AmountResource.findAmountResource(LifeSupportType.FOOD));
 				} break;
 
 				case DESSERT : {
@@ -214,15 +215,15 @@ extends UnitTableModel {
 					int mapSize = resourceMap.size();
 					if (mapSizeCache != mapSize) {
 						//System.out.println("resourceMap has "+ resourceMap.size());
-						mapSizeCache = mapSize ;		
+						mapSizeCache = mapSize ;
 					}
 					// get a list of dessert loaded
-					// get the amount of each and sum them up					
+					// get the amount of each and sum them up
 					//int i = 0;
 			   		Iterator<AmountResource> j = resourceMap.keySet().iterator();
 		    		while (j.hasNext()) {
-		    			AmountResource ar = j.next(); 
-				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts(); 	        
+		    			AmountResource ar = j.next();
+				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
 		    	        for(String n : availableDesserts) {
 		    	        	if (AmountResource.findAmountResource(n).equals(ar)) {
 				    			double amount = resourceMap.get(ar);
@@ -234,10 +235,10 @@ extends UnitTableModel {
 		    	        //i++;
 		    		}
 					//System.out.println(vehicle.getName() + "    Sum : " + sum);
-				    result = new Double(sum);    				        
-				    
+				    result = new Double(sum);
+
 				} break;
-				
+
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
 					result = resourceMap.get(AmountResource.findAmountResource(LifeSupportType.OXYGEN));
@@ -298,7 +299,7 @@ extends UnitTableModel {
 
 				case DESTINATION : {
 					result = null;
-					Mission mission = 
+					Mission mission =
 							Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
@@ -311,7 +312,7 @@ extends UnitTableModel {
 				} break;
 
 				case DESTDIST : {
-					Mission mission = 
+					Mission mission =
 							Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
@@ -327,7 +328,7 @@ extends UnitTableModel {
 				} break;
 
 				case MISSION : {
-					Mission mission = 
+					Mission mission =
 							Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
 					if (mission != null) {
 						result = mission.getName();
@@ -339,7 +340,7 @@ extends UnitTableModel {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
 					result = resourceMap.get(AmountResource.findAmountResource("ice"));
 				} break;
-				
+
 				}
 			}
 			catch (Exception e) {
@@ -364,7 +365,7 @@ extends UnitTableModel {
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
 		else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
-		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
+		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
 				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 			if (target instanceof Person) columnNum = CREW;
 			else if (target instanceof Robot) columnNum = BOTS;
@@ -379,28 +380,28 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN))) 
+				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN)))
 					tempColumnNum = OXYGEN;
-				else if (target.equals(AmountResource.findAmountResource("methane"))) 
+				else if (target.equals(AmountResource.findAmountResource("methane")))
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.FOOD))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.FOOD)))
 					tempColumnNum = FOOD;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER)))
 					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
+				else if (target.equals(AmountResource.findAmountResource("rock samples")))
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(AmountResource.findAmountResource("ice"))) 
+				else if (target.equals(AmountResource.findAmountResource("ice")))
 					tempColumnNum = ICE;
-				else {					
+				else {
 					// 2015-03-09 Added matching the dessert chosen for the journey
-					String [] availableDesserts = PreparingDessert.getArrayOfDesserts();											
-				  	// Put together a list of available dessert 
-			        for(String n : availableDesserts) { 	
+					String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+				  	// Put together a list of available dessert
+			        for(String n : availableDesserts) {
 			        	if (target.equals(AmountResource.findAmountResource(n)))
 			    			tempColumnNum = DESSERT;
 			        }
 				}
-				
+
 				if (tempColumnNum > -1) {
 					// 2015-03-10 Converted resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
 					double currentValue =  Math.round ( (Double) getValueAt(unitIndex, tempColumnNum) * 10.0 ) / 10.0;
@@ -441,7 +442,7 @@ extends UnitTableModel {
 			try {
 				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 				AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-				resourceMap.put(food, getResourceStored(newUnit, food));						
+				resourceMap.put(food, getResourceStored(newUnit, food));
 				AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
 				AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -452,17 +453,17 @@ extends UnitTableModel {
 				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
 				AmountResource ice = AmountResource.findAmountResource("ice");
 				resourceMap.put(ice, getResourceStored(newUnit, ice));
-				
+
 				// 2015-03-09 Added all dessert to the resourceMap
-				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
-			  	// Put together a list of available dessert 
+				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+			  	// Put together a list of available dessert
 		        for(String n : availableDesserts) {
-		        	AmountResource dessert = AmountResource.findAmountResource(n);    
+		        	AmountResource dessert = AmountResource.findAmountResource(n);
 		        	resourceMap.put(dessert, getResourceStored(newUnit, dessert));
 		        }
-	        
-				resourceCache.put(newUnit, resourceMap);			
-				
+
+				resourceCache.put(newUnit, resourceMap);
+
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE, "", e);
@@ -625,7 +626,7 @@ extends UnitTableModel {
 			MissionEventType eventType = event.getType();
 			int columnNum = -1;
 			if (
-					eventType == MissionEventType.TRAVEL_STATUS_EVENT || 
+					eventType == MissionEventType.TRAVEL_STATUS_EVENT ||
 					eventType == MissionEventType.NAVPOINTS_EVENT
 					) columnNum = DESTINATION;
 			else if (eventType == MissionEventType.DISTANCE_EVENT) columnNum = DESTDIST;

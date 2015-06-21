@@ -91,7 +91,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return goodsList.size() + " Trade Goods";
+		return " " + goodsList.size() + " Trade Goods";
 	}
 
 	/**
@@ -102,7 +102,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getName() {
-		return "Trade Goods";
+		return Msg.getString("TradeTableModel.tabName");
 	}
 
 	/**
@@ -162,13 +162,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			Object result =  goodsList.get(rowIndex).getName();
 			return WordUtils.capitalize(result.toString());
 		}
-	
+
 		else if (columnIndex == 1) {
 			// 2014-11-17 Capitalized Category Names
 			Object result = getGoodCategoryName(goodsList.get(rowIndex));
 			return WordUtils.capitalize(result.toString());
 		}
-			
+
 		else {
 			try {
 				Settlement settlement = settlements.get(columnIndex - 2);

@@ -51,9 +51,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		foodList = FoodUtil.getFoodList();
 
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		
+
 		//FoodInventoryTableModel ft = unitManager.
-		
+
 		// Initialize settlements.
 		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 
@@ -63,7 +63,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		// Add as unit manager listener.
 		unitManager.addUnitManagerListener(this);
-		
+
 	}
 
 	/**
@@ -95,7 +95,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 */
 	@Override
 	public String getCountString() {
-		return foodList.size() + " Food Items"; // do need a white space before Food Items 
+		return " " + foodList.size() + " Food Items"; // do need a white space before Food Items
 	}
 
 	/**
@@ -136,7 +136,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		if (columnIndex == 0) return Msg.getString("FoodInventoryTableModel.firstColumn");
 		//else if (columnIndex == 1) return "Category";
 		else {
-			String columnName = Msg.getString("FoodInventoryTableModel.settlementColumns", 
+			String columnName = Msg.getString("FoodInventoryTableModel.settlementColumns",
 					settlements.get(columnIndex - 1).getName());
 			return columnName;
 		}
@@ -162,7 +162,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
-		
+
 		if (columnIndex == 0) {
 			// 2014-11-17 Capitalized Resource Names
 			Object result =  foodList.get(rowIndex).getName();
@@ -191,7 +191,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 	}
 
-	/** gives back the internationalized name of a food's category. 
+	/** gives back the internationalized name of a food's category.
 
 	public String getFoodCategoryName(Food food) {
 		String key = food.getCategory().getMsgKey();

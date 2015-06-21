@@ -34,16 +34,8 @@ extends UnitWindow {
 		super(desktop, robot, false);
 
 		// Add tab panels
-		addTopPanel(new LocationTabPanel(robot, desktop));
-		addTabPanel(new InventoryTabPanel(robot, desktop));
-		addTabPanel(new TabPanelAttribute(robot, desktop));
-		addTabPanel(new TabPanelSkill(robot, desktop));
 		addTabPanel(new TabPanelActivity(robot, desktop));
-		//addTabPanel(new TabPanelHealth(robot, desktop));
-		//addTabPanel(new TabPanelGeneral(robot, desktop));
-		// 2015-03-20  Added TabPanelSchedule
-		addTabPanel(new TabPanelSchedule(robot, desktop));
-	
+		addTabPanel(new TabPanelAttribute(robot, desktop));
 
 		// Add death tab panel if robot is dead.
 		if (robot.getPhysicalCondition().isDead()) {
@@ -51,6 +43,18 @@ extends UnitWindow {
 			addTabPanel(new TabPanelDeath(robot, desktop));
 		}
 		else dead = false;
+
+		addTabPanel(new InventoryTabPanel(robot, desktop));
+		addTopPanel(new LocationTabPanel(robot, desktop));
+		// 2015-03-20  Added TabPanelSchedule
+		addTabPanel(new TabPanelSchedule(robot, desktop));
+		addTabPanel(new TabPanelSkill(robot, desktop));
+		//addTabPanel(new TabPanelHealth(robot, desktop));
+		//addTabPanel(new TabPanelGeneral(robot, desktop));
+
+		// 2015-06-20 Added tab sorting
+		sortTabPanels();
+
 	}
 
 	/**

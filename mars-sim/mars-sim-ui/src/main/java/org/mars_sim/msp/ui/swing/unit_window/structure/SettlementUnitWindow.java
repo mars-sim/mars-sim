@@ -38,32 +38,49 @@ public class SettlementUnitWindow extends UnitWindow {
         //setSize(600,600);
 
         // Add tab panels
-        addTopPanel(new LocationTabPanel(settlement, desktop));
-        addTabPanel(new TabPanelPopulation(settlement, desktop));
         addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
-        addTabPanel(new TabPanelVehicles(settlement, desktop));
-        addTabPanel(new InventoryTabPanel(settlement, desktop));
-        addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+        //2015-01-21 Added TabPanelBot
+        addTabPanel(new TabPanelBots(settlement, desktop));
+
         addTabPanel(new TabPanelBuildings(settlement, desktop));
-        addTabPanel(new TabPanelGoods(settlement, desktop));
-        addTabPanel(new TabPanelCredit(settlement, desktop));
-        addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
-        addTabPanel(new TabPanelMaintenance(settlement, desktop));
-        addTabPanel(new TabPanelManufacture(settlement, desktop));
-        addTabPanel(new TabPanelMissions(settlement, desktop));
+        //2014-12-02 Added TabPanelCooking
+        addTabPanel(new TabPanelCooking(settlement, desktop));
+
         addTabPanel(new TabPanelConstruction(settlement, desktop));
+
+        addTabPanel(new TabPanelCredit(settlement, desktop));
+        //2014-11-23 Added TabPanelFoodProduction
+        addTabPanel(new TabPanelFoodProduction(settlement, desktop));
+
+        addTabPanel(new TabPanelGoods(settlement, desktop));
+
+        addTabPanel(new InventoryTabPanel(settlement, desktop));
+
+        addTopPanel(new LocationTabPanel(settlement, desktop));
+
+        addTabPanel(new TabPanelMaintenance(settlement, desktop));
+
+        addTabPanel(new TabPanelManufacture(settlement, desktop));
+
+        addTabPanel(new TabPanelMissions(settlement, desktop));
+        //2015-04-28 Added TabPanelOrganization
+        addTabPanel(new TabPanelOrganization(settlement, desktop));
+
+        addTabPanel(new TabPanelPopulation(settlement, desktop));
+
+        addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+
+        addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
+
         addTabPanel(new TabPanelScience(settlement, desktop));
     	//2014-10-17 Added TabPanelHeatingSystem
         addTabPanel(new TabPanelThermalSystem(settlement, desktop));
-        //2014-11-23 Added TabPanelFoodProduction
-        addTabPanel(new TabPanelFoodProduction(settlement, desktop));
-        //2014-12-02 Added TabPanelCooking
-        addTabPanel(new TabPanelCooking(settlement, desktop));
-        //2015-01-21 Added TabPanelBot
-        addTabPanel(new TabPanelBots(settlement, desktop));
-        //2015-04-28 Added TabPanelStructure
-        addTabPanel(new TabPanelStructure(settlement, desktop));
+
+        addTabPanel(new TabPanelVehicles(settlement, desktop));
         //2015-05-01 Added TabPanelWeather
         addTabPanel(new TabPanelWeather(settlement, desktop));
+
+        // 2015-06-20 Added tab sorting
+		sortTabPanels();
     }
 }

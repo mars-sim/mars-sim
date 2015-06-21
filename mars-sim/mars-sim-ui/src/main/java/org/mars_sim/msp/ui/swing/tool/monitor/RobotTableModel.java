@@ -52,7 +52,7 @@ extends UnitTableModel {
 	//private static final Logger logger = Logger.getLogger(RobotTableModel.class.getName());
 
 	private static MainDesktopPane desktop;
-	
+
 	// Column indexes
 	/** Robot name column. */
 	private final static int NAME = 0;
@@ -85,7 +85,7 @@ extends UnitTableModel {
 	private static String columnNames[];
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
-	
+
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -97,7 +97,7 @@ extends UnitTableModel {
 		columnNames[TYPE] = Msg.getString("RobotTableModel.column.type"); //$NON-NLS-1$
 		columnTypes[TYPE] = String.class;
 		//columnNames[PERSONALITY] = Msg.getString("RobotTableModel.column.personality"); //$NON-NLS-1$
-		//columnTypes[PERSONALITY] = String.class; 
+		//columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("RobotTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[BATTERY] = Msg.getString("RobotTableModel.column.battery"); //$NON-NLS-1$
@@ -167,7 +167,7 @@ extends UnitTableModel {
 	 */
 	public RobotTableModel(UnitManager unitManager, MainDesktopPane desktop ) {
 		super(
-			Msg.getString("RobotTableModel.allRobots"), //$NON-NLS-1$
+			Msg.getString("RobotTableModel.tabName"), //$NON-NLS-1$
 			"RobotTableModel.countingRobots", //$NON-NLS-1$
 			columnNames,
 			columnTypes
@@ -177,7 +177,7 @@ extends UnitTableModel {
 		setSource(unitManager.getRobots());
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
-		
+
 		//2014-12-30 Added desktop
 		this.desktop = desktop;
 
@@ -207,7 +207,7 @@ extends UnitTableModel {
 	}
 
 	/**
-	 * Constructs a RobotTableModel that displays residents are all associated people with 
+	 * Constructs a RobotTableModel that displays residents are all associated people with
 	 * a specified settlement.
 	 * @param settlement the settlement to check.
 	 * @param allAssociated Are all people associated with this settlement to be displayed?
@@ -299,7 +299,7 @@ extends UnitTableModel {
 			Robot robot = (Robot)getUnit(rowIndex);
 
 			Boolean isDead = robot.getPhysicalCondition().isDead();
-			
+
 			switch (columnIndex) {
 			case NAME : {
 				result = robot.getName();
@@ -346,7 +346,7 @@ extends UnitTableModel {
 			} break;
 */
 			case HEALTH : {
-				
+
 				result = robot.getPhysicalCondition().getHealthSituation();
 			} break;
 
@@ -363,15 +363,15 @@ extends UnitTableModel {
 
 			case JOB : {
 				// If robot is dead, get job from death info.
-				if (robot.getPhysicalCondition().isDead()) 
+				if (robot.getPhysicalCondition().isDead())
 					result = robot.getPhysicalCondition().getDeathDetails().getRobotJob();
 				else {
 					RobotJob robotJob = robot.getBotMind().getRobotJob();
-					if (robotJob != null) 
+					if (robotJob != null)
 						result = robotJob.getName(robot.getRobotType());
-					else 
+					else
 						result = null;
-				} 
+				}
 			} break;
 
 			case TASK : {
@@ -391,7 +391,7 @@ extends UnitTableModel {
 
 		return result;
 	}
-	
+
 	/**
 	 * Give the status of a robot's hunger level
 	 * @param hunger
@@ -413,7 +413,7 @@ extends UnitTableModel {
 	 * Give the status of a robot's fatigue level
 	 * @param fatigue
 	 * @return status
-	 
+
 	public String getFatigueStatus(double value) {
 		String status= "N/A";
 		if (value < 100) status = Msg.getString("RobotTableModel.column.fatigue.level1");
@@ -429,7 +429,7 @@ extends UnitTableModel {
 	 * Give the status of a robot's stress level
 	 * @param hunger
 	 * @return status
-	 
+
 	public String getStressStatus(double value) {
 		String status= "N/A";
 		if (value < 15) status = Msg.getString("RobotTableModel.column.stress.level1");
@@ -552,7 +552,7 @@ extends UnitTableModel {
 			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
 			else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
 			*/
-			
+
 			if (eventType == UnitEventType.DEATH_EVENT) {
 				if (event.getTarget() instanceof Robot) {
 					Unit unit = (Unit) event.getTarget();
@@ -574,7 +574,7 @@ extends UnitTableModel {
 				}
 			}
 			*/
-			 
+
 			if (column != null && column> -1) {
 				Unit unit = (Unit) event.getSource();
 				tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);
@@ -678,7 +678,7 @@ extends UnitTableModel {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT) 
+			if (eventType == UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT)
 				addUnit((Unit) event.getTarget());
 			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT)
 				removeUnit((Unit) event.getTarget());

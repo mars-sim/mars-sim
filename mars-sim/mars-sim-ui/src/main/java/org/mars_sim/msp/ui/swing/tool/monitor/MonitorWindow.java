@@ -39,6 +39,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
+import com.jidesoft.swing.JideTabbedPane;
 import com.jidesoft.swing.Searchable;
 import com.jidesoft.swing.SearchableBar;
 //import com.jidesoft.swing.SearchableBar;
@@ -56,13 +57,25 @@ implements TableModelListener, ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Tool name. */
-	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
-
 	final private static int STATUSHEIGHT = 25;
 
+	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
+
+	public static final String PEOPLE_ICON = "people_32";
+	public static final String BOT_ICON = "bot_32";
+	public static final String BUS_ICON = "bus_32";
+	public static final String BASE_ICON = "base_32";
+	public static final String CARROT_ICON = "carrot_32";
+	public static final String TRASH_ICON = "trash_32";
+	public static final String CENTERMAP_ICON = "centermap_32";
+	public static final String FIND_ICON = "find_32";
+	public static final String BRIEFCASE_ICON = "briefcase_32";
+	public static final String COLUMN_ICON = "column_32";
+	public static final String FILTER_ICON = "filter_32";
+
 	// Data members
-	private JTabbedPane tabsSection;
+	//private JTabbedPane tabsSection;
+	private JideTabbedPane tabsSection;
 	private JLabel rowCount;
 	private ArrayList<MonitorTab> tabs = new ArrayList<MonitorTab>();
 	/** Tab showing historical events. */
@@ -121,7 +134,7 @@ implements TableModelListener, ActionListener {
 		toolbar.add(buttonBar);
 
 		//buttonRemoveTab = new JButton(ImageLoader.getIcon(Msg.getString("img.tabRemove"))); //$NON-NLS-1$
-		buttonRemoveTab = new JButton(ImageLoader.getNewIcon("trash_32")); //$NON-NLS-1$
+		buttonRemoveTab = new JButton(ImageLoader.getNewIcon(TRASH_ICON)); //$NON-NLS-1$
 		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		buttonRemoveTab.addActionListener(this);
 		toolbar.add(buttonRemoveTab);
@@ -129,40 +142,44 @@ implements TableModelListener, ActionListener {
 
 		// Create buttons based on selection
 		//buttonMap = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
-		buttonMap = new JButton(ImageLoader.getNewIcon("centermap_32")); //$NON-NLS-1$
+		buttonMap = new JButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); //$NON-NLS-1$
 		buttonMap.setMargin(new Insets(3, 4, 4, 4));
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		toolbar.add(buttonMap);
 
 		//buttonDetails = new JButton(ImageLoader.getIcon(Msg.getString("img.showDetails"))); //$NON-NLS-1$
-		buttonDetails = new JButton(ImageLoader.getNewIcon("find_32")); //$NON-NLS-1$
+		buttonDetails = new JButton(ImageLoader.getNewIcon(FIND_ICON)); //$NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
 		toolbar.add(buttonDetails);
 
 		//buttonMissions = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
-		buttonMissions = new JButton(ImageLoader.getNewIcon("briefcase_32")); //$NON-NLS-1$
+		buttonMissions = new JButton(ImageLoader.getNewIcon(BRIEFCASE_ICON)); //$NON-NLS-1$
 		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		buttonMissions.addActionListener(this);
 		toolbar.add(buttonMissions);
 		toolbar.addSeparator();
 
 		//buttonProps = new JButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
-		buttonProps = new JButton(ImageLoader.getNewIcon("column_32")); //$NON-NLS-1$
+		buttonProps = new JButton(ImageLoader.getNewIcon(COLUMN_ICON)); //$NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
 		toolbar.add(buttonProps);
 		toolbar.addSeparator();
 
 		//buttonFilter = new JButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
-		buttonFilter = new JButton(ImageLoader.getNewIcon("filter_32")); //$NON-NLS-1$
+		buttonFilter = new JButton(ImageLoader.getNewIcon(FILTER_ICON)); //$NON-NLS-1$
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		buttonFilter.addActionListener(this);
 		toolbar.add(buttonFilter);
 
 		// Create tabbed pane for the table
-		tabsSection = new JTabbedPane();
+		tabsSection = new JideTabbedPane();
+		tabsSection.setBoldActiveTab(true);
+		tabsSection.setScrollSelectedTabOnWheel(true);
+		tabsSection.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
+		tabsSection.setTabPlacement(JideTabbedPane.TOP);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Create a status panel
@@ -184,25 +201,27 @@ implements TableModelListener, ActionListener {
 		// 2014-11-29 Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
-		addTab(new UnitTab(this,new PersonTableModel(unitManager, desktop), true, "people_32"));
 		// 2015-01-21 Added RobotTableModel
-		addTab(new UnitTab(this,new RobotTableModel(unitManager, desktop), true, "robot_32"));
-
-		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true, "car_32"));
-		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true, "city_32"));
+		addTab(new UnitTab(this, new RobotTableModel(unitManager, desktop), true, BOT_ICON));
 		// 2014-10-14 mkung: added FoodTableModel
-		addTab(new UnitTab(this,new CropTableModel(unitManager), true, "crop_32"));
-		// 2014-11-25 mkung: added FoodInventoryTab()
-		addTab(new FoodInventoryTab(this));
-
-		addTab(new MissionTab(this));
-		// 2014-11-29 Added notifyBox
-		// 2015-01-15 Added desktop
+		addTab(new UnitTab(this, new CropTableModel(unitManager), true, CARROT_ICON));
+		// 2014-11-29 Added notifyBox 2015-01-15 Added desktop
 		eventsTab = new EventTab(this, notifyBox, desktop);
 
 		addTab(eventsTab);
+		// 2014-11-25 mkung: added FoodInventoryTab()
+		addTab(new FoodInventoryTab(this));
 
 		addTab(new TradeTab(this));
+
+		addTab(new MissionTab(this));
+
+		addTab(new UnitTab(this, new PersonTableModel(unitManager, desktop), true, PEOPLE_ICON));
+
+		addTab(new UnitTab(this, new SettlementTableModel(unitManager), true, BASE_ICON));
+
+		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, BUS_ICON));
+
 
 		tabsSection.setSelectedIndex(0);
 		tabChanged();

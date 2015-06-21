@@ -19,12 +19,13 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
@@ -36,6 +37,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
+import com.jidesoft.swing.JideTabbedPane;
 
 /**
  * The UnitWindow is the base window for displaying units.
@@ -50,8 +53,11 @@ public abstract class UnitWindow extends JInternalFrame {
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
-	private JTabbedPane centerPanel;
-    private BufferedImage image;
+	//private JTabbedPane centerPanel;
+	// 2015-06-20 Replaced with JideTabbedPane
+	private JideTabbedPane centerPanel;
+
+	private BufferedImage image;
 
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -114,7 +120,11 @@ public abstract class UnitWindow extends JInternalFrame {
         }
 
         // Create center panel
-        centerPanel = new JTabbedPane();
+        centerPanel = new JideTabbedPane();
+        centerPanel.setBoldActiveTab(true);
+        centerPanel.setScrollSelectedTabOnWheel(true);
+        centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
+        centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         mainPane.add(namePanel, BorderLayout.NORTH);
         //centerPanel.setBackground(THEME_COLOR);
         mainPane.add(centerPanel, BorderLayout.CENTER);
@@ -136,10 +146,10 @@ public abstract class UnitWindow extends JInternalFrame {
     protected final void addTabPanel(TabPanel panel) {
         if (!tabPanels.contains(panel)) {
             tabPanels.add(panel);
-            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
-                panel, panel.getTabToolTip());
+            //centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
+            //    panel, panel.getTabToolTip());
         }
-    }
+      }
 
     protected final void addTopPanel(TabPanel panel) {
         if (!tabPanels.contains(panel)) {
@@ -148,6 +158,16 @@ public abstract class UnitWindow extends JInternalFrame {
         }
     }
 
+    // 2015-06-20 Added tab sorting
+    protected void sortTabPanels() {
+        tabPanels.stream().sorted(
+        		(t1, t2) -> t2.getTabTitle().compareTo(t1.getTabTitle()));
+        tabPanels.forEach(panel -> {
+	            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
+	                panel, panel.getTabToolTip());
+        });
+
+    }
     /**
      * Gets the unit for this window.
      *
@@ -234,7 +254,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	     this.alpha = alpha;
 	     repaint();
 	 }
-	*/
+
 
 	 @Override
 	 protected void paintComponent(Graphics g) {
@@ -264,6 +284,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	         g2.addRenderingHints(desktopHints);
 	     }
 	 }
+*/
 
 	/**
 	 * Prepares unit window for deletion.
