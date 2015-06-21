@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -112,9 +113,13 @@ extends TabPanel {
 		labelPanel.add(label);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(1, 3, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
-		infoPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+//		JPanel infoPanel = new JPanel(new GridLayout(1, 3, 40, 0)); //new FlowLayout(FlowLayout.CENTER));
+//		infoPanel.setBorder(new MarsPanelBorder());
+		Box box = Box.createHorizontalBox();
+		box.setBorder(new MarsPanelBorder());
+
+//		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		centerContentPanel.add(box, BorderLayout.NORTH);
 
 		// Create hideRepeatedTaskBox.
 		hideRepeatedTasksCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.showRepeatedTask")); //$NON-NLS-1$
@@ -133,9 +138,12 @@ extends TabPanel {
 			}
 		});
 		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
-		infoPanel.add(hideRepeatedTasksCheckBox);
+//		infoPanel.add(hideRepeatedTasksCheckBox);
+		box.add(hideRepeatedTasksCheckBox);
+		box.add(Box.createHorizontalGlue());
 
-/*    	// add today into solList
+
+		/*    	// add today into solList
      	solList.add(todayInteger);
  		if (today > 1) {
 			Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
@@ -176,14 +184,12 @@ extends TabPanel {
 		comboBox.setMaximumRowCount(7);
 		//comboBox.setBorder(null);
 
-	    //JLabel solLabel = new JLabel("Select:");
 		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-	    //solPanel.add(solLabel);
 		solPanel.add(comboBox);
 
-		//infoPanel.add(solLabel);
-		infoPanel.add(solPanel);
+//		infoPanel.add(solPanel);
+		box.add(solPanel);
+		box.add(Box.createHorizontalGlue());
 
     	selectedSolCache = (Integer) comboBox.getSelectedItem();
 		if (selectedSolCache == null)
@@ -214,7 +220,8 @@ extends TabPanel {
 			}
 		});
 		realTimeUpdateCheckBox.setSelected(isRealTimeUpdate);
-		infoPanel.add(realTimeUpdateCheckBox);
+//		infoPanel.add(realTimeUpdateCheckBox);
+		box.add(realTimeUpdateCheckBox);
 
 		// Create schedule table model
 		if (unit instanceof Person)

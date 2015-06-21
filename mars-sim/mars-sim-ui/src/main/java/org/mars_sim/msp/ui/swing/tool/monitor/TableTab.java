@@ -153,7 +153,7 @@ extends MonitorTab {
 	// These icons are used to render the sorting images on the column header
 	private static Icon ascendingIcon = null;
 	private static Icon descendingIcon = null;
-	private final static Icon TABLEICON = ImageLoader.getIcon("Table");
+	//private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
 	/** Table component. */
 	protected JTable table;
@@ -170,8 +170,9 @@ extends MonitorTab {
      * @param mandatory Is this table view mandatory.
      * @param singleSelection Does this table only allow single selection?
      */
-    public TableTab(final MonitorWindow window, MonitorModel model, boolean mandatory, boolean singleSelection) {
-        super(model, mandatory, TABLEICON);
+    public TableTab(final MonitorWindow window, MonitorModel model, boolean mandatory, boolean singleSelection, String icon) {
+        super(model, mandatory, ImageLoader.getNewIcon(icon));
+        		//TABLEICON);
 
         // Can not create icons until UIManager is up and running
         if (ascendingIcon == null) {

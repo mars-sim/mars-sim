@@ -120,37 +120,43 @@ implements TableModelListener, ActionListener {
 		buttonBar.addActionListener(this);
 		toolbar.add(buttonBar);
 
-		buttonRemoveTab = new JButton(ImageLoader.getIcon(Msg.getString("img.tabRemove"))); //$NON-NLS-1$
+		//buttonRemoveTab = new JButton(ImageLoader.getIcon(Msg.getString("img.tabRemove"))); //$NON-NLS-1$
+		buttonRemoveTab = new JButton(ImageLoader.getNewIcon("trash_32")); //$NON-NLS-1$
 		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		buttonRemoveTab.addActionListener(this);
 		toolbar.add(buttonRemoveTab);
 		toolbar.addSeparator();
 
 		// Create buttons based on selection
-		buttonMap = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+		//buttonMap = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+		buttonMap = new JButton(ImageLoader.getNewIcon("centermap_32")); //$NON-NLS-1$
 		buttonMap.setMargin(new Insets(3, 4, 4, 4));
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		toolbar.add(buttonMap);
 
-		buttonDetails = new JButton(ImageLoader.getIcon(Msg.getString("img.showDetails"))); //$NON-NLS-1$
+		//buttonDetails = new JButton(ImageLoader.getIcon(Msg.getString("img.showDetails"))); //$NON-NLS-1$
+		buttonDetails = new JButton(ImageLoader.getNewIcon("find_32")); //$NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
 		toolbar.add(buttonDetails);
 
-		buttonMissions = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
+		//buttonMissions = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
+		buttonMissions = new JButton(ImageLoader.getNewIcon("briefcase_32")); //$NON-NLS-1$
 		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		buttonMissions.addActionListener(this);
 		toolbar.add(buttonMissions);
 		toolbar.addSeparator();
 
-		buttonProps = new JButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
+		//buttonProps = new JButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
+		buttonProps = new JButton(ImageLoader.getNewIcon("column_32")); //$NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
 		toolbar.add(buttonProps);
 		toolbar.addSeparator();
 
-		buttonFilter = new JButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
+		//buttonFilter = new JButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
+		buttonFilter = new JButton(ImageLoader.getNewIcon("filter_32")); //$NON-NLS-1$
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		buttonFilter.addActionListener(this);
 		toolbar.add(buttonFilter);
@@ -178,14 +184,14 @@ implements TableModelListener, ActionListener {
 		// 2014-11-29 Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
-		addTab(new UnitTab(this,new PersonTableModel(unitManager, desktop), true));
+		addTab(new UnitTab(this,new PersonTableModel(unitManager, desktop), true, "people_32"));
 		// 2015-01-21 Added RobotTableModel
-		addTab(new UnitTab(this,new RobotTableModel(unitManager, desktop), true));
+		addTab(new UnitTab(this,new RobotTableModel(unitManager, desktop), true, "robot_32"));
 
-		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
-		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
+		addTab(new UnitTab(this,new VehicleTableModel(unitManager), true, "car_32"));
+		addTab(new UnitTab(this,new SettlementTableModel(unitManager), true, "city_32"));
 		// 2014-10-14 mkung: added FoodTableModel
-		addTab(new UnitTab(this,new CropTableModel(unitManager), true));
+		addTab(new UnitTab(this,new CropTableModel(unitManager), true, "crop_32"));
 		// 2014-11-25 mkung: added FoodInventoryTab()
 		addTab(new FoodInventoryTab(this));
 
@@ -283,7 +289,7 @@ implements TableModelListener, ActionListener {
 	 */
 	public void displayModel(UnitTableModel model) {
 		if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
-		else addTab(new UnitTab(this,model, false));
+		else addTab(new UnitTab(this,model, false, "user_32"));
 	}
 
 	/**

@@ -39,7 +39,8 @@ extends MonitorTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public final static Icon BARICON = ImageLoader.getIcon(Msg.getString("img.barChart")); //$NON-NLS-1$
+	//public final static Icon BARICON = ImageLoader.getIcon(Msg.getString("img.barChart")); //$NON-NLS-1$
+	public final static Icon BARICON = ImageLoader.getNewIcon("bar_32"); //$NON-NLS-1$
 
 	/** Maximum label length. */
 	private final static int MAXLABEL = 12;

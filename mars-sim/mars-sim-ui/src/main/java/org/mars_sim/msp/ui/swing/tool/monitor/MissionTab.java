@@ -16,7 +16,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 /**
- * This class represents a mission table displayed within the Monitor Window. 
+ * This class represents a mission table displayed within the Monitor Window.
  */
 public class MissionTab
 extends TableTab {
@@ -24,12 +24,14 @@ extends TableTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+    public final static String ICON = "briefcase_32";
+
 	/**
 	 * Constructor.
 	 */
 	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new MissionTableModel(), true, true);
+		super(window, new MissionTableModel(), true, true, ICON);
 	}
 
 	/**
@@ -56,7 +58,7 @@ extends TableTab {
 		Iterator<?> it = rows.iterator();
 		if (it.hasNext()) {
 			Mission mission = (Mission) it.next();
-			if (mission.getPeopleNumber() > 0) 
+			if (mission.getPeopleNumber() > 0)
 				desktop.centerMapGlobe(((Unit)mission.getPeople().toArray()[0]).getCoordinates());
 		}
 	}
