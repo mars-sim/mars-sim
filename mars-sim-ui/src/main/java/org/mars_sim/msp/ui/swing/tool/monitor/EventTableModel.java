@@ -192,7 +192,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * @return model name.
 	 */
 	public String getName() {
-		return Msg.getString("EventTableModel.title"); //$NON-NLS-1$
+		return Msg.getString("EventTableModel.tabName"); //$NON-NLS-1$
 	}
 
 	/**
@@ -287,7 +287,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return Msg.getString(
+		return " " + Msg.getString(
 			"EventTableModel.numberOfEvents", //$NON-NLS-1$
 			Integer.toString(cachedEvents.size())
 		);

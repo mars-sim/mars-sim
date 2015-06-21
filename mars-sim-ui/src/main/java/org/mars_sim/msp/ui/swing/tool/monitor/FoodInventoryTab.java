@@ -27,7 +27,7 @@ implements UnitManagerListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    public final static String ICON = "burger";
+    public final static String ICON = "spacefood_32";
 
 	/**
 	 * constructor.

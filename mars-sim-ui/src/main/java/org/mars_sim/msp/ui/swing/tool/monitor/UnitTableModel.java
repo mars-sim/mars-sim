@@ -165,6 +165,26 @@ implements MonitorModel, UnitListener {
 		return this.size;
 	}
 
+	protected boolean getRefreshSize() {
+		return refreshSize;
+	}
+
+	protected void setRefreshSize(boolean value) {
+		refreshSize = value;
+	}
+
+	protected Collection<Unit> getUnits() {
+		return units;
+	}
+
+	protected int getSize() {
+		return units.size();
+	}
+
+	protected void setSize(int value) {
+		size = value;
+	}
+
 	/**
 	 * Return the number of columns
 	 * @return column count.
@@ -211,7 +231,6 @@ implements MonitorModel, UnitListener {
 	 * @return the number of Units.
 	 */
 	public int getRowCount() {
-
 		return getUnitNumber();
 	}
 
@@ -267,7 +286,7 @@ implements MonitorModel, UnitListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return Msg.getString(countingMsgKey,Integer.toString(getUnitNumber()));
+		return " " + Msg.getString(countingMsgKey, Integer.toString(getUnitNumber()));
 	}
 
 	/**

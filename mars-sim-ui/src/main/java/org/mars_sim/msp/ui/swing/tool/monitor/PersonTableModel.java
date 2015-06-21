@@ -179,7 +179,7 @@ extends UnitTableModel {
 	 */
 	public PersonTableModel(UnitManager unitManager, MainDesktopPane desktop ) {
 		super(
-			Msg.getString("PersonTableModel.allPeople"), //$NON-NLS-1$
+			Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
 			"PersonTableModel.countingPeople", //$NON-NLS-1$
 			columnNames,
 			columnTypes

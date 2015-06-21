@@ -52,7 +52,7 @@ import com.jidesoft.swing.TreeSearchable;
 /**
  * The TabPanelStructure is a tab panel showing the organizational structure of a settlement.
  */
-public class TabPanelStructure
+public class TabPanelOrganization
 extends TabPanel {
 
 	/** default serial id. */
@@ -67,7 +67,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelStructure(Unit unit, MainDesktopPane desktop) {
+	public TabPanelOrganization(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			"Org", //$NON-NLS-1$

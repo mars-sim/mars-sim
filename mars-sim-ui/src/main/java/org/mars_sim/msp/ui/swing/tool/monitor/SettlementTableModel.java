@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -43,19 +44,19 @@ extends UnitTableModel {
 	private static final long serialVersionUID = 1L;
 
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
-	 
+
 	// Column indexes
 	private final static int NAME = 0;
 	private final static int POPULATION = 1;
 	private final static int PARKED = 2;
 	private final static int POWER = 3;
-	
+
 	private final static int MALFUNCTION = 4;
 	private final static int OXYGEN = 5;
 	private final static int HYDROGEN = 6;
 	private final static int CO2 = 7;
 	private final static int METHANE = 8;
-	
+
 	private final static int WATER = 9;
 	private final static int GREY_WATER = 10;
 	private final static int BLACK_WATER = 11;
@@ -113,7 +114,7 @@ extends UnitTableModel {
 	 */
 	public SettlementTableModel(UnitManager unitManager) {
 		super(
-			"All Settlements",
+			Msg.getString("SettlementTableModel.tabName"),
 			"SettlementTableModel.countingSettlements", //$NON-NLS-1$
 			columnNames,
 			columnTypes
@@ -207,7 +208,7 @@ extends UnitTableModel {
 					result = resourceMap.get(
 							AmountResource.findAmountResource("black water"));
 				} break;
-				
+
 				case CO2 : {
 					result = resourceMap.get(
 							AmountResource.findAmountResource("carbon dioxide"));
@@ -237,7 +238,7 @@ extends UnitTableModel {
 
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
-		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
+		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
 				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 			if (target instanceof Person) columnNum = POPULATION;
 			else if (target instanceof Vehicle) columnNum = PARKED;
@@ -248,23 +249,23 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN))) 
+				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN)))
 					tempColumnNum = OXYGEN;
-				else if (target.equals(AmountResource.findAmountResource("hydrogen"))) 
+				else if (target.equals(AmountResource.findAmountResource("hydrogen")))
 					tempColumnNum = HYDROGEN;
-				else if (target.equals(AmountResource.findAmountResource("carbon dioxide"))) 
+				else if (target.equals(AmountResource.findAmountResource("carbon dioxide")))
 					tempColumnNum = CO2;
-				else if (target.equals(AmountResource.findAmountResource("methane"))) 
+				else if (target.equals(AmountResource.findAmountResource("methane")))
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER))) 
+				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER)))
 					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("grey water"))) 
+				else if (target.equals(AmountResource.findAmountResource("grey water")))
 					tempColumnNum = GREY_WATER;
-				else if (target.equals(AmountResource.findAmountResource("black water"))) 
+				else if (target.equals(AmountResource.findAmountResource("black water")))
 					tempColumnNum = BLACK_WATER;
-				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
+				else if (target.equals(AmountResource.findAmountResource("rock samples")))
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(AmountResource.findAmountResource("ice"))) 
+				else if (target.equals(AmountResource.findAmountResource("ice")))
 					tempColumnNum = ICE;
 
 				if (tempColumnNum > -1) {
@@ -343,7 +344,7 @@ extends UnitTableModel {
 	 * @return integer amount of resource.
 	 */
 	private Integer getResourceStored(Unit unit, AmountResource resource) {
-		Integer result = null;	
+		Integer result = null;
 		Inventory inv = unit.getInventory();
 		result = (int) inv.getAmountResourceStored(resource, true);
 		return result;

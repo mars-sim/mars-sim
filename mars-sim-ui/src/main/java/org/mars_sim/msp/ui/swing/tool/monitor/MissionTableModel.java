@@ -70,7 +70,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		columnNames[DESCRIPTION] = Msg.getString("MissionTableModel.column.description"); //$NON-NLS-1$
 		columnTypes[DESCRIPTION] = String.class;
 		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
-		columnTypes[PHASE] = String.class; 
+		columnTypes[PHASE] = String.class;
 		columnNames[STARTING_SETTLEMENT] = Msg.getString("MissionTableModel.column.startingSettlement"); //$NON-NLS-1$
 		columnTypes[STARTING_SETTLEMENT] = String.class;
 		columnNames[VEHICLE] = Msg.getString("MissionTableModel.column.vehicle"); //$NON-NLS-1$
@@ -98,7 +98,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	 * @return Descriptive name.
 	 */
 	public String getName() {
-		return Msg.getString("MissionTableModel.title"); //$NON-NLS-1$
+		return Msg.getString("MissionTableModel.tabName"); //$NON-NLS-1$
 	}
 
 	/**
@@ -180,7 +180,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return Msg.getString(
+		return " " + Msg.getString(
 			"MissionTableModel.numberOfMissions", //$NON-NLS-1$
 			Integer.toString(missionCache.size())
 		);
@@ -200,7 +200,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			if (eventType == MissionEventType.NAME_EVENT) column1 = TYPE;
 			else if (eventType == MissionEventType.DESCRIPTION_EVENT) column1 = DESCRIPTION;
 			else if (eventType == MissionEventType.PHASE_EVENT) column1 = PHASE;
-			else if (eventType == MissionEventType.ADD_MEMBER_EVENT || 
+			else if (eventType == MissionEventType.ADD_MEMBER_EVENT ||
 					eventType == MissionEventType.REMOVE_MEMBER_EVENT) column1 = MEMBER_NUM;
 			else if (eventType == MissionEventType.NAVPOINTS_EVENT) column1 = NAVPOINT_NUM;
 			else if (eventType == MissionEventType.VEHICLE_EVENT) column1 = VEHICLE;
