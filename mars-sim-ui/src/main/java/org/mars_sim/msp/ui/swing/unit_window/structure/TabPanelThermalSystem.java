@@ -460,8 +460,8 @@ extends TabPanel {
 			List<Building> newBuildings = selectBuildingsWithThermal();
 			if (!buildingsWithThermal.equals(newBuildings)) {
 				buildingsWithThermal = newBuildings;
-				fireTableDataChanged();
 			}
+			fireTableDataChanged();
 		}
 	}
 }

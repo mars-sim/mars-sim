@@ -612,8 +612,27 @@ implements Serializable {
                 powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
         }
 
+        // TODO: separate auxiliary power for subsystem, not just lighting power
+
         return powerRequired;
     }
+
+    /**
+     * Gets the total amount of lighting power in this greenhouse.
+     * @return power (kW)
+     */
+    public double getTotalLightingPower() {
+        double powerRequired = 0D;
+
+        Iterator<Crop> i = crops.iterator();
+        while (i.hasNext()) {
+            Crop crop = i.next();
+            powerRequired += crop.getLightingPower();
+        }
+
+        return powerRequired;
+    }
+
 
     /**
      * Gets the amount of power required when function is at power down level.

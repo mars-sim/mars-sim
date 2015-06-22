@@ -60,8 +60,11 @@ implements Serializable {
 
 	public static final double  WATT_TO_PHOTON_CONVERSION_RATIO = 4.609;
 
-	public static final double  EFFICIENCY_HPS = .35D; //high pressure sodium (HPS) lamps efficiency
-
+	public static final double  VISIBLE_RADIATION_HPS = .4; // high pressure sodium (HPS) lamps efficiency
+	public static final double  BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS)
+	public static final double  NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS)
+	public static final double  CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS)
+	public static final double  LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
@@ -462,7 +465,7 @@ implements Serializable {
 	}
 
 	public void turnOnLighting(double neededWatt) {
-		lightingPower = neededWatt / 1000D / EFFICIENCY_HPS;  // lightingPower is in kW
+		lightingPower = neededWatt / 1000D / VISIBLE_RADIATION_HPS;  // lightingPower is in kW
 	}
 
 	public void turnOffLighting() {

@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
@@ -126,6 +127,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
 
+	protected double powerNeededForEVAheater;
+
 	boolean isImpactImminent = false;
 
 	protected String buildingType;
@@ -176,7 +179,7 @@ LocalBoundedObject, InsidePathLocation {
 		//}
 
 		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.HEAT_OFF;
+		heatMode = HeatMode.ONLINE;
 
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
 			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -213,6 +216,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
+		this.location = manager.getSettlement().getCoordinates();
 
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
@@ -635,6 +639,8 @@ LocalBoundedObject, InsidePathLocation {
 		if (furnace != null && furnace.getHeating() != null )
 			furnace.getHeating().getFullHeatRequired();
 
+		result += powerNeededForEVAheater;
+
 		return result;
 	}
 	//2014-11-02 Added setHeatGenerated()
@@ -682,6 +688,14 @@ LocalBoundedObject, InsidePathLocation {
 		return malfunctionManager;
 	}
 
+    /**
+     * Gets the total amount of lighting power in this greenhouse.
+     * @return power (kW)
+     */
+    public double getTotalPowerForEVA() {
+        return powerNeededForEVAheater;
+    }
+
 
 	public int numOfPeopleInAirLock() {
         int num = 0;
@@ -690,6 +704,7 @@ LocalBoundedObject, InsidePathLocation {
 	        num = ((EVA) getFunction(BuildingFunction.EVA)).getAirlock().getOccupants().size();
 			//if (num > 0) System.out.println("num is " + num);
 		//}
+	        powerNeededForEVAheater = num * 1D; // set to 1kW for each person
         return num;
 /*
         List<Building> evaBuildings = manager.getBuildings(BuildingFunction.EVA);
@@ -968,6 +983,10 @@ LocalBoundedObject, InsidePathLocation {
 		return item;
 	}
 
+
+	public Coordinates getLocation() {
+		return location;
+	}
 
 	/**
 	 * Prepare object for garbage collection.
