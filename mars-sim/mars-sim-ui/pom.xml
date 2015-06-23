@@ -132,7 +132,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.sibvisions.jvx</groupId>
 			<artifactId>jfxtensions</artifactId>
-			<version>0.9_beta</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>

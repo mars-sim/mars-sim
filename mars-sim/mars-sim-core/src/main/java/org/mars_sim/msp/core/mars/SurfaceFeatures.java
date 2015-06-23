@@ -45,6 +45,7 @@ public class SurfaceFeatures implements Serializable {
 	private int solCache = 1;
 
 	private double opticalDepthStartingValue = 0.2342;
+	private double factor;
 
     private List<Landmark> landmarks;
     private List<ExploredLocation> exploredLocations;
@@ -63,6 +64,7 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, Double> solarIrradianceMapCache;
 	private MarsClock solarIrradianceMapCacheTime;
 
+
 	DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
     /**
@@ -77,7 +79,6 @@ public class SurfaceFeatures implements Serializable {
         areothermalMap = new AreothermalMap();
 
         //weather = Simulation.instance().getMars().getWeather();
-
         mars = Simulation.instance().getMars();
         //orbitInfo = mars.getOrbitInfo();
         missionManager = Simulation.instance().getMissionManager();
@@ -88,7 +89,12 @@ public class SurfaceFeatures implements Serializable {
             throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
         }
 
+        if (solarIrradianceMapCache == null) {
+            solarIrradianceMapCache = new ConcurrentHashMap<Coordinates, Double>();
+        }
 
+        double a = OrbitInfo.SEMI_MAJOR_AXIS;
+        factor = MEAN_SOLAR_IRRADIANCE * a * a;
     }
 
     /**
@@ -99,6 +105,10 @@ public class SurfaceFeatures implements Serializable {
 
         // Initialize surface terrain.
         surfaceTerrain = new TerrainElevation();
+
+     	if (sunDirection == null)
+      		sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
+
     }
 
     /** Returns the surface terrain
@@ -119,16 +129,15 @@ public class SurfaceFeatures implements Serializable {
      */
     public double getSurfaceSunlight(Coordinates location) {
     	double result = 0;
+      	//if (sunDirection == null)
+      	//	sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
 /*
 // Method 1:
-
-      	if (mars == null)
-        	mars = Simulation.instance().getMars();
-        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
-        System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
+        //System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
 
-        double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
+        //double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
+
         if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
             result = 1D;
         } else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
@@ -137,34 +146,33 @@ public class SurfaceFeatures implements Serializable {
             double twilightAngle = angleFromSun - ((Math.PI / 2D) - (twilightzone / 2D));
             result = 1D - (twilightAngle / twilightzone);
         }
-*/
-// Method 2:
-        double z =  orbitInfo.getSolarZenithAngle(location);
 
-       // System.out.println("z3 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
-
-        double twilightzone = .2D;
-        if (z  < (Math.PI / 2D) - (twilightzone/2D) ) {
+        // Below is the numerically shortened equivalent of the above if-else block
+        if (angleFromSun  < 1.4708) {
             result = 1D;
-        } else if (z  > (Math.PI / 2D) + (twilightzone / 2D)) {
+        } else if (angleFromSun  > 1.6708) {
             result = 0D;
         } else {
-            double twilightAngle = z  - ((Math.PI / 2D) - (twilightzone / 2D));
-            result = 1D - (twilightAngle / twilightzone);
+            //double twilightAngle = z - 1.6708;
+            result = 9.354 - .2 * angleFromSun;
         }
 
-/*
-// Method 3:
- *
-        double result = getSolarIrradiance(location); // or use SurfaceFeatures.MEAN_SOLAR_IRRADIANCE
-
-        if (result > 20.94)
-        	result = 1;
-        else if (result <= 20.94 & result > 0)
-        	result = result / 20.94;
-        else
-        	result = 0;
 */
+// Method 2:
+
+
+        double z =  orbitInfo.getSolarZenithAngle(location);
+        //System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
+
+        //double twilightzone = .2D;
+        if (z  < 1.4708) {
+            result = 1D;
+        } else if (z  > 1.6708) {
+            result = 0D;
+        } else {
+            //double twilightAngle = z - 1.6708;
+            result = 9.354 - .2 * z;
+        }
 
         return result;
     }
@@ -176,30 +184,17 @@ public class SurfaceFeatures implements Serializable {
      */
     public double getSolarIrradiance(Coordinates location) {
 
-        // Lazy instantiation of solarIrradianceMapCache.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        if ((solarIrradianceMapCacheTime == null) || !currentTime.equals(solarIrradianceMapCacheTime)) {
-            if (solarIrradianceMapCache == null) {
-                solarIrradianceMapCache = new ConcurrentHashMap<Coordinates, Double>();
-            }
-            //if (solarIrradianceMapCacheTime == null) solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
-            //System.out.println(" currentTime : " + currentTime.getMillisol()
-            //+ "    solarIrradianceMapCacheTime : " + solarIrradianceMapCacheTime.getMillisol());//getSolarIrradiance()'s clearing solarIrradianceMapCache");
-            solarIrradianceMapCache.clear();
+        if (!currentTime.equals(solarIrradianceMapCacheTime)) {
+        	solarIrradianceMapCache.clear();
             solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
         }
-        //else {
-        //}
-
         // If location is not in cache, calculate solar irradiance.
         if (!solarIrradianceMapCache.containsKey(location)) {
             if (mars == null) {
                 mars = Simulation.instance().getMars();
             }
-            // The solar irradiance value below is the value on top of the atmosphere only
-            //double lat = location.getPhi2Lat(location.getPhi());
-            //System.out.println("lat is " + lat);
-            /*
+/*
 // Approach 1
 		double s1 = 0;
         double L_s = mars.getOrbitInfo().getL_s();
@@ -209,7 +204,7 @@ public class SurfaceFeatures implements Serializable {
     	double den = 1 - e * e;
     	s1 = MEAN_SOLAR_IRRADIANCE * Math.cos(z) * num / den * num / den  ;
     	System.out.println("solar irradiance s1 is " + s1);
-             */
+ */
 
 // Approach 2 consists of 5 parts
             // Part 1: get cosine solar zenith angle
@@ -217,7 +212,7 @@ public class SurfaceFeatures implements Serializable {
             double G_h = 0;
             double G_bh = 0;
             double G_dh = 0;
-            //G_0: solar irradiance at the top of the atmosphere
+            //G_0: direct solar irradiance at the top of the atmosphere
             //G_h: global irradiance on a horizontal surface
             //G_bh: direct beam irradiance on a horizontal surface
             //G_dh: diffuse irradiance on a horizontal surface
@@ -227,8 +222,7 @@ public class SurfaceFeatures implements Serializable {
 
             double cos_z =  orbitInfo.getCosineSolarZenithAngle(location);
             double z = Math.acos(cos_z);
-            //getSurfaceSunlight(location);
-            //System.out.println("z2 : " + Math.round(Math.acos(cos_z) * 180D / Math.PI * 1000D)/1000D);// + "   cos_z : "+ fmt3.format(cos_z));
+
             if (z >= Math.PI/2D) {
             	// Mar is in the so-called twilight zone
             	// Set it to a maximum of 12 degree below the horizon
@@ -252,14 +246,11 @@ public class SurfaceFeatures implements Serializable {
 
                 // Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
                 // Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5 )
-                double mean =  MEAN_SOLAR_IRRADIANCE; // * 0.675 * (1 + Math.sin((L_s - 161.2774)/180D * Math.PI));
 
                 // Part 3: get the instantaneous radius and semi major axis
                 double r =  orbitInfo.getDistanceToSun();
-                double a = OrbitInfo.SEMI_MAJOR_AXIS;
-                double radiusAndAxis =  a * a / r / r;
 
-                G_0 = cos_z * mean * radiusAndAxis;
+                G_0 = cos_z * factor / r / r;
 
                 //if (G_0 <= 0)
                 //	G_0 = 0;
@@ -366,7 +357,7 @@ public class SurfaceFeatures implements Serializable {
     	    	else if (cos_z > .05)
     	    		G_dh = G_bh;
 */
-    	    	G_dh = G_bh *.4;
+    	    	G_dh = G_bh *.3;
 
     	    	// Finally,
     	    	G_h = G_bh + G_dh;
