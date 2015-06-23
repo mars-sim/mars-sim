@@ -21,28 +21,28 @@ import java.util.logging.Logger;
  * The ShadingMapLayer is a graphics layer to display twilight and night time shading.
  */
 public class ShadingMapLayer implements MapLayer {
-    
+
     private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
-	
+
     private static Logger logger = Logger.getLogger(CLASS_NAME);
-    
+
     // Domain data
     private SurfaceFeatures surfaceFeatures;
     private int[] shadingArray;
     private Component displayComponent;
-    
+
     /**
      * Constructor
      * @param displayComponent the display component.
      */
     public ShadingMapLayer(Component displayComponent) {
-        
+
         Mars mars = Simulation.instance().getMars();
         surfaceFeatures = mars.getSurfaceFeatures();
         this.displayComponent = displayComponent;
         shadingArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
     }
-    
+
 	/**
      * Displays the layer on the map image.
      * @param mapCenter the location of the center of the map.
@@ -50,7 +50,7 @@ public class ShadingMapLayer implements MapLayer {
      * @param g graphics context of the map display.
      */
     public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
-        
+
         int centerX = 150;
         int centerY = 150;
 
@@ -65,25 +65,25 @@ public class ShadingMapLayer implements MapLayer {
             for (int y = 0; y < Map.MAP_VIS_HEIGHT; y+=2) {
                 mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
                 double sunlight = surfaceFeatures.getSurfaceSunlight(location);
-//                double sunlight = surfaceFeatures.getSolarIrradiance(location) / 400D;
+                //double sunlight = surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
                 if (sunlight > 1D) {
                     sunlight = 1D;
                 }
                 int sunlightInt = (int) (127 * sunlight);
                 int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
-               
+
                 shadingArray[x + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
                 shadingArray[x + 1 + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
                 if (y < Map.MAP_VIS_HEIGHT -1) {
                     shadingArray[x + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
                     shadingArray[x + 1 + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
                 }
-       
+
                 if (sunlight > 0) nightTime = false;
                 if (sunlight < 127) dayTime = false;
             }
         }
-        
+
         if (nightTime) {
             g.setColor(new Color(0, 0, 0, 128));
             g.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
@@ -91,7 +91,7 @@ public class ShadingMapLayer implements MapLayer {
         else if (!dayTime) {
             // Create shading image for map
             Image shadingMap = displayComponent.createImage(
-            	new MemoryImageSource(Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT, 
+            	new MemoryImageSource(Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT,
             	shadingArray, 0, Map.MAP_VIS_WIDTH));
 
             MediaTracker mt = new MediaTracker(displayComponent);

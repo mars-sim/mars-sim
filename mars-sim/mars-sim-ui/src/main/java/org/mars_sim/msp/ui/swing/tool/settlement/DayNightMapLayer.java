@@ -95,7 +95,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	            g2d.fillRect(0, 0, width, height);
 	        }
 
-	        else if (sunlight > .90D )
+	        else if (sunlight > .90D)
 	        	return;
 
 	        else if (sunlight >= 0.01D && sunlight <= .90D) {
