@@ -39,6 +39,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
+import com.jidesoft.plaf.LookAndFeelFactory;
+import com.jidesoft.plaf.UIDefaultsLookup;
 import com.jidesoft.swing.JideTabbedPane;
 import com.jidesoft.swing.Searchable;
 import com.jidesoft.swing.SearchableBar;
@@ -176,10 +178,14 @@ implements TableModelListener, ActionListener {
 
 		// Create tabbed pane for the table
 		tabsSection = new JideTabbedPane();
+        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 		tabsSection.setBoldActiveTab(true);
 		tabsSection.setScrollSelectedTabOnWheel(true);
-		tabsSection.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
-		tabsSection.setTabPlacement(JideTabbedPane.TOP);
+		//tabsSection.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
+		tabsSection.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+		tabsSection.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+		//tabsSection.setBackground(UIDefaultsLookup.getColor("control"));
+		tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Create a status panel

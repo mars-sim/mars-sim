@@ -95,6 +95,8 @@ implements Runnable {
 	int rightWidth = positionMetrics.stringWidth(longitude);
 
 	private Mars mars;
+
+	private SurfaceFeatures surfaceFeatures;
 	/**
 	 * Constructor.
 	 * @param navwin the navigator window.
@@ -344,8 +346,13 @@ implements Runnable {
 		int centerX = width / 2;
 		int centerY = height / 2;
 
-		if (mars == null)
-			mars = Simulation.instance().getMars();
+		//if (mars == null)
+		//	mars = Simulation.instance().getMars();
+
+		if (surfaceFeatures == null)
+			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+
+
 		// Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
 		Coordinates location = new Coordinates(0D, 0D);
@@ -356,8 +363,9 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					//double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-					double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+					double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+					//double sunlight =surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+
 					if (sunlight > 1D) {
 					    sunlight = 1D;
 					}

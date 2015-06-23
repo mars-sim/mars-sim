@@ -38,6 +38,8 @@ import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.jidesoft.plaf.LookAndFeelFactory;
+import com.jidesoft.plaf.UIDefaultsLookup;
 import com.jidesoft.swing.JideTabbedPane;
 
 /**
@@ -121,9 +123,13 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create center panel
         centerPanel = new JideTabbedPane();
+        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
         centerPanel.setBoldActiveTab(true);
         centerPanel.setScrollSelectedTabOnWheel(true);
-        centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
+        centerPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+        centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+        //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
+        //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         mainPane.add(namePanel, BorderLayout.NORTH);
         //centerPanel.setBackground(THEME_COLOR);

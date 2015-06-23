@@ -118,13 +118,17 @@ public class SurfaceFeatures implements Serializable {
      * Values in between 0.0 and 1.0 represent twilight conditions.
      */
     public double getSurfaceSunlight(Coordinates location) {
-        if (mars == null)
+    	double result = 0;
+/*
+// Method 1:
+
+      	if (mars == null)
         	mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
+        System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
 
-        double result = 0;
-        double twilightzone = .2D; // Angle width of twilight border (radians)
+        double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
         if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
             result = 1D;
         } else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
@@ -133,6 +137,34 @@ public class SurfaceFeatures implements Serializable {
             double twilightAngle = angleFromSun - ((Math.PI / 2D) - (twilightzone / 2D));
             result = 1D - (twilightAngle / twilightzone);
         }
+*/
+// Method 2:
+        double z =  orbitInfo.getSolarZenithAngle(location);
+
+       // System.out.println("z3 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
+
+        double twilightzone = .2D;
+        if (z  < (Math.PI / 2D) - (twilightzone/2D) ) {
+            result = 1D;
+        } else if (z  > (Math.PI / 2D) + (twilightzone / 2D)) {
+            result = 0D;
+        } else {
+            double twilightAngle = z  - ((Math.PI / 2D) - (twilightzone / 2D));
+            result = 1D - (twilightAngle / twilightzone);
+        }
+
+/*
+// Method 3:
+ *
+        double result = getSolarIrradiance(location); // or use SurfaceFeatures.MEAN_SOLAR_IRRADIANCE
+
+        if (result > 20.94)
+        	result = 1;
+        else if (result <= 20.94 & result > 0)
+        	result = result / 20.94;
+        else
+        	result = 0;
+*/
 
         return result;
     }
@@ -194,17 +226,21 @@ public class SurfaceFeatures implements Serializable {
                 orbitInfo = mars.getOrbitInfo();
 
             double cos_z =  orbitInfo.getCosineSolarZenithAngle(location);
-            //System.out.println("z : " + Math.round(Math.acos(cos_z) * 180D / Math.PI * 1000D)/1000D + "   cos_z : "+ fmt3.format(cos_z));
-            if (cos_z <= 0) {
+            double z = Math.acos(cos_z);
+            //getSurfaceSunlight(location);
+            //System.out.println("z2 : " + Math.round(Math.acos(cos_z) * 180D / Math.PI * 1000D)/1000D);// + "   cos_z : "+ fmt3.format(cos_z));
+            if (z >= Math.PI/2D) {
             	// Mar is in the so-called twilight zone
             	// Set it to a maximum of 12 degree below the horizon
             	// indirect sunlight such as diffuse/scattering/reflective sunlight will light up the Martian sky
-            	if (cos_z >= -.2094 ) // up to 12 degree (or 12/180 * pi = .2094 radians)
-                G_0 = Math.round((0.2094-cos_z)*100D);
+            	if (z <= Math.PI/2D + .1 )
+            		// twilight zone is defined as bwtween 0.1 to -0.1 in radians above and below the horizon
+            		G_h = Math.round( (-200*z +100*Math.PI + 20) * 100.00)/100.00; // keep a minimum of G_h at 20 W/m2 if the sun is within the twlight zone
+            	//G_h = Math.round((0.2094 + z)*100D);
             	// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
             }
 
-            else { // if cos_z > 0
+            else {
 
                 // Part 2: get the new average solar irradiance as a result of the changing distance between Mars and Sun  with respect to the value of L_s.
                 //double L_s = orbitInfo.getL_s();
@@ -267,13 +303,19 @@ public class SurfaceFeatures implements Serializable {
 
                 // TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust storm
 
-                // The extinction of radiation through the Martian atmosphere is caused mainly by suspended dust particles.
+                // Note 1 : The extinction of radiation through the Martian atmosphere is caused mainly by suspended dust particles.
                 // Although dust particles are effective at scattering direct solar irradiance, a substantial amount of diffuse light is able to penetrate to the surface of the planet.
                 // The amount of PAR available on the Martian surface can then be calculated to be 42% of the total PAR to reach the surface.
 
-                // Based on Viking observation, it's estimated approximately 100 local dust storms (each last a few days) can occur in a given Martian year
-
+                // Note 2: Based on Viking observation, it's estimated approximately 100 local dust storms (each last a few days) can occur in a given Martian year
                 // Duration of a global dust storm is 35 - 70 sols. Local dust storms last a few days.
+
+
+      			// Note 3: TODO: Model how dust clouds, water/ice clouds, CO2 clouds affects tau differently
+      			// REFERENCE: http://www.sciencedirect.com/science/article/pii/S0019103514001559
+      			// The solar longitude (LS) 20–136° period is also characterized by the presence of cirriform clouds at the Opportunity site,
+      			// especially near LS = 50° and 115°. In addition to water ice clouds, a water ice haze may also be present, and carbon dioxide clouds
+      			// may be present early in the season.
 
 
                 // Choice 1 : if using Beer's law : transmissivity = Math.exp(-tau/cos_z);

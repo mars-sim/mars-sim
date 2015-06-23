@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
-/** 
+/**
  * The MarsGlobe class generates the Martian globe for the
  * GlobeDisplay object. It can center the globe at any set of
  * coordinates.
@@ -220,6 +220,7 @@ public class MarsGlobe {
 
 						// Put point in buffer array
 						buffer_array[buff_x + (map_height * buff_y)] = sphereColor[array_y].elementAt(array_x);
+						//buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray scale
 					}
 		}
 
