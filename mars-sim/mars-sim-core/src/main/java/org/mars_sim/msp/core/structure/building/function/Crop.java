@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,16 +56,17 @@ implements Serializable {
 	public static final double OXYGEN_GENERATION_RATE = .9D;
 	public static final double CO2_GENERATION_RATE = .9D;
 
-	public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42% are EM within 400 to 700 nm
+	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42% are EM within 400 to 700 nm
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm#_top
 
-	public static final double  WATT_TO_PHOTON_CONVERSION_RATIO = 4.609;
+	public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; // in u mol / m2 /s / W m-2 for Mars only
 
-	public static final double  VISIBLE_RADIATION_HPS = .4; // high pressure sodium (HPS) lamps efficiency
-	public static final double  BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS)
-	public static final double  NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS)
-	public static final double  CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS)
-	public static final double  LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
+	public static final double kW_PER_HPS = .4;
+	public static final double VISIBLE_RADIATION_HPS = .4; // high pressure sodium (HPS) lamps efficiency
+	public static final double BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS)
+	public static final double NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS)
+	public static final double CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS)
+	public static final double LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
@@ -107,7 +109,7 @@ implements Serializable {
 	private double dailyPARRequired;
 	private double dailyPARCache = 0;
 	private double sunlightModifierCache = 1;
-	private double timeCache = 0;
+	//private double timeCache = 0;
 
 	private double lightingPower = 0; // in kW
 
@@ -124,6 +126,8 @@ implements Serializable {
 	private SurfaceFeatures surface;
 	private MarsClock marsClock;
 	private MasterClock masterClock;
+
+	DecimalFormat fmt = new DecimalFormat("0.000");
 
 	/**
 	 * Constructor.
@@ -464,8 +468,8 @@ implements Serializable {
 		}
 	}
 
-	public void turnOnLighting(double neededWatt) {
-		lightingPower = neededWatt / 1000D / VISIBLE_RADIATION_HPS;  // lightingPower is in kW
+	public void turnOnLighting(double kW) {
+		lightingPower = kW;
 	}
 
 	public void turnOffLighting() {
@@ -475,7 +479,7 @@ implements Serializable {
 	// 2015-02-16 Added calculateHarvestModifier()
 	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
 		double harvestModifier = 1D;
-		timeCache = timeCache + time;
+		//timeCache = timeCache + time;
 
 		// TODO: Modify harvest modifier according to the moisture level
 		// TODO: Modify harvest modifier according to the pollination by the  number of bees in the greenhouse
@@ -495,28 +499,65 @@ implements Serializable {
 
 	    int currentMillisols = (int) marsClock.getMillisol();
 
-		// 2015-04-09 Added calculation based on solar irradiance and artificial lighting
-		double PAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
-		double instantaneousPAR	= PAR * WATT_TO_PHOTON_CONVERSION_RATIO * time * MarsClock.SECONDS_IN_MILLISOL / 1_000_000D;
 
+		// 2015-04-09 Add instantaneous PAR from solar irradiance
+		//double uPAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
+		double uPAR = WATT_TO_PHOTON_CONVERSION_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
+
+		double instantaneousPAR	= 0;
+		if (uPAR > 10)
+			instantaneousPAR = uPAR * time * MarsClock.SECONDS_IN_MILLISOL / 1_000_000D; // in mol / m2 within this period of time
 
 	    // Gauge if there is enough sunlight
 	    double progress = dailyPARCache / dailyPARRequired;
 	    double ruler = currentMillisols / 1000D;
+		//System.out.println("uPAR : "+ fmt.format(uPAR) + "\tinstantaneousPAR : " + fmt.format(instantaneousPAR)
+		//		+ "\tprogress : "+ fmt.format(progress) + "\truler : " + fmt.format(ruler));
 
 	    // TODO: what if the time zone of a settlement causes sunlight to shine at near the tail end of the currentMillisols time ?
 
-	    // Compare dailyPARCache / dailyPARRequired  vs. current time / 1000D
+	    // // 2015-04-09 Compare dailyPARCache / dailyPARRequired  vs. current time / 1000D
 	    if (progress < ruler) {
-	    	//if not enough, turn on lighting
-	    	double neededWatt = growingArea * (dailyPARRequired - instantaneousPAR) / 4.78 / MarsClock.SECONDS_IN_MILLISOL * 1000D;
-	    	turnOnLighting(neededWatt);
-	    	//logger.info("neededWatt is " + neededWatt);
-		    dailyPARCache = dailyPARCache + dailyPARRequired - instantaneousPAR;
+	    	// TODO: also compare also how much more sunlight will still be available
+	    	// if sunlight is available
+	    	if (uPAR > 10) {
+	    		dailyPARCache = dailyPARCache + instantaneousPAR ;
+	 		    //System.out.print("\tdailyPARCache : " + fmt.format(dailyPARCache));
+	    	}
+	    	else {
+		    	//if no sunlight, turn on artificial lighting
+	    		double d_PAR = dailyPARRequired - dailyPARCache; // in mol / m2 / d
+
+	    		double d_PAR_area = d_PAR / (1000 - currentMillisols) / MarsClock.SECONDS_IN_MILLISOL * growingArea; // in mol / msol
+
+		    	double d_kW_area = d_PAR_area * 1000 *  WATT_TO_PHOTON_CONVERSION_RATIO ;
+
+		    	//double d_Joules_now = d_kWatt * time * MarsClock.SECONDS_IN_MILLISOL;
+
+		    	// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
+
+		    	int numLamp = (int) (d_kW_area / kW_PER_HPS / VISIBLE_RADIATION_HPS);
+		    	// each HPS lamp supplies 400W with 40% visible radiation efficiency
+		    	double supplykW = numLamp * kW_PER_HPS;
+
+		    	// TODO: should also allow the use of LED for lighting
+
+		    	//System.out.println("time : "+ time);
+		    	double supplyIntantaneousPAR = supplykW * time * MarsClock.SECONDS_IN_MILLISOL /1000 / WATT_TO_PHOTON_CONVERSION_RATIO / growingArea ; // in mol / m2
+
+		    	turnOnLighting(supplykW);
+
+			    dailyPARCache = dailyPARCache + supplyIntantaneousPAR;
+			   // System.out.println("\td_kW_area : "+ fmt.format(d_kW_area) + "\tsupplykW : "+ fmt.format(supplykW)
+			   // + "\tsPAR : "+ fmt.format(supplyIntantaneousPAR) + "\tdailyPARCache : " + fmt.format(dailyPARCache));
+	    	}
+
 	    }
 	    else {
 	    	turnOffLighting();
 			dailyPARCache = dailyPARCache + instantaneousPAR;
+			//System.out.println("\tdailyPARCache : " + fmt.format(dailyPARCache));
+
 	    }
 	        // check for the passing of each day
 	    int newSol = MarsClock.getSolOfYear(marsClock);
@@ -533,7 +574,7 @@ implements Serializable {
 			//logger.info("sunlightModifier is " + sunlightModifier);
 			dailyPARCache = 0;
 			//logger.info("timeCache is "+ timeCache);
-			timeCache = 0;
+			//timeCache = 0;
 		}
 		else {
 			//System.out.println(" currentSol : newSol   " + currentSol + " : " + newSol);

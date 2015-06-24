@@ -1,5 +1,7 @@
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Vector;
@@ -19,6 +21,10 @@ implements MouseWheelListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private boolean layingOut = false;
+
+	private boolean wide = true;
 
 	/**
 	 * constructor.
@@ -65,4 +71,30 @@ implements MouseWheelListener {
 			);
 		}
 	}
+
+    public void doLayout(){
+        try{
+            layingOut = true;
+            super.doLayout();
+        }finally{
+            layingOut = false;
+        }
+    }
+
+	public boolean isWide() {
+		return wide;
+	}
+
+	public void setWide(boolean wide) {
+		this.wide = wide;
+	}
+
+    public Dimension getSize(){
+        Dimension dim = super.getSize();
+        if(!layingOut && isWide())
+            //dim.width = Math.max(dim.width, getPreferredSize().width);
+        	dim.width = Math.min(dim.width, Toolkit.getDefaultToolkit().getScreenSize().width);
+        return dim;
+    }
+
 }
