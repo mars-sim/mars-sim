@@ -63,6 +63,7 @@ implements TableModelListener, ActionListener {
 
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
+	// 2015-06-20 Added an custom icon for each tab
 	public static final String PEOPLE_ICON = "people_32";
 	public static final String BOT_ICON = "bot_32";
 	public static final String BUS_ICON = "bus_32";
@@ -228,8 +229,8 @@ implements TableModelListener, ActionListener {
 
 		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, BUS_ICON));
 
-
-		tabsSection.setSelectedIndex(0);
+		// Open the people tab
+		tabsSection.setSelectedIndex(6);
 		tabChanged();
 
 		// Add a listener for the tab changes
@@ -240,7 +241,6 @@ implements TableModelListener, ActionListener {
 				}
 			}
 		);
-
 
 		// 2015-06-17 Added createSearchBar();
 		//setTable();
@@ -257,6 +257,7 @@ implements TableModelListener, ActionListener {
 		setMinimumSize(new Dimension(1024, 512));
 		setSize(new Dimension(1024, 512));
 
+		pack();
 	}
 
 

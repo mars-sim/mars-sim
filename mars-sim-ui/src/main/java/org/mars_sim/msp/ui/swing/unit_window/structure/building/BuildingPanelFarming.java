@@ -57,11 +57,11 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 
 /**
- * The FarmingBuildingPanel class is a building function panel representing 
+ * The FarmingBuildingPanel class is a building function panel representing
  * the crop farming status of a settlement building.
  */
 public class BuildingPanelFarming
-extends BuildingFunctionPanel 
+extends BuildingFunctionPanel
 implements Serializable, MouseListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -85,17 +85,17 @@ implements Serializable, MouseListener {
 	private int cropsCache;
 	/** The cache for the amount of solar irradiance. */
 	private int radCache;
-	
+
 	private int deletingCropIndex;
-	
+
 	//private String deletingCrop = "";
-	
+
 	// 2014-12-09 Added comboBox for crop queue
 	private DefaultComboBoxModel<CropType> comboBoxModel;
 	private JComboBoxMW<CropType> comboBox;
 	private List<CropType> cropCache;
 	private JList<CropType> list;
-	
+
 	//private String cropInQueue;
 	private ListModel listModel;
 	/** Table model for crop info. */
@@ -104,13 +104,13 @@ implements Serializable, MouseListener {
 	private JScrollPane listScrollPanel;
 	private CropType cropType;
 	private CropType deletingCropType;
-	
+
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
 	 * @param desktop {@link MainDesktopPane} The main desktop.
 	 */
-	// 2014-11-20 Added tooltip for crops 
+	// 2014-11-20 Added tooltip for crops
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
@@ -124,15 +124,15 @@ implements Serializable, MouseListener {
 
 		init();
 	}
-	
+
 	public void init() {
-		
+
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare farming label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
@@ -140,7 +140,7 @@ implements Serializable, MouseListener {
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(farmingLabel);
-		
+
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
 		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
@@ -155,7 +155,7 @@ implements Serializable, MouseListener {
 		radCache = farm.getFarmerNum();
 		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
 		labelPanel.add(radLabel);
-		
+
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
 		// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
@@ -170,7 +170,7 @@ implements Serializable, MouseListener {
 		// Prepare crop table
 		JTable cropTable = new JTable(cropTableModel){
 			private static final long serialVersionUID = 1L;
-			// 2014-11-20 Implement Table Cell ToolTip for crops           
+			// 2014-11-20 Implement Table Cell ToolTip for crops
             public String getToolTipText(MouseEvent e) {
                 String name = null;
                 java.awt.Point p = e.getPoint();
@@ -178,7 +178,7 @@ implements Serializable, MouseListener {
                 int colIndex = columnAtPoint(p);
                 java.util.List<Crop> crops;
     			StringBuilder result = new StringBuilder("<html>");
-    			
+
                 try {
                         crops = farm.getCrops();
                         Crop crop = crops.get(rowIndex);
@@ -199,56 +199,56 @@ implements Serializable, MouseListener {
 	                	result.append("<br>&emsp;Edible Mass:&emsp;");
 	                	result.append(mass0).append(" kg");
 	                	result.append("<br>&nbsp;Inedible Mass:&emsp;");
-	                	result.append(mass1).append(" kg");              
+	                	result.append(mass1).append(" kg");
 	                	result.append("<br>&nbsp;Growing Days:&emsp;");
-	                	result.append(time); 
+	                	result.append(time);
 	                	result.append("<br>&nbsp;Water Content:&emsp;");
-	                	result.append(water).append(" %"); 	                	
-      
+	                	result.append(water).append(" %");
+
                 } catch (RuntimeException e1) {
                     //catch null pointer exception if mouse is over an empty line
                 }
     			result.append("</html>");
     			return result.toString();
             }
-        }; // end of JTable	   	
+        }; // end of JTable
         //final JTable ctable = cropTable;
 	    //SwingUtilities.invokeLater(new Runnable(){
 	    //    public void run()  {
-	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);	        	
-	    //     } });		
+	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);
+	    //     } });
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false);
-		cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-		cropTable.getColumnModel().getColumn(1).setPreferredWidth(60);
-		cropTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-		cropTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+		cropTable.getColumnModel().getColumn(0).setPreferredWidth(7);
+		cropTable.getColumnModel().getColumn(1).setPreferredWidth(40);
+		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 		// 2014-10-10 mkung: added column 4 showing the crop's category
-		cropTable.getColumnModel().getColumn(4).setPreferredWidth(40);
+		cropTable.getColumnModel().getColumn(4).setPreferredWidth(30);
 		//cropTable.setOpaque(false);
 		//cropTable.setBackground(new Color(0,0,0,128));
 		setTableStyle(cropTable);
-		
+
 		scrollPanel.setViewportView(cropTable);
-		
+
 		JPanel queuePanel = new JPanel(new BorderLayout());
-	    add(queuePanel, BorderLayout.SOUTH);   
+	    add(queuePanel, BorderLayout.SOUTH);
 	    queuePanel.setOpaque(false);
 	    queuePanel.setBackground(new Color(0,0,0,128));
-		
+
 	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    selectPanel.setOpaque(false);
 	    selectPanel.setBackground(new Color(0,0,0,128));
-	    JLabel selectLabel = new JLabel(" Select from : ");
+	    JLabel selectLabel = new JLabel("Choose : ");
 	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
 	    selectPanel.add(selectLabel);
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
-	    
+
        	// 2014-12-09 Added crop combo box model.
         CropConfig config = SimulationConfig.instance().getCropConfiguration();
 		List<CropType> cropTypeList = config.getCropList();
-		//2014-12-12 Enabled Collections.sorts by implementing Comparable<CropType> 
+		//2014-12-12 Enabled Collections.sorts by implementing Comparable<CropType>
 		Collections.sort(cropTypeList);
 		cropCache = new ArrayList<CropType>(cropTypeList);
 		comboBoxModel = new DefaultComboBoxModel<CropType>();
@@ -259,11 +259,11 @@ implements Serializable, MouseListener {
 	    	comboBoxModel.addElement(c);
 		}
 		//cropType = cropTypeList.get(0);
-		
+
 		// Create comboBox.
 		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		comboBox.setRenderer(new PromptComboBoxRenderer(" List of Crops "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
 		comboBox.setSelectedIndex(-1);
 		comboBox.setOpaque(false);
 		comboBox.setBackground(new Color(51,25,0,128));
@@ -273,7 +273,7 @@ implements Serializable, MouseListener {
             	cropType = (CropType) comboBox.getSelectedItem();
             	//System.out.println("BuildingPanelFarming.java: Selected cropType is " + cropType );
             }
-            });  
+            });
 		comboBox.setMaximumRowCount(10);
 		selectPanel.add(comboBox);
 
@@ -285,9 +285,9 @@ implements Serializable, MouseListener {
 				"BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		addButton.setOpaque(false);
-		addButton.setBackground(new Color(0,0,0,128));
-		addButton.setForeground(Color.ORANGE);
+		//addButton.setOpaque(false);
+		//addButton.setBackground(new Color(0,0,0,128));
+		//addButton.setForeground(Color.ORANGE);
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				cropType = (CropType) comboBox.getSelectedItem();
@@ -297,18 +297,18 @@ implements Serializable, MouseListener {
 				repaint();
 			}
 			});
-		buttonPanel.add(addButton, BorderLayout.NORTH);	
-		
+		buttonPanel.add(addButton, BorderLayout.NORTH);
+
 		selectPanel.add(buttonPanel);
-		
+
 
 		JButton delButton = new JButton(Msg.getString(
 				"BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
-		delButton.setOpaque(false);
-		delButton.setBackground(new Color(0,0,0,128));
-		delButton.setForeground(Color.ORANGE);
+		//delButton.setOpaque(false);
+		//delButton.setBackground(new Color(0,0,0,128));
+		//delButton.setForeground(Color.ORANGE);
 
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -317,24 +317,24 @@ implements Serializable, MouseListener {
 	            	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
 		           	//System.out.println("BuildingPanelFarming.java: Just deleted " + cropType );
 			        // 2015-01-06 Added listUpdate()
-	            	listUpdate(); 
+	            	listUpdate();
 	            	repaint();
 				}
 			}
 			});
-		buttonPanel.add(delButton, BorderLayout.CENTER);	
-	    
-	    
+		buttonPanel.add(delButton, BorderLayout.CENTER);
+
+
 		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
 		queueListPanel.setOpaque(false);
 		queueListPanel.setBackground(new Color(0,0,0,128));
 		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout()); //new FlowLayout(FlowLayout.CENTER));
 		queueButtonLabelPanel.setOpaque(false);
 		queueButtonLabelPanel.setBackground(new Color(0,0,0,128));
-	    JLabel queueListLabel = new JLabel("<html><center>Crop(s)<br>in<br>Queue:</center><br><br><br></html>");
+	    JLabel queueListLabel = new JLabel("<html><center>Crop<br>Queue:</center><br><br><br></html>");
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
-		
+
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 
 		// Create scroll panel for population list.
@@ -347,7 +347,7 @@ implements Serializable, MouseListener {
 		listScrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
 		listScrollPanel.setOpaque(false);
 		listScrollPanel.setBackground(new Color(0, 0, 0, 0));
-		
+
 		// Create list model
 		listModel = new ListModel(); //settlement);
 		// Create list
@@ -357,37 +357,37 @@ implements Serializable, MouseListener {
 			public void valueChanged(ListSelectionEvent event) {
 		        if (!event.getValueIsAdjusting() && event != null){
 					selectCrop();
-		            //JList source = (JList)event.getSource();  
+		            //JList source = (JList)event.getSource();
 		            //deletingCropIndex = source.getSelectedIndex();
 		            //deletingCrop = source.getSelectedValue().toString();
 					//if (listModel.getSize() > 0) listModel.removeElementAt(deletingCropIndex);
 		        }
 		    }
 		});
-		queueListPanel.add(listScrollPanel); 
+		queueListPanel.add(listScrollPanel);
 		list.setOpaque(false);
 		list.setBackground(new Color(0, 0, 0, 50));
-	
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Sets the style for the table
 	 * @param table
 	 */
 	// 2015-01-01 Added setTableStyle()
 	public void setTableStyle(JTable table) {
-		
+
 		//JTableHeader header = table.getTableHeader();
     	//TableHeaderRenderer theRenderer =
     	//	new TableHeaderRenderer(header.getDefaultRenderer());
     	//header.setDefaultRenderer(theRenderer);
-    	
+
 		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
 		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
 		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
-		headerRenderer.setForeground( Color.WHITE); 
+		headerRenderer.setForeground( Color.WHITE);
 		headerRenderer.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 
 		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
@@ -399,21 +399,21 @@ implements Serializable, MouseListener {
 		table.setShowGrid(true);
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE  
+		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
 
 	}
-	
+
 	/**
 	 * Selects Crop
 	 * @param table
 	 */
 	public void selectCrop() {
-		
+
 		CropType cropType = (CropType) list.getSelectedValue();
 		if (cropType != null) {
 			deletingCropType = cropType;
 			deletingCropIndex = list.getSelectedIndex();
-		} else	
+		} else
 		//System.out.println( " deletingCropIndex is " + deletingCropIndex);
         //System.out.println( " deletingCropType is " + deletingCropType);
         listUpdate();
@@ -429,13 +429,13 @@ implements Serializable, MouseListener {
  		listScrollPanel.validate();
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
-		comboBox.setRenderer(new PromptComboBoxRenderer(" Crops List "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
 		comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
     	//list.setSelectedIndex(0);
 	}
-	
-	/** 
+
+	/**
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */
@@ -456,7 +456,7 @@ implements Serializable, MouseListener {
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
 
-	
+
 	/**
 	 * Update this panel
 	 */
@@ -474,7 +474,7 @@ implements Serializable, MouseListener {
 			cropsLabel.setText("Number of Crops: " + cropsCache);
 		}
 
-		
+
 		// Update solar irradiance label if necessary.
 		Coordinates location = farm.getBuilding().getCoordinates();
 		int rad = (int) Simulation.instance().getMars().getSurfaceFeatures().getSolarIrradiance(location);
@@ -482,10 +482,10 @@ implements Serializable, MouseListener {
 			radCache = rad;
 			radLabel.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
 		}
-		
+
 		// Update crop table.
 		cropTableModel.update();
-		
+
 		// Update list
 		listModel.update();
  		list.validate();
@@ -495,8 +495,8 @@ implements Serializable, MouseListener {
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
 	}
-    
-	
+
+
 	/**
 	 * List model for the crops in queue.
 	 */
@@ -504,75 +504,75 @@ implements Serializable, MouseListener {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
-	    
+
 	    //private Settlement settlement;
 	    private List<CropType> list;
-	    
+
 	    private ListModel() {
-	    	//System.out.println("ListModel constructor"); 
-	 
+	    	//System.out.println("ListModel constructor");
+
         	List<CropType> c = farm.getCropListInQueue();
 	        if (c != null)
 	        	list = new ArrayList<CropType>(c);
 	        else list = null;
 	        //Collections.sort(list);
 	    }
-	    
+
         @Override
         public CropType getElementAt(int index) {
-        	//System.out.println("ListModel : index is " + index); 
-        	//System.out.println("ListModel : list.size() is " + list.size()); 
+        	//System.out.println("ListModel : index is " + index);
+        	//System.out.println("ListModel : list.size() is " + list.size());
 
         	CropType result = null;
-            
+
             if ((index >= 0) && (index < list.size())) {
                 result = list.get(index);
             }
-            
+
             return result;
         }
 
         @Override
         public int getSize() {
-         	//System.out.println("ListModel : index is " + index); 
-        	//System.out.println("ListModel : list.size() is " + list.size()); 
+         	//System.out.println("ListModel : index is " + index);
+        	//System.out.println("ListModel : list.size() is " + list.size());
         	if (list == null)
         		return 0;
         	else return list.size();
         }
-        
+
         /**
          * Update the list model.
          */
         public void update() {
-            
-        	List<CropType> c = farm.getCropListInQueue(); 
-        	
+
+        	List<CropType> c = farm.getCropListInQueue();
+
         		//System.out.println("listModel.update() : Size is different. Proceed...");
         		// if the list contains duplicate items, it somehow pass this test
-	         
-        		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) { 
+
+        		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
 	                List<CropType> oldList = list;
-	            	//System.out.println("listModel.update() : oldList.size() is " + oldList.size());          
+	            	//System.out.println("listModel.update() : oldList.size() is " + oldList.size());
 	                List<CropType> tempList = new ArrayList<CropType>(c);
 	                //Collections.sort(tempList);
-	                
-	             	//System.out.println("ListModel : index is " + index); 
-	            	//System.out.println("listModel.update() : tempList.size() is " + tempList.size()); 
-	
+
+	             	//System.out.println("ListModel : index is " + index);
+	            	//System.out.println("listModel.update() : tempList.size() is " + tempList.size());
+
 	                list = tempList;
 	                fireContentsChanged(this, 0, getSize());
-	                
+
 	                oldList.clear();
 	           }
-        	
+
         }
 	}
 
     //public void setCropInQueue(String cropInQueue) {
     //	this.cropInQueue = cropInQueue;
     //}
-	/** 
+	/**
 	 * Internal class used as model for the crop table.
 	 */
 	private static class CropTableModel extends AbstractTableModel {
@@ -609,7 +609,7 @@ implements Serializable, MouseListener {
 			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;
 			// 2014-10-10 mkung: added column 4 showing the crop's category
-			else if (columnIndex == 4) dataType = String.class;			
+			else if (columnIndex == 4) dataType = String.class;
 			return dataType;
 		}
 
@@ -619,7 +619,7 @@ implements Serializable, MouseListener {
 			else if (columnIndex == 2) return "Phase";
 			else if (columnIndex == 3) return "Growth";
 			// 2014-10-10 mkung: added column 4 showing the crop's category
-			else if (columnIndex == 4) return "Category";			
+			else if (columnIndex == 4) return "Category";
 			else return null;
 		}
 
@@ -647,9 +647,9 @@ implements Serializable, MouseListener {
 				else if (phase.equals(Crop.GROWING)) {
 					growth = (int) (growingCompleted * 100D);
 				}
-				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED)) 
+				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED))
 					growth = 100;
-				
+
 				return String.valueOf(growth) + "%";
 			}
 			// 2014-10-10 mkung: added column 4 showing the crop's category
@@ -693,7 +693,7 @@ implements Serializable, MouseListener {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			Component c = defaultRenderer.getListCellRendererComponent(
 	                list, value, index, isSelected, cellHasFocus);
-			
+
 			if (value == null) {
 				setText( prompt );
 				return this;
@@ -712,7 +712,7 @@ implements Serializable, MouseListener {
 	                    list, value, index, isSelected, cellHasFocus);
 	        }
 	        return c;
-		}	
+		}
 	}
 
 }

@@ -171,7 +171,7 @@ public class SurfaceFeatures implements Serializable {
             result = 0D;
         } else {
             //double twilightAngle = z - 1.6708;
-            result = 9.354 - .2 * z;
+            result = 8.354 - 5 * z;
         }
 
         return result;

@@ -467,14 +467,15 @@ extends TabPanel {
 
 			// check if user selected hide repeated tasks checkbox
 			if (tasks != null && hideRepeatedTasks) {
-
+				// show only non-repeating consecutive tasks
 				List<DailyTask> thisSchedule = new ArrayList<DailyTask>(tasks);
 		        int i = thisSchedule.size() - 1;
 		        //for (int i = size - 1; i > 0; i--) {
-		        while (i != 0 ) {
+		        while (i > 0 ) {
 
 		        	DailyTask currentTask = thisSchedule.get(i);
 		        	DailyTask lastTask = null;
+
 		        	if ( i - 1 > -1 )
 		        		lastTask = thisSchedule.get(i - 1);
 
