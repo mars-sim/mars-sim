@@ -975,7 +975,7 @@
 		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
-			<number-of-robots number="12" />
+			<number-of-robots number="9" />
 		</settlement>
 
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 1)">

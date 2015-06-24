@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,8 +52,8 @@ public class MasterClock implements Serializable { // Runnable,
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	/** Clock thread sleep time (milliseconds) --> 25Hz should be sufficient. */
-	private static long SLEEP_TIME = 40L;
+	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
+	private static long SLEEP_TIME = 20L; // 40L
 
 	// Data members
 	/** Runnable flag. */
@@ -379,7 +380,8 @@ public class MasterClock implements Serializable { // Runnable,
 	            // Pause simulation to allow other threads to complete.
 	            try {
 	                Thread.yield();
-	                Thread.sleep(SLEEP_TIME);
+	                //Thread.sleep(SLEEP_TIME);
+					TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 	            }
 	            catch (Exception e) {
 	                logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
