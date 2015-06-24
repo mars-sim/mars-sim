@@ -34,7 +34,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -184,7 +183,7 @@ implements Serializable, MouseListener {
                         Crop crop = crops.get(rowIndex);
                         double time;
                         double mass0, mass1;
-                        double water;
+                        double water, PAR;
                         String cropName, cat;
                         cropName = WordUtils.capitalize(crop.getCropType().getName());
                         cat = crop.getCropType().getCropCategory();
@@ -192,18 +191,21 @@ implements Serializable, MouseListener {
                     	water = 100 * crop.getCropType().getEdibleWaterContent();
                     	mass1 = crop.getCropType().getInedibleBiomass();
                     	time = crop.getCropType().getGrowingTime() /1000;
+                    	PAR = crop.getCropType().getDailyPAR();
 	                	result.append("&emsp;&nbsp;Crop Name:&emsp;");
 	                	result.append(cropName);
 	                	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;");
 	                	result.append(cat);
+	                	result.append("<br>&nbsp;Growing Days:&emsp;");
+	                	result.append(time);
 	                	result.append("<br>&emsp;Edible Mass:&emsp;");
 	                	result.append(mass0).append(" kg");
 	                	result.append("<br>&nbsp;Inedible Mass:&emsp;");
 	                	result.append(mass1).append(" kg");
-	                	result.append("<br>&nbsp;Growing Days:&emsp;");
-	                	result.append(time);
 	                	result.append("<br>&nbsp;Water Content:&emsp;");
 	                	result.append(water).append(" %");
+	                	result.append("<br>&nbsp;PAR required:&emsp;");
+	                	result.append(PAR).append(" mol/m2/day");
 
                 } catch (RuntimeException e1) {
                     //catch null pointer exception if mouse is over an empty line
@@ -239,10 +241,10 @@ implements Serializable, MouseListener {
 	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    selectPanel.setOpaque(false);
 	    selectPanel.setBackground(new Color(0,0,0,128));
-	    JLabel selectLabel = new JLabel("Choose : ");
+	    //JLabel selectLabel = new JLabel("Choose : ");
 	    //selectLabel.setFont(new Font("Serif", Font.BOLD, 16));
 	    //selectLabel.setForeground(new Color(102, 51, 0)); // dark brown
-	    selectPanel.add(selectLabel);
+	    //selectPanel.add(selectLabel);
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
        	// 2014-12-09 Added crop combo box model.
@@ -263,10 +265,11 @@ implements Serializable, MouseListener {
 		// Create comboBox.
 		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
 		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
-		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Choose from list "));
 		comboBox.setSelectedIndex(-1);
-		comboBox.setOpaque(false);
-		comboBox.setBackground(new Color(51,25,0,128));
+		//comboBox.setPrototypeDisplayValue("XXXXXXXXXXXXX");
+		//comboBox.setOpaque(false);
+		//comboBox.setBackground(new Color(51,25,0,128));
 		//comboBox.setBackground(Color.LIGHT_GRAY);
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -393,9 +396,9 @@ implements Serializable, MouseListener {
 		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
 			table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
 		}
-		MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
+		//MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
 		// set cell to have a light color border
-		table.setBorder(border);
+		//table.setBorder(border);
 		table.setShowGrid(true);
 	    table.setShowVerticalLines(true);
 		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
@@ -429,7 +432,7 @@ implements Serializable, MouseListener {
  		listScrollPanel.validate();
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
-		comboBox.setRenderer(new PromptComboBoxRenderer(" Crop List "));
+		comboBox.setRenderer(new PromptComboBoxRenderer(" Choose from list "));
 		comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
     	//list.setSelectedIndex(0);

@@ -29,6 +29,7 @@ crop-category : crop type
 edible-biomass : in tonnes per hectare  or  gram / m^2 / day
 edible-water-content : in proportion of 1 (1 is 100%)
 inedible-biomass : in tonnes per hectare
+daily-PAR : in mol /  m^2 / day
 
 Note: 1 metric ton = 1 tonnes
 

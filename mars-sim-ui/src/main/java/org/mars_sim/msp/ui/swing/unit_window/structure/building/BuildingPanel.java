@@ -193,7 +193,8 @@ extends JPanel {
 				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
 		renameBtn.setPreferredSize(new Dimension(60, 20));
 		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
-		renameBtn.addActionListener(new ActionListener() {
+	    renameBtn.setBackground(Color.GRAY);
+	    renameBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 				// if rename is done successfully, then update the building name
 				//boolean isRenamed =
@@ -205,11 +206,9 @@ extends JPanel {
 		});
 		btnPanel.add(renameBtn);
 		namePanel.add(btnPanel);
-        //if (isTranslucent) {
-        	renameBtn.setOpaque(false);
-        	renameBtn.setBackground(new Color(0,0,0,128));
-        	renameBtn.setForeground(Color.ORANGE);
-        //}
+        if (isTranslucent) {
+    	    renameBtn.setBackground(Color.GRAY);
+        }
 		setPanelStyle(btnPanel);
 
 	    // Prepare function list panel.
@@ -464,6 +463,7 @@ extends JPanel {
 
 
 	public void setPanelTranslucent() {
+/*
 		if (isTranslucent) {
 	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
 	   	 	while (i.hasNext()) {
@@ -471,7 +471,7 @@ extends JPanel {
 	   	 		setPanelStyle(p);
 	   	 	}
 		}
-
+*/
 	    setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
                   false, true, true, true));
 
@@ -480,8 +480,8 @@ extends JPanel {
 	public void setPanelStyle(JPanel p) {
 		//System.out.println("BuildingPanel.java : isTranslucent is "+ isTranslucent);
 		//if (isTranslucent) {
-			p.setOpaque(false);
-			p.setBackground(new Color(0,0,0,128));
+			//p.setOpaque(false);
+			//p.setBackground(new Color(0,0,0,128));
 
 		//}
 	}
