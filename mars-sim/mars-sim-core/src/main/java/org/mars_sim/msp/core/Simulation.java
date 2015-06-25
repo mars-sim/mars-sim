@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -142,11 +143,13 @@ implements ClockListener, Serializable {
     private transient HistoricalEventManager eventManager;
 
     //private transient Thread clockThread;
-    private transient ThreadPoolExecutor clockExecutor;
+    //private transient ThreadPoolExecutor clockExecutor;
+    //private transient ThreadPoolExecutor clockScheduler; //
+    private transient PausableThreadPoolExecutor clockScheduler;
+
     private transient ThreadPoolExecutor managerExecutor;
 
     private transient ExecutorService simExecutor;
-
 
     // Intransient data members (stored in save file)
     /** Planet Mars. */
@@ -313,10 +316,14 @@ implements ClockListener, Serializable {
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();
 
-        if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
-	        clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
-	        //logger.info("Simulation's start() : clockExecutor was null. just made one");
-	        clockExecutor.execute(masterClock.getClockThreadTask());
+        if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
+	        //clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
+	        // 2015-06-24 Replaced with PausableThreadPoolExecutor
+        	clockScheduler =  new PausableThreadPoolExecutor(1, 5);
+        	//clockScheduler = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newSingleThreadExecutor(); newFixedThreadPool(1); //newScheduledThreadPool(1); // newSingleThreadScheduledExecutor(); //
+        	//clockScheduler.scheduleAtFixedRate(masterClock.getClockThreadTask(), 0, (long) 16.66667, TimeUnit.MILLISECONDS);
+        	//logger.info("Simulation's start() : clockExecutor was null. just made one");
+	        clockScheduler.execute(masterClock.getClockThreadTask());
 	        //logger.info("Simulation : just loading clockExecutor for masterClock");
         }
         //else if (clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
@@ -400,7 +407,7 @@ implements ClockListener, Serializable {
         sim.stop();
 
         masterClock.endClockListenerExecutor();
-        clockExecutor.shutdownNow();
+        clockScheduler.shutdownNow();
         if (managerExecutor != null) {
             managerExecutor.shutdownNow();
         }
@@ -533,7 +540,7 @@ implements ClockListener, Serializable {
     }
 
     public void unpause() {
-        if (clockExecutor != null) {
+        if (clockScheduler != null) {
             masterClock.addClockListener(this);
             masterClock.setPaused(false);
             masterClock.restart();
@@ -734,9 +741,14 @@ implements ClockListener, Serializable {
     }
 
 
-    public ThreadPoolExecutor getClockExecutor() {
-    	return clockExecutor;
+   //public ThreadPoolExecutor getClockExecutor() {
+   //	return clockExecutor;
+   //}
+
+    public PausableThreadPoolExecutor getClockScheduler() {
+    	return clockScheduler;
     }
+
 
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.

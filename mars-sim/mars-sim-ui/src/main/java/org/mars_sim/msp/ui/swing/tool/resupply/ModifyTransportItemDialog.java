@@ -50,7 +50,7 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 		// Initialize data members.
 		this.transportItem = transportItem;
 
-		this.setSize(500,500);
+		this.setSize(560,500);
 
 		 // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());

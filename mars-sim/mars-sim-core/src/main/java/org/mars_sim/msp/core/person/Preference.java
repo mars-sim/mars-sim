@@ -13,9 +13,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
@@ -43,12 +45,13 @@ import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
+import org.mars_sim.msp.core.time.MarsClock;
 
 public class Preference implements Serializable {
 
 	/** default serial id. */
-	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	private NaturalAttributeManager naturalAttributeManager;
@@ -58,6 +61,7 @@ public class Preference implements Serializable {
 	private Map<String, Integer> metaTaskStringMap;
 	private List<String> metaTaskStringList;
 
+	private Map<MarsClock, MetaTask> planner;
 
 	public Preference(Person person) {
 		this.person = person;
@@ -67,6 +71,10 @@ public class Preference implements Serializable {
 
 		metaTaskMap = new ConcurrentHashMap<>();
 		metaTaskStringMap = new ConcurrentHashMap<>();
+
+		planner = new ConcurrentHashMap<>();
+
+		scheduleTask();
 	}
 
 	public void initializePreference() {
@@ -163,6 +171,36 @@ public class Preference implements Serializable {
 			metaTaskMap.put(metaTask, 0);
 			result = 0;
 		}
+
+		//int size = planner.size();
+		//if (size >0) System.out.println("size : " + size);
+		// TEMPORARILY ONLY
+		// 2015-06-24 Added checking if a planned task is matched
+		//String s = metaTask.getClass().getSimpleName();
+		//if (s.equals("WriteReportMeta"))
+		//	System.out.println(s); // metaTask);
+		if (planner.containsValue(metaTask)) {
+			//System.out.println("contain task !");
+			// iterate over the planner
+			Iterator<Entry<MarsClock, MetaTask>> i = planner.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<MarsClock, MetaTask> entry = i.next();
+				MarsClock clock = entry.getKey();
+				MetaTask task = entry.getValue();
+				if (metaTask.equals(task)) {
+					//System.out.println("task matched!");
+					//if (MarsClock.getTotalSol(clock) == MarsClock.getTotalSol(currentTime)){
+					MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+					int now = (int) MarsClock.getTotalMillisols(currentTime);
+					int sch = (int) MarsClock.getTotalMillisols(clock);
+					if (now - sch > 0 && now - sch <= 5) {
+						// examine its timestamp down to within 5 millisols
+						//System.out.println("now - sch = " + (now-sch));
+						result += 1000D;
+					}
+				}
+			}
+		}
 		return result;
 	}
 
@@ -195,4 +233,23 @@ public class Preference implements Serializable {
 		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}
+
+
+	public void scheduleTask() {
+		MarsClock clock = new MarsClock(15,1,1,300);
+		//System.out.println(" planned : " + MarsClock.getDateTimeStamp(clock));
+		// Schedule a task
+		setPlanner(MetaTaskUtil.getMetaTask("WriteReportMeta"), clock);
+	}
+
+	public boolean setPlanner(MetaTask metaTask, MarsClock marsClock) {
+		if (!planner.containsKey(marsClock)) {
+			// TODO: need to compare the clock better
+			planner.put(marsClock, metaTask);
+			return true;
+		}
+		return false;
+	}
+
+
 }

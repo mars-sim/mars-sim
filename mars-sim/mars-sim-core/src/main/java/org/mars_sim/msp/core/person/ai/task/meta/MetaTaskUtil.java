@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -123,6 +124,18 @@ public class MetaTaskUtil {
 
         // Return copy of meta task list.
         return new ArrayList<MetaTask>(metaTasks);
+    }
+
+    public static MetaTask getMetaTask(String name) {
+    	MetaTask metaTask = null;
+    	Iterator<MetaTask> i = metaTasks.iterator();
+    	while (i.hasNext()) {
+    		MetaTask t = i.next();
+    		if (t.getClass().getSimpleName().equals(name)) {
+    			metaTask = t;
+    		}
+    	}
+    	return metaTask;
     }
 
     public static List<MetaTask> getRobotMetaTasks() {

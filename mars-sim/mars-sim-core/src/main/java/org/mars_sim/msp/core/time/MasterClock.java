@@ -53,7 +53,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
 	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
-	private static long SLEEP_TIME = 20L; // 40L
+	private static long SLEEP_TIME = (long) 16.66667; // 40L
 
 	// Data members
 	/** Runnable flag. */
@@ -376,7 +376,6 @@ public class MasterClock implements Serializable { // Runnable,
 
 	        // Keep running until told not to
 	        while (keepRunning) {
-
 	            // Pause simulation to allow other threads to complete.
 	            try {
 	                Thread.yield();

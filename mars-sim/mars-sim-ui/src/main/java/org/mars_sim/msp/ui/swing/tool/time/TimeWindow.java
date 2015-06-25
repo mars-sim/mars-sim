@@ -164,7 +164,7 @@ implements ClockListener {
 		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
 
 		// Create Martian calendar display
-		calendarDisplay = new MarsCalendarDisplay(marsTime);
+		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		innerCalendarPane.add(calendarDisplay);
