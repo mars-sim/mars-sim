@@ -578,7 +578,7 @@ public class MainWindow extends JComponent {
 
 		if (isAutosave) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
-			clock.autosaveSimulation(fileLocn);
+			clock.autosaveSimulation();
 		}
 		else {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$

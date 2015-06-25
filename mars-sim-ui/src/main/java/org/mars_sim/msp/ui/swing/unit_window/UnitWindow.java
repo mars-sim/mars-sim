@@ -49,7 +49,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-    private static final int BLUR_SIZE = 7;
+    //private static final int BLUR_SIZE = 7;
 	// Data members
 	protected JPanel namePanel;
 	/** The tab panels. */
@@ -59,7 +59,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	// 2015-06-20 Replaced with JideTabbedPane
 	private JideTabbedPane centerPanel;
 
-	private BufferedImage image;
+	//private BufferedImage image;
 
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -140,7 +140,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //this.addInternalFrameListener(new UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
 
         //setStyle();
-  		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
+  		//setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
     }
 
 

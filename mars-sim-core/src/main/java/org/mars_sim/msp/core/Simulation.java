@@ -91,6 +91,7 @@ implements ClockListener, Serializable {
     /** Flag to indicate that a new simulation is being created or loaded. */
     private static boolean isUpdating = false;
 
+    private double fileSize;
     // 2014-12-26 Added useGUI
     /** true if displaying graphic user interface. */
     private static boolean useGUI = true;
@@ -241,7 +242,9 @@ implements ClockListener, Serializable {
      * @throws Exception if transient data could not be loaded.
      */
     private void initializeTransientData() {
-        eventManager = new HistoricalEventManager();
+        logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+
+    	eventManager = new HistoricalEventManager();
     }
 
     /**
@@ -353,6 +356,13 @@ implements ClockListener, Serializable {
         //executor = null;
     }
 
+    /*
+     * Obtains the size of the file
+     * @return fileSize in megabytes
+     */
+    public double getFileSize() {
+    	return fileSize;
+    }
 
     /**
      * Loads a simulation instance from a save file.
@@ -382,7 +392,9 @@ implements ClockListener, Serializable {
 
         if (f.exists() && f.canRead()) {
             try {
+    			fileSize = (f.length() / 1024D / 1024D);
                 simulation.readFromFile(f);
+
             } catch (ClassNotFoundException ex) {
                 throw new IllegalStateException(ex);
             } catch (IOException ex) {
@@ -485,13 +497,20 @@ implements ClockListener, Serializable {
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
                 logger.info("Autosaving into " + autosaveFilename);
             }
+
             else
                 file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 
+            // if the autosave directory does not exist, create one now
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
+
         }
+
+        //else if file != null
+            // file should already have the correct dir, name and extension, no need to change it
+
 
 
         //ObjectOutputStream p = null;
