@@ -173,9 +173,9 @@ public class MainScene {
 				setLookAndFeel(1);
 			} );
 
-			startAutosaveTimer();
+			//startAutosaveTimer();
 			// desktop.openInitialWindows(); // doesn't work here
-			startEarthTimer();
+			//startEarthTimer();
 			// System.out.println("done running the two timers");
 			// System.out.println("done running createMainScene()");
 		}
@@ -185,6 +185,8 @@ public class MainScene {
 		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
 		openInitialWindows();
+		startAutosaveTimer();
+		startEarthTimer();
 	}
 
 	public void openTransportWizard(BuildingManager buildingManager) {
@@ -593,6 +595,7 @@ public class MainScene {
 
 	/**
 	 * Load a previously saved simulation.
+	 * @param type
 	 */
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
@@ -617,16 +620,14 @@ public class MainScene {
 		} else {
 			loadSimThread.interrupt();
 		}
-
 	}
 
 	/**
 	 * Performs the process of loading a simulation.
-	 *
-	 * @param autosave,
-	 *            true if loading the autosave sim file
+	 * @param type
 	 */
 	public void loadSimulationProcess(int type) {
+		logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		String dir = null;
 		String title = null;
 		File fileLocn = null;
@@ -739,6 +740,7 @@ public class MainScene {
 	 * Ends the current simulation and close the JavaFX stage of MainScene
 	 */
 	private void endSim() {
+		logger.info("MainScene's endSim() is on " + Thread.currentThread().getName() + " Thread");
 		Simulation.instance().endSimulation();
 		Simulation.instance().getSimExecutor().shutdownNow();
 
@@ -755,7 +757,7 @@ public class MainScene {
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
-
+		logger.info("MainScene's newSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm on New");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
@@ -784,6 +786,7 @@ public class MainScene {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(int type) {
+		logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -804,6 +807,7 @@ public class MainScene {
 	 */
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
+		logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		File fileLocn = null;
 		String dir = null;
 		String title = null;
@@ -824,11 +828,11 @@ public class MainScene {
 			// Set extension filter
 			FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
 					"*.sim");
-			FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
-			chooser.getExtensionFilters().addAll(simFilter, allFilter);
+			//FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+			chooser.getExtensionFilters().add(simFilter); // , allFilter);
 			File selectedFile = chooser.showSaveDialog(stage);
 			if (selectedFile != null)
-				fileLocn = selectedFile;
+				fileLocn = selectedFile; // + Simulation.DEFAULT_EXTENSION;
 			else
 				return;
 		}
@@ -837,7 +841,7 @@ public class MainScene {
 
 		if (type == AUTOSAVE) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
-			clock.autosaveSimulation(fileLocn);
+			clock.autosaveSimulation();
 		} else if (type == SAVE_AS || type == DEFAULT) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
@@ -873,7 +877,7 @@ public class MainScene {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-
+		logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
 
 		logger.info("Exiting simulation");
@@ -901,8 +905,8 @@ public class MainScene {
 	 *            true if native look and feel should be used.
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
-	public void setLookAndFeel(int choice) { // boolean nativeLookAndFeel,
-												// boolean nimRODLookAndFeel) {
+	public void setLookAndFeel(int choice) {
+		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
 		// String currentTheme =
 		// UIManager.getLookAndFeel().getClass().getName();
@@ -1050,6 +1054,8 @@ public class MainScene {
 	 * Initiates the process of saving a simulation.
 	 */
 	public void saveOnExit() {
+		logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
+
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
@@ -1069,6 +1075,7 @@ public class MainScene {
 	// }
 
 	public void openInitialWindows() {
+		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
 		} );

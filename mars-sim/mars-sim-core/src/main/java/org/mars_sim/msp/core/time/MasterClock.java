@@ -270,9 +270,9 @@ public class MasterClock implements Serializable { // Runnable,
      * @param file autosave to file or null if default file.
      */
     // 2015-01-08 Added autosaveSimulation
-    public void autosaveSimulation(File file) {
+    public void autosaveSimulation() {
         autosaveSimulation = true;
-        this.file = file;
+        //this.file = file;
     }
 
     /**

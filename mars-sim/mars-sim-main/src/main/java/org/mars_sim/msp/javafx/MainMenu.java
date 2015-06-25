@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -59,6 +60,7 @@ public class MainMenu {
     private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
 	// Data members
+    private double fileSize;
 
     public static String screen1ID = "main";
     public static String screen1File = "/fxui/fxml/MainMenu.fxml";
@@ -198,7 +200,7 @@ public class MainMenu {
 
 	   // prepare main scene
 	   mainScene.prepareMainScene();
-	   final Scene scene = mainScene.initializeScene();
+	   Scene scene = mainScene.initializeScene();
 	   mainScene.prepareOthers();
 
 	   // prepare stage
@@ -231,20 +233,23 @@ public class MainMenu {
 	   try {
 		   mainScene = new MainScene(stage);
 		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+		   TimeUnit.SECONDS.sleep(1L);
+		   // The delay time for launching the JavaFX UI is based on the size of the default.sim
+		   long delay_time = (long) (fileSize * 4000L);
+		   TimeUnit.MILLISECONDS.sleep(delay_time);
 		   prepareStage();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-      //menuScene = new MenuScene().createMenuScene();
 
    }
 
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
-			Simulation.instance().loadSimulation(null);
+			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
 			Simulation.instance().start();
+			fileSize = Simulation.instance().getFileSize();
+			//System.out.println("filesize is "+ fileSize);
 		}
 	}
 
