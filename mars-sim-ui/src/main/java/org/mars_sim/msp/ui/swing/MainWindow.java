@@ -430,7 +430,7 @@ public class MainWindow extends JComponent {
 			desktop.clearDesktop();
 
 			MasterClock masterClock = Simulation.instance().getMasterClock();
-			Simulation.instance().getClockExecutor().submit(masterClock.getClockThreadTask());
+			Simulation.instance().getClockScheduler().submit(masterClock.getClockThreadTask());
 			//masterClock.loadSimulation(chooser.getSelectedFile());
 
 

@@ -87,7 +87,7 @@ public class MainScene {
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
-	private static final int TIME_DELAY = 940;
+	private static final int TIME_DELAY = 980;
 
 	// Categories of loading and saving simulation
 	public static final int DEFAULT = 1;
@@ -680,7 +680,7 @@ public class MainScene {
 		desktop.clearDesktop();
 
 		MasterClock masterClock = Simulation.instance().getMasterClock();
-		Simulation.instance().getClockExecutor().submit(masterClock.getClockThreadTask());
+		Simulation.instance().getClockScheduler().submit(masterClock.getClockThreadTask());
 
 		while (masterClock.isLoadingSimulation()) {
 			try {
