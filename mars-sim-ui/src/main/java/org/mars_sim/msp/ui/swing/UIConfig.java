@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.07 2015-01-17
+ * @version 3.08 2015-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -155,25 +155,27 @@ public class UIConfig {
             MainDesktopPane desktop = mainWindow.getDesktop();
             JInternalFrame[] windows = desktop.getAllFrames();
             for (JInternalFrame window1 : windows) {
-                Element windowElement = new Element(WINDOW);
-                internalWindowsElement.addContent(windowElement);
+                if (window1.isVisible() || window1.isIcon()) {
+                    Element windowElement = new Element(WINDOW);
+                    internalWindowsElement.addContent(windowElement);
 
-                windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-                windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-                windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-                windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-                windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+                    windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+                    windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+                    windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+                    windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+                    windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+                    windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
-                if (window1 instanceof ToolWindow) {
-                    windowElement.setAttribute(TYPE, TOOL);
-                    windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-                } else if (window1 instanceof UnitWindow) {
-                    windowElement.setAttribute(TYPE, UNIT);
-                    windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-                } else {
-                    windowElement.setAttribute(TYPE, "other");
-                    windowElement.setAttribute(NAME, "other");
+                    if (window1 instanceof ToolWindow) {
+                        windowElement.setAttribute(TYPE, TOOL);
+                        windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+                    } else if (window1 instanceof UnitWindow) {
+                        windowElement.setAttribute(TYPE, UNIT);
+                        windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+                    } else {
+                        windowElement.setAttribute(TYPE, "other");
+                        windowElement.setAttribute(NAME, "other");
+                    }
                 }
             }
 
