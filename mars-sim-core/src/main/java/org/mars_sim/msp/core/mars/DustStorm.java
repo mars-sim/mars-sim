@@ -68,12 +68,16 @@ public class DustStorm implements Serializable {
 			if (weather.getLocalDustStormMap().size() == 0)
 				hemisphere = RandomUtil.getRandomInt(0, 1);
 			else {
+
 				// Check which hemisphere the previous dust storm is located at and avoid that hemisphere
+				// TODO: need to fix the NullPointerException below
+/*
 				int hemisphereUsed = weather.getPlanetEncirclingDustStormMap().get(0).getHemisphere();
 				if (hemisphereUsed == NORTHERN)
 					hemisphere = SOUTHERN;
 				else
 					hemisphere = NORTHERN;
+*/
 			}
 		}
 

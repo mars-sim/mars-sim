@@ -46,7 +46,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
-/** 
+/**
  * The SearchWindow is a tool window that allows the user to search
  * for individual units by name and category.
  */
@@ -105,7 +105,7 @@ extends ToolWindow {
 	/** Array of category names. */
 	private String[] unitCategoryNames;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the desktop pane
 	 */
@@ -245,7 +245,7 @@ extends ToolWindow {
 		}
 		else if (category.equals(UnitCategory.VEHICLES.getName())) {
 			Collection<Vehicle> vehicle = unitManager.getVehicles();
-			units = CollectionUtils.sortByName(vehicle); 
+			units = CollectionUtils.sortByName(vehicle);
 		}
 
 		Iterator<? extends Unit> unitI = units.iterator();
@@ -288,9 +288,9 @@ extends ToolWindow {
 		statusLabel.setText(" "); //$NON-NLS-1$
 	}
 
-	/** 
-	 * Make selection in list depending on what unit names 
-	 * begin with the changed text. 
+	/**
+	 * Make selection in list depending on what unit names
+	 * begin with the changed text.
 	 */
 	private void searchTextChange() {
 		if (!lockSearchText) {
@@ -332,11 +332,11 @@ extends ToolWindow {
 	 * Inner class list model for categorized units.
 	 */
 	private class UnitListModel
-	extends DefaultListModel<Unit> 
+	extends DefaultListModel<Unit>
 	implements UnitManagerListener {
 
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 		// Data members.
@@ -383,7 +383,7 @@ extends ToolWindow {
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			if (category.equals(UnitCategory.PEOPLE)) {
 				Collection<Person> people = unitManager.getPeople();
-				units = CollectionUtils.sortByName(people);   
+				units = CollectionUtils.sortByName(people);
 			}
 			else if (category.equals(UnitCategory.SETTLEMENTS)) {
 				Collection<Settlement> settlement = unitManager.getSettlements();

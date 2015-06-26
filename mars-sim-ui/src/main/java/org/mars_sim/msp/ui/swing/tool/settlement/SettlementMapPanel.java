@@ -9,9 +9,11 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -81,6 +83,10 @@ implements ClockListener {
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
 
+	private Graphics dbg;
+	//private Graphics2D g2d;
+	private Image dbImage = null;
+
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
 	 */
@@ -91,6 +97,8 @@ implements ClockListener {
         //System.out.println("SettlementMapPanel's constructor");
 
 		setLayout(new BorderLayout());
+
+		setDoubleBuffered(true);
 
 		// Initialize data members.
 		xPos = 0D;
@@ -140,6 +148,8 @@ implements ClockListener {
 
 	    new SettlementTransparentPanel(desktop, this);
 
+		////paintDoubleBuffer();
+		repaint();
 	}
 
 	/** Constructor 2
@@ -172,6 +182,7 @@ implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -203,6 +214,7 @@ implements ClockListener {
 		    }
 
 		    public void mouseReleased(MouseEvent evt){
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				 if (evt.isPopupTrigger()) {
 					 doPop(evt);
 				 }
@@ -243,6 +255,7 @@ implements ClockListener {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				// Move map center based on mouse drag difference.
 				double xDiff = evt.getX() - xLast;
 				double yDiff = evt.getY() - yLast;
@@ -250,6 +263,7 @@ implements ClockListener {
 				xLast = evt.getX();
 				yLast = evt.getY();
 			}
+
 		});
 
 	}
@@ -278,6 +292,8 @@ implements ClockListener {
 		if (newSettlement != settlement) {
 			// TODO : inform SettlementTransparentPanel to update settlement ?
 			this.settlement = newSettlement;
+
+			//paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -296,6 +312,8 @@ implements ClockListener {
 	 */
 	public void setScale(double scale) {
 		this.scale = scale;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -313,6 +331,8 @@ implements ClockListener {
 	 */
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -325,6 +345,8 @@ implements ClockListener {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -344,6 +366,8 @@ implements ClockListener {
 
 		xPos += realXDiff;
 		yPos += realYDiff;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -372,7 +396,10 @@ implements ClockListener {
 
 		if (selectedPerson != null) {
 			selectPerson(selectedPerson);
-			repaint();
+
+
+			////paintDoubleBuffer();
+			//repaint();
 		}
 		return selectedPerson;
 	}
@@ -402,7 +429,9 @@ implements ClockListener {
 
 		if (selectedRobot != null) {
 			selectRobot(selectedRobot);
-			repaint();
+
+			////paintDoubleBuffer();
+			//repaint();
 		}
 		return selectedRobot;
 	}
@@ -444,6 +473,9 @@ implements ClockListener {
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= newRange) {
 				selectedBuilding = building;
+
+				////paintDoubleBuffer();
+				//repaint();
 			}
 			//i++;
 		}
@@ -497,6 +529,9 @@ implements ClockListener {
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
+
+				////paintDoubleBuffer();
+				//repaint();
 			}
 		}
 		return selectedVehicle;
@@ -536,6 +571,9 @@ implements ClockListener {
 			double distance = Math.hypot(distanceX, distanceY);
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
+
+				////paintDoubleBuffer();
+				//repaint();
 			}
 		}
 		return selectedVehicle;
@@ -652,6 +690,8 @@ implements ClockListener {
 	 */
 	public void setShowBuildingLabels(boolean showLabels) {
 		this.showBuildingLabels = showLabels;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -669,6 +709,8 @@ implements ClockListener {
 	 */
 	public void setShowConstructionLabels(boolean showLabels) {
 		this.showConstructionLabels = showLabels;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -686,6 +728,8 @@ implements ClockListener {
 	 */
 	public void setShowPersonLabels(boolean showLabels) {
 		this.showPersonLabels = showLabels;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -703,6 +747,8 @@ implements ClockListener {
 	 */
 	public void setShowRobotLabels(boolean showLabels) {
 		this.showRobotLabels = showLabels;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 	/**
@@ -719,6 +765,8 @@ implements ClockListener {
 	 */
 	public void setShowVehicleLabels(boolean showLabels) {
 		this.showVehicleLabels = showLabels;
+
+		//paintDoubleBuffer();
 		repaint();
 	}
 
@@ -737,16 +785,17 @@ implements ClockListener {
 	 */
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
 		this.showDayNightLayer = showDayNightLayer;
+
+		////paintDoubleBuffer();
 		repaint();
 	}
 
-	@Override
-	protected void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-//		long startTime = System.nanoTime();
-
 		Graphics2D g2d = (Graphics2D) g;
+
+//				long startTime = System.nanoTime();
 
 		// Set graphics rendering hints.
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -760,9 +809,11 @@ implements ClockListener {
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 
-//		long endTime = System.nanoTime();
-//		double timeDiff = (endTime - startTime) / 1000000D;
-//		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+//				long endTime = System.nanoTime();
+//				double timeDiff = (endTime - startTime) / 1000000D;
+//				System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+
+
 	}
 
 	/**
@@ -782,11 +833,15 @@ implements ClockListener {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
+
+		dbg = null;
+		dbImage = null;
 	}
 
 	@Override
 	public void clockPulse(double time) {
 		// Repaint map panel with each clock pulse.
+		//paintDoubleBuffer();
 		repaint();
 	}
 

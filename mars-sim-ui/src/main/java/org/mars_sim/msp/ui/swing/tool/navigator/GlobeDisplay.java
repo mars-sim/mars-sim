@@ -15,6 +15,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
@@ -94,9 +95,14 @@ implements Runnable {
 	/** stores the position for drawing lon/lat strings in {@link #drawCrossHair(Graphics)}. */
 	int rightWidth = positionMetrics.stringWidth(longitude);
 
-	private Mars mars;
+	//private Mars mars;
 
 	private SurfaceFeatures surfaceFeatures;
+
+	private Graphics dbg;
+	private Image dbImage = null;
+	private Image starfield;
+
 	/**
 	 * Constructor.
 	 * @param navwin the navigator window.
@@ -108,6 +114,11 @@ implements Runnable {
 		// Initialize data members
 		this.width = width;
 		this.height = height;
+
+		starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
+
+		if (surfaceFeatures == null)
+			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 		// Set component size
 		setPreferredSize(new Dimension(width, height));
@@ -192,7 +203,9 @@ implements Runnable {
 
 					recreate = false;
 
+					paintDoubleBuffer();
 					repaint();
+					//paintScreen();
 				}
 
 				super.mouseDragged(e);
@@ -206,7 +219,7 @@ implements Runnable {
 				//System.out.println("             Y = " + e.getY());
 				dragx = e.getX();
 				dragy = e.getY();
-
+				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				super.mousePressed(e);
 			}
 
@@ -220,7 +233,7 @@ implements Runnable {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				//navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				super.mouseReleased(e);
 			}
 
@@ -233,6 +246,7 @@ implements Runnable {
 
 		// Initially show real surface globe
 		showSurf();
+
 	}
 
 	/**
@@ -244,6 +258,10 @@ implements Runnable {
 		}
 		topo = false;
 		showGlobe(centerCoords);
+	}
+
+	public boolean isTopo() {
+		return topo;
 	}
 
 	/**
@@ -306,19 +324,87 @@ implements Runnable {
 					marsSphere.drawSphere(centerCoords);
 				}
 				recreate = false;
+
+				paintDoubleBuffer();
 				repaint();
+				//paintScreen();
+
 			} else {
 				// Pause for 2 seconds between display refreshs
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {}
 
+
+				paintDoubleBuffer();
 				repaint();
+				//paintScreen();
 			}
 		}
 	}
 
-	@Override
+/*
+	// active rendering the buffer image to the screen
+	public void paintScreen() {
+		Graphics g;
+		try {
+			g = this.getGraphics();
+			if ((g != null) && (dbImage != null))
+				g.drawImage(dbImage,  0, 0,  null);
+
+			Toolkit.getDefaultToolkit().sync();
+			g.dispose();
+
+		} catch (Exception e){
+			//System.out.println("Graphics context error: " + e);
+		}
+	}
+
+*/
+
+	/*
+	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
+	 */
+	public void paintDoubleBuffer() {
+		if (dbImage == null) {
+			dbImage = createImage(150,150);
+			if (dbImage == null) {
+				//System.out.println("dbImage is null");
+				return;
+			}
+			else
+				dbg = dbImage.getGraphics();
+		}
+
+		dbg.setColor(Color.black);
+		dbg.fillRect(0, 0, 150, 150);
+
+		//Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
+		dbg.drawImage(starfield, 0, 0, Color.black, null);
+
+		// Draw real or topo globe
+		MarsGlobe globe = topo ? topoSphere : marsSphere;
+
+		if (globe.isImageDone()) {
+			dbg.drawImage(globe.getGlobeImage(), 0, 0, this);
+		}
+
+		if (showDayNightShading) {
+			drawShading(dbg);
+		}
+
+		drawUnits(dbg);
+		drawCrossHair(dbg);
+
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if(dbImage != null)
+			g.drawImage(dbImage,  0, 0, null);
+	}
+
+/*
 	public void paintComponent(Graphics g) {
 
 		Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
@@ -337,6 +423,7 @@ implements Runnable {
 		drawUnits(g);
 		drawCrossHair(g);
 	}
+*/
 
 	/**
 	 * Draws the day/night shading on the globe.
@@ -349,8 +436,8 @@ implements Runnable {
 		//if (mars == null)
 		//	mars = Simulation.instance().getMars();
 
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		//if (surfaceFeatures == null)
+		//	surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 
 		// Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
@@ -526,5 +613,9 @@ implements Runnable {
 		marsSphere = null;
 		topoSphere = null;
 		centerCoords = null;
+		surfaceFeatures = null;
+		dbg = null;
+		dbImage = null;
+		starfield = null;
 	}
 }
