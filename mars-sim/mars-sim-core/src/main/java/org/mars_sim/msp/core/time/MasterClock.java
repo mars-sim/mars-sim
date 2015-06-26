@@ -53,7 +53,8 @@ public class MasterClock implements Serializable { // Runnable,
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
 	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
-	private static long SLEEP_TIME = (long) 16.66667; // 40L
+	private static final long PERIOD = 40_000_000L; //in nanoseconds
+	private static final int NO_DELAYS_PER_YIELD = 16;
 
 	// Data members
 	/** Runnable flag. */
@@ -369,28 +370,22 @@ public class MasterClock implements Serializable { // Runnable,
 
 		@Override
 		public void run() {
-
-	        keepRunning = true;
-	        long lastTimeDiff;
 	        elapsedlast = uptimer.getUptimeMillis();
 
+	        // 2015-06-26 For variable sleepTime
+	        long lastTimeDiff;
+			long t1, t2, sleepTime, overSleepTime = 0L;
+	        int noDelays = 0;
+	        t1 = System.nanoTime();
+
 	        // Keep running until told not to
+	        keepRunning = true;
 	        while (keepRunning) {
-	            // Pause simulation to allow other threads to complete.
-	            try {
-	                Thread.yield();
-	                //Thread.sleep(SLEEP_TIME);
-					TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
-	            }
-	            catch (Exception e) {
-	                logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
-	            }
 
 	            if (!isPaused) {
 
 	                // Update elapsed milliseconds.
 	                updateElapsedMilliseconds();
-
 	                // Get the time pulse length in millisols.
 	                double timePulse = getTimePulse();
 
@@ -398,6 +393,7 @@ public class MasterClock implements Serializable { // Runnable,
 	                totalPulses++;
 
 	                long startTime = System.nanoTime();
+	                //System.out.println("resolution : " + (System.nanoTime() - startTime));
 
 	                // Add time pulse length to Earth and Mars clocks.
 	                double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
@@ -462,7 +458,38 @@ public class MasterClock implements Serializable { // Runnable,
 	                exitProgram = false;
 	                System.exit(0);
 	            }
-	        }
+
+		        // 2015-06-26 Refactored codes for variable sleepTime
+	            t2 = System.nanoTime();
+	            //dt = t2 - t1;
+	            sleepTime = PERIOD - t2 + t1 - overSleepTime;
+	            //System.out.println("sleep : " + sleepTime/1_000_000 + "ms");
+
+	            if (sleepTime > 0) {
+		            // Pause simulation to allow other threads to complete.
+		            try {
+		                //Thread.yield();
+		                //Thread.sleep(SLEEP_TIME);
+						TimeUnit.NANOSECONDS.sleep(sleepTime);
+		            }
+		            catch (Exception e) {
+		                logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
+		            }
+		            overSleepTime = (System.nanoTime() - t2) - sleepTime;
+
+	            }
+	            else { // last frame went beyond the PERIOD
+	            	overSleepTime = 0L;
+
+	            	if (++noDelays >= NO_DELAYS_PER_YIELD) {
+	            		Thread.yield();
+	            		noDelays = 0;
+	            	}
+	            }
+
+	            t1 = System.nanoTime();
+
+	        } // end of while
 	    } // end of run
     }
 
