@@ -100,6 +100,8 @@ public class SettlementTransparentPanel extends JComponent {
         this.mapPanel = mapPanel;
         this.desktop = desktop;
 
+		setDoubleBuffered(true);
+
         createAndShowGUI();
     }
 

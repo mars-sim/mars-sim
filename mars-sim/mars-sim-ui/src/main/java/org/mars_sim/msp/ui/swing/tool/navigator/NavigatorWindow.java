@@ -4,7 +4,7 @@
  * @version 3.07 2014-11-28
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.tool.navigator;  
+package org.mars_sim.msp.ui.swing.tool.navigator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.Landmark;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -62,7 +64,7 @@ import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-/** 
+/**
  * The NavigatorWindow is a tool window that displays a map and a
  * globe showing Mars, and various other elements. It is the primary
  * interface component that presents the simulation to the user.
@@ -118,6 +120,9 @@ implements ActionListener {
 	private JCheckBoxMenuItem exploredSiteItem;
 	/** Show minerals menu item. */
 	private JCheckBoxMenuItem mineralItem;
+
+	private JPanel mapPaneInner;
+
 	private MapLayer unitIconLayer;
 	private MapLayer unitLabelLayer;
 	private MapLayer shadingLayer;
@@ -128,7 +133,7 @@ implements ActionListener {
 	private MapLayer exploredSiteLayer;
 
 	/**
-	 * Constructor. 
+	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the desktop pane
 	 */
 	public NavigatorWindow(MainDesktopPane desktop) {
@@ -182,12 +187,14 @@ implements ActionListener {
 		mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 				new LineBorder(Color.gray)));
 		rightTopPane.add(mapPane);
-		JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
+		mapPaneInner = new JPanel(new BorderLayout(0, 0));
 		mapPaneInner.setBackground(Color.black);
-		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		map = new MapPanel();
-		map.addMouseListener(new mapClickListener());
+		map.setNavWin(this);
+		map.addMouseListener(new mapListener());
+		map.addMouseMotionListener(new mouseMotionListener());
 
 		// Create map layers.
 		unitIconLayer = new UnitIconMapLayer(map);
@@ -320,7 +327,7 @@ implements ActionListener {
 	}
 
 	/** Update coordinates in map, buttons, and globe
-	 *  Redraw map and globe if necessary 
+	 *  Redraw map and globe if necessary
 	 *  @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
@@ -329,7 +336,7 @@ implements ActionListener {
 		globeNav.showGlobe(newCoords);
 	}
 
-	/** Update coordinates on globe only. Redraw globe if necessary 
+	/** Update coordinates on globe only. Redraw globe if necessary
 	 *  @param newCoords the new center location
 	 */
 	public void updateGlobeOnly(Coordinates newCoords) {
@@ -359,14 +366,14 @@ implements ActionListener {
 						else {
 						    latitude += 90D;
 						}
-						
+
 						String westString = Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort");
 						if (longitude > 0D) {
 							if (longDirStr.equals(westString)) {
 							    longitude = 360D - longitude; //$NON-NLS-1$
 							}
 						}
-						
+
 						double phi = Math.PI * (latitude / 180D);
 						double theta = (2 * Math.PI) * (longitude / 360D);
 						updateCoords(new Coordinates(phi, theta));
@@ -379,12 +386,12 @@ implements ActionListener {
 				map.setMapType(TopoMarsMap.TYPE);
 				globeNav.showTopo();
 				legend.showColor();
-			}	 
+			}
 			else {
 				map.setMapType(SurfMarsMap.TYPE);
 				globeNav.showSurf();
 				legend.showMap();
-			} 
+			}
 		}
 		else if (source == dayNightItem) {
 			setMapLayer(dayNightItem.isSelected(), shadingLayer);
@@ -482,7 +489,7 @@ implements ActionListener {
 					new ActionListener() {
 						public void actionPerformed(ActionEvent event) {
 							JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
-							((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(), 
+							((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(),
 									checkboxItem.isSelected());
 						}
 					});
@@ -507,7 +514,7 @@ implements ActionListener {
 		return new ImageIcon(image);
 	}
 
-	/** 
+	/**
 	 * Opens a unit window on the desktop.
 	 *
 	 * @param unit the unit the window is for.
@@ -516,35 +523,118 @@ implements ActionListener {
 		desktop.openUnitWindow(unit, false);
 	}
 
-	private class mapClickListener extends MouseAdapter {
+	private class mapListener extends MouseAdapter {
+
+		public void mouseEntered(MouseEvent event) {
+			checkHover(event);
+		}
+
+		public void mouseExited(MouseEvent event) {
+		}
+
 		public void mouseClicked(MouseEvent event) {
+			checkClick(event);
+		}
 
-			if (map.getCenterLocation() != null) {
-				double rho = CannedMarsMap.PIXEL_RHO;
+	}
 
-				Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
-						(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
-						(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
-				boolean unitsClicked = false;
+	// 2015-06-26 Added mouseMotionListener
+	private class mouseMotionListener extends MouseMotionAdapter {
 
-				Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+		public void mouseMoved(MouseEvent event) {
+			checkHover(event);
+		}
 
-				// Open window if unit is clicked on the map
-				while (i.hasNext()) {
-					Unit unit = i.next();
-					UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-					if (displayInfo.isMapDisplayed(unit)) {
-						Coordinates unitCoords = unit.getCoordinates();
-						double clickRange = unitCoords.getDistance(clickedPosition);
-						double unitClickRange = displayInfo.getMapClickRange();
-						if (clickRange < unitClickRange) {
-							openUnitWindow(unit);
-							unitsClicked = true;
-						}
+		public void mouseDragged(MouseEvent event) {
+		}
+
+	}
+
+	// 2015-06-26 Added checkClick()
+	public void checkClick(MouseEvent event) {
+
+		if (map.getCenterLocation() != null) {
+			double rho = CannedMarsMap.PIXEL_RHO;
+
+			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
+					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
+					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
+			boolean unitsClicked = false;
+
+			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+
+			// Open window if unit is clicked on the map
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+				if (displayInfo.isMapDisplayed(unit)) {
+					Coordinates unitCoords = unit.getCoordinates();
+					double clickRange = unitCoords.getDistance(clickedPosition);
+					double unitClickRange = displayInfo.getMapClickRange();
+					if (clickRange < unitClickRange) {
+						openUnitWindow(unit);
+						unitsClicked = true;
+						mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
 					}
 				}
+			}
 
-				if (!unitsClicked) updateCoords(clickedPosition);
+			if (!unitsClicked) {
+				updateCoords(clickedPosition);
+				mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+			}
+		}
+	}
+
+
+	// 2015-06-26 Added checkHover()
+	public void checkHover(MouseEvent event) {
+
+		Coordinates mapCenter = map.getCenterLocation();
+		if (mapCenter != null) {
+			double rho = CannedMarsMap.PIXEL_RHO;
+
+			Coordinates mousePos = map.getCenterLocation().convertRectToSpherical(
+					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
+					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
+			boolean onTarget = false;
+
+			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+
+			// Change mouse cursor if hovering over an unit on the map
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+				if (displayInfo.isMapDisplayed(unit)) {
+					Coordinates unitCoords = unit.getCoordinates();
+					double clickRange = unitCoords.getDistance(mousePos);
+					double unitClickRange = displayInfo.getMapClickRange();
+					if (clickRange < unitClickRange) {
+						onTarget = true;
+						mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+					}
+				}
+			}
+
+			// Change mouse cursor if hovering over a landmark on the map
+			Iterator<Landmark> j = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
+			while (j.hasNext()) {
+				Landmark landmark = (Landmark) j.next();
+
+				Coordinates unitCoords = landmark.getLandmarkLocation();
+				double clickRange = unitCoords.getDistance(mousePos);
+				double unitClickRange = 40D;
+
+				if (clickRange < unitClickRange) {
+					onTarget = true;
+					mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+					//System.out.println("right on landmark");
+				}
+			}
+
+			if (!onTarget) {
+				//updateCoords(clickedPosition);
+				mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 			}
 		}
 	}
@@ -552,5 +642,15 @@ implements ActionListener {
 	public void destroy() {
 		map.destroy();
 		globeNav.destroy();
+		navButtons = null;
+		legend = null;
+		unitIconLayer = null;
+		unitLabelLayer = null;
+		shadingLayer = null;
+		mineralLayer = null;
+		trailLayer = null;
+		navpointLayer = null;
+		landmarkLayer = null;
+		exploredSiteLayer = null;
 	}
 }

@@ -54,6 +54,10 @@ extends JComponent {
 		setPreferredSize(new Dimension(140, 90));
 		setMaximumSize(getPreferredSize());
 		setMinimumSize(getPreferredSize());
+
+		baseColor = Color.orange;
+		midColor = new Color(210, 117, 101);
+		darkColor = new Color(140, 94, 74);
 	}
 
 	/**
