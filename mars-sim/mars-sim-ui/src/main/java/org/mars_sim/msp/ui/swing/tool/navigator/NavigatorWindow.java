@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 3.07 2014-11-28
+ * @version 3.08 2015-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -199,7 +199,6 @@ implements ActionListener {
 		// Create map layers.
 		unitIconLayer = new UnitIconMapLayer(map);
 		unitLabelLayer = new UnitLabelMapLayer();
-		map.addMapLayer(unitLabelLayer);
 		mineralLayer = new MineralMapLayer(map);
 		shadingLayer = new ShadingMapLayer(map);
 		navpointLayer = new NavpointMapLayer(map);
@@ -208,11 +207,12 @@ implements ActionListener {
 		exploredSiteLayer = new ExploredSiteMapLayer(map);
 
 		// Add default map layers.
-		map.addMapLayer(unitIconLayer);
-		map.addMapLayer(unitLabelLayer);
-		map.addMapLayer(navpointLayer);
-		map.addMapLayer(trailLayer);
-		map.addMapLayer(landmarkLayer);
+		map.addMapLayer(shadingLayer, 0);
+		map.addMapLayer(unitIconLayer, 2);
+		map.addMapLayer(unitLabelLayer, 3);
+		map.addMapLayer(navpointLayer, 4);
+		map.addMapLayer(trailLayer, 5);
+		map.addMapLayer(landmarkLayer, 6);
 
 		map.showMap(new Coordinates((Math.PI / 2D), 0D));
 		mapPaneInner.add(map, BorderLayout.CENTER);
@@ -394,16 +394,16 @@ implements ActionListener {
 			}
 		}
 		else if (source == dayNightItem) {
-			setMapLayer(dayNightItem.isSelected(), shadingLayer);
+			setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
 			globeNav.setDayNightTracking(dayNightItem.isSelected());
 		}
-		else if (source == unitLabelItem) setMapLayer(unitLabelItem.isSelected(), unitLabelLayer);
-		else if (source == trailItem) setMapLayer(trailItem.isSelected(), trailLayer);
-		else if (source == landmarkItem) setMapLayer(landmarkItem.isSelected(), landmarkLayer);
-		else if (source == navpointItem) setMapLayer(navpointItem.isSelected(), navpointLayer);
-		else if (source == exploredSiteItem) setMapLayer(exploredSiteItem.isSelected(), exploredSiteLayer);
+		else if (source == unitLabelItem) setMapLayer(unitLabelItem.isSelected(), 3, unitLabelLayer);
+		else if (source == trailItem) setMapLayer(trailItem.isSelected(), 5, trailLayer);
+		else if (source == landmarkItem) setMapLayer(landmarkItem.isSelected(), 6, landmarkLayer);
+		else if (source == navpointItem) setMapLayer(navpointItem.isSelected(), 4, navpointLayer);
+		else if (source == exploredSiteItem) setMapLayer(exploredSiteItem.isSelected(), 7, exploredSiteLayer);
 		else if (source == mineralItem) {
-			setMapLayer(mineralItem.isSelected(), mineralLayer);
+			setMapLayer(mineralItem.isSelected(), 1, mineralLayer);
 			mineralsButton.setEnabled(mineralItem.isSelected());
 		}
 	}
@@ -411,11 +411,16 @@ implements ActionListener {
 	/**
 	 * Sets a map layer on or off.
 	 * @param setMap true if map is on and false if off.
+	 * @param index the index order of the map layer.
 	 * @param mapLayer the map layer.
 	 */
-	private void setMapLayer(boolean setMap, MapLayer mapLayer) {
-		if (setMap) map.addMapLayer(mapLayer);
-		else map.removeMapLayer(mapLayer);
+	private void setMapLayer(boolean setMap, int index, MapLayer mapLayer) {
+		if (setMap) {
+		    map.addMapLayer(mapLayer, index);
+		}
+		else {
+		    map.removeMapLayer(mapLayer);
+		}
 	}
 
 	/**

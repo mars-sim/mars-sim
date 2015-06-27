@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationCustomInfoPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-26
 
  * @author Scott Davis
  */
@@ -140,13 +140,13 @@ extends MissionCustomInfoPanel {
 
 			setLayout(new GridLayout(1, 2));
 
-			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 10));
 			add(namePanel);
 
 			JLabel nameLabel = new JLabel(siteName, SwingConstants.LEFT);
 			namePanel.add(nameLabel);
 
-			JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+			JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 10));
 			add(barPanel);
 
 			completionBar = new JProgressBar(0, 100);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.07 2014-12-28
+ * @version 3.08 2015-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -247,7 +247,6 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
 		missionCustomPane = new JPanel(customPanelLayout);
-		missionCustomPane.setPreferredSize(new Dimension(-1, 250));
 		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(missionCustomPane);

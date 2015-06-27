@@ -214,10 +214,18 @@ implements Runnable {
 	/**
 	 * Adds a new map layer
 	 * @param newLayer the new map layer.
+	 * @param index the index order of the map layer.
 	 */
-	public void addMapLayer(MapLayer newLayer) {
+	public void addMapLayer(MapLayer newLayer, int index) {
 		if (newLayer != null) {
-			if (!mapLayers.contains(newLayer)) mapLayers.add(newLayer);
+			if (!mapLayers.contains(newLayer)) {
+			    if (index < mapLayers.size()) { 
+			        mapLayers.add(index, newLayer);
+			    }
+			    else {
+			        mapLayers.add(newLayer);
+			    }
+			}
 		}
 		else throw new IllegalArgumentException("newLayer is null");
 	}
@@ -228,7 +236,9 @@ implements Runnable {
 	 */
 	public void removeMapLayer(MapLayer oldLayer) {
 		if (oldLayer != null) {
-			if (mapLayers.contains(oldLayer)) mapLayers.remove(oldLayer);
+			if (mapLayers.contains(oldLayer)) {
+			    mapLayers.remove(oldLayer);
+			}
 		}
 		else throw new IllegalArgumentException("oldLayer is null");
 	}

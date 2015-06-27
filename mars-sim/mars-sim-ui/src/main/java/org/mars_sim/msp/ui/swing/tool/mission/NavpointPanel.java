@@ -45,6 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -87,12 +88,13 @@ implements ListSelectionListener, MissionListener {
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
-		mapPane.addMapLayer(new UnitLabelMapLayer());
+		mapPane.addMapLayer(new ShadingMapLayer(mapPane), 0);
+		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 2);
+		mapPane.addMapLayer(new UnitLabelMapLayer(), 3);
 		trailLayer = new VehicleTrailMapLayer();
-		mapPane.addMapLayer(trailLayer);
+		mapPane.addMapLayer(trailLayer, 4);
 		navpointLayer = new NavpointMapLayer(this);
-		mapPane.addMapLayer(navpointLayer);
+		mapPane.addMapLayer(navpointLayer, 5);
         mineralLayer = new MineralMapLayer(this);
         // Forcing map panel to be 300x300 size.
         mapPane.setSize(new Dimension(300, 300));
@@ -231,7 +233,7 @@ implements ListSelectionListener, MissionListener {
 					navpointTableModel.updateNavpoints();
                     
                     if ((mission instanceof Exploration) || (mission instanceof Mining)) {
-                        if (!mapPane.hasMapLayer(mineralLayer)) mapPane.addMapLayer(mineralLayer);
+                        if (!mapPane.hasMapLayer(mineralLayer)) mapPane.addMapLayer(mineralLayer, 1);
                     }
                     else {
                         if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
