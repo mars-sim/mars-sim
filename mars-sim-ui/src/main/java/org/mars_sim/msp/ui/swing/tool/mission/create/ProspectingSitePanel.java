@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-26
 
  * @author Scott Davis
  */
@@ -24,6 +24,9 @@ import java.awt.event.MouseMotionAdapter;
  */
 class ProspectingSitePanel extends WizardPanel {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	// Wizard panel name.
 	private final static String NAME = "Prospecting Site";
 	
@@ -65,10 +68,10 @@ class ProspectingSitePanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
-		mapPane.addMapLayer(new UnitLabelMapLayer());
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false));
+		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
+		mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
+		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
+		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 3);
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
 		mapPane.setMaximumSize(mapPane.getPreferredSize());

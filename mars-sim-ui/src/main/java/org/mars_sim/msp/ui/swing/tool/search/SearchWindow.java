@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-26
 
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -130,7 +131,8 @@ extends ToolWindow {
 		setContentPane(mainPane);
 
 		// Create search for panel
-		JPanel searchForPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel searchForPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		searchForPane.setPreferredSize(new Dimension(240, 26));
 		mainPane.add(searchForPane, BorderLayout.NORTH);
 
 		// Create search for label

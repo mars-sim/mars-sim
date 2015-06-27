@@ -160,7 +160,9 @@ public class SurfaceFeatures implements Serializable {
 */
 // Method 2:
 
-
+    	if (orbitInfo == null) {
+            orbitInfo = mars.getOrbitInfo();
+    	}
         double z =  orbitInfo.getSolarZenithAngle(location);
         //System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
 
@@ -304,8 +306,8 @@ public class SurfaceFeatures implements Serializable {
 
       			// Note 3: TODO: Model how dust clouds, water/ice clouds, CO2 clouds affects tau differently
       			// REFERENCE: http://www.sciencedirect.com/science/article/pii/S0019103514001559
-      			// The solar longitude (LS) 20–136° period is also characterized by the presence of cirriform clouds at the Opportunity site,
-      			// especially near LS = 50° and 115°. In addition to water ice clouds, a water ice haze may also be present, and carbon dioxide clouds
+      			// The solar longitude (LS) 20 deg 136 deg period is also characterized by the presence of cirriform clouds at the Opportunity site,
+      			// especially near LS = 50 deg and 115 deg. In addition to water ice clouds, a water ice haze may also be present, and carbon dioxide clouds
       			// may be present early in the season.
 
 

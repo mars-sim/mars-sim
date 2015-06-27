@@ -65,7 +65,7 @@ public class ShadingMapLayer implements MapLayer {
             for (int y = 0; y < Map.MAP_VIS_HEIGHT; y+=2) {
                 mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
                 double sunlight = surfaceFeatures.getSurfaceSunlight(location);
-                //double sunlight = surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+//                double sunlight = surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
                 if (sunlight > 1D) {
                     sunlight = 1D;
                 }

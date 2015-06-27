@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.08 2015-02-10
+ * @version 3.08 2015-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -89,7 +89,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                     // Add construction profit for existing or new construction sites.
                     double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
                     if (constructionProfit > 0D) {
-                        result = 10D;
+                        result = 100D;
                         
                         double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
                         double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);

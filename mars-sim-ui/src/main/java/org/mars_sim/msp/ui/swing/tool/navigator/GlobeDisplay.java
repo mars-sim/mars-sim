@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.08 2015-06-17
-
+ * @version 3.08 2015-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -15,7 +14,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
@@ -30,7 +28,6 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
@@ -136,7 +133,7 @@ implements Runnable {
 		recreate = true;
 		useUSGSMap = false;
 		shadingArray = new int[width * height];
-		showDayNightShading = false;
+		showDayNightShading = true;
 
 		addMouseMotionListener(new MouseAdapter() {
 			int lastx, lasty;
@@ -450,16 +447,30 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					double sunlight = surfaceFeatures.getSurfaceSunlight(location);
-					//double sunlight =surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+					
+					double sunlight = 1D;
+					try {
+					    sunlight = surfaceFeatures.getSurfaceSunlight(location);
+//					    sunlight =surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+					}
+					catch (NullPointerException e) {
+					    // Do nothing.
+					    // This may be caused if simulation hasn't been fully initialized yet.
+					}
 
 					if (sunlight > 1D) {
 					    sunlight = 1D;
 					}
 					int sunlightInt = (int) (127 * sunlight);
 					shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
-				} else {
-					shadingArray[x + (y * 150)] = 0xFF000000;
+				}
+				else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
+				    // Draw black opaque pixel at boundary of Mars.
+				    shadingArray[x + (y * 150)] = 0xFF000000;
+				} 
+				else {
+				    // Draw transparent pixel so background stars will show through.
+					shadingArray[x + (y * 150)] = 0x00000000;
 				}
 			}
 		}

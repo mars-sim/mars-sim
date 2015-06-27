@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.08 2015-04-01
+ * @version 3.08 2015-06-26
  * @author Scott Davis
  */
 
@@ -9,19 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -34,12 +23,10 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 import com.jidesoft.plaf.LookAndFeelFactory;
-import com.jidesoft.plaf.UIDefaultsLookup;
 import com.jidesoft.swing.JideTabbedPane;
 
 /**
@@ -128,6 +115,10 @@ public abstract class UnitWindow extends JInternalFrame {
         centerPanel.setScrollSelectedTabOnWheel(true);
         centerPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
         centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+        
+        // Setting foreground color for tab text.
+        centerPanel.setForeground(Color.DARK_GRAY);
+        
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);

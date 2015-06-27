@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-26
 
  * @author Scott Davis
  */
@@ -89,11 +89,11 @@ class ExplorationSitesPanel extends WizardPanel {
 		// Create the map panel.
 		mapPane = new MapPanel();
         mineralLayer = new MineralMapLayer(mapPane);
-        mapPane.addMapLayer(mineralLayer);
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
-		mapPane.addMapLayer(new UnitLabelMapLayer());
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, true));
+        mapPane.addMapLayer(mineralLayer, 0);
+		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
+		mapPane.addMapLayer(new UnitLabelMapLayer(), 2);
+		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 3);
+		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, true), 4);
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
