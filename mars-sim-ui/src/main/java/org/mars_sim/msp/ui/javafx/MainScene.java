@@ -346,7 +346,11 @@ public class MainScene {
 	}
 
 	public void initializeTheme() {
+
+		changeTheme();
+/*
 		theme = 1;
+		rootStackPane.getStylesheets().clear();
 		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 		notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 		memUsedText.setFill(Color.ORANGE);
@@ -355,7 +359,7 @@ public class MainScene {
 		memBtn.setTextFill(Color.LIGHTSALMON);
 		clkBtn.setTextFill(Color.LIGHTSALMON);
 		lookAndFeelTheme = "nimrod";
-
+*/
 	}
 
 	public void changeTheme() {
