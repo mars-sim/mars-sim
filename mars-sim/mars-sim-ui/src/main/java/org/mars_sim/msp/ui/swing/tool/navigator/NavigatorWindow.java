@@ -33,7 +33,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -163,6 +162,8 @@ implements ActionListener {
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this, 150, 150);
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		globePane.setBackground(Color.black);
+		globePane.setOpaque(true);
 		globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
 				new LineBorder(Color.gray)));
 		globePane.add(globeNav);
@@ -190,12 +191,14 @@ implements ActionListener {
 		rightTopPane.add(mapPane);
 		mapPaneInner = new JPanel(new BorderLayout(0, 0));
 		mapPaneInner.setBackground(Color.black);
-		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		mapPaneInner.setOpaque(true);
+//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		map = new MapPanel();
 		map.setNavWin(this);
 		map.addMouseListener(new mapListener());
 		map.addMouseMotionListener(new mouseMotionListener());
+		map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		// Create map layers.
 		unitIconLayer = new UnitIconMapLayer(map);
@@ -325,7 +328,6 @@ implements ActionListener {
 
 		// Pack window
 		pack();
-
 	}
 
 	/** Update coordinates in map, buttons, and globe
@@ -566,7 +568,6 @@ implements ActionListener {
 			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
 					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
 					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
-			boolean unitsClicked = false;
 
 			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
 
@@ -580,15 +581,9 @@ implements ActionListener {
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						openUnitWindow(unit);
-						unitsClicked = true;
-						mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+						map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					}
 				}
-			}
-
-			if (!unitsClicked) {
-				updateCoords(clickedPosition);
-				mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 			}
 		}
 	}
@@ -618,7 +613,7 @@ implements ActionListener {
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						onTarget = true;
-						mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+						map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					}
 				}
 			}
@@ -634,14 +629,13 @@ implements ActionListener {
 
 				if (clickRange < unitClickRange) {
 					onTarget = true;
-					mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+					map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					//System.out.println("right on landmark");
 				}
 			}
 
 			if (!onTarget) {
-				//updateCoords(clickedPosition);
-				mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+			    map.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
 	}
