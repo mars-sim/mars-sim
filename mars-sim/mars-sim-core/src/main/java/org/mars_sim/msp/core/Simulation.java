@@ -177,7 +177,7 @@ implements ClockListener, Serializable {
 
     /** constructor. */
     public Simulation() {
-        logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
         initializeTransientData();
     }
 
@@ -204,7 +204,7 @@ implements ClockListener, Serializable {
      * @throws Exception if new simulation could not be created.
      */
     public static void createNewSimulation() {
-        logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
         isUpdating = true;
 
@@ -242,7 +242,7 @@ implements ClockListener, Serializable {
      * @throws Exception if transient data could not be loaded.
      */
     private void initializeTransientData() {
-        logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 
     	eventManager = new HistoricalEventManager();
     }
@@ -253,7 +253,7 @@ implements ClockListener, Serializable {
      */
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
-        logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
@@ -314,7 +314,7 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start() {
-        logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
 
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();
@@ -370,7 +370,7 @@ implements ClockListener, Serializable {
      * @throws Exception if simulation could not be loaded.
      */
     public void loadSimulation(final File file) {
-        logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
         isUpdating = true;
 
         File f = file;
@@ -482,7 +482,7 @@ implements ClockListener, Serializable {
      * @throws Exception if simulation could not be saved.
      */
     public void saveSimulation(File file, boolean isAutosave) throws IOException {
-        logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
+        //logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
         Simulation simulation = instance();
         simulation.pause();

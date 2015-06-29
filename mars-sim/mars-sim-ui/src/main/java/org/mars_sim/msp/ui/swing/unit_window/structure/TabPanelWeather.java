@@ -193,12 +193,12 @@ extends TabPanel {
         JPanel weatherPanel = new JPanel(new BorderLayout(0, 0));//new GridLayout(2, 1));//new FlowLayout(FlowLayout.CENTER));
 
        	// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout());
-		weatherPanel.add(buttonPane, BorderLayout.NORTH);
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		weatherPanel.add(buttonPane);//, BorderLayout.NORTH);
 
 		// Create the Storm Tracking button.
 		JButton stormButton = new JButton("Track Dust Storm");
-		stormButton.setToolTipText("Click to open dust storm tracking panel");
+		stormButton.setToolTipText("Click to Open Storm Tracking Window");
 		stormButton.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -375,8 +375,9 @@ extends TabPanel {
 			// Pause simulation.
 			ms.pauseSimulation();
 			// Create Storm Tracking Window..
-			if (stormWin == null)
+			if (stormWin == null) {
 				stormWin = new StormTrackingWindow(desktop, this);
+			}
 			// Unpause simulation.
 			ms.unpauseSimulation();
 		}

@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -324,6 +325,7 @@ implements ActionListener {
 
 		// Pack window
 		pack();
+
 	}
 
 	/** Update coordinates in map, buttons, and globe

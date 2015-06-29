@@ -100,7 +100,7 @@ public class UnitManager implements Serializable {
 	 * Constructor.
 	 */
 	public UnitManager() {
-		logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
 		solCache = 1;
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
@@ -1366,9 +1366,10 @@ public class UnitManager implements Serializable {
 		while (i.hasNext()) {
 			i.next().timePassing(time);
 		}
-
+/*
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
+
 		MarsClock clock = masterClock.getMarsClock();
 		// check for the passing of each day
 		int solElapsed = MarsClock.getSolOfYear(clock);
@@ -1378,6 +1379,7 @@ public class UnitManager implements Serializable {
 			logger.info("<Benchmarking> Current Tick Per Second (TPS) : "
 					+ Simulation.instance().getMasterClock().getPulsesPerSecond());
 		}
+*/
 	}
 
 	/**

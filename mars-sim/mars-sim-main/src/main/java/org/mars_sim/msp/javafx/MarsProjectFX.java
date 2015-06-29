@@ -51,7 +51,7 @@ public class MarsProjectFX extends Application  {
     private MarsProjectFX marsProjectFX;
 
     public MarsProjectFX() {
-	   	logger.info("MarsProjectFX's contructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's contructor is on " + Thread.currentThread().getName() + " Thread");
     	marsProjectFX = this;
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -69,7 +69,7 @@ public class MarsProjectFX extends Application  {
     }
 
     public void init() {
-	   	logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() + " Thread");
 	   	Simulation.instance().startSimExecutor();
 	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
     }
@@ -79,9 +79,9 @@ public class MarsProjectFX extends Application  {
 
 		public void run() {
 		   	new Simulation();
-	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 			setLogging();
 			setDirectory();
+	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 			argList = Arrays.asList(args);
 			useGUI = !argList.contains("-headless");
@@ -93,7 +93,7 @@ public class MarsProjectFX extends Application  {
 		    }
 
 		    if (useGUI) {
-		    	//System.setProperty("sun.java2d.opengl", "true");
+		    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 		    	System.setProperty("sun.java2d.ddforcevram", "true");
 		       	// Enable capability of loading of svg image using regular method
 		    	SvgImageLoaderFactory.install();
@@ -109,7 +109,7 @@ public class MarsProjectFX extends Application  {
     }
 
 	public void start(Stage primaryStage) {
-	   	logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
 
 		if (useGUI) {
 		    mainMenu = new MainMenu(this); //, args, true);
@@ -243,7 +243,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
-		logger.info("MarsProjectFX's handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProjectFX's handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         try {
             int index = argList.indexOf("-load");
@@ -267,7 +267,7 @@ public class MarsProjectFX extends Application  {
      * Create a new simulation instance.
      */
     void handleNewSimulation() {
-		logger.info("MarsProjectFX's handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProjectFX's handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         try {
             SimulationConfig.loadConfig();
@@ -289,7 +289,7 @@ public class MarsProjectFX extends Application  {
      * Start the simulation instance.
      */
     public void startSimulation() {
-		logger.info("MarsProjectFX's startSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProjectFX's startSimulation() is in "+Thread.currentThread().getName() + " Thread");
 
         // Start the simulation.
         Simulation.instance().start();
@@ -315,10 +315,6 @@ public class MarsProjectFX extends Application  {
     }
 
 	public class ConfigEditorTask implements Runnable {
-		//MarsProjectFX marsProjectFX;
-		//MainMenu mainMenu;
-		//public ConfigEditorTask() {
-		//}
 		  public void run() {
 			  new ScenarioConfigEditorFX(marsProjectFX, mainMenu);
 		  }
@@ -326,11 +322,8 @@ public class MarsProjectFX extends Application  {
 
 
     public static void main(String[] args) {
-    	logger.info("MarsProjectFX's main() is in " + Thread.currentThread().getName() + " Thread");
+    	//logger.info("MarsProjectFX's main() is in " + Thread.currentThread().getName() + " Thread");
     	MarsProjectFX.args = args;
-    	//marsProjectFX = new MarsProjectFX();
-    	//marsProjectFX.mainThread();
-    	//mainThread();
 
         //HelloNode app = new HelloNode();
         //app.setShowSettings(false);

@@ -78,8 +78,7 @@ import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 /**
  * ScenarioConfigEditorFX allows users to configure the types of settlements available at the start of the simulation.
  */
-public class ScenarioConfigEditorFX { //implements Runnable {
-//{
+public class ScenarioConfigEditorFX {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
@@ -146,7 +145,7 @@ public class ScenarioConfigEditorFX { //implements Runnable {
 	 * @param config the simulation configuration.
 	 */
 	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { //, SimulationConfig config) {
-	    logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() + " Thread");
+	    //logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members.
 		this.config = SimulationConfig.instance();
@@ -457,7 +456,7 @@ public class ScenarioConfigEditorFX { //implements Runnable {
 			}
 
 			if (!hasError) {
-			    logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
+			    //logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
 				stage.hide();
 				setConfiguration();
 				//System.out.println("calling Simulation.createNewSimulation()");

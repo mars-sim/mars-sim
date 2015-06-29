@@ -127,9 +127,9 @@ implements Serializable {
 		if (currentTask != null) {
 			String doAction = currentTask.getDescription();
 			if (person != null) 
-				person.getTaskSchedule().addTask(getTaskName(), doAction);
+				person.getTaskSchedule().recordTask(getTaskName(), doAction);
 			else if (robot != null)
-				robot.getTaskSchedule().addTask(getTaskName(), doAction);
+				robot.getTaskSchedule().recordTask(getTaskName(), doAction);
 			
 			return doAction;			
 		} else {

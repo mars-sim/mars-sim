@@ -135,7 +135,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
-	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainWindow = mainWindow;
 
 		init();
@@ -146,7 +146,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
 		init();
@@ -211,7 +211,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// 2014-12-27 Added prepareWindows
 		prepareWindows();
 		//openMarqueeBanner("");
-	   	logger.info("MainDesktopPane's init() is done ");
+	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 
 	/**
@@ -256,7 +256,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	// 2014-12-19 Added prepareListeners()
 	public void prepareListeners() {
-	   	logger.info("MainDesktopPane's prepareListeners() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's prepareListeners() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Add addUnitManagerListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -274,7 +274,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			i.next().addUnitListener(this);
 		}
 
-	   	logger.info("MainDesktopPane's prepareListeners() is done");
+	   	//logger.info("MainDesktopPane's prepareListeners() is done");
 	}
 
 	/** Returns the MainWindow instance
@@ -346,7 +346,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
-	   	logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
 
 		if (toolWindows != null)
 			toolWindows.clear();
@@ -418,14 +418,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(marsViewer);
 
-	   	logger.info("MainDesktopPane's prepareToolWindows() is done ");
+	   	//logger.info("MainDesktopPane's prepareToolWindows() is done ");
 	}
 
 	/*
 	 * * Creates announcement windows & transportWizard
 	 */
 	private void prepareWindows() {
-	   	logger.info("MainDesktopPane's prepareWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's prepareWindows() is on " + Thread.currentThread().getName() + " Thread");
 		// Prepare announcementWindow.
 		announcementWindow = new AnnouncementWindow(this);
 		try { announcementWindow.setClosed(true); }
