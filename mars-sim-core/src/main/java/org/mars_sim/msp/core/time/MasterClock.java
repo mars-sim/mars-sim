@@ -101,7 +101,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @throws Exception if clock could not be constructed.
      */
     public MasterClock() {
-        logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         SimulationConfig config = SimulationConfig.instance();

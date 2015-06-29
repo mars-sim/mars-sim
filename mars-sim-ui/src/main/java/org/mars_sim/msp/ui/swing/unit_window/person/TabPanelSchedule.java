@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -38,14 +39,17 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TaskSchedule;
-import org.mars_sim.msp.core.person.TaskSchedule.DailyTask;
+import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.StormTrackingWindow;
 
 
 /**
@@ -76,6 +80,8 @@ extends TabPanel {
 	private Person person;
 	private Robot robot;
 	private TaskSchedule taskSchedule;
+	private PlannerWindow plannerWindow;
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -115,6 +121,23 @@ extends TabPanel {
 		// Prepare info panel.
 //		JPanel infoPanel = new JPanel(new GridLayout(1, 3, 40, 0)); //new FlowLayout(FlowLayout.CENTER));
 //		infoPanel.setBorder(new MarsPanelBorder());
+
+       	// Create the button panel.
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		topContentPanel.add(buttonPane);//, BorderLayout.NORTH);
+
+		// Create the Storm Tracking button.
+		JButton button = new JButton("Open Planner");
+		button.setToolTipText("Click to Open Personal Planner");
+		button.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// Open storm tracking window.
+					openPlannerWindow();
+				}
+			});
+		buttonPane.add(button);
+
 		Box box = Box.createHorizontalBox();
 		box.setBorder(new MarsPanelBorder());
 
@@ -155,7 +178,7 @@ extends TabPanel {
     	}
 */
 
-		Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
+		Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
 		int size = schedules.size();
 		// size + 1 is needed to add today into solList
 		for (int i = 0 ; i < size + 1; i++ )
@@ -275,7 +298,7 @@ extends TabPanel {
        	//
     	if (today != todayCache) {
 
-    		Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
+    		Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
     		int size = schedules.size();
     		// size + 1 is needed to add today into solList
     		for (int i = 0 ; i < size + 1; i++ )
@@ -322,7 +345,40 @@ extends TabPanel {
 
 	}
 
+    public void setViewer(PlannerWindow w) {
+    	this.plannerWindow = w;
+    }
 
+	/**
+	 * Opens PlannerWindow
+	 */
+    // 2015-05-21 Added openPlannerWindow()
+	private void openPlannerWindow() {
+
+		MainWindow mw = desktop.getMainWindow();
+		if (mw !=null )  {
+			// Pause simulation
+			mw.pauseSimulation();
+			// Create PlannerWindow
+			if (plannerWindow == null)
+				plannerWindow = new PlannerWindow(unit, desktop, this);
+			// Unpause simulation
+			mw.unpauseSimulation();
+		}
+
+		MainScene ms = desktop.getMainScene();
+		if (ms !=null )  {
+			// Pause simulation
+			ms.pauseSimulation();
+			// Create PlannerWindow
+			if (plannerWindow == null) {
+				plannerWindow = new PlannerWindow(unit, desktop, this);
+			}
+			// Unpause simulation
+			ms.unpauseSimulation();
+		}
+
+	}
 
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
@@ -384,7 +440,7 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private TaskSchedule taskSchedule;
-		private List<DailyTask> tasks;
+		private List<OneTask> tasks;
 
 		DecimalFormat fmt = new DecimalFormat("0000");
 
@@ -404,7 +460,7 @@ extends TabPanel {
 	        	taskSchedule = robot.getTaskSchedule();
 	        }
 
-	        tasks = taskSchedule.getCurrentSchedule();
+	        tasks = taskSchedule.getTodaySchedule();
 
 		}
 
@@ -456,25 +512,25 @@ extends TabPanel {
 
 	        // Load previous day's schedule if selected
 			if (sol != selectedSol) {
-				Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
+				Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
 				tasks = schedules.get(selectedSol);
 			}
 
 			else {
 				// Load today's schedule
-				tasks = taskSchedule.getCurrentSchedule();
+				tasks = taskSchedule.getTodaySchedule();
 			}
 
 			// check if user selected hide repeated tasks checkbox
 			if (tasks != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
-				List<DailyTask> thisSchedule = new ArrayList<DailyTask>(tasks);
+				List<OneTask> thisSchedule = new ArrayList<OneTask>(tasks);
 		        int i = thisSchedule.size() - 1;
 		        //for (int i = size - 1; i > 0; i--) {
 		        while (i > 0 ) {
 
-		        	DailyTask currentTask = thisSchedule.get(i);
-		        	DailyTask lastTask = null;
+		        	OneTask currentTask = thisSchedule.get(i);
+		        	OneTask lastTask = null;
 
 		        	if ( i - 1 > -1 )
 		        		lastTask = thisSchedule.get(i - 1);

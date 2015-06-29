@@ -447,7 +447,7 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					
+
 					double sunlight = 1D;
 					try {
 					    sunlight = surfaceFeatures.getSurfaceSunlight(location);
@@ -467,7 +467,7 @@ implements Runnable {
 				else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
 				    // Draw black opaque pixel at boundary of Mars.
 				    shadingArray[x + (y * 150)] = 0xFF000000;
-				} 
+				}
 				else {
 				    // Draw transparent pixel so background stars will show through.
 					shadingArray[x + (y * 150)] = 0x00000000;

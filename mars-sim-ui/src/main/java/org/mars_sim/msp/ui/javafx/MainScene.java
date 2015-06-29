@@ -123,7 +123,7 @@ public class MainScene {
 	private DndTabPane dndTabPane;
 	private FXDesktopPane fxDesktopPane;
 
-	private Timeline timeline;
+	private Timeline timeline, autosaveTimeline;
 	private static NotificationPane notificationPane;
 
 	private static MainDesktopPane desktop;
@@ -143,7 +143,7 @@ public class MainScene {
 	 * @param stage
 	 */
 	public MainScene(Stage stage) {
-		logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 	}
 
@@ -152,7 +152,7 @@ public class MainScene {
 	 * prepares Transport Wizard
 	 */
 	public void prepareMainScene() {
-		logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
 		Simulation.instance().getSimExecutor().submit(new MainSceneTask());
 	}
 
@@ -161,7 +161,7 @@ public class MainScene {
 	 */
 	public class MainSceneTask implements Runnable {
 		public void run() {
-			logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
+			//logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Load UI configuration.
 			// if (!cleanUI) {
 			// UIConfig.INSTANCE.parseFile();
@@ -169,6 +169,7 @@ public class MainScene {
 
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
+
 			SwingUtilities.invokeLater(() -> {
 				setLookAndFeel(1);
 			} );
@@ -182,7 +183,7 @@ public class MainScene {
 	}
 
 	public void prepareOthers() {
-		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
 		openInitialWindows();
 		startAutosaveTimer();
@@ -205,7 +206,7 @@ public class MainScene {
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
-		logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 		marsNode = new MarsNode(this, stage);
 
 		// Detect if a user hits the top-right close button
@@ -319,9 +320,8 @@ public class MainScene {
 			@Override
 			public void handle(KeyEvent keyEvent) {
 				if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
-					setTheme();
+					changeTheme();
 					SwingUtilities.invokeLater(() -> {
-						// desktop.closeAllToolWindow();
 						setLookAndFeel(1);
 						swingNode.setContent(desktop);
 					} );
@@ -337,7 +337,7 @@ public class MainScene {
 	public static void notifyThemeChange(String text) {
 		if (desktop != null) {
 			// desktop.refreshTheme();
-			System.out.println("deskop != null , calling notifyThemeChange()");
+			//System.out.println("deskop != null , calling notifyThemeChange()");
 			// if (notificationPane != null) {
 			// notificationPane.setText("Skin is set to " + text);
 			notificationPane.show("Skin is set to " + text);
@@ -345,7 +345,20 @@ public class MainScene {
 		}
 	}
 
-	public void setTheme() {
+	public void initializeTheme() {
+		theme = 1;
+		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+		notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+		memUsedText.setFill(Color.ORANGE);
+		memMaxText.setFill(Color.ORANGE);
+		timeText.setFill(Color.ORANGE);
+		memBtn.setTextFill(Color.LIGHTSALMON);
+		clkBtn.setTextFill(Color.LIGHTSALMON);
+		lookAndFeelTheme = "nimrod";
+
+	}
+
+	public void changeTheme() {
 		if (theme == 1) {
 			rootStackPane.getStylesheets().clear();
 			theme = 2;
@@ -528,15 +541,6 @@ public class MainScene {
 		return "/org/controlsfx/control/notificationpane.css";
 	}
 
-	/*
-	 * private void updateBar() { boolean useDarkTheme =
-	 * cbUseDarkTheme.isSelected(); if (useDarkTheme) {
-	 * notificationPane.setText("Hello World! Using the dark theme");
-	 * notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-	 * } else { notificationPane.setText("Hello World! Using the light theme");
-	 * notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK
-	 * ); } }
-	 */
 	public void updateTimeText() {
 
 		String t = null;
@@ -576,16 +580,24 @@ public class MainScene {
 	// 2015-01-07 Added startAutosaveTimer()
 	public void startAutosaveTimer() {
 
-		Timeline timeline = new Timeline(
-				new KeyFrame(Duration.millis(1000 * 60 * AUTOSAVE_EVERY_X_MINUTE), ae -> saveSimulation(AUTOSAVE)));
-		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		timeline.play();
+		autosaveTimeline = new Timeline(
+				new KeyFrame(Duration.seconds(60 * AUTOSAVE_EVERY_X_MINUTE),
+						ae -> saveSimulation(AUTOSAVE)));
+		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		autosaveTimeline.play();
 
 	}
 
 	/**
+	 * Gets the timeline instance of the autosave timer.
+	 * @return autosaveTimeline
+	 */
+	public Timeline getAutosaveTimeline() {
+		return autosaveTimeline;
+	}
+
+	/**
 	 * Gets the main desktop panel.
-	 *
 	 * @return desktop
 	 */
 	public MainDesktopPane getDesktop() {
@@ -862,6 +874,7 @@ public class MainScene {
 	 */
 	public void pauseSimulation() {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+		autosaveTimeline.pause();
 		Simulation.instance().getMasterClock().setPaused(true);
 	}
 
@@ -869,6 +882,7 @@ public class MainScene {
 	 * Closes the announcement window and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
+		autosaveTimeline.play();
 		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.disposeAnnouncementWindow();
 	}
@@ -906,7 +920,7 @@ public class MainScene {
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(int choice) {
-		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
 		// String currentTheme =
 		// UIManager.getLookAndFeel().getClass().getName();
@@ -998,8 +1012,8 @@ public class MainScene {
 	private void createSwingNode() {
 		desktop = new MainDesktopPane(this);
 		SwingUtilities.invokeLater(() -> {
-			swingNode.setContent(desktop);
 			setLookAndFeel(1);
+			swingNode.setContent(desktop);
 		} );
 		// desktop.openInitialWindows();
 	}
@@ -1075,7 +1089,7 @@ public class MainScene {
 	// }
 
 	public void openInitialWindows() {
-		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
 		} );

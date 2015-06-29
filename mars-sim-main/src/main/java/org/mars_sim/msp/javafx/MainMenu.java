@@ -14,8 +14,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -100,7 +98,7 @@ public class MainMenu {
     public MainMenu(MarsProjectFX marsProjectFX) {
     	this.marsProjectFX = marsProjectFX;
     	mainMenu = this;
-    	logger.info("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
+    	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 	}
 
     public boolean exitDialog(Stage stage) {
@@ -127,7 +125,7 @@ public class MainMenu {
     }
 
    void initAndShowGUI(Stage primaryStage) {
-		logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+	   //Logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
 	   this.primaryStage = primaryStage;
 
@@ -196,7 +194,7 @@ public class MainMenu {
 	}
 
    public void prepareStage() {
-	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
 	   // prepare main scene
 	   mainScene.prepareMainScene();
@@ -217,7 +215,7 @@ public class MainMenu {
   }
 
    public void runOne() {
-	   logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 
 	   primaryStage.setIconified(true);
 
@@ -227,7 +225,7 @@ public class MainMenu {
    }
 
    public void runTwo() {
-	   logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 	   primaryStage.setIconified(true);
 
 	   try {
@@ -254,7 +252,7 @@ public class MainMenu {
 	}
 
    public void runThree() {
-	   logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
 	   Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
 	   //primaryStage.setIconified(true);
 /*
@@ -307,7 +305,6 @@ public class MainMenu {
    //}
 
    public Parent createMarsGlobe() {
-
 	   logger.info("Is ConditionalFeature.SCENE3D supported on this platform? " + Platform.isSupported(ConditionalFeature.SCENE3D));
 
 	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());

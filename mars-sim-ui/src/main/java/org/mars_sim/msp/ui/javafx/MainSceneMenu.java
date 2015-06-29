@@ -81,7 +81,7 @@ public class MainSceneMenu extends MenuBar  {
 	 */
 	public MainSceneMenu(MainScene mainScene, MainDesktopPane desktop) {
 		super();
-		logger.info("MainSceneMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainSceneMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		this.mainScene = mainScene;
 		this.desktop = desktop;
@@ -99,7 +99,7 @@ public class MainSceneMenu extends MenuBar  {
 	}
 
 	public void createGUI() {
-		logger.info("MainSceneMenu's CreateGUI() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainSceneMenu's CreateGUI() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = mainScene.getStage();
         // --- Menu File
         Menu menuFile = new Menu("File");
@@ -108,11 +108,11 @@ public class MainSceneMenu extends MenuBar  {
         MenuItem openItem = new MenuItem("Open...");
         openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         MenuItem openAutoSaveItem = new MenuItem("Open autosave");
-        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
+        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         MenuItem saveAsItem = new MenuItem("Save As...");
-        saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN , KeyCombination.SHIFT_DOWN));
+        saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem SeparatorMenuItem1 = new SeparatorMenuItem();
@@ -249,7 +249,7 @@ public class MainSceneMenu extends MenuBar  {
         Menu menuHelp = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About");
         MenuItem tutorialItem = new MenuItem("Tutorial");
-        tutorialItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        tutorialItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
         MenuItem userGuideItem = new MenuItem("User Guide");
         userGuideItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
@@ -442,7 +442,7 @@ public class MainSceneMenu extends MenuBar  {
         });
 
         skinThemeItem.setOnAction(e -> {
-        	mainScene.setTheme();
+        	mainScene.changeTheme();
             SwingUtilities.invokeLater(() -> {
             	mainScene.setLookAndFeel(1);
             	mainScene.getSwingNode().setContent(desktop);

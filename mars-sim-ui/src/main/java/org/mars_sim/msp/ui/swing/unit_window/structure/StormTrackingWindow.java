@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
@@ -41,13 +42,13 @@ implements InternalFrameListener, ActionListener {
 
 	// Data members
 	private JPanel infoPane;
-	private TabPanelWeather tab;
+	private TabPanelWeather tabPanelWeather;
 
-	public StormTrackingWindow(MainDesktopPane desktop, TabPanelWeather tab) {
+	public StormTrackingWindow(MainDesktopPane desktop, TabPanelWeather tabPanelWeather) {
 		// Use JInternalFrame constructor
-        super("Storm Tracking Window", false, true, false, true);
+        super("Storm Tracking", false, true, false, false);
 
-        this.tab = tab;
+        this.tabPanelWeather = tabPanelWeather;
 		// Create info panel.
 		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
@@ -56,7 +57,9 @@ implements InternalFrameListener, ActionListener {
 
 		setSize(new Dimension(400, 400));
 
-		//setContentPane(createJMEWindow());
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+		addInternalFrameListener(this);
 
 		desktop.add(this);
 
@@ -82,42 +85,40 @@ implements InternalFrameListener, ActionListener {
 	@Override
 	public void internalFrameOpened(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-
+		tabPanelWeather.setViewer(null);
+		//System.out.println("internalFrameClosing()");
 	}
 
 
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		tab.setViewer(null);
+		tabPanelWeather.setViewer(null);
+		//System.out.println("internalFrameClosed()");
 	}
 
 
 	@Override
 	public void internalFrameIconified(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 
 	@Override
 	public void internalFrameDeiconified(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 
 	@Override
 	public void internalFrameActivated(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 

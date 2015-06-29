@@ -219,7 +219,7 @@ implements Runnable {
 	public void addMapLayer(MapLayer newLayer, int index) {
 		if (newLayer != null) {
 			if (!mapLayers.contains(newLayer)) {
-			    if (index < mapLayers.size()) { 
+			    if (index < mapLayers.size()) {
 			        mapLayers.add(index, newLayer);
 			    }
 			    else {

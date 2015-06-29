@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -187,6 +188,7 @@ implements TableModelListener, ActionListener {
 		tabsSection.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
 		//tabsSection.setBackground(UIDefaultsLookup.getColor("control"));
 		tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
+		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 
 		// Create a status panel

@@ -188,15 +188,17 @@
 		<!-- Note: the transparent inflatable frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="transparent inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="100.0" skill-required="2" foundation="unprepared surface foundation" >
-			<part name="aluminum scrap" number="5" />
-			<part name="plastic sheet" number="100" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="3" />
-			<part name="gasket" number="3" />
-			<part name="electrical wire" number="4" />
-			<part name="wire connector" number="4" />
-			<part name="power cable" number="2" />
-			<part name="large air duct" number="4" />
+		  <part name="steel scrap" number="4" />
+		  <part name="aluminum scrap" number="8" />
+		  <part name="glass sheet" number="10" />
+		  <part name="plastic sheet" number="40" />
+		  <part name="plastic pipe" number="5" />
+		  <part name="valve" number="3" />
+		  <part name="gasket" number="3" />
+		  <part name="electrical wire" number="4" />
+		  <part name="wire connector" number="4" />
+		  <part name="power cable" number="2" />
+		  <part name="large air duct" number="4" />
 		</frame>
 
 		<!-- Note: the md1 nuclear reactor frame is just for salvaging and cannot be constructed insitu. -->
@@ -263,16 +265,17 @@
 		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false"
 		 salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
-			<part name="steel scrap" number="10" />
-			<part name="aluminum scrap" number="15" />
-			<part name="glass sheet" number="20" />
-			<part name="plastic pipe" number="15" />
-			<part name="valve" number="9" />
-			<part name="gasket" number="9" />
-			<part name="electrical wire" number="12" />
-			<part name="wire connector" number="12" />
-			<part name="power cable" number="6" />
-			<part name="large air duct" number="6" />
+		  <part name="steel scrap" number="10" />
+		  <part name="aluminum scrap" number="15" />
+		  <part name="glass sheet" number="20" />
+		  <part name="plastic sheet" number="100" />
+		  <part name="plastic pipe" number="15" />
+		  <part name="valve" number="9" />
+		  <part name="gasket" number="9" />
+		  <part name="electrical wire" number="12" />
+		  <part name="wire connector" number="12" />
+		  <part name="power cable" number="6" />
+		  <part name="large air duct" number="8" />
 		</frame>
 
 		<!-- Note: the garage frame is just for salvaging and cannot be constructed insitu. -->
