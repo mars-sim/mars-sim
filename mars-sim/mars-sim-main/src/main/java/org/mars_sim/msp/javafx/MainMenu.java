@@ -210,7 +210,9 @@ public class MainMenu {
 	   stage.show();
 
 	   mainScene.getMarsNode().createSettlementWindow();
-	   mainScene.getMarsNode().createJMEWindow(stage);
+	   //mainScene.getMarsNode().createJMEWindow(stage);
+
+	   mainScene.initializeTheme();
 
   }
 
