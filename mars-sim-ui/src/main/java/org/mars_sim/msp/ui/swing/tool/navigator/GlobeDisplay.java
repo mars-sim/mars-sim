@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.08 2015-06-26
+ * @version 3.08 2015-06-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -136,62 +135,24 @@ implements Runnable {
 		showDayNightShading = true;
 
 		addMouseMotionListener(new MouseAdapter() {
-			int lastx, lasty;
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				int difx, dify, x = e.getX(), y = e.getY();
 
-				if (y > dragy) {
-					if (y < lasty) {
-						dragy = y;
-					}
-				} else {
-					if (y > lasty) {
-						dragy = y;
-					}
-				}
-
-				if (x > dragx) {
-					if (x < lastx) {
-						dragx = x;
-					}
-				} else {
-					if (x > lastx) {
-						dragx = x;
-					}
-				}
-				dify = dragy - y;
 				difx = dragx - x;
-				lastx = x;
-				lasty = y;
-				/*
-				 * System.out.println("GlobeDisplay mouseDragged difx = "+difx);
-				 * System.out.println("GlobeDisplay mouseDragged dify = "+dify);
-				 * System.out.println("GlobeDisplay mouseDragged dragx = "+dragx);
-				 * System.out.println("GlobeDisplay mouseDragged dragy = "+dragy);
-				 * System.out.println("GlobeDisplay mouseDragged X = "+e.getX());
-				 * System.out.println("GlobeDisplay mouseDragged Y = "+e.getY());
-				 */
-				if (dragx != 0 && dragy != 0) {
-					double newPhi = centerCoords.getPhi() + ((double) dify * .0025D % (Math.PI));
-					if (newPhi > Math.PI) {
-						newPhi = Math.PI;
-					}
-					if (newPhi < 0D) {
-						newPhi = 0D;
-					}
+				dify = dragy - y;
+				dragx = x;
+				dragy = y;
+				
+				if ((difx != 0) || (dify != 0)) {
 
-					double newTheta = centerCoords.getTheta() + ((double) difx * .0025D % (Math.PI / 2D));
-					while (newTheta > (Math.PI * 2D)) {
-						newTheta -= (Math.PI * 2D);
-					}
-					while (newTheta < 0D) {
-						newTheta += (Math.PI * 2D);
-					}
-
-					centerCoords = new Coordinates(newPhi, newTheta);
-
+				    // Globe circumference in pixels.
+				    double globeCircumference = 300D;
+				    double rho = globeCircumference / (2D * Math.PI);
+                    centerCoords = centerCoords.convertRectToSpherical(
+                            (double) difx, (double) dify, rho);
+				    
 					if (topo) {
 						topoSphere.drawSphere(centerCoords);
 					} else {
@@ -217,7 +178,6 @@ implements Runnable {
 				dragx = e.getX();
 				dragy = e.getY();
 				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				super.mousePressed(e);
 			}
 
 			@Override
@@ -225,19 +185,7 @@ implements Runnable {
 				dragx = 0;
 				dragy = 0;
 				navwin.updateCoords(centerCoords);
-				super.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				//navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				super.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				super.mouseReleased(e);
 			}
 		});
 
@@ -447,7 +395,7 @@ implements Runnable {
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-
+					
 					double sunlight = 1D;
 					try {
 					    sunlight = surfaceFeatures.getSurfaceSunlight(location);
@@ -467,7 +415,7 @@ implements Runnable {
 				else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
 				    // Draw black opaque pixel at boundary of Mars.
 				    shadingArray[x + (y * 150)] = 0xFF000000;
-				}
+				} 
 				else {
 				    // Draw transparent pixel so background stars will show through.
 					shadingArray[x + (y * 150)] = 0x00000000;

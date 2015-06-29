@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-06-29
 
  * @author Scott Davis
  */
@@ -42,11 +42,9 @@ implements Runnable {
 	private static int dragx, dragy;
 
 	// Data members.
-	private boolean recreate;
 	private boolean mapError;
 	private boolean wait;
 	private boolean update;
-	private boolean topo;
 
 	private String mapErrorMessage;
 	private String mapType;
@@ -63,7 +61,6 @@ implements Runnable {
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
 
-	private NavigatorWindow navwin;
 	private Graphics dbg;
 	private Image dbImage = null;
 
@@ -80,10 +77,10 @@ implements Runnable {
 		mapLayers = new ArrayList<MapLayer>();
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
-		recreate = true;
 
 		setPreferredSize(new Dimension(300, 300));
 		setBackground(Color.BLACK);
+		setOpaque(true);
 	}
 
 	/*
@@ -91,86 +88,31 @@ implements Runnable {
 	 */
 	// 2015-06-26 Added setNavWin()
 	public void setNavWin(final NavigatorWindow navwin) {
-		this.navwin = navwin;
 
 		// 2015-06-26 Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
-			int lastx, lasty;
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				int difx, dify, x = e.getX(), y = e.getY();
 
-				if (y > dragy) {
-					if (y < lasty) {
-						dragy = y;
-					}
-				} else {
-					if (y > lasty) {
-						dragy = y;
-					}
-				}
-
-				if (x > dragx) {
-					if (x < lastx) {
-						dragx = x;
-					}
-				} else {
-					if (x > lastx) {
-						dragx = x;
-					}
-				}
-				dify = dragy - y;
 				difx = dragx - x;
-				lastx = x;
-				lasty = y;
-				/*
-				 * System.out.println("GlobeDisplay mouseDragged difx = "+difx);
-				 * System.out.println("GlobeDisplay mouseDragged dify = "+dify);
-				 * System.out.println("GlobeDisplay mouseDragged dragx = "+dragx);
-				 * System.out.println("GlobeDisplay mouseDragged dragy = "+dragy);
-				 * System.out.println("GlobeDisplay mouseDragged X = "+e.getX());
-				 * System.out.println("GlobeDisplay mouseDragged Y = "+e.getY());
-				 */
-				if (dragx != 0 && dragy != 0) {
-					double newPhi = centerCoords.getPhi() + ((double) dify * .0025D % (Math.PI));
-					if (newPhi > Math.PI) {
-						newPhi = Math.PI;
-					}
-					if (newPhi < 0D) {
-						newPhi = 0D;
-					}
+				dify = dragy - y;
+				dragx = x;
+				dragy = y;
 
-					double newTheta = centerCoords.getTheta() + ((double) difx * .0025D % (Math.PI / 2D));
-					while (newTheta > (Math.PI * 2D)) {
-						newTheta -= (Math.PI * 2D);
-					}
-					while (newTheta < 0D) {
-						newTheta += (Math.PI * 2D);
-					}
-
-					centerCoords = new Coordinates(newPhi, newTheta);
-/*
-					topo = navwin.getMarsGlobe().isTopo();
-
-					if (topo) {
-						topoMap.drawSphere(centerCoords);
-					} else {
-						surfMap.drawSphere(centerCoords);
-					}
-*/
-					setMapType(getMapType());
+				if ((difx != 0) || (dify != 0)) {
+				    
+				    double rho = CannedMarsMap.PIXEL_RHO;
+		            centerCoords = centerCoords.convertRectToSpherical(
+		                    (double) difx, (double) dify, rho);
+				    
 					map.drawMap(centerCoords);
-
-					recreate = false;
 
 					paintDoubleBuffer();
 					repaint();
-
 				}
-
-				super.mouseDragged(e);
 			}
 		});
 
@@ -181,8 +123,7 @@ implements Runnable {
 				//System.out.println("             Y = " + e.getY());
 				dragx = e.getX();
 				dragy = e.getY();
-				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				super.mousePressed(e);
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			}
 
 			@Override
@@ -190,19 +131,7 @@ implements Runnable {
 				dragx = 0;
 				dragy = 0;
 				navwin.updateCoords(centerCoords);
-				super.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				//navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				super.mouseReleased(e);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				super.mouseReleased(e);
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 
@@ -219,7 +148,7 @@ implements Runnable {
 	public void addMapLayer(MapLayer newLayer, int index) {
 		if (newLayer != null) {
 			if (!mapLayers.contains(newLayer)) {
-			    if (index < mapLayers.size()) {
+			    if (index < mapLayers.size()) { 
 			        mapLayers.add(index, newLayer);
 			    }
 			    else {
