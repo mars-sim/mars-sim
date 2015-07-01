@@ -348,6 +348,7 @@ public class MainScene {
 	public void initializeTheme() {
 
 		changeTheme();
+		setLookAndFeel(1);
 /*
 		theme = 1;
 		rootStackPane.getStylesheets().clear();
@@ -995,7 +996,7 @@ public class MainScene {
 		}
 
 		if (changed) {
-			// SwingUtilities.updateComponentTreeUI(desktop);
+			SwingUtilities.updateComponentTreeUI(desktop);
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
