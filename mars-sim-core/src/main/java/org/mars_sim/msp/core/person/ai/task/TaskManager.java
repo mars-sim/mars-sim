@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
+/**
  * The TaskManager class keeps track of a person's current task and can randomly
  * assign a new task to a person based on a list of possible tasks and that person's
  * current situation.
@@ -57,17 +57,17 @@ implements Serializable {
 
 	private Person person = null;
 	private Robot robot = null;
-	
-	/** 
+
+	/**
 	 * Constructor.
 	 * @param mind the mind that uses this task manager.
 	 */
 	public TaskManager(Mind mind) {
 		// Initialize data members
 		this.mind = mind;
-		
+
 		this.person = mind.getPerson();
-		
+
 		currentTask = null;
 
 		// Initialize cache values.
@@ -79,9 +79,9 @@ implements Serializable {
 	public TaskManager(BotMind botMind) {
 		// Initialize data members
 		this.botMind = botMind;
-		
+
 		this.robot = botMind.getRobot();
-		
+
 		currentTask = null;
 
 		// Initialize cache values.
@@ -126,12 +126,13 @@ implements Serializable {
 	public String getTaskDescription() {
 		if (currentTask != null) {
 			String doAction = currentTask.getDescription();
-			if (person != null) 
+/*
+			if (person != null)
 				person.getTaskSchedule().recordTask(getTaskName(), doAction);
 			else if (robot != null)
 				robot.getTaskSchedule().recordTask(getTaskName(), doAction);
-			
-			return doAction;			
+*/
+			return doAction;
 		} else {
 			return "";
 		}
@@ -166,11 +167,11 @@ implements Serializable {
 	public void clearTask() {
 		currentTask.endTask();
 		currentTask = null;
-		
-		if (person != null) 
+
+		if (person != null)
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
 		else if (robot != null)
-			robot.fireUnitUpdate(UnitEventType.TASK_EVENT);		
+			robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
 	}
 
 	/**
@@ -178,17 +179,31 @@ implements Serializable {
 	 * @param newTask the task to be added
 	 */
 	public void addTask(Task newTask) {
+
+		if (currentTask != null) {
+			String doAction = currentTask.getDescription();
+			String name = currentTask.getName();
+			if (person != null) {
+				person.getTaskSchedule().recordTask(name, doAction);
+			}
+			else if (robot != null) {
+				robot.getTaskSchedule().recordTask(name, doAction);
+			}
+
+		}
 		if (hasActiveTask()) {
 			currentTask.addSubTask(newTask);
 		} else {
 			currentTask = newTask;
 		}
-			
-		if (person != null) 
+
+		if (person != null) {
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
-		else if (robot != null)
-			robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);		
-		
+		}
+		else if (robot != null) {
+			robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		}
+
 	}
 
 	/**
@@ -197,23 +212,23 @@ implements Serializable {
 	 */
     public void reduceEnergy(double time) {
     	PhysicalCondition health = null;
-		if (person != null) 
-			health = person.getPhysicalCondition();			
+		if (person != null)
+			health = person.getPhysicalCondition();
 		else if (robot != null)
 			health = robot.getPhysicalCondition();
-		
+
 //		int ACTIVITY_FACTOR = 6;
 //		double newTime = ACTIVITY_FACTOR * time ;
 //		health.reduceEnergy(newTime);
-		
+
 		// Changing reduce energy to be just time as it otherwise
 		// ends up being too much energy reduction compared to the
 		// amount gained from eating.
 		health.reduceEnergy(time);;
         //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
     }
-    
-	/** 
+
+	/**
 	 * Perform the current task for a given amount of time.
 	 * @param time amount of time to perform the action
 	 * @param efficiency The performance rating of person performance task.
@@ -227,45 +242,45 @@ implements Serializable {
 			if (efficiency < .1D) {
 				efficiency = .1D;
 			}
-			
+
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
-			
+
 			checkForEmergency();
 			remainingTime = currentTask.performTask(time);
 		}
-		
+
 		// Expend energy based on activity.
 		if (currentTask != null) {
-		    
+
 		    double energyTime = time - remainingTime;
-		    
+
 		    // Double energy expenditure if performing effort-driven task.
 		    if (currentTask.isEffortDriven()) {
 		        energyTime *= 2D;
 		    }
-		    
+
 		    if (energyTime > 0D) {
 		        reduceEnergy(energyTime);
 		    }
 		}
-        
+
 		return remainingTime;
-		
+
 	}
 
 	private boolean doingEmergencyRepair() {
 
 	    // Check if person is already repairing an emergency.
-	    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+	    boolean hasEmergencyRepair = ((currentTask != null) && (currentTask
 				instanceof RepairEmergencyMalfunction));
 		if (((currentTask != null) && (currentTask instanceof RepairEmergencyMalfunctionEVA))) {
 		    hasEmergencyRepair = true;
 		}
 		return hasEmergencyRepair;
 	}
-	
+
 	private boolean doingAirlockTask() {
 		// Check if robot is performing an airlock task.
 		boolean hasAirlockTask = false;
@@ -276,19 +291,19 @@ implements Serializable {
 			}
 			task = task.getSubTask();
 		}
-		
+
 		return hasAirlockTask;
 	}
-	
+
 	/**
 	 * Checks if the person or robot is walking through a given building.
 	 * @param building the building.
 	 * @return true if walking through building.
 	 */
 	public boolean isWalkingThroughBuilding(Building building) {
-	    
+
 	    boolean result = false;
-	    
+
 	    Task task = currentTask;
 	    while ((task != null) && !result) {
 	        if (task instanceof Walk) {
@@ -299,19 +314,19 @@ implements Serializable {
 	        }
 	        task = task.getSubTask();
 	    }
-	    
+
 	    return result;
 	}
-	
+
 	/**
 	 * Checks if the person or robot is walking through a given vehicle.
 	 * @param vehicle the vehicle.
 	 * @return true if walking through vehicle.
 	 */
 	public boolean isWalkingThroughVehicle(Vehicle vehicle) {
-	    
+
 	    boolean result = false;
-        
+
         Task task = currentTask;
         while ((task != null) && !result) {
             if (task instanceof Walk) {
@@ -322,46 +337,46 @@ implements Serializable {
             }
             task = task.getSubTask();
         }
-        
+
         return result;
 	}
-	
+
 	/**
 	 * Checks if any emergencies are happening in the person's local.
 	 * Adds an emergency task if necessary.
 	 * @throws Exception if error checking for emergency.
 	 */
 	private void checkForEmergency() {
-	    
+
 		if (person != null) {
-			
+
 			// Check for emergency malfunction.
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
-				
+
 			    // Check if person is already repairing an emergency.
 			    boolean hasEmergencyRepair = doingEmergencyRepair();
-				
+
 				// Check if person is performing an airlock task.
 				boolean hasAirlockTask = doingAirlockTask();
-				
+
 				// Check if person is outside.
-				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;								
-				
+				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+
 				// Cancel current task and start emergency repair task.
 				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
-					
+
 					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
-			            
+
 			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
-			                
-			                logger.fine(person + " cancelling task " + currentTask + 
+
+			                logger.fine(person + " cancelling task " + currentTask +
 			                        " due to emergency EVA repairs.");
 			                clearTask();
 			                addTask(new RepairEmergencyMalfunctionEVA(person));
 			            }
 					}
 					else {
-					    logger.fine(person + " cancelling task " + currentTask + 
+					    logger.fine(person + " cancelling task " + currentTask +
 		                        " due to emergency repairs.");
 		                clearTask();
 					    addTask(new RepairEmergencyMalfunction(person));
@@ -370,34 +385,34 @@ implements Serializable {
 			}
 		}
 		else if (robot != null) {
-			
+
 			// Check for emergency malfunction.
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
-				
+
 			    // Check if robot is already repairing an emergency.
 			    boolean hasEmergencyRepair = doingEmergencyRepair();
-				
+
 				// Check if robot is performing an airlock task.
 				boolean hasAirlockTask = doingAirlockTask();
-				
+
 				// Check if robot is outside.
 				boolean isOutside = robot.getLocationSituation() == LocationSituation.OUTSIDE;
-				
+
 				// Cancel current task and start emergency repair task.
 				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
-					
+
 					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(robot)) {
-			            
+
 			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(robot)) {
-			                
-			                logger.fine(robot + " cancelling task " + currentTask + 
+
+			                logger.fine(robot + " cancelling task " + currentTask +
 			                        " due to emergency EVA repairs.");
 			                clearTask();
 			                addTask(new RepairEmergencyMalfunctionEVA(robot));
 			            }
 					}
 					else {
-					    logger.fine(robot + " cancelling task " + currentTask + 
+					    logger.fine(robot + " cancelling task " + currentTask +
 		                        " due to emergency repairs.");
 		                clearTask();
 					    addTask(new RepairEmergencyMalfunction(robot));
@@ -408,7 +423,7 @@ implements Serializable {
 
 	}
 
-	/** 
+	/**
 	 * Gets a new task for the person based on tasks available.
 	 * @return new task
 	 */
@@ -420,20 +435,20 @@ implements Serializable {
 		}
 		// Get a random number from 0 to the total weight
 		double totalProbability = getTotalTaskProbability(true);
-				
+
 		if (totalProbability == 0D) {
-			
+
 			if (person != null) {
-				throw new IllegalStateException(mind.getPerson() + 
+				throw new IllegalStateException(mind.getPerson() +
 						" has zero total task probability weight.");
 			}
 			else if (robot != null) {
-				throw new IllegalStateException(botMind.getRobot() + 
-						" has zero total task probability weight.");			
-			}	
+				throw new IllegalStateException(botMind.getRobot() +
+						" has zero total task probability weight.");
+			}
 		}
-		
-		
+
+
 		double r = RandomUtil.getRandomDouble(totalProbability);
 		// Determine which task is selected.
 		MetaTask selectedMetaTask = null;
@@ -443,36 +458,37 @@ implements Serializable {
 			double probWeight = taskProbCache.get(metaTask);
 			if (r <= probWeight) {
 				selectedMetaTask = metaTask;
-			} 
+			}
 			else {
 				r -= probWeight;
 			}
 		}
 		if (selectedMetaTask == null) {
-			if (person != null) 
-				throw new IllegalStateException(mind.getPerson() + 
+			if (person != null)
+				throw new IllegalStateException(mind.getPerson() +
 						" could not determine a new task.");
 			else if (robot != null)
-					throw new IllegalStateException(botMind.getRobot() + 
+					throw new IllegalStateException(botMind.getRobot() +
 							" could not determine a new task.");
-			
+
 		}
 		if (person != null) {
 			// Construct the task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
+			//person.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
 		}
 		else if (robot != null) {
 			// Construct the task
 			result = selectedMetaTask.constructInstance(botMind.getRobot());
+			//robot.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
 		}
 
-		
 		// Clear time cache.
 		timeCache = null;
 		return result;
 	}
 
-	/** 
+	/**
 	 * Determines the total probability weight for available tasks.
 	 * @return total probability weight
 	 */
@@ -489,44 +505,44 @@ implements Serializable {
 	 */
 	private void calculateProbability() {
 		if (person != null) {
-				
-			if (taskProbCache == null) 
+
+			if (taskProbCache == null)
 				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
-			
+
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
 			Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
-			
+
 			while (i.hasNext()) {
 				MetaTask metaTask = i.next();
 				double probability = 0;
-		
+
 				probability = metaTask.getProbability(person);
-				
+
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					taskProbCache.put(metaTask, probability);
 					totalProbCache += probability;
 				}
 				else {
 					taskProbCache.put(metaTask, 0D);
-		
-						logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
-								" probability: " + probability);							
+
+						logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() +
+								" probability: " + probability);
 				}
 			}
 		}
-		
-		else if (robot != null) {		
-				
+
+		else if (robot != null) {
+
 			if (taskProbCache == null)
 				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
-			
+
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
 			Iterator<MetaTask> i = MetaTaskUtil.getRobotMetaTasks().iterator();
-			
+
 			while (i.hasNext()) {
 				MetaTask metaTask = i.next();
 				double probability = 0;
@@ -539,9 +555,9 @@ implements Serializable {
 				}
 				else {
 					taskProbCache.put(metaTask, 0D);
-					
-					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() + 
-								" probability: " + probability);					
+
+					logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() +
+								" probability: " + probability);
 				}
 			}
 		}

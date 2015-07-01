@@ -26,6 +26,10 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COMMUNICATION;
 
+    // Data members
+    private int populationSupport;
+    private int user, userCapacity;
+
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -69,6 +73,63 @@ implements Serializable {
         return demand / (supply + 1D);
     }
 
+
+    /**
+     * Gets the number of people this administration facility can support.
+     * @return population that can be supported.
+     */
+    public int getPopulationSupport() {
+        return populationSupport;
+    }
+
+
+    /**
+     * Gets the number of people this comm facility can be used all at a time.
+     * @return population that can be supported.
+     */
+    public int getUserCapacity() {
+        return userCapacity;
+    }
+
+
+    /**
+     * Gets the current number of people using the facility.
+     * @return number of people.
+     */
+    public int getNumUser() {
+        return user;
+    }
+
+    /**
+     * Adds a person to the facility.
+     * @throws BuildingException if person would exceed facility capacity.
+     */
+    public void addUser() {
+        user++;
+        if (user > userCapacity) {
+            user = userCapacity;
+            throw new IllegalStateException("The facility is full.");
+        }
+    }
+
+    /**
+     * Removes a person from the facility.
+     * @throws BuildingException if nobody is using the facility.
+     */
+    public void removeUser() {
+        user--;
+        if (user < 0) {
+            user = 0;
+            throw new IllegalStateException("The facility is empty.");
+        }
+    }
+
+    @Override
+    public double getMaintenanceTime() {
+        return populationSupport * 1D;
+    }
+
+
     /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
@@ -92,11 +153,6 @@ implements Serializable {
         return 0D;
     }
 
-    @Override
-    public double getMaintenanceTime() {
-        return 10D;
-    }
-
 	@Override
 	public double getFullHeatRequired() {
 		// TODO Auto-generated method stub
@@ -108,4 +164,5 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }

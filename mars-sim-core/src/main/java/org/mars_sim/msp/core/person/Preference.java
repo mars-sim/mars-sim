@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
@@ -54,27 +55,42 @@ public class Preference implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private int solCache = 0;
+
 	private NaturalAttributeManager naturalAttributeManager;
 	private Person person;
-	private List<MetaTask> metaTaskList;
-	private Map<MetaTask, Integer> metaTaskMap;
-	private Map<String, Integer> metaTaskStringMap;
-	private List<String> metaTaskStringList;
+	private MarsClock clock;
 
-	private Map<MarsClock, MetaTask> planner;
+	private List<MetaTask> metaTaskList;
+	private Map<MetaTask, Integer> scorekMap;
+	private Map<String, Integer> stringNameMap;
+	private List<String> metaTaskStringList;
+	private Map<MarsClock, MetaTask> futureTaskMap;
+	private Map<MetaTask, Boolean> statusMap; // true if the activity has been accomplished
+	private Map<MetaTask, Integer> priorityMap;
+	private Map<MetaTask, Boolean> frequencyMap; // true if the activity can only be done once a day
 
 	public Preference(Person person) {
+		//System.out.println("starting Preference's constructor");
+
 		this.person = person;
 
 		metaTaskList = MetaTaskUtil.getMetaTasks();
 		metaTaskStringList = new ArrayList<>();
 
-		metaTaskMap = new ConcurrentHashMap<>();
-		metaTaskStringMap = new ConcurrentHashMap<>();
+		scorekMap = new ConcurrentHashMap<>();
+		stringNameMap = new ConcurrentHashMap<>();
 
-		planner = new ConcurrentHashMap<>();
+		futureTaskMap = new ConcurrentHashMap<>();
+		statusMap = new ConcurrentHashMap<>();
+		priorityMap = new ConcurrentHashMap<>();
+		frequencyMap = new ConcurrentHashMap<>();
 
-		scheduleTask();
+		//scheduleTask("WriteReportMeta", 600, 900);
+		//scheduleTask("ConnectWithEarthMeta", 700, 950);
+
+		//System.out.println("done with Preference's constructor");
+
 	}
 
 	public void initializePreference() {
@@ -145,17 +161,17 @@ public class Preference implements Serializable {
 				result = 8;
 
 			String s = getStringName(metaTask);
-			if (!metaTaskStringMap.containsKey(s)) {
-				metaTaskStringMap.put(s, result);
+			if (!stringNameMap.containsKey(s)) {
+				stringNameMap.put(s, result);
 			}
 
-			if (!metaTaskMap.containsKey(metaTask)) {
-				metaTaskMap.put(metaTask, result);
+			if (!scorekMap.containsKey(metaTask)) {
+				scorekMap.put(metaTask, result);
 			}
 
 		}
 
-        for (MetaTask key : metaTaskMap.keySet()) {
+        for (MetaTask key : scorekMap.keySet()) {
         	metaTaskStringList.add(getStringName(key));
         }
 
@@ -163,53 +179,57 @@ public class Preference implements Serializable {
 	}
 
 	public int getPreferenceScore(MetaTask metaTask) {
-		int result;
+		int result = 0;
 		//String s = getStringName(metaTask);
-		if (metaTaskMap.containsKey(metaTask))
-			result = metaTaskMap.get(metaTask);
+		if (scorekMap.containsKey(metaTask))
+			result = scorekMap.get(metaTask);
 		else {
-			metaTaskMap.put(metaTask, 0);
+			scorekMap.put(metaTask, 0);
 			result = 0;
 		}
 
-		//int size = planner.size();
-		//if (size >0) System.out.println("size : " + size);
-		// TEMPORARILY ONLY
-		// 2015-06-24 Added checking if a planned task is matched
-		//String s = metaTask.getClass().getSimpleName();
-		//if (s.equals("WriteReportMeta"))
-		//	System.out.println(s); // metaTask);
-		if (planner.containsValue(metaTask)) {
-			//System.out.println("contain task !");
-			// iterate over the planner
-			Iterator<Entry<MarsClock, MetaTask>> i = planner.entrySet().iterator();
-			while (i.hasNext()) {
-				Entry<MarsClock, MetaTask> entry = i.next();
-				MarsClock clock = entry.getKey();
-				MetaTask task = entry.getValue();
-				if (metaTask.equals(task)) {
-					//System.out.println("task matched!");
-					//if (MarsClock.getTotalSol(clock) == MarsClock.getTotalSol(currentTime)){
-					MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-					int now = (int) MarsClock.getTotalMillisols(currentTime);
-					int sch = (int) MarsClock.getTotalMillisols(clock);
-					if (now - sch > 0 && now - sch <= 5) {
-						// examine its timestamp down to within 5 millisols
-						//System.out.println("now - sch = " + (now-sch));
-						result += 1000D;
-					}
-				}
-			}
+		if (futureTaskMap.containsValue(metaTask)
+				&& (statusMap.get(metaTask) != null)
+				&& !statusMap.get(metaTask)
+				&& frequencyMap.get(metaTask)) {
+			result += checkScheduledTask(metaTask);
 		}
 		return result;
 	}
 
+	public int checkScheduledTask(MetaTask metaTask) {
+		int result = 0;
+
+		// iterate over
+		Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<MarsClock, MetaTask> entry = i.next();
+			MarsClock clock = entry.getKey();
+			MetaTask task = entry.getValue();
+			if (metaTask.equals(task)) {
+				//System.out.println("task matched!");
+				//if (MarsClock.getTotalSol(clock) == MarsClock.getTotalSol(currentTime)){
+				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+				int now = (int) MarsClock.getTotalMillisols(currentTime);
+				int sch = (int) MarsClock.getTotalMillisols(clock);
+				if (now - sch > 0 && now - sch <= 5) {
+					// examine its timestamp down to within 5 millisols
+					//System.out.println("now - sch = " + (now-sch));
+					result += priorityMap.get(task);
+				}
+			}
+		}
+
+
+		return result;
+	}
+
 	public Map<MetaTask, Integer> getMetaTaskMap(){
-		return metaTaskMap;
+		return scorekMap;
 	}
 
 	public Map<String, Integer> getMetaTaskStringMap(){
-		return metaTaskStringMap;
+		return stringNameMap;
 	}
 
 
@@ -235,21 +255,92 @@ public class Preference implements Serializable {
 	}
 
 
-	public void scheduleTask() {
-		MarsClock clock = new MarsClock(15,1,1,300);
-		//System.out.println(" planned : " + MarsClock.getDateTimeStamp(clock));
-		// Schedule a task
-		setPlanner(MetaTaskUtil.getMetaTask("WriteReportMeta"), clock);
+	public void scheduleTask(String s, int t1, int t2, boolean onceOnly, int priority) {
+
+		// set the time between 700 and 950 msols on the next day
+		MarsClock randomTimetomorrow = clock.getMarsClockNextSol(clock, t1, t2);
+		//System.out.println("randomTimetomorrow : " + randomTimetomorrow.getDateTimeStamp());
+		MetaTask mt = MetaTaskUtil.getMetaTask(s);
+		setPlanner(mt, randomTimetomorrow);
+		frequencyMap.put(mt, onceOnly);
+		priorityMap.put(mt, priority);
 	}
 
 	public boolean setPlanner(MetaTask metaTask, MarsClock marsClock) {
-		if (!planner.containsKey(marsClock)) {
+		if (!futureTaskMap.containsKey(marsClock)) {
 			// TODO: need to compare the clock better
-			planner.put(marsClock, metaTask);
+			futureTaskMap.put(marsClock, metaTask);
+			statusMap.put(metaTask, false);
 			return true;
 		}
 		return false;
 	}
 
+    /**
+     * Performs the actions per frame
+     * @param time amount of time passing (in millisols).
+     */
+	// 2015-06-29 Added timePassing()
+    public void timePassing(double time) {
+	    if (clock == null)
+	    	clock = Simulation.instance().getMasterClock().getMarsClock();
 
+		int solElapsed = MarsClock.getSolOfYear(clock);
+		if (solElapsed != solCache) {
+
+/*
+			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
+			while (i.hasNext()) {
+				MetaTask mt = i.next().getValue();
+				// if this meta task is not a recurrent task, remove it.
+				if (!frequencyMap.get(mt)) {
+					futureTaskMap.remove(mt);
+					frequencyMap.remove(mt);
+					statusMap.remove(mt);
+					priorityMap.remove(mt);
+				}
+			}
+*/
+			scheduleTask("WriteReportMeta", 500, 800, true, 750);
+			scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
+
+			solCache = solElapsed;
+		}
+
+    }
+
+    public boolean getTaskStatus(MetaTask mt) { //Task task) {
+    	//MetaTask mt = convertTask2MetaTask(task);
+    	if (statusMap.isEmpty()) {
+    		// if it does not exist (either it is not scheduled or it have been accomplished), the status is true
+    		return true;
+    	}
+    	else if (statusMap.get(mt) == null)
+    		return true;
+    	else
+    		return statusMap.get(mt);
+    }
+
+    public void setTaskStatus(Task task, boolean value) {
+      	MetaTask mt = convertTask2MetaTask(task);
+
+		// if this accomplished meta task is onceOnly task, remove it.
+		if (value && frequencyMap != null && frequencyMap.get(mt)) {
+			futureTaskMap.remove(mt);
+			frequencyMap.remove(mt);
+			statusMap.remove(mt);
+			priorityMap.remove(mt);
+		}
+		else
+			statusMap.put(mt, value);
+
+    }
+
+    public MetaTask convertTask2MetaTask(Task task) {
+    	MetaTask result = null;
+    	String name = task.getTaskName();
+    	//System.out.println(" task name is " + name);
+    	result = MetaTaskUtil.getMetaTask(name + "Meta");
+    	return result;
+    }
 }
