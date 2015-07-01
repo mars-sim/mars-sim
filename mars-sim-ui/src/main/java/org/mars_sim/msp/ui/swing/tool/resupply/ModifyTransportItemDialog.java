@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ModifyTransportItemDialog.java
- * @version 3.08 2015-03-21
+ * @version 3.08 2015-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -13,20 +13,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 /**
  * A dialog for modifying transport items.
  * TODO externalize strings
  */
-//2015-03-21 Switched from extending JDialog to JinternalFrame
-public class ModifyTransportItemDialog extends JInternalFrame {
+public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -44,8 +43,8 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 	//2015-03-21 Switched from using JFrame to using desktop in param
 	public ModifyTransportItemDialog(MainDesktopPane desktop, String title, Transportable transportItem) {// , boolean isFX) {
 
-		// Use JInternalFrame constructor
-        super("Modify Mission", false, true, false, true);
+		// Use ModalInternalFrame constructor
+        super("Modify Mission");
 
 		// Initialize data members.
 		this.transportItem = transportItem;
@@ -96,8 +95,8 @@ public class ModifyTransportItemDialog extends JInternalFrame {
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 
 	    setLocation(width, height);
+	    setModal(true);
 	    setVisible(true);
-
 	}
 
 	public void initEditingPanel() {

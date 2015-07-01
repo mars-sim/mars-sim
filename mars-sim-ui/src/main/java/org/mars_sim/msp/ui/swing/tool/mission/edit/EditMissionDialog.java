@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EditMissionDialog.java
- * @version 3.08 2015-03-23
+ * @version 3.08 2015-06-30
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 import javax.swing.*;
 
@@ -23,8 +24,11 @@ import java.util.Iterator;
 /**
  * The edit mission dialog for the mission tool.
  */
-public class EditMissionDialog extends JInternalFrame {
+public class EditMissionDialog extends ModalInternalFrame {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	// Private members
 	private Mission mission;
 	private InfoPanel infoPane;
@@ -36,8 +40,8 @@ public class EditMissionDialog extends JInternalFrame {
 	 * @param mission the mission to edit.
 	 */
 	public EditMissionDialog(MainDesktopPane desktop, Mission mission) {
-		// Use JInternalFrame constructor
-        super("Edit Mission", false, true, false, true);
+		// Use ModalInternalFrame constructor
+        super("Edit Mission");
         
 		// Initialize data members.
 		this.mission = mission;
@@ -94,8 +98,9 @@ public class EditMissionDialog extends JInternalFrame {
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
+	    
+	    setModal(true);
 	    setVisible(true);
-	    		
 	}
 	
 	/**
