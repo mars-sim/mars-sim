@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 3.08 2015-06-29
+ * @version 3.08 2015-07-01
 
  * @author Scott Davis
  */
@@ -63,10 +63,12 @@ implements Runnable {
 
 	private Graphics dbg;
 	private Image dbImage = null;
+	private long refreshRate;
 
-	public MapPanel() {
+	public MapPanel(long refreshRate) {
 		super();
 
+		this.refreshRate = refreshRate;
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
 		topoMap = new TopoMarsMap(this);
@@ -266,7 +268,7 @@ implements Runnable {
 	public void run() {
 		while (update) {
         	try {
-                Thread.sleep(1000);
+                Thread.sleep(refreshRate);
             }
 	        catch (InterruptedException e) {}
 
@@ -277,8 +279,9 @@ implements Runnable {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if(dbImage != null)
+		if (dbImage != null) {
 			g.drawImage(dbImage,  0, 0, null);
+		}
 	}
 
 	/*
@@ -299,7 +302,9 @@ implements Runnable {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (wait) {
-        	if (mapImage != null) dbg.drawImage(mapImage, 0, 0, this);
+        	if (mapImage != null) {
+        	    dbg.drawImage(mapImage, 0, 0, this);
+        	}
         	String message = "Generating Map";
         	drawCenteredMessage(message, dbg);
         }
@@ -307,10 +312,14 @@ implements Runnable {
         	if (mapError) {
             	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
                 // Display previous map image
-                if (mapImage != null) dbg.drawImage(mapImage, 0, 0, this);
+                if (mapImage != null) {
+                    dbg.drawImage(mapImage, 0, 0, this);
+                }
 
                 // Draw error message
-                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
+                if (mapErrorMessage == null) {
+                    mapErrorMessage = "Null Map";
+                }
                 drawCenteredMessage(mapErrorMessage, dbg);
             }
         	else {
@@ -325,8 +334,11 @@ implements Runnable {
                 	}
 
                 	// Display map layers.
-                	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, dbg);
+                	List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
+                	Iterator<MapLayer> i = tempMapLayers.iterator();
+                	while (i.hasNext()) {
+                	    i.next().displayLayer(centerCoords, mapType, dbg);
+                	}
                 }
         	}
         }

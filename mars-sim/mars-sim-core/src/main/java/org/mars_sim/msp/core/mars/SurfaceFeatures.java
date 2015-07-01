@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.08 2015-06-15
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -128,7 +128,7 @@ public class SurfaceFeatures implements Serializable {
      * Values in between 0.0 and 1.0 represent twilight conditions.
      */
     public double getSurfaceSunlight(Coordinates location) {
-    	double result = 0;
+    	double result = 1D;
       	//if (sunDirection == null)
       	//	sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
 /*
@@ -161,20 +161,25 @@ public class SurfaceFeatures implements Serializable {
 // Method 2:
 
     	if (orbitInfo == null) {
-            orbitInfo = mars.getOrbitInfo();
+    	    if (mars != null) {
+    	        orbitInfo = mars.getOrbitInfo();
+    	    }
     	}
-        double z =  orbitInfo.getSolarZenithAngle(location);
-        //System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
+    	
+    	if (orbitInfo != null) {
+    	    double z =  orbitInfo.getSolarZenithAngle(location);
+    	    //System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
 
-        //double twilightzone = .2D;
-        if (z  < 1.4708) {
-            result = 1D;
-        } else if (z  > 1.6708) {
-            result = 0D;
-        } else {
-            //double twilightAngle = z - 1.6708;
-            result = 8.354 - 5 * z;
-        }
+    	    //double twilightzone = .2D;
+    	    if (z  < 1.4708) {
+    	        result = 1D;
+    	    } else if (z  > 1.6708) {
+    	        result = 0D;
+    	    } else {
+    	        //double twilightAngle = z - 1.6708;
+    	        result = 8.354 - 5 * z;
+    	    }
+    	}
 
         return result;
     }

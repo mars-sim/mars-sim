@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 
@@ -87,7 +87,7 @@ implements ListSelectionListener, MissionListener {
 		mainPane.add(mapDisplayPane);
 		
 		// Create the map panel.
-		mapPane = new MapPanel();
+		mapPane = new MapPanel(500L);
 		mapPane.addMapLayer(new ShadingMapLayer(mapPane), 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 2);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 3);

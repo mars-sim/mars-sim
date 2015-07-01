@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * FieldSitePanel.java
- * @version 3.08 2015-06-26
-
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -62,7 +61,7 @@ public class FieldSitePanel extends WizardPanel {
         add(titleLabel);
         
         // Create the map panel.
-        mapPane = new MapPanel();
+        mapPane = new MapPanel(20L);
         mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
         mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
         mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
@@ -88,7 +87,7 @@ public class FieldSitePanel extends WizardPanel {
         instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(instructionLabel);
         
-        // Create verticle glue.
+        // Create vertical glue.
         add(Box.createVerticalGlue());
     }
     
@@ -219,9 +218,9 @@ public class FieldSitePanel extends WizardPanel {
         }
         
         /**
-         * Checks if mouse location is within range boundries and edge of map display. 
+         * Checks if mouse location is within range boundaries and edge of map display. 
          * @param position the mouse location.
-         * @return true if within boundries.
+         * @return true if within boundaries.
          */
         private boolean withinBounds(IntPoint position) {
             boolean result = true;

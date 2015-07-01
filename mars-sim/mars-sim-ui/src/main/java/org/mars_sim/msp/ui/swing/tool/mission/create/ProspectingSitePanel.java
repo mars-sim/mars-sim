@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 3.08 2015-06-26
-
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 
@@ -67,7 +66,7 @@ class ProspectingSitePanel extends WizardPanel {
 		add(titleLabel);
 		
 		// Create the map panel.
-		mapPane = new MapPanel();
+		mapPane = new MapPanel(20L);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 0);
 		mapPane.addMapLayer(new UnitLabelMapLayer(), 1);
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
@@ -94,7 +93,7 @@ class ProspectingSitePanel extends WizardPanel {
 		instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(instructionLabel);
 		
-		// Create verticle glue.
+		// Create vertical glue.
 		add(Box.createVerticalGlue());
 	}
 	
@@ -108,7 +107,7 @@ class ProspectingSitePanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);

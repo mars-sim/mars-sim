@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 3.08 2015-06-26
-
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 
@@ -106,7 +105,7 @@ public class MiningSitePanel extends WizardPanel {
 		leftPanel.add(centerPanel, BorderLayout.CENTER);
 		
 		// Create the map panel.
-		mapPane = new MapPanel();
+		mapPane = new MapPanel(20L);
         mineralLayer = new MineralMapLayer(mapPane);
         mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(unitIconLayer = new UnitIconMapLayer(mapPane), 1);
