@@ -68,6 +68,8 @@ extends TabPanel {
 	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
 	private Integer selectedSol;
+	private int today ;
+	private Integer todayInteger;
 
 	private JCheckBox hideRepeatedTasksCheckBox;
 	private JCheckBox realTimeUpdateCheckBox;
@@ -167,8 +169,8 @@ extends TabPanel {
 		box.add(hideRepeatedTasksCheckBox);
 		box.add(Box.createHorizontalGlue());
 
-    	int today = taskSchedule.getSolCache();
-    	Integer todayInteger = (Integer) today ;
+    	today = taskSchedule.getSolCache();
+    	todayInteger = (Integer) today ;
     	solList = new CopyOnWriteArrayList<Object>();
 
 		int size = schedules.size();
@@ -211,26 +213,29 @@ extends TabPanel {
             	selectedSol = (Integer) comboBox.getSelectedItem();
             	if ( selectedSol != null ) // e.g. when first loading up
             		scheduleTableModel.update(hideRepeated, (int) selectedSol);
-            	//else
-            		//scheduleTableModel.update(hideRepeatedTasks, (int) today);
+            	if (selectedSol == todayInteger)
+            		// Binds comboBox with realTimeUpdateCheckBox
+            		realTimeUpdateCheckBox.setSelected(true);
             }
 		});
 
 		// Create realTimeUpdateCheckBox.
 		realTimeUpdateCheckBox = new JCheckBox(Msg.getString("TabPanelSchedule.checkbox.realTimeUpdate")); //$NON-NLS-1$
+		realTimeUpdateCheckBox.setSelected(true);
 		realTimeUpdateCheckBox.setHorizontalTextPosition(SwingConstants.RIGHT);
 		realTimeUpdateCheckBox.setFont(new Font("Serif", Font.PLAIN, 11));
 		realTimeUpdateCheckBox.setToolTipText(Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
 		realTimeUpdateCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (realTimeUpdateCheckBox.isSelected())
+				if (realTimeUpdateCheckBox.isSelected()){
 					isRealTimeUpdate = true;
+					scheduleTableModel.update(hideRepeated, today);
+					comboBox.setSelectedItem(todayInteger);
+				}
 				else
 					isRealTimeUpdate = false;
 			}
 		});
-		realTimeUpdateCheckBox.setSelected(isRealTimeUpdate);
-//		infoPanel.add(realTimeUpdateCheckBox);
 		box.add(realTimeUpdateCheckBox);
 
 		// Create schedule table model
@@ -273,21 +278,12 @@ extends TabPanel {
 	 */
 	public void update() {
 
-		// Update if necessary.
-
-    	int today = taskSchedule.getSolCache();
-    	Integer todayInteger = (Integer) today ;
-    	//List<Object> solList = new ArrayList<Object>();
-
+    	today = taskSchedule.getSolCache();
+    	todayInteger = (Integer) today ;
        	selectedSol = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
-    	//Integer selectedSol = (Integer) comboBox.getSelectedItem();
 
-       	// Turn off the Real Time Update if users want to look at a previous sol
-       	if (selectedSol != todayInteger)
-       		isRealTimeUpdate = false;
-
+       	// Update the sol box at the beginning of a new sol
     	if (today != todayCache) {
-
     		int size = schedules.size();
 			solList.clear();
     		for (int i = 0 ; i < size + 1; i++ ) {
@@ -299,13 +295,13 @@ extends TabPanel {
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
-			// update comboBox.
+			// Update comboBox
 			comboBox.setModel(newComboBoxModel);
 			comboBox.setRenderer(new PromptComboBoxRenderer());
 
 			// Note: Below is needed or else users will be constantly interrupted
 			// as soon as the combobox got updated with the new day's schedule
-			// and selected schedule will be swapped out without warning.
+			// and will be swapped out without warning.
 			if (selectedSol != null)
 				comboBox.setSelectedItem(selectedSol);
 			else {
@@ -315,20 +311,11 @@ extends TabPanel {
 			todayCache = today;
     	}
 
-		if (isRealTimeUpdate) {
-			if ( (int)selectedSol == today)
-			//comboBox.setSelectedItem(today);
-				scheduleTableModel.update(hideRepeated, today);
-				comboBox.setSelectedItem(todayInteger);
-		}
-		//else {
-		//	comboBox.setSelectedItem(selectedSolCache); // make existing schedule to stay
-		//}
-
-    	//if ( selectedSolCache != null ) // e.g. when first loading up
-    	//	scheduleTableModel.update(hideRepeatedTasks, (int) selectedSolCache);
-    	//else
-    	//	scheduleTableModel.update(hideRepeatedTasks, (int) today);
+       	// Turn off the Real Time Update if the user is still looking at a previous sol's schedule
+       	if (selectedSol != todayInteger) {
+       		isRealTimeUpdate = false;
+       		realTimeUpdateCheckBox.setSelected(false);
+       	}
 
 		// Detects if the Hide Repeated box has changed. If yes, call for update
 		if (hideRepeatedCache != hideRepeated) {

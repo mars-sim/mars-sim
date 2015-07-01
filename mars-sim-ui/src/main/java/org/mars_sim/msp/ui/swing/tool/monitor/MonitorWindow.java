@@ -26,6 +26,7 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -424,6 +425,8 @@ implements TableModelListener, ActionListener {
 				buttonFilter.setEnabled(true);
 			}
 		}
+
+		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	public void tableChanged(TableModelEvent e) {

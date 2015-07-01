@@ -325,12 +325,13 @@ public class Preference implements Serializable {
       	MetaTask mt = convertTask2MetaTask(task);
 
 		// if this accomplished meta task is onceOnly task, remove it.
-		if (value && frequencyMap != null && frequencyMap.get(mt)) {
-			futureTaskMap.remove(mt);
-			frequencyMap.remove(mt);
-			statusMap.remove(mt);
-			priorityMap.remove(mt);
-		}
+		if (value && frequencyMap.get(mt) != null && !frequencyMap.isEmpty())
+			if (frequencyMap.get(mt) != null && frequencyMap.get(mt)) {
+				futureTaskMap.remove(mt);
+				frequencyMap.remove(mt);
+				statusMap.remove(mt);
+				priorityMap.remove(mt);
+			}
 		else
 			statusMap.put(mt, value);
 
