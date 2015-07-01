@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.07 2015-01-08
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -15,6 +15,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -24,6 +26,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class MissionTableModel
 extends AbstractTableModel
@@ -257,6 +261,22 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 				if (mission instanceof VehicleMission) {
 					VehicleMission vehicleMission = (VehicleMission) mission;
 					if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
+				}
+				else if (mission instanceof BuildingConstructionMission) {
+				    BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
+                    List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+                    if (constVehicles.size() > 0) {
+                        Vehicle vehicle = constVehicles.get(0);
+                        result = vehicle.getName();
+                    }
+				}
+				else if (mission instanceof BuildingSalvageMission) {
+				    BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
+                    List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
+                    if (constVehicles.size() > 0) {
+                        Vehicle vehicle = constVehicles.get(0);
+                        result = vehicle.getName();
+                    }
 				}
 			} break;
 

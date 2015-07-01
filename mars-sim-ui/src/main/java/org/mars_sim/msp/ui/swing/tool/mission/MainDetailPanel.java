@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.08 2015-06-26
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -57,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -219,8 +221,26 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					// Open window for vehicle.
 					VehicleMission vehicleMission = (VehicleMission) currentMission;
 					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle != null) getDesktop().openUnitWindow(vehicle, false);
+					if (vehicle != null) {
+					    getDesktop().openUnitWindow(vehicle, false);
+					}
 				}
+				else if (currentMission instanceof BuildingConstructionMission) {
+				    BuildingConstructionMission constructionMission = (BuildingConstructionMission) currentMission;
+	                List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+	                if (constVehicles.size() > 0) {
+	                    Vehicle vehicle = constVehicles.get(0);
+	                    getDesktop().openUnitWindow(vehicle, false);
+	                }
+				}
+				else if (currentMission instanceof BuildingSalvageMission) {
+				    BuildingSalvageMission salvageMission = (BuildingSalvageMission) currentMission;
+                    List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
+                    if (constVehicles.size() > 0) {
+                        Vehicle vehicle = constVehicles.get(0);
+                        getDesktop().openUnitWindow(vehicle, false);
+                    }
+                }
 			}
 		});
 
@@ -388,6 +408,41 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					currentVehicle = vehicle;
 				}
 			}
+			else if (mission instanceof BuildingConstructionMission) {
+			    // Display first of mission's list of construction vehicles.
+			    BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
+			    List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+			    if (constVehicles.size() > 0) {
+			        Vehicle vehicle = constVehicles.get(0);
+			        isVehicle = true;
+			        vehicleButton.setText(vehicle.getName());
+                    vehicleButton.setVisible(true);
+                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
+                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+                    vehicle.addUnitListener(this);
+                    currentVehicle = vehicle;
+			    }
+			}
+			else if (mission instanceof BuildingSalvageMission) {
+	            // Display first of mission's list of construction vehicles.
+			    BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
+                List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
+                if (constVehicles.size() > 0) {
+                    Vehicle vehicle = constVehicles.get(0);
+                    isVehicle = true;
+                    vehicleButton.setText(vehicle.getName());
+                    vehicleButton.setVisible(true);
+                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
+                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+                    vehicle.addUnitListener(this);
+                    currentVehicle = vehicle;
+                }
+			}
+			
 			if (!isVehicle) {
 				// Clear vehicle info.
 				vehicleButton.setVisible(false);
@@ -469,7 +524,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
+	    if (event.getSource() instanceof Vehicle) {
+	        SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
+	    }
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 3.08 2015-06-26
+ * @version 3.08 2015-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -194,7 +194,7 @@ implements ActionListener {
 		mapPaneInner.setOpaque(true);
 //		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-		map = new MapPanel();
+		map = new MapPanel(500L);
 		map.setNavWin(this);
 		map.addMouseListener(new mapListener());
 		map.addMouseMotionListener(new mouseMotionListener());

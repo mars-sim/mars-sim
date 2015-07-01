@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 3.08 2015-06-26
-
+ * @version 3.08 2015-07-01d
  * @author Scott Davis
  */
 
@@ -87,7 +86,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 		
 		// Create the map panel.
-		mapPane = new MapPanel();
+		mapPane = new MapPanel(20L);
         mineralLayer = new MineralMapLayer(mapPane);
         mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);
@@ -180,7 +179,7 @@ class ExplorationSitesPanel extends WizardPanel {
         mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
         mineralLegendScrollPane.setViewportView(mineralLegendTable);
         
-        // Create a verticle glue to manage layout.
+        // Create a vertical glue to manage layout.
 		add(Box.createVerticalGlue());
 	}
 	
@@ -194,7 +193,7 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		getWizard().getMissionData().setExplorationSites(getSites());
@@ -309,7 +308,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 	
 	/**
-	 * Gets the estimated time spent travelling on the mission.
+	 * Gets the estimated time spent traveling on the mission.
 	 * @return time (millisols)
 	 */
 	private double getTravelTime() {
@@ -326,7 +325,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 	
 	/**
-	 * Gets the total distance travelled in the mission.
+	 * Gets the total distance traveled in the mission.
 	 * @return distance (km)
 	 */
 	private double getDistance() {
