@@ -196,11 +196,11 @@ extends ToolWindow {
 
 		if (mw !=null )  {
 			// Pause simulation.
-			mw.pauseSimulation();
+		    mw.pauseSimulation();
 	
 			// Create new mission wizard.
 			new EditMissionDialog(desktop, mission);
-	
+			
 			// Unpause simulation.
 			mw.unpauseSimulation();
 		}

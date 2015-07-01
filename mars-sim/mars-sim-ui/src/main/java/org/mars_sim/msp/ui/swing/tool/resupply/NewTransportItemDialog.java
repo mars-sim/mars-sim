@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NewTransportItemDialog.java
- * @version 3.08 2015-03-23
+ * @version 3.08 2015-06-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -16,19 +16,19 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 /**
  * A dialog for creating a new transport item.
  * TODO externalize strings
  */
 //2015-03-21 Switched from extending JDialog to JinternalFrame
-public class NewTransportItemDialog extends JInternalFrame {
+public class NewTransportItemDialog extends ModalInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -55,10 +55,10 @@ public class NewTransportItemDialog extends JInternalFrame {
 	//2015-03-21 Switched from using JFrame to using desktop in param
 	public NewTransportItemDialog(MainDesktopPane desktop) {
 	
-		// Use JInternalFrame constructor
-        super("New Transport Item", false, true, false, true);
+		// Use ModalInternalFrame constructor
+        super("New Transport Item");
 
-		this.setSize(500,500);
+		setSize(500, 500);
 		
 		 // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -135,8 +135,10 @@ public class NewTransportItemDialog extends JInternalFrame {
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    this.setLocation(width, height);
-	    this.setVisible(true);
+	    setLocation(width, height);
+	    
+	    setModal(true);
+	    setVisible(true);
 	}
 
 	/**

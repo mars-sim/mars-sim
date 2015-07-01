@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 3.08 2015-03-23
+ * @version 3.08 2015-06-30
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 import javax.swing.*;
 
@@ -23,7 +24,7 @@ import java.util.List;
  */
 // 2015-03-24 Converted CreateMissionWizard from JDialog to JInternalFrame
 public class CreateMissionWizard
-extends JInternalFrame
+extends ModalInternalFrame
 implements ActionListener {
 
 	/** default serial id. */
@@ -43,8 +44,8 @@ implements ActionListener {
 	 */
 	public CreateMissionWizard(MainDesktopPane desktop) {
 
-		// Use JInternalFrame constructor
-        super("Create Mission Wizard", false, true, false, true);
+		// Use ModalInternalFrame constructor
+        super("Create Mission Wizard");
 
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
@@ -115,9 +116,9 @@ implements ActionListener {
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
+	    
+	    setModal(true);
 	    setVisible(true);
-
-
 	}
 
 	/**
