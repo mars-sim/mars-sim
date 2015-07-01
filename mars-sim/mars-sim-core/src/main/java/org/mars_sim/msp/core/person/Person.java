@@ -380,6 +380,11 @@ implements VehicleOperator, Serializable {
             // result in death.
             if (health.timePassing(time, support, config)) {
 
+            	// 2015-06-29 Added calling preference and taskSchedule's timePassing()
+            	preference.timePassing(time);
+
+            	taskSchedule.timePassing(time);
+
                 // Mental changes with time passing.
                 mind.timePassing(time);
             }

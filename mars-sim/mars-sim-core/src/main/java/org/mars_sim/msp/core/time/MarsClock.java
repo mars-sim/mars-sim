@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
@@ -544,61 +545,7 @@ public class MarsClock implements Serializable {
 
 		return season;
     }
-/*
-    public String getSeason(int hemisphere) {
-    	String season = "";
-    	int solElapsed = MarsClock.getSolOfYear(Simulation.instance().getMasterClock().getMarsClock());
-    	//System.out.println(" solElapsed :" +  solElapsed );
-    	// 2015-02-24 Added modifier
-    	String modifier = "";
 
-		if (solElapsed > SOLS_IN_ORBIT_LEAPYEAR)
-			solElapsed = solElapsed - SOLS_IN_ORBIT_NON_LEAPYEAR;
-
-		if (solElapsed < SUMMER_SOLSTICE || solElapsed >= SPRING_EQUINOX){
-			if (solElapsed >= SPRING_EQUINOX || solElapsed < 64 - 25 ) //int paddingDay = SOLS_IN_ORBIT_NON_LEAPYEAR - SPRING_EQUINOX = 25
-				modifier = "Early ";
-			else if (solElapsed < 64 - 25 + 66)
-				modifier = "Mid ";
-			else //if (solElapsed < SUMMER_SOLSTICE)
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Spring";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Autumn";
-        }
-		else if (solElapsed < AUTUMN_EQUINOX) {
-			if (solElapsed < SUMMER_SOLSTICE + 59)
-				modifier = "Early ";
-			else if (solElapsed < SUMMER_SOLSTICE + 59 + 61)
-				modifier = "Mid ";
-			else //if (solElapsed < AUTUMN_EQUINOX)
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Summer";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Winter";
-        }
-		else if (solElapsed < WINTER_SOLSTICE){
-			if (solElapsed < AUTUMN_EQUINOX + 47)
-				modifier = "Early ";
-			else if (solElapsed < AUTUMN_EQUINOX + 47 + 49)
-				modifier = "Mid ";
-			else //if (solElapsed < WINTER_SOLSTICE)
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Autumn";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Spring";
-        }
-		else if (solElapsed < SPRING_EQUINOX) {
-			if (solElapsed < WINTER_SOLSTICE + 51)
-				modifier = "Early ";
-			else if (solElapsed < WINTER_SOLSTICE + 51 + 53)
-				modifier = "Mid ";
-			else //if (solElapsed < SPRING_EQUINOX)
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Winter";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Summer";
-        }
-
-		return season;
-    }
-*/
 
     /**
      * Creates a clone of this MarsClock object, with the time set the same.
@@ -607,6 +554,32 @@ public class MarsClock implements Serializable {
     public Object clone() {
         return new MarsClock(orbit, month, sol, millisol);
     }
+
+    /**
+     * Gets a (random) time on the next day between t1 and t2 millisols.
+     * if t2 = 0, millisols = t1.
+     * @return MarsClock
+     */
+    public MarsClock getMarsClockNextSol(MarsClock clock, int t1, int t2) {
+    	int millis = 0;
+    	if (t2 == 0)
+    		millis = t1;
+    	else
+    		millis = RandomUtil.getRandomInt(t1, t2);
+    	int s = clock.getSolOfMonth() + 1;
+    	int m = clock.getMonth();
+    	int o = clock.getOrbit();
+    	if (s == 29) {
+    		s = 1;
+    		m++;
+    	}
+    	if (m == 24) {
+    		m = 1;
+    		o++;
+    	}
+        return new MarsClock(o, m, s, millis);
+    }
+
 
     /**
      * Displays the string version of the clock.

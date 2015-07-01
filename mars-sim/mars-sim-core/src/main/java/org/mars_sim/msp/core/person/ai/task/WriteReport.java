@@ -57,9 +57,10 @@ implements Serializable {
     public WriteReport(Person person) {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true,
-                10D + RandomUtil.getRandomDouble(30D));
+                10D + RandomUtil.getRandomDouble(20D));
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
             if (roleType == null)
             	roleType = person.getRole().getType();
@@ -82,10 +83,15 @@ implements Serializable {
 	                walkToActivitySpotInBuilding(officeBuilding, false);
 
 	                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
+
+
 	            }
-	            else {
-	                endTask();
-	            }
+	            //else {
+	            //    endTask();
+	            //}
+
+                // set the boolean to true so that it won't be done again today
+                person.getPreference().setTaskStatus(this, true);
             }
         }
         else {

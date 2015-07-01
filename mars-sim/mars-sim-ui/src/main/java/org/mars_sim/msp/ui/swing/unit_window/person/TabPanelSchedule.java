@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -64,23 +65,26 @@ extends TabPanel {
 	//private int sol;
 	private int todayCache;
 
-	private boolean hideRepeatedTasks;
-	private boolean isRealTimeUpdate;
+	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
-	private Integer selectedSolCache;
+	private Integer selectedSol;
 
 	private JCheckBox hideRepeatedTasksCheckBox;
 	private JCheckBox realTimeUpdateCheckBox;
 
-	//private JLabel solLabel;
 	private JComboBoxMW<Object> comboBox;
 	private DefaultComboBoxModel<Object> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
+
+	private List<OneTask> tasks;
+	private List<Object> solList;
+	private Map <Integer, List<OneTask>> schedules;
 
 	private Person person;
 	private Robot robot;
 	private TaskSchedule taskSchedule;
 	private PlannerWindow plannerWindow;
+
 
 	/**
 	 * Constructor.
@@ -106,9 +110,7 @@ extends TabPanel {
         	taskSchedule = robot.getTaskSchedule();
         }
 
-    	int today = taskSchedule.getSolCache();
-    	Integer todayInteger = (Integer) today ;
-    	List<Object> solList = new ArrayList<Object>();
+        schedules = taskSchedule.getSchedules();
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -152,57 +154,42 @@ extends TabPanel {
 		hideRepeatedTasksCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (hideRepeatedTasksCheckBox.isSelected()) {
-					hideRepeatedTasks = true;
+					hideRepeated = true;
 				}
 				else {
-					hideRepeatedTasks = false;
+					hideRepeated = false;
 				}
 
 			}
 		});
-		hideRepeatedTasksCheckBox.setSelected(hideRepeatedTasks);
+		hideRepeatedTasksCheckBox.setSelected(hideRepeated);
 //		infoPanel.add(hideRepeatedTasksCheckBox);
 		box.add(hideRepeatedTasksCheckBox);
 		box.add(Box.createHorizontalGlue());
 
+    	int today = taskSchedule.getSolCache();
+    	Integer todayInteger = (Integer) today ;
+    	solList = new CopyOnWriteArrayList<Object>();
 
-		/*    	// add today into solList
-     	solList.add(todayInteger);
- 		if (today > 1) {
-			Map <Integer, List<DailyTask>> schedules = taskSchedule.getSchedules();
-			Iterator i = schedules.entrySet().iterator();
-			while(i.hasNext()) {
-				   Entry entry =(Entry)i.next();
-				   solList.add((Object)entry.getKey());
-			}
-    	}
-*/
-
-		Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
 		int size = schedules.size();
-		// size + 1 is needed to add today into solList
 		for (int i = 0 ; i < size + 1; i++ )
+			// size + 1 is needed to add today into solList
 			solList.add(i + 1);
 
     	// Create comboBoxModel
     	Collections.sort(solList, Collections.reverseOrder());
     	comboBoxModel = new DefaultComboBoxModel<Object>();
-		//Iterator<Object> j = solList.iterator();
-		//while (j.hasNext()) {
-		//	Object s = j.next();
-	    //	comboBoxModel.addElement(s);
-		//}
     	// Using internal iterator in lambda expression
 		solList.forEach(s -> comboBoxModel.addElement(s));
 
 		// Create comboBox
 		comboBox = new JComboBoxMW<Object>(comboBoxModel);
 		comboBox.setSelectedItem(todayInteger);
-		comboBox.setOpaque(false);
+		//comboBox.setOpaque(false);
 		comboBox.setRenderer(new PromptComboBoxRenderer());
 		//comboBox.setRenderer(new PromptComboBoxRenderer(" List of Schedules "));
-		comboBox.setBackground(new Color(0,0,0,128));
-		comboBox.setBackground(new Color(255,229,204));
+		//comboBox.setBackground(new Color(0,0,0,128));
+		//comboBox.setBackground(new Color(255,229,204));
 		//comboBox.setForeground(Color.orange);
 		comboBox.setMaximumRowCount(7);
 		//comboBox.setBorder(null);
@@ -214,16 +201,16 @@ extends TabPanel {
 		box.add(solPanel);
 		box.add(Box.createHorizontalGlue());
 
-    	selectedSolCache = (Integer) comboBox.getSelectedItem();
-		if (selectedSolCache == null)
+    	selectedSol = (Integer) comboBox.getSelectedItem();
+		if (selectedSol == null)
 			comboBox.setSelectedItem(todayInteger);
 
 		comboBox.setSelectedItem((Integer)1);
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	selectedSolCache = (Integer) comboBox.getSelectedItem();
-            	if ( selectedSolCache != null ) // e.g. when first loading up
-            		scheduleTableModel.update(hideRepeatedTasks, (int) selectedSolCache);
+            	selectedSol = (Integer) comboBox.getSelectedItem();
+            	if ( selectedSol != null ) // e.g. when first loading up
+            		scheduleTableModel.update(hideRepeated, (int) selectedSol);
             	//else
             		//scheduleTableModel.update(hideRepeatedTasks, (int) today);
             }
@@ -276,10 +263,10 @@ extends TabPanel {
 		update();
 	}
 
-	private int GridLayout(int i, int j) {
+	//private int GridLayout(int i, int j) {
 		// TODO Auto-generated method stub
-		return 0;
-	}
+	//	return 0;
+	//}
 
 	/**
 	 * Updates the info on this panel.
@@ -290,28 +277,26 @@ extends TabPanel {
 
     	int today = taskSchedule.getSolCache();
     	Integer todayInteger = (Integer) today ;
-    	List<Object> solList = new ArrayList<Object>();
+    	//List<Object> solList = new ArrayList<Object>();
 
-       	selectedSolCache = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
+       	selectedSol = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
     	//Integer selectedSol = (Integer) comboBox.getSelectedItem();
 
-       	//
+       	// Turn off the Real Time Update if users want to look at a previous sol
+       	if (selectedSol != todayInteger)
+       		isRealTimeUpdate = false;
+
     	if (today != todayCache) {
 
-    		Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
     		int size = schedules.size();
-    		// size + 1 is needed to add today into solList
-    		for (int i = 0 ; i < size + 1; i++ )
+			solList.clear();
+    		for (int i = 0 ; i < size + 1; i++ ) {
+        		// size + 1 is needed for starting on sol 1
     			solList.add(i + 1);
+    		}
 
-	    	// Create comboBoxModel
 	    	Collections.sort(solList, Collections.reverseOrder());
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
-			//Iterator<Object> j = solList.iterator();
-			//while (j.hasNext()) {
-			//	Object ii = j.next();
-		    //	newComboBoxModel.addElement(ii);
-			//}
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
 			// update comboBox.
@@ -321,18 +306,20 @@ extends TabPanel {
 			// Note: Below is needed or else users will be constantly interrupted
 			// as soon as the combobox got updated with the new day's schedule
 			// and selected schedule will be swapped out without warning.
-			if (selectedSolCache != null)
-				comboBox.setSelectedItem(selectedSolCache);
-			else
+			if (selectedSol != null)
+				comboBox.setSelectedItem(selectedSol);
+			else {
 				comboBox.setSelectedItem(todayInteger);
-
+				selectedSol = null;
+			}
 			todayCache = today;
     	}
 
 		if (isRealTimeUpdate) {
-			if ( (int)selectedSolCache == today)
+			if ( (int)selectedSol == today)
 			//comboBox.setSelectedItem(today);
-				scheduleTableModel.update(hideRepeatedTasks, today);
+				scheduleTableModel.update(hideRepeated, today);
+				comboBox.setSelectedItem(todayInteger);
 		}
 		//else {
 		//	comboBox.setSelectedItem(selectedSolCache); // make existing schedule to stay
@@ -343,6 +330,11 @@ extends TabPanel {
     	//else
     	//	scheduleTableModel.update(hideRepeatedTasks, (int) today);
 
+		// Detects if the Hide Repeated box has changed. If yes, call for update
+		if (hideRepeatedCache != hideRepeated) {
+			hideRepeatedCache = hideRepeated;
+			scheduleTableModel.update(hideRepeated, selectedSol);
+		}
 	}
 
     public void setViewer(PlannerWindow w) {
@@ -433,14 +425,14 @@ extends TabPanel {
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private static class ScheduleTableModel
+	private class ScheduleTableModel
 	extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private TaskSchedule taskSchedule;
-		private List<OneTask> tasks;
+		//private TaskSchedule taskSchedule;
+		//private List<OneTask> tasks;
 
 		DecimalFormat fmt = new DecimalFormat("0000");
 
@@ -449,6 +441,7 @@ extends TabPanel {
 		 * @param person {@link Person}
 		 */
 		private ScheduleTableModel(Unit unit) {
+/*
 	        Person person = null;
 	        Robot robot = null;
 	        if (unit instanceof Person) {
@@ -461,7 +454,9 @@ extends TabPanel {
 	        }
 
 	        tasks = taskSchedule.getTodaySchedule();
+*/
 
+			//tasks = new ArrayList<>(taskSchedule.getTodaySchedule());
 		}
 
 		@Override
@@ -489,16 +484,16 @@ extends TabPanel {
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelSchedule.column.time"); //$NON-NLS-1$
-			//else if (columnIndex == 1) return Msg.getString("TabPanelSchedule.column.task"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelSchedule.column.activity"); //$NON-NLS-1$
+			//else if (columnIndex == 2) return Msg.getString("TabPanelSchedule.column.location"); //$NON-NLS-1$
 			else return null;
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
-			//else if (column == 1) return tasks.get(row).getTaskName();
 			else if (column == 1) return tasks.get(row).getDoAction();
+			//else if (column == 2) return tasks.get(row).getLocation();
 			else return null;
 		}
 
@@ -508,25 +503,24 @@ extends TabPanel {
 		 * @param selectedSol
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
-	        int sol = taskSchedule.getSolCache();
+	        int todaySol = taskSchedule.getSolCache();
 
 	        // Load previous day's schedule if selected
-			if (sol != selectedSol) {
-				Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
-				tasks = schedules.get(selectedSol);
-			}
-
-			else {
+			if (todaySol == selectedSol) {
 				// Load today's schedule
-				tasks = taskSchedule.getTodaySchedule();
+				tasks = new CopyOnWriteArrayList<OneTask>(taskSchedule.getTodaySchedule());
+
+			}
+			else {
+				tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
 			}
 
 			// check if user selected hide repeated tasks checkbox
 			if (tasks != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
-				List<OneTask> thisSchedule = new ArrayList<OneTask>(tasks);
+				List<OneTask> thisSchedule = new CopyOnWriteArrayList<OneTask>(tasks);
 		        int i = thisSchedule.size() - 1;
-		        //for (int i = size - 1; i > 0; i--) {
+		        // TODO: do I need "thisSchedule" ? or just use "tasks"
 		        while (i > 0 ) {
 
 		        	OneTask currentTask = thisSchedule.get(i);

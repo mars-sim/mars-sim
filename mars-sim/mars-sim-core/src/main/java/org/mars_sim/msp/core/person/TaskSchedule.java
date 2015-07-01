@@ -34,7 +34,7 @@ public class TaskSchedule implements Serializable {
 	private Map <Integer, List<OneTask>> schedules;
 	private List<OneTask> todaySchedule;
 
-	private MarsClock time;
+	private MarsClock time, clock;
 
 	/**
 	 * Constructor.
@@ -68,20 +68,34 @@ public class TaskSchedule implements Serializable {
 			time = Simulation.instance().getMasterClock().getMarsClock();
 		startTime = (int) time.getMillisol();
 
-        // check for the passing of each day
-        int solElapsed = MarsClock.getSolOfYear(time);
-        if (solElapsed != solCache) {
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
-        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
-        	schedules.put(solCache, todaySchedule);
-        	// create a new schedule for the new day
-    		todaySchedule = new CopyOnWriteArrayList<OneTask>();
-        	solCache = solElapsed;
-        }
-        //if (currentSchedule.isEmpty()) {
+        //if (todaySchedule.isEmpty()) {
         todaySchedule.add(new OneTask(startTime, taskName, doAction));
 
 	}
+
+	  /**
+     * Performs the actions per frame
+     * @param time amount of time passing (in millisols).
+     */
+	// 2015-06-29 Added timePassing()
+    public void timePassing(double time) {
+	    if (clock == null)
+	    	clock = Simulation.instance().getMasterClock().getMarsClock();
+
+		int solElapsed = MarsClock.getSolOfYear(clock);
+		if (solElapsed != solCache) {
+        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
+
+        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
+        	schedules.put(solCache, todaySchedule);
+
+        	// create a new schedule for the new day
+    		todaySchedule = new CopyOnWriteArrayList<OneTask>();
+
+        	solCache = solElapsed;
+		}
+
+    }
 
 	/**
 	 * Gets all schedules of a person.

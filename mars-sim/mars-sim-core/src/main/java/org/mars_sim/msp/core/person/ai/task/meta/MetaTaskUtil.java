@@ -33,6 +33,7 @@ public class MetaTaskUtil {
         // Populate metaTasks list with all meta tasks.
         metaTasks.add(new AssistScientificStudyResearcherMeta());
         metaTasks.add(new CompileScientificStudyResultsMeta());
+        metaTasks.add(new ConnectWithEarthMeta());
         metaTasks.add(new ConsolidateContainersMeta());
         metaTasks.add(new ConstructBuildingMeta());
         metaTasks.add(new CookMealMeta());
@@ -111,6 +112,7 @@ public class MetaTaskUtil {
         robotMetaTasks.add(new WalkMeta());
 
     }
+
     /**
      * Gets a list of all meta tasks.
      * @return list of meta tasks.
@@ -126,6 +128,10 @@ public class MetaTaskUtil {
         return new ArrayList<MetaTask>(metaTasks);
     }
 
+    /**
+     * Converts a task name in String to Metatask
+     * @return meta tasks.
+     */
     public static MetaTask getMetaTask(String name) {
     	MetaTask metaTask = null;
     	Iterator<MetaTask> i = metaTasks.iterator();
