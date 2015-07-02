@@ -386,7 +386,7 @@ public class MarsNode {
 
       return popover;
 	}
-
+/*
 	public TitledPane createTemperatureGauge() {
 
 		TitledPane tp = new TitledPane();
@@ -401,13 +401,14 @@ public class MarsNode {
 
 	    return tp;
 	}
-
+*/
 	private Collection<TitledPane> createPanes(Settlement settlement){
       Collection<TitledPane> result = new ArrayList<TitledPane>();
       TitledPane tp = new TitledPane();
 
-      tp = createTemperatureGauge();
-      result.add(tp);
+      // TODO: need to hack this eu.hansolo.enzo package to make it small.
+      //tp = createTemperatureGauge();
+      //result.add(tp);
 
       tp = new TitledPane();
       tp.setText("Population");

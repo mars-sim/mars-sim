@@ -465,15 +465,18 @@ public class MasterClock implements Serializable { // Runnable,
 	            sleepTime = PERIOD - t2 + t1 - overSleepTime;
 	            //System.out.println("sleep : " + sleepTime/1_000_000 + "ms");
 
-	            if (sleepTime > 0) {
+	            if (sleepTime > 0 && keepRunning) {
 		            // Pause simulation to allow other threads to complete.
 		            try {
 		                //Thread.yield();
 		                //Thread.sleep(SLEEP_TIME);
 						TimeUnit.NANOSECONDS.sleep(sleepTime);
 		            }
-		            catch (Exception e) {
-		                logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
+		            //catch (Exception e) {
+		            //    logger.log(Level.WARNING, "program terminated while running sleep() in MasterClock.run() ", e);
+		            //}
+		            catch (InterruptedException e) {
+		            	Thread.currentThread().interrupt();
 		            }
 		            overSleepTime = (System.nanoTime() - t2) - sleepTime;
 

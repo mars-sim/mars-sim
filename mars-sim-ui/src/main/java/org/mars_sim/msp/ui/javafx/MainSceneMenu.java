@@ -400,13 +400,13 @@ public class MainSceneMenu extends MenuBar  {
         marsViewerItem.setOnAction(e ->  {
     			if (marsViewerItem.isSelected()) {
     				marsViewerItem.setSelected(true);
-    				//mainScene.openMarsNet();
-    				new MarsPanel(desktop);
-    				//MarsFire f = new MarsFire();
-    				//f.createMarsFire();
+
+
+    				//new MarsPanel(desktop);
+
     			}
     			else {
-    				//mainScene.openSwingTab();
+
     				marsViewerItem.setSelected(false);
     			}
     	});

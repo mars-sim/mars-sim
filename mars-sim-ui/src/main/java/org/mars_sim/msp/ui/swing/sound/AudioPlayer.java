@@ -87,8 +87,8 @@ implements LineListener {
 			public void run() {
 				if ((filepath != null) && filepath.length() != 0) {
 					if (filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
-						startPlayCompressedSound(filepath, loop);
-					} 
+						//startPlayCompressedSound(filepath, loop);
+					}
 				}
 			}
 
