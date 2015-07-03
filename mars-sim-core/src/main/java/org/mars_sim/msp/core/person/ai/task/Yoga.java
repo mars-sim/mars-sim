@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * The Yoga class is a task for practicing yoga to reduce stress.
  */
 public class Yoga
@@ -36,14 +36,14 @@ implements Serializable {
             "Task.phase.doingYoga")); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.7D;
+    private static final double STRESS_MODIFIER = -.3D;
 
-    /** 
+    /**
      * constructor.
      * @param person the person to perform the task
      */
     public Yoga(Person person) {
-        super(NAME, person, false, false, STRESS_MODIFIER, true, 
+        super(NAME, person, false, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(30D));
 
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {

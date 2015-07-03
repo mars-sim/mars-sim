@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -54,9 +55,11 @@ implements Serializable {
 	private transient MarsClock timeCache;
 	private transient double totalProbCache;
 	private transient Map<MetaTask, Double> taskProbCache;
+	private transient List<MetaTask> mtListCache;
 
 	private Person person = null;
 	private Robot robot = null;
+	//private MarsClock clock;
 
 	/**
 	 * Constructor.
@@ -72,7 +75,7 @@ implements Serializable {
 
 		// Initialize cache values.
 		timeCache = null;
-		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
 	}
 
@@ -506,13 +509,40 @@ implements Serializable {
 	private void calculateProbability() {
 		if (person != null) {
 
-			if (taskProbCache == null)
-				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+		    List<MetaTask> mtList = null;
+
+		    //String shiftType = person.getTaskSchedule().getShiftType();
+
+		    if (timeCache == null)
+		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
+		    int millisols =  (int) timeCache.getMillisol();
+		    boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+
+		    if (isShiftHour) {
+		    	mtList = MetaTaskUtil.getWorkHourTasks();
+		    }
+		    else {
+		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+		    }
+
+			if (taskProbCache == null) {
+		    	taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+			}
+
+
+		    if (mtListCache == null || !mtListCache.equals(mtList)) {
+		    	//System.out.println("!mtListCache.equals(mtList)");
+		    	taskProbCache = null;
+		    	mtListCache = mtList;
+		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+		    }
+
+		    //System.out.println("mtListCache is "+ mtListCache);
 
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
-			Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+			Iterator<MetaTask> i = mtListCache.iterator();
 
 			while (i.hasNext()) {
 				MetaTask metaTask = i.next();
@@ -535,13 +565,15 @@ implements Serializable {
 
 		else if (robot != null) {
 
+			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
+
 			if (taskProbCache == null)
-				taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
+				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
-			Iterator<MetaTask> i = MetaTaskUtil.getRobotMetaTasks().iterator();
+			Iterator<MetaTask> i = mtList.iterator();
 
 			while (i.hasNext()) {
 				MetaTask metaTask = i.next();

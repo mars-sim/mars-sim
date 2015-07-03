@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-/** 
+/**
  * The Relax class is a simple task that implements resting and doing nothing for a while.
  * The duration of the task is by default chosen randomly, up to 100 millisols.
  */
@@ -41,26 +41,26 @@ implements Serializable {
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.relax"); //$NON-NLS-1$
-	
+
     /** Task phases. */
     private static final TaskPhase RELAXING = new TaskPhase(Msg.getString(
             "Task.phase.relaxing")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.5D;
+	private static final double STRESS_MODIFIER = -.3D;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
 				RandomUtil.getRandomDouble(40D));
 
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {      	
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			try {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
@@ -74,7 +74,7 @@ implements Serializable {
 				endTask();
 			}
 		}
-		
+
 		if (!walkSite) {
 		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If person is in rover, walk to passenger activity spot.
@@ -92,15 +92,15 @@ implements Serializable {
 		addPhase(RELAXING);
 		setPhase(RELAXING);
 	}
-	
+
 	public Relax(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + 
+		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
 				RandomUtil.getRandomDouble(40D));
 
 		// If robot is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 		/*
-		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {      	
+		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			try {
 				Building recBuilding = getAvailableRecreationBuilding(robot);
 				if (recBuilding != null) {
@@ -132,7 +132,7 @@ implements Serializable {
 		addPhase(RELAXING);
 		setPhase(RELAXING);
 	}
-	
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.RECREATION;
@@ -141,7 +141,7 @@ implements Serializable {
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return BuildingFunction.ROBOTIC_STATION;
     }
-    
+
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
@@ -162,7 +162,7 @@ implements Serializable {
 	 */
 	private double relaxingPhase(double time) {
 		// Do nothing
-		return 0D; 
+		return 0D;
 	}
 
 	@Override
@@ -198,7 +198,7 @@ implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		return 0;	
+		return 0;
 	}
 
 	@Override
