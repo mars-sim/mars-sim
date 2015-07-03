@@ -26,7 +26,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.sleep"); //$NON-NLS-1$
@@ -46,12 +46,14 @@ public class SleepMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Crowding modifier.
+        // TODO: check if the person has already slept for 300 millisols (give or take)
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
         		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
             // Fatigue modifier.
             double fatigue = person.getPhysicalCondition().getFatigue();
+        	result = fatigue;
+
             if (fatigue > 500D) {
                 result += (fatigue - 500D) / 4D;
             }

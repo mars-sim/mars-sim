@@ -48,8 +48,8 @@ public class WriteReportMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE
-                		&& !person.getPreference().getTaskStatus(this)) {
+        || person.getLocationSituation() == LocationSituation.IN_VEHICLE)
+        	if (!person.getPreference().getTaskStatus(this)) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
@@ -67,7 +67,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 
 	            // Modify if working out is the person's favorite activity.
 	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
-	                result += 50D;
+	                result += 10D;
 	            }
 
 	            if (roleType == null)
@@ -76,7 +76,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            if (roleType.equals(RoleType.PRESIDENT)
 	                	|| roleType.equals(RoleType.MAYOR)
 	            		|| roleType.equals(RoleType.COMMANDER) )
-	            	result += 100D;
+	            	result += 50D;
 
 	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 	            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -85,7 +85,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
-	            	result += 50D;
+	            	result += 20D;
 
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();

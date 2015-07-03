@@ -154,7 +154,7 @@ public class SurfaceFeatures implements Serializable {
             result = 0D;
         } else {
             //double twilightAngle = z - 1.6708;
-            result = 9.354 - .2 * angleFromSun;
+            result = 8.354 - 5 * angleFromSun;
         }
 
 */
@@ -165,7 +165,7 @@ public class SurfaceFeatures implements Serializable {
     	        orbitInfo = mars.getOrbitInfo();
     	    }
     	}
-    	
+
     	if (orbitInfo != null) {
     	    double z =  orbitInfo.getSolarZenithAngle(location);
     	    //System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);

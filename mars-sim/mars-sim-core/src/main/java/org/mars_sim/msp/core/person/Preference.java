@@ -301,8 +301,8 @@ public class Preference implements Serializable {
 				}
 			}
 */
-			scheduleTask("WriteReportMeta", 500, 800, true, 750);
-			scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
+			//scheduleTask("WriteReportMeta", 500, 800, true, 750);
+			//scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
 
 			solCache = solElapsed;
 		}
@@ -337,7 +337,7 @@ public class Preference implements Serializable {
 
     }
 
-    public MetaTask convertTask2MetaTask(Task task) {
+    public static MetaTask convertTask2MetaTask(Task task) {
     	MetaTask result = null;
     	String name = task.getTaskName();
     	//System.out.println(" task name is " + name);

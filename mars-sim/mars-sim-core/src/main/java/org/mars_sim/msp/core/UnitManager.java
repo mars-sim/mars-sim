@@ -723,15 +723,15 @@ public class UnitManager implements Serializable {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 
-		// Randomly create all remaining people to fill the settlements to
-		// capacity.
+		// Randomly create all remaining people to fill the settlements to capacity.
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
+				int initPop = settlement.getInitialPopulation();
 
 				// Fill up the settlement by creating more people
-				while (settlement.getCurrentPopulationNum() < settlement.getInitialPopulation()) {
+				while (settlement.getCurrentPopulationNum() < initPop) {
 					PersonGender gender = PersonGender.FEMALE;
 					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 						gender = PersonGender.MALE;
@@ -763,7 +763,7 @@ public class UnitManager implements Serializable {
 					ChainOfCommand cc = settlement.getChainOfCommand();
 
 					// 2015-04-30 Assign a role to everyone
-					if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR) {
+					if (initPop >= POPULATION_WITH_MAYOR) {
 						cc.set7Divisions(true);
 						cc.assignSpecialiststo7Divisions(person);
 					} else {
@@ -773,10 +773,15 @@ public class UnitManager implements Serializable {
 				} // end of while
 
 				// 2015-04-30 Assign head and chiefs
-				if (settlement.getInitialPopulation() >= POPULATION_WITH_MAYOR)
+				if (initPop >= POPULATION_WITH_MAYOR) {
 					establishGovernment(settlement);
-				else
-					establishCommand(settlement, settlement.getInitialPopulation());
+				}
+				else {
+					establishCommand(settlement, initPop);
+				}
+
+				// 2015-07-02
+				setupShift(settlement, initPop);
 
 			} // end of while
 
@@ -784,6 +789,147 @@ public class UnitManager implements Serializable {
 			e.printStackTrace(System.err);
 			throw new IllegalStateException("People could not be created: " + e.getMessage(), e);
 		}
+	}
+
+	// 2015-07-02 Added setupShift()
+	public void setupShift(Settlement settlement, int pop) {
+
+		int numShift = 0;
+		String shiftType = null;
+		int numA = 0, numX = 0, numY = 0;
+
+		if (pop == 1) {
+			numShift = 1;
+		}
+		else if (pop <= 5) {
+			numShift = 2;
+		}
+		else {//if pop > 5
+			numShift = 3;
+
+		}
+		settlement.setNumShift(numShift);
+
+		Collection<Person> people = settlement.getAllAssociatedPeople();
+		for (Person p : people) {
+
+			if (numShift == 1)
+				shiftType = "N";
+
+			else if (numShift == 2) {
+
+				if (pop%numShift == 0) {
+
+					if (pop/numShift == 1) {
+						if (numA < 1) { // allow only 1 person with "A shift"
+							shiftType = "A";
+							numA++;
+						}
+						else
+							shiftType = "B";
+					}
+
+					else { // if (pop/numShift == 2) {
+						if (numA < 2) { // allow 2 persons with "A shift"
+							shiftType = "A";
+							numA++;
+						}
+						else
+							shiftType = "B";
+					}
+
+				}
+
+				else { //if (pop%numShift == 1) {
+
+					if (pop/numShift == 1) {
+						if (numA < 2) { // allow 2 persons with "A shift"
+							shiftType = "A";
+							numA++;
+						}
+						else
+							shiftType = "B";
+					}
+
+					else { // if (pop/numShift == 2) {
+						if (numA < 3) { // allow 3 persons with "A shift"
+							shiftType = "A";
+							numA++;
+						}
+						else
+							shiftType = "B";
+					}
+
+				}
+
+			}
+
+			else if (numShift == 3) {
+
+				if (pop%numShift == 0) {
+
+					int lim = pop/numShift;
+
+					if (numX < lim+1) { // allow up to lim person with "X shift"
+						shiftType = "X";
+						numX++;
+					}
+
+					else if (numY < lim+1) { // allow up to lim person with "Y shift"
+						shiftType = "Y";
+						numY++;
+					}
+
+					else
+						shiftType = "Z";
+
+				}
+
+				else if (pop%numShift == 1) {
+
+					int lim = pop/numShift;
+
+					if (numX < lim+1) { // allow up to lim person with "X shift"
+						shiftType = "X";
+						numX++;
+					}
+
+					else if (numY < lim+2) { // allow up to lim + 1 person with "Y shift"
+						shiftType = "Y";
+						numY++;
+					}
+
+					else
+						shiftType = "Z";
+
+				}
+
+				else  {//if (pop%numShift == 2) {
+
+					int lim = pop/numShift;
+
+					if (numX < lim+2) { // allow up to lim+1 person with "X shift"
+						shiftType = "X";
+						numX++;
+					}
+
+					else if (numY < lim+2) { // allow up to lim+1 person with "Y shift"
+						shiftType = "Y";
+						numY++;
+					}
+
+					else
+						shiftType = "Z";
+
+				}
+
+
+
+			}
+
+			p.getTaskSchedule().setShiftType(shiftType);
+		}
+
 	}
 
 	// 2015-04-28 Added establishCommand()

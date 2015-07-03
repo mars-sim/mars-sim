@@ -7,8 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.collections.ListUtils;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -17,6 +21,10 @@ public class MetaTaskUtil {
 
     // Static values.
     private static List<MetaTask> metaTasks = null;
+    private static List<MetaTask> workHourTasks = null;
+    private static List<MetaTask> nonWorkHourTasks = null;
+    private static List<MetaTask> allHourTasks = null;
+
     private static List<MetaTask> robotMetaTasks = null;
     /**
      * Private constructor for utility class.
@@ -30,6 +38,22 @@ public class MetaTaskUtil {
 
         metaTasks = new ArrayList<MetaTask>();
 
+        initWorkHourTasks();
+        initNonWorkHourTasks();
+        initAllHourTasks();
+
+        Set<MetaTask> s = new HashSet<>();
+
+        s.addAll(workHourTasks);
+        s.addAll(nonWorkHourTasks);
+        s.addAll(allHourTasks);
+
+        metaTasks.addAll(s);
+
+        //metaTasks = ListUtils.union(workHourTasks, nonWorkHourTasks);
+        //metaTasks = ListUtils.union(metaTasks, allHourTasks);
+
+/*
         // Populate metaTasks list with all meta tasks.
         metaTasks.add(new AssistScientificStudyResearcherMeta());
         metaTasks.add(new CompileScientificStudyResultsMeta());
@@ -58,6 +82,7 @@ public class MetaTaskUtil {
         metaTasks.add(new PrescribeMedicationMeta());
         metaTasks.add(new ProduceFoodMeta());
         metaTasks.add(new ProposeScientificStudyMeta());
+		metaTasks.add(new ReadMeta());
         metaTasks.add(new RelaxMeta());
         metaTasks.add(new RepairEVAMalfunctionMeta());
         metaTasks.add(new RepairMalfunctionMeta());
@@ -82,8 +107,115 @@ public class MetaTaskUtil {
         metaTasks.add(new WorkoutMeta());
         metaTasks.add(new WriteReportMeta());
         metaTasks.add(new YogaMeta());
-
+*/
     }
+
+
+    /**
+     * Lazy initialization of work hour metaTasks list.
+     */
+    private static void initWorkHourTasks() {
+
+        workHourTasks = new ArrayList<MetaTask>();
+
+    	List<MetaTask> tasks = new ArrayList<MetaTask>();
+
+        tasks.add(new AssistScientificStudyResearcherMeta());
+        tasks.add(new CompileScientificStudyResultsMeta());
+        tasks.add(new ConsolidateContainersMeta());
+        tasks.add(new ConstructBuildingMeta());
+        tasks.add(new CookMealMeta());
+        tasks.add(new DigLocalIceMeta());
+        tasks.add(new DigLocalRegolithMeta());
+        tasks.add(new InviteStudyCollaboratorMeta());
+        tasks.add(new LoadVehicleEVAMeta());
+        tasks.add(new LoadVehicleGarageMeta());
+        tasks.add(new MaintainGroundVehicleEVAMeta());
+        tasks.add(new MaintainGroundVehicleGarageMeta());
+        tasks.add(new MaintenanceEVAMeta());
+        tasks.add(new MaintenanceMeta());
+        tasks.add(new ManufactureConstructionMaterialsMeta());
+        tasks.add(new ManufactureGoodMeta());
+        tasks.add(new PeerReviewStudyPaperMeta());
+        tasks.add(new PerformLaboratoryExperimentMeta());
+        tasks.add(new PerformLaboratoryResearchMeta());
+        tasks.add(new PerformMathematicalModelingMeta());
+        tasks.add(new PrepareDessertMeta());
+        tasks.add(new ProduceFoodMeta());
+        tasks.add(new ProposeScientificStudyMeta());
+        tasks.add(new RespondToStudyInvitationMeta());
+        tasks.add(new RestingMedicalRecoveryMeta());
+        tasks.add(new ReviewJobReassignmentMeta());
+        tasks.add(new SalvageBuildingMeta());
+        tasks.add(new SalvageGoodMeta());
+        tasks.add(new StudyFieldSamplesMeta());
+        tasks.add(new TeachMeta());
+        tasks.add(new TendGreenhouseMeta());
+        tasks.add(new ToggleFuelPowerSourceMeta());
+        tasks.add(new ToggleResourceProcessMeta());
+        tasks.add(new UnloadVehicleEVAMeta());
+        tasks.add(new UnloadVehicleGarageMeta());
+        tasks.add(new WriteReportMeta());
+
+        initAllHourTasks();
+
+        Set<MetaTask> s = new HashSet<>();
+
+        s.addAll(tasks);
+        s.addAll(allHourTasks);
+
+        workHourTasks.addAll(s);
+    }
+
+    /**
+     * Lazy initialization of work hour metaTasks list.
+     */
+    private static void initNonWorkHourTasks() {
+
+    	nonWorkHourTasks = new ArrayList<MetaTask>();
+
+    	List<MetaTask> tasks = new ArrayList<MetaTask>();
+
+    	tasks.add(new ReadMeta());
+    	tasks.add(new ConnectWithEarthMeta());
+        tasks.add(new SleepMeta());
+        tasks.add(new WorkoutMeta());
+        tasks.add(new YogaMeta());
+
+        initAllHourTasks();
+
+        Set<MetaTask> s = new HashSet<>();
+
+        s.addAll(tasks);
+        s.addAll(allHourTasks);
+
+        nonWorkHourTasks.addAll(s);
+    }
+
+
+    /**
+     * Lazy initialization of work hour metaTasks list.
+     */
+    private static void initAllHourTasks() {
+
+        allHourTasks = new ArrayList<MetaTask>();
+
+        allHourTasks.add(new EatMealMeta());
+        allHourTasks.add(new ObserveAstronomicalObjectsMeta());
+        allHourTasks.add(new PrescribeMedicationMeta());
+        allHourTasks.add(new RelaxMeta());
+    	//allHourTasks.add(new ReadMeta());
+        allHourTasks.add(new RepairEVAMalfunctionMeta());
+        allHourTasks.add(new RepairMalfunctionMeta());
+        allHourTasks.add(new RequestMedicalTreatmentMeta());
+        allHourTasks.add(new RestingMedicalRecoveryMeta());
+        allHourTasks.add(new ReturnLightUtilityVehicleMeta());
+        allHourTasks.add(new SelfTreatHealthProblemMeta());
+        allHourTasks.add(new TreatMedicalPatientMeta()); // should this task be 24/7 ?
+        allHourTasks.add(new WalkMeta());
+    }
+
+
 
    private static void initializeRobotMetaTasks() {
 
@@ -113,20 +245,65 @@ public class MetaTaskUtil {
 
     }
 
-    /**
-     * Gets a list of all meta tasks.
-     * @return list of meta tasks.
-     */
-    public static List<MetaTask> getMetaTasks() {
+   /**
+    * Gets a list of all meta tasks.
+    * @return list of meta tasks.
+    */
+   public static List<MetaTask> getMetaTasks() {
 
-        // Lazy initialize meta tasks list if necessary.
-        if (metaTasks == null) {
-            initializeMetaTasks();
-        }
+       // Lazy initialize meta tasks list if necessary.
+       if (metaTasks == null) {
+           initializeMetaTasks();
+       }
 
-        // Return copy of meta task list.
-        return new ArrayList<MetaTask>(metaTasks);
-    }
+       // Return copy of meta task list.
+       return new ArrayList<MetaTask>(metaTasks);
+   }
+
+   /**
+    * Gets a list of all work hour meta tasks.
+    * @return list of work hour meta tasks.
+    */
+   public static List<MetaTask> getWorkHourTasks() {
+
+       // Lazy initialize work hour meta tasks list if necessary.
+       if (workHourTasks == null) {
+           initWorkHourTasks();
+       }
+
+       // Return copy of work hour meta task list.
+       return new ArrayList<MetaTask>(workHourTasks);
+   }
+
+   /**
+    * Gets a list of all non work hour meta tasks.
+    * @return list of work hour meta tasks.
+    */
+   public static List<MetaTask> getNonWorkHourTasks() {
+
+       // Lazy initialize non work hour meta tasks list if necessary.
+       if (nonWorkHourTasks == null) {
+           initNonWorkHourTasks();
+       }
+
+       // Return copy of non work hour meta task list.
+       return new ArrayList<MetaTask>(nonWorkHourTasks);
+   }
+
+   /**
+    * Gets a list of all hour meta tasks.
+    * @return list of all hour meta tasks.
+    */
+   public static List<MetaTask> getAllWorkHourTasks() {
+
+       // Lazy initialize all hour meta tasks list if necessary.
+       if (allHourTasks == null) {
+           initAllHourTasks();
+       }
+
+       // Return copy of all hour meta task list.
+       return new ArrayList<MetaTask>(allHourTasks);
+   }
 
     /**
      * Converts a task name in String to Metatask

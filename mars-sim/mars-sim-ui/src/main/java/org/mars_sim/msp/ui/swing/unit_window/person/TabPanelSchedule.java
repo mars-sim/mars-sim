@@ -32,10 +32,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -64,15 +66,19 @@ extends TabPanel {
 
 	//private int sol;
 	private int todayCache;
+	private int today ;
 
 	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
 	private Integer selectedSol;
-	private int today ;
 	private Integer todayInteger;
+
+	private String shiftType, shiftCache = null;
 
 	private JCheckBox hideRepeatedTasksCheckBox;
 	private JCheckBox realTimeUpdateCheckBox;
+	private JTextField shiftTF;
+
 
 	private JComboBoxMW<Object> comboBox;
 	private DefaultComboBoxModel<Object> comboBoxModel;
@@ -127,8 +133,19 @@ extends TabPanel {
 //		infoPanel.setBorder(new MarsPanelBorder());
 
        	// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(buttonPane);//, BorderLayout.NORTH);
+
+		shiftType = person.getTaskSchedule().getShiftType();
+		shiftCache = shiftType;
+		JLabel shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift"), JLabel.CENTER);
+		buttonPane.add(shiftLabel);
+
+		shiftTF = new JTextField(shiftCache);
+		shiftTF.setEditable(false);
+		shiftTF.setColumns(3);
+		buttonPane.add(shiftTF);
+		buttonPane.add(new JLabel("           "));
 
 		// Create the Storm Tracking button.
 		JButton button = new JButton("Open Planner");
@@ -278,6 +295,16 @@ extends TabPanel {
 	 */
 	public void update() {
 
+		if (person != null) {
+			shiftType = person.getTaskSchedule().getShiftType();
+
+			//if (shiftCache != null)
+			if (!shiftCache.equals(shiftType)) {
+				shiftCache = shiftType;
+				shiftTF.setText(shiftCache);
+			}
+		}
+
     	today = taskSchedule.getSolCache();
     	todayInteger = (Integer) today ;
        	selectedSol = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
@@ -308,6 +335,7 @@ extends TabPanel {
 				comboBox.setSelectedItem(todayInteger);
 				selectedSol = null;
 			}
+
 			todayCache = today;
     	}
 
@@ -322,6 +350,9 @@ extends TabPanel {
 			hideRepeatedCache = hideRepeated;
 			scheduleTableModel.update(hideRepeated, selectedSol);
 		}
+
+		if (isRealTimeUpdate)
+			scheduleTableModel.update(hideRepeated, todayInteger);
 	}
 
     public void setViewer(PlannerWindow w) {

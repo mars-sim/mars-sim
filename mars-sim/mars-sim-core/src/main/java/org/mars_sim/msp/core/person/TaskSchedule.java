@@ -30,11 +30,13 @@ public class TaskSchedule implements Serializable {
 	private String actorName;
 	private String taskName;
 	private String doAction;
+	private String shiftType;
 
 	private Map <Integer, List<OneTask>> schedules;
 	private List<OneTask> todaySchedule;
 
 	private MarsClock time, clock;
+	//private Shift shift;
 
 	/**
 	 * Constructor.
@@ -46,6 +48,8 @@ public class TaskSchedule implements Serializable {
 		this.solCache = 1;
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
+		//shift = new Shift()
+
 	}
 
 	public TaskSchedule(Robot robot) {
@@ -121,38 +125,83 @@ public class TaskSchedule implements Serializable {
 		return solCache;
 	}
 
+	//public Shift getShift() {
+	//	return shift;
+	//}
+
+	public String getShiftType() {
+		return shiftType;
+	}
+
+
+	public void setShiftType(String shiftType){
+		this.shiftType = shiftType;
+	}
+
+	public boolean isShiftHour(int millisols){
+		boolean result = false;
+		if (shiftType.equals("A")) {
+			if (millisols == 1000 || (millisols >= 0 && millisols <= 499))
+				result = true;
+		}
+
+		else if (shiftType.equals("B")) {
+			if (millisols >= 500 && millisols <= 999)
+				result = true;
+		}
+
+		if (shiftType.equals("X")) {
+			if (millisols == 1000 || (millisols >= 0 && millisols <= 333))
+				result = true;
+		}
+
+		else if (shiftType.equals("Y")) {
+			if (millisols >= 334 && millisols <= 665)
+				result = true;
+		}
+
+		else if (shiftType.equals("Z")) {
+			if (millisols >= 666 && millisols <= 999)
+				result = true;
+		}
+
+		return result;
+	}
+
 	/**
 	 * Gets the task name.
 	 * @return task name
-	 */
+
 	public String getTaskName() {
 		return taskName;
 	}
+*/
 
 	/**
 	 * Gets the actor's name.
 	 * @return actor's name
-	 */
+
 	public String getActorName() {
 		return actorName;
 	}
-
+*/
 	/**
 	 * Gets what the actor is doing
 	 * @return what the actor is doin
-	 */
+
 	public String getDoAction() {
 		return doAction;
 	}
+*/
 
 	/**
 	 * Gets the start time of the task.
 	 * @return start time
-	 */
+
 	public int getStartTime() {
 		return startTime;
 	}
-
+*/
 
 	public class OneTask implements Serializable {
 
@@ -196,4 +245,46 @@ public class TaskSchedule implements Serializable {
 
 	}
 
+/*
+	public class Shift implements Serializable {
+
+
+		private static final long serialVersionUID = 1L;
+
+		// Data members
+		private String shiftName;
+		private int startTime;
+		private int endTime;
+
+		public Shift(String shiftName, int startTime, int endTime) {
+			this.shiftName = shiftName;
+			this.startTime = startTime;
+			this.endTime = endTime;
+		}
+*
+		**
+		 * Gets the shift name
+		 * @return shift name
+		 *
+		public String getShiftName() {
+			return shiftName;
+		}
+
+		**
+		 * Gets the start time of the task
+		 * @return start time
+		 *
+		public int getStartTime() {
+			return startTime;
+		}
+
+		**
+		 * Gets the end time of the task
+		 * @return end time
+		 *
+		public int getEndTime() {
+			return endTime;
+		}
+	}
+*/
 }
