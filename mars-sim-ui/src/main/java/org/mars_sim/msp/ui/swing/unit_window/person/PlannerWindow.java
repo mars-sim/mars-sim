@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -52,11 +51,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
-import javafx.embed.swing.SwingNode;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 /**
  * The window for planning future activities.

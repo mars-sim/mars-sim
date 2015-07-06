@@ -55,16 +55,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-gvt</artifactId>
-			<version>1.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-script</artifactId>
-			<version>1.7</version>
-		</dependency>
-		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>
 			<version>5.0</version>
@@ -85,6 +75,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>8.40.9</version>
 		</dependency>
 		<dependency>
+		  <groupId>org.apache.xmlgraphics</groupId>
+		  <artifactId>batik-script</artifactId>
+		  <version>1.7</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.xmlgraphics</groupId>
+		  <artifactId>batik-gvt</artifactId>
+		  <version>1.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.7</version>
@@ -93,11 +93,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.jcraft</groupId>
 			<artifactId>jorbis</artifactId>
 			<version>0.0.17</version>
-		</dependency>
-		<dependency>
-			<groupId>eu.hansolo.enzo</groupId>
-			<artifactId>Enzo</artifactId>
-			<version>0.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -213,6 +208,29 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <artifactId>fontawesomefx</artifactId>
 	    <version>8.4</version>
 	</dependency>
+	<dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>testfx-core</artifactId>
+        <version>4.0.1-alpha</version>
+        <scope>test</scope>
+    </dependency>
+	<dependency>
+		<groupId>org.testfx</groupId>
+		<artifactId>testfx-junit</artifactId>
+		<version>4.0.1-alpha</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.loadui</groupId>
+		<artifactId>testFx</artifactId>
+		<version>3.1.2</version>
+	</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
@@ -220,5 +238,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<name>JME3 maven repo</name>
 			<url>http://updates.jmonkeyengine.org/maven/</url>
 		</repository>
+	    <repository>
+	        <id>maven-central-repo</id>
+	        <url>http://repo1.maven.org/maven2</url>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	    </repository>
+	    <repository>
+	        <id>sonatype-snapshots-repo</id>
+	        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	       </snapshots>
+	    </repository>
 	</repositories>
 </project>

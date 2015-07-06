@@ -18,6 +18,8 @@ import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
 import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import com.sun.management.OperatingSystemMXBean;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,6 +102,9 @@ public class MainScene {
 	private int memTotal;
 	private int memUsed, memUsedCache;
 	private int memFree;
+	private int processCpuLoad;
+	private int systemCpuLoad;
+
 
 	private StringProperty timeStamp;
 
@@ -112,6 +117,8 @@ public class MainScene {
 	private Text timeText;
 	private Text memUsedText;
 	private Text memMaxText;
+	private Text processCpuLoadText;
+	private Text systemCpuLoadText;
 	private Button memBtn, clkBtn;
 
 	private Stage stage;
@@ -132,6 +139,8 @@ public class MainScene {
 	private TransportWizard transportWizard;
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
+	@SuppressWarnings("restriction")
+	private OperatingSystemMXBean osBean;
 
 	//static {
    //     Font.loadFont(MainScene.class.getResource("/fxui/fonts/fontawesome-webfont.ttf").toExternalForm(), 10);
@@ -470,6 +479,21 @@ public class MainScene {
 		// statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth() +
 		// 10);
 
+		osBean = ManagementFactory.getPlatformMXBean(
+				com.sun.management.OperatingSystemMXBean.class);
+
+		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
+		processCpuLoadText = new Text(" Process CPU Load : " + processCpuLoad + " % ");
+		processCpuLoadText.setFill(Color.GREY);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getRightItems().add(processCpuLoadText);
+
+		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
+		systemCpuLoadText = new Text(" System CPU Load : " + systemCpuLoad + " % ");
+		systemCpuLoadText.setFill(Color.GREY);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getRightItems().add(systemCpuLoadText);
+
 		memBtn = new Button(" [Memory] ");
 		memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		memBtn.setTextFill(Color.ORANGE);
@@ -579,6 +603,15 @@ public class MainScene {
 			// memUsedText.setStyle("-fx-text-inner-color: orange;");
 		}
 		memUsedCache = memUsed;
+
+		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
+		processCpuLoadText.setText(" Process CPU Load : " + processCpuLoad + " % ");
+		//processCpuLoadText.setFill(Color.GREY);
+
+
+		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
+		systemCpuLoadText.setText(" System CPU Load : " + systemCpuLoad + " % ");
+		//systemCpuLoadText.setFill(Color.GREY);
 
 	}
 

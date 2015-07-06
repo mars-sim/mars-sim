@@ -12,7 +12,7 @@ import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
 import com.sun.javafx.iio.common.ImageLoaderImpl;
 
-@SuppressWarnings("restriction")
+//@SuppressWarnings("restriction")
 public class SvgImageLoader extends ImageLoaderImpl {
 
 	private static final int BYTES_PER_PIXEL = 4; // RGBA
