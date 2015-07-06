@@ -53,8 +53,9 @@ public class MasterClock implements Serializable { // Runnable,
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
 	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
-	private static final long PERIOD = 40_000_000L; //in nanoseconds
+	private static final long PERIOD = 40_000_000L; //in nanoseconds (25 FPS)
 	private static final int NO_DELAYS_PER_YIELD = 16;
+	private static final int MAX_FRAME_SKIPS = 10;
 
 	// Data members
 	/** Runnable flag. */
@@ -373,91 +374,16 @@ public class MasterClock implements Serializable { // Runnable,
 	        elapsedlast = uptimer.getUptimeMillis();
 
 	        // 2015-06-26 For variable sleepTime
-	        long lastTimeDiff;
-			long t1, t2, sleepTime, overSleepTime = 0L;
+			long t1, t2, sleepTime, overSleepTime = 0L, excess = 0L;
 	        int noDelays = 0;
 	        t1 = System.nanoTime();
 
 	        // Keep running until told not to
 	        keepRunning = true;
+
 	        while (keepRunning) {
 
-	            if (!isPaused) {
-
-	                // Update elapsed milliseconds.
-	                updateElapsedMilliseconds();
-	                // Get the time pulse length in millisols.
-	                double timePulse = getTimePulse();
-
-	                // Incrementing total time pulse number.
-	                totalPulses++;
-
-	                long startTime = System.nanoTime();
-	                //System.out.println("resolution : " + (System.nanoTime() - startTime));
-
-	                // Add time pulse length to Earth and Mars clocks.
-	                double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
-
-	                // TODO : if null
-	                //if (earthTime == null)
-	                //	earthTime = Simulation.instance().getMasterClock().getEarthClock();
-	                if (keepRunning)
-	                	earthTime.addTime(earthTimeDiff);
-
-	                marsTime.addTime(timePulse);
-
-	  		  		if (!isPaused || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() )
-	  		  			fireClockPulse(timePulse);
-
-	                long endTime = System.nanoTime();
-	                lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
-
-	                logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
-	            }
-
-	            if (saveSimulation) {
-	                // Save the simulation to a file.
-	                try {
-	                    Simulation.instance().saveSimulation(file, false);
-	                } catch (IOException e) {
-
-	                    logger.log(Level.SEVERE, "Could not save the simulation with file = "
-	                            + (file == null ? "null" : file.getPath()), e);
-	                    e.printStackTrace();
-	                }
-	                saveSimulation = false;
-	            }
-
-	            else if (autosaveSimulation) {
-	                // Autosave the simulation to a file.
-	                try {
-	                    Simulation.instance().saveSimulation(file, true);
-	                } catch (IOException e) {
-
-	                    logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
-	                            + (file == null ? "null" : file.getPath()), e);
-	                    e.printStackTrace();
-	                }
-	                autosaveSimulation = false;
-	            }
-
-	            else if (loadSimulation) {
-	                // Load the simulation from a file.
-	                if (file.exists() && file.canRead()) {
-	                    Simulation.instance().loadSimulation(file);
-	                    Simulation.instance().start();
-	                }
-	                else {
-	                    logger.warning("Cannot access file " + file.getPath() + ", not reading");
-	                }
-	                loadSimulation = false;
-	            }
-
-	            // Exit program if exitProgram flag is true.
-	            if (exitProgram) {
-	                exitProgram = false;
-	                System.exit(0);
-	            }
+	        	statusUpdate();
 
 		        // 2015-06-26 Refactored codes for variable sleepTime
 	            t2 = System.nanoTime();
@@ -478,10 +404,13 @@ public class MasterClock implements Serializable { // Runnable,
 		            catch (InterruptedException e) {
 		            	Thread.currentThread().interrupt();
 		            }
+
 		            overSleepTime = (System.nanoTime() - t2) - sleepTime;
 
 	            }
+
 	            else { // last frame went beyond the PERIOD
+	            	excess -= sleepTime;
 	            	overSleepTime = 0L;
 
 	            	if (++noDelays >= NO_DELAYS_PER_YIELD) {
@@ -492,105 +421,102 @@ public class MasterClock implements Serializable { // Runnable,
 
 	            t1 = System.nanoTime();
 
+	         // 2015-07-03 Added skipping the sleep time if the statusUpdate() or other processes take too long
+	            int skips = 0;
+	            while ((excess > PERIOD ) && (skips < MAX_FRAME_SKIPS)) {
+	            	excess -= PERIOD;
+	            	statusUpdate();
+	            	skips++;
+	            }
 	        } // end of while
 	    } // end of run
     }
 
+    // 2015-07-03  Relocated codes into statusUpdate()
+    private void statusUpdate() {
 
-    /**
-     * Run clock
-
-    public void run() {
-
-        keepRunning = true;
         long lastTimeDiff;
-        elapsedlast = uptimer.getUptimeMillis();
 
-        // Keep running until told not to
-        while (keepRunning) {
+        if (!isPaused) {
 
-            // Pause simulation to allow other threads to complete.
-            try {
-                Thread.yield();
-                Thread.sleep(SLEEP_TIME);
-            }
-            catch (Exception e) {
-                logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
-            }
+            // Update elapsed milliseconds.
+            updateElapsedMilliseconds();
+            // Get the time pulse length in millisols.
+            double timePulse = getTimePulse();
 
-            if (!isPaused) {
+            // Incrementing total time pulse number.
+            totalPulses++;
 
-                // Update elapsed milliseconds.
-                updateElapsedMilliseconds();
+            long startTime = System.nanoTime();
+            //System.out.println("resolution : " + (System.nanoTime() - startTime));
 
-                // Get the time pulse length in millisols.
-                double timePulse = getTimePulse();
+            // Add time pulse length to Earth and Mars clocks.
+            double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
 
-                // Incrementing total time pulse number.
-                totalPulses++;
+            // TODO : if null
+            //if (earthTime == null)
+            //	earthTime = Simulation.instance().getMasterClock().getEarthClock();
+            if (keepRunning)
+            	earthTime.addTime(earthTimeDiff);
 
-                long startTime = System.nanoTime();
+            marsTime.addTime(timePulse);
 
-                // Add time pulse length to Earth and Mars clocks.
-                double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
+		  		if (!isPaused || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() )
+		  			fireClockPulse(timePulse);
 
-                earthTime.addTime(earthTimeDiff);
-                marsTime.addTime(timePulse);
+            long endTime = System.nanoTime();
+            lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
 
-                fireClockPulse(timePulse);
-
-                long endTime = System.nanoTime();
-                lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
-
-                logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
-            }
-
-            if (saveSimulation) {
-                // Save the simulation to a file.
-                try {
-                    Simulation.instance().saveSimulation(file, false);
-                } catch (IOException e) {
-
-                    logger.log(Level.SEVERE, "Could not save the simulation with file = "
-                            + (file == null ? "null" : file.getPath()), e);
-                    e.printStackTrace();
-                }
-                saveSimulation = false;
-            }
-
-            else if (autosaveSimulation) {
-                // Autosave the simulation to a file.
-                try {
-                    Simulation.instance().saveSimulation(file, true);
-                } catch (IOException e) {
-
-                    logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
-                            + (file == null ? "null" : file.getPath()), e);
-                    e.printStackTrace();
-                }
-                autosaveSimulation = false;
-            }
-
-            else if (loadSimulation) {
-                // Load the simulation from a file.
-                if (file.exists() && file.canRead()) {
-                    Simulation.instance().loadSimulation(file);
-                    Simulation.instance().start();
-                }
-                else {
-                    logger.warning("Cannot access file " + file.getPath() + ", not reading");
-                }
-                loadSimulation = false;
-            }
-
-            // Exit program if exitProgram flag is true.
-            if (exitProgram) {
-                exitProgram = false;
-                System.exit(0);
-            }
+            logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
         }
+
+        if (saveSimulation) {
+            // Save the simulation to a file.
+            try {
+                Simulation.instance().saveSimulation(file, false);
+            } catch (IOException e) {
+
+                logger.log(Level.SEVERE, "Could not save the simulation with file = "
+                        + (file == null ? "null" : file.getPath()), e);
+                e.printStackTrace();
+            }
+            saveSimulation = false;
+        }
+
+        else if (autosaveSimulation) {
+            // Autosave the simulation to a file.
+            try {
+                Simulation.instance().saveSimulation(file, true);
+            } catch (IOException e) {
+
+                logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
+                        + (file == null ? "null" : file.getPath()), e);
+                e.printStackTrace();
+            }
+            autosaveSimulation = false;
+        }
+
+        else if (loadSimulation) {
+            // Load the simulation from a file.
+            if (file.exists() && file.canRead()) {
+                Simulation.instance().loadSimulation(file);
+                Simulation.instance().start();
+            }
+            else {
+                logger.warning("Cannot access file " + file.getPath() + ", not reading");
+            }
+            loadSimulation = false;
+        }
+
+        // Exit program if exitProgram flag is true.
+        if (exitProgram) {
+            exitProgram = false;
+            System.exit(0);
+        }
+
     }
-*/
+
+
     /**
      * Looks at the clock listener list and checks if each listener has already had a corresponding task in the clock listener task list.
      */

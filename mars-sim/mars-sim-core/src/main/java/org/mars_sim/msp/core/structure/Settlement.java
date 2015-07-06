@@ -87,6 +87,7 @@ implements LifeSupportType {
     private double zeroPopulationTime;
     private int scenarioID;
 	private int solCache = 1;
+	private int numShift;
 
     //2014-11-23 Added foodProductionOverride
     private boolean foodProductionOverride = false;
@@ -1167,6 +1168,10 @@ implements LifeSupportType {
 
     public ChainOfCommand getChainOfCommand() {
     	return chainOfCommand;
+    }
+
+    public void setNumShift(int numShift) {
+    	this.numShift = numShift;
     }
 
     @Override

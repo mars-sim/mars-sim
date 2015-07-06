@@ -2,7 +2,7 @@ package org.mars_sim.msp.ui.javafx.svg;
 
 import com.sun.javafx.iio.common.ImageDescriptor;
 
-@SuppressWarnings("restriction")
+//@SuppressWarnings("restriction")
 public class SvgDescriptor extends ImageDescriptor {
 
 	private static final String formatName = "SVG";

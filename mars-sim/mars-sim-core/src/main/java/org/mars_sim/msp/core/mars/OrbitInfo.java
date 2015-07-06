@@ -70,7 +70,7 @@ implements Serializable {
 	// as related to the occasional onset of global dust storms within the advance of this season.
 	// see http://www.giss.nasa.gov/tools/mars24/help/notes.html
 
-	private Map<Coordinates, Double> cosineSolarZenithAngleMap;
+	//private Map<Coordinates, Double> cosineSolarZenithAngleMap;
 
 	/** The solar zenith angle z */
 	//private double solarZenithAngle;
@@ -78,7 +78,8 @@ implements Serializable {
 	/** The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
 
-	private MarsClock marsClock, cosineSolarZenithAngleMapCacheTime;
+	private MarsClock marsClock;
+	//private cosineSolarZenithAngleMapCacheTime;
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo() {
@@ -91,9 +92,9 @@ implements Serializable {
 		//L_s_perihelion = 251D + 0.00645 * ( Simulation.instance().getMasterClock().getEarthClock().getYear() - 2000);
 		//L_s_aphelion = L_s_perihelion - 180D;
 
-		if (cosineSolarZenithAngleMap == null) {
-        	cosineSolarZenithAngleMap = new ConcurrentHashMap<>();
-        }
+		//if (cosineSolarZenithAngleMap == null) {
+        //	cosineSolarZenithAngleMap = new ConcurrentHashMap<>();
+        //}
 	}
 
 	/**
@@ -228,7 +229,7 @@ implements Serializable {
         //}
 
         // If location is not in cache, calculate
-       // if (!cosineSolarZenithAngleMap.containsKey(location)) {
+        //if (!cosineSolarZenithAngleMap.containsKey(location)) {
 
 			double solar_time = marsClock.getMillisol() ;
 			//System.out.println("solar_time is " + (int) solar_time);
@@ -295,6 +296,7 @@ implements Serializable {
 			result = Math.sin (lat) * sineSolarDeclinationAngle +  Math.cos (lat)  * Math.cos (d) * Math.cos (h) ;
 
 			return result;
+
 			//cosineSolarZenithAngleMap.put(location, result);
         //}
 

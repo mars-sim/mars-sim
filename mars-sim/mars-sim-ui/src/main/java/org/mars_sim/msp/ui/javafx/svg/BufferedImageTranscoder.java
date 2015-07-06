@@ -6,7 +6,8 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 
-/**
+/** see https://github.com/codecentric/javafxsvg
+ * 
  * Code based on: https://gist.github.com/ComFreek/b0684ac324c815232556
  * 
  * Many thanks to bb-generation for sharing this code!

@@ -8,6 +8,10 @@ import com.sun.javafx.iio.ImageLoader;
 import com.sun.javafx.iio.ImageLoaderFactory;
 import com.sun.javafx.iio.ImageStorage;
 
+
+// see https://github.com/codecentric/javafxsvg
+// https://blog.codecentric.de/en/2015/03/adding-custom-image-renderer-javafx-8/
+
 @SuppressWarnings("restriction")
 public class SvgImageLoaderFactory implements ImageLoaderFactory {
 	private static final ImageLoaderFactory instance = new SvgImageLoaderFactory();
