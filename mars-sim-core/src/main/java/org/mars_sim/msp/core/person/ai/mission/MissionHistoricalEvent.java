@@ -19,25 +19,36 @@ import org.mars_sim.msp.core.robot.Robot;
 public class MissionHistoricalEvent
 extends HistoricalEvent {
 
-	/**
-	 * Constructor 1.
-	 * @param person The person on the mission.
-	 * @param mission The mission with the event.
-	 * @param eventType The type of event.
-	 */
-	public MissionHistoricalEvent(Person person, Mission mission, EventType eventType) {
-		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.MISSION, eventType, person, mission.getName());
-	}
+//	/**
+//	 * Constructor 1.
+//	 * @param person The person on the mission.
+//	 * @param mission The mission with the event.
+//	 * @param eventType The type of event.
+//	 */
+//	public MissionHistoricalEvent(Person person, Mission mission, EventType eventType) {
+//		// Use HistoricalEvent constructor.
+//		super(HistoricalEventCategory.MISSION, eventType, person, mission.getName());
+//	}
+//	
+//	/**
+//	 * Constructor 2.
+//	 * @param robot The robot on the mission.
+//	 * @param mission The mission with the event.
+//	 * @param eventType The type of event.
+//	 */
+//	public MissionHistoricalEvent(Robot robot, Mission mission, EventType eventType) {
+//		// Use HistoricalEvent constructor.
+//		super(HistoricalEventCategory.MISSION, eventType, robot, mission.getName());
+//	}
 	
 	/**
-	 * Constructor 2.
-	 * @param robot The robot on the mission.
-	 * @param mission The mission with the event.
-	 * @param eventType The type of event.
-	 */
-	public MissionHistoricalEvent(Robot robot, Mission mission, EventType eventType) {
-		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.MISSION, eventType, robot, mission.getName());
-	}
+     * Constructor 1.
+     * @param person The person on the mission.
+     * @param mission The mission with the event.
+     * @param eventType The type of event.
+     */
+    public MissionHistoricalEvent(MissionMember member, Mission mission, EventType eventType) {
+        // Use HistoricalEvent constructor.
+        super(HistoricalEventCategory.MISSION, eventType, member, mission.getName());
+    }
 }

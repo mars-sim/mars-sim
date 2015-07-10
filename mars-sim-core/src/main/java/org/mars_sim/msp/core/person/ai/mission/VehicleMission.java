@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.08 2015-04-24
+ * @version 3.08 2015-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -119,12 +117,12 @@ implements UnitListener {
 		}
 	}
 	*/
-	protected VehicleMission(String name, Unit unit, int minPeople) {
+	protected VehicleMission(String name, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
-		super(name, unit, minPeople);
+		super(name, startingMember, minPeople);
 
-		Person person = null;
-		Robot robot = null;
+//		Person person = null;
+//		Robot robot = null;
 		
 		// Add mission phases.
 		addPhase(EMBARKING);
@@ -132,17 +130,20 @@ implements UnitListener {
 		addPhase(DISEMBARKING);
 
 
-		// Reserve a vehicle.	        
-		if (unit instanceof Person) {
-			person = (Person) unit;   
-			if (!reserveVehicle(person)) 
-				endMission("No reservable vehicles.");		
+		// Reserve a vehicle.	 
+		if (!reserveVehicle(startingMember)) {
+		    endMission("No reservable vehicles.");
 		}
-		else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			if (!reserveVehicle(robot)) 
-				endMission("No reservable vehicles.");		
-		}
+//		if (unit instanceof Person) {
+//			person = (Person) unit;   
+//			if (!reserveVehicle(person)) 
+//				endMission("No reservable vehicles.");		
+//		}
+//		else if (unit instanceof Robot) {
+//			robot = (Robot) unit;
+//			if (!reserveVehicle(robot)) 
+//				endMission("No reservable vehicles.");		
+//		}
 	}
 	
 	/**
@@ -180,10 +181,10 @@ implements UnitListener {
 		setVehicle(vehicle);
 	}
 	 */
-	protected VehicleMission(String name, Unit unit, int minPeople,
+	protected VehicleMission(String name, MissionMember startingMember, int minPeople,
 			Vehicle vehicle) {
 		// Use TravelMission constructor.
-		super(name, unit, minPeople);
+		super(name, startingMember, minPeople);
 
 		// Add mission phases.
 		addPhase(EMBARKING);
@@ -304,12 +305,12 @@ implements UnitListener {
 	 * @return true if vehicle is reserved, false if unable to.
 	 * @throws MissionException if error reserving vehicle.
 	 */
-	protected final boolean reserveVehicle(Person person) {
+	protected final boolean reserveVehicle(MissionMember member) {
 
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 
 		// Create list of best unreserved vehicles for the mission.
-		Iterator<Vehicle> i = getAvailableVehicles(person.getSettlement())
+		Iterator<Vehicle> i = getAvailableVehicles(member.getSettlement())
 				.iterator();
 		while (i.hasNext()) {
 			Vehicle availableVehicle = i.next();
@@ -339,41 +340,41 @@ implements UnitListener {
 
 		return hasVehicle();
 	}
-	protected final boolean reserveVehicle(Robot robot) {
-
-		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
-
-		// Create list of best unreserved vehicles for the mission.
-		Iterator<Vehicle> i = getAvailableVehicles(robot.getSettlement())
-				.iterator();
-		while (i.hasNext()) {
-			Vehicle availableVehicle = i.next();
-			if (bestVehicles.size() > 0) {
-				int comparison = compareVehicles(availableVehicle,
-						(Vehicle) bestVehicles.toArray()[0]);
-				if (comparison == 0) {
-					bestVehicles.add(availableVehicle);
-				}
-				else if (comparison == 1) {
-					bestVehicles.clear();
-					bestVehicles.add(availableVehicle);
-				}
-			} else
-				bestVehicles.add(availableVehicle);
-		}
-
-		// Randomly select from the best vehicles.
-		if (bestVehicles.size() > 0) {
-			int bestVehicleIndex = RandomUtil
-					.getRandomInt(bestVehicles.size() - 1);
-			try {
-				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
-			} catch (Exception e) {
-			}
-		}
-
-		return hasVehicle();
-	}
+//	protected final boolean reserveVehicle(Robot robot) {
+//
+//		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
+//
+//		// Create list of best unreserved vehicles for the mission.
+//		Iterator<Vehicle> i = getAvailableVehicles(robot.getSettlement())
+//				.iterator();
+//		while (i.hasNext()) {
+//			Vehicle availableVehicle = i.next();
+//			if (bestVehicles.size() > 0) {
+//				int comparison = compareVehicles(availableVehicle,
+//						(Vehicle) bestVehicles.toArray()[0]);
+//				if (comparison == 0) {
+//					bestVehicles.add(availableVehicle);
+//				}
+//				else if (comparison == 1) {
+//					bestVehicles.clear();
+//					bestVehicles.add(availableVehicle);
+//				}
+//			} else
+//				bestVehicles.add(availableVehicle);
+//		}
+//
+//		// Randomly select from the best vehicles.
+//		if (bestVehicles.size() > 0) {
+//			int bestVehicleIndex = RandomUtil
+//					.getRandomInt(bestVehicles.size() - 1);
+//			try {
+//				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
+//			} catch (Exception e) {
+//			}
+//		}
+//
+//		return hasVehicle();
+//	}
 	/**
 	 * Gets a collection of available vehicles at a settlement that are usable for this mission.
 	 * @param settlement the settlement to find vehicles.
@@ -498,43 +499,26 @@ implements UnitListener {
 		}
 	}
 
-	/**
-	 * The person performs the current phase of the mission.
-	 * @param person the person performing the phase.
-	 * @throws MissionException if problem performing the phase.
-	 */
-	protected void performPhase(Person person) {
-		super.performPhase(person);
+	@Override
+	protected void performPhase(MissionMember member) {
+		super.performPhase(member);
 		if (EMBARKING.equals(getPhase())) {
-			performEmbarkFromSettlementPhase(person);
+			performEmbarkFromSettlementPhase(member);
 		}
 		else if (TRAVELLING.equals(getPhase())) {
-			performTravelPhase(person);
+			performTravelPhase(member);
 		}
 		else if (DISEMBARKING.equals(getPhase())) {
-			performDisembarkToSettlementPhase(person, getCurrentNavpoint()
+			performDisembarkToSettlementPhase(member, getCurrentNavpoint()
 					.getSettlement());
 		}
 	}
-	protected void performPhase(Robot robot) {
-		super.performPhase(robot);
-		if (EMBARKING.equals(getPhase())) {
-			performEmbarkFromSettlementPhase(robot);
-		}
-		else if (TRAVELLING.equals(getPhase())) {
-			performTravelPhase(robot);
-		}
-		else if (DISEMBARKING.equals(getPhase())) {
-			performDisembarkToSettlementPhase(robot, getCurrentNavpoint()
-					.getSettlement());
-		}
-	}
+
 	/**
 	 * Performs the travel phase of the mission.
-	 * @param person the person currently performing the mission.
-	 * @throws MissionException if error performing phase.
+	 * @param member the mission member currently performing the mission.
 	 */
-	protected final void performTravelPhase(Person person) {
+	protected final void performTravelPhase(MissionMember member) {
 
 		NavPoint destination = getNextNavpoint();
 
@@ -543,31 +527,36 @@ implements UnitListener {
 				destination.getLocation());
 		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		if (!reachedDestination && !malfunction) {
-			// Don't operate vehicle if person was the last operator.
-			if (person != lastOperator) {
-				// If vehicle doesn't currently have an operator, set this person as the operator.
-				if (vehicle.getOperator() == null) {
-					if (operateVehicleTask != null) {
-						operateVehicleTask = getOperateVehicleTask(person,
-								operateVehicleTask.getTopPhase());
-					} else {
-						operateVehicleTask = getOperateVehicleTask(person, null);
-					}
-					assignTask(person, operateVehicleTask);
-					lastOperator = person;
-				} else {
-					// If emergency, make sure current operate vehicle task is pointed home.
-					if (!operateVehicleTask.getDestination().equals(
-							destination.getLocation())) {
-						operateVehicleTask.setDestination(destination
-								.getLocation());
-						setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
-								getNextNavpoint().getDescription())); //$NON-NLS-1$
-					}
-				}
-			} else {
-				lastOperator = null;
-			}
+		    
+		    if (member instanceof Person) {
+		        Person person = (Person) member;
+
+		        // Don't operate vehicle if person was the last operator.
+		        if (person != lastOperator) {
+		            // If vehicle doesn't currently have an operator, set this person as the operator.
+		            if (vehicle.getOperator() == null) {
+		                if (operateVehicleTask != null) {
+		                    operateVehicleTask = getOperateVehicleTask(person,
+		                            operateVehicleTask.getTopPhase());
+		                } else {
+		                    operateVehicleTask = getOperateVehicleTask(person, null);
+		                }
+		                assignTask(person, operateVehicleTask);
+		                lastOperator = person;
+		            } else {
+		                // If emergency, make sure current operate vehicle task is pointed home.
+		                if (!operateVehicleTask.getDestination().equals(
+		                        destination.getLocation())) {
+		                    operateVehicleTask.setDestination(destination
+		                            .getLocation());
+		                    setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+		                            getNextNavpoint().getDescription())); //$NON-NLS-1$
+		                }
+		            }
+		        } else {
+		            lastOperator = null;
+		        }
+		    }
 		}
 
 		// If the destination has been reached, end the phase.
@@ -581,7 +570,7 @@ implements UnitListener {
 		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
 
 			// If not, determine an emergency destination.
-			determineEmergencyDestination(person);
+			determineEmergencyDestination(member);
 		}
 
 		// If vehicle has unrepairable malfunction, end mission.
@@ -589,89 +578,81 @@ implements UnitListener {
 			endMission("unrepairable malfunction");
 		}
 	}
-	protected final void performTravelPhase(Robot robot) {
-
-		NavPoint destination = getNextNavpoint();
-
-		// If vehicle has not reached destination and isn't broken down, travel to destination.
-		boolean reachedDestination = vehicle.getCoordinates().equals(
-				destination.getLocation());
-		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
-		if (!reachedDestination && !malfunction) {
-			// Don't operate vehicle if robot was the last operator.
-			if (robot != lastOperator) {
-				// If vehicle doesn't currently have an operator, set this robot as the operator.
-				if (vehicle.getOperator() == null) {
-					if (operateVehicleTask != null) {
-						operateVehicleTask = getOperateVehicleTask(robot,
-								operateVehicleTask.getTopPhase());
-					} else {
-						operateVehicleTask = getOperateVehicleTask(robot, null);
-					}
-					assignTask(robot, operateVehicleTask);
-					lastOperator = robot;
-				} else {
-					// If emergency, make sure current operate vehicle task is pointed home.
-					if (!operateVehicleTask.getDestination().equals(
-							destination.getLocation())) {
-						operateVehicleTask.setDestination(destination
-								.getLocation());
-						setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
-								getNextNavpoint().getDescription())); //$NON-NLS-1$
-					}
-				}
-			} else {
-				lastOperator = null;
-			}
-		}
-
-		// If the destination has been reached, end the phase.
-		if (reachedDestination) {
-			reachedNextNode();
-			setPhaseEnded(true);
-		}
-
-		// Check if enough resources for remaining trip
-		// or if there is an emergency medical problem.
-		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
-
-			// If not, determine an emergency destination.
-			determineEmergencyDestination(robot);
-		}
-
-		// If vehicle has unrepairable malfunction, end mission.
-		if (hasUnrepairableMalfunction()) {
-			endMission("unrepairable malfunction");
-		}
-	}
+//	protected final void performTravelPhase(Robot robot) {
+//
+//		NavPoint destination = getNextNavpoint();
+//
+//		// If vehicle has not reached destination and isn't broken down, travel to destination.
+//		boolean reachedDestination = vehicle.getCoordinates().equals(
+//				destination.getLocation());
+//		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
+//		if (!reachedDestination && !malfunction) {
+//			// Don't operate vehicle if robot was the last operator.
+//			if (robot != lastOperator) {
+//				// If vehicle doesn't currently have an operator, set this robot as the operator.
+//				if (vehicle.getOperator() == null) {
+//					if (operateVehicleTask != null) {
+//						operateVehicleTask = getOperateVehicleTask(robot,
+//								operateVehicleTask.getTopPhase());
+//					} else {
+//						operateVehicleTask = getOperateVehicleTask(robot, null);
+//					}
+//					assignTask(robot, operateVehicleTask);
+//					lastOperator = robot;
+//				} else {
+//					// If emergency, make sure current operate vehicle task is pointed home.
+//					if (!operateVehicleTask.getDestination().equals(
+//							destination.getLocation())) {
+//						operateVehicleTask.setDestination(destination
+//								.getLocation());
+//						setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+//								getNextNavpoint().getDescription())); //$NON-NLS-1$
+//					}
+//				}
+//			} else {
+//				lastOperator = null;
+//			}
+//		}
+//
+//		// If the destination has been reached, end the phase.
+//		if (reachedDestination) {
+//			reachedNextNode();
+//			setPhaseEnded(true);
+//		}
+//
+//		// Check if enough resources for remaining trip
+//		// or if there is an emergency medical problem.
+//		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
+//
+//			// If not, determine an emergency destination.
+//			determineEmergencyDestination(robot);
+//		}
+//
+//		// If vehicle has unrepairable malfunction, end mission.
+//		if (hasUnrepairableMalfunction()) {
+//			endMission("unrepairable malfunction");
+//		}
+//	}
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
-	 * @param person the person operating the vehicle.
+	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
-	 * @throws MissionException if error creating OperateVehicle task.
 	 */
-	protected abstract OperateVehicle getOperateVehicleTask(Person person,
-			TaskPhase lastOperateVehicleTaskPhase);
-	protected abstract OperateVehicle getOperateVehicleTask(Robot robot,
+	protected abstract OperateVehicle getOperateVehicleTask(MissionMember member,
 			TaskPhase lastOperateVehicleTaskPhase);
 
 	/**
 	 * Performs the embark from settlement phase of the mission.
-	 * @param person the person currently performing the mission.
-	 * @throws MissionException if error performing phase.
+	 * @param member the mission member currently performing the mission.
 	 */
-	protected abstract void performEmbarkFromSettlementPhase(Person person);
-	protected abstract void performEmbarkFromSettlementPhase(Robot robot);
+	protected abstract void performEmbarkFromSettlementPhase(MissionMember member);
 
 	/**
 	 * Performs the disembark to settlement phase of the mission.
-	 * @param person the person currently performing the mission.
+	 * @param member the mission member currently performing the mission.
 	 * @param disembarkSettlement the settlement to be disembarked to.
-	 * @throws MissionException if error performing phase.
 	 */
-	protected abstract void performDisembarkToSettlementPhase(Person person,
-			Settlement disembarkSettlement);
-	protected abstract void performDisembarkToSettlementPhase(Robot robot,
+	protected abstract void performDisembarkToSettlementPhase(MissionMember member,
 			Settlement disembarkSettlement);
 
 	/**
@@ -727,26 +708,37 @@ implements UnitListener {
 	 */
 	protected final double getAverageVehicleSpeedForOperators() {
 
+	    double result = 0D;
+	    
 		double totalSpeed = 0D;
-		Iterator<Person> i = getPeople().iterator();
+		int count = 0;
+		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
-			totalSpeed += getAverageVehicleSpeedForOperator(i.next());
+		    MissionMember member = i.next();
+		    if (member instanceof Person) {
+		        totalSpeed += getAverageVehicleSpeedForOperator((Person) member);
+		        count++;
+		    }
 		}
 
-		return totalSpeed / getPeopleNumber();
+		if (count > 0) {
+		    result = totalSpeed / (double) count;
+		}
+		
+		return result;
 	}
 
 	/**
 	 * Gets the average speed of a vehicle with a given person operating it.
-	 * @param person the vehicle operator.
+	 * @param operator the vehicle operator.
 	 * @return average speed (km/h)
 	 */
-	private double getAverageVehicleSpeedForOperator(Person person) {
-		return OperateVehicle.getAverageVehicleSpeed(vehicle, person);
+	private double getAverageVehicleSpeedForOperator(VehicleOperator operator) {
+		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator);
 	}
-	private double getAverageVehicleSpeedForOperator(Robot robot) {
-		return OperateVehicle.getAverageVehicleSpeed(vehicle, robot);
-	}
+//	private double getAverageVehicleSpeedForOperator(Robot robot) {
+//		return OperateVehicle.getAverageVehicleSpeed(vehicle, robot);
+//	}
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
@@ -862,9 +854,9 @@ implements UnitListener {
 	/**
 	 * Determines the emergency destination settlement for the mission if one is reachable, otherwise sets the emergency
 	 * beacon and ends the mission.
-	 * @param person the person performing the mission.
+	 * @param member the mission member performing the mission.
 	 */
-	protected final void determineEmergencyDestination(Person person) {
+	protected final void determineEmergencyDestination(MissionMember member) {
 
 		// Determine closest settlement.
 		Settlement newDestination = findClosestSettlement();
@@ -890,7 +882,7 @@ implements UnitListener {
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(
-							person, this,
+							member, this,
 							EventType.MISSION_EMERGENCY_DESTINATION);
 					Simulation.instance().getEventManager().registerNewEvent(
 							newEvent);
@@ -910,51 +902,51 @@ implements UnitListener {
 		}
 	}
 	
-	protected final void determineEmergencyDestination(Robot robot) {
-
-		// Determine closest settlement.
-		Settlement newDestination = findClosestSettlement();
-		if (newDestination != null) {
-
-			// Check if enough resources to get to settlement.
-			double distance = getCurrentMissionLocation().getDistance(
-					newDestination.getCoordinates());
-			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
-					&& !hasEmergencyAllCrew()) {
-
-				// Check if closest settlement is already the next navpoint.
-				boolean sameDestination = false;
-				NavPoint nextNav = getNextNavpoint();
-				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
-					sameDestination = true;
-				}
-
-				if (!sameDestination) {
-					logger.severe(vehicle.getName()
-							+ " setting emergency destination to "
-							+ newDestination.getName() + ".");
-
-					// Creating emergency destination mission event.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(
-							robot, this,
-							EventType.MISSION_EMERGENCY_DESTINATION);
-					Simulation.instance().getEventManager().registerNewEvent(
-							newEvent);
-
-					// Set the new destination as the travel mission's next and final navpoint.
-					clearRemainingNavpoints();
-					addNavpoint(new NavPoint(newDestination.getCoordinates(),
-							newDestination, "emergency destination: "
-									+ newDestination.getName()));
-					associateAllMembersWithSettlement(newDestination);
-				}
-			} else {
-				endMission("Not enough resources to continue.");
-			}
-		} else {
-			endMission("No emergency settlement destination found.");
-		}
-	}
+//	protected final void determineEmergencyDestination(Robot robot) {
+//
+//		// Determine closest settlement.
+//		Settlement newDestination = findClosestSettlement();
+//		if (newDestination != null) {
+//
+//			// Check if enough resources to get to settlement.
+//			double distance = getCurrentMissionLocation().getDistance(
+//					newDestination.getCoordinates());
+//			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
+//					&& !hasEmergencyAllCrew()) {
+//
+//				// Check if closest settlement is already the next navpoint.
+//				boolean sameDestination = false;
+//				NavPoint nextNav = getNextNavpoint();
+//				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
+//					sameDestination = true;
+//				}
+//
+//				if (!sameDestination) {
+//					logger.severe(vehicle.getName()
+//							+ " setting emergency destination to "
+//							+ newDestination.getName() + ".");
+//
+//					// Creating emergency destination mission event.
+//					HistoricalEvent newEvent = new MissionHistoricalEvent(
+//							robot, this,
+//							EventType.MISSION_EMERGENCY_DESTINATION);
+//					Simulation.instance().getEventManager().registerNewEvent(
+//							newEvent);
+//
+//					// Set the new destination as the travel mission's next and final navpoint.
+//					clearRemainingNavpoints();
+//					addNavpoint(new NavPoint(newDestination.getCoordinates(),
+//							newDestination, "emergency destination: "
+//									+ newDestination.getName()));
+//					associateAllMembersWithSettlement(newDestination);
+//				}
+//			} else {
+//				endMission("Not enough resources to continue.");
+//			}
+//		} else {
+//			endMission("No emergency settlement destination found.");
+//		}
+//	}
 	
 	/**
 	 * Sets the vehicle's emergency beacon on or off.
@@ -992,32 +984,16 @@ implements UnitListener {
 		vehicle.setEmergencyBeacon(beaconOn);
 	}
 	*/
-	public void setEmergencyBeacon(Unit unit, Vehicle vehicle, boolean beaconOn) {
+	/**
+     * Sets the vehicle's emergency beacon on or off.
+     * @param member the mission member performing the mission.
+     * @param vehicle the vehicle on the mission.
+     * @param beaconOn true if beacon is on, false if not.
+     */
+	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn) {
+	    
 		// Creating mission emergency beacon event.
-		HistoricalEvent newEvent = null;
-		Person person = null;
-		Robot robot = null;
-		        
-		if (unit instanceof Person) {
-			person = (Person) unit;  
-			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);
-		}
-		else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);			
-		}
-
-		// TODO: for future debugging NullPointerException when calling registerNewEvent()		
-		else if (unit == null) {
-             //throw new IllegalStateException("unit is null");
-			// can use either person or robot
-			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);		
-		}
-		
-		if (newEvent == null) {
-			throw new IllegalStateException("newEvent is null"); 
-		}
-         
+		HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_EMERGENCY_BEACON);
          
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {

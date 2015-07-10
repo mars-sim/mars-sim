@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.08 2015-06-17
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -116,8 +115,8 @@ implements Serializable {
             exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
             explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
-            // Recruit additional people to mission.
-            recruitPeopleForMission(startingPerson);
+            // Recruit additional members to mission.
+            recruitMembersForMission(startingPerson);
 
             // Determine exploration sites
             try {
@@ -147,58 +146,58 @@ implements Serializable {
         setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
                 getStartingSettlement().getName())); //$NON-NLS-1$
     }
-    public Exploration(Robot startingRobot) {
-
-        // Use RoverMission constructor.
-        super(DEFAULT_DESCRIPTION, startingRobot, RoverMission.MIN_PEOPLE);
-
-        if (!isDone()) {
-
-            // Set mission capacity.
-            if (hasVehicle())
-                setMissionCapacity(getRover().getCrewCapacity());
-            int availableSuitNum = Mission
-                    .getNumberAvailableEVASuitsAtSettlement(startingRobot
-                            .getSettlement());
-            if (availableSuitNum < getMissionCapacity())
-                setMissionCapacity(availableSuitNum);
-
-            // Initialize data members.
-            setStartingSettlement(startingRobot.getSettlement());
-            exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
-            explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
-
-            // Recruit additional people to mission.
-            recruitRobotsForMission(startingRobot);
-
-            // Determine exploration sites
-            try {
-                if (hasVehicle()) {
-                    int skill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(),
-                            getPeopleNumber(), true), NUM_SITES, skill);
-                }
-            } catch (Exception e) {
-                endMission("Exploration sites could not be determined.");
-            }
-
-            // Add home settlement
-            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
-                    getStartingSettlement(), getStartingSettlement().getName()));
-
-            // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable())
-                endMission("Vehicle is not loadable. (Exploration)");
-        }
-
-        // Add exploring site phase.
-        addPhase(EXPLORE_SITE);
-
-        // Set initial mission phase.
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
-                getStartingSettlement().getName())); //$NON-NLS-1$
-    }
+//    public Exploration(Robot startingRobot) {
+//
+//        // Use RoverMission constructor.
+//        super(DEFAULT_DESCRIPTION, startingRobot, RoverMission.MIN_PEOPLE);
+//
+//        if (!isDone()) {
+//
+//            // Set mission capacity.
+//            if (hasVehicle())
+//                setMissionCapacity(getRover().getCrewCapacity());
+//            int availableSuitNum = Mission
+//                    .getNumberAvailableEVASuitsAtSettlement(startingRobot
+//                            .getSettlement());
+//            if (availableSuitNum < getMissionCapacity())
+//                setMissionCapacity(availableSuitNum);
+//
+//            // Initialize data members.
+//            setStartingSettlement(startingRobot.getSettlement());
+//            exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
+//            explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
+//
+//            // Recruit additional people to mission.
+//            recruitRobotsForMission(startingRobot);
+//
+//            // Determine exploration sites
+//            try {
+//                if (hasVehicle()) {
+//                    int skill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+//                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(),
+//                            getPeopleNumber(), true), NUM_SITES, skill);
+//                }
+//            } catch (Exception e) {
+//                endMission("Exploration sites could not be determined.");
+//            }
+//
+//            // Add home settlement
+//            addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
+//                    getStartingSettlement(), getStartingSettlement().getName()));
+//
+//            // Check if vehicle can carry enough supplies for the mission.
+//            if (hasVehicle() && !isVehicleLoadable())
+//                endMission("Vehicle is not loadable. (Exploration)");
+//        }
+//
+//        // Add exploring site phase.
+//        addPhase(EXPLORE_SITE);
+//
+//        // Set initial mission phase.
+//        setPhase(VehicleMission.EMBARKING);
+//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+//                getStartingSettlement().getName())); //$NON-NLS-1$
+//    }
     /**
      * Constructor with explicit data.
      * @param members collection of mission members.
@@ -208,12 +207,12 @@ implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public Exploration(Collection<Unit> members,
+    public Exploration(Collection<MissionMember> members,
             Settlement startingSettlement, List<Coordinates> explorationSites,
             Rover rover, String description) {
 
         // Use RoverMission constructor.
-        super(description, (Unit) members.toArray()[0], 1, rover);
+        super(description, (MissionMember) members.toArray()[0], 1, rover);
 
         setStartingSettlement(startingSettlement);
 
@@ -243,16 +242,17 @@ implements Serializable {
     	Robot robot = null;
     	
         // Add mission members.
-        Iterator<Unit> i = members.iterator();
+    	// TODO Refactor this.
+        Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
          	                    	
-	        Unit unit = i.next();
-	        if (unit instanceof Person) {
-	        	person = (Person) unit;
+	        MissionMember member = i.next();
+	        if (member instanceof Person) {
+	        	person = (Person) member;
 	        	person.getMind().setMission(this);
 	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
+	        else if (member instanceof Robot) {
+	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
 	        }    
         }
@@ -340,10 +340,11 @@ implements Serializable {
     }
 
     @Override
-    protected void performPhase(Person person) {
-        super.performPhase(person);
-        if (EXPLORE_SITE.equals(getPhase()))
-            exploringPhase(person);
+    protected void performPhase(MissionMember member) {
+        super.performPhase(member);
+        if (EXPLORE_SITE.equals(getPhase())) {
+            exploringPhase(member);
+        }
     }
 
     /**
@@ -354,21 +355,25 @@ implements Serializable {
         endExploringSite = true;
 
         // End each member's explore site task.
-        Iterator<Person> i = getPeople().iterator();
+        Iterator<MissionMember> i = getMembers().iterator();
         while (i.hasNext()) {
-            Task task = i.next().getMind().getTaskManager().getTask();
-            if (task instanceof ExploreSite) {
-                ((ExploreSite) task).endEVA();
+            MissionMember member = i.next();
+            if (member instanceof Person) {
+                Person person = (Person) member;
+                Task task = person.getMind().getTaskManager().getTask();
+                if (task instanceof ExploreSite) {
+                    ((ExploreSite) task).endEVA();
+                }
             }
         }
     }
 
     /**
      * Performs the explore site phase of the mission.
-     * @param person the person currently performing the mission
+     * @param member the mission member currently performing the mission
      * @throws MissionException if problem performing phase.
      */
-    private void exploringPhase(Person person) {
+    private void exploringPhase(MissionMember member) {
 
         // Add new explored site if just starting exploring.
         if (currentSite == null) {
@@ -382,13 +387,18 @@ implements Serializable {
         MarsClock currentTime = (MarsClock) Simulation.instance()
                 .getMasterClock().getMarsClock().clone();
         double timeDiff = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
-        if (timeDiff >= EXPLORING_SITE_TIME)
+        if (timeDiff >= EXPLORING_SITE_TIME) {
             timeExpired = true;
+        }
         
         // Update exploration site completion.
         double completion = timeDiff / EXPLORING_SITE_TIME;
-        if (completion > 1D) completion = 1D;
-        else if (completion < 0D) completion = 0D;
+        if (completion > 1D) {
+            completion = 1D;
+        }
+        else if (completion < 0D) {
+            completion = 0D;
+        }
         explorationSiteCompletion.put(getCurrentNavpoint().getDescription(), completion);
         fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpoint().getDescription());
 
@@ -406,10 +416,11 @@ implements Serializable {
 
             // Determine if no one can start the explore site task.
             boolean nobodyExplore = true;
-            Iterator<Person> j = getPeople().iterator();
+            Iterator<MissionMember> j = getMembers().iterator();
             while (j.hasNext()) {
-                if (ExploreSite.canExploreSite(j.next(), getRover()))
+                if (ExploreSite.canExploreSite(j.next(), getRover())) {
                     nobodyExplore = false;
+                }
             }
 
             // If no one can explore the site and this is not due to it just being
@@ -429,18 +440,23 @@ implements Serializable {
             // Check if enough resources for remaining trip.
             if (!hasEnoughResourcesForRemainingMission(false)) {
                 // If not, determine an emergency destination.
-                determineEmergencyDestination(person);
+                determineEmergencyDestination(member);
                 setPhaseEnded(true);
             }
         } 
         else {
             // If exploration time has expired for the site, have everyone end their exploration tasks.
             if (timeExpired) {
-                Iterator<Person> i = getPeople().iterator();
+                Iterator<MissionMember> i = getMembers().iterator();
                 while (i.hasNext()) {
-                    Task task = i.next().getMind().getTaskManager().getTask();
-                    if ((task != null) && (task instanceof ExploreSite))
-                        ((ExploreSite) task).endEVA();
+                    MissionMember tempMember = i.next();
+                    if (tempMember instanceof Person) {
+                        Person tempPerson = (Person) tempMember;
+                        Task task = tempPerson.getMind().getTaskManager().getTask();
+                        if ((task != null) && (task instanceof ExploreSite)) {
+                            ((ExploreSite) task).endEVA();
+                        }
+                    }
                 }
             }
         }
@@ -448,13 +464,18 @@ implements Serializable {
         if (!getPhaseEnded()) {
 
             if (!endExploringSite && !timeExpired) {
-                // If person can explore the site, start that task.
-                if (ExploreSite.canExploreSite(person, getRover())) {
-                    assignTask(person, new ExploreSite(person, currentSite,
-                            (Rover) getVehicle()));
+                // TODO Refactor this.
+                if (member instanceof Person) {
+                    Person person = (Person) member;
+                    // If person can explore the site, start that task.
+                    if (ExploreSite.canExploreSite(person, getRover())) {
+                        assignTask(person, new ExploreSite(person, currentSite,
+                                (Rover) getVehicle()));
+                    }
                 }
             }
-        } else {
+        } 
+        else {
             currentSite.setExplored(true);
             currentSite = null;
         }
@@ -492,48 +513,22 @@ implements Serializable {
     }
 
     @Override
-    protected boolean isCapableOfMission(Person person) {
-        if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (person.getSettlement() == getStartingSettlement())
-                    return true;
+    protected boolean isCapableOfMission(MissionMember member) {
+        boolean result = super.isCapableOfMission(member);
+        
+        if (result) {
+            boolean atStartingSettlement = false;
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == getStartingSettlement()) {
+                    atStartingSettlement = true;
+                }
             }
+            result = atStartingSettlement;
         }
-        return false;
+        
+        return result;
     }
 
-    @Override
-    protected void recruitPeopleForMission(Person startingPerson) {
-        super.recruitPeopleForMission(startingPerson);
-
-        // Make sure there is at least one person left at the starting settlement.
-        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
-                startingPerson)) {
-            // Remove last person added to the mission.
-            Person lastPerson = (Person) getPeople().toArray()[getPeopleNumber() - 1];
-            if (lastPerson != null) {
-                lastPerson.getMind().setMission(null);
-                if (getPeopleNumber() < getMinPeople())
-                    endMission("Not enough members.");
-            }
-        }
-    }
-    @Override
-    protected void recruitRobotsForMission(Robot startingRobot) {
-        super.recruitRobotsForMission(startingRobot);
-
-        // Make sure there is at least one person left at the starting settlement.
-        //if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
-         //       startingRobot)) {
-            // Remove last person added to the mission.
-        	Robot lastRobot = (Robot) getRobots().toArray()[getRobotsNumber() - 1];
-            if (lastRobot != null) {
-                lastRobot.getBotMind().setMission(null);
-                if (getRobotsNumber() < getMinRobots())
-                    endMission("Not enough bot members.");
-            }
-        //}
-    }
     @Override
     public double getEstimatedRemainingMissionTime(boolean useBuffer) {
         double result = super.getEstimatedRemainingMissionTime(useBuffer);

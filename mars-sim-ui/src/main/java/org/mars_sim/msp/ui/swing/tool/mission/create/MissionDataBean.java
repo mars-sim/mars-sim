@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
@@ -49,7 +48,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
-	private Collection<Unit> mixedMembers;
+	private Collection<MissionMember> mixedMembers;
 	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
@@ -268,7 +267,7 @@ class MissionDataBean {
 		
 	}
 	
-	Collection<Unit> getMixedMembers() {
+	Collection<MissionMember> getMixedMembers() {
 		return mixedMembers;
 	}	
 	/**
@@ -279,7 +278,7 @@ class MissionDataBean {
 		this.members = members;
 	}
 	
-	void setMixedMembers(Collection<Unit> mixedMembers) {
+	void setMixedMembers(Collection<MissionMember> mixedMembers) {
 		this.mixedMembers = mixedMembers;
 	}
 	/**

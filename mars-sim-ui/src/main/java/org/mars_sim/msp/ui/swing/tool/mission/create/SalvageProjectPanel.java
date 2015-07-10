@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageProjectPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 
@@ -29,9 +28,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -301,17 +300,18 @@ extends WizardPanel {
                 	
                     int memberNum = getWizard().getMissionData().getMixedMembers().size();
                     // Add mission members.
-                    Iterator<Unit> i = getWizard().getMissionData().getMixedMembers().iterator();
+                    Iterator<MissionMember> i = getWizard().getMissionData().getMixedMembers().iterator();
                     while (i.hasNext()) {
-                     	                    	
-            	        Unit unit = i.next();
-            	        if (unit instanceof Person) {
-            	        	person = (Person) unit;
+                     	
+                        // TODO Refactor
+                        MissionMember member = i.next();
+            	        if (member instanceof Person) {
+            	        	person = (Person) member;
             	        	int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
                             totalSkill += constructionSkill;
             	        }
-            	        else if (unit instanceof Robot) {
-            	        	robot = (Robot) unit;
+            	        else if (member instanceof Robot) {
+            	        	robot = (Robot) member;
             	        	int constructionSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
                             totalSkill += constructionSkill;
             	        }    

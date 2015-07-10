@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.07 2014-10-10
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -101,7 +100,7 @@ implements Serializable {
             if (vehicleTarget != null) {
                 if (getRescuePeopleNum(vehicleTarget) > 0) {
                     rescue = true;
-                    setMinPeople(1);
+                    setMinMembers(1);
                     setDescription(Msg.getString("Mission.description.rescueSalvageVehicle.rescue", 
                             vehicleTarget.getName())); //$NON-NLS-1$)
                 }
@@ -114,9 +113,9 @@ implements Serializable {
                 addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
                 addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(), getStartingSettlement().getName()));
 
-                // Recruit additional people to mission.
+                // Recruit additional members to mission.
                 if (!isDone()) {
-                    recruitPeopleForMission(startingPerson);
+                    recruitMembersForMission(startingPerson);
                 }
 
                 // Check if vehicle can carry enough supplies for the mission.
@@ -147,11 +146,11 @@ implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public RescueSalvageVehicle(Collection<Unit> members, Settlement startingSettlement, 
+    public RescueSalvageVehicle(Collection<MissionMember> members, Settlement startingSettlement, 
             Vehicle vehicleTarget, Rover rover, String description) {
 
         // Use RoverMission constructor.
-        super(description, (Unit) members.toArray()[0], 1, rover);
+        super(description, (MissionMember) members.toArray()[0], 1, rover);
 
         setStartingSettlement(startingSettlement);
         this.vehicleTarget = vehicleTarget;
@@ -169,16 +168,16 @@ implements Serializable {
     	Robot robot = null;
     	
         // Add mission members.
-        Iterator<Unit> i = members.iterator();
+        Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
-         	                    	
-	        Unit unit = i.next();
-	        if (unit instanceof Person) {
-	        	person = (Person) unit;
+            MissionMember member = i.next();
+            // TODO refactor
+	        if (member instanceof Person) {
+	        	person = (Person) member;
 	        	person.getMind().setMission(this);
 	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
+	        else if (member instanceof Robot) {
+	        	robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
 	        }    
         }
@@ -295,24 +294,19 @@ implements Serializable {
         }
     }
 
-    /**
-     * The person performs the current phase of the mission.
-     * @param person the person performing the phase.
-     * @throws MissionException if problem performing the phase.
-     */
-    protected void performPhase(Person person) {
-        super.performPhase(person);
+    @Override
+    protected void performPhase(MissionMember member) {
+        super.performPhase(member);
         if (RENDEZVOUS.equals(getPhase())) {
-            rendezvousPhase(person);
+            rendezvousPhase(member);
         }
     }
 
     /** 
      * Performs the rendezvous phase of the mission.
-     * @param person the person currently performing the mission
-     * @throws MissionException if problem performing rendezvous phase.
+     * @param member the mission member currently performing the mission.
      */
-    private void rendezvousPhase(Person person) {
+    private void rendezvousPhase(MissionMember member) {
 
         logger.info(getVehicle().getName() + " rendezvous with " + vehicleTarget.getName());
 
@@ -345,7 +339,7 @@ implements Serializable {
         }
 
         // Turn off vehicle's emergency beacon.
-        setEmergencyBeacon(person, vehicleTarget, false);
+        setEmergencyBeacon(member, vehicleTarget, false);
 
         // Hook vehicle up for towing.
         getRover().setTowedVehicle(vehicleTarget);
@@ -354,7 +348,7 @@ implements Serializable {
         setPhaseEnded(true);
 
         // Set mission event.
-        HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RENDEZVOUS);
+        HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_RENDEZVOUS);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 
@@ -634,46 +628,41 @@ implements Serializable {
         }
     }
 
-    /**
-     * Gets the mission qualification value for the person.
-     * Person is qualified and interested in joining the mission if the value is larger than 0.
-     * The larger the qualification value, the more likely the person will be picked for the mission.
-     * Qualification values of zero or negative will not join missions.
-     * @param person the person to check.
-     * @return mission qualification value.
-     * @throws MissionException if problem finding mission qualification.
-     */
     @Override
-    protected double getMissionQualification(Person person) {
+    protected double getMissionQualification(MissionMember member) {
         double result = 0D;
 
-        if (isCapableOfMission(person)) {
-            result = super.getMissionQualification(person);
+//        if (isCapableOfMission(member)) {
+            result = super.getMissionQualification(member);
 
-            // If person has the "Driver" job, add 1 to their qualification.
-            if (person.getMind().getJob() instanceof Driver) {
-                result += 1D;
+            if (member instanceof Person) {
+                Person person = (Person) member;
+
+                // If person has the "Driver" job, add 1 to their qualification.
+                if (person.getMind().getJob() instanceof Driver) {
+                    result += 1D;
+                }
             }
-        }
+//        }
 
         return result;
     }
 
-    /**
-     * Checks to see if a person is capable of joining a mission.
-     * @param person the person to check.
-     * @return true if person could join mission.
-     */
     @Override
-    protected boolean isCapableOfMission(Person person) {
-        if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (person.getSettlement() == getStartingSettlement()) {
-                    return true;
+    protected boolean isCapableOfMission(MissionMember member) {
+        boolean result = super.isCapableOfMission(member);
+        
+        if (result) {
+            boolean atStartingSettlement = false;
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == getStartingSettlement()) {
+                    atStartingSettlement = true;
                 }
             }
+            result = atStartingSettlement;
         }
-        return false;
+        
+        return result;
     }
 
     /**
@@ -712,37 +701,6 @@ implements Serializable {
         }
 
         return result;
-    }
-
-    /**
-     * Recruits new people into the mission.
-     * @param startingPerson the person starting the mission.
-     */
-    @Override
-    protected void recruitPeopleForMission(Person startingPerson) {
-        super.recruitPeopleForMission(startingPerson);
-
-        // Make sure there is at least one person left at the starting settlement.
-        // If salvage mission, otherwise ignore if rescue mission.
-        if (!rescue) {
-            if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
-                // Remove last person added to the mission.
-                Object[] array = getPeople().toArray();
-                Person lastPerson = null;
-                int amount = getPeopleNumber() - 1;
-
-                if(amount > 0 && amount < array.length) {
-                    lastPerson= (Person) array[amount];
-                }
-
-                if (lastPerson != null) {
-                    lastPerson.getMind().setMission(null);
-                    if (getPeopleNumber() < getMinPeople()) {
-                        endMission("Not enough members.");
-                    }
-                }
-            }
-        }
     }
 
     /**

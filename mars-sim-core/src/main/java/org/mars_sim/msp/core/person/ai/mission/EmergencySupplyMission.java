@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.08 2015-06-17
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -132,9 +133,9 @@ implements Serializable {
                 // Determine emergency supplies.
                 determineNeededEmergencySupplies();
             
-                // Recruit additional people to mission.
+                // Recruit additional members to mission.
                 if (!isDone()) {
-                    recruitPeopleForMission(startingPerson);
+                    recruitMembersForMission(startingPerson);
                 }
             }
             else {
@@ -294,22 +295,22 @@ implements Serializable {
     }
     
     @Override
-    protected void performPhase(Person person) {
-        super.performPhase(person);
+    protected void performPhase(MissionMember member) {
+        super.performPhase(member);
         if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
-            performSupplyDeliveryDisembarkingPhase(person);
+            performSupplyDeliveryDisembarkingPhase(member);
         } else if (SUPPLY_DELIVERY.equals(getPhase())) {
-            performSupplyDeliveryPhase(person);
+            performSupplyDeliveryPhase(member);
         } else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
-            performLoadReturnTripSuppliesPhase(person);
+            performLoadReturnTripSuppliesPhase(member);
         } else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
-            performReturnTripEmbarkingPhase(person);
+            performReturnTripEmbarkingPhase(member);
         }
     }
 
     @Override
-    protected void performEmbarkFromSettlementPhase(Person person) {
-        super.performEmbarkFromSettlementPhase(person);
+    protected void performEmbarkFromSettlementPhase(MissionMember member) {
+        super.performEmbarkFromSettlementPhase(member);
 
         // Set emergency vehicle (if any) to be towed.
         if (!isDone() && (getRover().getTowedVehicle() == null)) {
@@ -323,7 +324,7 @@ implements Serializable {
     }
     
     @Override
-    protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) {
+    protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
 
         // Unload towed vehicle if any.
         if (!isDone() && (getRover().getTowedVehicle() != null)) {
@@ -334,14 +335,14 @@ implements Serializable {
             emergencyVehicle.determinedSettlementParkedLocationAndFacing();
         }
 
-        super.performDisembarkToSettlementPhase(person, disembarkSettlement);
+        super.performDisembarkToSettlementPhase(member, disembarkSettlement);
     }
     
     /**
      * Perform the supply delivery disembarking phase.
-     * @param person the person performing the phase.
+     * @param member the member performing the phase.
      */
-    private void performSupplyDeliveryDisembarkingPhase(Person person) {
+    private void performSupplyDeliveryDisembarkingPhase(MissionMember member) {
 
         // If rover is not parked at settlement, park it.
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
@@ -353,8 +354,8 @@ implements Serializable {
             BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), emergencySettlement);
         }
 
-        // Have person exit rover if necessary.
-        if (person.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+        // Have member exit rover if necessary.
+        if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
             
             // Get random inhabitable building at emergency settlement.
             Building destinationBuilding = emergencySettlement.getBuildingManager().
@@ -364,11 +365,23 @@ implements Serializable {
                 Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
                         destinationLoc.getY(), destinationBuilding);
                 
-                if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-                    assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+                if (member instanceof Person) {
+                    Person person = (Person) member;
+                    if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+                        assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+                    }
+                    else {
+                        logger.severe("Unable to walk to building " + destinationBuilding);
+                    }
                 }
-                else {
-                    logger.severe("Unable to walk to building " + destinationBuilding);
+                else if (member instanceof Robot) {
+                    Robot robot = (Robot) member;
+                    if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+                        assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+                    }
+                    else {
+                        logger.severe("Unable to walk to building " + destinationBuilding);
+                    }
                 }
             }
             else {
@@ -385,9 +398,9 @@ implements Serializable {
     
     /**
      * Perform the supply delivery phase.
-     * @param person the person performing the phase.
+     * @param member the mission member performing the phase.
      */
-    private void performSupplyDeliveryPhase(Person person) {
+    private void performSupplyDeliveryPhase(MissionMember member) {
         
         // Unload towed vehicle (if necessary).
         if (getRover().getTowedVehicle() != null) {
@@ -403,15 +416,19 @@ implements Serializable {
         if (!roverUnloaded) {
             // Random chance of having person unload (this allows person to do other things sometimes)
             if (RandomUtil.lessThanRandPercent(50)) {
-                if (isRoverInAGarage()) {
-                    assignTask(person, new UnloadVehicleGarage(person, getRover()));
-                }
-                else {
-                    // Check if it is day time.
-                    SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                    if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
-                            surface.inDarkPolarRegion(person.getCoordinates())) {
-                        assignTask(person, new UnloadVehicleEVA(person, getRover()));
+                // TODO Refactor to allow robots.
+                if (member instanceof Person) {
+                    Person person = (Person) member;
+                    if (isRoverInAGarage()) {
+                        assignTask(person, new UnloadVehicleGarage(person, getRover()));
+                    }
+                    else {
+                        // Check if it is day time.
+                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                        if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
+                                surface.inDarkPolarRegion(person.getCoordinates())) {
+                            assignTask(person, new UnloadVehicleEVA(person, getRover()));
+                        }
                     }
                 }
 
@@ -428,9 +445,9 @@ implements Serializable {
     
     /**
      * Perform the load return trip supplies phase.
-     * @param person the person performing the phase.
+     * @param member the mission member performing the phase.
      */
-    private void performLoadReturnTripSuppliesPhase(Person person) {
+    private void performLoadReturnTripSuppliesPhase(MissionMember member) {
         
         if (!isDone() && !isVehicleLoaded()) {
 
@@ -438,17 +455,21 @@ implements Serializable {
             if (isVehicleLoadable()) {
                 // Random chance of having person load (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
-                    if (isRoverInAGarage()) {
-                        assignTask(person, new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
-                                getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-                    }
-                    else {
-                        // Check if it is day time.
-                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                        if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
-                                surface.inDarkPolarRegion(person.getCoordinates())) {
-                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+                    // TODO Refactor to allow robots.
+                    if (member instanceof Person) {
+                        Person person = (Person) member;
+                        if (isRoverInAGarage()) {
+                            assignTask(person, new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
                                     getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                        }
+                        else {
+                            // Check if it is day time.
+                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                            if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
+                                    surface.inDarkPolarRegion(person.getCoordinates())) {
+                                assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+                                        getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                            }
                         }
                     }
                 }
@@ -463,24 +484,38 @@ implements Serializable {
     
     /**
      * Perform the return trip embarking phase.
-     * @param person the person performing the phase.
+     * @param member the mission member performing the phase.
      */
-    private void performReturnTripEmbarkingPhase(Person person) {
+    private void performReturnTripEmbarkingPhase(MissionMember member) {
         
         // If person is not aboard the rover, board rover.
-        if (person.getLocationSituation() != LocationSituation.IN_VEHICLE && 
-                person.getLocationSituation() != LocationSituation.BURIED) {
+        if (member.getLocationSituation() != LocationSituation.IN_VEHICLE && 
+                member.getLocationSituation() != LocationSituation.BURIED) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
             Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
                     vehicleLoc.getY(), getVehicle());
-            if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-                assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+            // TODO Refactor
+            if (member instanceof Person) {
+                Person person = (Person) member;
+                if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+                    assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+                }
+                else {
+                    logger.severe(person.getName() + " unable to enter rover " + getVehicle());
+                    endMission(person.getName() + " unable to enter rover " + getVehicle());
+                }
             }
-            else {
-                logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-                endMission(person.getName() + " unable to enter rover " + getVehicle());
+            else if (member instanceof Robot) {
+                Robot robot = (Robot) member;
+                if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+                    assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+                }
+                else {
+                    logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
+                    endMission(robot.getName() + " unable to enter rover " + getVehicle());
+                }
             }
             
             if (isRoverInAGarage()) {
@@ -931,30 +966,6 @@ implements Serializable {
     }
     
     @Override
-    protected void recruitPeopleForMission(Person startingPerson) {
-        super.recruitPeopleForMission(startingPerson);
-
-        // Make sure there is at least one person left at the starting settlement.
-        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
-            // Remove last person added to the mission.
-            Person lastPerson = null;
-            int amount = getPeopleNumber() - 1;
-            Object[] array = getPeople().toArray();
-
-            if (amount >= 0 && amount < array.length) {
-                lastPerson = (Person) array[amount];
-            }
-
-            if (lastPerson != null) {
-                lastPerson.getMind().setMission(null);
-                if (getPeopleNumber() < getMinPeople()) {
-                    endMission("Not enough members.");
-                }
-            }
-        }
-    }
-    
-    @Override
     public Map<Resource, Number> getRequiredResourcesToLoad() {
         Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(true);
         
@@ -1073,6 +1084,23 @@ implements Serializable {
                 towed.setReservedForMission(false);
             }
         }
+    }
+    
+    @Override
+    protected boolean isCapableOfMission(MissionMember member) {
+        boolean result = super.isCapableOfMission(member);
+        
+        if (result) {
+            boolean atStartingSettlement = false;
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == getStartingSettlement()) {
+                    atStartingSettlement = true;
+                }
+            }
+            result = atStartingSettlement;
+        }
+        
+        return result;
     }
     
     @Override

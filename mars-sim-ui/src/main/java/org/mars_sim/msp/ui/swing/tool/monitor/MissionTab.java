@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTab.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-07-10
 
  * @author Scott Davis
  */
@@ -10,8 +10,8 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
@@ -58,8 +58,10 @@ extends TableTab {
 		Iterator<?> it = rows.iterator();
 		if (it.hasNext()) {
 			Mission mission = (Mission) it.next();
-			if (mission.getPeopleNumber() > 0)
-				desktop.centerMapGlobe(((Unit)mission.getPeople().toArray()[0]).getCoordinates());
+			if (mission.getMembersNumber() > 0) {
+			    MissionMember member = (MissionMember) mission.getMembers().toArray()[0];
+				desktop.centerMapGlobe(member.getCoordinates());
+			}
 		}
 	}
 }

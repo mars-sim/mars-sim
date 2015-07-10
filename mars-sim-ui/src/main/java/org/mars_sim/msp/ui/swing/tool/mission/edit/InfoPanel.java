@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoDialog.java
- * @version 3.07 2014-09-15
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
@@ -37,10 +38,12 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -71,8 +74,8 @@ extends JPanel {
 	
 	protected JTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
-	protected DefaultListModel<Person> memberListModel;
-	protected JList<Person> memberList;
+	protected DefaultListModel<MissionMember> memberListModel;
+	protected JList<MissionMember> memberList;
 	protected JButton addMembersButton;
 	protected JButton removeMembersButton;
 	
@@ -142,12 +145,12 @@ extends JPanel {
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         // Create member list model
-        memberListModel = new DefaultListModel<Person>();
-        Iterator<Person> i = mission.getPeople().iterator();
+        memberListModel = new DefaultListModel<MissionMember>();
+        Iterator<MissionMember> i = mission.getMembers().iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
-        memberList = new JList<Person>(memberListModel);
+        memberList = new JList<MissionMember>(memberListModel);
         memberList.addListSelectionListener(
         		new ListSelectionListener() {
         			@Override
@@ -195,15 +198,15 @@ extends JPanel {
 	 */
 	private boolean canAddMembers() {
 		boolean roomInMission = (memberListModel.size() < mission.getMissionCapacity());
-		boolean availablePeople = (getAvailablePeople().size() > 0);
-		return (roomInMission && availablePeople);
+		boolean availableMembers = (getAvailableMembers().size() > 0);
+		return (roomInMission && availableMembers);
 	}
 	
 	/**
 	 * Open the add members dialog.
 	 */
 	private void addMembers() {
-		new AddMembersDialog(parent, desktop, mission, memberListModel, getAvailablePeople());
+		new AddMembersDialog(parent, desktop, mission, memberListModel, getAvailableMembers());
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
@@ -212,10 +215,13 @@ extends JPanel {
 	 */
 	private void removeMembers() {
 		int[] selectedIndexes = memberList.getSelectedIndices();
-		Object[] selectedPeople = new Object[selectedIndexes.length];
-		for (int x = 0; x < selectedIndexes.length; x++) 
-			selectedPeople[x] = memberListModel.elementAt(selectedIndexes[x]);
-        for (Object aSelectedPeople : selectedPeople) memberListModel.removeElement(aSelectedPeople);
+		Object[] selectedMembers = new Object[selectedIndexes.length];
+		for (int x = 0; x < selectedIndexes.length; x++) { 
+			selectedMembers[x] = memberListModel.elementAt(selectedIndexes[x]);
+		}
+        for (Object aSelectedMembers : selectedMembers) {
+            memberListModel.removeElement(aSelectedMembers);
+        }
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
@@ -264,52 +270,91 @@ extends JPanel {
 	}
 	
 	/**
-	 * Gets a collection of people available to be added to the mission.
-	 * @return collection of available people.
+	 * Gets a collection of people and robots available to be added to the mission.
+	 * @return collection of available members.
 	 */
-	private Collection<Person> getAvailablePeople() {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+	private Collection<MissionMember> getAvailableMembers() {
+		Collection<MissionMember> result = new ConcurrentLinkedQueue<MissionMember>();
 	
-		// Add people in the settlement or rover.
+		// Add people and robots in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			MissionPhase phase = mission.getPhase();
-			Collection<Person> peopleAtLocation = null;
+			Collection<MissionMember> membersAtLocation = new ArrayList<MissionMember>();
 			if (rover != null) {
 				if (phase.equals(RoverMission.EMBARKING) || 
 						phase.equals(RoverMission.DISEMBARKING)) {
-					// Add available people at the local settlement.
+					// Add available people and robots at the local settlement.
 					Settlement settlement = rover.getSettlement();
-					if (settlement != null) peopleAtLocation = settlement.getInhabitants();
+					if (settlement != null) {
+					    membersAtLocation.addAll(settlement.getInhabitants());
+					    membersAtLocation.addAll(settlement.getRobots());
+					}
 				}
 				else {
-					// Add available people in the rover.
-					peopleAtLocation = rover.getCrew();
+					// Add available people and robots in the rover.
+					membersAtLocation.addAll(rover.getCrew());
+					membersAtLocation.addAll(rover.getRobotCrew());
 				}
 			}
 			
 			// Add people.
-			Iterator<Person> i = peopleAtLocation.iterator();
+			Iterator<MissionMember> i = membersAtLocation.iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (!memberListModel.contains(person)) result.add(person);
-			}
-		}
-		
-		// Add people who are outside at this location as well.
-		try {
-			Coordinates missionLocation = mission.getCurrentMissionLocation();
-			Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-				if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-					if (person.getCoordinates().equals(missionLocation)) {
-						if (!memberListModel.contains(person)) result.add(person);
-					}
+				MissionMember member = i.next();
+				if (!memberListModel.contains(member)) {
+				    result.add(member);
 				}
 			}
 		}
-		catch (Exception e) {}
+		else {
+		    
+		    // Add people and robots at settlement.
+		    Settlement settlement = mission.getAssociatedSettlement();
+		    if (settlement != null) {
+		        Iterator<Person> i = settlement.getInhabitants().iterator();
+		        while (i.hasNext()) {
+		            Person person = i.next();
+		            if (!memberListModel.contains(person)) {
+		                result.add(person);
+		            }
+		        }
+		        
+		        Iterator<Robot> j = settlement.getRobots().iterator();
+		        while (j.hasNext()) {
+		            Robot robot = j.next();
+		            if (!memberListModel.contains(robot)) {
+		                result.add(robot);
+		            }
+		        }
+		    }
+		}
+		
+		// Add people and robots who are outside at this location as well.
+		Coordinates missionLocation = mission.getCurrentMissionLocation();
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		while (i.hasNext()) {
+		    Person person = i.next();
+		    if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+		        if (person.getCoordinates().equals(missionLocation)) {
+		            if (!memberListModel.contains(person)) {
+		                result.add(person);
+		            }
+		        }
+		    }
+		}
+		
+		Iterator<Robot> j = Simulation.instance().getUnitManager().getRobots().iterator();
+        while (j.hasNext()) {
+            Robot robot = j.next();
+            if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
+                if (robot.getCoordinates().equals(missionLocation)) {
+                    if (!memberListModel.contains(robot)) {
+                        result.add(robot);
+                    }
+                }
+            }
+        }
 		
 		return result;
 	}

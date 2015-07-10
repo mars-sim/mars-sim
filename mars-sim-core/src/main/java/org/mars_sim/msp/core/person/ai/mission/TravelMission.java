@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelMission.java
- * @version 3.07 2015-03-01
+ * @version 3.08 2015-07-06
 
  * @author Scott Davis
  */
@@ -88,37 +88,46 @@ extends Mission {
         setTravelStatus(AT_NAVPOINT);
     }
     */
-    protected TravelMission(String name, Unit unit, int minPeople) {
+    protected TravelMission(String name, MissionMember startingMember, int minPeople) {
         // Use Mission constructor.
-        super(name, unit, minPeople);
+        super(name, startingMember, minPeople);
 
-        Person person = null;
-        Robot robot = null;
+//        Person person = null;
+//        Robot robot = null;
                 
         NavPoint startingNavPoint = null;
         
-        if (unit instanceof Person) {
-        	person = (Person) unit; 
-            if (person.getSettlement() != null) 
-                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                		person.getSettlement(), person
-                                .getSettlement().getName());          
-            else 
-                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                        "starting location");
-
+        if (startingMember.getSettlement() != null) {
+            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                    startingMember.getSettlement(), startingMember
+                            .getSettlement().getName());
         }
-        else if (unit instanceof Robot) {
-        	robot = (Robot) unit;
-            if (robot.getSettlement() != null)
-                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                        robot.getSettlement(), robot
-                                .getSettlement().getName()); 
-            else 
-                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                        "starting location");
-
+        else {
+            startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+                    "starting location");
         }
+        
+//        if (unit instanceof Person) {
+//        	person = (Person) unit; 
+//            if (person.getSettlement() != null) 
+//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+//                		person.getSettlement(), person
+//                                .getSettlement().getName());          
+//            else 
+//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+//                        "starting location");
+//
+//        }
+//        else if (unit instanceof Robot) {
+//        	robot = (Robot) unit;
+//            if (robot.getSettlement() != null)
+//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+//                        robot.getSettlement(), robot
+//                                .getSettlement().getName()); 
+//            else 
+//                startingNavPoint = new NavPoint(getCurrentMissionLocation(),
+//                        "starting location");
+//        }
  
         addNavpoint(startingNavPoint);
         lastStopNavpoint = startingNavPoint;
@@ -308,21 +317,22 @@ extends Mission {
 
     /**
      * Performs the travel phase of the mission.
-     * @param person the person currently performing the mission.
-     * @throws MissionException if error performing travel phase.
+     * @param member the mission member currently performing the mission.
      */
-    protected abstract void performTravelPhase(Person person);
-    protected abstract void performTravelPhase(Robot robot);
+    protected abstract void performTravelPhase(MissionMember member);
+//    protected abstract void performTravelPhase(Robot robot);
 
     /**
      * Gets the starting time of the current leg of the mission.
      * @return starting time
      */
     protected final MarsClock getCurrentLegStartingTime() {
-        if (legStartingTime != null)
+        if (legStartingTime != null) {
             return (MarsClock) legStartingTime.clone();
-        else
+        }
+        else {
             return null;
+        }
     }
 
     /**
@@ -330,11 +340,13 @@ extends Mission {
      * @return distance (km)
      */
     public final double getCurrentLegDistance() {
-        if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
+        if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
             return lastStopNavpoint.getLocation().getDistance(
                     getNextNavpoint().getLocation());
-        else
+        }
+        else {
             return 0D;
+        }
     }
 
     /**

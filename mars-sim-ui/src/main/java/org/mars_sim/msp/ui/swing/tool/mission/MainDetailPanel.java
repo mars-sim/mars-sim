@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.08 2015-07-01
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -54,6 +54,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -368,8 +369,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			String phaseText = mission.getPhaseDescription();
 			if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
 			phaseLabel.setText(Msg.getString("MainDetailPanel.phase",phaseText)); //$NON-NLS-1$
-			int memberNum = mission.getPeopleNumber();
-			int minMembers = mission.getMinPeople();
+			int memberNum = mission.getMembersNumber();
+			int minMembers = mission.getMinMembers();
 			String maxMembers = ""; //$NON-NLS-1$
 			if (mission instanceof VehicleMission) {
 				maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
@@ -562,9 +563,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				phaseLabel.setText(Msg.getString("MainDetailPanel.phase",phaseText)); //$NON-NLS-1$
 			}
 			else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT || 
-					type == MissionEventType.MIN_PEOPLE_EVENT || type == MissionEventType.CAPACITY_EVENT) {
-				int memberNum = mission.getPeopleNumber();
-				int minMembers = mission.getMinPeople();
+					type == MissionEventType.MIN_MEMBERS_EVENT || type == MissionEventType.CAPACITY_EVENT) {
+				int memberNum = mission.getMembersNumber();
+				int minMembers = mission.getMinMembers();
 				String maxMembers = ""; //$NON-NLS-1$
 				if (mission instanceof VehicleMission) {
 					maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
@@ -672,14 +673,14 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	
 		// Private members.
 		private Mission mission;
-		private Collection<Person> members;
+		private Collection<MissionMember> members;
 
 		/**
 		 * Constructor.
 		 */
 		private MemberTableModel() {
 			mission = null;
-			members = new ConcurrentLinkedQueue<Person>();
+			members = new ConcurrentLinkedQueue<MissionMember>();
 		}
 
 		/**
@@ -718,9 +719,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		public Object getValueAt(int row, int column) {
 			if (row < members.size()) {
 				Object array[] = members.toArray();
-				Person person = (Person) array[row];
-				if (column == 0) return person.getName();
-				else return person.getMind().getTaskManager().getTaskDescription();
+				MissionMember member = (MissionMember) array[row];
+				if (column == 0) return member.getName();
+				else return member.getTaskDescription();
 			}   
 			else return Msg.getString("unknown"); //$NON-NLS-1$
 		}
@@ -740,8 +741,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
-			Person person = (Person) event.getSource();
-			int index = getIndex(members,person);
+			MissionMember member = (MissionMember) event.getSource();
+			int index = getIndex(members, member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			}
@@ -775,9 +776,12 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		void updateMembers() {
 			if (mission != null) {
 				clearMembers();
-				members = new ConcurrentLinkedQueue<Person>(mission.getPeople());
-				Iterator<Person> i = members.iterator();
-				while (i.hasNext()) i.next().addUnitListener(this);
+				members = new ConcurrentLinkedQueue<MissionMember>(mission.getMembers());
+				Iterator<MissionMember> i = members.iterator();
+				while (i.hasNext()) {
+				    MissionMember member = i.next();
+				    member.addUnitListener(this);
+				}
 				SwingUtilities.invokeLater(new MemberTableUpdater());
 			}
 			else {
@@ -793,8 +797,11 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		 */
 		private void clearMembers() {
 			if (members != null) {
-				Iterator<Person> i = members.iterator();
-				while (i.hasNext()) i.next().removeUnitListener(this);
+				Iterator<MissionMember> i = members.iterator();
+				while (i.hasNext()) {
+				    MissionMember member = i.next();
+				    member.removeUnitListener(this);
+				}
 				members.clear();
 			}
 		}
@@ -833,8 +840,12 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			}
 
 			public void run() {
-				if (entireData) fireTableDataChanged();
-				else fireTableCellUpdated(row, column);
+				if (entireData) {
+				    fireTableDataChanged();
+				}
+				else {
+				    fireTableCellUpdated(row, column);
+				}
 			}
 		}
 	}

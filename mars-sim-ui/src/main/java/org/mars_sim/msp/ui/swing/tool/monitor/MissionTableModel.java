@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.08 2015-07-01
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -291,7 +291,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			} break;
 
 			case MEMBER_NUM : {
-				result = mission.getPeopleNumber();
+				result = mission.getMembersNumber();
 			} break;
 
 			case NAVPOINT_NUM : {

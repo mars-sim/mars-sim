@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.08 2015-07-01
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 
@@ -29,7 +29,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -223,7 +222,7 @@ implements ListSelectionListener, MissionListener {
 				
 				// Update map and info for new mission.
 				currentMission = mission;
-				if (mission.getPeopleNumber() > 0) {
+				if (mission.getMembersNumber() > 0) {
 					if (mission instanceof VehicleMission) {
 						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
                     }
@@ -239,7 +238,7 @@ implements ListSelectionListener, MissionListener {
                         if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
                     }
                     
-					mapPane.showMap(((Unit)currentMission.getPeople().toArray()[0]).getCoordinates());
+                    mapPane.showMap(currentMission.getCurrentMissionLocation());
 				}
 			}
 		}

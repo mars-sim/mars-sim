@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.08 2015-02-26
+ * @version 3.08 2015-07-02
 
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,12 +36,11 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.jidesoft.swing.SearchableBar;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
@@ -56,7 +55,7 @@ extends UnitTableModel {
 
 	//private static final Logger logger = Logger.getLogger(PersonTableModel.class.getName());
 
-	private static MainDesktopPane desktop;
+//	private static MainDesktopPane desktop;
 
 	// Column indexes
 	/** Person name column. */
@@ -191,7 +190,7 @@ extends UnitTableModel {
 		unitManager.addUnitManagerListener(unitManagerListener);
 
 		//2014-12-30 Added desktop
-		this.desktop = desktop;
+//		this.desktop = desktop;
 
 	}
 
@@ -278,7 +277,15 @@ extends UnitTableModel {
 
 		sourceType = ValidSourceType.MISSION_PEOPLE;
 		this.mission = mission;
-		setSource(mission.getPeople());
+		Collection<Person> missionPeople = new ArrayList<Person>();
+		Iterator<MissionMember> i = mission.getMembers().iterator();
+		while (i.hasNext()) {
+		    MissionMember member = i.next();
+		    if (member instanceof Person) {
+		        missionPeople.add((Person) member);
+		    }
+		}
+		setSource(missionPeople);
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}

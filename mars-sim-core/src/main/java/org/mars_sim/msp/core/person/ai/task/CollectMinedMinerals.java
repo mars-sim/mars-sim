@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 3.08 2015-06-17
+ * @version 3.08 2015-07-06
  * @author Scott Davis
  */
 
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -60,7 +61,7 @@ implements Serializable {
     // Data members
     private Rover rover; // Rover used.
     protected AmountResource mineralType;
-
+    
     /**
      * Constructor
      * @param person the person performing the task.
@@ -94,33 +95,33 @@ implements Serializable {
         // Add task phases
         addPhase(COLLECT_MINERALS);
     }
-    public CollectMinedMinerals(Robot robot, Rover rover, AmountResource mineralType) {
-
-        // Use EVAOperation parent constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-
-        // Initialize data members.
-        this.rover = rover;
-        this.mineralType = mineralType;
-
-        // Determine location for collection site.
-        Point2D collectionSiteLoc = determineCollectionSiteLocation();
-        setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
-
-        // Take bags for collecting mined minerals.
-        if (!hasBags()) {
-            takeBag();
-
-            // If bags are not available, end task.
-            if (!hasBags()) {
-                logger.fine(robot.getName() + " not able to find bag to collect mined minerals.");
-                endTask();
-            }
-        }
-
-        // Add task phases
-        addPhase(COLLECT_MINERALS);
-    }
+//    public CollectMinedMinerals(Robot robot, Rover rover, AmountResource mineralType) {
+//
+//        // Use EVAOperation parent constructor.
+//        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+//
+//        // Initialize data members.
+//        this.rover = rover;
+//        this.mineralType = mineralType;
+//
+//        // Determine location for collection site.
+//        Point2D collectionSiteLoc = determineCollectionSiteLocation();
+//        setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
+//
+//        // Take bags for collecting mined minerals.
+//        if (!hasBags()) {
+//            takeBag();
+//
+//            // If bags are not available, end task.
+//            if (!hasBags()) {
+//                logger.fine(robot.getName() + " not able to find bag to collect mined minerals.");
+//                endTask();
+//            }
+//        }
+//
+//        // Add task phases
+//        addPhase(COLLECT_MINERALS);
+//    }
     /**
      * Determine location for the collection site.
      * @return site X and Y location outside rover.
@@ -326,89 +327,99 @@ implements Serializable {
 
     /**
      * Checks if a person can perform a CollectMinedMinerals task.
-     * @param person the person to perform the task
+     * @param member the member to perform the task
      * @param rover the rover the person will EVA from
      * @param mineralType the resource to collect.
      * @return true if person can perform the task.
      */
-    public static boolean canCollectMinerals(Person person, Rover rover, AmountResource mineralType) {
+    public static boolean canCollectMinerals(MissionMember member, Rover rover, AmountResource mineralType) {
 
-        // Check if person can exit the rover.
-        boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
+        boolean result = false;
+        
+        if (member instanceof Person) {
+            
+            Person person = (Person) member;
+        
+            // Check if person can exit the rover.
+            boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
+            // Check if it is night time outside.
+            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
 
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            // Check if in dark polar region.
+            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
 
-        // Check if person's medical condition will not allow task.
-        boolean medical = person.getPerformanceRating() < .5D;
+            // Check if person's medical condition will not allow task.
+            boolean medical = person.getPerformanceRating() < .5D;
 
-        // Checks if available bags with remaining capacity for resource.
-        Bag bag = findMostFullBag(rover.getInventory(), mineralType);
-        boolean bagAvailable = (bag != null);
+            // Checks if available bags with remaining capacity for resource.
+            Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+            boolean bagAvailable = (bag != null);
 
-        // Check if bag and full EVA suit can be carried by person or is too heavy.
-        double carryMass = 0D;
-        if (bag != null) {
-            carryMass += bag.getMass();
+            // Check if bag and full EVA suit can be carried by person or is too heavy.
+            double carryMass = 0D;
+            if (bag != null) {
+                carryMass += bag.getMass();
+            }
+            
+            EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+            if (suit != null) {
+                carryMass += suit.getMass();
+                AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
+                AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
+            }
+            double carryCapacity = person.getInventory().getGeneralCapacity();
+            boolean canCarryEquipment = (carryCapacity >= carryMass);
+
+            result = (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
         }
-        EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
-        if (suit != null) {
-            carryMass += suit.getMass();
-            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
-            AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
-        }
-        double carryCapacity = person.getInventory().getGeneralCapacity();
-        boolean canCarryEquipment = (carryCapacity >= carryMass);
-
-        return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
+        
+        return result;
     }
-    public static boolean canCollectMinerals(Robot robot, Rover rover, AmountResource mineralType) {
-
-        // Check if robot can exit the rover.
-        boolean exitable = ExitAirlock.canExitAirlock(robot, rover.getAirlock());
-
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
-
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
-
-        // Check if robot's medical condition will not allow task.
-        boolean medical = robot.getPerformanceRating() < .5D;
-
-        // Checks if available bags with remaining capacity for resource.
-        Bag bag = findMostFullBag(rover.getInventory(), mineralType);
-        boolean bagAvailable = (bag != null);
-
-        // Check if bag and full EVA suit can be carried by person or is too heavy.
-        double carryMass = 0D;
-        if (bag != null) {
-            carryMass += bag.getMass();
-        }
-        /*
-        EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
-        if (suit != null) {
-            carryMass += suit.getMass();
-            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
-            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
-        }
-        */
-        double carryCapacity = robot.getInventory().getGeneralCapacity();
-        boolean canCarryEquipment = (carryCapacity >= carryMass);
-
-        return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
-    }
+//    public static boolean canCollectMinerals(Robot robot, Rover rover, AmountResource mineralType) {
+//
+//        // Check if robot can exit the rover.
+//        boolean exitable = ExitAirlock.canExitAirlock(robot, rover.getAirlock());
+//
+//        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+//
+//        // Check if it is night time outside.
+//        boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
+//
+//        // Check if in dark polar region.
+//        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+//
+//        // Check if robot's medical condition will not allow task.
+//        boolean medical = robot.getPerformanceRating() < .5D;
+//
+//        // Checks if available bags with remaining capacity for resource.
+//        Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+//        boolean bagAvailable = (bag != null);
+//
+//        // Check if bag and full EVA suit can be carried by person or is too heavy.
+//        double carryMass = 0D;
+//        if (bag != null) {
+//            carryMass += bag.getMass();
+//        }
+//        /*
+//        EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+//        if (suit != null) {
+//            carryMass += suit.getMass();
+//            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
+//            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
+//            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
+//            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
+//        }
+//        */
+//        double carryCapacity = robot.getInventory().getGeneralCapacity();
+//        boolean canCarryEquipment = (carryCapacity >= carryMass);
+//
+//        return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);
+//    }
 
     @Override
     protected void addExperience(double time) {

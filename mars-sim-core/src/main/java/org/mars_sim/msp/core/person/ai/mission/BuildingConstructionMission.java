@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.08 2015-05-29
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -107,15 +106,15 @@ implements Serializable {
 
 	/**
 	 * Constructor.
-	 * @param startingPerson the person starting the mission.
+	 * @param startingMember the mission member starting the mission.
 	 */
-	public BuildingConstructionMission(Person startingPerson) {
+	public BuildingConstructionMission(MissionMember startingMember) {
         // Use Mission constructor.
-        super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
+        super(DEFAULT_DESCRIPTION, startingMember, MIN_PEOPLE);
         
         if (!isDone()) {
             // Sets the settlement.
-            settlement = startingPerson.getSettlement();
+            settlement = startingMember.getSettlement();
             
             // Sets the mission capacity.
             setMissionCapacity(MAX_PEOPLE);
@@ -124,12 +123,20 @@ implements Serializable {
                 setMissionCapacity(availableSuitNum);
             }
             
-            // Recruit additional people to mission.
-            recruitPeopleForMission(startingPerson);
+            // Recruit additional members to mission.
+            recruitMembersForMission(startingMember);
             
             // Determine construction site and stage.
-            int constructionSkill = startingPerson.getMind().getSkillManager().
-                    getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+            // TODO Refactor.
+            int constructionSkill = 0;
+            if (startingMember instanceof Person) {
+                Person person = (Person) startingMember;
+                constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+            }
+            else if (startingMember instanceof Robot) {
+                Robot robot = (Robot) startingMember;
+                constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+            }
 
             init(constructionSkill);
         }
@@ -145,41 +152,41 @@ implements Serializable {
                 , settlement.getName()));
     }
 	
-	public BuildingConstructionMission(Robot startingRobot) {
-        // Use Mission constructor.
-        super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
-        
-        if (!isDone()) {
-            // Sets the settlement.
-            settlement = startingRobot.getSettlement();
-            
-            // Sets the mission capacity.
-            setMissionCapacity(MAX_PEOPLE);
-            int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
-            if (availableSuitNum < getMissionCapacity()) {
-                setMissionCapacity(availableSuitNum);
-            }
-            
-            // Recruit additional people to mission.
-            recruitRobotsForMission(startingRobot);
-            
-            // Determine construction site and stage.
-            int constructionSkill = startingRobot.getBotMind().getSkillManager().
-                    getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-
-            init(constructionSkill);
-        }
-        
-        // Add phases.
-        addPhase(PREPARE_SITE_PHASE);
-        addPhase(CONSTRUCTION_PHASE);        
-        // Set initial mission phase.
-        setPhase(PREPARE_SITE_PHASE);
-        
-        setPhaseDescription(Msg.getString(
-        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-                , settlement.getName()));
-    }  
+//	public BuildingConstructionMission(Robot startingRobot) {
+//        // Use Mission constructor.
+//        super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
+//        
+//        if (!isDone()) {
+//            // Sets the settlement.
+//            settlement = startingRobot.getSettlement();
+//            
+//            // Sets the mission capacity.
+//            setMissionCapacity(MAX_PEOPLE);
+//            int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
+//            if (availableSuitNum < getMissionCapacity()) {
+//                setMissionCapacity(availableSuitNum);
+//            }
+//            
+//            // Recruit additional people to mission.
+//            recruitRobotsForMission(startingRobot);
+//            
+//            // Determine construction site and stage.
+//            int constructionSkill = startingRobot.getBotMind().getSkillManager().
+//                    getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+//
+//            init(constructionSkill);
+//        }
+//        
+//        // Add phases.
+//        addPhase(PREPARE_SITE_PHASE);
+//        addPhase(CONSTRUCTION_PHASE);        
+//        // Set initial mission phase.
+//        setPhase(PREPARE_SITE_PHASE);
+//        
+//        setPhaseDescription(Msg.getString(
+//        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+//                , settlement.getName()));
+//    }  
 	
 	
 	public void init(int constructionSkill) {
@@ -410,18 +417,14 @@ implements Serializable {
                 , settlement.getName()));
     }
     */
-    public BuildingConstructionMission(Collection<Unit> members, Settlement settlement, 
+    public BuildingConstructionMission(Collection<MissionMember> members, Settlement settlement, 
             ConstructionSite site, ConstructionStageInfo stageInfo, double xLoc, double yLoc,
             double facing, List<GroundVehicle> vehicles) {
         
-        // Use Mission constructor.
-        //super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);       
-        super(DEFAULT_DESCRIPTION, (Unit) members.toArray()[0], 1);
+        // Use Mission constructor.  
+        super(DEFAULT_DESCRIPTION, (MissionMember) members.toArray()[0], 1);
         
         this.settlement = settlement;
-        
-     	Person person = null;
-    	Robot robot = null;
     	
         ConstructionManager manager = settlement.getConstructionManager();
         if (site != null) {
@@ -452,28 +455,32 @@ implements Serializable {
                 
                 int bestConstructionSkill = 0;
                 
-                Iterator<Unit> i = members.iterator();
+                Iterator<MissionMember> i = members.iterator();
 
                 while (i.hasNext()) {
-                 	                    	
-        	        Unit unit = i.next();
-        	        if (unit instanceof Person) {
-        	        	person = (Person) unit;
+                 	// TODO Refactor
+        	        MissionMember member = i.next();
+        	        if (member instanceof Person) {
+        	        	Person person = (Person) member;
         	        	person.getMind().setMission(this);
         	        }
-        	        else if (unit instanceof Robot) {
-        	        	robot = (Robot) unit;
+        	        else if (member instanceof Robot) {
+        	        	Robot robot = (Robot) member;
         	        	robot.getBotMind().setMission(this);
         	        }      
                 	
                     int constructionSkill = 0;
-                    
-                	if (person != null)
+                    // TODO Refactor
+                    if (member instanceof Person) {
+                        Person person = (Person) member;
                     	constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
                             SkillType.CONSTRUCTION);
-                	else if (robot != null)
+                    }
+                    else if (member instanceof Robot) {
+                        Robot robot = (Robot) member;
                 		constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
                 				SkillType.CONSTRUCTION);
+                    }
                 	
                     if (constructionSkill > bestConstructionSkill) {
                         bestConstructionSkill = constructionSkill;
@@ -511,17 +518,17 @@ implements Serializable {
         }
         
         // Add mission members.
-        Iterator<Unit> i = members.iterator();
+        Iterator<MissionMember> i = members.iterator();
     	
         while (i.hasNext()) {
          	                    	
-	        Unit unit = i.next();
-	        if (unit instanceof Person) {
-	        	person = (Person) unit;
+	        MissionMember member = i.next();
+	        if (member instanceof Person) {
+	        	Person person = (Person) member;
 	        	person.getMind().setMission(this);
 	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
+	        else if (member instanceof Robot) {
+	        	Robot robot = (Robot) member;
 	        	robot.getBotMind().setMission(this);
 	        }      
         }
@@ -636,28 +643,21 @@ implements Serializable {
     }
     
     @Override
-    protected boolean isCapableOfMission(Person person) {
-        if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (person.getSettlement() == settlement) {
-                    return true;
+    protected boolean isCapableOfMission(MissionMember member) {
+        boolean result = super.isCapableOfMission(member);
+        
+        if (result) {
+            boolean atSettlement = false;
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == settlement) {
+                    atSettlement = true;
                 }
             }
+            result = atSettlement;
         }
-        return false;
+        
+        return result;
     }
-    
-    @Override
-    protected boolean isCapableOfMission(Robot robot) {
-        if (super.isCapableOfMission(robot)) {
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (robot.getSettlement() == settlement) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }    
     
     /**
      * Checks if a light utility vehicle (LUV) is available for the mission.
@@ -705,37 +705,36 @@ implements Serializable {
     }
 
     @Override
-    protected void performPhase(Person person) {
-        super.performPhase(person);
+    protected void performPhase(MissionMember member) {
+        super.performPhase(member);
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
-            prepareSitePhase(person);
+            prepareSitePhase(member);
         }
         else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-            constructionPhase(person);
+            constructionPhase(member);
         }
     }
-    @Override
-    protected void performPhase(Robot robot) {
-        super.performPhase(robot);
-        if (PREPARE_SITE_PHASE.equals(getPhase())) {
-            prepareSitePhase(robot);
-        }
-        else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-            constructionPhase(robot);
-        }
-    }    
+//    @Override
+//    protected void performPhase(Robot robot) {
+//        super.performPhase(robot);
+//        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+//            prepareSitePhase(robot);
+//        }
+//        else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+//            constructionPhase(robot);
+//        }
+//    }    
     /**
      * Performs the prepare site phase.
-     * @param person the person performing the phase.
-     * @throws MissionException if error performing the phase.
+     * @param member the mission member performing the phase.
      */
-    private void prepareSitePhase(Person person) {
+    private void prepareSitePhase(MissionMember member) {
     	prepareSitePhase();
     }
     
-    private void prepareSitePhase(Robot robot) {
-    	prepareSitePhase();
-    }    
+//    private void prepareSitePhase(Robot robot) {
+//    	prepareSitePhase();
+//    }    
     
     private void prepareSitePhase() {
         // Load all available materials needed for construction.
@@ -805,10 +804,9 @@ implements Serializable {
     
     /**
      * Performs the construction phase.
-     * @param person the person performing the phase.
-     * @throws MissionException if error performing the phase.
+     * @param member the mission member performing the phase.
      */
-    private void constructionPhase(Person person) {
+    private void constructionPhase(MissionMember member) {
 
         // Anyone in the crew or a single person at the home settlement has a 
         // dangerous illness, end phase.
@@ -829,10 +827,21 @@ implements Serializable {
             // 75% chance of assigning task, otherwise allow break.
             if (RandomUtil.lessThanRandPercent(75D)) {
 
-                // Assign construction task to person.
-                if (ConstructBuilding.canConstruct(person, constructionSite)) {
-                    assignTask(person, new ConstructBuilding(person, constructionStage, 
-                            constructionSite, constructionVehicles));
+                // Assign construction task to member.
+                // TODO Refactor.
+                if (member instanceof Person) {
+                    Person person = (Person) member;
+                    if (ConstructBuilding.canConstruct(person, constructionSite)) {
+                        assignTask(person, new ConstructBuilding(person, constructionStage, 
+                                constructionSite, constructionVehicles));
+                    }
+                }
+                else if (member instanceof Robot) {
+                    Robot robot = (Robot) member;
+                    if (ConstructBuilding.canConstruct(robot, constructionSite)) {
+                        assignTask(robot, new ConstructBuilding(robot, constructionStage, 
+                                constructionSite, constructionVehicles));
+                    }
                 }
             }
         }
@@ -840,38 +849,38 @@ implements Serializable {
         constructionStageComplete();
     }
     
-    private void constructionPhase(Robot robot) {
-
-        // Anyone in the crew or a single person at the home settlement has a 
-        // dangerous illness, end phase.
-        if (hasEmergency()) {
-            setPhaseEnded(true);
-        }
-        
-        // Load available construction materials into construction site.
-        loadAvailableConstructionMaterials();
-        
-        // Check if further work can be done on construction stage.
-        if (constructionStage.getCompletableWorkTime() <= constructionStage.getCompletedWorkTime()) {
-            setPhaseEnded(true);
-        }
-        
-        if (!getPhaseEnded()) {
-            
-            // 75% chance of assigning task, otherwise allow break.
-            if (RandomUtil.lessThanRandPercent(75D)) {
-
-                // Assign construction task to robot.
-                if (ConstructBuilding.canConstruct(robot, constructionSite)) {
-                    assignTask(robot, new ConstructBuilding(robot, constructionStage, 
-                            constructionSite, constructionVehicles));
-                }
-            }
-        }
-        
-        constructionStageComplete();
-  
-    }   
+//    private void constructionPhase(Robot robot) {
+//
+//        // Anyone in the crew or a single person at the home settlement has a 
+//        // dangerous illness, end phase.
+//        if (hasEmergency()) {
+//            setPhaseEnded(true);
+//        }
+//        
+//        // Load available construction materials into construction site.
+//        loadAvailableConstructionMaterials();
+//        
+//        // Check if further work can be done on construction stage.
+//        if (constructionStage.getCompletableWorkTime() <= constructionStage.getCompletedWorkTime()) {
+//            setPhaseEnded(true);
+//        }
+//        
+//        if (!getPhaseEnded()) {
+//            
+//            // 75% chance of assigning task, otherwise allow break.
+//            if (RandomUtil.lessThanRandPercent(75D)) {
+//
+//                // Assign construction task to robot.
+//                if (ConstructBuilding.canConstruct(robot, constructionSite)) {
+//                    assignTask(robot, new ConstructBuilding(robot, constructionStage, 
+//                            constructionSite, constructionVehicles));
+//                }
+//            }
+//        }
+//        
+//        constructionStageComplete();
+//  
+//    }   
     
     public void constructionStageComplete() { 
 	    if (constructionStage.isComplete()) {

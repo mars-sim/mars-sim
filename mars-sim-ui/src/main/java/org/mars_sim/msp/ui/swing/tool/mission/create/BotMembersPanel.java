@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.08 2015-03-24
+ * @version 3.08 2015-07-08
  * @author Manny Kung
  */
 
@@ -33,8 +33,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -266,10 +266,11 @@ implements ActionListener {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection<Unit> units = new ConcurrentLinkedQueue<Unit>();
-		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) 
-			units.add((Unit) botMembersTableModel.getUnit(x));
-		getWizard().getMissionData().setMixedMembers(units);
+		Collection<MissionMember> members = new ConcurrentLinkedQueue<MissionMember>();
+		for (int x = 0; x < botMembersTableModel.getRowCount(); x++) {
+			members.add((MissionMember) botMembersTableModel.getUnit(x));
+		}
+		getWizard().getMissionData().setMixedMembers(members);
 		return true;
 	}
 

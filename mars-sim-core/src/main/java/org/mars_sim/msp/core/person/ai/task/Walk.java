@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.08 2015-06-13
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -398,6 +399,7 @@ implements Serializable {
 
         setPhase(getWalkingStepPhase());
     }
+    
     /**
      * Find an emergency airlock at a person's location.
      * @param person the person.
@@ -407,20 +409,21 @@ implements Serializable {
 
         Airlock result = null;
 
-        // Determine airlock from other people on mission.
+        // Determine airlock from other members on mission.
         if (person.getMind().getMission() != null) {
-            Iterator<Person> i = person.getMind().getMission().getPeople().iterator();
+            Iterator<MissionMember> i = person.getMind().getMission().getMembers().iterator();
             while (i.hasNext() && (result == null)) {
-                Person p = i.next();
-                if (p != person) {
-                    LocationSituation location = p.getLocationSituation();
+                MissionMember member = i.next();
+                if (member != person) {
+                    LocationSituation location = member.getLocationSituation();
                     if (location == LocationSituation.IN_SETTLEMENT) {
-                        result = p.getSettlement().getClosestAvailableAirlock(person);
+                        result = member.getSettlement().getClosestAvailableAirlock(person);
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
-                        Vehicle vehicle = p.getVehicle();
-                        if (vehicle instanceof Airlockable)
+                        Vehicle vehicle = member.getVehicle();
+                        if (vehicle instanceof Airlockable) {
                             result = ((Airlockable) vehicle).getAirlock();
+                        }
                     }
                 }
             }
@@ -431,8 +434,9 @@ implements Serializable {
             Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
-                if (person.getCoordinates().equals(settlement.getCoordinates()))
+                if (person.getCoordinates().equals(settlement.getCoordinates())) {
                     result = settlement.getClosestAvailableAirlock(person);
+                }
             }
         }
 
@@ -442,8 +446,9 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {
-                    if (vehicle instanceof Airlockable)
+                    if (vehicle instanceof Airlockable) {
                         result = ((Airlockable) vehicle).getAirlock();
+                    }
                 }
             }
         }
@@ -457,18 +462,19 @@ implements Serializable {
 
         // Determine airlock from other robots on mission.
         if (robot.getBotMind().getMission() != null) {
-            Iterator<Robot> i = robot.getBotMind().getMission().getRobots().iterator();
+            Iterator<MissionMember> i = robot.getBotMind().getMission().getMembers().iterator();
             while (i.hasNext() && (result == null)) {
-                Robot p = i.next();
-                if (p != robot) {
-                    LocationSituation location = p.getLocationSituation();
+                MissionMember member = i.next();
+                if (member != robot) {
+                    LocationSituation location = member.getLocationSituation();
                     if (location == LocationSituation.IN_SETTLEMENT) {
-                        result = p.getSettlement().getClosestAvailableAirlock(robot);
+                        result = member.getSettlement().getClosestAvailableAirlock(robot);
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
-                        Vehicle vehicle = p.getVehicle();
-                        if (vehicle instanceof Airlockable)
+                        Vehicle vehicle = member.getVehicle();
+                        if (vehicle instanceof Airlockable) {
                             result = ((Airlockable) vehicle).getAirlock();
+                        }
                     }
                 }
             }
@@ -479,8 +485,9 @@ implements Serializable {
             Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (result == null)) {
                 Settlement settlement = i.next();
-                if (robot.getCoordinates().equals(settlement.getCoordinates()))
+                if (robot.getCoordinates().equals(settlement.getCoordinates())) {
                     result = settlement.getClosestAvailableAirlock(robot);
+                }
             }
         }
 
@@ -490,8 +497,9 @@ implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Vehicle vehicle = i.next();
                 if (robot.getCoordinates().equals(vehicle.getCoordinates())) {
-                    if (vehicle instanceof Airlockable)
+                    if (vehicle instanceof Airlockable) {
                         result = ((Airlockable) vehicle).getAirlock();
+                    }
                 }
             }
         }
