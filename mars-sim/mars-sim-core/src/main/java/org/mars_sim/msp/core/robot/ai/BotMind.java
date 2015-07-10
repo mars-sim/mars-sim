@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BotMind.java
- * @version 3.07 2015-02-11
+ * @version 3.08 2015-07-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot.ai;
@@ -221,7 +221,7 @@ implements Serializable {
         if (hasActiveMission()) {
 
         	if (robot != null)
-                mission.removeRobot(robot);
+                mission.removeMember(robot);
 
             mission = null;
         }
@@ -236,13 +236,13 @@ implements Serializable {
 
         	if (robot != null) {
         		if (mission != null) {
-                    mission.removeRobot(robot);
+                    mission.removeMember(robot);
                 }
 
                 mission = newMission;
 
                 if (newMission != null) {
-                    newMission.addRobot(robot);
+                    newMission.addMember(robot);
                 }
 
                 robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);

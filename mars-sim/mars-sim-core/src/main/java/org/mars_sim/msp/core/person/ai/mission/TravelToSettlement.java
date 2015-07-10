@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.07 2015-03-01
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 
@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -28,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.job.Manager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
-import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -71,24 +69,23 @@ implements Serializable {
 
     /**
      * Constructor with destination settlement randomly determined.
-     * @param startingPerson the person starting the mission.
-     * @throws MissionException if error constructing mission.
+     * @param startingMember the mission member starting the mission.
      */
-    public TravelToSettlement(Person startingPerson) {
+    public TravelToSettlement(MissionMember startingMember) {
         // Use RoverMission constructor
-        super(DEFAULT_DESCRIPTION, startingPerson);
+        super(DEFAULT_DESCRIPTION, startingMember);
 
         if (!isDone()) {
 
             // Initialize data members
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(startingMember.getSettlement());
 
             // Set mission capacity.
             if (hasVehicle()) {
                 setMissionCapacity(getRover().getCrewCapacity());
             }
             int availableSuitNum = Mission
-                    .getNumberAvailableEVASuitsAtSettlement(startingPerson
+                    .getNumberAvailableEVASuitsAtSettlement(startingMember
                             .getSettlement());
             if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
@@ -96,7 +93,7 @@ implements Serializable {
 
             // Choose destination settlement.
             setDestinationSettlement(getRandomDestinationSettlement(
-                    startingPerson, getStartingSettlement()));
+                    startingMember, getStartingSettlement()));
             if (destinationSettlement != null) {
                 addNavpoint(new NavPoint(
                         destinationSettlement.getCoordinates(),
@@ -118,9 +115,9 @@ implements Serializable {
                 }
             }
 
-            // Recruit additional people to mission.
+            // Recruit additional members to mission.
             if (!isDone()) {
-                recruitPeopleForMission(startingPerson);
+                recruitMembersForMission(startingMember);
             }
 
             // Check if vehicle can carry enough supplies for the mission.
@@ -136,69 +133,63 @@ implements Serializable {
 
         logger.info("Travel to Settlement mission");
     }
-    public TravelToSettlement(Robot robot) {
-        // Use RoverMission constructor
-        super(DEFAULT_DESCRIPTION, robot);
-
-        if (!isDone()) {
-
-            // Initialize data members
-            setStartingSettlement(robot.getSettlement());
-
-            // Set mission capacity.
-            if (hasVehicle()) {
-                setMissionCapacity(getRover().getCrewCapacity());
-            }
-            int availableSuitNum = Mission
-                    .getNumberAvailableEVASuitsAtSettlement(robot
-                            .getSettlement());
-            if (availableSuitNum < getMissionCapacity()) {
-                setMissionCapacity(availableSuitNum);
-            }
-
-            // Choose destination settlement.
-            setDestinationSettlement(getRandomDestinationSettlement(
-                    robot, getStartingSettlement()));
-            if (destinationSettlement != null) {
-                addNavpoint(new NavPoint(
-                        destinationSettlement.getCoordinates(),
-                        destinationSettlement, destinationSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
-                        destinationSettlement.getName())); //$NON-NLS-1$)
-            }
-            else {
-                endMission("Destination is null.");
-            }
-
-            // Check mission available space
-            if (!isDone()) {
-                int availableSpace = destinationSettlement.getPopulationCapacity()
-                        - destinationSettlement.getAllAssociatedPeople().size();
-
-                if (availableSpace < getMissionCapacity()) {
-                    setMissionCapacity(availableSpace);
-                }
-            }
-
-            // Recruit additional people to mission.
-            // TODO: Tentatively, robot will only do solo mission
-            //if (!isDone())
-            //    recruitPeopleForMission(robot);
-
-
-            // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable. (TravelToSettlement)");
-            }
-        }
-
-        // Set initial phase
-        setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
-                getStartingSettlement().getName())); //$NON-NLS-1$
-
-        logger.info("Travel to Settlement mission");
-    }
+//    public TravelToSettlement(Robot robot) {
+//        // Use RoverMission constructor
+//        super(DEFAULT_DESCRIPTION, robot);
+//
+//        if (!isDone()) {
+//
+//            // Initialize data members
+//            setStartingSettlement(robot.getSettlement());
+//
+//            // Set mission capacity.
+//            if (hasVehicle()) {
+//                setMissionCapacity(getRover().getCrewCapacity());
+//            }
+//            int availableSuitNum = Mission
+//                    .getNumberAvailableEVASuitsAtSettlement(robot
+//                            .getSettlement());
+//            if (availableSuitNum < getMissionCapacity()) {
+//                setMissionCapacity(availableSuitNum);
+//            }
+//
+//            // Choose destination settlement.
+//            setDestinationSettlement(getRandomDestinationSettlement(
+//                    robot, getStartingSettlement()));
+//            if (destinationSettlement != null) {
+//                addNavpoint(new NavPoint(
+//                        destinationSettlement.getCoordinates(),
+//                        destinationSettlement, destinationSettlement.getName()));
+//                setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
+//                        destinationSettlement.getName())); //$NON-NLS-1$)
+//            }
+//            else {
+//                endMission("Destination is null.");
+//            }
+//
+//            // Check mission available space
+//            if (!isDone()) {
+//                int availableSpace = destinationSettlement.getPopulationCapacity()
+//                        - destinationSettlement.getAllAssociatedPeople().size();
+//
+//                if (availableSpace < getMissionCapacity()) {
+//                    setMissionCapacity(availableSpace);
+//                }
+//            }
+//
+//            // Check if vehicle can carry enough supplies for the mission.
+//            if (hasVehicle() && !isVehicleLoadable()) {
+//                endMission("Vehicle is not loadable. (TravelToSettlement)");
+//            }
+//        }
+//
+//        // Set initial phase
+//        setPhase(VehicleMission.EMBARKING);
+//        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
+//                getStartingSettlement().getName())); //$NON-NLS-1$
+//
+//        logger.info("Travel to Settlement mission");
+//    }
     /**
      * Constructor with explicit data.
      * @param members collection of mission members.
@@ -246,15 +237,11 @@ implements Serializable {
         }
     } */
 
-    public TravelToSettlement(Collection<Unit> members,
+    public TravelToSettlement(Collection<MissionMember> members,
             Settlement startingSettlement, Settlement destinationSettlement,
             Rover rover, String description) {
         // Use RoverMission constructor.
-        super(description, (Unit) members.toArray()[0], 1, rover);
-
-        Person person = null;
-        Robot robot = null;
-        //Unit unit = (Unit) members.toArray()[0];
+        super(description, (MissionMember) members.toArray()[0], 1, rover);
 
         // Initialize data members
         setStartingSettlement(startingSettlement);
@@ -274,17 +261,18 @@ implements Serializable {
 
 
         // Add mission members.
-        Iterator<Unit> i = members.iterator();
+        Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
-	        	Unit unit = i.next();
-	        if (unit instanceof Person) {
-	        	person = (Person) unit;
-	        	person.getMind().setMission(this);
-	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
-	        	robot.getBotMind().setMission(this);
-	        }
+            MissionMember member = i.next();
+            // TODO Refactor.
+            if (member instanceof Person) {
+                Person person = (Person) member;
+                person.getMind().setMission(this);
+            }
+            else if (member instanceof Robot) {
+                Robot robot = (Robot) member;
+                robot.getBotMind().setMission(this);
+            }
         }
 
         // Set initial phase
@@ -339,12 +327,11 @@ implements Serializable {
 
     /**
      * Determines a random destination settlement other than current one.
-     * @param person the person searching for a settlement.
+     * @param member the mission member searching for a settlement.
      * @param startingSettlement the settlement the mission is starting at.
      * @return randomly determined settlement
-     * @throws MissionException if problem determining destination settlement.
      */
-    private Settlement getRandomDestinationSettlement(Person person,
+    private Settlement getRandomDestinationSettlement(MissionMember member,
             Settlement startingSettlement) {
 
         double range = getVehicle().getRange();
@@ -352,7 +339,7 @@ implements Serializable {
 
         // Find all desirable destination settlements.
         Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
-                person, startingSettlement, range);
+                member, startingSettlement, range);
 
         // Randomly select a desirable settlement.
         if (desirableSettlements.size() > 0) {
@@ -361,33 +348,33 @@ implements Serializable {
 
         return result;
     }
-    private Settlement getRandomDestinationSettlement(Robot robot,
-            Settlement startingSettlement) {
-
-        double range = getVehicle().getRange();
-        Settlement result = null;
-
-        // Find all desirable destination settlements.
-        Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
-                robot, startingSettlement, range);
-
-        // Randomly select a desirable settlement.
-        if (desirableSettlements.size() > 0) {
-            result = RandomUtil.getWeightedRandomObject(desirableSettlements);
-        }
-
-        return result;
-    }
+//    private Settlement getRandomDestinationSettlement(Robot robot,
+//            Settlement startingSettlement) {
+//
+//        double range = getVehicle().getRange();
+//        Settlement result = null;
+//
+//        // Find all desirable destination settlements.
+//        Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
+//                robot, startingSettlement, range);
+//
+//        // Randomly select a desirable settlement.
+//        if (desirableSettlements.size() > 0) {
+//            result = RandomUtil.getWeightedRandomObject(desirableSettlements);
+//        }
+//
+//        return result;
+//    }
 
     /**
      * Gets all possible and desirable destination settlements.
-     * @param person the person searching for a settlement.
+     * @param member the mission member searching for a settlement.
      * @param startingSettlement the settlement the mission is starting at.
      * @param range the range (km) that can be travelled.
      * @return map of destination settlements.
      */
     public static Map<Settlement, Double> getDestinationSettlements(
-            Person person, Settlement startingSettlement, double range) {
+            MissionMember member, Settlement startingSettlement, double range) {
         Map<Settlement, Double> result = new HashMap<Settlement, Double>();
 
         UnitManager unitManager = startingSettlement.getUnitManager();
@@ -401,7 +388,7 @@ implements Serializable {
             if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))
                     && !isTravelDestination) {
 
-                double desirability = getDestinationSettlementDesirability(person,
+                double desirability = getDestinationSettlementDesirability(member,
                         startingSettlement, settlement);
                 if (desirability > 0D)
                     result.put(settlement, desirability);
@@ -410,30 +397,30 @@ implements Serializable {
 
         return result;
     }
-    public static Map<Settlement, Double> getDestinationSettlements(
-            Robot robot, Settlement startingSettlement, double range) {
-        Map<Settlement, Double> result = new HashMap<Settlement, Double>();
-
-        UnitManager unitManager = startingSettlement.getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-
-        while (i.hasNext()) {
-            Settlement settlement = i.next();
-            double distance = startingSettlement.getCoordinates().getDistance(
-                    settlement.getCoordinates());
-            boolean isTravelDestination = isCurrentTravelDestination(settlement);
-            if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))
-                    && !isTravelDestination) {
-
-                double desirability = getDestinationSettlementDesirability(robot,
-                        startingSettlement, settlement);
-                if (desirability > 0D)
-                    result.put(settlement, desirability);
-            }
-        }
-
-        return result;
-    }
+//    public static Map<Settlement, Double> getDestinationSettlements(
+//            Robot robot, Settlement startingSettlement, double range) {
+//        Map<Settlement, Double> result = new HashMap<Settlement, Double>();
+//
+//        UnitManager unitManager = startingSettlement.getUnitManager();
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//
+//        while (i.hasNext()) {
+//            Settlement settlement = i.next();
+//            double distance = startingSettlement.getCoordinates().getDistance(
+//                    settlement.getCoordinates());
+//            boolean isTravelDestination = isCurrentTravelDestination(settlement);
+//            if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))
+//                    && !isTravelDestination) {
+//
+//                double desirability = getDestinationSettlementDesirability(robot,
+//                        startingSettlement, settlement);
+//                if (desirability > 0D)
+//                    result.put(settlement, desirability);
+//            }
+//        }
+//
+//        return result;
+//    }
 
     /**
      * Checks if a settlement is the destination of a current travel to settlement mission.
@@ -460,43 +447,55 @@ implements Serializable {
 
     /**
      * Gets the desirability of the destination settlement.
-     * @param person the person looking at the settlement.
-     * @param startingSettlement the settlement the person is already at.
+     * @param member the mission member looking at the settlement.
+     * @param startingSettlement the settlement the member is already at.
      * @param destinationSettlement the new settlement.
      * @return negative or positive desirability weight value.
      */
-    private static double getDestinationSettlementDesirability(Person person,
+    private static double getDestinationSettlementDesirability(MissionMember member,
             Settlement startingSettlement, Settlement destinationSettlement) {
 
         // Determine relationship factor in destination settlement relative to
         // starting settlement.
+        double relationshipFactor = 0D;
         RelationshipManager relationshipManager = Simulation.instance()
                 .getRelationshipManager();
-        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
-                person, startingSettlement.getAllAssociatedPeople());
-        double destinationOpinion = relationshipManager
-                .getAverageOpinionOfPeople(person, destinationSettlement
-                        .getAllAssociatedPeople());
-        double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
+        if (member instanceof Person) {
+            Person person = (Person) member;
+            double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
+                    person, startingSettlement.getAllAssociatedPeople());
+            double destinationOpinion = relationshipManager
+                    .getAverageOpinionOfPeople(person, destinationSettlement
+                            .getAllAssociatedPeople());
+            relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
+        }
 
         // Determine job opportunities in destination settlement relative to
         // starting settlement.
-        Job currentJob = person.getMind().getJob();
-        double currentJobProspect = JobManager.getJobProspect(person,
-                currentJob, startingSettlement, true);
-        double destinationJobProspect = 0D;
-        // TODO: evaluate if getJobLock() or something else will need to be considered.
-        if (person.getMind().getJobLock())
-            destinationJobProspect = JobManager.getJobProspect(person,
-                    currentJob, destinationSettlement, false);
-        else
-            destinationJobProspect = JobManager.getBestJobProspect(person,
-                    destinationSettlement, false);
         double jobFactor = 0D;
-        if (destinationJobProspect > currentJobProspect)
-            jobFactor = 1D;
-        else if (destinationJobProspect < currentJobProspect)
-            jobFactor = -1D;
+        if (member instanceof Person) {
+            Person person = (Person) member;
+            Job currentJob = person.getMind().getJob();
+            double currentJobProspect = JobManager.getJobProspect(person,
+                    currentJob, startingSettlement, true);
+            double destinationJobProspect = 0D;
+            
+            if (person.getMind().getJobLock()) {
+                destinationJobProspect = JobManager.getJobProspect(person,
+                        currentJob, destinationSettlement, false);
+            }
+            else {
+                destinationJobProspect = JobManager.getBestJobProspect(person,
+                        destinationSettlement, false);
+            }
+            
+            if (destinationJobProspect > currentJobProspect) {
+                jobFactor = 1D;
+            }
+            else if (destinationJobProspect < currentJobProspect) {
+                jobFactor = -1D;
+            }
+        }
 
         // Determine available space in destination settlement relative to
         // starting settlement.
@@ -511,12 +510,17 @@ implements Serializable {
                 .getTotalScientificAchievement() - startingSettlement
                 .getTotalScientificAchievement()) / 10D;
         double jobScienceAchievementFactor = 0D;
-        ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
-        if (jobScience != null) {
-            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
-            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
-            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
+        
+        if (member instanceof Person) {
+            Person person = (Person) member;
+            ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
+            if (jobScience != null) {
+                double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
+                double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
+                jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
+            }
         }
+        
         double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
 
         if (destinationCrowding < RoverMission.MIN_PEOPLE) {
@@ -530,213 +534,146 @@ implements Serializable {
                 + (scienceAchievementFactor * SCIENCE_MODIFIER);
     }
 
-    private static double getDestinationSettlementDesirability(Robot robot,
-            Settlement startingSettlement, Settlement destinationSettlement) {
-
-        // Determine relationship factor in destination settlement relative to
-        // starting settlement.
-/*        RelationshipManager relationshipManager = Simulation.instance()
-                .getRelationshipManager();
-        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
-                person, startingSettlement.getAllAssociatedPeople());
-        double destinationOpinion = relationshipManager
-                .getAverageOpinionOfPeople(person, destinationSettlement
-                        .getAllAssociatedPeople());
-        double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
-*/
-        // Determine job opportunities in destination settlement relative to
-        // starting settlement.
-        RobotJob currentJob = robot.getBotMind().getRobotJob();
-        double currentJobProspect = JobManager.getRobotJobProspect(robot,
-                currentJob, startingSettlement, true);
-        double destinationJobProspect = 0D;
-        if (robot.getBotMind().getJobLock())
-            destinationJobProspect = JobManager.getRobotJobProspect(robot,
-                    currentJob, destinationSettlement, false);
-        else
-            destinationJobProspect = JobManager.getBestRobotJobProspect(robot,
-                    destinationSettlement, false);
-        double jobFactor = 0D;
-        if (destinationJobProspect > currentJobProspect)
-            jobFactor = 1D;
-        else if (destinationJobProspect < currentJobProspect)
-            jobFactor = -1D;
-
-        // Determine available space in destination settlement relative to
-        // starting settlement.
-        int startingCrowding = startingSettlement.getRobotCapacity()
-                - startingSettlement.getAllAssociatedRobots().size() - 1;
-        int destinationCrowding = destinationSettlement.getRobotCapacity()
-                - destinationSettlement.getAllAssociatedRobots().size();
-        double crowdingFactor = destinationCrowding - startingCrowding;
-
-        // Determine science achievement factor for destination relative to starting settlement.
-/*        double totalScienceAchievementFactor = (destinationSettlement
-                .getTotalScientificAchievement() - startingSettlement
-                .getTotalScientificAchievement()) / 10D;
-        double jobScienceAchievementFactor = 0D;
-        ScienceType jobScience = ScienceType.getJobScience(robot.getBotMind().getJob());
-        if (jobScience != null) {
-            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
-            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
-            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
-        }
-        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
-*/
-
-        if (destinationCrowding < RoverMission.MIN_PEOPLE) {
-            return 0;
-        }
-
-        // Return the sum of the factors with modifiers.
-        return //(relationshipFactor * RELATIONSHIP_MODIFIER)+
-                (jobFactor * JOB_MODIFIER)
-                + (crowdingFactor * CROWDING_MODIFIER);
-                // (scienceAchievementFactor * SCIENCE_MODIFIER)
-    }
-    /**
-     * Checks to see if a person is capable of joining a mission.
-     * @param person the person to check.
-     * @return true if person could join mission.
-     */
+//    private static double getDestinationSettlementDesirability(Robot robot,
+//            Settlement startingSettlement, Settlement destinationSettlement) {
+//
+//        // Determine relationship factor in destination settlement relative to
+//        // starting settlement.
+///*        RelationshipManager relationshipManager = Simulation.instance()
+//                .getRelationshipManager();
+//        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
+//                person, startingSettlement.getAllAssociatedPeople());
+//        double destinationOpinion = relationshipManager
+//                .getAverageOpinionOfPeople(person, destinationSettlement
+//                        .getAllAssociatedPeople());
+//        double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
+//*/
+//        // Determine job opportunities in destination settlement relative to
+//        // starting settlement.
+//        RobotJob currentJob = robot.getBotMind().getRobotJob();
+//        double currentJobProspect = JobManager.getRobotJobProspect(robot,
+//                currentJob, startingSettlement, true);
+//        double destinationJobProspect = 0D;
+//        if (robot.getBotMind().getJobLock())
+//            destinationJobProspect = JobManager.getRobotJobProspect(robot,
+//                    currentJob, destinationSettlement, false);
+//        else
+//            destinationJobProspect = JobManager.getBestRobotJobProspect(robot,
+//                    destinationSettlement, false);
+//        double jobFactor = 0D;
+//        if (destinationJobProspect > currentJobProspect)
+//            jobFactor = 1D;
+//        else if (destinationJobProspect < currentJobProspect)
+//            jobFactor = -1D;
+//
+//        // Determine available space in destination settlement relative to
+//        // starting settlement.
+//        int startingCrowding = startingSettlement.getRobotCapacity()
+//                - startingSettlement.getAllAssociatedRobots().size() - 1;
+//        int destinationCrowding = destinationSettlement.getRobotCapacity()
+//                - destinationSettlement.getAllAssociatedRobots().size();
+//        double crowdingFactor = destinationCrowding - startingCrowding;
+//
+//        // Determine science achievement factor for destination relative to starting settlement.
+///*        double totalScienceAchievementFactor = (destinationSettlement
+//                .getTotalScientificAchievement() - startingSettlement
+//                .getTotalScientificAchievement()) / 10D;
+//        double jobScienceAchievementFactor = 0D;
+//        ScienceType jobScience = ScienceType.getJobScience(robot.getBotMind().getJob());
+//        if (jobScience != null) {
+//            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
+//            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
+//            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
+//        }
+//        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
+//*/
+//
+//        if (destinationCrowding < RoverMission.MIN_PEOPLE) {
+//            return 0;
+//        }
+//
+//        // Return the sum of the factors with modifiers.
+//        return //(relationshipFactor * RELATIONSHIP_MODIFIER)+
+//                (jobFactor * JOB_MODIFIER)
+//                + (crowdingFactor * CROWDING_MODIFIER);
+//                // (scienceAchievementFactor * SCIENCE_MODIFIER)
+//    }
+ 
     @Override
-    protected boolean isCapableOfMission(Person person) {
-        if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (person.getSettlement() == getStartingSettlement())
+    protected boolean isCapableOfMission(MissionMember member) {
+        if (super.isCapableOfMission(member)) {
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == getStartingSettlement()) {
                     return true;
-            }
-        }
-        return false;
-    }
-    protected boolean isCapableOfMission(Robot robot) {
-        if (super.isCapableOfMission(robot)) {
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (robot.getSettlement() == getStartingSettlement())
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the mission qualification value for the person. Person is qualified and interested in joining the mission if
-     * the value is larger than 0. The larger the qualification value, the more likely the person will be picked for the
-     * mission. Qualification values of zero or negative will not join missions.
-     * @param person the person to check.
-     * @return mission qualification value.
-     * @throws MissionException if problem finding mission qualification.
-     */
-    @Override
-    protected double getMissionQualification(Person person) {
-        double result = 0D;
-
-        if (isCapableOfMission(person)) {
-            result = super.getMissionQualification(person);
-            RelationshipManager relationshipManager = Simulation.instance()
-                    .getRelationshipManager();
-
-            // Add modifier for average relationship with inhabitants of
-            // destination settlement.
-            if (destinationSettlement != null) {
-                Collection<Person> destinationInhabitants = destinationSettlement
-                        .getAllAssociatedPeople();
-                double destinationSocialModifier = (relationshipManager
-                        .getAverageOpinionOfPeople(person,
-                                destinationInhabitants) - 50D) / 50D;
-                result += destinationSocialModifier;
-            }
-
-            // Subtract modifier for average relationship with non-mission
-            // inhabitants of starting settlement.
-            if (getStartingSettlement() != null) {
-                Collection<Person> startingInhabitants = getStartingSettlement()
-                        .getAllAssociatedPeople();
-                Iterator<Person> i = startingInhabitants.iterator();
-                while (i.hasNext()) {
-                    if (hasPerson(i.next()))
-                        i.remove();
                 }
-                double startingSocialModifier = (relationshipManager
-                        .getAverageOpinionOfPeople(person, startingInhabitants) - 50D) / 50D;
-                result -= startingSocialModifier;
             }
-
-            // If person has the "Driver" job, add 1 to their qualification.
-            if (person.getMind().getJob() instanceof Driver)
-                result += 1D;
-
-            if (person.getMind().getJob() instanceof Manager)
-                result += 10D;
         }
-
-        return result;
+        
+        return false;
     }
 
-    protected double getMissionQualification(Robot robot) {
+    @Override
+    protected double getMissionQualification(MissionMember member) {
         double result = 0D;
 
-        if (isCapableOfMission(robot)) {
-            result = super.getMissionQualification(robot);
+//        if (isCapableOfMission(member)) {
+            result = super.getMissionQualification(member);
 
-            // If robot has the "Driver" job, add 1 to their qualification.
-            if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
-                result += 1D;
-        }
+            if (member instanceof Person) {
+                Person person = (Person) member;
+
+                RelationshipManager relationshipManager = Simulation.instance()
+                        .getRelationshipManager();
+
+                // Add modifier for average relationship with inhabitants of
+                // destination settlement.
+                if (destinationSettlement != null) {
+                    Collection<Person> destinationInhabitants = destinationSettlement
+                            .getAllAssociatedPeople();
+                    double destinationSocialModifier = (relationshipManager
+                            .getAverageOpinionOfPeople(person,
+                                    destinationInhabitants) - 50D) / 50D;
+                    result += destinationSocialModifier;
+                }
+
+                // Subtract modifier for average relationship with non-mission
+                // inhabitants of starting settlement.
+                if (getStartingSettlement() != null) {
+                    Collection<Person> startingInhabitants = getStartingSettlement()
+                            .getAllAssociatedPeople();
+                    Iterator<Person> i = startingInhabitants.iterator();
+                    while (i.hasNext()) {
+                        if (hasMember(i.next())) {
+                            i.remove();
+                        }
+                    }
+                    double startingSocialModifier = (relationshipManager
+                            .getAverageOpinionOfPeople(person, startingInhabitants) - 50D) / 50D;
+                    result -= startingSocialModifier;
+                }
+
+                // If person has the "Driver" job, add 1 to their qualification.
+                if (person.getMind().getJob() instanceof Driver) {
+                    result += 1D;
+                }
+
+                if (person.getMind().getJob() instanceof Manager) {
+                    result += 10D;
+                }
+            }
+            else if (member instanceof Robot) {
+                Robot robot = (Robot) member;
+                
+                // If robot has the "Driver" job, add 1 to their qualification.
+                if (robot.getBotMind().getRobotJob() instanceof Deliverybot) {
+                    result += 1D;
+                }
+            }
+//        }
 
         return result;
     }
 
-    /**
-     * Recruits new people into the mission.
-     * @param startingPerson the person starting the mission.
-     */
-    @Override
-    protected void recruitPeopleForMission(Person startingPerson) {
-        super.recruitPeopleForMission(startingPerson);
-
-        // Make sure there is at least one person left at the starting
-        // settlement.
-        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
-                startingPerson)) {
-            // Remove last person added to the mission.
-            Object[] array = getPeople().toArray();
-            int amount = getPeopleNumber() - 1;
-            Person lastPerson = null;
-            if (amount >= 0 && amount < array.length) {
-                lastPerson = (Person) array[amount];
-            }
-
-            if (lastPerson != null) {
-                lastPerson.getMind().setMission(null);
-                if (getPeopleNumber() < getMinPeople())
-                    endMission("Not enough members.");
-            }
-        }
-    }
-/*    protected void recruitPeopleForMission(Robot robot) {
-        super.recruitPeopleForMission(robot);
-
-        // Make sure there is at least one person left at the starting
-        // settlement.
-        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
-                robot)) {
-            // Remove last person added to the mission.
-            Object[] array = getPeople().toArray();
-            int amount = getPeopleNumber() - 1;
-            Person lastPerson = null;
-            if (amount >= 0 && amount < array.length) {
-                lastPerson = (Person) array[amount];
-            }
-
-            if (lastPerson != null) {
-                lastPerson.getMind().setMission(null);
-                if (getPeopleNumber() < getMinPeople())
-                    endMission("Not enough members.");
-            }
-        }
-    }
-*/
     /**
      * Gets the settlement associated with the mission.
      * @return settlement or null if none.

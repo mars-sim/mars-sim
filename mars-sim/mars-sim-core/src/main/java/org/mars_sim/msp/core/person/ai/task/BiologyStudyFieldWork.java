@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldWork.java
- * @version 3.08 2015-06-17
+ * @version 3.08 2015-07-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -103,26 +104,35 @@ implements Serializable {
 
     /**
      * Checks if a person can research a site.
-     * @param person the person
+     * @param member the member.
      * @param rover the rover
      * @return true if person can research a site.
      */
-    public static boolean canResearchSite(Person person, Rover rover) {
-        // Check if person can exit the rover.
-        boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
+    public static boolean canResearchSite(MissionMember member, Rover rover) {
+        
+        boolean result = false;
+        
+        if (member instanceof Person) {
+            Person person = (Person) member;
 
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            // Check if person can exit the rover.
+            boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
-        // Check if it is night time outside.
-        boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-        // Check if in dark polar region.
-        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+            // Check if it is night time outside.
+            boolean sunlight = surface.getSolarIrradiance(rover.getCoordinates()) > 0;
 
-        // Check if person's medical condition will not allow task.
-        boolean medical = person.getPerformanceRating() < .5D;
+            // Check if in dark polar region.
+            boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
 
-        return (exitable && (sunlight || darkRegion) && !medical);
+            // Check if person's medical condition will not allow task.
+            boolean medical = person.getPerformanceRating() < .5D;
+
+            result = (exitable && (sunlight || darkRegion) && !medical);
+        }
+        
+        return result;
     }
 
     @Override

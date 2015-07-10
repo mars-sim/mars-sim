@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.08 2015-06-17
+ * @version 3.08 2015-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -106,8 +106,8 @@ implements Serializable {
 			// Initialize data members.
 			setStartingSettlement(startingPerson.getSettlement());
 
-			// Recruit additional people to mission.
-			recruitPeopleForMission(startingPerson);
+			// Recruit additional members to mission.
+			recruitMembersForMission(startingPerson);
 
 			// Determine field site location.
 			if (hasVehicle()) {
@@ -345,48 +345,34 @@ implements Serializable {
 	}
 
 	@Override
-	protected void recruitPeopleForMission(Person startingPerson) {
-		super.recruitPeopleForMission(startingPerson);
+	protected double getMissionQualification(MissionMember member) {  
+	    double result = super.getMissionQualification(member);
 
-		// Make sure there is at least one person left at the starting settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
-			// Remove last person added to the mission.
-			Person lastPerson = (Person) getPeople().toArray()[getPeopleNumber() - 1];
-			if (lastPerson != null) {
-				lastPerson.getMind().setMission(null);
-				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
-			}
-		}
-	}
+	    if ((result > 0D) && (member instanceof Person)) {
+	        Person person = (Person) member;
 
-	@Override
-	protected double getMissionQualification(Person person) {  
-		double result = 0D;
+	        // Get base result for job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) result = job.getJoinMissionProbabilityModifier(this.getClass());
 
-		if (isCapableOfMission(person)) {
+	        // Add modifier if person is a researcher on the same scientific study.
+	        ScienceType biology = ScienceType.BIOLOGY;
+	        if (study != null) {
+	            if (person == study.getPrimaryResearcher()) {
+	                result += 2D;
 
-			// Get base result for job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) result = job.getJoinMissionProbabilityModifier(this.getClass());
+	                // Check if study's primary science is biology.
+	                if (biology == study.getScience()) result += 1D;
+	            }
+	            else if (study.getCollaborativeResearchers().containsKey(person)) {
+	                result += 1D;
 
-			// Add modifier if person is a researcher on the same scientific study.
-			ScienceType biology = ScienceType.BIOLOGY;
-			if (study != null) {
-				if (person == study.getPrimaryResearcher()) {
-					result += 2D;
-
-					// Check if study's primary science is biology.
-					if (biology == study.getScience()) result += 1D;
-				}
-				else if (study.getCollaborativeResearchers().containsKey(person)) {
-					result += 1D;
-
-					// Check if study collaboration science is in biology.
-					ScienceType collabScience = study.getCollaborativeResearchers().get(person);
-					if (biology == collabScience) result += 1D;
-				}
-			}
-		}
+	                // Check if study collaboration science is in biology.
+	                ScienceType collabScience = study.getCollaborativeResearchers().get(person);
+	                if (biology == collabScience) result += 1D;
+	            }
+	        }
+	    }
 
 		return result;
 	}
@@ -442,9 +428,11 @@ implements Serializable {
 	}
 
 	@Override
-	protected void performPhase(Person person) {
-		super.performPhase(person);
-		if (RESEARCH_SITE.equals(getPhase())) researchFieldSitePhase(person);
+	protected void performPhase(MissionMember member) {
+		super.performPhase(member);
+		if (RESEARCH_SITE.equals(getPhase())) {
+		    researchFieldSitePhase(member);
+		}
 	}
 
 	/**
@@ -455,19 +443,25 @@ implements Serializable {
 		endFieldSite = true;
 
 		// End each member's biology field work task.
-		Iterator<Person> i = getPeople().iterator();
-		while (i.hasNext()) {
-			Task task = i.next().getMind().getTaskManager().getTask();
-			if (task instanceof BiologyStudyFieldWork) ((BiologyStudyFieldWork) task).endEVA();
+		Iterator<MissionMember> i = getMembers().iterator();
+        while (i.hasNext()) {
+            MissionMember member = i.next();
+            if (member instanceof Person) {
+                Person person = (Person) member;
+                Task task = person.getMind().getTaskManager().getTask();
+                if (task instanceof BiologyStudyFieldWork) {
+                    ((BiologyStudyFieldWork) task).endEVA();
+                }
+            }
 		}
 	}
 
 	/** 
 	 * Performs the research field site phase of the mission.
-	 * @param person the person currently performing the mission
+	 * @param member the mission member currently performing the mission
 	 * @throws MissionException if problem performing phase.
 	 */
-	private void researchFieldSitePhase(Person person) {
+	private void researchFieldSitePhase(MissionMember member) {
 
 		// Check if field site research has just started.
 		if (fieldSiteStartTime == null) {
@@ -478,8 +472,9 @@ implements Serializable {
 		// Check if crew has been at site for more than required length of time.
 		boolean timeExpired = false;
 		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) 
+		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
 			timeExpired = true;
+		}
 
 		if (isEveryoneInRover()) {
 
@@ -490,80 +485,88 @@ implements Serializable {
 			}
 
 			// Check if crew has been at site for more than required length of time, then end this phase.
-			if (timeExpired) setPhaseEnded(true);
+			if (timeExpired) {
+			    setPhaseEnded(true);
+			}
 
 			// Determine if no one can start the field work task.
 			boolean nobodyFieldWork = true;
-			Iterator<Person> j = getPeople().iterator();
-			while (j.hasNext()) {
-				if (BiologyStudyFieldWork.canResearchSite(j.next(), getRover())) nobodyFieldWork = false;
+			Iterator<MissionMember> j = getMembers().iterator();
+            while (j.hasNext()) {
+				if (BiologyStudyFieldWork.canResearchSite(j.next(), getRover())) {
+				    nobodyFieldWork = false;
+				}
 			}
 
 			// If no one can research the site and this is not due to it just being
 			// night time, end the field work phase.
-			//            try {
 			Mars mars = Simulation.instance().getMars();
 			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
 					getCurrentMissionLocation());
 			double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
-			//            }
-			//            catch (Exception e) {
-			//                throw new MissionException(getPhase(), e);
-			//            }
+			if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) {
+			    setPhaseEnded(true);
+			}
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
-			if (hasEmergency()) setPhaseEnded(true);
+			if (hasEmergency()) {
+			    setPhaseEnded(true);
+			}
 
-			//            try {
 			// Check if enough resources for remaining trip.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
 				// If not, determine an emergency destination.
-				determineEmergencyDestination(person);
+				determineEmergencyDestination(member);
 				setPhaseEnded(true);
 			}
-			//            }
-			//            catch (Exception e) {
-			//                throw new MissionException(getPhase(), e.getMessage());
-			//            }
 		}
 		else {
 			// If research time has expired for the site, have everyone end their field work tasks.
-			if (timeExpired) {
-				Iterator<Person> i = getPeople().iterator();
-				while (i.hasNext()) {
-					Task task = i.next().getMind().getTaskManager().getTask();
-					if ((task != null) && (task instanceof BiologyStudyFieldWork))
-						((BiologyStudyFieldWork) task).endEVA();
-				}
-			}
+		    if (timeExpired) {
+		        Iterator<MissionMember> i = getMembers().iterator();
+		        while (i.hasNext()) {
+		            MissionMember tempMember = i.next();
+		            if (tempMember instanceof Person) {
+		                Person tempPerson = (Person) tempMember;
+		                Task task = tempPerson.getMind().getTaskManager().getTask();
+		                if ((task != null) && (task instanceof BiologyStudyFieldWork)) {
+		                    ((BiologyStudyFieldWork) task).endEVA();
+		                }
+		            }
+		        }
+		    }
 		}
 
 		if (!getPhaseEnded()) {
 
 			if (!endFieldSite && !timeExpired) {
 				// If person can research the site, start that task.
-				if (BiologyStudyFieldWork.canResearchSite(person, getRover())) {
-					//                    try {
-					assignTask(person, new BiologyStudyFieldWork(person, leadResearcher, study, 
-							(Rover) getVehicle()));
-					//                    }
-					//                    catch(Exception e) {
-					//                        throw new MissionException(getPhase(), e);
-					//                    }
+				if (BiologyStudyFieldWork.canResearchSite(member, getRover())) {
+				    // TODO refactor.
+				    if (member instanceof Person) {
+				        Person person = (Person) member;
+				        assignTask(person, new BiologyStudyFieldWork(person, leadResearcher, study, 
+				                (Rover) getVehicle()));
+				    }
 				}
 			}
 		}
 	}
 
 	@Override
-	protected boolean isCapableOfMission(Person person) {
-		if (super.isCapableOfMission(person)) {
-			if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-				if (person.getSettlement() == getStartingSettlement()) return true;
-			}
-		}
-		return false;
+	protected boolean isCapableOfMission(MissionMember member) {
+	    boolean result = super.isCapableOfMission(member);
+        if (result) {
+            boolean atStartingSettlement = false;
+            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (member.getSettlement() == getStartingSettlement()) {
+                    atStartingSettlement = true;
+                }
+            }
+            result = atStartingSettlement;
+        }
+        
+        return result;
 	}
 
 	@Override

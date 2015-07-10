@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 3.07 2014-08-17
+ * @version 3.08 2015-07-08
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -64,14 +63,7 @@ extends CollectResourcesMission {
 				Bag.class, REQUIRED_BAGS, 
 				NUM_SITES, MIN_PEOPLE);
 	}
-	public CollectRegolith (Robot startingRobot) {
-		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingRobot, 
-				getRegolithResource(), SITE_GOAL, 
-				COLLECTION_RATE, 
-				Bag.class, REQUIRED_BAGS, 
-				NUM_SITES, MIN_PEOPLE);
-	}
+
 	/**
 	 * Constructor with explicit data.
 	 * @param members collection of mission members.
@@ -81,7 +73,7 @@ extends CollectResourcesMission {
 	 * @param description the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith (Collection<Unit> members, Settlement startingSettlement, 
+	public CollectRegolith (Collection<MissionMember> members, Settlement startingSettlement, 
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.

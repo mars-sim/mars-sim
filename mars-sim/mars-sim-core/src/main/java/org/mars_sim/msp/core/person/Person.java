@@ -27,6 +27,8 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -48,7 +50,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  */
 public class Person
 extends Unit
-implements VehicleOperator, Serializable {
+implements VehicleOperator, MissionMember, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -755,20 +757,30 @@ implements VehicleOperator, Serializable {
 	  */
 	// 2015-05-18 Added getBuildingLocation()
     public Building getBuildingLocation() {
-	     Building result = null;
-	     if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	         BuildingManager manager = getSettlement().getBuildingManager();
-	         result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
-	         //List<Building> buildings = manager.getBuildings();
-	         //Iterator<Building> i = buildings.iterator();
-	        // while (i.hasNext()) {
-	 		//	Building b = i.next();
-	 		//	String buildingType = b.getBuildingType();
-	 		//}
-	     }
+        Building result = null;
+        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = getSettlement().getBuildingManager();
+            result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+            //List<Building> buildings = manager.getBuildings();
+            //Iterator<Building> i = buildings.iterator();
+            // while (i.hasNext()) {
+            //	Building b = i.next();
+            //	String buildingType = b.getBuildingType();
+            //}
+        }
 
-	     return result;
-	 }
+        return result;
+    }
+    
+    @Override
+    public String getTaskDescription() {
+        return getMind().getTaskManager().getTaskDescription();
+    }
+    
+    @Override
+    public void setMission(Mission newMission) {
+        getMind().setMission(newMission);
+    }
 
     @Override
     public void destroy() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AddMembersDialog.java
- * @version 3.08 2015-03-23
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 
@@ -27,15 +27,16 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 /**
  * A dialog window for adding members to the mission for the mission tool.
  */
-class AddMembersDialog extends JInternalFrame {
+class AddMembersDialog extends ModalInternalFrame {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -43,24 +44,24 @@ class AddMembersDialog extends JInternalFrame {
 	private Mission mission;
 	protected MainDesktopPane desktop;
 	
-	private DefaultListModel<Person> memberListModel;
-	private DefaultListModel<Person> availableListModel;
-	private JList<Person> availableList;
+	private DefaultListModel<MissionMember> memberListModel;
+	private DefaultListModel<MissionMember> availableListModel;
+	private JList<MissionMember> availableList;
 	private JButton addButton;
 	
 	/**
 	 * Constructor.
 	 * @param owner {@link Dialog} the owner dialog.
 	 * @param mission {@link Mission} the mission to add to.
-	 * @param memberListModel {@link DefaultListModel}<{@link Person}> the member list model in the edit mission dialog.
-	 * @param availablePeople {@link Collection}<{@link People}> the available people to add.
+	 * @param memberListModel {@link DefaultListModel}<{@link MissionMember}> the member list model in the edit mission dialog.
+	 * @param availableMembers {@link Collection}<{@link MissionMember}> the available members to add.
 	 */
-	public AddMembersDialog(JInternalFrame owner, MainDesktopPane desktop, Mission mission, DefaultListModel<Person> memberListModel, 
-			Collection<Person> availablePeople) {
+	public AddMembersDialog(JInternalFrame owner, MainDesktopPane desktop, Mission mission, 
+	        DefaultListModel<MissionMember> memberListModel, Collection<MissionMember> availableMembers) {
 		// Use JDialog constructor
 		//super(owner, "Add Members", true);
 		// Use JInternalFrame constructor
-        super("Add Members", false, true, false, true);
+        super("Add Members");
        		
 		// Initialize data members.
 		this.mission = mission;
@@ -87,16 +88,16 @@ class AddMembersDialog extends JInternalFrame {
         availablePeoplePane.add(availableScrollPane, BorderLayout.CENTER);
         
         // Create available list model
-        availableListModel = new DefaultListModel<Person>();
-        Iterator<Person> i = availablePeople.iterator();
+        availableListModel = new DefaultListModel<MissionMember>();
+        Iterator<MissionMember> i = availableMembers.iterator();
         while (i.hasNext()) availableListModel.addElement(i.next());
         
         // Create member list
-        availableList = new JList<Person>(availableListModel);
+        availableList = new JList<MissionMember>(availableListModel);
         availableList.addListSelectionListener(
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {
-        				// Enable the add button if there are available people.
+        				// Enable the add button if there are available members.
         				addButton.setEnabled(availableList.getSelectedValues().length > 0);
         			}
         		}
@@ -113,8 +114,8 @@ class AddMembersDialog extends JInternalFrame {
 		addButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
-        				// Add people to the edit mission dialog and dispose this dialog.
-        				addPeople();
+        				// Add members to the edit mission dialog and dispose this dialog.
+        				addMembers();
         				dispose();
         			}
 				});
@@ -146,18 +147,17 @@ class AddMembersDialog extends JInternalFrame {
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
 	    setVisible(true);
-	    
-		
 	}
 	
 	/**
-	 * Add people to edit mission dialog.
+	 * Add members to edit mission dialog.
 	 */
-	private void addPeople() {
+	private void addMembers() {
 		int[] selectedIndexes = availableList.getSelectedIndices();
         for (int selectedIndexe : selectedIndexes) {
-            if (memberListModel.getSize() < mission.getMissionCapacity())
+            if (memberListModel.getSize() < mission.getMissionCapacity()) {
                 memberListModel.addElement(availableListModel.elementAt(selectedIndexe));
+            }
         }
 	}
 }

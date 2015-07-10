@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.08 2015-05-21
+ * @version 3.08 2015-07-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -127,26 +127,18 @@ implements Serializable {
 
 	/** 
 	 * Gets the mission a given person is a member of.
-	 * If person is a member of no mission, return null.
-	 * @param person the given person
-	 * @return mission for that person
+	 * If member isn't a part of any mission, return null.
+	 * @param member the member.
+	 * @return mission for that member
 	 */
-	public Mission getMission(Person person) {
+	public Mission getMission(MissionMember member) {
 		Mission result = null;
 		for (Mission tempMission : missions) {
-			if (tempMission.hasPerson(person)) {
+		    if (tempMission.hasMember(member)) {
 				result = tempMission;
 			}
 		}
-		return result;
-	}
-	public Mission getMission(Robot robot) {
-		Mission result = null;
-		for (Mission tempMission : missions) {
-			if (tempMission.hasRobot(robot)) {
-				result = tempMission;
-			}
-		}
+		
 		return result;
 	}
 	

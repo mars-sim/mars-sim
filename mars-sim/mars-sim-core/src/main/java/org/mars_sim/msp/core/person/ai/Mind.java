@@ -346,8 +346,9 @@ implements Serializable {
     public void setInactive() {
         taskManager.clearTask();
         if (hasActiveMission()) {
-        	if (person != null)
-                mission.removePerson(person);
+        	if (person != null) {
+                mission.removeMember(person);
+        	}
 
             mission = null;
         }
@@ -362,13 +363,13 @@ implements Serializable {
 
         	if (person != null) {
         		if (mission != null) {
-                    mission.removePerson(person);
+                    mission.removeMember(person);
                 }
 
                 mission = newMission;
 
                 if (newMission != null) {
-                    newMission.addPerson(person);
+                    newMission.addMember(person);
                 }
 
                 person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);

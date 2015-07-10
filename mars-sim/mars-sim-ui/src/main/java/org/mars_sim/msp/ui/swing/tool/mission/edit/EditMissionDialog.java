@@ -1,14 +1,18 @@
 /**
  * Mars Simulation Project
  * EditMissionDialog.java
- * @version 3.08 2015-06-30
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -16,7 +20,9 @@ import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 import javax.swing.*;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -179,15 +185,19 @@ public class EditMissionDialog extends ModalInternalFrame {
 	private void setMissionMembers() {
 		// Add new members.
 		for (int x = 0; x < infoPane.memberListModel.size(); x++) {
-			Person person = (Person) infoPane.memberListModel.elementAt(x);
-			if (!mission.hasPerson(person)) person.getMind().setMission(mission);
+		    MissionMember member = (MissionMember) infoPane.memberListModel.elementAt(x);
+			if (!mission.hasMember(member)) {
+			    member.setMission(mission);
+			}
 		}
 		
 		// Remove old members.
-		Iterator<Person> i = mission.getPeople().iterator();
+		Iterator<MissionMember> i = mission.getMembers().iterator();
 		while (i.hasNext()) {
-			Person person = i.next();
-			if (!infoPane.memberListModel.contains(person)) person.getMind().setMission(null);
+			MissionMember member = i.next();
+			if (!infoPane.memberListModel.contains(member)) {
+			    member.setMission(null);
+			}
 		}
 	}
 }

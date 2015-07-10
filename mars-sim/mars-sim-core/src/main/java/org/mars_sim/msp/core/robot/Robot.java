@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -57,7 +59,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
 public class Robot
 //extends Unit
 extends Equipment
-implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
+implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -661,6 +663,16 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
 		return malfunctionManager;
 	}
 
+	@Override
+    public String getTaskDescription() {
+        return getBotMind().getTaskManager().getTaskDescription();
+    }
+	
+	@Override
+	public void setMission(Mission newMission) {
+	    getBotMind().setMission(newMission);
+	}
+	
     @Override
     public void destroy() {
         super.destroy();
@@ -677,6 +689,4 @@ implements Salvagable,  Malfunctionable, VehicleOperator, Serializable {
         //scientificAchievement.clear();
         //scientificAchievement = null;
     }
-
-
 }

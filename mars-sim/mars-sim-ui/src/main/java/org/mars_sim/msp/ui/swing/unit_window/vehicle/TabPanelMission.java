@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTabPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-07-02
  * @author Scott Davis
  */
 
@@ -31,8 +31,9 @@ import javax.swing.JTextArea;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -52,15 +53,15 @@ extends TabPanel {
 
 	private JTextArea missionTextArea;
 	private JTextArea missionPhaseTextArea;
-	private DefaultListModel<Person> memberListModel;
-	private JList<Person> memberList;
+	private DefaultListModel<MissionMember> memberListModel;
+	private JList<MissionMember> memberList;
 	private JButton missionButton;
 	private JButton monitorButton;
 
 	// Cache
 	private String missionCache = null;
 	private String missionPhaseCache = null;
-	private Collection<Person> memberCache;
+	private Collection<MissionMember> memberCache;
 
 	/**
 	 * Constructor.
@@ -135,20 +136,20 @@ extends TabPanel {
 		memberListPanel.add(memberScrollPanel);
 
 		// Create member list model
-		memberListModel = new DefaultListModel<Person>();
-		if (mission != null) memberCache = mission.getPeople();
-		else memberCache = new ConcurrentLinkedQueue<Person>();
-		Iterator<Person> i = memberCache.iterator();
+		memberListModel = new DefaultListModel<MissionMember>();
+		if (mission != null) memberCache = mission.getMembers();
+		else memberCache = new ConcurrentLinkedQueue<MissionMember>();
+		Iterator<MissionMember> i = memberCache.iterator();
 		while (i.hasNext()) memberListModel.addElement(i.next());
 
 		// Create member list
-		memberList = new JList<Person>(memberListModel);
+		memberList = new JList<MissionMember>(memberListModel);
 		// memberList.addMouseListener(this);
 		memberList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				// If double-click, open person dialog.
 				if (arg0.getClickCount() >= 2) 
-					getDesktop().openUnitWindow((Person) memberList.getSelectedValue(), false);
+					getDesktop().openUnitWindow((Unit) memberList.getSelectedValue(), false);
 			}
 		});
 		memberScrollPanel.setViewportView(memberList);
@@ -218,17 +219,17 @@ extends TabPanel {
 		}
 
 		// Update member list
-		Collection<Person> tempCollection = null;
+		Collection<MissionMember> tempCollection = null;
 		if (mission != null) {
-		    tempCollection = mission.getPeople();
+		    tempCollection = mission.getMembers();
 		}
 		else {
-		    tempCollection = new ConcurrentLinkedQueue<Person>();
+		    tempCollection = new ConcurrentLinkedQueue<MissionMember>();
 		}
 		if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
 			memberCache = tempCollection;
 			memberListModel.clear();
-			Iterator<Person> i = memberCache.iterator();
+			Iterator<MissionMember> i = memberCache.iterator();
 			while (i.hasNext()) {
 			    memberListModel.addElement(i.next());
 			}
