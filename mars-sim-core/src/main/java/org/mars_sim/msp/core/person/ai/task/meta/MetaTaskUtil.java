@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @version 3.08 2015-05-22
+ * @version 3.08 2015-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -11,8 +11,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.collections.ListUtils;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -311,7 +309,7 @@ public class MetaTaskUtil {
      */
     public static MetaTask getMetaTask(String name) {
     	MetaTask metaTask = null;
-    	Iterator<MetaTask> i = metaTasks.iterator();
+    	Iterator<MetaTask> i = getMetaTasks().iterator();
     	while (i.hasNext()) {
     		MetaTask t = i.next();
     		if (t.getClass().getSimpleName().equals(name)) {

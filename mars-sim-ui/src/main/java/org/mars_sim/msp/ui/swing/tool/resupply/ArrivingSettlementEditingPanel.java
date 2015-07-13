@@ -155,11 +155,11 @@ extends TransportItemEditingPanel {
 		JLabel populationLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.population")); //$NON-NLS-1$
 		populationPane.add(populationLabel);
 
-		// Create population panel.
+		// Create robot number panel.
 		JPanel numOfRobotsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		numPane.add(numOfRobotsPane);
 
-		// Create population label.
+		// Create robot number label.
 		JLabel numOfRobotsLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.numOfRobots")); //$NON-NLS-1$
 		numOfRobotsPane.add(numOfRobotsLabel);
 
