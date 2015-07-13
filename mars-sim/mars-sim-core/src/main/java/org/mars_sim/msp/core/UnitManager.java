@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.08 2015-03-24
+ * @version 3.08 2015-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -42,7 +41,6 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -770,20 +768,15 @@ public class UnitManager implements Serializable {
 						cc.set3Divisions(true);
 						cc.assignSpecialiststo3Divisions(person);
 					}
-				} // end of while
+				}
 
-				// 2015-04-30 Assign head and chiefs
-				if (initPop >= POPULATION_WITH_MAYOR) {
-					establishGovernment(settlement);
-				}
-				else {
-					establishCommand(settlement, initPop);
-				}
+				// Establish system of governance at settlement.
+				establishSettlementGovernance(settlement);
 
 				// 2015-07-02
 				setupShift(settlement, initPop);
 
-			} // end of while
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -1024,6 +1017,21 @@ public class UnitManager implements Serializable {
 
 		if (pop >= POPULATION_WITH_SUB_COMMANDER)
 			cv.setRole(RoleType.SUB_COMMANDER);
+	}
+	
+	/**
+	 * Establish or reset the system of governance at a settlement.
+	 * @param settlement the settlement.
+	 */
+	public void establishSettlementGovernance(Settlement settlement) {
+	    
+	    int popSize = settlement.getAllAssociatedPeople().size();
+	    if (popSize >= POPULATION_WITH_MAYOR) {
+            establishGovernment(settlement);
+        }
+        else {
+            establishCommand(settlement, popSize);
+        }
 	}
 
 	// 2015-04-30 Added establishGovernment()

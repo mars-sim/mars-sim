@@ -463,9 +463,12 @@ extends UnitTableModel {
 					result = "N/A";
 				else {
 					Role role = person.getRole();
-					RoleType type = role.getType();
-					if (role != null) result = type;
-					else result = null;
+					if (role != null) {
+					    result = role.getType();
+					}
+					else {
+					    result = null;
+					}
 				}
 			} break;
 

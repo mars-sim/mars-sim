@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.07 2014-10-29
+ * @version 3.08 2015-07-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -25,12 +25,18 @@ import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -68,12 +74,12 @@ implements Transportable, Serializable {
 	 * @param arrivalDate the arrival date.
 	 * @param landingLocation the landing location.
 	 * @param populationNum the population of new immigrants arriving with the settlement.
+	 * @param numOfRobots the number of new robots.
 	 */
 	public ArrivingSettlement(
 		String name, String template,
 		MarsClock arrivalDate, Coordinates landingLocation,
-		int populationNum, int numOfRobots
-	) {
+		int populationNum, int numOfRobots) {
 		this.name = name;
 		this.template = template;
 		this.arrivalDate = arrivalDate;
@@ -285,6 +291,9 @@ implements Transportable, Serializable {
 
 		// Create new immigrants with arriving settlement.
 		createNewImmigrants(newSettlement);
+		
+		// Create new robots.
+		createNewRobots(newSettlement);
 
 		// Create new equipment.
 		createNewEquipment(newSettlement);
@@ -335,11 +344,78 @@ implements Transportable, Serializable {
 			String birthplace = "Earth"; //TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			Person immigrant = new Person(immigrantName, gender, birthplace, newSettlement);
+			
+			// Initialize favorites and preferences.
+            Favorite favorites = immigrant.getFavorite();
+            favorites.setFavoriteMainDish(favorites.getRandomMainDish());
+            favorites.setFavoriteSideDish(favorites.getRandomSideDish());
+            favorites.setFavoriteDessert(favorites.getRandomDessert());
+            favorites.setFavoriteActivity(favorites.getRandomActivity());
+            immigrant.getPreference().initializePreference();
+            
+            // Assign a job by calling getInitialJob
+            immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+			
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);
 			logger.info(immigrantName + " arrives on Mars at " + newSettlement.getName());
 		}
+		
+		// Update command/governance and work shift schedules at settlement with new immigrants.
+        if (immigrants.size() > 0) {
+            
+            int popSize = newSettlement.getAllAssociatedPeople().size();
+            
+            // Reset specialist positions at settlement.
+            ChainOfCommand cc = newSettlement.getChainOfCommand();
+            Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
+            while (i.hasNext()) {
+                Person person = i.next();
+                if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
+                    cc.set7Divisions(true);
+                    cc.assignSpecialiststo7Divisions(person);
+                } 
+                else {
+                    cc.set3Divisions(true);
+                    cc.assignSpecialiststo3Divisions(person);
+                }
+            }
+            
+            // Reset command/government system at settlement.
+            unitManager.establishSettlementGovernance(newSettlement);
+            
+            // Reset work shift schedules at settlement.
+            unitManager.setupShift(newSettlement, popSize);
+        }
+	}
+	
+	/**
+	 * Create the new settlement's robots.
+	 * @param newSettlement the new settlement.
+	 */
+	private void createNewRobots(Settlement newSettlement) {
+	    
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+	    for (int x = 0; x < numOfRobots; x++) {
+	        
+	        // Get a robotType randomly
+            RobotType robotType = unitManager.getABot();
+
+            // Create arriving robot.
+            Robot robot = new Robot(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Earth",
+                    newSettlement, newSettlement.getCoordinates());
+            unitManager.addUnit(robot);
+
+            // Initialize robot job.
+            String jobName = RobotJob.getName(robotType);
+            if (jobName != null) {
+                RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+                if (robotJob != null) {
+                    robot.getBotMind().setRobotJob(robotJob, true);
+                }
+            }
+	    }
 	}
 
 	/**

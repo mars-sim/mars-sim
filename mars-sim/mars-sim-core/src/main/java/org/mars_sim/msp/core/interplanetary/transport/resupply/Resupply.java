@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.07 2014-12-26
+ * @version 3.08 2015-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -33,13 +33,16 @@ import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -478,16 +481,58 @@ implements Serializable, Transportable {
         for (int x = 0; x < getNewImmigrantNum(); x++) {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             PersonGender gender = PersonGender.FEMALE;
-            if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
+            if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+                gender = PersonGender.MALE;
+            }
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
             Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
+            
+            // Initialize favorites and preferences.
+            Favorite favorites = immigrant.getFavorite();
+            favorites.setFavoriteMainDish(favorites.getRandomMainDish());
+            favorites.setFavoriteSideDish(favorites.getRandomSideDish());
+            favorites.setFavoriteDessert(favorites.getRandomDessert());
+            favorites.setFavoriteActivity(favorites.getRandomActivity());
+            immigrant.getPreference().initializePreference();
+            
+            // Assign a job by calling getInitialJob
+            immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+            
             unitManager.addUnit(immigrant);
             relationshipManager.addNewImmigrant(immigrant, immigrants);
             immigrants.add(immigrant);
+            
             logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
             // 2015-04-22 Added fireUnitUpdate()
             settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
+        }
+        
+        // Update command/governance and work shift schedules at settlement with new immigrants.
+        if (immigrants.size() > 0) {
+            
+            int popSize = settlement.getAllAssociatedPeople().size();
+            
+            // Reset specialist positions at settlement.
+            ChainOfCommand cc = settlement.getChainOfCommand();
+            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+            while (i.hasNext()) {
+                Person person = i.next();
+                if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
+                    cc.set7Divisions(true);
+                    cc.assignSpecialiststo7Divisions(person);
+                } 
+                else {
+                    cc.set3Divisions(true);
+                    cc.assignSpecialiststo3Divisions(person);
+                }
+            }
+            
+            // Reset command/government system at settlement.
+            unitManager.establishSettlementGovernance(settlement);
+            
+            // Reset work shift schedules at settlement.
+            unitManager.setupShift(settlement, popSize);
         }
     }
 
