@@ -174,8 +174,8 @@ public class MainMenu {
        primaryStage.setResizable(false);
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
        primaryStage.setScene(scene);
-       //primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
-       primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
+       //primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
 
        // Starts a new stage for MainScene
@@ -194,7 +194,7 @@ public class MainMenu {
 	}
 
    public void prepareStage() {
-	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
 	   // prepare main scene
 	   mainScene.prepareMainScene();
@@ -202,8 +202,8 @@ public class MainMenu {
 	   mainScene.prepareOthers();
 
 	   // prepare stage
-	   stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
+	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab32.png").toString()));
 	   stage.setResizable(true);
 	   //stage.setFullScreen(true);
 	   stage.setScene(scene);

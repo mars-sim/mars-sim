@@ -51,7 +51,7 @@ public class MarsProjectFX extends Application  {
     private MarsProjectFX marsProjectFX;
 
     public MarsProjectFX() {
-	   	//logger.info("MarsProjectFX's contructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName() + " Thread");
     	marsProjectFX = this;
 		/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -94,10 +94,10 @@ public class MarsProjectFX extends Application  {
 
 		    if (useGUI) {
 		    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
-		    	System.setProperty("sun.java2d.ddforcevram", "true");
+		    	//System.setProperty("sun.java2d.ddforcevram", "true");
+
 		       	// Enable capability of loading of svg image using regular method
-		    	SvgImageLoaderFactory.install();
-			    //mainMenu = new MainMenu(marsProjectFX); //, args, true);
+		    	//SvgImageLoaderFactory.install();
 
 			} else { // GUI-less
 			    // Initialize the simulation.

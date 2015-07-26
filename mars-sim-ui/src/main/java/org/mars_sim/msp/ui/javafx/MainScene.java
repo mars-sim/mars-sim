@@ -192,7 +192,7 @@ public class MainScene {
 	}
 
 	public void prepareOthers() {
-		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
 		openInitialWindows();
 		startAutosaveTimer();
@@ -1089,8 +1089,8 @@ public class MainScene {
 		Optional<ButtonType> result = alert.showAndWait();
 
 		if (result.get() == buttonTypeOne) {
-			saveOnExit();
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			saveOnExit();
 			endSim();
 		} else if (result.get() == buttonTypeTwo) {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
@@ -1127,7 +1127,7 @@ public class MainScene {
 	// }
 
 	public void openInitialWindows() {
-		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
 		} );
