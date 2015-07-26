@@ -346,7 +346,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
-	   	//logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
 
 		if (toolWindows != null)
 			toolWindows.clear();
@@ -1200,6 +1200,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
+	   	logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 			// Open default windows on desktop.
