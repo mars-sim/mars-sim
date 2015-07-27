@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionMemberable.java
- * @version 3.08 2015-07-10
+ * @version 3.08 2015-07-20
  * @author Scott Davis
  */
 

@@ -73,7 +73,6 @@ public class SleepMeta implements MetaTask, Serializable {
                 result *= 4D;
             }
 
-
             Building building = Sleep.getAvailableLivingQuartersBuilding(person);
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
@@ -84,6 +83,17 @@ public class SleepMeta implements MetaTask, Serializable {
 	        if (result > 0)
 	        	result += person.getPreference().getPreferenceScore(this);
             if (result < 0) result = 0;
+            
+            // Check if person's work shift will begin in the next 50 millisols.
+            int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+            millisols += 50;
+            if (millisols > 1000) {
+                millisols -= 1000;
+            }
+            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            if (willBeShiftHour) {
+                result = 0D;
+            }
         }
 
         // No sleeping outside.

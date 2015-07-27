@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Relax;
@@ -29,6 +30,9 @@ public class RelaxMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.relax"); //$NON-NLS-1$
+    
+    /** Modifier if during person's work shift. */
+    private static final double WORK_SHIFT_MODIFIER = .01D;
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
@@ -68,6 +72,13 @@ public class RelaxMeta implements MetaTask, Serializable {
         if (result > 0)
         	result += person.getPreference().getPreferenceScore(this);
         if (result < 0) result = 0;
+        
+        // Modify probability if during person's work shift.
+        int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+        if (isShiftHour) {
+            result*= WORK_SHIFT_MODIFIER;
+        }
 
         return result;
     }

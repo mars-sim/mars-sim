@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.08 2015-03-18
+ * @version 3.08 2015-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -606,6 +606,9 @@ implements ClockListener {
 			} else {
 				selectedPerson.put(settlement, person);
 			}
+			
+			// Repaint to refresh the label display.
+			repaint();
 		}
 	}
 
@@ -633,6 +636,9 @@ implements ClockListener {
 			} else {
 				selectedRobot.put(settlement, robot);
 			}
+			
+			// Repaint to refresh the label display.
+			repaint();
 		}
 	}
 

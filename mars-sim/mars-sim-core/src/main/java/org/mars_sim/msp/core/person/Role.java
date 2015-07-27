@@ -32,10 +32,10 @@ public class Role implements Serializable {
 		return type;
 	}
 
-	public void relinquishOldRoleType() {
-		RoleType type = getType();
-		if (type != null) {
-		    person.getAssociatedSettlement().getChainOfCommand().releaseJobRoleMap(type);
+	public void relinquishOldRoleType(RoleType oldType) {
+//		RoleType type = getType();
+		if (oldType != null) {
+		    person.getAssociatedSettlement().getChainOfCommand().releaseJobRoleMap(oldType);
 		}
 	}
 
@@ -46,11 +46,13 @@ public class Role implements Serializable {
 	public void setNewRoleType(RoleType type) {
 
 	    if (type != getType()) {
-	        relinquishOldRoleType();
+//	        relinquishOldRoleType();
+	        RoleType oldType = getType();
 //	        System.out.println("New RoleType is "+ type);
 	        this.type = type;
 	        person.getAssociatedSettlement().getChainOfCommand().addJobRoleMap(type);
 	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, type);
+	        relinquishOldRoleType(oldType);
 	    }
 /*
 		if (type == RoleType.SAFETY_SPECIALIST)

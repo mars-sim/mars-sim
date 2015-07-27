@@ -139,10 +139,11 @@ public class MetaTaskUtil {
         tasks.add(new PerformLaboratoryResearchMeta());
         tasks.add(new PerformMathematicalModelingMeta());
         tasks.add(new PrepareDessertMeta());
+        tasks.add(new PrescribeMedicationMeta());
         tasks.add(new ProduceFoodMeta());
         tasks.add(new ProposeScientificStudyMeta());
         tasks.add(new RespondToStudyInvitationMeta());
-        tasks.add(new RestingMedicalRecoveryMeta());
+        tasks.add(new ReturnLightUtilityVehicleMeta());
         tasks.add(new ReviewJobReassignmentMeta());
         tasks.add(new SalvageBuildingMeta());
         tasks.add(new SalvageGoodMeta());
@@ -151,6 +152,7 @@ public class MetaTaskUtil {
         tasks.add(new TendGreenhouseMeta());
         tasks.add(new ToggleFuelPowerSourceMeta());
         tasks.add(new ToggleResourceProcessMeta());
+        tasks.add(new TreatMedicalPatientMeta());
         tasks.add(new UnloadVehicleEVAMeta());
         tasks.add(new UnloadVehicleGarageMeta());
         tasks.add(new WriteReportMeta());
@@ -177,6 +179,7 @@ public class MetaTaskUtil {
     	tasks.add(new ReadMeta());
     	tasks.add(new ConnectWithEarthMeta());
         tasks.add(new SleepMeta());
+        tasks.add(new WalkMeta());
         tasks.add(new WorkoutMeta());
         tasks.add(new YogaMeta());
 
@@ -200,17 +203,12 @@ public class MetaTaskUtil {
 
         allHourTasks.add(new EatMealMeta());
         allHourTasks.add(new ObserveAstronomicalObjectsMeta());
-        allHourTasks.add(new PrescribeMedicationMeta());
         allHourTasks.add(new RelaxMeta());
-    	//allHourTasks.add(new ReadMeta());
         allHourTasks.add(new RepairEVAMalfunctionMeta());
         allHourTasks.add(new RepairMalfunctionMeta());
         allHourTasks.add(new RequestMedicalTreatmentMeta());
         allHourTasks.add(new RestingMedicalRecoveryMeta());
-        allHourTasks.add(new ReturnLightUtilityVehicleMeta());
         allHourTasks.add(new SelfTreatHealthProblemMeta());
-        allHourTasks.add(new TreatMedicalPatientMeta()); // should this task be 24/7 ?
-        allHourTasks.add(new WalkMeta());
     }
 
 

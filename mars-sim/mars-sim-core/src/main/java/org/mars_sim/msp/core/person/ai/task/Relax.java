@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -58,6 +59,13 @@ implements Serializable {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
 				RandomUtil.getRandomDouble(40D));
 
+		// If during person's work shift, only relax for short period.
+		int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+		if (isShiftHour) {
+		    setDuration(10D);
+		}
+		
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

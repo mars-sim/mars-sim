@@ -269,9 +269,11 @@ implements TableModelListener, ActionListener {
 		MonitorTab monitorTab = getSelected();
     	if (searchable != null)
     		SearchableUtils.uninstallSearchable(table);
-		TableTab tableTab = (TableTab) monitorTab;
-    	table = tableTab.getTable();
-		//System.out.println("tab : " + tableTab + "\n    table : " + table);
+    	if (monitorTab instanceof TableTab) {
+    	    TableTab tableTab = (TableTab) monitorTab;
+    	    table = tableTab.getTable();
+    	    //System.out.println("tab : " + tableTab + "\n    table : " + table);
+    	}
     }
 
     //public void switchTable() {
@@ -283,29 +285,31 @@ implements TableModelListener, ActionListener {
     	if (searchable != null)
     		SearchableUtils.uninstallSearchable(searchable);
 
-       	searchable = SearchableUtils.installSearchable(table);
-        searchable.setRepeats(true);
-        //searchable.setPopupTimeout(5000);
-     	searchable.setCaseSensitive(false);
+    	if (table != null) {
+    	    searchable = SearchableUtils.installSearchable(table);
+    	    searchable.setRepeats(true);
+    	    //searchable.setPopupTimeout(5000);
+    	    searchable.setCaseSensitive(false);
 
-		if (_tableSearchableBar != null) {
-			_tableSearchableBar.setSearchingText("");
-			_tableSearchableBar = null;
-			//statusPanel.remove(_tableSearchableBar);
-		}
+    	    if (_tableSearchableBar != null) {
+    	        _tableSearchableBar.setSearchingText("");
+    	        _tableSearchableBar = null;
+    	        //statusPanel.remove(_tableSearchableBar);
+    	    }
 
-        _tableSearchableBar = new SearchableBar(searchable);
-        _tableSearchableBar.setCompact(false);
-		_tableSearchableBar.setToolTipText("Type in your search terms");
-		((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
-		//_tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
-	    //_tableSearchableBar.setName("TableSearchableBar");
-	    _tableSearchableBar.setShowMatchCount(true);
-	    _tableSearchableBar.setVisible(true);
+    	    _tableSearchableBar = new SearchableBar(searchable);
+    	    _tableSearchableBar.setCompact(false);
+    	    _tableSearchableBar.setToolTipText("Type in your search terms");
+    	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
+    	    //_tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
+    	    //_tableSearchableBar.setName("TableSearchableBar");
+    	    _tableSearchableBar.setShowMatchCount(true);
+    	    _tableSearchableBar.setVisible(true);
 
-		//statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-		//statusPanel.invalidate();
-		//statusPanel.revalidate();
+    	    //statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+    	    //statusPanel.invalidate();
+    	    //statusPanel.revalidate();
+    	}
     }
 
 
