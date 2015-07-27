@@ -797,5 +797,4 @@ implements VehicleOperator, MissionMember, Serializable {
         scientificAchievement.clear();
         scientificAchievement = null;
     }
-
 }

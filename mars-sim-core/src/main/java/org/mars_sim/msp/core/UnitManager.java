@@ -1082,8 +1082,9 @@ public class UnitManager implements Serializable {
 			}
 		}
 
-		mayorCandidate.setRole(RoleType.MAYOR);
-
+		if (mayorCandidate != null) {
+		    mayorCandidate.setRole(RoleType.MAYOR);
+		}
 	}
 
 	// 2015-04-30 Added electChief()
@@ -1180,8 +1181,10 @@ public class UnitManager implements Serializable {
 				}
 			}
 		}
-		chief.setRole(role);
-		// System.out.println("Chief is "+ chief.getName());
+		if (chief != null) {
+		    chief.setRole(role);
+		    // System.out.println("Chief is "+ chief.getName());
+		}
 	}
 
 	/**

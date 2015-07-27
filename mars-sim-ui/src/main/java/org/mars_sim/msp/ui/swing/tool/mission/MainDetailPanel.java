@@ -15,12 +15,14 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -673,14 +675,14 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	
 		// Private members.
 		private Mission mission;
-		private Collection<MissionMember> members;
+		private List<MissionMember> members;
 
 		/**
 		 * Constructor.
 		 */
 		private MemberTableModel() {
 			mission = null;
-			members = new ConcurrentLinkedQueue<MissionMember>();
+			members = new ArrayList<MissionMember>();
 		}
 
 		/**
@@ -776,7 +778,14 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		void updateMembers() {
 			if (mission != null) {
 				clearMembers();
-				members = new ConcurrentLinkedQueue<MissionMember>(mission.getMembers());
+				members = new ArrayList<MissionMember>(mission.getMembers());
+				Collections.sort(members, new Comparator<MissionMember>() {
+
+                    @Override
+                    public int compare(MissionMember o1, MissionMember o2) {
+                        return o1.getName().compareToIgnoreCase(o2.getName());
+                    }
+				});
 				Iterator<MissionMember> i = members.iterator();
 				while (i.hasNext()) {
 				    MissionMember member = i.next();

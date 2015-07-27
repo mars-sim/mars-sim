@@ -593,6 +593,7 @@ implements Serializable {
 				}
 			}
 		}
+		
 		// Set the time cache to the current time.
 		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
