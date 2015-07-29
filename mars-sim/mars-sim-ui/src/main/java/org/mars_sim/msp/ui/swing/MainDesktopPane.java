@@ -413,12 +413,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		toolWindows.add(guideWindow);
 
 		// Prepare Mars Viewer window
-		MarsViewer marsViewer = new MarsViewer(this);
-		try { marsViewer.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(marsViewer);
+		//MarsViewer marsViewer = new MarsViewer(this);
+		//try { marsViewer.setClosed(true); }
+		//catch (PropertyVetoException e) { }
+		//toolWindows.add(marsViewer);
 
-	   	//logger.info("MainDesktopPane's prepareToolWindows() is done ");
+	   	logger.info("MainDesktopPane's prepareToolWindows() is done ");
 	}
 
 	/*

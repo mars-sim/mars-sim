@@ -148,16 +148,16 @@ public class MainSceneMenu extends MenuBar  {
         resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
 
-        marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
-        marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
+        //marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
+        //marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
-        webToolItem = new CheckMenuItem("Web Tool");
-        webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
+        //webToolItem = new CheckMenuItem("Web Tool");
+        //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
         menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,
         		monitorToolItem, missionToolItem,settlementMapToolItem,
-        		scienceToolItem, resupplyToolItem, marsViewerItem, webToolItem);
+        		scienceToolItem, resupplyToolItem);//, marsViewerItem, webToolItem);
 
 
         // --- Menu Settings
@@ -397,6 +397,8 @@ public class MainSceneMenu extends MenuBar  {
             }
         });
 */
+
+        /*
         marsViewerItem.setOnAction(e ->  {
     			if (marsViewerItem.isSelected()) {
     				marsViewerItem.setSelected(true);
@@ -426,7 +428,7 @@ public class MainSceneMenu extends MenuBar  {
     				webToolItem.setSelected(false);
     			}
         });
-
+*/
         showFullScreenItem.setOnAction(e -> {
             	boolean isFullScreen =  mainScene.getStage().isFullScreen();
             	if (!isFullScreen) {
@@ -579,9 +581,9 @@ public class MainSceneMenu extends MenuBar  {
 		return resupplyToolItem;
 	}
 
-	public CheckMenuItem getMarsViewerItem() {
-		return marsViewerItem;
-	}
+	//public CheckMenuItem getMarsViewerItem() {
+	//	return marsViewerItem;
+	//}
 
     // 2015-06-05 Added createMenuItem()
     private CheckMenuItem createMenuItem(String title, String toolName){
@@ -650,9 +652,9 @@ public class MainSceneMenu extends MenuBar  {
 			getResupplyToolItem().setSelected(false);
 		}
 
-		else if (toolName.equals(MarsViewer.NAME)) {
-			getMarsViewerItem().setSelected(false);
-		}
+		//else if (toolName.equals(MarsViewer.NAME)) {
+		//	getMarsViewerItem().setSelected(false);
+		//}
 
     }
 
@@ -690,13 +692,13 @@ public class MainSceneMenu extends MenuBar  {
 			return getSettlementMapToolItem();
 		}
 
-		else if (toolName.equals(Browser.NAME)) {
-			return getResupplyToolItem();
-		}
+		//else if (toolName.equals(Browser.NAME)) {
+		//	return getResupplyToolItem();
+		//}
 
-		else if (toolName.equals(MarsViewer.NAME)) {
-			return getMarsViewerItem();
-		}
+		//else if (toolName.equals(MarsViewer.NAME)) {
+		//	return getMarsViewerItem();
+		//}
 
 		else
 			return null;

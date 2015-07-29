@@ -80,7 +80,7 @@ implements ActionListener, MenuListener {
 	/** Resupply tool menu item. */
 	private JCheckBoxMenuItem resupplyToolItem;
 	/** Mars Viewer menu item. */
-	private JCheckBoxMenuItem marsViewerItem;
+	//private JCheckBoxMenuItem marsViewerItem;
 
 	/** Unit Bar menu item. */
 	private JCheckBoxMenuItem showUnitBarItem;
@@ -245,11 +245,11 @@ implements ActionListener, MenuListener {
 		toolsMenu.add(resupplyToolItem);
 
 		// 2015-06-12 Create mars viewer menu item
-		ImageIcon viewericon = new ImageIcon(getClass().getResource(Msg.getString("img.find"))); //$NON-NLS-1$
-		marsViewerItem = new JCheckBoxMenuItem(MarsViewer.NAME, viewericon);
-		marsViewerItem.addActionListener(this);
-		marsViewerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
-		toolsMenu.add(marsViewerItem);
+		//ImageIcon viewericon = new ImageIcon(getClass().getResource(Msg.getString("img.find"))); //$NON-NLS-1$
+		//marsViewerItem = new JCheckBoxMenuItem(MarsViewer.NAME, viewericon);
+		//marsViewerItem.addActionListener(this);
+		//marsViewerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
+		//toolsMenu.add(marsViewerItem);
 
 
 		// Create settings menu
@@ -433,10 +433,10 @@ implements ActionListener, MenuListener {
 			else desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
 
-		if (selectedItem == marsViewerItem) {
-			if (marsViewerItem.isSelected()) desktop.openToolWindow(MarsViewer.NAME);
-			else desktop.closeToolWindow(MarsViewer.NAME);
-		}
+		//if (selectedItem == marsViewerItem) {
+		//	if (marsViewerItem.isSelected()) desktop.openToolWindow(MarsViewer.NAME);
+		//	else desktop.closeToolWindow(MarsViewer.NAME);
+		//}
 
 		if (selectedItem == showUnitBarItem) {
 			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());
@@ -495,7 +495,7 @@ implements ActionListener, MenuListener {
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
-		marsViewerItem.setSelected(desktop.isToolWindowOpen(MarsViewer.NAME));
+		//marsViewerItem.setSelected(desktop.isToolWindowOpen(MarsViewer.NAME));
 
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());

@@ -192,11 +192,12 @@ public class MainScene {
 	}
 
 	public void prepareOthers() {
-		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
 		openInitialWindows();
 		startAutosaveTimer();
 		startEarthTimer();
+		//logger.info("done with MainScene's prepareOthers()");
 	}
 
 	public void openTransportWizard(BuildingManager buildingManager) {
@@ -355,9 +356,10 @@ public class MainScene {
 	}
 
 	public void initializeTheme() {
-
-		changeTheme();
+		logger.info("MainScene's initializeTheme()");
 		setLookAndFeel(1);
+		changeTheme();
+
 /*
 		theme = 1;
 		rootStackPane.getStylesheets().clear();
@@ -370,9 +372,11 @@ public class MainScene {
 		clkBtn.setTextFill(Color.LIGHTSALMON);
 		lookAndFeelTheme = "nimrod";
 */
+		logger.info("done with MainScene's initializeTheme()");
 	}
 
 	public void changeTheme() {
+		logger.info("MainScene's changeTheme()");
 		if (theme == 1) {
 			rootStackPane.getStylesheets().clear();
 			theme = 2;
@@ -450,6 +454,8 @@ public class MainScene {
 			clkBtn.setTextFill(Color.LIGHTSALMON);
 			lookAndFeelTheme = "nimrod";
 		}
+
+		logger.info("done with MainScene's changeTheme()");
 	}
 
 	/**
@@ -958,7 +964,7 @@ public class MainScene {
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(int choice) {
-		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
 		// String currentTheme =
 		// UIManager.getLookAndFeel().getClass().getName();
@@ -1037,6 +1043,8 @@ public class MainScene {
 				// desktop.updateTransportWizardLF();
 			}
 		}
+
+		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 	}
 
 	public MainSceneMenu getMainSceneMenu() {
