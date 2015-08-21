@@ -2,7 +2,6 @@
  * Mars Simulation Project
  * SVGLoader.java
  * @version 3.07 2014-12-06
-
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -17,6 +16,7 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+//import org.apache.batik.dom.util.SAXDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.svg.SVGDocument;
