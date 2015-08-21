@@ -135,7 +135,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
-	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainWindow = mainWindow;
 
 		init();
@@ -146,7 +146,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
 		init();
@@ -154,6 +154,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
+	   	logger.info("MainDesktopPane's init() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer();
@@ -196,7 +197,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Create update thread.
 
-		setupToolWindowTasks();
+		//setupToolWindowTasks();
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
@@ -351,11 +352,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (toolWindows != null)
 			toolWindows.clear();
 
+	   	logger.info("toolWindows.clear()");
+
 		// Prepare navigator window
 		NavigatorWindow navWindow = new NavigatorWindow(this);
 		try { navWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(navWindow);
+
+	   	logger.info("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
@@ -363,17 +368,23 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(searchWindow);
 
+	   	logger.info("toolWindows.add(searchWindow)");
+
 		// Prepare time tool window
 		TimeWindow timeWindow = new TimeWindow(this);
 		try { timeWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(timeWindow);
 
+	   	logger.info("toolWindows.add(timeWindow)");
+
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try { monitorWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(monitorWindow);
+
+	   	logger.info("toolWindows.add(monitorWindow)");
 
 		// Prepare settlement tool window
 		//SettlementWindow
@@ -387,12 +398,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//closeToolWindow(SettlementWindow.NAME);
 		setSettlementWindow(settlementWindow);
 
+	   	logger.info("toolWindows.add(settlementWindow)");
+
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try { scienceWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(scienceWindow);
 
+	   	logger.info("toolWindows.add(scienceWindow)");
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);
@@ -400,17 +414,23 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(missionWindow);
 
+	   	logger.info("toolWindows.add(missionWindow)");
+
 		// Prepare resupply tool window
 		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
 		try { resupplyWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(resupplyWindow);
 
+	   	logger.info("toolWindows.add(resupplyWindow)");
+
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
+
+	   	logger.info("toolWindows.add(guideWindow)");
 
 		// Prepare Mars Viewer window
 		//MarsViewer marsViewer = new MarsViewer(this);
@@ -857,7 +877,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
 		}
 	}
-
+/*
 	private void setupToolWindowTasks() {
 		// set up toolWindowExecutor even though it is not used right now inside this method
 		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
@@ -884,7 +904,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					toolWindowExecutor.execute(t);
 		});
 	}
-
+*/
 	private void runUnitWindowExecutor() {
 		// set up unitWindowExecutor
 		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4);
@@ -923,7 +943,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Update all tool windows.
-		runToolWindowExecutor();
+		//runToolWindowExecutor();
 
 
 
@@ -962,7 +982,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
         //threadPoolExecutor.shutdown();
-        if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+        //if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 		//logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 		toolWindowTaskList.clear();
@@ -1006,17 +1026,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		updateThread.setRun(false);
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
         //threadPoolExecutor.shutdown();
-        if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+
+		//if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 
         // Restart update threads.
-        setupToolWindowTasks();
+        //setupToolWindowTasks();
 		updateThread.setRun(true);
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
-
-        //threadPoolExecutor.execute(updateThreadTask);
-        //toolWindowExecutor.execute(toolWindowTask);
-        //unitWindowExecutor.execute(unitWindowTask);
 
 	}
 
