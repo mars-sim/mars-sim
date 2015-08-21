@@ -539,7 +539,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		}
 
 	    public void run() {
-	    	Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
+	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
+	    	Notifications.create().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
 	    }
 
 	}

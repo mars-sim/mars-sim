@@ -80,6 +80,7 @@ import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 
+
 /**
  * The MainScene class is the primary Stage for MSP. It is the container for
  * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
@@ -315,9 +316,10 @@ public class MainScene {
 		dndTabPane.getSelectionModel().select(swingTab);
 		dndTabPane.getTabs().addAll(swingTab, nodeTab);
 
-		Node notificationNode = createNotificationPane();
+		//Node notificationNode = createNotificationPane();
+		//borderPane.setCenter(notificationNode);
 
-		borderPane.setCenter(notificationNode);
+		borderPane.setCenter(dndTabPane);
 
 		rootStackPane = new StackPane(borderPane);
 
@@ -343,18 +345,13 @@ public class MainScene {
 
 		return scene;
 	}
-
+/*
 	public static void notifyThemeChange(String text) {
 		if (desktop != null) {
-			// desktop.refreshTheme();
-			//System.out.println("deskop != null , calling notifyThemeChange()");
-			// if (notificationPane != null) {
-			// notificationPane.setText("Skin is set to " + text);
 			notificationPane.show("Skin is set to " + text);
-			// }
 		}
 	}
-
+*/
 	public void initializeTheme() {
 		logger.info("MainScene's initializeTheme()");
 		setLookAndFeel(1);
@@ -381,8 +378,8 @@ public class MainScene {
 			rootStackPane.getStylesheets().clear();
 			theme = 2;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-			notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			memUsedText.setFill(Color.GREEN);
 			memMaxText.setFill(Color.GREEN);
 			timeText.setFill(Color.GREEN);
@@ -393,8 +390,8 @@ public class MainScene {
 			rootStackPane.getStylesheets().clear();
 			theme = 3;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-			notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			memUsedText.setFill(Color.ORANGERED);
 			memMaxText.setFill(Color.ORANGERED);
 			timeText.setFill(Color.ORANGERED);
@@ -405,7 +402,7 @@ public class MainScene {
 			rootStackPane.getStylesheets().clear();
 			theme = 4;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			memUsedText.setFill(Color.LIGHTCYAN);
 			memMaxText.setFill(Color.LIGHTCYAN);
 			timeText.setFill(Color.LIGHTCYAN);
@@ -436,7 +433,7 @@ public class MainScene {
 			// rootStackPane.getStylesheets().clear();
 			theme = 7;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
+			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			memUsedText.setFill(Color.CADETBLUE);
 			memMaxText.setFill(Color.CADETBLUE);
 			timeText.setFill(Color.CADETBLUE);
@@ -545,6 +542,8 @@ public class MainScene {
 		return statusBar;
 	}
 
+	/*
+
 	public NotificationPane getNotificationPane() {
 		return notificationPane;
 	}
@@ -568,6 +567,7 @@ public class MainScene {
 		return notificationPane;
 	}
 
+
 	public String getSampleName() {
 		return "Notification Pane";
 	}
@@ -575,6 +575,7 @@ public class MainScene {
 	public String getControlStylesheetURL() {
 		return "/org/controlsfx/control/notificationpane.css";
 	}
+*/
 
 	public void updateTimeText() {
 

@@ -202,6 +202,7 @@ public class MainSceneMenu extends MenuBar  {
         Menu menuNotification = new Menu("Notification");
 
         Menu newsPaneItem = new Menu("News Pane");
+        newsPaneItem.setDisable(true);
 
         CheckMenuItem slideFromTop = new CheckMenuItem("Slide from Top");
         slideFromTop.setSelected(false);
@@ -450,6 +451,7 @@ public class MainSceneMenu extends MenuBar  {
             });
         });
 
+/*
 		slideFromTop.setOnAction(e -> {
                 if (!mainScene.getNotificationPane().isShowFromTop()) {
                 	// there is no check mark on slideFromTop
@@ -486,7 +488,7 @@ public class MainSceneMenu extends MenuBar  {
                 	showHideNewsPane.setSelected(false);
                 }
         });
-
+*/
 
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
