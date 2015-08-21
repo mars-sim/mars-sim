@@ -765,7 +765,7 @@ public class MainScene {
 
 		desktop.disposeAnnouncementWindow();
 		// Open Guide tool after loading.
-		desktop.openToolWindow(GuideWindow.NAME);
+		//desktop.openToolWindow(GuideWindow.NAME);
 
 	}
 
@@ -1136,9 +1136,9 @@ public class MainScene {
 
 	public void openInitialWindows() {
 		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-		SwingUtilities.invokeLater(() -> {
+		//SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
-		} );
+		//});
 	}
 
 	public MarsNode getMarsNode() {

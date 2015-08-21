@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -43,6 +44,9 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(GuideWindow.class.getName());
+
 	// Tool name
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
 
@@ -53,7 +57,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	/** our HTML content pane. */
 	private HTMLContentPane htmlPane;
 
-	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
+	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator +
 	//        "help" + File.separator + "userguide.html");
 	/* [landrus, 27.11.09]: load the url in the constructor. */
 	private URL guideURL;
@@ -69,6 +73,9 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	public GuideWindow(MainDesktopPane desktop) {
 		// Use TableWindow constructor
 		super(NAME, desktop);
+
+	   	logger.info("GuideWindow's constructor is on " + Thread.currentThread().getName() + " Thread");
+
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 		// Create the main panel
@@ -91,12 +98,16 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		toolPanel.add(backButton);
 		toolPanel.add(forwardButton);
 
+	   	logger.info("GuideWindow's constructor: initialize buttons and toolPanel");
+
 		htmlPane = new HTMLContentPane();
 		htmlPane.addHyperlinkListener(this);
 		htmlPane.goToURL(guideURL);
 
 		htmlPane.setBackground(Color.lightGray);
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
+
+	   	logger.info("GuideWindow's constructor: initialize htmlPane");
 
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
 		scrollPane.setBorder(new MarsPanelBorder());
@@ -107,16 +118,23 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		mainPane.add(scrollPane);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 
+	   	logger.info("GuideWindow's constructor: initialize mainPane");
+
 		// We have to define a starting size
 		setSize(new Dimension(575, 475));
 
+	   	logger.info("GuideWindow's constructor: setSize");
+
 		// Allow the window to be resized by the user.
-		setResizable(true);
-		setMaximizable(true);
+		//setResizable(true);
+		//setMaximizable(true);
 		updateButtons();
 
 		// Show the window
 		setVisible(true);
+
+	   	logger.info("GuideWindow's constructor: done!");
+
 	}
 
 	/**
