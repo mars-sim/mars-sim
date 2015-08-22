@@ -354,8 +354,10 @@ public class MainScene {
 */
 	public void initializeTheme() {
 		logger.info("MainScene's initializeTheme()");
-		setLookAndFeel(1);
-		changeTheme();
+		SwingUtilities.invokeLater(() -> {
+			setLookAndFeel(1);
+		});
+		changeTheme(); // mandatory to call changeTheme() at least once at the beginning or else UI would crash
 
 /*
 		theme = 1;
@@ -1137,9 +1139,9 @@ public class MainScene {
 
 	public void openInitialWindows() {
 		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-		//SwingUtilities.invokeLater(() -> {
+		SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
-		//});
+		});
 	}
 
 	public MarsNode getMarsNode() {
