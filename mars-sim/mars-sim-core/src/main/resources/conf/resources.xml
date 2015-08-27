@@ -101,35 +101,65 @@
 	<resource name="White Rice" phase="solid" edible="true"></resource>
 
 <!-- Crop Produce -->
-	<resource name="Blueberry" phase="solid" edible="true"></resource>
-	<resource name="Cabbage" phase="solid" edible="true"></resource>
-	<resource name="Carrot" phase="solid" edible="true"></resource>
-	<resource name="Celery" phase="solid" edible="true"></resource>
-	<resource name="Cucumber" phase="solid" edible="true"></resource>
-	<resource name="Cranberry" phase="solid" edible="true"></resource>
-	<resource name="Garlic" phase="solid" edible="true"></resource>
-	<resource name="Ginger" phase="solid" edible="true"></resource>
-	<resource name="Green Bell Pepper" phase="solid" edible="true"></resource>
-	<resource name="Green Onion" phase="solid" edible="true"></resource>
-	<resource name="Kidney Bean" phase="solid" edible="true"></resource>
-	<resource name="Lettuce" phase="solid" edible="true"></resource>
-	<resource name="Morel Mushroom" phase="solid" edible="true"></resource>
-	<resource name="Peas" phase="solid" edible="true"></resource>
-	<resource name="Peanut" phase="solid" edible="true"></resource>
-	<resource name="Potato" phase="solid" edible="true"></resource>
-	<resource name="Quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
+	<resource name="blueberry" phase="solid" edible="true"></resource>
+	<resource name="cabbage" phase="solid" edible="true"></resource>
+	<resource name="carrot" phase="solid" edible="true"></resource>
+	<resource name="celery" phase="solid" edible="true"></resource>
+	<resource name="cucumber" phase="solid" edible="true"></resource>
+	<resource name="cranberry" phase="solid" edible="true"></resource>
+	<resource name="garlic" phase="solid" edible="true"></resource>
+	<resource name="ginger" phase="solid" edible="true"></resource>
+	<resource name="green bell pepper" phase="solid" edible="true"></resource>
+	<resource name="green onion" phase="solid" edible="true"></resource>
+	<resource name="kidney bean" phase="solid" edible="true"></resource>
+	<resource name="lettuce" phase="solid" edible="true"></resource>
+	<resource name="morel mushroom" phase="solid" edible="true"></resource>
+	<resource name="peas" phase="solid" edible="true"></resource>
+	<resource name="peanut" phase="solid" edible="true"></resource>
+	<resource name="potato" phase="solid" edible="true"></resource>
+	<resource name="quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
 	<resource name="radish" phase="solid" edible="true"></resource>
 	<resource name="red beet" phase="solid" edible="true"></resource>
-	<resource name="Rice" phase="solid" edible="true"></resource>
-	<resource name="Sesame" phase="solid" edible="true">Seeds from sesame plant.</resource>
-	<resource name="Soybean" phase="solid" edible="true">Soybean seeds.</resource>
-	<resource name="Strawberry" phase="solid" edible="true"></resource>
-	<resource name="Sugarcane" phase="solid" edible="true"></resource>
-	<resource name="Swiss Chard" phase="solid" edible="true"></resource>
-	<resource name="Tomato" phase="solid" edible="true"></resource>
-	<resource name="Wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
+	<resource name="rice" phase="solid" edible="true"></resource>
+	<resource name="sesame" phase="solid" edible="true">Seeds from sesame plant.</resource>
+	<resource name="soybean" phase="solid" edible="true">Soybean seeds.</resource>
+	<resource name="strawberry" phase="solid" edible="true"></resource>
+	<resource name="sugarcane" phase="solid" edible="true"></resource>
+	<resource name="swiss Chard" phase="solid" edible="true"></resource>
+	<resource name="tomato" phase="solid" edible="true"></resource>
+	<resource name="wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
-	<resource name="White Onion" phase="solid" edible="true"></resource>
+	<resource name="white onion" phase="solid" edible="true"></resource>
+
+<!-- Crop Stock Seedlings -->
+	<resource name="blueberry seedling" phase="solid" edible="true"></resource>
+	<resource name="cabbage seedling" phase="solid" edible="true"></resource>
+	<resource name="carrot seedling" phase="solid" edible="true"></resource>
+	<resource name="celery seedling" phase="solid" edible="true"></resource>
+	<resource name="cucumber seedling" phase="solid" edible="true"></resource>
+	<resource name="cranberry seedling" phase="solid" edible="true"></resource>
+	<resource name="garlic seedling" phase="solid" edible="true"></resource>
+	<resource name="ginger seedling" phase="solid" edible="true"></resource>
+	<resource name="green bell pepper seedling" phase="solid" edible="true"></resource>
+	<resource name="green onion seedling" phase="solid" edible="true"></resource>
+	<resource name="kidney bean seedling" phase="solid" edible="true"></resource>
+	<resource name="lettuce seedling" phase="solid" edible="true"></resource>
+	<resource name="morel Mushroom seedling" phase="solid" edible="true"></resource>
+	<resource name="peas seedling" phase="solid" edible="true"></resource>
+	<resource name="peanut seedling" phase="solid" edible="true"></resource>
+	<resource name="potato seedling" phase="solid" edible="true"></resource>
+	<resource name="quinoa seedling" phase="solid" edible="true"></resource>
+	<resource name="radish seedling" phase="solid" edible="true"></resource>
+	<resource name="red beet seedling" phase="solid" edible="true"></resource>
+	<resource name="rice seedling" phase="solid" edible="true"></resource>
+	<resource name="sesame seedling" phase="solid" edible="true"></resource>
+	<resource name="soybean seedling" phase="solid" edible="true"></resource>
+	<resource name="strawberry seedling" phase="solid" edible="true"></resource>
+	<resource name="sugarcane seedling" phase="solid" edible="true"></resource>
+	<resource name="swiss Chard seedling" phase="solid" edible="true"></resource>
+	<resource name="tomato seedling" phase="solid" edible="true"></resource>
+	<resource name="wheat seedling" phase="solid" edible="true"></resource>
+	<resource name="white onion seedling" phase="solid" edible="true"></resource>
 
 
 <!-- Chemical or Mineral Compounds -->

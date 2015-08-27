@@ -297,7 +297,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop to grow an flourish. -->
 			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
 			<!-- growing-area: the max growing area (square meters) of all crops. -->
-			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="50.0" >
+			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".025" growing-area="50.0" >
 				<activity>
 					<activity-spot xloc="0.0" yloc="2.0" />
 					<activity-spot xloc="0.0" yloc="0.0" />
@@ -373,7 +373,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="80.0" />
+				<power-source type="Standard Power Source" power="150.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -473,7 +473,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="200.0" />
+				<power-source type="Standard Power Source" power="600.0" />
 			</power-generation>
 		</functions>
 	</building>

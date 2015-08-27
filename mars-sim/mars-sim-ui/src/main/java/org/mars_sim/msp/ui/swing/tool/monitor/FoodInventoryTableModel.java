@@ -73,7 +73,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	@Override
 	public void unitUpdate(UnitEvent event) {
 		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
-			SwingUtilities.invokeLater(new TradeTableUpdater(event));
+			SwingUtilities.invokeLater(new FoodTableUpdater(event));
 		}
 	}
 
@@ -183,6 +183,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			    String foodName = food.getName();
 				AmountResource ar = AmountResource.findAmountResource(foodName);
 				double foodAvailable = inv.getAmountResourceStored(ar, false);
+				//double foodAvailable = inv.getAmountResourceStored(ar, true);
 				return foodAvailable;
 			}
 			catch (Exception e) {
@@ -204,11 +205,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Inner class for updating food table.
 	 */
-	private class TradeTableUpdater implements Runnable {
+	private class FoodTableUpdater implements Runnable {
 
 		private UnitEvent event;
 
-		private TradeTableUpdater(UnitEvent event) {
+		private FoodTableUpdater(UnitEvent event) {
 			this.event = event;
 		}
 

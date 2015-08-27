@@ -54,12 +54,13 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
+    private static final double SEEDLINGS_PER_SQM = .3D; // in kg arbitrary
 
     private Inventory inv;
     private Settlement settlement;
     private Building building;
-    private BeeGrowing beeGrowing;
-	private GoodsManager goodsManager;
+    //private BeeGrowing beeGrowing;
+	//private GoodsManager goodsManager;
 
 
     private int cropNum;
@@ -68,7 +69,7 @@ implements Serializable {
     private double powerSustainingCrop;
     private double maxGrowingArea;
     private double remainingGrowingArea;
-    private double maxHarvestinKg;
+    private double totalHarvestinKgPerDay;
     private List<Crop> crops = new ArrayList<Crop>();
 
   	// 2014-12-09 Added cropInQueue, cropListInQueue
@@ -90,7 +91,7 @@ implements Serializable {
         this.building = building;
         this.inv = building.getInventory();
         this.settlement = building.getBuildingManager().getSettlement();
-		this.goodsManager = settlement.getGoodsManager();
+		//this.goodsManager = settlement.getGoodsManager();
 
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
@@ -115,7 +116,8 @@ implements Serializable {
         }
 
         // 2015-02-18 Created BeeGrowing
-        beeGrowing = new BeeGrowing(this);
+        // TODO: write codes to incorporate the idea of bee growing
+        // beeGrowing = new BeeGrowing(this);
     }
 
 
@@ -137,6 +139,7 @@ implements Serializable {
 			else
 				crop = selectHighestDemandCropType();
 		} else {
+			// select the CropType currently in the user queue
 			Iterator<CropType> i = cropTypes.iterator();
 			while (i.hasNext()) {
 				CropType c = i.next();
@@ -190,19 +193,32 @@ implements Serializable {
     	else { //if (remainingGrowingArea > 1D)
     		cropArea = maxGrowingArea / (double) cropNum ;
     	}
+
 		remainingGrowingArea = remainingGrowingArea - cropArea;
+		//System.out.println("cropArea : "+ cropArea);
+
 		if (remainingGrowingArea < 0) remainingGrowingArea = 0;
 		//System.out.println("remainingGrowingArea : "+ remainingGrowingArea);
-    	// maxHarvest is in kg ( note: 1 tonnes per hectare  = 0.1 kg per sq m )
-		//System.out.println("cropArea : "+ cropArea);
-    	maxHarvestinKg = edibleBiomass * cropArea / 10D;
-    	//logger.info(cropType.getName() + " : max possible harvest : " + Math.round(maxHarvestinKg*100.0)/100.0 + " kg");
-        crop = new Crop(cropType, cropArea, maxHarvestinKg, this, settlement, isNewCrop);
 
-        // 2015-01-14 Added fertilizer to the soil for the new crop
-        provideFertilizer(cropArea, isNewCrop);
-        // 2015-02-28 Replaced some amount of old soil with new soil
-        provideNewSoil(cropArea, isNewCrop);
+		// 1kg = 1000 g
+		double maxHarvestinKgPerDay = edibleBiomass * cropArea /1000D ;
+    	logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
+
+		//totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
+
+		double percentGrowth = 0;
+
+	    if (isNewCrop) {
+	        //2015-08-26 Added useSeedlings()
+	    	percentGrowth = useSeedlings(cropType, cropArea);
+	    	// 2015-01-14 Added fertilizer to the soil for the new crop
+	        provideFertilizer(cropArea);
+	        // 2015-02-28 Replaced some amount of old soil with new soil
+	        provideNewSoil(cropArea);
+
+	    }
+
+		crop = new Crop(cropType, cropArea, maxHarvestinKgPerDay, this, settlement, isNewCrop, percentGrowth);
 
     	return crop;
     }
@@ -211,14 +227,18 @@ implements Serializable {
      * Retrieves new soil when planting new crop
      */
     // 2015-02-28 provideNewSoil()
-    public void provideNewSoil(double cropArea, boolean isNewCrop) {
+    public void provideNewSoil(double cropArea) {
         // 2015-02-28 Replaced some amount of old soil with new soil
-        if (isNewCrop) {
-        	double rand = RandomUtil.getRandomDouble(2);
-        	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
-        	Storage.retrieveAnResource(amount, "soil", inv, true );
-        	Storage.storeAnResource(amount, "crop waste", inv);
-        }
+    	double rand = RandomUtil.getRandomDouble(2);
+
+    	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
+
+    	// TODO: adjust how much old soil should be turned to crop waste
+    	Storage.storeAnResource(amount, "crop waste", inv);
+
+    	// TODO: adjust how much new soil is needed to replenish the soil bed
+    	Storage.retrieveAnResource(amount, "soil", inv, true );
+
     }
 
     public Building getBuilding() {
@@ -229,41 +249,69 @@ implements Serializable {
      * Retrieves the fertilizer and add to the soil when planting the crop
      */
     //2015-02-28 Modified provideFertilizer()
-    public void provideFertilizer(double cropArea, boolean isNewCrop) {
-        if (isNewCrop) {
-        	double rand = RandomUtil.getRandomDouble(2);
-        	double amount = Crop.FERTILIZER_NEEDED_PER_SQM * cropArea / 10D * rand;
-        	Storage.retrieveAnResource(amount, "fertilizer", inv, true);
-    		//System.out.println("fertilizer used in planting a new crop : " + amount);
-        }
+    public void provideFertilizer(double cropArea) {
+    	double rand = RandomUtil.getRandomDouble(2);
+    	double amount = Crop.FERTILIZER_NEEDED_PER_SQM * cropArea / 10D * rand;
+    	Storage.retrieveAnResource(amount, "fertilizer", inv, true);
+		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
     /**
-     * Retrieves the resource
-     * @param name
-     * @parama requestedAmount
+     * Uses available seedlings to shorten Germinating Phase when planting the crop
+     * @parama cropType
+     * @param cropArea
+     * @return percentGrowth
+     */
+    //2015-08-26 Added useSeedlings()
+    public double useSeedlings(CropType cropType, double cropArea) {
+    	double percent = 0;
 
-    //2015-01-14 Added retrieveAnResource()
-    public void retrieveAnResource(String name, double requestedAmount) {
-    	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(name);
+    	double seedlings = cropArea * SEEDLINGS_PER_SQM * cropType.getEdibleBiomass()/20D;
+
+    	// Add randomness
+    	//double rand = RandomUtil.getRandomDouble(2);
+    	//seedlings = seedlings*.7 + rand*.3;
+
+    	double requestedAmount = seedlings;
+
+    	String cropSeedling = cropType.getName()+ " seedling";
+
+    	boolean result = false;
+
+      	try {
+	    	AmountResource nameAR = AmountResource.findAmountResource(cropSeedling);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);
-	        if (amountStored < requestedAmount) {
-	     		requestedAmount = amountStored;
-	    		logger.warning("Just used up all " + name);
-	        }
-	    	else if (amountStored < 0.00001)
-	    		logger.warning("no more " + name + " in " + settlement.getName());
+	    	if (amountStored < 0.0000000001) {
+	    		//logger.warning("No more " + name);
+	    		percent = 0;
+	    	}
+	    	else if (amountStored < requestedAmount) {
+	     		//logger.warning("Just ran out of " + name);
+	    		result = true;
+	    		percent = amountStored / requestedAmount * 100D;
+	    		requestedAmount  = amountStored;
+
+	    	}
+
 	    	else {
+	    		result = true;
+	    		percent = 100;
+	    	}
+
+	    	if (result) {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
 	    		inv.addAmountDemand(nameAR, requestedAmount);
 	    	}
+
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
+
+      	return percent;
+
     }
- */
+
     //2014-12-09 Added setCropInQueue()
     public void setCropInQueue(String cropInQueue) {
     	this.cropInQueue = cropInQueue;
@@ -505,6 +553,7 @@ implements Serializable {
      * @throws BuildingException if error occurs.
      */
 	public void timePassing(double time) {
+		//System.out.println("timePassing() : time is " + time);
 	    MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
 	    int solElapsed = MarsClock.getSolOfYear(clock);
@@ -517,6 +566,7 @@ implements Serializable {
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
+		//System.out.println("timePassing() : productionLevel  is " + productionLevel );
 
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
@@ -562,7 +612,7 @@ implements Serializable {
         }
 
         // 2015-02-18 Added beeGrowing.timePassing()
-        beeGrowing.timePassing(time);
+        //beeGrowing.timePassing(time);
 
     }
 
@@ -609,7 +659,10 @@ implements Serializable {
         while (i.hasNext()) {
             Crop crop = i.next();
             if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION))
-                powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
+                //powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
+            	powerRequired += powerGrowingCrop + crop.getLightingPower();
+            else if (crop.getPhase().equals(Crop.HARVESTING) || crop.getPhase().equals(Crop.PLANTING))
+            	powerRequired += powerGrowingCrop;
         }
 
         // TODO: separate auxiliary power for subsystem, not just lighting power
@@ -671,7 +724,8 @@ implements Serializable {
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
-        return maxHarvestinKg * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
+
+        return totalHarvestinKgPerDay / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
     }
 
     @Override
