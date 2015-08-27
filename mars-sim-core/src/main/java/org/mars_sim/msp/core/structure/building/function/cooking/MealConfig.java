@@ -19,7 +19,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 /**
- * Provides configuration information about meal. 
+ * Provides configuration information about meal.
  * Uses a DOM document to get the information.
  */
 
@@ -32,13 +32,13 @@ implements Serializable {
 	// Element names
 	//private static final String MEAL_LIST = "meal-list";
 	private static final String MAIN_DISH = "main-dish";
-	
+
 	private static final String INGREDIENT = "ingredient";
-	
+
 	private static final String MAIN_DISH_NAME = "name";
 	private static final String MAIN_DISH_ID = "id";
 	private static final String MEAL_CATEGORY = "category";
-	
+
 	private static final String INGREDIENT_ID = "id";
 	private static final String INGREDIENT_NAME = "name";
 
@@ -50,13 +50,13 @@ implements Serializable {
 	private static final String SALT = "salt";
 	//2014-12-11 Added isItAvailable
 	//private boolean isItAvailable = false;
-	
+
 	private Document mealDoc;
 	private List<HotMeal> mealList;
 	//private HotMeal meal;
 	//private List<Ingredient> ingredientList;
 	//private Ingredient ingredient;
-	
+
 	/**
 	 * Constructor.
 	 * @param mealDoc the meal DOM document.
@@ -79,8 +79,8 @@ implements Serializable {
 			List<Element> mainDishes = root.getChildren(MAIN_DISH);
 
 			//Set<Integer> mealIDs = new HashSet<Integer>();
-			
-			for (Element mainDish : mainDishes) {	
+
+			for (Element mainDish : mainDishes) {
 
 				// Get meal id.
 				String sid = mainDish.getAttributeValue(MAIN_DISH_ID);
@@ -89,55 +89,55 @@ implements Serializable {
 				// Get name.
 				String name = "";
 				name = mainDish.getAttributeValue(MAIN_DISH_NAME);
-				
+
 				// Get oil
-				String oilStr = mainDish.getAttributeValue(OIL);
+				String oilStr = mainDish.getAttributeValue(OIL).toLowerCase();
 				double oil = Double.parseDouble(oilStr);
 
 				// Get salt
-				String saltStr = mainDish.getAttributeValue(SALT);
+				String saltStr = mainDish.getAttributeValue(SALT).toLowerCase();
 				double salt = Double.parseDouble(saltStr);
 
 				// Get meal category
 				String mealCategory ="";
 				mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
-				
+
 				// Create meal
-				
+
 				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); //, isItAvailable);
 	    		//System.out.println("MealConfig.java : aMeal is " + aMeal);
-				
+
 				//2014-12-11 Modified to ingredients = meal.getChildren(INGREDIENT);
 				List<Element> ingredients = mainDish.getChildren(INGREDIENT);
 	    		//System.out.println("MealConfig.java : ingredients is " + ingredients);
-		
+
 				for (Element ingredient : ingredients) {
 
 					// Get id.
 					String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
 					int ingredientId = Integer.parseInt(ingredientIdStr);
 					//System.out.println(" ingredientId is " + ingredientId);
-					
+
 					// Get name.
 					String ingredientName = "";
 					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
-					
-					// Get proportion 
+
+					// Get proportion
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
-		
+
 					//2014-12-11 Added isItAvailable
-					aMeal.addIngredient(ingredientId, ingredientName, proportion);//, isItAvailable);	
-				
+					aMeal.addIngredient(ingredientId, ingredientName, proportion);//, isItAvailable);
+
 					//System.out.println("proportion is "+ proportion);
 		    		//System.out.println("MealConfig.java : aMeal.getIngredientList() is " + aMeal.getIngredientList());
 
 				}
-			
+
 				//System.out.println("meal name is " + aMeal.getMealName());
 				mealList.add(aMeal);
 			}
-			
+
 		}
 		//logger.info("");
 		//System.out.println("mealList size : " + mealList.size());

@@ -186,18 +186,18 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.4</version>
+			<version>1.16.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jfxtras</groupId>
 			<artifactId>jfxtras-labs</artifactId>
-			<version>8.0-r3</version>
+			<version>8.0-r4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
-			<version>3.6.9</version>
+			<version>3.6.10</version>
 		</dependency>
 	<dependency>
 	    <groupId>de.jensd</groupId>

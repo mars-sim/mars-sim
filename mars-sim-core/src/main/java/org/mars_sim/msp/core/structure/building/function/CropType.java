@@ -47,7 +47,12 @@ implements Serializable, Comparable<CropType> {
 	/**
 	 * Constructor.
 	 * @param name - The name of the type of crop.
-	 * @param growingTime - Length of growing phase for crop. (millisols)
+	 * @param growingTime - Length of growing phase for crop in millisols.
+	 * @param cropCategory
+	 * @param edibleBiomass
+	 * @param edibleWaterContent
+	 * @param inedibleBiomass
+	 * @param dailyPAR
 	 */
 	public CropType(String name, double growingTime, String cropCategory,
 			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR) {

@@ -5,11 +5,12 @@
 <crop-list>
 
 <!-- References :
-1. Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006
-2. NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 http://ston.jsc.nasa.gov/collections/trs/_techrep/CR-2004-208941.pdf
-3. Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
-4. For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
-5. http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
+
+1.	Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006
+2. 	NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 http://ston.jsc.nasa.gov/collections/trs/_techrep/CR-2004-208941.pdf
+3. 	Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
+4. 	For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
+5. 	http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
  a. Vegetables that contain 92 percent water include
 	cauliflower, eggplant, red cabbage, peppers and spinach.
  b. Broccoli is 91 percent water by weight.
@@ -18,59 +19,61 @@
  d. water content:
 	http://www2.ca.uky.edu/enri/pubs/enri129.pdf
 
-6. Typical expected yield for food crop:
-http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
+6. 	Typical expected yield for food crop:
+	http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
 
-7. 01ICES-307 Design Parameters for Mars Deployable Greenhouses
-http://www.marshome.org/files2/Bucklin1.pdf
+7. 	01ICES-307 Design Parameters for Mars Deployable Greenhouses
+	http://www.marshome.org/files2/Bucklin1.pdf
 
-growing-time : # of sols
-crop-category : crop type
-edible-biomass : in tonnes per hectare  or  gram / m^2 / day
-edible-water-content : in proportion of 1 (1 is 100%)
-inedible-biomass : in tonnes per hectare
-daily-PAR : in mol /  m^2 / day
+	growing-time : # of sols
+	crop-category : crop type
+	edible-biomass : gram per m^2 per day
+	edible-water-content : in proportion of 1 (1 is 100%)
+	inedible-biomass : gram per m^2 per day
+	daily-PAR : in mol per  m^2 per day
 
-Note: 1 metric ton = 1 tonnes
+	Note: 1 metric ton = 1 tonnes
 
-8.  Photosynthetically active radiation (PAR), which is light with a wavelength
-between 300/400 to 700 nm
+	1 tonnes per hectare = 0.1 kg per m^2
+	1/100 tonnes per hectare per day = 1 gram per m^2 per day
 
-Researchers measure instantaneous light in micromoles (μmol) per square
-meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. This “quantum” unit quantifies the number of
-photons (individual particles of energy) used in photosynthesis that fall on a square meter (10.8
-square feet) every second.
+8.  Photosynthetically active radiation (PAR), which is light with a wavelength between 300/400 to 700 nm
 
-This light measurement is an instantaneous reading.
+	Researchers measure instantaneous light in micromoles (μmol) per square
+	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. This “quantum” unit quantifies the number of
+	photons (individual particles of energy) used in photosynthesis that fall on a square meter (10.8
+	square feet) every second.
 
-Daily light integral (DLI) or Daily PAR is the amount of PAR received
-each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day). It is expressed
-as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
-The DLI concept is like a rain gauge. Just as a rain gauge collects the total rain in a particular location over
-a period of time, so DLI measures the total amount of PAR received in a day. Greenhouse growers can use
-light meters to measure the number of light photons that accumulate in a square meter over a 24-hour period.
+	This light measurement is an instantaneous reading.
 
-10.  Total water use and water requirement:
-soybean: total: 845 kg, req :  414 kg per gram....
+	Daily light integral (DLI) or Daily PAR is the amount of PAR received
+	each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day). It is expressed
+	as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
+	The DLI concept is like a rain gauge. Just as a rain gauge collects the total rain in a particular location over
+	a period of time, so DLI measures the total amount of PAR received in a day. Greenhouse growers can use
+	light meters to measure the number of light photons that accumulate in a square meter over a 24-hour period.
 
-11. MPR Model: a crop model that consists of a set of nonlinear polynomial equations, six for each crop, developed using multivariate polynomial regression
-(MPR).
+10.	Total water use and water requirement:
+	soybean: total: 845 kg, req :  414 kg per gram....
 
-The dependent variables for three of the six MPR equations are the relative growth rates
-of (a) total dry mass prior to formation of yield bearing organs, (b) total dry mass after the
-formation of yield bearing organs, and (c) yield dry mass.
+11. MPR Model: a crop model that consists of a set of nonlinear polynomial equations, six for each crop,
+	developed using multivariate polynomial regression (MPR).
 
-The independent variables used in each equation include the average PPF, T, and CO2 values (averaged from planting date up to
-the current time increment t), and the total or yield dry mass at t-1.
+	The dependent variables for three of the six MPR equations are the relative growth rates
+	of (a) total dry mass prior to formation of yield bearing organs, (b) total dry mass after the
+	formation of yield bearing organs, and (c) yield dry mass.
 
-The model-based predictive controller adjusts light intensity, atmospheric/elevated atmospheric carbon dioxide concentration,
-(photosynthetic photon flux (PPF), average daily air temperature (T),
+	The independent variables used in each equation include the average PPF, T, and CO2 values (averaged from planting date up to
+	the current time increment t), and the total or yield dry mass at t-1.
 
-http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
+	The model-based predictive controller adjusts light intensity, atmospheric/elevated atmospheric carbon dioxide concentration,
+	(photosynthetic photon flux (PPF), average daily air temperature (T),
+
+	http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
 -->
 
 
-	<crop name="Cabbage"
+	<crop name="cabbage"
  	  	growing-time="85.0"
     	crop-category="Vegetables"
     	edible-biomass="75.78"
@@ -79,7 +82,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	daily-PAR="17.28"
     	/>
 
-	<crop name="Carrot"
+	<crop name="carrot"
     	growing-time="74.83"
     	crop-category="Roots"
     	edible-biomass="40"
@@ -88,7 +91,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	daily-PAR="32.4"
     	/>
 
-	<crop name="Swiss Chard"
+	<crop name="swiss chard"
     	growing-time="45.0"
     	crop-category="Vegetables"
     	edible-biomass="87.50"
@@ -97,7 +100,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	daily-PAR="17.28"
     	/>
 
-	<crop name="Celery"
+	<crop name="celery"
     	growing-time="75.0"
     	crop-category="Vegetables"
     	edible-biomass="103.27"
@@ -106,7 +109,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	daily-PAR="17.28"
     	/>
 
-    <crop name="Kidney Bean"
+    <crop name="kidney bean"
     	growing-time="85.0"
     	crop-category="Legumes"
     	edible-biomass="11.11"
@@ -115,7 +118,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="25.92"
     	/>
 
-    <crop name="Green Onion"
+    <crop name="green onion"
     	growing-time="50.0"
     	crop-category="Spices"
     	edible-biomass="81.82"
@@ -124,7 +127,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="17.28"
     	/>
 
-    <crop name="Lettuce"
+    <crop name="lettuce"
     	growing-time="28.0"
     	crop-category="Vegetables"
     	edible-biomass="35"
@@ -135,7 +138,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	<!-- http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
     	 10 kg / week yield for greenhouse  -->
 
-    <crop name="White Onion"
+    <crop name="white onion"
     	growing-time="50.0"
     	crop-category="Bulbs"
     	edible-biomass="81.82"
@@ -144,7 +147,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="17.28"
     	/>
 
-    <crop name="Peas"
+    <crop name="peas"
         growing-time="75.0"
     	crop-category="Legumes"
     	edible-biomass="12.20"
@@ -154,7 +157,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	/>
 
 
-    <crop name="Peanut"
+    <crop name="peanut"
         growing-time="104.0"
     	crop-category="Legumes"
     	edible-biomass="6"
@@ -163,7 +166,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="32.4"
     	/>
 
-     <crop name="Rice"
+     <crop name="rice"
         growing-time="100.0"
     	crop-category="Grains"
     	edible-biomass="10.3"
@@ -172,7 +175,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="34.56"
     	/>
 
-    <crop name="Wheat"
+    <crop name="wheat"
         growing-time="80"
     	crop-category="Grains"
     	edible-biomass="13"
@@ -181,7 +184,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="69.12"
     	/>
 
-    <crop name="Potato"
+    <crop name="potato"
     	growing-time="100.0"
     	crop-category="Tubers"
     	edible-biomass="35"
@@ -190,7 +193,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
      	daily-PAR="34.56"
     	/>
 
-     <crop name="Soybean"
+     <crop name="soybean"
         growing-time="93"
     	crop-category="Legumes"
     	edible-biomass="10"
@@ -199,7 +202,7 @@ http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/P
     	daily-PAR="34.56"
     	/>
 
-    <crop name="Garlic"
+    <crop name="garlic"
         growing-time="85"
     	crop-category="Bulbs"
     	edible-biomass="5.5"
