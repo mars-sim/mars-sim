@@ -1,12 +1,14 @@
 # coding=utf-8
 # Mars Simulation Project
-# Script for output of transitional progress
+# Script for output of progress with UI transition
 # transition.py
-# @version 3.08 2015-05-05
-# @author Lars Næsbye Christensen [lechimp]
-
-# Very simple script to tell us how much Swing and JavaFX we use
-# Run : 'python transition.py [path]' and the path you wish to traverse, e.g. '/home/user/mars-sim'
+# @version 3.08 2015-08-14
+# @author Lars Næsbye Christensen
+#
+# A very simple script to tell us how much Swing and JavaFX we use
+# Note that it doesn't discern between packages and imports
+#
+# Usage : 'python transition.py [path]' and the path you wish to traverse, e.g. '/home/user/mars-sim'
 
 
 import io
@@ -18,7 +20,7 @@ num_of_files_with_swing = 0;
 num_of_files_with_javafx = 0;
 num_of_files_with_both = 0;
 
-rootdir = sys.argv[1];
+rootdir = sys.argv[1]; // get the starting path from the command line
 carry =0;
 
 for subdir, dirs, files in os.walk(rootdir):
