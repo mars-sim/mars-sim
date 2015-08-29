@@ -423,7 +423,7 @@ implements Serializable {
 				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired;
 				// Store the crop harvest
 				Storage.storeAnResource(lastHarvest, cropName, inv);
-				logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
+				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
 				generateCropWaste(lastHarvest);
@@ -440,7 +440,7 @@ implements Serializable {
 				//logger.info("addWork() : " + cropName + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
 				// Store the crop harvest
 				Storage.storeAnResource(modifiedHarvest, cropName, inv);
-				logger.info("addWork() : harvesting " + cropName + " : " + Math.round(modifiedHarvest * 1000.0)/1000.0 + " kg.");
+				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(modifiedHarvest * 1000.0)/1000.0 + " kg.");
 				remainingWorkTime = 0D;
 				generateCropWaste(modifiedHarvest);
 			}

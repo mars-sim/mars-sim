@@ -7,9 +7,13 @@
 <!-- References :
 
 1.	Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006
+
 2. 	NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 http://ston.jsc.nasa.gov/collections/trs/_techrep/CR-2004-208941.pdf
+
 3. 	Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
+
 4. 	For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
+
 5. 	http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
  a. Vegetables that contain 92 percent water include
 	cauliflower, eggplant, red cabbage, peppers and spinach.
@@ -37,9 +41,9 @@
 	1 tonnes per hectare = 0.1 kg per m^2
 	1/100 tonnes per hectare per day = 1 gram per m^2 per day
 
-8.  Photosynthetically active radiation (PAR), which is light with a wavelength between 300/400 to 700 nm
+8.  Photosynthetically active radiation (PAR) is light with a wavelength between 300/400 nm and 700 nm
 
-	Researchers measure instantaneous light in micromoles (μmol) per square
+	Researchers measure instantaneous light in micro-moles (μmol) per square
 	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. This “quantum” unit quantifies the number of
 	photons (individual particles of energy) used in photosynthesis that fall on a square meter (10.8
 	square feet) every second.

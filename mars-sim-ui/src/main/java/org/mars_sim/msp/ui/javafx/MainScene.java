@@ -89,8 +89,8 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
-	private static int AUTOSAVE_EVERY_X_MINUTE = 10;
-	private static final int TIME_DELAY = 980;
+	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
+	private static final int TIME_DELAY = 960;
 
 	// Categories of loading and saving simulation
 	public static final int DEFAULT = 1;
@@ -120,7 +120,7 @@ public class MainScene {
 	private Text memMaxText;
 	private Text processCpuLoadText;
 	private Text systemCpuLoadText;
-	private Button memBtn, clkBtn;
+	private Button memBtn, clkBtn, cpuBtn;
 
 	private Stage stage;
 	private Scene scene;
@@ -327,7 +327,8 @@ public class MainScene {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-		rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
+		//rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
+		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 		rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyEvent) {
@@ -352,28 +353,36 @@ public class MainScene {
 		}
 	}
 */
+
+	/*
+	 * Sets the theme skin after calling stage.show() at the start of the sim
+	 */
 	public void initializeTheme() {
 		logger.info("MainScene's initializeTheme()");
+
+		// NOTE: it is mandatory to change the theme from 1 to 2 below at the start of the sim
+		// This avoids two display issues:
+		// (1). the crash of Mars Navigator Tool when it was first loaded
+		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
+		// Also, when clicking a tab at the first time, a NullPointerException results)
+		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
+		rootStackPane.getStylesheets().clear();
+		theme = 2;
+		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+		updateColor(Color.GREEN, Color.PALEGREEN);
+		lookAndFeelTheme = "LightTabaco";
+
 		SwingUtilities.invokeLater(() -> {
 			setLookAndFeel(1);
+			//swingNode.setContent(desktop);
 		});
-		changeTheme(); // mandatory to call changeTheme() at least once at the beginning or else UI would crash
 
-/*
-		theme = 1;
-		rootStackPane.getStylesheets().clear();
-		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-		notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-		memUsedText.setFill(Color.ORANGE);
-		memMaxText.setFill(Color.ORANGE);
-		timeText.setFill(Color.ORANGE);
-		memBtn.setTextFill(Color.LIGHTSALMON);
-		clkBtn.setTextFill(Color.LIGHTSALMON);
-		lookAndFeelTheme = "nimrod";
-*/
 		logger.info("done with MainScene's initializeTheme()");
 	}
 
+	/*
+	 * Changes the theme skin of desktop
+	 */
 	public void changeTheme() {
 		logger.info("MainScene's changeTheme()");
 		if (theme == 1) {
@@ -382,11 +391,7 @@ public class MainScene {
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-			memUsedText.setFill(Color.GREEN);
-			memMaxText.setFill(Color.GREEN);
-			timeText.setFill(Color.GREEN);
-			memBtn.setTextFill(Color.PALEGREEN);
-			clkBtn.setTextFill(Color.PALEGREEN);
+			updateColor(Color.GREEN, Color.PALEGREEN);
 			lookAndFeelTheme = "LightTabaco";
 		} else if (theme == 2) {
 			rootStackPane.getStylesheets().clear();
@@ -394,69 +399,59 @@ public class MainScene {
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-			memUsedText.setFill(Color.ORANGERED);
-			memMaxText.setFill(Color.ORANGERED);
-			timeText.setFill(Color.ORANGERED);
-			memBtn.setTextFill(Color.YELLOW);
-			clkBtn.setTextFill(Color.YELLOW);
+			updateColor(Color.ORANGERED, Color.YELLOW);
 			lookAndFeelTheme = "Burdeos";
 		} else if (theme == 3) { // dark olive
 			rootStackPane.getStylesheets().clear();
 			theme = 4;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			memUsedText.setFill(Color.LIGHTCYAN);
-			memMaxText.setFill(Color.LIGHTCYAN);
-			timeText.setFill(Color.LIGHTCYAN);
-			memBtn.setTextFill(Color.DARKOLIVEGREEN);
-			clkBtn.setTextFill(Color.DARKOLIVEGREEN);
+			updateColor(Color.LIGHTCYAN, Color.DARKOLIVEGREEN);
 			lookAndFeelTheme = "DarkTabaco";
 		} else if (theme == 4) {
 			// rootStackPane.getStylesheets().clear();
 			theme = 5;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			memUsedText.setFill(Color.BLANCHEDALMOND);
-			memMaxText.setFill(Color.BLANCHEDALMOND);
-			timeText.setFill(Color.BLANCHEDALMOND);
-			memBtn.setTextFill(Color.GREY);
-			clkBtn.setTextFill(Color.GREY);
+			updateColor(Color.BLANCHEDALMOND, Color.GREY);
 			lookAndFeelTheme = "DarkGrey";
 		} else if (theme == 5) { // + purple
 			// rootStackPane.getStylesheets().clear();
 			theme = 6;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			memUsedText.setFill(Color.PALEGOLDENROD);
-			memMaxText.setFill(Color.PALEGOLDENROD);
-			timeText.setFill(Color.PALEGOLDENROD);
-			memBtn.setTextFill(Color.BLUEVIOLET);
-			clkBtn.setTextFill(Color.BLUEVIOLET);
+			updateColor(Color.PALEGOLDENROD, Color.BLUEVIOLET);
 			lookAndFeelTheme = "Night";
 		} else if (theme == 6) { // + skyblue
 			// rootStackPane.getStylesheets().clear();
 			theme = 7;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-			memUsedText.setFill(Color.CADETBLUE);
-			memMaxText.setFill(Color.CADETBLUE);
-			timeText.setFill(Color.CADETBLUE);
-			memBtn.setTextFill(Color.LIGHTBLUE);
-			clkBtn.setTextFill(Color.LIGHTBLUE);
+			updateColor(Color.CADETBLUE, Color.LIGHTBLUE);
 			lookAndFeelTheme = "Snow";
 		} else if (theme == 7) {
 			rootStackPane.getStylesheets().clear();
 			theme = 1;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			memUsedText.setFill(Color.ORANGE);
-			memMaxText.setFill(Color.ORANGE);
-			timeText.setFill(Color.ORANGE);
-			memBtn.setTextFill(Color.LIGHTSALMON);
-			clkBtn.setTextFill(Color.LIGHTSALMON);
+			updateColor(Color.ORANGE, Color.LIGHTSALMON);
 			lookAndFeelTheme = "nimrod";
 		}
 
 		logger.info("done with MainScene's changeTheme()");
 	}
 
+	/*
+	 * Updates the colors of the texts and buttons on the status bar
+	 */
+	// 2015-08-29 Added updateColor()
+	public void updateColor(Color txtColor, Color btnColor) {
+		memUsedText.setFill(txtColor);
+		memMaxText.setFill(txtColor);
+		timeText.setFill(txtColor);
+		systemCpuLoadText.setFill(txtColor);
+		processCpuLoadText.setFill(txtColor);
+		memBtn.setTextFill(btnColor);
+		clkBtn.setTextFill(btnColor);
+		cpuBtn.setTextFill(btnColor);
+	}
 	/**
 	 * Creates and starts the earth timer
 	 *
@@ -465,6 +460,8 @@ public class MainScene {
 	public void startEarthTimer() {
 		// Set up earth time text update
 		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeText()));
+		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
+		// All the objects with animated properties would not be garbage collected.
 		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 		timeline.play();
 
@@ -487,14 +484,20 @@ public class MainScene {
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
+		cpuBtn = new Button(" [CPU Load] ");
+		cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		cpuBtn.setTextFill(Color.ORANGE);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getRightItems().add(cpuBtn);
+
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText = new Text(" Process CPU Load : " + processCpuLoad + " % ");
+		processCpuLoadText = new Text(" Process : " + processCpuLoad + " % ");
 		processCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(processCpuLoadText);
 
 		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		systemCpuLoadText = new Text(" System CPU Load : " + systemCpuLoad + " % ");
+		systemCpuLoadText = new Text(" System : " + systemCpuLoad + " % ");
 		systemCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(systemCpuLoadText);
@@ -506,14 +509,14 @@ public class MainScene {
 		statusBar.getRightItems().add(memBtn);
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-		memMaxText = new Text(" Total Designated : " + memMax + " MB ");
+		memMaxText = new Text(" Designated : " + memMax + " MB ");
 		memMaxText.setFill(Color.GREY);
 		statusBar.getRightItems().add(memMaxText);
 
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
-		memUsedText = new Text(" Currently Used : " + memUsed + " MB ");
+		memUsedText = new Text(" Used : " + memUsed + " MB ");
 		memUsedText.setId("mem-text");
 		// memUsedText.setStyle("-fx-text-inner-color: orange;");
 		memUsedText.setFill(Color.GREY);
@@ -529,15 +532,15 @@ public class MainScene {
 			throw new IllegalStateException("earthclock is null");
 		}
 
-		timeText = new Text(" Earth Time : " + timeStamp + "  ");
-		// timeText.setStyle("-fx-text-inner-color: orange;");
-		timeText.setId("time-text");
-		timeText.setFill(Color.GREY);
-
 		clkBtn = new Button(" [Clock] ");
 		clkBtn.setTextFill(Color.ORANGE);
 		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
+
+		timeText = new Text(" Earth Time : " + timeStamp + "  ");
+		// timeText.setStyle("-fx-text-inner-color: orange;");
+		timeText.setId("time-text");
+		timeText.setFill(Color.GREY);
 		statusBar.getRightItems().add(timeText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -630,6 +633,8 @@ public class MainScene {
 		autosaveTimeline = new Timeline(
 				new KeyFrame(Duration.seconds(60 * AUTOSAVE_EVERY_X_MINUTE),
 						ae -> saveSimulation(AUTOSAVE)));
+		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
+		// All the objects with animated properties would not be garbage collected.
 		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 		autosaveTimeline.play();
 
@@ -1137,11 +1142,25 @@ public class MainScene {
 	// this.mainMenu = mainMenu;
 	// }
 
+	//public void openInitialWindows() {
+	//	logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+	//	SwingUtilities.invokeLater(() -> {
+	//		desktop.openInitialWindows();
+	//	});
+	//}
+
 	public void openInitialWindows() {
 		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-		SwingUtilities.invokeLater(() -> {
+		String OS = System.getProperty("os.name").toLowerCase();
+		//System.out.println("OS is " + OS);
+		if (OS.equals("mac os x")) {
+		// SwingUtilities needed below for MacOSX
+			SwingUtilities.invokeLater(() -> {
 			desktop.openInitialWindows();
-		});
+			});
+		}
+		else
+			desktop.openInitialWindows();
 	}
 
 	public MarsNode getMarsNode() {

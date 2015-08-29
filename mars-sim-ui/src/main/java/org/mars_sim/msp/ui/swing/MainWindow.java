@@ -86,8 +86,8 @@ public class MainWindow extends JComponent {
 	private Timer delayLaunchTimer;
 	private Timer autosaveTimer;
 	private javax.swing.Timer earthTimer = null;
-	private static int AUTOSAVE_MINUTES = 15;
-	private static final int TIMEDELAY = 900;
+	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
+	private static final int TIME_DELAY = 960;
 
     //protected ShowDateTime showDateTime;
     private JStatusBar statusBar;
@@ -302,14 +302,14 @@ public class MainWindow extends JComponent {
             }
         };
         autosaveTimer = new Timer();
-        autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_MINUTES);
+        autosaveTimer.schedule(timerTask, 1000* 60 * AUTOSAVE_EVERY_X_MINUTE);
     }
 
 
 	// 2015-01-13 Added startEarthTimer()
 	public void startEarthTimer() {
 
-		earthTimer = new javax.swing.Timer(TIMEDELAY,
+		earthTimer = new javax.swing.Timer(TIME_DELAY,
 			new ActionListener() {
 			String t = null;
 			    @SuppressWarnings("deprecation")

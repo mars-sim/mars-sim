@@ -15,7 +15,11 @@
         #556B2F,
         #bbc3ab,
         radial-gradient(center 50% 50%, radius 100%, #bbc3ab, #88976d);
-
+    -fx-text-fill: darkgreen;
+    -fx-opacity: 1;
+	-fx-base: rgb(50, 50, 50);
+	-fx-control-inner-background:  rgb(50, 50, 50);
+	-fx-accent: darkgoldenrod;
 }
 
 .menu-bar {

@@ -9,7 +9,7 @@
 
 .root {
 	-fx-font-size: 12pt;
-    -fx-font-family: "Segoe UI Light";
+    -fx-font-family: "LiberationMono";
     -fx-text-fill: orange;
     -fx-opacity: 1;
 	-fx-base: rgb(50, 50, 50);
