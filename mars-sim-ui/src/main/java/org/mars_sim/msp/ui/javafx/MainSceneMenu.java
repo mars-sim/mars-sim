@@ -107,7 +107,7 @@ public class MainSceneMenu extends MenuBar  {
         MenuItem openItem = new MenuItem("Open...");
         openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         MenuItem openAutoSaveItem = new MenuItem("Open autosave");
-        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         MenuItem saveAsItem = new MenuItem("Save As...");

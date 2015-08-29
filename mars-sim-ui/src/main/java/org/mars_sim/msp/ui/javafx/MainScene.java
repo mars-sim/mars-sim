@@ -334,6 +334,7 @@ public class MainScene {
 			public void handle(KeyEvent keyEvent) {
 				if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
 					changeTheme();
+					// SwingUtilities is needed for MacOSX compatibility
 					SwingUtilities.invokeLater(() -> {
 						setLookAndFeel(1);
 						swingNode.setContent(desktop);
@@ -366,12 +367,13 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-		rootStackPane.getStylesheets().clear();
+		//rootStackPane.getStylesheets().clear();
 		theme = 2;
 		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 		updateColor(Color.GREEN, Color.PALEGREEN);
 		lookAndFeelTheme = "LightTabaco";
 
+		// SwingUtilities is needed for MacOSX compatibility
 		SwingUtilities.invokeLater(() -> {
 			setLookAndFeel(1);
 			//swingNode.setContent(desktop);
@@ -911,6 +913,8 @@ public class MainScene {
 			clock.saveSimulation(fileLocn);
 		}
 
+/*
+  		// Note: the following Thread.sleep() causes system to hang in MacOSX, but not in Windows
 		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
 			try {
 				Thread.sleep(100L);
@@ -918,6 +922,8 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
 			}
 		}
+
+*/
 		desktop.disposeAnnouncementWindow();
 	}
 
