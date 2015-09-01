@@ -233,7 +233,7 @@ implements Serializable {
 		boolean result = false;
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
 
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
