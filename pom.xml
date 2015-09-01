@@ -12,7 +12,7 @@
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
     <properties>
-        <junit.version>4.8.2</junit.version>
+        <junit.version>4.12</junit.version>
 
     </properties>
 	<!-- ************************************************************************************************* -->

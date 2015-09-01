@@ -138,7 +138,7 @@ public class DustStorm implements Serializable {
 			int s = size;
 			tempSize = s + up - down;
 			// From http://mars.jpl.nasa.gov/odyssey/mgs/sci/fifthconf99/6011.pdf
-			// the probability of a “planetary-encircling” storm occurring in any particular Mars year
+			// the probability of a planetary-encircling storm occurring in any particular Mars year
 			// is 33% based on Earth-based observational record in 1956, 1971, 1973, 1977 (two), and 1982.
 			// TODO: how to incorporate this 33% into the algorithm here?
 

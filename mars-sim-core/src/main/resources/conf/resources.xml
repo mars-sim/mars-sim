@@ -167,16 +167,16 @@
 	<resource name="ammonia" phase="solid"> NH3+ is an essential nutrient for plants</resource>
 	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing plastic and for making polycarbonate</resource>
 	<resource name="beeswax" phase="solid" />
-	<resource name="calcium Carbonate" phase="solid" />
+	<resource name="calcium carbonate" phase="solid" />
 	<resource name="gypsum" phase="solid" />
 	<resource name="honey" phase="liquid" />
 	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
-	<resource name="iron Oxide" phase="solid">also known as rust</resource>
-	<resource name="iron Powder" phase="solid" />
+	<resource name="iron oxide" phase="solid">also known as rust</resource>
+	<resource name="iron powder" phase="solid" />
 	<resource name="lime" phase="solid" />
 	<resource name="nitrate" phase="solid"> NO3- is an essential nutrient for plants</resource>
 	<resource name="nitrite" phase="solid"> NO2- is an essential nutrient for plants</resource>
-	<resource name="potash Lye" phase="solid">Potassium Hydroxide</resource>
+	<resource name="potash lye" phase="solid">Potassium Hydroxide</resource>
 	<resource name="polycarbonate resin" phase="liquid" />
 	<resource name="polyester resin" phase="liquid" />
 	<resource name="propolis" phase="solid"> Propolis or bee glue is a resinous mixture collected by honey bees from tree buds,
