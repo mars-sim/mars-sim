@@ -62,6 +62,8 @@ extends TabPanel {
 
 	private JPanel infoPanel;
 
+	private JTree tree;
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -210,7 +212,7 @@ extends TabPanel {
           	root.add(supplySpecialistNode);
         }
 
-		JTree tree = new JTree(root);
+		tree = new JTree(root);
         tree.setVisibleRowCount(8);
 
      	// 2015-06-17 Added treeSearchable
@@ -314,10 +316,26 @@ extends TabPanel {
     	        if(selRow != -1) {
     	            if(e.getClickCount() == 2) {
     	    			DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
-    	    			Person person =  (Person) node.getUserObject();
-    	    			if (person != null) {
-    	    				desktop.openUnitWindow(person, false);
+    	    			Person person = null;
+    	    			Settlement settlement = null;
+    	    			// 2015-09-03 Added checking for node
+    	    			// to avoid java.lang.ClassCastException: java.lang.String cannot be cast to org.mars_sim.msp.core.person.Person
+    	    			if (node.getUserObject() instanceof Person){
+    	    				person =  (Person) node.getUserObject();
+        	    			if (person != null) {
+        	    				desktop.openUnitWindow(person, false);
+    	    			}
+    	    			else if (node.getUserObject() instanceof Settlement)
+    	    				settlement =  (Settlement) node.getUserObject();
+        	    			update();
+        	    			tree.revalidate();
+        	    			tree.repaint();
     	            	}
+    	    			else {
+    	    				update();
+    	    				tree.revalidate();
+        	    			tree.repaint();
+    	    			}
     	            }
     	        }
     	    }
@@ -370,6 +388,7 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		tree = null;
 		createTree();
 	}
 

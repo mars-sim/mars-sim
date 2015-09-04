@@ -456,8 +456,20 @@ implements ActionListener {
 				}
 
 				else if (!jobCache.equals(selectedJobStr)) {
+					int pop = 0;
+					// 2015-09-03 Added try catch to see if getSettlement() is null
+					// why null?
+					try {
+						pop = person.getSettlement().getAllAssociatedPeople().size();
 
-					int pop = person.getSettlement().getAllAssociatedPeople().size();
+					} catch(Exception e){
+				        e.printStackTrace(System.err);
+						//System.out.println("getAllAssociatedPeople() is null");
+						//pop = person.getSettlement().getCurrentPopulationNum();
+						jobComboBox.setSelectedItem(jobStrCache);
+						errorLabel.setText("A person must be in a settlement when requesting the change of the job type!");
+						errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+					}
 
 					// if the population is beyond 4
 			        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
