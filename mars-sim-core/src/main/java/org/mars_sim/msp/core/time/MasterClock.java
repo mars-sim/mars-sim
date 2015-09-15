@@ -320,9 +320,10 @@ public class MasterClock implements Serializable { // Runnable,
         if (timeRatio > 0D) {
             double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
+            System.out.print(" timePulseSeconds : " + timePulseSeconds);
         }
         else timePulse = 1D;
-
+        System.out.println(" timePulse : " + timePulse );
         return timePulse;
     }
 
@@ -338,6 +339,7 @@ public class MasterClock implements Serializable { // Runnable,
     public void setTimeRatio(double ratio) {
         if (ratio >= 0.0001D && ratio <= 500000D) {
             timeRatio = ratio;
+            System.out.println("timeRatio : " + timeRatio + " ");
         }
         else throw new IllegalArgumentException("Time ratio out of bounds ");
     }
@@ -378,7 +380,7 @@ public class MasterClock implements Serializable { // Runnable,
 	        int noDelays = 0;
 	        t1 = System.nanoTime();
 
-	        // Keep running until told not to
+	        // Keep running until told not to by calling stop()
 	        keepRunning = true;
 
 	        while (keepRunning) {
@@ -707,7 +709,7 @@ public class MasterClock implements Serializable { // Runnable,
         long tnow = uptimer.getUptimeMillis();
         elapsedMilliseconds = tnow - elapsedlast;
         elapsedlast = tnow;
-        //System.out.println("getElapsedmilliseconds " + elapsedMilliseconds);
+        System.out.print ("elapsedMilliseconds : " + elapsedMilliseconds + " ");
     }
 
     private long getElapsedmillis() {
