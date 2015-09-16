@@ -337,7 +337,7 @@ implements ActionListener {
 
 		        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 		        	// If this request is at least one day ago
-			        if ( solElapsed != solCache)
+			        if (solElapsed != solCache)
 			        	if (statusCache.equals("Pending")) {
 
 				        	solCache = solElapsed;
@@ -352,16 +352,17 @@ implements ActionListener {
 				        	String selectedJobStr = jobAssignmentList.get(last).getJobType();
 
 				        	// Check if the chief or the commander has approved the job reassignment
-				        	// if the reassignment is not pending (usch as null or approved), process with making the new job show up
+				        	// if the reassignment is not pending (such as null or approved), process with making the new job show up
 				        	if (status.equals("Approved")) {
 
 				        		statusCache = "Approved";
-				        		System.out.println("just set statusCache to Approved.  selectedJobStr : " + selectedJobStr);
+				        		System.out.println("TabPanelCareer : just set statusCache to Approved.  selectedJobStr : " + selectedJobStr);
 
 							    // Sets the job to the newly selected job
 							    //person.getMind().setJob(selectedJobStr, true, JobManager.USER);
 
 							    jobComboBox.setSelectedItem(selectedJobStr);
+							    System.out.println("TabPanelCareer : selectedJobStr is " + selectedJobStr);
 
 							    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob
 							    // as soon as the combobox selection is changed or wait for checking of "approval" ?
@@ -445,7 +446,7 @@ implements ActionListener {
 				// 2015-04-30 if job is Manager, loads and set to the previous job and quit;
 				if (jobStrCache.equals("Manager")) {
 					jobComboBox.setSelectedItem(jobStrCache);
-					errorLabel.setText("Mayor cannot switch job arbitrary!");
+					errorLabel.setText("Mayor cannot switch job arbitrarily!");
 					errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 
@@ -456,20 +457,33 @@ implements ActionListener {
 				}
 
 				else if (!jobCache.equals(selectedJobStr)) {
+/*
 					int pop = 0;
-					// 2015-09-03 Added try catch to see if getSettlement() is null
-					// why null?
-					try {
-						pop = person.getSettlement().getAllAssociatedPeople().size();
-
-					} catch(Exception e){
-				        e.printStackTrace(System.err);
-						//System.out.println("getAllAssociatedPeople() is null");
-						//pop = person.getSettlement().getCurrentPopulationNum();
+					// 2015-09-03 Check to see if getSettlement() is null
+					if (person.getSettlement() == null) {
+						// the person is NOT inside a settlement
 						jobComboBox.setSelectedItem(jobStrCache);
-						errorLabel.setText("A person must be in a settlement when requesting the change of the job type!");
+						errorLabel.setForeground(Color.RED);
+						errorLabel.setText("Must be inside a settlement to file the request.");
 						errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 					}
+					else
+						pop = person.getSettlement().getAllAssociatedPeople().size();
+*/
+					// 2015-09-03 use getAssociatedSettlement instead of getSettlement()
+					int pop = 0;
+			        Settlement settlement = null;
+			        if (person.getAssociatedSettlement() != null)
+			        	settlement = person.getAssociatedSettlement();
+			        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+			        	settlement = (Settlement) person.getTopContainerUnit();
+			        }
+			        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
+			        	settlement = vehicle.getSettlement();
+			        }
+
+			        pop = settlement.getAllAssociatedPeople().size();
 
 					// if the population is beyond 4
 			        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
@@ -487,6 +501,8 @@ implements ActionListener {
 			        	//int size = jobAssignmentList.size();
 
 			        	JobHistory jh = person.getJobHistory();
+			        	//jh.getJobAssignmentList().add(new JobAssignment(null, selectedJobStr, JobManager.USER, "Pending", null));
+
 			        	jh.saveJob(selectedJobStr, JobManager.USER, "Pending", null, true);
 			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setStatus("Pending");
 
@@ -502,7 +518,7 @@ implements ActionListener {
 						jobHistoryTableModel.update();
 			        }
 
-			        else { // pop <=4
+			        else if (pop > 0 && pop <= UnitManager.POPULATION_WITH_COMMANDER){
 						errorLabel.setForeground(Color.RED);
 						errorLabel.setText("");
 					    jobComboBox.setSelectedItem(selectedJobStr);

@@ -91,8 +91,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                    if (status != null)
 		                    if (status.equals("Pending")) {
 		                    	//System.out.println("ReviewJobReassignmentMeta status equals pending");
-		                    	result += 300D;
-		                    	result += result * preference / 6D ;
+		                    	result += 600D;
+		                    	result = result + result * preference / 10D ;
 		                    }
 	                    //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result : " + result);
 	    	            // Note: if an office space is not available, one can still write reports

@@ -36,6 +36,8 @@ public class JobHistory implements Serializable  {
 		jobAssignmentList = new CopyOnWriteArrayList<JobAssignment>();
 		//jobHistoryMap = new HashMap<MarsClock, JobAssignment>();
 
+		//jobAssignmentList.add(new JobAssignment(startClock, newJobStr, initiator, status, approvedBy));
+
 	}
 
 	//public Map<MarsClock, JobAssignment> getJobHistoryMap() {
@@ -59,7 +61,7 @@ public class JobHistory implements Serializable  {
 
 
     public void processJob(String newJobStr, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
-    	//System.out.println("just called JobHistory's processNewJob()");
+    	//System.out.println("calling JobHistory's processJob()");
 
     	if (jobAssignmentList.isEmpty()) {
     		MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
@@ -67,23 +69,27 @@ public class JobHistory implements Serializable  {
     	}
 
     	else {
+    		//System.out.println("JobHistory : jobAssignmentList.size() is currently " + jobAssignmentList.size());
     		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
     		String lastJobStr = jobAssignmentList.get(last).getJobType();
+    		//System.out.println("JobHistory : lastJobStr was " + lastJobStr);
         	if (clock == null)
         		clock = Simulation.instance().getMasterClock().getMarsClock();
     		// Compare lastJobStr with newJobStr
     		if (!lastJobStr.equals(newJobStr)) { // for sanity check
-
-	        	if (addNewJobAssignment || status.equals("Pending"))
+        		//System.out.println("JobHistory : newJobStr was " + newJobStr);
+	        	if (addNewJobAssignment) // status.equals("Pending"))
 	        		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator, status, approvedBy));
 
-	    		else {
-	        		jobAssignmentList.get(last).setAuthorizedBy(person.getName() + "--" + person.getRole().getType()); // or getRole().toString();
+	    		else if (status.equals("Approved")) {
+	    			String boss = person.getName() + "--" + person.getRole().getType();
+	        		jobAssignmentList.get(last).setAuthorizedBy(boss); // or getRole().toString();
 	        		//MarsClock clock = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	            	jobAssignmentList.get(last).setStatus("Approved");
 	            	jobAssignmentList.get(last).setTimeAuthorized(clock);
-	            	System.out.println("just called JobHistory's processNewJob() and set it to Approved");
+	            	//System.out.println("JobHistory : Just approved by " + jobAssignmentList.get(last).getAuthorizedBy());
+	         	    //System.out.println("JobHistory : processJob() : new status is " + jobAssignmentList.get(last).getStatus());
 	    		}
         	}
     	}

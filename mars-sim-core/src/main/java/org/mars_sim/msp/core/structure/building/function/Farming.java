@@ -202,7 +202,7 @@ implements Serializable {
 
 		// 1kg = 1000 g
 		double maxHarvestinKgPerDay = edibleBiomass * cropArea /1000D ;
-    	logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
+    	//logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
 
 		//totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
 

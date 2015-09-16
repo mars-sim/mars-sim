@@ -262,29 +262,34 @@ implements Serializable {
 
     	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
 
-
     }
 
 
     public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
 
-    	//System.out.println("calling assignJob()");
+    	//System.out.println("Mind.java : calling assignJob()");
     	String jobStr = null;
     	if (job == null)
     		jobStr = null;
     	else
     		jobStr = job.getName(person.getGender());
+
+    	//System.out.println("Mind.java : assignJob() : jobStr is " + jobStr);
+    	//System.out.println("Mind.java : assignJob() : job is " + job);
+
     	// TODO : check if the initiator's role allows the job to be changed
     	if (!newJobStr.equals(jobStr)) {
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 		        // 2015-03-30 Added saveJob()
-		        if (approvedBy.equals(JobManager.SETTLEMENT)) {
+		        if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
 		        	if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4)
 		        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
+		        		//System.out.println("Mind.java : assignJob() : <= 4, just calling JobHistory's saveJob() ");
 		        }
-		        else  {// if (approvedBy.equals(a person)  {
+		        else {// if (approvedBy.equals(a person)  {
 	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
+	            	//System.out.println("Mind.java : assignJob() : just calling JobHistory's saveJob() ");
 		        }
 
 		    	//System.out.println("just called JobHistory's saveJob()");

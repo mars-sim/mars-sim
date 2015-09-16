@@ -313,7 +313,8 @@ implements VehicleOperator, MissionMember, Serializable {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT)
             return (Settlement) getContainerUnit();
         else if (getLocationSituation() == LocationSituation.OUTSIDE)
-            return (Settlement) getContainerUnit();
+        // 2015-09-03 Changed getContainerUnit() below to getTopContainerUnit()
+            return (Settlement) getTopContainerUnit();
         else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	//Unit container
         	//return container.getTopContainerUnit()
@@ -771,12 +772,12 @@ implements VehicleOperator, MissionMember, Serializable {
 
         return result;
     }
-    
+
     @Override
     public String getTaskDescription() {
         return getMind().getTaskManager().getTaskDescription();
     }
-    
+
     @Override
     public void setMission(Mission newMission) {
         getMind().setMission(newMission);
