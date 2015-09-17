@@ -461,10 +461,10 @@ implements Serializable {
 
 		//int numSeedlings = (int) seedlings;
 
-		String seedlingName = cropName + " seedling";
+		String seedlingName = cropName + " seedlings/seeds";
 		Storage.storeAnResource(seedlings, seedlingName, inv);
 
-		System.out.println(seedlings + " kg " + seedlingName + " extracted and preserved");
+		logger.info("End of harvest : " + seedlings + " kg " + seedlingName + " extracted");
 	}
 
 	public void generateCropWaste(double harvestMass) {
