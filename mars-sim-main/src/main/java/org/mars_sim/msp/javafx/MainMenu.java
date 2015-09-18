@@ -193,33 +193,6 @@ public class MainMenu {
 	   return multiplayerMode;
 	}
 
-   public void prepareStage() {
-	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
-
-	   // prepare main scene
-	   mainScene.prepareMainScene();
-	   Scene scene = mainScene.initializeScene();
-	   mainScene.prepareOthers();
-
-	   // prepare stage
-	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
-
-	   stage.setResizable(true);
-	   //stage.setFullScreen(true);
-	   stage.setScene(scene);
-	   stage.show();
-
-	   //mainScene.getMarsNode().createSettlementWindow();
-	   //mainScene.getMarsNode().createJMEWindow(stage);
-
-	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
-
-	   mainScene.initializeTheme();
-
-	   //logger.info("done with MainMenu's prepareStage()");
-  }
-
    public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 
@@ -237,8 +210,8 @@ public class MainMenu {
 	   try {
 		   mainScene = new MainScene(stage);
 		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
-		   TimeUnit.SECONDS.sleep(1L);
-		   // The delay time for launching the JavaFX UI is based on the size of the default.sim
+		   TimeUnit.SECONDS.sleep(2L);
+		   // The delay time for launching the JavaFX UI is based on the file size of the default.sim
 		   long delay_time = (long) (fileSize * 4000L);
 		   TimeUnit.MILLISECONDS.sleep(delay_time);
 		   prepareStage();
@@ -256,6 +229,34 @@ public class MainMenu {
 			//System.out.println("filesize is "+ fileSize);
 		}
 	}
+
+
+	   public void prepareStage() {
+		   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+
+		   // prepare main scene
+		   mainScene.prepareMainScene();
+		   Scene scene = mainScene.initializeScene();
+		   mainScene.prepareOthers();
+
+		   // prepare stage
+		   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+	       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
+
+		   stage.setResizable(true);
+		   //stage.setFullScreen(true);
+		   stage.setScene(scene);
+		   stage.show();
+
+		   //mainScene.getMarsNode().createSettlementWindow();
+		   //mainScene.getMarsNode().createJMEWindow(stage);
+
+		   //logger.info("done with stage.show() in MainMenu's prepareStage()");
+
+		   mainScene.initializeTheme();
+
+		   //logger.info("done with MainMenu's prepareStage()");
+	  }
 
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
