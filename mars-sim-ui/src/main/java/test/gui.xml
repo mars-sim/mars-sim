@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<!--
+    Document   : gui.xml
+    Created on : November 22, 2007, 9:23 PM
+    Author     : Matthias Mann
+    Description:
+        Contains image declarations for gui.png
+--><themes>
+    <images file="gui.png" format="RGBA">
+        <area name="button.normal" border="5" xywh="60,80,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="button.hoverX" border="5" xywh="20,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="button.pressedX" border="5" xywh="40,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+
+        <area name="button.hoverframe" border="5" nocenter="true" xywh="80,80,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="button.pressedback" border="5" xywh="100,80,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <composed name="button.hover">
+            <alias ref="button.normal"/>
+            <alias ref="button.hoverframe"/>
+        </composed>
+        <composed name="button.focused">
+            <alias ref="button.normal"/>
+            <alias ref="button.hoverframe"/>
+        </composed>
+        <composed name="button.pressed">
+            <alias ref="button.pressedback"/>
+            <alias ref="button.hoverframe"/>
+        </composed>
+        <alias name="button.armed" ref="button.pressed"/>
+        
+        <area name="togglebutton.inactive.normal" border="5" xywh="0,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="togglebutton.inactive.hover" border="5" xywh="20,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="togglebutton.inactive.pressed" border="5" xywh="40,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="togglebutton.active.normal" border="5" xywh="60,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="togglebutton.active.hover" border="5" xywh="80,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <area name="togglebutton.active.pressed" border="5" xywh="100,0,20,20" splitx="L5,R5" splity="T5,B5"/>
+        <alias name="togglebutton.inactive.armed" ref="togglebutton.inactive.pressed"/>
+        <alias name="togglebutton.active.armed" ref="togglebutton.active.pressed"/>
+        <alias name="togglebutton.inactive.focused" ref="togglebutton.inactive.hover"/>
+        <alias name="togglebutton.active.focused" ref="togglebutton.active.hover"/>
+
+        <area name="scrollbar.upbutton.normal" xywh="160,0,30,28"/>
+        <area name="scrollbar.upbutton.hover" xywh="190,0,30,28"/>
+        <area name="scrollbar.upbutton.pressed" xywh="220,0,30,28"/>
+        <area name="scrollbar.downbutton.normal" xywh="160,62,30,28"/>
+        <area name="scrollbar.downbutton.hover" xywh="190,62,30,28"/>
+        <area name="scrollbar.downbutton.pressed" xywh="220,62,30,28"/>
+        <area name="scrollbar.thumb.normal" xywh="220,90,30,15"/>
+        <area name="scrollbar.thumb.hover" xywh="220,105,30,15"/>
+        <area name="scrollbar.thumb.pressed" xywh="220,120,30,15"/>
+        <area name="scrollbar.background" splity="32,58" xywh="160,0,30,90"/>
+        <alias name="scrollbar.upbutton.armed" ref="scrollbar.upbutton.pressed"/>
+        <alias name="scrollbar.downbutton.armed" ref="scrollbar.downbutton.pressed"/>
+        <alias name="scrollbar.thumb.armed" ref="scrollbar.thumb.pressed"/>
+        <alias name="scrollbar.upbutton.focused" ref="scrollbar.upbutton.hover"/>
+        <alias name="scrollbar.downbutton.focused" ref="scrollbar.downbutton.hover"/>
+        <alias name="scrollbar.thumb.focused" ref="scrollbar.thumb.hover"/>
+        
+        <area name="pausebutton.inactive.normal" xywh="0,100,30,30"/>
+        <area name="pausebutton.inactive.hover" xywh="30,100,30,30"/>
+        <area name="pausebutton.inactive.pressed" xywh="60,100,30,30"/>
+        <area name="pausebutton.active.normal" xywh="0,20,30,30"/>
+        <area name="pausebutton.active.hover" xywh="30,20,30,30"/>
+        <area name="pausebutton.active.pressed" xywh="60,20,30,30"/>
+                
+        <area name="clock" xywh="1,131,48,48"/>
+        <alias name="loadingicon" ref="clock"/>
+        
+        <area name="pathbutton.hover" splitx="12,16" xywh="120,0,30,10"/>
+        <area name="pathbutton.pressed" splitx="12,16" xywh="120,10,30,10"/>
+        <alias name="pathbutton.armed" ref="pathbutton.pressed"/>
+
+        <grid name="tooltip.background" border="4" weightsX="0,1,0" weightsY="0,1,0">
+            <area xywh="30,50,3,3"/>
+            <area xywh="33,50,24,3"/>
+            <area xywh="57,50,3,3"/>
+            <area xywh="30,55,3,20"/>
+            <area xywh="33,55,24,20"/>
+            <area xywh="57,55,3,20"/>
+            <area xywh="30,77,3,3"/>
+            <area xywh="33,77,24,3"/>
+            <area xywh="57,77,3,3"/>
+        </grid>
+        
+        <area name="box" border="6,10,9,6" splitx="12,16" splity="4,8" xywh="0,80,20,20"/>
+
+        <area name="box.separator" border="0,0,5,0" splitx="8,22" splity="0,0" xywh="120,50,30,5"/>
+        
+        <area name="menubar.background" border="0,8,7,16" xywh="20,80,40,20" splitx="L8,R16"/>
+            
+        <area name="listbox.background" xywh="171,101,48,48"/>
+        <area name="listbox.display.background" border="0" splitx="2,10" splity="2,10" nocenter="true" if="selected" xywh="120,55,12,12"/>
+        <alias name="listbox.display.overlay" ref="none"/>
+        
+        <area name="editfield.cursor" xywh="120,55,2,12"/>
+        <area name="editfield.selection" tint="#80ffffc0" xywh="121,55,1,12"/>
+
+        <area name="checkbox.inactive.normal" splitx="30,30" splity="5,25" nocenter="true" xywh="60,210,30,30"/>
+        <area name="checkbox.inactive.hover" splitx="30,30" splity="5,25" nocenter="true" xywh="90,210,30,30"/>
+        <area name="checkbox.inactive.pressed" splitx="30,30" splity="5,25" nocenter="true" xywh="120,210,30,30"/>
+        <area name="checkbox.checkmark" splitx="30,30" xywh="150,210,30,30"/>
+        <area name="checkbox.checkmark.pressed" splitx="30,30" xywh="90,100,30,30"/>
+        <alias name="checkbox.inactive.focused" ref="checkbox.inactive.hover"/>
+        <composed name="checkbox.inactive.armed">
+            <alias ref="checkbox.inactive.pressed"/>
+            <alias ref="checkbox.checkmark.pressed"/>
+        </composed>
+        <composed name="checkbox.active.normal">
+            <alias ref="checkbox.inactive.normal"/>
+            <alias ref="checkbox.checkmark"/>
+        </composed>
+        <composed name="checkbox.active.hover">
+            <alias ref="checkbox.inactive.hover"/>
+            <alias ref="checkbox.checkmark"/>
+        </composed>
+        <composed name="checkbox.active.focused">
+            <alias ref="checkbox.inactive.focused"/>
+            <alias ref="checkbox.checkmark"/>
+        </composed>
+        <composed name="checkbox.active.pressed">
+            <alias ref="checkbox.inactive.pressed"/>
+            <alias ref="checkbox.checkmark.pressed"/>
+        </composed>
+        <alias name="checkbox.active.armed" ref="checkbox.inactive.pressed"/>
+        
+        <area name="combobox.background" splitx="8,165" xywh="50,150,171,30"/>
+        <area name="combobox.button.normal" xywh="221,150,29,30"/>
+        <area name="combobox.button.hover" xywh="221,210,29,30"/>
+        <area name="combobox.button.pressed" xywh="191,210,29,30"/>
+        <area name="combobox.display.selection" splitx="8,165" xywh="60,180,171,30"/>
+        <alias name="combobox.button.armed" ref="combobox.button.pressed"/>
+        <alias name="combobox.button.focused" ref="combobox.button.hover"/>
+        
+        <area name="valuadjuster.background" border="3" xywh="60,80,20,20" splitx="L3,R3" splity="T3,B3"/>
+        <area name="valuadjuster.hover" border="3" xywh="80,80,20,20" splitx="L3,R3" splity="T3,B3"/>
+        <area name="valuadjuster.pressed" border="3" xywh="100,80,20,20" splitx="L3,R3" splity="T3,B3"/>
+        <area name="valuadjuster.edit.background" xywh="123,20,24,20"/>
+        <alias name="valuadjuster.armed" ref="valuadjuster.pressed"/>
+
+        <select name="valuadjuster.button.background">
+            <alias ref="valuadjuster.pressed" if="armed | pressed"/>
+            <alias ref="valuadjuster.hover" if="hover"/>
+            <alias ref="valuadjuster.background"/>
+        </select>
+
+        <area name="exitbutton.normal" xywh="60,50,15,15"/>
+        <area name="exitbutton.hover" xywh="75,50,15,15"/>
+        <area name="exitbutton.pressed" xywh="60,65,15,15"/>
+        <alias name="exitbutton.armed" ref="exitbutton.pressed"/>
+
+        <area name="missingThumbnail" xywh="0,180,57,76"/>
+
+        <area name="textarea.ul-bullet" inset="-6,0,6,0" xywh="135,95,29,29"/>
+    </images>
+</themes>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<themes>
+
+    <images file="../test/simple.png" format="RGBA">
+        <area name="white" xywh="24,4,1,1"/>
+        <alias name="black" ref="white" tint="#000"/>
+
+        <alias name="-grid.bar" ref="white" tint="#008" sizeOverwriteH="10" sizeOverwriteV="10"/>
+        <alias name="-grid.none" ref="none" sizeOverwriteH="10" sizeOverwriteV="10"/>
+
+        <grid name="-grid.base.cell" weightsX="1,0,1" weightsY="1,0,1">
+            <alias ref="black"/>
+            <alias ref="-grid.bar"/>
+            <alias ref="black"/>
+            <alias ref="-grid.bar"/>
+            <alias ref="-grid.bar"/>
+            <alias ref="-grid.bar"/>
+            <alias ref="black"/>
+            <alias ref="-grid.bar"/>
+            <alias ref="black"/>
+        </grid>
+        <grid name="grid.base" weightsX="1,1,1,1" weightsY="1,1,1,1">
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+            <alias ref="-grid.base.cell"/>
+        </grid>
+
+        <grid name="-grid.mask.cell" weightsX="1,0,1" weightsY="1,0,1">
+            <alias ref="black"/>
+            <alias ref="-grid.none"/>
+            <alias ref="black"/>
+            <alias ref="-grid.none"/>
+            <alias ref="-grid.none"/>
+            <alias ref="-grid.none"/>
+            <alias ref="black"/>
+            <alias ref="-grid.none"/>
+            <alias ref="black"/>
+        </grid>
+        <grid name="grid.mask" weightsX="1,1,1,1" weightsY="1,1,1,1">
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+            <alias ref="-grid.mask.cell"/>
+        </grid>
+    </images>
+
+    <fontDef name="normal" filename="../test/font.fnt" color="white">
+        <fontParam if="error" color="red"/>
+        <fontParam if="disabled" color="gray"/>
+        <fontParam if="textSelection" color="blue"/>
+    </fontDef>
+
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
+    </theme>
+
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="border"><border>5</border></param>
+        <param name="fadeInTime"><int>0</int></param>
+        <theme name="label" ref="-defaults">
+            <param name="font"><font>normal</font></param>
+        </theme>
+    </theme>
+
+    <theme name="backgroundtest" ref="-defaults">
+        <param name="grid"><image>grid.*</image></param>
+
+        <theme name="fpscounter" ref="-defaults">
+            <param name="tooltip"><string>Current FPS</string></param>
+        </theme>
+        <theme name="label" ref="-defaults"/>
+    </theme>
+</themes>

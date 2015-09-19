@@ -1,0 +1,46 @@
+body {
+    font-family: default;
+    color: black;
+    padding: 5px
+}
+
+a {
+    font-family: link;
+    color: blue
+}
+
+p {
+    margin-bottom: 1em;
+    margin-left: 5px;
+    margin-right: 5px;
+    text-align: justify;
+}
+
+ul {
+    margin-bottom: 1em;
+}
+
+ol > li {
+    padding-left: 5px;
+}
+
+div div {
+    font-family: big
+}
+
+#portrait {
+    text-align: left;
+    margin-bottom: 1em;
+    border: none;
+}
+
+h1 {
+    margin-top: 0.5em;
+    font-family: big;
+}
+
+pre { font-family: code; color: #000000 }
+.ST0 { font-family: codeBold; color: #404040 }
+.comment { font-family: code; color: #404040 }
+.character { font-family: code; color: #ce7b00 }
+.keyword-directive { font-family: code; color: #0000e6 }

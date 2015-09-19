@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<themes>
+
+    <images file="../test/chaos_sphere_blue_800x600.png" format="RGB" filter="linear">
+        <area name="background-image" xywh="0,0,800,600"/>
+    </images>
+
+    <include filename="../test/cursors.xml"/>
+
+    <fontDef name="normal" filename="../test/font.fnt" color="white"/>
+    <fontDef name="result" filename="../textarea/bigfont.fnt" color="yellow"/>
+
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="inputMap"><inputMapDef/></param>
+    </theme>
+
+    <!-- no tooltips used -->
+    <theme name="tooltipwindow" ref="-defaults"/>
+
+    <theme name="actiondemo" ref="-defaults">
+        <param name="background"><image>background-image</image></param>
+
+        <param name="inputMap"><inputMapDef>
+            <action name="left">A</action>
+            <action name="back">S</action>
+            <action name="right">D</action>
+            <action name="forward">W</action>
+            <action name="load">ctrl O</action>
+            <action name="save">ctrl S</action>
+        </inputMapDef></param>
+        
+        <theme name="fpscounter" ref="-defaults">
+            <param name="tooltip"><string>Current FPS</string></param>
+        </theme>
+
+        <theme name="instructions" ref="-defaults">
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+        </theme>
+
+        <theme name="result" ref="-defaults">
+            <param name="font"><font>result</font></param>
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+        </theme>
+    </theme>
+</themes>

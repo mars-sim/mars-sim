@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @version 3.07 2015-01-06
+ * @version 3.07 2015-09-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -41,6 +43,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -54,6 +60,12 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
+import de.matthiasmann.twl.GUI;
+import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
+import de.matthiasmann.twl.theme.ThemeManager;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.InventoryDemo;
+import test.TestUtils;
+
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing
@@ -66,7 +78,7 @@ implements Serializable, MouseListener {
 	private static final long serialVersionUID = 1L;
 
 	//private static final int CENTER = 0;
-
+	private static Logger logger = Logger.getLogger(BuildingPanelFarming.class.getName());
 	// Data members
 	/** The farming building. */
 	private Farming farm;
@@ -94,6 +106,7 @@ implements Serializable, MouseListener {
 	private JComboBoxMW<CropType> comboBox;
 	private List<CropType> cropCache;
 	private JList<CropType> list;
+	private JButton slotButton;
 
 	//private String cropInQueue;
 	private ListModel listModel;
@@ -127,7 +140,7 @@ implements Serializable, MouseListener {
 	public void init() {
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -154,6 +167,27 @@ implements Serializable, MouseListener {
 		radCache = farm.getFarmerNum();
 		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
 		labelPanel.add(radLabel);
+
+		// 2015-09-19 Added slotButtonPanel and slotButton
+		JPanel slotButtonPanel = new JPanel(new FlowLayout());
+		labelPanel.add(slotButtonPanel);
+        slotButton = new JButton("Ops Panel");
+        //slotButton.setOpaque(false);
+        //slotButton.setBackground(new Color(51,25,0,128));
+        //slotButton.setForeground(Color.ORANGE);
+        //slotButton.setEnabled(processComboBox.getItemCount() > 0);
+        slotButton.setToolTipText("Click to enter the greenhouse ops panel");
+        slotButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+        		//try {
+        			openGreenhouseOps();
+        		//}
+        		//catch (Exception e) {
+        		//	logger.log(Level.SEVERE, "new slot button", e);
+        		//}
+        	}
+        });
+        slotButtonPanel.add(slotButton);
 
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
@@ -232,6 +266,7 @@ implements Serializable, MouseListener {
 		setTableStyle(cropTable);
 
 		scrollPanel.setViewportView(cropTable);
+
 
 		JPanel queuePanel = new JPanel(new BorderLayout());
 	    add(queuePanel, BorderLayout.SOUTH);
@@ -372,8 +407,45 @@ implements Serializable, MouseListener {
 		list.setBackground(new Color(0, 0, 0, 50));
 
 	}
+	/*
+	 * Creates a TWL display window for greenhouse operations
+	 */
+	// 2015-09-19 openGrowingArea()()
+    public void openGreenhouseOps() {
+        try {
+            Display.setDisplayMode(new DisplayMode(800, 600));
+            Display.create();
+            Display.setTitle("Greenhouse Operations Panel");
+            Display.setVSyncEnabled(true);
 
+            Mouse.setClipMouseCoordinatesToWindow(false);
 
+            InventoryDemo ops = new InventoryDemo();
+
+            LWJGLRenderer renderer = new LWJGLRenderer();
+            GUI gui = new GUI(ops, renderer);
+
+            ThemeManager theme = ThemeManager.createThemeManager(
+                    InventoryDemo.class.getResource("/twl/inventory/inventory.xml"), renderer);
+            gui.applyTheme(theme);
+
+            gui.validateLayout();
+            ops.positionFrame();
+
+            while(!Display.isCloseRequested() && !ops.quit) {
+                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+                gui.update();
+                Display.update();
+            }
+
+            gui.destroy();
+            theme.destroy();
+        } catch (Exception ex) {
+            TestUtils.showErrMsg(ex);
+        }
+        Display.destroy();
+    }
 
 	/**
 	 * Sets the style for the table

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<themes>
+
+    <images file="../chat/chat.png" format="RGBA" filter="linear">
+        <area name="tooltip.background" border="3" xywh="1,24,7,7" splitx="L3,R3" splity="T3,B3"/>
+        <grid name="frame.background" weightsX="0,1,0" weightsY="0,1,0" border="20,4,4,4" tint="#DFFF">
+            <area xywh="1,1,2,17"/>
+            <area xywh="4,1,1,17"/>
+            <area xywh="13,1,2,17"/>
+            <area xywh="1,19,2,1"/>
+            <area xywh="4,19,1,1"/>
+            <area xywh="13,19,2,1"/>
+            <area xywh="1,21,2,2"/>
+            <area xywh="4,21,1,2"/>
+            <area xywh="13,21,2,2"/>
+        </grid>
+        <select name="vscrollbar.upbutton.background" center="true">
+            <area tint="#FF0000" if="pressed" xywh="16,7,7,4"/>
+            <area tint="#5A5A5A" if="hover" xywh="16,7,7,4"/>
+            <area tint="#000000" xywh="16,7,7,4"/>
+        </select>
+        <select name="vscrollbar.downbutton.background" center="true">
+            <area tint="#FF0000" if="pressed" xywh="16,12,7,4"/>
+            <area tint="#5A5A5A" if="hover" xywh="16,12,7,4"/>
+            <area tint="#000000" xywh="16,12,7,4"/>
+        </select>
+        <select name="vscrollbar.thumb.background">
+            <area splity="4,5" tint="#FF0000" if="pressed" xywh="16,17,7,10"/>
+            <area splity="4,5" tint="#5A5A5A" if="hover" xywh="16,17,7,10"/>
+            <area splity="4,5" tint="#000000" xywh="16,17,7,10"/>
+        </select>
+        <area name="smiley" center="true" xywh="24,1,14,14"/>
+        <area name="innerframe.background" xywh="17,1,5,5" splitx="2,3" splity="2,3" border="2"/>
+
+        <area name="-editfield.cursor" xywh="1,1,1,1"/>
+        <animation name="editfield.cursor" timeSource="keyboardFocus">
+            <frame ref="-editfield.cursor" duration="500"/>
+            <frame ref="none" duration="500"/>
+        </animation>
+        <area name="editfield.selection" tint="#E000FEFF" xywh="1,1,1,1"/>
+        <area name="evilframe.background" border="19,5,5,5" xywh="40,1,20,29" splitx="L5,R5" splity="T19,B5"/>
+
+        <composed name="valueadjuster.background" border="2">
+            <area tint="#cccc" xywh="1,1,1,1"/>
+            <alias ref="innerframe.background"/>
+        </composed>
+    </images>
+
+    <images file="../test/chaos_sphere_blue_800x600.png" filter="linear">
+        <area name="background-image" xywh="*"/>
+    </images>
+
+    <images file="../test/simple.png" format="RGBA">
+        <area name="textarea.ul-bullet" center="true" sizeOverwriteH="20" inset="3,0,-3,0" xywh="80,0,9,9"/>
+    </images>
+
+    <images file="image.png">
+        <area name="image.png" xywh="*"/>
+    </images>
+    
+    <include filename="../test/cursors.xml"/>
+
+    <fontDef name="normal" filename="../test/font.fnt">
+        <fontParam if="error" color="red"/>
+        <fontParam if="disabled" color="gray"/>
+        <fontParam if="textSelection" color="blue"/>
+    </fontDef>
+    <fontDef name="black" filename="../test/font.fnt" color="black"/>
+    
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
+    </theme>
+
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="background"><image>tooltip.background</image></param>
+        <param name="border"><border>5</border></param>
+        <param name="fadeInTime"><int>0</int></param>
+        <theme name="label" ref="-defaults">
+            <param name="font"><font>black</font></param>
+        </theme>
+    </theme>
+
+    <theme name="resizableframe" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>frame.background</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="titleAreaTop"><int>1</int></param>
+        <param name="titleAreaLeft"><int>8</int></param>
+        <param name="titleAreaRight"><int>-8</int></param>
+        <param name="titleAreaBottom"><int>15</int></param>
+        <param name="hasCloseButton"><bool>false</bool></param>
+        <param name="closeButtonX"><int>0</int></param>
+        <param name="closeButtonY"><int>0</int></param>
+        <param name="hasResizeHandle"><bool>false</bool></param>
+        <param name="resizeHandleX"><int>0</int></param>
+        <param name="resizeHandleY"><int>0</int></param>
+        <param name="fadeColorInactive"><color>white</color></param>
+        <param name="fadeDurationActivate"><int>0</int></param>
+        <param name="fadeDurationDeactivate"><int>0</int></param>
+        <param name="fadeDurationShow"><int>0</int></param>
+        <param name="fadeDurationHide"><int>0</int></param>
+        <param name="mouseCursor"><cursor>arrow.*</cursor></param>
+        <theme name="title" ref="-defaults">
+            <param name="textAlignment"><enum type="alignment">left</enum></param>
+            <param name="font"><font>black</font></param>
+        </theme>
+        <theme name="closeButton" ref="-defaults"/>
+        <theme name="resizeHandle" ref="-defaults"/>
+    </theme>
+
+    <theme name="vscrollbar" ref="-defaults" allowWildcard="true">
+        <theme name="upbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.upbutton.*</image></param>
+            <param name="minHeight"><int>9</int></param>
+        </theme>
+        <theme name="downbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.downbutton.*</image></param>
+            <param name="minHeight"><int>9</int></param>
+        </theme>
+        <theme name="thumb" ref="-defaults">
+            <param name=""><image>vscrollbar.thumb.*</image></param>
+        </theme>
+        <param name="scaleThumb"><bool>true</bool></param>
+        <param name="minWidth"><int>9</int></param>
+        <param name="minHeight"><int>48</int></param>
+    </theme>
+
+    <theme name="hscrollbar" ref="-defaults" allowWildcard="true">
+        <!-- dummy -->
+        <theme name="leftbutton" ref="-defaults"/>
+        <theme name="rightbutton" ref="-defaults"/>
+        <theme name="thumb" ref="-defaults"/>
+        <param name="scaleThumb"><bool>false</bool></param>
+    </theme>
+
+    <theme name="scrollpane" ref="-defaults" allowWildcard="true">
+        <theme name="hscrollbar" ref="hscrollbar"/>  <!-- not used -->
+        <theme name="vscrollbar" ref="vscrollbar"/>
+        <param name="minWidth"><int>100</int></param>
+        <param name="minHeight"><int>100</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="maxHeight"><int>32767</int></param>
+        <param name="hasDragButton"><bool>false</bool></param>
+        <param name="autoScrollArea"><int>5</int></param>
+        <param name="autoScrollSpeed"><int>10</int></param>
+        <param name="scrollbarsAlwaysVisible"><bool>false</bool></param>
+    </theme>
+
+    <theme name="editfield" ref="-defaults" allowWildcard="true">
+        <param name=""><image>editfield.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="mouseCursor"><cursor>cursor.text</cursor></param>
+        <param name="passwordChar"><int>0x25CF</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="columns"><int>5</int></param>
+        <theme name="renderer" ref="-defaults"/>
+        <param name="autocompletion-height"><int>150</int></param>
+    </theme>
+
+    <theme name="valueadjuster" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>none</image></param>
+        <theme name="decButton" ref="-defaults">
+            <param name="background"><image>valueadjuster.background</image></param>
+            <param name="border"><border>background.border</border></param>
+            <param name="text"><string>-</string></param>
+            <param name="border"><border>0</border></param>
+            <param name="minWidth"><int>16</int></param>
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+            <param name="font"><font>black</font></param>
+        </theme>
+        <theme name="incButton" ref="-defaults">
+            <param name="background"><image>valueadjuster.background</image></param>
+            <param name="border"><border>background.border</border></param>
+            <param name="text"><string>+</string></param>
+            <param name="border"><border>0</border></param>
+            <param name="minWidth"><int>16</int></param>
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+            <param name="font"><font>black</font></param>
+        </theme>
+        <theme name="valueDisplay" ref="-defaults">
+            <param name="background"><image>valueadjuster.background</image></param>
+            <param name="border"><border>background.border</border></param>
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+            <param name="font"><font>black</font></param>
+        </theme>
+        <theme name="valueEdit" ref="editfield">
+            <param name="background"><image>valueadjuster.background</image></param>
+            <param name="border"><border>background.border</border></param>
+        </theme>
+        <param name="width"><int>100</int></param>
+        <param name="useMouseWheel"><bool>false</bool></param>
+        <param name="displayPrefix"><string/></param>
+    </theme>
+
+    <theme name="textareademo" ref="-defaults">
+        <param name="background"><image>background-image</image></param>
+
+        <theme name="fpscounter" ref="-defaults">
+            <param name="tooltip"><string>Current FPS</string></param>
+        </theme>
+
+        <theme name="textframe" ref="resizableframe">
+            <theme name="scrollpane" ref="scrollpane">
+                <param name="background"><image>innerframe.background</image></param>
+                <param name="border"><border>background.border</border></param>
+
+                <theme name="textarea" ref="-defaults">
+                    <param name="fonts"><map>
+                        <param name="default"><fontDef filename="../test/font.fnt"/></param>
+                        <param name="link"><fontDef filename="../test/font.fnt" underlineOffset="1">
+                            <fontParam if="hover" underline="true"/>
+                        </fontDef></param>
+                        <param name="big"><fontDef filename="bigfont.fnt"/></param>
+                        <param name="code"><fontDef filename="code.fnt"/></param>
+                        <param name="codeBold"><fontDef filename="codeBold.fnt"/></param>
+                    </map></param>
+                    <param name="images"><map>
+                        <param name="frame"><image>evilframe.background</image></param>
+                        <param name="smiley"><image>smiley</image></param>
+                        <param name="ul-bullet"><image>textarea.ul-bullet</image></param>
+                        <param name="image.png"><image>image.png</image></param>
+                    </map></param>
+                    <param name="mouseCursor.link"><cursor>cursor.finger</cursor></param>
+                    <theme name="" ref="*"/>
+                </theme>
+            </theme>
+        </theme>
+    </theme>
+</themes>

@@ -202,7 +202,7 @@
 	<resource name="paper" phase="solid" />
 	<resource name="napkin" phase="solid" />
 	<resource name="toilet tissue" phase="solid" />
-	<resource name="bleaching chemical" phase="solid">Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
+	<resource name="bleaching chemical" phase="liquid">Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
 
 
 <!-- Mineral concentrations. -->

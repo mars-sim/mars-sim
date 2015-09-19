@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<themes>
+
+    <images file="../chat/chat.png" format="RGBA" filter="linear">
+        <area name="tooltip.background" border="3" xywh="1,24,7,7" splitx="L3,R3" splity="T3,B3"/>
+        <select name="vscrollbar.upbutton.background" center="true">
+            <area tint="#FF0000" if="pressed" xywh="16,7,7,4"/>
+            <area tint="#5A5A5A" xywh="16,7,7,4"/>
+        </select>
+        <select name="vscrollbar.downbutton.background" center="true">
+            <area tint="#FF0000" if="pressed" xywh="16,12,7,4"/>
+            <area tint="#5A5A5A" xywh="16,12,7,4"/>
+        </select>
+        <select name="vscrollbar.thumb.background">
+            <area splity="4,5" tint="#FF0000" if="pressed" xywh="16,17,7,10"/>
+            <area splity="4,5" tint="#5A5A5A" xywh="16,17,7,10"/>
+        </select>
+        <area name="innerframe.background" splitx="2,3" splity="2,3" border="2" xywh="17,1,5,5"/>
+        
+        <gradient name="white" type="horizontal" wrap="scale">
+            <stop color="white" pos="0"/>
+        </gradient>
+        
+        <animation name="anim" timeSource="now" sizeOverwriteH="12"  sizeOverwriteV="12">
+            <frame ref="white" tint="red" duration="500"/>
+            <frame ref="white" tint="blue" duration="500"/>
+        </animation>
+    </images>
+
+    <images file="../test/chaos_sphere_blue_800x600.png" format="RGB" filter="linear">
+        <area name="background-image" xywh="0,0,800,600"/>
+        
+        <composed name="background-anim">
+            <alias ref="background-image"/>
+            <grid weightsX="1,0" weightsY="0,1">
+                <alias ref="none"/>
+                <alias ref="anim"/>
+                <alias ref="none"/>
+                <alias ref="none"/>
+            </grid>
+        </composed>
+    </images>
+
+    <fontDef name="normal" filename="../textarea/code.fnt" color="white"/>
+    <fontDef name="black" filename="../textarea/code.fnt" color="black"/>
+
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
+    </theme>
+
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="background"><image>tooltip.background</image></param>
+        <param name="border"><border>5</border></param>
+        <param name="fadeInTime"><int>0</int></param>
+        <theme name="label" ref="-defaults">
+            <param name="font"><font>black</font></param>
+        </theme>
+    </theme>
+
+    <theme name="vscrollbar" ref="-defaults" allowWildcard="true">
+        <theme name="upbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.upbutton.*</image></param>
+            <param name="minHeight"><int>9</int></param>
+        </theme>
+        <theme name="downbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.downbutton.*</image></param>
+            <param name="minHeight"><int>9</int></param>
+        </theme>
+        <theme name="thumb" ref="-defaults">
+            <param name=""><image>vscrollbar.thumb.*</image></param>
+        </theme>
+        <param name="scaleThumb"><bool>true</bool></param>
+        <param name="minWidth"><int>9</int></param>
+        <param name="minHeight"><int>48</int></param>
+    </theme>
+
+    <theme name="hscrollbar" ref="-defaults">
+        <!-- dummy -->
+        <theme name="leftbutton" ref="-defaults"/>
+        <theme name="rightbutton" ref="-defaults"/>
+        <theme name="thumb" ref="-defaults"/>
+        <param name="scaleThumb"><bool>false</bool></param>
+    </theme>
+
+    <theme name="scrollpane" ref="-defaults">
+        <theme name="hscrollbar" ref="hscrollbar"/>  <!-- not used -->
+        <theme name="vscrollbar" ref="vscrollbar"/>
+        <param name="minWidth"><int>100</int></param>
+        <param name="minHeight"><int>100</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="maxHeight"><int>32767</int></param>
+        <param name="hasDragButton"><bool>false</bool></param>
+        <param name="autoScrollArea"><int>5</int></param>
+        <param name="autoScrollSpeed"><int>10</int></param>
+        <param name="scrollbarsAlwaysVisible"><bool>true</bool></param>
+    </theme>
+
+    <theme name="listkeyevents" ref="-defaults">
+        <param name="background"><image>background-anim</image></param>
+            
+        <theme name="scrollpane"  ref="scrollpane">
+            <param name="background"><image>innerframe.background</image></param>
+            <param name="border"><border>background.border</border></param>
+
+            <theme name="textarea" ref="-defaults">
+                <param name="fonts"><map>
+                    <param name="default"><font>normal</font></param>
+                </map></param>
+                <param name="images"><map/></param>
+                <param name="classes"><map/></param>
+                <theme name="image" ref="-defaults"/>
+            </theme>
+        </theme>
+    </theme>
+    
+</themes>

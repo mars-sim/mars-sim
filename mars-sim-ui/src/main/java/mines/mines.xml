@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<themes>
+
+    <images file="mines.png" format="RGBA" filter="linear">
+        <area name="img.closed" xywh="0,0,20,20"/>
+        <area name="img.flag" xywh="20,0,20,20"/>
+        <area name="img.wrongFlag" xywh="40,0,20,20"/>
+        <area name="img.number.0" xywh="60,0,20,20"/>
+        <area name="img.number.1" xywh="80,0,20,20"/>
+        <area name="img.number.2" xywh="100,0,20,20"/>
+        <area name="img.number.3" xywh="120,0,20,20"/>
+        <area name="img.number.4" xywh="140,0,20,20"/>
+        <area name="img.number.5" xywh="160,0,20,20"/>
+        <area name="img.number.6" xywh="180,0,20,20"/>
+        <area name="img.number.7" xywh="200,0,20,20"/>
+        <area name="img.number.8" xywh="220,0,20,20"/>
+        <area name="img.mine" xywh="240,0,20,20"/>
+        <area name="img.boom" xywh="260,0,20,20"/>
+    </images>
+
+    <images file="mines2.png" format="RGBA" filter="linear">
+        <area name="img2.closed" xywh="0,0,25,25"/>
+        <area name="img2.flag" xywh="25,0,25,25"/>
+        <area name="img2.wrongFlag" xywh="50,0,25,25"/>
+        <area name="img2.number.0" xywh="75,0,25,25"/>
+        <area name="img2.number.1" xywh="100,0,25,25"/>
+        <area name="img2.number.2" xywh="125,0,25,25"/>
+        <area name="img2.number.3" xywh="150,0,25,25"/>
+        <area name="img2.number.4" xywh="175,0,25,25"/>
+        <area name="img2.number.5" xywh="200,0,25,25"/>
+        <area name="img2.number.6" xywh="225,0,25,25"/>
+        <area name="img2.number.7" xywh="250,0,25,25"/>
+        <area name="img2.number.8" xywh="275,0,25,25"/>
+        <area name="img2.mine" xywh="300,0,25,25"/>
+        <area name="img2.boom" xywh="325,0,25,25"/>
+    </images>
+    
+    <images file="../test/simple.png" format="COLOR">
+        <area name="-borderA" border="3" xywh="0,0,9,9" splitx="L3,R3" splity="T3,B3"/>
+        <area name="-borderB" border="3" xywh="10,0,9,9" splitx="L3,R3" splity="T3,B3"/>
+        <area name="-borderC" border="3" xywh="20,0,9,9" splitx="L3,R3" splity="T3,B3"/>
+        <area name="-borderD" border="3" xywh="30,0,9,9" splitx="L3,R3" splity="T3,B3"/>
+        <area name="-borderE" border="3" xywh="40,0,9,9" splitx="L3,R3" splity="T3,B3"/>
+        <area name="-iconA" xywh="0,10,9,6"/>
+        <area name="-iconD" xywh="0,25,9,6"/>
+        <area name="-gradC" xywh="25,21,1,1"/>
+        <area name="-selH" repeatX="true" tiled="true" xywh="26,10,8,1"/>
+        <area name="-selV" repeatY="true" tiled="true" xywh="26,10,1,8"/>
+        
+        <composed name="--selection">
+            <grid weightsX="1" weightsY="0,1,0">
+                <alias ref="-selH"/>
+                <alias ref="none"/>
+                <alias ref="-selH"/>
+            </grid>
+            <grid weightsX="0,1,0" weightsY="1">
+                <alias ref="-selV"/>
+                <alias ref="none"/>
+                <alias ref="-selV"/>
+            </grid>
+        </composed>
+        
+        <select name="button.background" border="6,3">
+            <alias ref="-borderB" if="disabled" tint="#8fff"/>
+            <alias ref="-borderE" if="armed"/>
+            <alias ref="-borderB"/>
+        </select>
+        
+        <select name="editfield.background">
+            <alias ref="-borderE" if="readonly"/>
+            <alias ref="-borderC"/>
+        </select>
+        <area name="-editfield.cursor" xywh="24,10,1,1"/>
+        <animation name="editfield.cursor" timeSource="keyboardFocus">
+            <frame ref="-editfield.cursor" duration="500"/>
+            <frame ref="none" duration="500"/>
+        </animation>
+        <alias name="editfield.selection" ref="-gradC"/>
+        
+        <composed name="columnHeader.background" inset="-3,0">
+            <alias ref="-borderB"/>
+            <grid weightsX="1,0" weightsY="1">
+                <alias ref="none"/>
+                <select center="true" inset="0,0,0,3">
+                    <alias ref="-iconD" if="sortAscending"/>
+                    <alias ref="-iconA" if="sortDescending"/>
+                </select>
+            </grid>
+        </composed>
+
+        <alias name="table.row.background" ref="-gradC" if="rowSelected"/>
+        <alias name="table.row.overlay" ref="--selection" inset="1" if="keyboardFocus + !hasFocusedChild + leadRow"/>
+        <alias name="table.row.dropmarker" ref="-gradC"/>
+        
+        <alias name="-icon.upbutton" ref="-iconD" inset="5,3,5,4"/>
+        <alias name="-icon.downbutton" ref="-iconA" inset="5,3,5,4"/>
+
+        <select name="scrollbar.thumb.background">
+            <alias ref="-borderB" if="disabled" tint="#8fff"/>
+            <alias ref="-borderE" if="armed | pressed"/>
+            <alias ref="-borderB"/>
+        </select>
+        <area name="scrollbar.background" tiled="true" xywh="12,24,16,16"/>
+
+        <select name="vscrollbar.upbutton.background">
+            <composed if="armed">
+                <alias ref="-borderD"/>
+                <alias ref="-icon.upbutton" inset="1,1,-1,-1"/>
+            </composed>
+            <composed>
+                <alias ref="-borderA"/>
+                <alias ref="-icon.upbutton"/>
+            </composed>
+        </select>
+        <select name="vscrollbar.downbutton.background">
+            <composed if="armed">
+                <alias ref="-borderD"/>
+                <alias ref="-icon.downbutton" inset="1,1,-1,-1"/>
+            </composed>
+            <composed>
+                <alias ref="-borderA"/>
+                <alias ref="-icon.downbutton"/>
+            </composed>
+        </select>
+    </images>
+    
+    <images file="../test/chaos_sphere_blue_800x600.png" format="RGB" filter="linear">
+        <area name="background-image" xywh="0,0,800,600"/>
+    </images>
+
+    <include filename="../test/cursors.xml"/>
+
+    <fontDef name="normal" filename="../test/font.fnt" color="black">
+        <fontParam if="error" color="red"/>
+        <fontParam if="disabled" color="gray"/>
+        <fontParam if="textSelection" color="blue"/>
+    </fontDef>
+    <fontDef name="button" filename="../test/font.fnt" color="black">
+        <fontParam offsetX="1" offsetY="1" if="armed"/>
+    </fontDef>
+    <fontDef name="white" filename="../test/font.fnt" color="white"/>
+    <fontDef name="big" filename="../textarea/bigfont.fnt" color="black"/>
+
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
+    </theme>
+
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="fadeInTime"><int>0</int></param>
+    </theme>
+    
+    <theme name="button" ref="-defaults">
+        <param name=""><image>button.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="textAlignment"><enum type="alignment">center</enum></param>
+        <param name="font"><font>button</font></param>
+    </theme>
+    
+    <theme name="editfield" ref="-defaults">
+        <param name=""><image>editfield.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="passwordChar"><int>0x25CF</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="columns"><int>5</int></param>
+        <theme name="renderer" ref="-defaults"/>
+        <param name="mouseCursor"><cursor>cursor.text</cursor></param>
+        <param name="autocompletion-height"><int>150</int></param>
+    </theme>
+    
+    <theme name="simpledialog" ref="-defaults">
+        <param name="background"><image>-borderA</image></param>
+        <param name="border"><border>5</border></param>
+        <param name="spacing"><int>15</int></param>
+        <param name="alignment"><enum type="alignment">center</enum></param>
+        <theme name="" ref="*"/>
+        <theme name="content" ref="-defaults">
+            <theme name="" ref="*"/>
+            <param name="background"><image>none</image></param>
+            <param name="overlay"><image>none</image></param>
+            <param name="smallGap"><dimension>3,3</dimension></param>
+            <param name="mediumGap"><dimension>5,5</dimension></param>
+            <param name="largeGap"><dimension>7,7</dimension></param>
+            <param name="defaultGap"><dimension>5,5</dimension></param>
+            <param name="namedGaps"><map>
+                    <param name="title-buttons"><gap>20</gap></param>
+                    <param name="title-msg"><gap>10</gap></param>
+                    <param name="top-msg"><gap>0</gap></param>
+                    <param name="msg-buttons"><gap>20</gap></param>
+                    <param name="left-msg"><gap>0</gap></param>
+                    <param name="msg-right"><gap>0,0,32767</gap></param>
+
+                    <param name="left-btnOk"><gap>0,0,32767</gap></param>
+                    <param name="btnOk-btnCancel"><gap>20</gap></param>
+                    <param name="btnCancel-right"><gap>0</gap></param>
+            </map></param>
+            <theme name="title" ref="-defaults">
+                <param name="font"><font>big</font></param>
+                <param name="textAlignment"><enum type="alignment">center</enum></param>
+            </theme>
+            <theme name="btnOk" ref="button"/>
+            <theme name="btnCancel" ref="button"/>
+        </theme>
+    </theme>
+    
+    <theme name="enterNameDialog" ref="simpledialog">
+        <theme name="content" merge="true">
+            <theme name="nameEditField" ref="editfield">
+                <param name="columns"><int>32</int></param>
+            </theme>
+        </theme>
+    </theme>
+    
+    <theme name="vscrollbar" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>scrollbar.background</image></param>
+        <theme name="upbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.upbutton.*</image></param>
+            <param name="minHeight"><int>16</int></param>
+        </theme>
+        <theme name="downbutton" ref="-defaults">
+            <param name=""><image>vscrollbar.downbutton.*</image></param>
+            <param name="minHeight"><int>16</int></param>
+        </theme>
+        <theme name="thumb" ref="-defaults">
+            <param name=""><image>scrollbar.thumb.*</image></param>
+        </theme>
+        <param name="scaleThumb"><bool>true</bool></param>
+        <param name="minWidth"><int>16</int></param>
+        <param name="minHeight"><int>48</int></param>
+    </theme>
+
+    <theme name="highscoreDialog" ref="simpledialog">
+        <theme name="content" merge="true">
+            <theme name="scrollpane" ref="-defaults">
+                <theme name="hscrollbar" ref="-defaults">
+                    <theme name="leftbutton" ref="-defaults"/>
+                    <theme name="rightbutton" ref="-defaults"/>
+                    <theme name="thumb" ref="-defaults"/>
+                    <param name="scaleThumb"><bool>true</bool></param>
+                </theme>
+                <theme name="vscrollbar" ref="vscrollbar"/>
+                <param name="minWidth"><int>100</int></param>
+                <param name="minHeight"><int>100</int></param>
+                <param name="maxWidth"><int>32767</int></param>
+                <param name="maxHeight"><int>400</int></param>
+                <param name="hasDragButton"><bool>false</bool></param>
+                <param name="autoScrollArea"><int>5</int></param>
+                <param name="autoScrollSpeed"><int>10</int></param>
+                <param name="scrollbarsAlwaysVisible"><bool>false</bool></param>
+                
+                <theme name="resultTable" ref="-defaults">
+                    <param name="rowHeight"><int>font.lineHeight + 6</int></param>
+                    <theme name="stringcellrenderer" ref="-defaults">
+                        <param name="border"><border>0,3,0,0</border></param>
+                    </theme>
+                    <theme name="columnHeader" ref="button">
+                        <param name=""><image>columnHeader.*</image></param>
+                    </theme>
+                    <param name="columnHeaderWidth"><int>256</int></param>
+                    <param name="columnHeaderHeight"><int>20</int></param>
+                    <param name="columnDividerDragableDistance"><int>3</int></param>
+                    <param name="columnResizeCursor"><cursor>cursor.resizecolumn</cursor></param>
+                    <param name="columnDivider"><image>none</image></param>
+                    <param name="columnWidths"><map>
+                        <param name="0"><int>font.EM * 8</int></param>
+                        <param name="2"><int>font.EM * 4</int></param>
+                    </map></param>
+                    <param name="ensureColumnHeaderMinWidth"><bool>true</bool></param>
+                    <param name="row"><image>table.row.*</image></param>
+                    <param name="inputMap"><inputMapDef ref="-defaultInputMap">
+                        <action name="toggleSelectionOnLeadRow">ctrl SPACE</action>
+                        <action name="selectNextRow">DOWN</action>
+                        <action name="selectPreviousRow">UP</action>
+                        <action name="selectNextPage">NEXT</action>
+                        <action name="selectPreviousPage">PRIOR</action>
+                        <action name="selectFirstRow">HOME</action>
+                        <action name="selectLastRow">END</action>
+                        <action name="extendSelectionToNextRow">shift DOWN</action>
+                        <action name="extendSelectionToPreviousRow">shift UP</action>
+                        <action name="extendSelectionToNextPage">shift NEXT</action>
+                        <action name="extendSelectionToPreviousPage">shift PRIOR</action>
+                        <action name="extendSelectionToFirstRow">shift HOME</action>
+                        <action name="extendSelectionToLastRow">shift END</action>
+                        <action name="moveLeadToNextRow">ctrl DOWN</action>
+                        <action name="moveLeadToPreviousRow">ctrl UP</action>
+                        <action name="moveLeadToNextPage">ctrl NEXT</action>
+                        <action name="moveLeadToPreviousPage">ctrl PRIOR</action>
+                        <action name="moveLeadToFirstRow">ctrl HOME</action>
+                        <action name="moveLeadToLastRow">ctrl END</action>
+                        <action name="expandLeadRow">ADD</action>
+                        <action name="collapseLeadRow">SUBTRACT</action>
+                    </inputMapDef></param>
+                </theme>
+            </theme>
+        </theme>
+    </theme>
+
+    <theme name="mines" ref="-defaults">
+        <param name="background"><image>background-image</image></param>
+        <param name="inputMap"><inputMapDef ref="-defaultInputMap">
+            <action name="quit">ESCAPE</action>
+            <action name="restart">ctrl N</action>
+            <action name="toggleFPS">ctrl F</action>
+        </inputMapDef></param>
+    
+        <theme name="fpscounter" ref="-defaults">
+            <param name="font"><font>white</font></param>
+            <param name="tooltip"><string>Current FPS</string></param>
+        </theme>
+        
+        <theme name="gameTimeLabel" ref="-defaults">
+            <param name="background"><image>-borderA</image></param>
+            <param name="border"><border>background.border</border></param>
+        </theme>
+        
+        <theme name="restartButton" ref="button">
+            <param name="text"><string>New game</string></param>
+        </theme>
+        
+        <theme name="highscoresButton" ref="button">
+            <param name="text"><string>Show Highscores</string></param>
+        </theme>
+        
+        <theme name="minewidget" ref="-defaults">
+            <param name=""><image>img2.*</image></param>
+            
+            <theme name="gameOverLabel" ref="-defaults">
+                <param name="font"><font>big</font></param>
+                <param name="textAlignment"><enum type="alignment">center</enum></param>
+            </theme>
+        </theme>
+    </theme>
+</themes>

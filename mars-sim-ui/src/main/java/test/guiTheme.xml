@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<!--
+    Document   : guiTheme.xml
+    Created on : November 22, 2007, 9:23 PM
+    Author     : Matthias Mann
+    Description:
+        Purpose of the document follows.
+--><themes>
+    <include filename="gui.xml"/>
+    <include filename="Eforen.xml"/>
+
+    <images file="chaos_sphere_blue_800x600.png" format="RGB" filter="linear">
+        <area name="gui.background" xywh="0,0,800,600"/>
+    </images>
+
+    <images file="TWL Logo.png" format="RGBA">
+        <area name="twl-logo" inset="-8" xywh="0,0,256,128"/>
+    </images>
+
+    <fontDef name="normal" filename="font.fnt" color="white">
+        <fontParam if="error" color="red"/>
+        <fontParam if="textSelection" color="white"/>
+    </fontDef>
+
+    <inputMapDef name="-defaultInputMap">
+        <action name="selectAll">ctrl A</action>
+        <action name="cut">ctrl X</action>
+        <action name="copy">ctrl C</action>
+        <action name="paste">ctrl V</action>
+    </inputMapDef>
+
+    <theme name="-defaults">
+        <param name="background"><image>none</image></param>
+        <param name="overlay"><image>none</image></param>
+        <param name="font"><font>normal</font></param>
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+        <param name="minWidth"><int>0</int></param>
+        <param name="minHeight"><int>0</int></param>
+        <param name="maxWidth"><int>0</int></param>
+        <param name="maxHeight"><int>0</int></param>
+        <param name="mouseCursor"><cursor>eforen.cursor.normal</cursor></param>
+        <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
+    </theme>
+    
+    <theme name="label" ref="-defaults" allowWildcard="true">
+        <param name="textAlignment"><enum type="alignment">left</enum></param>
+    </theme>
+    
+    <theme name="editfield" ref="label" allowWildcard="true">
+        <param name=""><image>editfield.*</image></param>
+        <param name=""><image>eforen.editfield.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="passwordChar"><int>0x25CF</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="columns"><int>5</int></param>
+        <theme name="renderer" ref="label"/>
+        <param name="mouseCursor"><cursor>eforen.cursor.text</cursor></param>
+        <param name="autocompletion-height"><int>150</int></param>
+    </theme>
+    
+    <theme name="button" ref="-defaults" allowWildcard="true">
+        <param name=""><image>eforen.button.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="textAlignment"><enum type="alignment">center</enum></param>
+        <param name="minWidth"><int>56</int></param>
+    </theme>
+
+    <theme name="togglebutton" ref="button" allowWildcard="true">
+        <param name=""><image>eforen.togglebutton.*</image></param>
+        <param name="border"><border>background.border</border></param>
+    </theme>
+
+    <theme name="radiobutton" ref="togglebutton" allowWildcard="true"/>
+    
+    <theme name="checkbox" ref="-defaults" allowWildcard="true">
+        <param name=""><image>eforen.checkbox.*</image></param>
+    </theme>
+
+    <theme name="progressbar" ref="-defaults" allowWildcard="true">
+        <param name=""><image>eforen.progressbar.*</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="minWidth"><int>100</int></param>
+    </theme>
+
+    <theme name="progressbar-glow" ref="progressbar" allowWildcard="true">
+        <param name="progressImage"><image>eforen.progressbar.progressImage-glow</image></param>
+    </theme>
+
+    <theme name="progressbar-glow-anim" ref="progressbar" allowWildcard="true">
+        <param name="progressImage"><image>eforen.progressbar.progressImage-glow-anim</image></param>
+    </theme>
+    
+    <theme name="hscrollbar" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>eforen.hscrollbar.background</image></param>
+        <theme name="leftbutton" ref="-defaults">
+            <param name=""><image>eforen.hscrollbar.leftbutton.*</image></param>
+        </theme>
+        <theme name="rightbutton" ref="-defaults">
+            <param name=""><image>eforen.hscrollbar.rightbutton.*</image></param>
+        </theme>
+        <theme name="thumb" ref="-defaults">
+            <param name=""><image>eforen.hscrollbar.thumb.*</image></param>
+        </theme>
+        <param name="scaleThumb"><bool>true</bool></param>
+        <param name="minWidth"><int>106</int></param>
+    </theme>
+
+    <theme name="vscrollbar" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>eforen.vscrollbar.background</image></param>
+        <theme name="upbutton" ref="-defaults">
+            <param name=""><image>eforen.vscrollbar.upbutton.*</image></param>
+        </theme>
+        <theme name="downbutton" ref="-defaults">
+            <param name=""><image>eforen.vscrollbar.downbutton.*</image></param>
+        </theme>
+        <theme name="thumb" ref="-defaults">
+            <param name=""><image>eforen.vscrollbar.thumb.*</image></param>
+        </theme>
+        <param name="scaleThumb"><bool>true</bool></param>
+        <param name="minHeight"><int>106</int></param>
+    </theme>
+
+    <fontDef name="listbox-display" filename="font.fnt" color="aqua"/>
+    <theme name="listbox" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>listbox.background</image></param>
+        <param name="cellHeight"><int>22</int></param> <!-- the font line height is 20 -->
+        <param name="cellWidth"><constant>SINGLE_COLUMN</constant></param>
+        <param name="rowMajor"><bool>true</bool></param>
+        <param name="fixedCellWidth"><bool>false</bool></param>
+        <param name="fixedCellHeight"><bool>false</bool></param>
+        <param name="maxHeight"><int>8000</int></param>
+        <param name="maxWidth"><int>8000</int></param>
+        <theme name="vscrollbar" ref="vscrollbar"/>
+        <theme name="display" ref="label">
+            <param name=""><image>listbox.display.*</image></param>
+            <param name="font"><font>listbox-display</font></param>
+            <param name="border"><border>1,2,1,2</border></param>
+        </theme>
+    </theme>
+
+    <theme name="combobox" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>eforen.combobox.background</image></param>
+        <param name="popupHeight"><int>150</int></param>
+        <theme name="display" ref="label">
+            <param name="focus"><image>eforen.combobox.display.selection</image></param>
+            <param name="border"><border>4,8,4,8</border></param>
+            <param name="minWidth"><int>100</int></param>
+            <param name="textAlignment"><enum type="alignment">left</enum></param>
+        </theme>
+        <theme name="button" ref="-defaults">
+            <param name=""><image>eforen.combobox.button.*</image></param>
+        </theme>
+    </theme>
+    
+    <theme name="comboboxPopup" ref="-defaults">
+        <theme name="listbox" ref="listbox">
+            <param name="background"><image>eforen.combobox.listbox.background</image></param>
+        </theme>
+    </theme>
+
+    <theme name="-valueadjuster-button" ref="button">
+        <param name=""><image>valuadjuster.button.*</image></param>
+        <param name="border"><border>background.border</border></param>
+    </theme>
+    
+    <theme name="valueadjuster" ref="-defaults" allowWildcard="true">
+        <theme name="decButton" ref="-valueadjuster-button">
+            <param name="text"><string>-</string></param>
+        </theme>
+        <theme name="incButton" ref="-valueadjuster-button">
+            <param name="text"><string>+</string></param>
+        </theme>
+        <theme name="valueDisplay" ref="-valueadjuster-button">
+            <param name="textAlignment"><enum type="alignment">center</enum></param>
+        </theme>
+        <theme name="valueEdit" ref="editfield">
+            <param name="background"><image>valuadjuster.edit.background</image></param>
+        </theme>
+        <param name="width"><int>100</int></param>
+        <param name="useMouseWheel"><bool>true</bool></param>
+        <param name="displayPrefix"><string/></param>
+    </theme>
+
+    <theme name="scrollpane" ref="-defaults" allowWildcard="true">
+        <theme name="hscrollbar" ref="hscrollbar"/>
+        <theme name="vscrollbar" ref="vscrollbar"/>
+        <param name="minWidth"><int>100</int></param>
+        <param name="minHeight"><int>100</int></param>
+        <param name="maxWidth"><int>32767</int></param>
+        <param name="maxHeight"><int>32767</int></param>
+        <param name="hasDragButton"><bool>true</bool></param>
+        <param name="autoScrollArea"><int>5</int></param>
+        <param name="autoScrollSpeed"><int>10</int></param>
+        <param name="scrollbarsAlwaysVisible"><bool>false</bool></param>
+        <theme name="dragButton" ref="-defaults">
+            <param name=""><image>scrollpane.dragbutton.*</image></param>
+            <!-- <param name="mouseCursor"><cursor>eforen.cursor.arrow.drag2d</cursor></param> -->
+        </theme>
+    </theme>
+
+    <theme name="textarea" ref="-defaults" allowWildcard="true">
+        <param name="fonts"><map>
+            <param name="default"><font>normal</font></param>
+        </map></param>
+        <param name="images"><map>
+        </map></param>
+    </theme>
+
+    <theme name="folderbrowser">
+        <param name="background"><image>box</image></param>
+        <param name="border"><border>background.border</border></param>
+        <theme name="listbox" ref="listbox"/>
+        <theme name="currentpathbox">
+            <param name="background"><image>box.separator</image></param>
+            <param name="border"><border>background.border</border></param>
+            <theme name="pathseparator" ref="label">
+                <param name="background"><image>none</image></param>
+            </theme>
+            <theme name="pathbutton" ref="label">
+                <param name="normal"><image>none</image></param>
+                <param name=""><image>pathbutton.*</image></param>
+            </theme>
+        </theme>
+    </theme>
+    
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="background"><image>tooltip.background</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="fadeInTime"><int>250</int></param>
+        <theme name="label" ref="label"/>
+    </theme>
+
+    <theme name="dialoglayout" ref="-defaults" allowWildcard="true">
+        <param name="defaultGap"><dimension>8,8</dimension></param>
+        <param name="smallGap"><dimension>12,12</dimension></param>
+        <param name="mediumGap"><dimension>20,20</dimension></param>
+        <param name="largeGap"><dimension>25,25</dimension></param>
+        <param name="namedGaps"><map/></param>
+    </theme>
+
+    <theme name="colorselector" ref="dialoglayout">
+        <theme name="label" ref="label"/>
+        <theme name="colorarea1d" ref="-defaults">
+            <param name=""><image>colorselector.*</image></param>
+            <param name="border"><border>2</border></param>
+            <param name="minWidth"><int>30</int></param>
+            <param name="minHeight"><int>128</int></param>
+        </theme>
+        <theme name="colorarea2d" ref="-defaults">
+            <param name=""><image>colorselector.*</image></param>
+            <param name="border"><border>2</border></param>
+            <param name="minWidth"><int>128</int></param>
+            <param name="minHeight"><int>128</int></param>
+        </theme>
+        <theme name="valueadjuster" ref="valueadjuster">
+            <param name="maxWidth"><int>32767</int></param>
+        </theme>
+        <theme name="previewLabel" ref="label">
+            <param name="text"><string>Current color:</string></param>
+        </theme>
+        <theme name="preview" ref="dialoglayout">
+            <param name="border"><border>2</border></param>
+            <param name="minWidth"><int>64</int></param>
+            <param name="minHeight"><int>64</int></param>
+            <theme name="colorarea" ref="-defaults">
+                <param name="background"><image>white</image></param>
+            </theme>
+        </theme>
+        <param name="mouseCursor."><cursor>eforen.cursor.arrow.*</cursor></param>
+    </theme>
+
+    <theme name="resizableframe" ref="-defaults" allowWildcard="true">
+        <param name="background"><image>eforen.frame.resizeable</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="offscreenExtra"><border>13,15</border></param>
+        <param name="titleAreaTop"><int>5</int></param>
+        <param name="titleAreaLeft"><int>5</int></param>
+        <param name="titleAreaRight"><int>-5</int></param>
+        <param name="titleAreaBottom"><int>5</int></param>
+        <param name="hasCloseButton"><bool>false</bool></param>
+        <param name="closeButtonX"><int>0</int></param>
+        <param name="closeButtonY"><int>0</int></param>
+        <param name="hasResizeHandle"><bool>false</bool></param>
+        <param name="resizeHandleX"><int>0</int></param>
+        <param name="resizeHandleY"><int>0</int></param>
+        <param name="mouseCursor."><cursor>eforen.cursor.arrow.*</cursor></param>
+        <param name="fadeColorInactive"><color>#F888</color></param>
+        <param name="fadeDurationActivate"><int>200</int></param>
+        <param name="fadeDurationDeactivate"><int>200</int></param>
+        <param name="fadeDurationShow"><int>200</int></param>
+        <param name="fadeDurationHide"><int>200</int></param>
+        <theme name="title" ref="label">
+            <param name="textAlignment"><enum type="alignment">top</enum></param>
+        </theme>
+        <theme name="closeButton" ref="button">
+            <param name=""><image>eforen.frame.closebutton.*</image></param>
+            <param name="border"><border>background.border</border></param>
+            <param name="minWidth"><int>0</int></param>
+        </theme>
+        <theme name="resizeHandle" ref="-defaults"/>
+    </theme>
+
+    <theme name="resizableframe-title" ref="resizableframe" allowWildcard="true">
+        <param name="background"><image>eforen.frame.resizeable-title</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="offscreenExtra"><border>10</border></param>
+        <param name="titleAreaTop"><int>10</int></param>
+        <param name="titleAreaLeft"><int>30</int></param>
+        <param name="titleAreaRight"><int>-70</int></param>
+        <param name="titleAreaBottom"><int>27</int></param>
+        <param name="hasCloseButton"><bool>true</bool></param>
+        <param name="closeButtonX"><int>-28</int></param>
+        <param name="closeButtonY"><int>15</int></param>
+    </theme>
+
+    <theme name="graph" ref="-defaults">
+        <param name="background"><image>eforen.graph.background</image></param>
+        <param name="border"><border>background.border</border></param>
+        <param name="minWidth"><int>100</int></param>
+        <param name="minHeight"><int>100</int></param>
+        <param name="sizeMultipleX"><int>5</int></param>
+        <param name="sizeMultipleY"><int>8</int></param>
+        <param name="lineStyles"><map>
+            <param name="default"><map>
+                <param name="color"><color>white</color></param>
+                <param name="width"><float>1.0</float></param>
+            </map></param>
+        </map></param>
+        <theme name="grapharea" ref="-defaults">
+            <param name="background"><image>none</image></param>
+        </theme>
+    </theme>
+
+    <theme name="-treecellrenderer" ref="-defaults">
+        <param name="treeIndent"><int>13</int></param>
+        <param name="treeButtonSize"><dimension>20,19</dimension></param>
+    </theme>
+    <theme name="table" ref="-defaults" allowWildcard="true">
+        <param name="row.background"><image>none</image></param>
+        <param name="row.overlay"><image>none</image></param>
+        <param name=""><image>table.*</image></param>
+        <param name=""><image>table.*</image></param>
+        <param name="rowHeight"><int>20</int></param> <!-- the font line height is 14 -->
+        <theme name="stringcellrenderer" ref="-defaults"/>
+        <theme name="TreeLeafCellRenderer" ref="-treecellrenderer"/>
+        <theme name="TreeNodeCellRenderer" ref="-treecellrenderer"/>
+        <theme name="spanrenderer" ref="-defaults"/>
+        <theme name="treeButton" ref="checkbox"/>
+        <theme name="columnHeader" ref="button">
+            <param name="background"><image>eforen.tableheader.background</image></param>
+        </theme>
+        <param name="columnHeaderWidth"><int>256</int></param>
+        <param name="columnHeaderHeight"><int>20</int></param>
+        <param name="columnDividerDragableDistance"><int>3</int></param>
+        <param name="columnResizeCursor"><cursor>eforen.cursor.arrow.left</cursor></param>
+        <param name="columnDivider"><image>none</image></param>
+        <param name="columnWidths"><map/></param>
+        <param name="inputMap"><inputMapDef ref="-defaultInputMap">
+            <action name="toggleSelectionOnLeadRow">ctrl SPACE</action>
+        </inputMapDef></param>
+        <theme name="" ref="*"/>
+        <theme name="ComboBoxCellRenderer">
+            <param name="comboBoxHeight"><int>20</int></param>
+        </theme>
+        <theme name="EditFieldCellRenderer">
+            <param name="editFieldHeight"><int>20</int></param>
+        </theme>
+    </theme>
+
+    <theme name="menumanager" ref="-defaults">
+        <theme name="menupopup" ref="dialoglayout">
+            <param name="background"><image>box</image></param>
+            <param name="border"><border>background.border</border></param>
+            <theme name="button" ref="button"/>
+            <theme name="submenu" ref="button"/>
+            <theme name="spacer" ref="-defaults"/>
+            <param name="namedGaps"><map>
+                <param name="menuitem"><gap>0</gap></param>
+            </map></param>
+        </theme>
+    </theme>
+
+
+    
+
+    <theme name="optionsdialog" ref="dialoglayout">
+        <param name="background"><image>none</image></param>
+        <theme name="" ref="*"/>
+        <theme name="checkmark" ref="checkbox">
+            <param name="text"><string>Animate images</string></param>
+            <param name="tooltip"><string>Animate the images while they are displayed</string></param>
+        </theme>
+        <theme name="scrollpane" ref="scrollpane">
+            <param name=""><image>editfield.*</image></param>
+            <param name=""><image>eforen.editfield.*</image></param>
+            <param name="border"><border>background.border</border></param>
+            <theme name="editfield" ref="editfield">
+                <param name="background"><image>none</image></param>
+                <param name="border"><border>0</border></param>
+                <theme name="renderer" merge="true">
+                    <param name="textAlignment"><enum type="alignment">topleft</enum></param>
+                </theme>
+            </theme>
+            <param name="minHeight"><int>100</int></param>
+            <param name="maxHeight"><int>100</int></param>
+        </theme>
+    </theme>
+
+    <theme name="settings" ref="dialoglayout">
+        <param name="background"><image>none</image></param>
+        <theme name="" ref="*"/>
+        <theme name="btnAccept" ref="button">
+            <param name="text"><string>Accept</string></param>
+        </theme>
+        <theme name="btnCancel" ref="button">
+            <param name="text"><string>Cancel</string></param>
+        </theme>
+    </theme>
+
+    <theme name="settingdialog" ref="-defaults">
+        <param name="background"><image>eforen.frame.fixed</image></param>
+        <param name="border"><border>background.border</border></param>
+        <theme name="settings" ref="settings"/>
+    </theme>
+
+    <theme name="scrollPaneDemoContent" ref="label">
+        <param name="background"><image>gui.background</image></param>
+    </theme>
+    <theme name="scrollPaneDemoDialog1" ref="resizableframe-title"/>
+
+    <theme name="licenseTextArea" ref="textarea">
+        <param name="border"><border>0,0,0,10</border></param>
+        <param name="images"><map>
+            <param name="twl-logo"><image>twl-logo</image></param>
+            <param name="ul-bullet"><image>textarea.ul-bullet</image></param>
+        </map></param>
+        <param name="minWidth"><int>400</int></param>
+    </theme>
+    <theme name="licenseFrame" ref="resizableframe-title">
+        <param name="border"><border>42,25,26,15</border></param>
+        <theme name="scrollpane" ref="scrollpane">
+            <theme name="textarea" ref="licenseTextArea"/>
+        </theme>
+    </theme>
+
+    <theme name="tableScrollPane" ref="scrollpane"/>
+
+    <theme name="colorSelectorDemoFrame" ref="resizableframe-title">
+        <theme name="dialoglayout" ref="dialoglayout">
+            <theme name="colorselector" ref="colorselector"/>
+            <theme name="togglebutton" ref="checkbox"/>
+            <theme name="label" ref="label"/>
+            <theme name="testDisplay" ref="label">
+                <param name="textAlignment"><enum type="alignment">center</enum></param>
+                <param name="font"><fontDef filename="font.fnt" color="white"/></param>
+            </theme>
+            <theme name="testDisplay2" ref="label">
+                <param name="background"><image>white</image></param>
+                <param name="textAlignment"><enum type="alignment">center</enum></param>
+                <param name="font"><fontDef filename="font.fnt" color="black"/></param>
+            </theme>
+        </theme>
+    </theme>
+    
+    <theme name="buttonBox" ref="-defaults">
+        <theme name="" ref="*"/>
+        <param name="spacing"><int>5</int></param>
+        <param name="alignment"><enum type="alignment">CENTER</enum></param>
+    </theme>
+</themes>

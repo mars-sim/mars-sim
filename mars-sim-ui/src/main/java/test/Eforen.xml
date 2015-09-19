@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE themes PUBLIC "-//www.matthiasmann.de//TWL-Theme//EN" "http://hg.l33tlabs.org/twl/raw-file/tip/src/de/matthiasmann/twl/theme/theme.dtd">
+<!--
+    Document   : Eforen.xml
+    Created on : November 22, 2007, 9:23 PM
+    Author     : Matthias Mann
+    Description:
+        Contains image declarations for Eforen.png and EforenArrows.png
+--><themes>
+    <images file="Eforen.png" format="RGBA">
+        <area name="white" xywh="25,20,1,1"/>
+        <alias name="black" ref="white" tint="#000"/>
+        <alias name="colorselector.cursor" ref="white"/>
+
+        <grid name="eforen.frame.fixed" inset="-16" border="18" weightsX="0,1,0" weightsY="0,1,0">
+            <area xywh="1,1,35,35"/>
+            <area xywh="37,1,1,35"/>
+            <area xywh="39,1,35,35"/>
+            <area xywh="1,37,35,1"/>
+            <area xywh="37,37,1,1"/>
+            <area xywh="39,37,35,1"/>
+            <area xywh="1,39,35,35"/>
+            <area xywh="37,39,1,35"/>
+            <area xywh="39,39,35,35"/>
+        </grid>
+
+        <area name="eforen.frame.resizeable" splitx="38,39" splity="39,40" inset="-13,-15" border="24,21" xywh="116,110,77,79"/>
+
+        <area name="eforen.frame.resizeable-title" splitx="60,62" splity="51,53" inset="-10" border="42,25,26,25" xywh="197,60,157,88"/>
+
+        <area name="-eforen.frame.closebutton" inset="-14,0" xywh="136,59,41,10"/>
+        <select name="eforen.frame.closebutton.background">
+            <animation if="armed" timeSource="armed">
+                <frame ref="-eforen.frame.closebutton" tint="#AA0000" duration="300"/>
+                <frame ref="-eforen.frame.closebutton" tint="#660000" duration="300"/>
+            </animation>
+            <animation if="pressed" timeSource="pressed">
+                <frame ref="-eforen.frame.closebutton" tint="#007700" duration="500"/>
+                <frame ref="-eforen.frame.closebutton" tint="#AA0000" duration="500"/>
+            </animation>
+            <animation if="hover" timeSource="hover">
+                <frame ref="-eforen.frame.closebutton" tint="#005500" duration="500"/>
+                <frame ref="-eforen.frame.closebutton" tint="#00AA00" duration="1000"/>
+            </animation>
+            <alias ref="-eforen.frame.closebutton" tint="#00AA30" if="keyboardFocus"/>
+            <alias ref="-eforen.frame.closebutton"/>
+        </select>
+        
+        <grid name="-eforen.button" inset="-9,-8,-9,-8" border="21,2" weightsX="0,1,0" weightsY="1">
+            <area xywh="75,70,36,39"/>
+            <area xywh="112,70,1,39"/>
+            <area xywh="114,70,36,39"/>
+        </grid>
+        <select name="eforen.button.background">
+            <animation if="armed" timeSource="armed">
+                <frame ref="-eforen.button" tint="#AA0000" duration="300"/>
+                <frame ref="-eforen.button" tint="#660000" duration="300"/>
+            </animation>
+            <animation if="pressed" timeSource="pressed">
+                <frame ref="-eforen.button" tint="#007700" duration="500"/>
+                <frame ref="-eforen.button" tint="#AA0000" duration="500"/>
+            </animation>
+            <animation if="keyboardFocus + hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#00AA30" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#005500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#00AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <animation if="hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#FFFFFF" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#005500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#00AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <alias ref="-eforen.button" tint="#00AA30" if="keyboardFocus"/>
+            <alias ref="-eforen.button"/>
+        </select>
+
+        <select name="eforen.togglebutton.background">
+            <animation if="armed" timeSource="armed">
+                <frame ref="-eforen.button" tint="#AA0000" duration="300"/>
+                <frame ref="-eforen.button" tint="#660000" duration="300"/>
+            </animation>
+            <animation if="selected + pressed" timeSource="pressed">
+                <frame ref="-eforen.button" tint="#777700" duration="500"/>
+                <frame ref="-eforen.button" tint="#770000" duration="500"/>
+            </animation>
+            <animation if="selected + keyboardFocus + hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#77AA30" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#775500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#77AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <animation if="selected + hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#77CC00" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#775500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#77AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <alias ref="-eforen.button" tint="#77CC30" if="selected + keyboardFocus"/>
+            <alias ref="-eforen.button" tint="#77CC00" if="selected"/>
+            <animation if="pressed" timeSource="pressed">
+                <frame ref="-eforen.button" tint="#007700" duration="500"/>
+                <frame ref="-eforen.button" tint="#AA0000" duration="500"/>
+            </animation>
+            <animation if="keyboardFocus + hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#00AA30" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#005500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#00AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <animation if="hover" timeSource="hover">
+                <frame ref="-eforen.button" tint="#FFFFFF" duration="100"/>
+                <repeat>
+                    <frame ref="-eforen.button" tint="#005500" duration="500"/>
+                    <frame ref="-eforen.button" tint="#00AA00" duration="1000"/>
+                </repeat>
+            </animation>
+            <alias ref="-eforen.button" tint="#00AA30" if="keyboardFocus"/>
+            <alias ref="-eforen.button"/>
+        </select>
+        
+
+        <grid name="eforen.editfield.background" inset="-9" border="3" weightsX="0,1,0" weightsY="1">
+            <area splity="16,20" xywh="151,70,20,36"/>
+            <area splity="16,20" xywh="172,70,1,36"/>
+            <area splity="16,20" xywh="174,70,20,36"/>
+        </grid>
+
+        <grid name="eforen.tableheader.background" inset="-3,-9" border="3" weightsX="0,1,0" weightsY="1">
+            <select>
+                <area splity="16,20" inset="0,-9,0,0" if="firstColumnHeader" xywh="151,70,20,36"/>
+                <area splity="16,20" xywh="160,70,11,36"/>
+            </select>
+            <area splity="16,20" xywh="172,70,1,36"/>
+            <select>
+                <area splity="16,20" inset="0,0,0,-9" if="lastColumnHeader" xywh="174,70,20,36"/>
+                <area splity="16,20" xywh="174,70,11,36"/>
+            </select>
+        </grid>
+
+        <!--  VERTICAL SCROOLBAR -->
+
+        <area name="eforen.vscrollbar.background" inset="-20,34" border="2" xywh="359,54,55,56"/>
+
+        <select name="eforen.vscrollbar.upbutton.background" inset="-20,-19" border="2">
+            <area if="armed | pressed" xywh="471,1,55,53"/>
+            <area if="hover" xywh="415,1,55,53"/>
+            <area xywh="359,1,55,53"/>
+        </select>
+
+        <select name="eforen.vscrollbar.downbutton.background" inset="-20,-19" border="2">
+            <area if="armed | pressed" xywh="471,110,55,53"/>
+            <area if="hover" xywh="415,110,55,53"/>
+            <area xywh="359,110,55,53"/>
+        </select>
+
+        <grid name="-eforen.vscrollbar.thumb.pressed" weightsX="1" weightsY="0,1,0,1,0">
+            <area xywh="471,164,53,24"/>
+            <area xywh="471,188,53,1"/>
+            <area xywh="471,189,53,1"/>
+            <area xywh="471,190,53,1"/>
+            <area xywh="471,191,53,22"/>
+        </grid>
+        <grid name="-eforen.vscrollbar.thumb.hover" weightsX="1" weightsY="0,1,0,1,0">
+            <area xywh="415,164,53,24"/>
+            <area xywh="415,188,53,1"/>
+            <area xywh="415,189,53,1"/>
+            <area xywh="415,190,53,1"/>
+            <area xywh="415,191,53,22"/>
+        </grid>
+        <select name="eforen.vscrollbar.thumb.background" inset="-20,-20,-18,-18">
+            <animation if="armed | pressed" timeSource="pressed">
+                <frame ref="-eforen.vscrollbar.thumb.pressed" tint="#AA0000" duration="500"/>
+                <frame ref="-eforen.vscrollbar.thumb.pressed" tint="#660000" duration="500"/>
+            </animation>
+            <animation if="hover" timeSource="hover">
+                <frame ref="-eforen.vscrollbar.thumb.hover" tint="#005500" duration="500"/>
+                <frame ref="-eforen.vscrollbar.thumb.hover" tint="#00AA00" duration="1000"/>
+            </animation>
+            <grid weightsX="1" weightsY="0,1,0,1,0">
+                <area xywh="359,164,53,24"/>
+                <area xywh="359,188,53,1"/>
+                <area xywh="359,189,53,1"/>
+                <area xywh="359,190,53,1"/>
+                <area xywh="359,191,53,22"/>
+            </grid>
+        </select>
+
+        <!--  HORIZONTAL SCROOLBAR -->
+
+        <area name="eforen.hscrollbar.background" inset="34,-20" border="2" xywh="222,391,56,55"/>
+
+        <select name="eforen.hscrollbar.leftbutton.background" inset="-19,-20" border="2">
+            <area if="armed | pressed" xywh="169,279,53,55"/>
+            <area if="hover" xywh="169,335,53,55"/>
+            <area xywh="169,391,53,55"/>
+        </select>
+
+        <select name="eforen.hscrollbar.rightbutton.background" inset="-19,-20" border="2">
+            <area if="armed | pressed" xywh="278,279,53,55"/>
+            <area if="hover" xywh="278,335,53,55"/>
+            <area xywh="278,391,53,55"/>
+        </select>
+
+        <grid name="-eforen.hscrollbar.thumb.hover" weightsX="0,1,0,1,0" weightsY="1">
+            <area xywh="332,337,24,53"/>
+            <area xywh="356,337,1,53"/>
+            <area xywh="357,337,1,53"/>
+            <area xywh="358,337,1,53"/>
+            <area xywh="359,337,22,53"/>
+        </grid>
+        <grid name="-eforen.hscrollbar.thumb.pressed" weightsX="0,1,0,1,0" weightsY="1">
+            <area xywh="332,281,24,53"/>
+            <area xywh="356,281,1,53"/>
+            <area xywh="357,281,1,53"/>
+            <area xywh="358,281,1,53"/>
+            <area xywh="359,281,22,53"/>
+        </grid>
+        <select name="eforen.hscrollbar.thumb.background" inset="-18,-20,-20,-18">
+            <animation if="armed | pressed" timeSource="pressed">
+                <frame ref="-eforen.hscrollbar.thumb.pressed" tint="#AA0000" duration="500"/>
+                <frame ref="-eforen.hscrollbar.thumb.pressed" tint="#660000" duration="500"/>
+            </animation>
+            <animation if="hover" timeSource="hover">
+                <frame ref="-eforen.hscrollbar.thumb.hover" tint="#005500" duration="500"/>
+                <frame ref="-eforen.hscrollbar.thumb.hover" tint="#00AA00" duration="1000"/>
+            </animation>
+            <grid weightsX="0,1,0,1,0" weightsY="1">
+                <area xywh="332,393,24,53"/>
+                <area xywh="356,393,1,53"/>
+                <area xywh="357,393,1,53"/>
+                <area xywh="358,393,1,53"/>
+                <area xywh="359,393,22,53"/>
+            </grid>
+        </select>
+
+        <select name="scrollpane.dragbutton.background" inset="-20,-20,-19,-19">
+            <area if="downArrowArmed" xywh="437,335,54,54"/>
+            <area if="rightArrowArmed" xywh="437,390,54,54"/>
+            <area if="armed | pressed" xywh="382,280,54,54"/>
+            <area if="hover" xywh="382,335,54,54"/>
+            <area xywh="382,390,54,54"/>
+        </select>
+        
+        <!-- PROGRESS BAR -->
+        
+        <grid name="eforen.progressbar.background" inset="-19,-20" weightsX="0,1,0" weightsY="1">
+            <area xywh="2,162,34,47"/>
+            <area xywh="39,162,1,47"/>
+            <area xywh="43,162,34,47"/>
+        </grid>
+        <area name="eforen.progressbar.progressImage" inset="1" xywh="82,199,1,5"/>
+        <grid name="-eforen.progressbar.end-glow" weightsX="1,0" weightsY="1">
+            <alias ref="none"/>
+            <area inset="-18,-18,-17,-18" tint="#C0FFFFFF" xywh="2,116,43,42"/>
+        </grid>
+        <composed name="eforen.progressbar.progressImage-glow">
+            <alias ref="eforen.progressbar.progressImage"/>
+            <alias ref="-eforen.progressbar.end-glow"/>
+         </composed>
+        <composed name="eforen.progressbar.progressImage-glow-anim">
+            <alias ref="eforen.progressbar.progressImage"/>
+            <animation count="1" timeSource="valueChanged">
+                <frame ref="-eforen.progressbar.end-glow" tint="#FFFFFFFF" duration="100"/>
+                <frame ref="-eforen.progressbar.end-glow" tint="#FFFFFFFF" duration="3000"/>
+                <frame ref="-eforen.progressbar.end-glow" tint="#00FFFFFF" duration="1"/>
+            </animation>
+         </composed>
+
+        <area name="eforen.combobox.background" splitx="38,125" splity="29,30" inset="-20,-19,-20,-5" xywh="2,334,163,59"/>
+        <area name="eforen.combobox.display.selection" splitx="39,118" splity="26,27" inset="-17,-16,-17,-17" xywh="5,277,157,53"/>
+        <area name="-eforen.combobox.button.normal" splity="28,29" inset="-19" xywh="119,215,53,57"/>
+        <composed name="-eforen.combobox.button.pressed">
+            <alias ref="-eforen.combobox.button.normal"/>
+            <grid weightsX="1" weightsY="0,1,0,1,0" inset="-12,-17,-15,-17">
+                <area xywh="66,222,49,17"/>
+                <area xywh="66,239,49,1"/>
+                <area xywh="66,240,49,11"/>
+                <area xywh="66,251,49,1"/>
+                <area xywh="66,252,49,16"/>
+            </grid>
+        </composed>
+        <select name="eforen.combobox.button.background">
+            <animation if="armed | pressed" timeSource="pressed">
+                <frame ref="-eforen.combobox.button.pressed" tint="#FFFFFF" duration="500"/>
+                <frame ref="-eforen.combobox.button.pressed" tint="#CCCCCC" duration="500"/>
+            </animation>
+            <composed if="hover">
+                <alias ref="-eforen.combobox.button.normal"/>
+                <grid weightsX="1" weightsY="0,1,0,1,0" inset="-21,-23,-20,-23">
+                    <area xywh="2,213,61,24"/>
+                    <area xywh="2,237,61,1"/>
+                    <area xywh="2,238,61,11"/>
+                    <area xywh="2,249,61,1"/>
+                    <area xywh="2,250,61,23"/>
+                </grid>
+            </composed>
+            <alias ref="-eforen.combobox.button.normal"/>
+        </select>
+
+        <grid name="eforen.combobox.listbox.background" weightsX="0,1,0" weightsY="0,1,0" inset="-19,-19,-19,-19" border="8">
+            <area xywh="1,1,35,35"/>
+            <area xywh="37,1,1,35"/>
+            <area xywh="39,1,35,35"/>
+            <area xywh="1,37,35,1"/>
+            <area xywh="37,37,1,1"/>
+            <area xywh="39,37,35,1"/>
+            <area xywh="1,39,35,35"/>
+            <area xywh="37,39,1,35"/>
+            <area xywh="39,39,35,35"/>
+        </grid>
+
+        <area name="-eforen.checkbox.inactive.normal" splitx="28,30" splity="28,29" inset="-19" xywh="176,218,58,57"/>
+        <area name="-eforen.checkbox.checkmark" inset="-19" center="true" xywh="298,218,58,57"/>
+        <animation name="-eforen.checkbox.inactive.hover" timeSource="hover">
+            <frame ref="-eforen.checkbox.inactive.normal" tint="#005500" duration="500"/>
+            <frame ref="-eforen.checkbox.inactive.normal" tint="#00AA00" duration="1000"/>
+        </animation>
+        <composed name="-eforen.checkbox.active.normal">
+            <alias ref="-eforen.checkbox.inactive.normal"/>
+            <alias ref="-eforen.checkbox.checkmark"/>
+        </composed>
+        <alias name="-eforen.checkbox.inactive.focused" ref="-eforen.checkbox.inactive.normal" tint="#00AA30"/>
+
+        <select name="eforen.checkbox.background">
+            <animation if="selected + armed" timeSource="armed">
+                <frame ref="-eforen.checkbox.inactive.normal" tint="#AA0000" duration="300"/>
+                <frame ref="-eforen.checkbox.inactive.normal" tint="#660000" duration="300"/>
+            </animation>
+            <animation if="selected + pressed" timeSource="pressed">
+                <frame ref="-eforen.checkbox.active.normal" tint="#007700" duration="500"/>
+                <frame ref="-eforen.checkbox.active.normal" tint="#AA0000" duration="500"/>
+            </animation>
+            <composed if="selected + hover">
+                <alias ref="-eforen.checkbox.inactive.hover"/>
+                <alias ref="-eforen.checkbox.checkmark"/>
+            </composed>
+            <composed if="selected + keyboardFocus">
+                <alias ref="-eforen.checkbox.inactive.focused"/>
+                <alias ref="-eforen.checkbox.checkmark"/>
+            </composed>
+            <alias ref="-eforen.checkbox.active.normal" if="selected"/>
+            <animation if="armed" timeSource="armed">
+                <frame ref="-eforen.checkbox.active.normal" tint="#AA0000" duration="300"/>
+                <frame ref="-eforen.checkbox.active.normal" tint="#660000" duration="300"/>
+            </animation>
+            <animation if="pressed" timeSource="pressed">
+                <frame ref="-eforen.checkbox.inactive.normal" tint="#007700" duration="500"/>
+                <frame ref="-eforen.checkbox.inactive.normal" tint="#AA0000" duration="500"/>
+            </animation>
+            <alias ref="-eforen.checkbox.inactive.hover" if="hover"/>
+            <alias ref="-eforen.checkbox.inactive.focused" if="keyboardFocus"/>
+            <alias ref="-eforen.checkbox.inactive.normal"/>
+        </select>
+
+        <grid name="eforen.graph.background" weightsX="0,1,0" weightsY="0,1,0" inset="-10,-13,-11,-14" border="2,8,1,6">
+            <area xywh="360,217,31,25"/>
+            <area repeatX="true" xywh="392,217,5,25"/>
+            <area xywh="398,217,31,25"/>
+            <area repeatY="true" xywh="360,243,31,8"/>
+            <area repeatX="true" repeatY="true" xywh="392,243,5,8"/>
+            <area repeatY="true" xywh="398,243,31,8"/>
+            <area xywh="360,252,31,20"/>
+            <area repeatX="true" xywh="392,252,5,20"/>
+            <area xywh="398,252,31,20"/>
+        </grid>
+    </images>
+
+    <images file="EforenArrows.png" format="RGBA">
+        <cursor name="eforen.cursor.normal" hotSpotX="29" hotSpotY="27" xywh="2,2,69,74"/>
+        <cursor name="eforen.cursor.text" hotSpotX="22" hotSpotY="30" xywh="301,6,45,54"/>
+        <cursor name="eforen.cursor.move4" hotSpotX="29" hotSpotY="29" xywh="7,87,59,59"/>
+        <cursor name="eforen.cursor.move8" hotSpotX="29" hotSpotY="29" xywh="445,87,59,59"/>
+
+        <cursor name="eforen.cursor.arrow.top-left" hotSpotX="28" hotSpotY="27" xywh="155,89,55,55"/>
+        <cursor name="eforen.cursor.arrow.top-right" hotSpotX="27" hotSpotY="27" xywh="82,89,55,55"/>
+        <cursor name="eforen.cursor.arrow.top" hotSpotX="22" hotSpotY="30" xywh="306,87,45,59"/>
+        <cursor name="eforen.cursor.arrow.left" hotSpotX="30" hotSpotY="22" xywh="226,94,59,45"/>
+
+        <cursor name="eforen.cursor.arrow.bottom-left" ref="eforen.cursor.arrow.top-right"/>
+        <cursor name="eforen.cursor.arrow.bottom-right" ref="eforen.cursor.arrow.top-left"/>
+        <cursor name="eforen.cursor.arrow.bottom" ref="eforen.cursor.arrow.top"/>
+        <cursor name="eforen.cursor.arrow.right" ref="eforen.cursor.arrow.left"/>
+        <cursor name="eforen.cursor.arrow.all" ref="eforen.cursor.move4"/>
+
+        <cursor name="eforen.cursor.arrow.drag2d" ref="eforen.cursor.move8"/>
+    </images>
+</themes>

@@ -3136,7 +3136,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing an ls 3D printer. -->
-	<process name="ls 3d printer manufacturing" tech="4" skill="4" work-time="2000" process-time="2000"
+	<process name="laser sintering 3D printer manufacturing" tech="4" skill="4" work-time="2000" process-time="2000"
 			power-required="15.0">
 		<inputs>
 			<part name="aluminum wire" number="10" />
@@ -3270,7 +3270,17 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		</outputs>
 	</process>
 
-	<!-- 2015-05-31 Added manufacturing ceramic tile. -->
+	<!-- 2015-05-31 Added
+
+	1. work glove
+	2. utility knife
+	3. kitchen knives set
+	manufacturing ceramic tile.
+	2. water heater
+	3. laser headlights, lens, prism, laser diodes
+
+
+	-->
 
 
 
