@@ -42,7 +42,7 @@ public class Localization {
 
 	/**
 	 * Returns the Locale object that is associated with ControlsFX.
-	 * 
+	 *
 	 * @return the global ControlsFX locale
 	 */
 	public static final Locale getLocale() {
@@ -52,7 +52,7 @@ public class Localization {
 
 	/**
 	 * Sets locale which will be used as ControlsFX locale
-	 * 
+	 *
 	 * @param newLocale
 	 *            null is allowed and will be interpreted as default locale
 	 */
@@ -77,11 +77,12 @@ public class Localization {
 
 	/**
 	 * Returns a string localized using currently set locale
-	 * 
+	 *
 	 * @param key resource bundle key
 	 * @return localized text or formatted key if not found
 	 */
 	public static final String getString(final String key) {
+		System.out.println("Localization : getString() : key is " + key);
 		try {
 			return getLocaleBundle().getString(key);
 		} catch (MissingResourceException ex) {
@@ -92,7 +93,7 @@ public class Localization {
 	/**
 	 * Converts text to localization key,
 	 * currently by prepending it with the KEY_PREFIX
-	 * 
+	 *
 	 * @param text
 	 * @return localization key
 	 */
@@ -102,7 +103,7 @@ public class Localization {
 
 	/**
 	 * Checks if the text is a localization key
-	 * 
+	 *
 	 * @param text
 	 * @return true if text is a localization key
 	 */
@@ -111,13 +112,14 @@ public class Localization {
 	}
 
 	/**
-	 * Tries to localize the text. If the text is a localization key - and attempt will be made to 
+	 * Tries to localize the text. If the text is a localization key - and attempt will be made to
 	 * use it for localization, otherwise the text is returned as is
-	 * 
+	 *
 	 * @param text
 	 * @return
 	 */
 	public static String localize(String text) {
+		System.out.println("Localization : localize() : text is " + text);
 		return isKey(text) ? getString(text.substring(KEY_PREFIX.length())
 				.trim()) : text;
 	}

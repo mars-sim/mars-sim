@@ -140,6 +140,8 @@ public class MainScene {
 	private TransportWizard transportWizard;
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
+	private StatusBar statusBar;
+
 	@SuppressWarnings("restriction")
 	private OperatingSystemMXBean osBean;
 
@@ -256,7 +258,7 @@ public class MainScene {
 		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
 
 		// Create ControlFX's StatusBar
-		StatusBar statusBar = createStatusBar();
+		statusBar = createStatusBar();
 		VBox bottomBox = new VBox();
 		bottomBox.getChildren().addAll(statusBar);
 
@@ -470,8 +472,11 @@ public class MainScene {
 	}
 
 	public StatusBar createStatusBar() {
-		StatusBar statusBar = new StatusBar();
-		statusBar.setText(""); // needed for deleting the default text "OK"
+		//StatusBar statusBar = null;
+		if (statusBar == null) {
+			statusBar = new StatusBar();
+			statusBar.setText(""); // needed for deleting the default text "OK"
+		}
 		// statusBar.setAlignment(Pos.BASELINE_RIGHT);
 		// statusBar.setStyle("-fx-background-color: gainsboro;");
 		// statusBar.setAlignment(Pos.CENTER);
@@ -803,23 +808,6 @@ public class MainScene {
 	}
 
 	/**
-	 * Ends the current simulation and close the JavaFX stage of MainScene
-	 */
-	private void endSim() {
-		logger.info("MainScene's endSim() is on " + Thread.currentThread().getName() + " Thread");
-		Simulation.instance().endSimulation();
-		Simulation.instance().getSimExecutor().shutdownNow();
-
-		// Simulation.instance().destroyOldSimulation();
-		getDesktop().clearDesktop();
-		// getDesktop().resetDesktop();
-		// Simulation.instance().getMasterClock().exitProgram();
-		stage.close();
-		// Simulation.instance().endMasterClock();
-		Simulation.instance().startSimExecutor();
-	}
-
-	/**
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
@@ -945,8 +933,28 @@ public class MainScene {
 		desktop.disposeAnnouncementWindow();
 	}
 
+
 	/**
-	 * Exit the simulation for running and exit.
+	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves the main menu running
+	 */
+	private void endSim() {
+		logger.info("MainScene's endSim() is on " + Thread.currentThread().getName() + " Thread");
+		Simulation.instance().endSimulation();
+		Simulation.instance().getSimExecutor().shutdownNow();
+
+		// Simulation.instance().destroyOldSimulation();
+		getDesktop().clearDesktop();
+		// getDesktop().resetDesktop();
+		// Simulation.instance().getMasterClock().exitProgram();
+
+		statusBar = null;
+		stage.close();
+		// Simulation.instance().endMasterClock();
+		Simulation.instance().startSimExecutor();
+	}
+
+	/**
+	 * Exits the current simulation and the main menu.
 	 */
 	public void exitSimulation() {
 		logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
