@@ -54,14 +54,14 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
-    private static final double SEEDLINGS_PER_SQM = .3D; // in kg arbitrary
+    /** (arbitrary) amount of crop tissue culture needed per square meter of growing area */
+    private static final double TISSUE_PER_SQM = .05D;
 
     private Inventory inv;
     private Settlement settlement;
     private Building building;
     //private BeeGrowing beeGrowing;
 	//private GoodsManager goodsManager;
-
 
     private int cropNum;
 	private int solCache = 1;
@@ -210,7 +210,7 @@ implements Serializable {
 
 	    if (isNewCrop) {
 	        //2015-08-26 Added useSeedlings()
-	    	percentGrowth = useSeedlings(cropType, cropArea);
+	    	percentGrowth = useTissueCulture(cropType, cropArea);
 	    	// 2015-01-14 Added fertilizer to the soil for the new crop
 	        provideFertilizer(cropArea);
 	        // 2015-02-28 Replaced some amount of old soil with new soil
@@ -257,29 +257,26 @@ implements Serializable {
     }
 
     /**
-     * Uses available seedlings to shorten Germinating Phase when planting the crop
+     * Uses available tissue culture to shorten Germinating Phase when planting the crop
      * @parama cropType
      * @param cropArea
      * @return percentGrowth
      */
     //2015-08-26 Added useSeedlings()
-    public double useSeedlings(CropType cropType, double cropArea) {
+    //2015-09-18 Changed to useTissueCulture()
+    public double useTissueCulture(CropType cropType, double cropArea) {
     	double percent = 0;
 
-    	double seedlings = cropArea * SEEDLINGS_PER_SQM * cropType.getEdibleBiomass()/20D;
+    	double amount = cropArea * TISSUE_PER_SQM * cropType.getEdibleBiomass()/20D;
 
-    	// Add randomness
-    	//double rand = RandomUtil.getRandomDouble(2);
-    	//seedlings = seedlings*.7 + rand*.3;
+    	double requestedAmount = amount;
 
-    	double requestedAmount = seedlings;
-
-    	String cropSeedling = cropType.getName()+ " seedling";
+    	String tissue = cropType.getName()+ " tissue culture";
 
     	boolean result = false;
 
       	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(cropSeedling);
+	    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);
 	    	if (amountStored < 0.0000000001) {
@@ -291,7 +288,6 @@ implements Serializable {
 	    		result = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount  = amountStored;
-
 	    	}
 
 	    	else {

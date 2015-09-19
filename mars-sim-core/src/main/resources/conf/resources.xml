@@ -131,35 +131,37 @@
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 	<resource name="white onion" phase="solid" edible="true"></resource>
 
-<!-- Crop Stock Seedlings -->
-	<resource name="blueberry seedling" phase="solid" edible="true"></resource>
-	<resource name="cabbage seedling" phase="solid" edible="true"></resource>
-	<resource name="carrot seedling" phase="solid" edible="true"></resource>
-	<resource name="celery seedling" phase="solid" edible="true"></resource>
-	<resource name="cucumber seedling" phase="solid" edible="true"></resource>
-	<resource name="cranberry seedling" phase="solid" edible="true"></resource>
-	<resource name="garlic seedling" phase="solid" edible="true"></resource>
-	<resource name="ginger seedling" phase="solid" edible="true"></resource>
-	<resource name="green bell pepper seedling" phase="solid" edible="true"></resource>
-	<resource name="green onion seedling" phase="solid" edible="true"></resource>
-	<resource name="kidney bean seedling" phase="solid" edible="true"></resource>
-	<resource name="lettuce seedling" phase="solid" edible="true"></resource>
-	<resource name="morel Mushroom seedling" phase="solid" edible="true"></resource>
-	<resource name="peas seedling" phase="solid" edible="true"></resource>
-	<resource name="peanut seedling" phase="solid" edible="true"></resource>
-	<resource name="potato seedling" phase="solid" edible="true"></resource>
-	<resource name="quinoa seedling" phase="solid" edible="true"></resource>
-	<resource name="radish seedling" phase="solid" edible="true"></resource>
-	<resource name="red beet seedling" phase="solid" edible="true"></resource>
-	<resource name="rice seedling" phase="solid" edible="true"></resource>
-	<resource name="sesame seedling" phase="solid" edible="true"></resource>
-	<resource name="soybean seedling" phase="solid" edible="true"></resource>
-	<resource name="strawberry seedling" phase="solid" edible="true"></resource>
-	<resource name="sugarcane seedling" phase="solid" edible="true"></resource>
-	<resource name="swiss Chard seedling" phase="solid" edible="true"></resource>
-	<resource name="tomato seedling" phase="solid" edible="true"></resource>
-	<resource name="wheat seedling" phase="solid" edible="true"></resource>
-	<resource name="white onion seedling" phase="solid" edible="true"></resource>
+<!-- Crop tissue culture -->
+<!-- see https://en.wiki2.org/wiki/Plant_tissue_culture
+		 http://extension.psu.edu/plants/green-industry/news/2014/tissue-culture-finishing-for-greenhouse-growers-stage-iii-stage-iv -->
+	<resource name="blueberry tissue culture" phase="solid" ></resource>
+	<resource name="cabbage tissue culture" phase="solid" ></resource>
+	<resource name="carrot tissue culture" phase="solid" ></resource>
+	<resource name="celery tissue culture" phase="solid" ></resource>
+	<resource name="cucumber tissue culture" phase="solid" ></resource>
+	<resource name="cranberry tissue culture" phase="solid" ></resource>
+	<resource name="garlic tissue culture" phase="solid" ></resource>
+	<resource name="ginger tissue culture" phase="solid" ></resource>
+	<resource name="green bell pepper tissue culture" phase="solid" ></resource>
+	<resource name="green onion tissue culture" phase="solid" ></resource>
+	<resource name="kidney bean tissue culture" phase="solid" ></resource>
+	<resource name="lettuce tissue culture" phase="solid" ></resource>
+	<resource name="morel Mushroom tissue culture" phase="solid" ></resource>
+	<resource name="peas tissue culture" phase="solid" ></resource>
+	<resource name="peanut tissue culture" phase="solid" ></resource>
+	<resource name="potato tissue culture" phase="solid" ></resource>
+	<resource name="quinoa tissue culture" phase="solid" ></resource>
+	<resource name="radish tissue culture" phase="solid" ></resource>
+	<resource name="red beet tissue culture" phase="solid" ></resource>
+	<resource name="rice tissue culture" phase="solid" ></resource>
+	<resource name="sesame tissue culture" phase="solid" ></resource>
+	<resource name="soybean tissue culture" phase="solid" ></resource>
+	<resource name="strawberry tissue culture" phase="solid" ></resource>
+	<resource name="sugarcane tissue culture" phase="solid" ></resource>
+	<resource name="swiss Chard tissue culture" phase="solid" ></resource>
+	<resource name="tomato tissue culture" phase="solid" ></resource>
+	<resource name="wheat tissue culture" phase="solid" ></resource>
+	<resource name="white onion tissue culture" phase="solid" ></resource>
 
 
 <!-- Chemical or Mineral Compounds -->

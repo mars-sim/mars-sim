@@ -429,7 +429,7 @@ implements Serializable {
 				generateCropWaste(lastHarvest);
 
 				//2015-08-26 Added harvestSeedlings();
-				harvestSeedlings();
+				computeHarvestedTissue();
 				//actualHarvest = 0;
 				//growingTimeCompleted = 0;
 
@@ -449,22 +449,25 @@ implements Serializable {
 		return remainingWorkTime;
 	}
 
+    /**
+     * Compute the amount of crop tissues extracted
+     */
 	//2015-08-26 Added harvestSeedlings();
-	public void harvestSeedlings() {
+	//2015-09-18 Changed to computeHarvestedTissue();
+	public void computeHarvestedTissue() {
 		// Added the contributing factor based on the health condition
-		// TODO: re-tune the amount of seedlings based on not just based on the edible biomass (actualHarvest) but also the inedible biomass and the crop category
-		double seedlings = healthCondition* actualHarvest/10D;
+		// TODO: re-tune the amount of tissue culture based on not just based on the edible biomass (actualHarvest)
+		// but also the inedible biomass and the crop category
+		double amount = healthCondition * actualHarvest/100D;
 
 		// Added randomness
-		double rand = RandomUtil.getRandomDouble(2);
-		seedlings = seedlings * .7 + seedlings * rand;
+		double rand = RandomUtil.getRandomDouble(1);
+		amount = Math.round((amount * .5 + amount * rand)*100000.0)/100000.0;
 
-		//int numSeedlings = (int) seedlings;
+		String tissue = cropName + " tissue culture";
+		Storage.storeAnResource(amount, tissue, inv);
 
-		String seedlingName = cropName + " seedlings/seeds";
-		Storage.storeAnResource(seedlings, seedlingName, inv);
-
-		logger.info("End of harvest : " + seedlings + " kg " + seedlingName + " extracted");
+		logger.info("A botany lab successfully extracted and preserved " + amount + " kg " + tissue);
 	}
 
 	public void generateCropWaste(double harvestMass) {
