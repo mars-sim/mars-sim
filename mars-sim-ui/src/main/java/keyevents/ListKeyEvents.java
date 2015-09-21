@@ -61,7 +61,7 @@ public class ListKeyEvents extends Container {
             GUI gui = new GUI(demo, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    ListKeyEvents.class.getResource("ListKeyEvents.xml"), renderer);
+                    ListKeyEvents.class.getResource("/twl/keyevents/ListKeyEvents.xml"), renderer);
             gui.applyTheme(theme);
 
             while(!Display.isCloseRequested() && !demo.quit) {
@@ -90,15 +90,15 @@ public class ListKeyEvents extends Container {
     public ListKeyEvents() {
         sb = new StringBuilder();
         sb.append("Press any key - the keyboard events are displayed below\n");
-        
+
         textAreaModel = new SimpleTextAreaModel(sb.toString());
         textArea = new TextArea(textAreaModel);
         scrollPane = new ScrollPane(textArea);
         scrollPane.setFixed(Fixed.HORIZONTAL);
-        
+
         add(scrollPane);
     }
-    
+
     public void listKeyEvents() {
         boolean hadEvents = false;
         while(Keyboard.next()) {
@@ -126,5 +126,5 @@ public class ListKeyEvents extends Container {
             }
         }
     }
-    
+
 }

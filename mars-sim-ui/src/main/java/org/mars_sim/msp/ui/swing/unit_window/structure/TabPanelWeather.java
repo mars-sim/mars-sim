@@ -235,16 +235,18 @@ extends TabPanel {
         bottomPanel.add(dataP, BorderLayout.CENTER);
 
         // Prepare air pressure label
-        JLabel airPressureLabel = new JLabel("Pressure : ", JLabel.RIGHT);
+        JLabel airPressureLabel = new JLabel("Air Pressure : ", JLabel.RIGHT);
         airPressureLabel.setOpaque(false);
         airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(airPressureLabel);
 
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         pressureTF = new JTextField();
         pressureTF.setEditable(false);
         pressureTF.setColumns(8);
         pressureTF.setFont(new Font("Serif", Font.ITALIC, 12));
-        dataP.add(pressureTF);//, BorderLayout.CENTER);
+        wrapper1.add(pressureTF);//, BorderLayout.CENTER);
+        dataP.add(wrapper1);
 
         // Prepare air density label
         JLabel airDensityLabel = new JLabel(Msg.getString("TabPanelWeather.airDensity.label"), JLabel.RIGHT);
@@ -252,61 +254,70 @@ extends TabPanel {
         airDensityLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(airDensityLabel);
 
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         airDensityTF = new JTextField();
         airDensityTF.setEditable(false);
         airDensityTF.setColumns(8);
         airDensityTF.setOpaque(false);
         airDensityTF.setFont(new Font("Serif", Font.ITALIC, 12));
         //airDensityValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(airDensityTF);//, BorderLayout.CENTER);
+        wrapper2.add(airDensityTF);//, BorderLayout.CENTER);
+        dataP.add(wrapper2);
 
         JLabel windSpeedLabel = new JLabel(Msg.getString("TabPanelWeather.windspeed.label"), JLabel.RIGHT);
         windSpeedLabel.setOpaque(false);
         windSpeedLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(windSpeedLabel);
 
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         windSpeedTF = new JTextField();
         windSpeedTF.setEditable(false);
         windSpeedTF.setColumns(8);
         windSpeedTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataP.add(windSpeedTF);
+        wrapper3.add(windSpeedTF);
+        dataP.add(wrapper3);
 
         JLabel windDirLabel = new JLabel(Msg.getString("TabPanelWeather.windDirection.label"), JLabel.RIGHT);
         windDirLabel.setOpaque(false);
         windDirLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(windDirLabel);
 
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         windDirTF = new JTextField();
         windDirTF.setEditable(false);
         windDirTF.setColumns(8);
         windDirTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataP.add(windDirTF);
+        wrapper4.add(windDirTF);
+        dataP.add(wrapper4);
 
         JLabel solarIrradianceLabel = new JLabel(Msg.getString("TabPanelWeather.solarIrradiance.label"), JLabel.RIGHT);
         solarIrradianceLabel.setOpaque(false);
         solarIrradianceLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(solarIrradianceLabel);
 
-
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         solarIrradianceCache = getSolarIrradiance();
         solarIrradianceTF = new JTextField(getSolarIrradianceString(solarIrradianceCache));
         solarIrradianceTF.setEditable(false);
         solarIrradianceTF.setColumns(8);
         solarIrradianceTF.setOpaque(false);
         solarIrradianceTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataP.add(solarIrradianceTF);
+        wrapper5.add(solarIrradianceTF);
+        dataP.add(wrapper5);
 
         JLabel opticalDepthLabel = new JLabel(Msg.getString("TabPanelWeather.opticalDepth.label"), JLabel.RIGHT);
         opticalDepthLabel.setOpaque(false);
         opticalDepthLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(opticalDepthLabel);
 
+		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         opticalDepthTF = new JTextField();
         opticalDepthTF.setEditable(false);
         opticalDepthTF.setColumns(8);
         opticalDepthTF.setOpaque(false);
         opticalDepthTF.setFont(new Font("Serif", Font.PLAIN, 12));
-        dataP.add(opticalDepthTF);
+        wrapper6.add(opticalDepthTF);
+        dataP.add(wrapper6);
 
         JLabel zenithAngleLabel = new JLabel(Msg.getString("TabPanelWeather.zenithAngle.label"), JLabel.RIGHT);
         zenithAngleLabel.setOpaque(false);
@@ -314,12 +325,14 @@ extends TabPanel {
         //zenithAngleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(zenithAngleLabel);
 
+		JPanel wrapper7 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         zenithAngleTF = new JTextField();
         zenithAngleTF.setEditable(false);
         zenithAngleTF.setColumns(8);
         zenithAngleTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //zenithAngleValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(zenithAngleTF);
+        wrapper7.add(zenithAngleTF);
+        dataP.add(wrapper7);
 
         JLabel solarDeclinationLabel = new JLabel(Msg.getString("TabPanelWeather.solarDeclination.label"), JLabel.RIGHT);
         solarDeclinationLabel.setOpaque(false);
@@ -327,13 +340,14 @@ extends TabPanel {
         //solarDeclinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dataP.add(solarDeclinationLabel);
 
-        solarDeclinationTF = new JTextField();
+		JPanel wrapper8 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		solarDeclinationTF = new JTextField();
         solarDeclinationTF.setEditable(false);
         solarDeclinationTF.setColumns(8);
         solarDeclinationTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //solarDeclinationValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dataP.add(solarDeclinationTF);
-
+        wrapper8.add(solarDeclinationTF);
+        dataP.add(wrapper8);
 
 /*
         // TODO: have a meteorologist or Areologist visit the weather station daily to fine tune the equipment

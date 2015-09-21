@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -73,7 +74,11 @@ extends TabPanel {
 	/** The settlement's power grid. */
 	private PowerGrid powerGrid;
 
-	private JLabel eff_electric_Label;
+	private JLabel electricEfficiencyLabel;
+
+	// 2015-09-20 Added the use of uneditable JTextField
+	private JTextField powerGeneratedTF, powerUsedTF, powerStorageCapacityTF, powerStoredTF, solarCellEfficiencyTF, degradRateTF ;
+
 	// Data cache
 	/** The total power generated cache. */
 	private double powerGeneratedCache;
@@ -83,11 +88,12 @@ extends TabPanel {
 	private double powerStorageCapacityCache;
 	/** The total power stored cache. */
 	private double powerStoredCache;
-
-	private double powerEffCache;
+	/** The total solar cell efficiency cache. */
+	private double solarCellEfficiencyCache;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+	private DecimalFormat formatter3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 
 	private List<PowerSource> powerSources;
 	private BuildingConfig config;
@@ -112,7 +118,6 @@ extends TabPanel {
 		manager = settlement.getBuildingManager();
 		config = SimulationConfig.instance().getBuildingConfiguration();
 
-
 		// Prepare power grid label panel.
 		JPanel powerGridLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(powerGridLabelPanel);
@@ -123,40 +128,89 @@ extends TabPanel {
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		powerGridLabelPanel.add(titleLabel);
 
+		// Prepare power label.
+		//JPanel powerLabelPanel = new JPanel(new FlowLayout());
+		//powerLabelPanel.setBorder(new MarsPanelBorder());
+		//topContentPanel.add(powerLabelPanel);
+
 		// Prepare power info panel.
-		JPanel powerInfoPanel = new JPanel(new GridLayout(6, 1, 0, 0));
+		JPanel powerInfoPanel = new JPanel(new GridLayout(6, 2, 0, 0));
 		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated label.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
-		powerGeneratedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated", formatter.format(powerGeneratedCache)), JLabel.CENTER); //$NON-NLS-1$
+		powerGeneratedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(powerGeneratedLabel);
+
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerGeneratedTF = new JTextField(formatter.format(powerGeneratedCache));
+		powerGeneratedTF.setEditable(false);
+		powerGeneratedTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper1.add(powerGeneratedTF);
+		powerInfoPanel.add(wrapper1);
 
 		// Prepare power used label.
 		powerUsedCache = powerGrid.getRequiredPower();
-		powerUsedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed", formatter.format(powerUsedCache)), JLabel.CENTER); //$NON-NLS-1$
+		powerUsedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(powerUsedLabel);
+
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerUsedTF = new JTextField(formatter.format(powerUsedCache));
+		powerUsedTF.setEditable(false);
+		powerUsedTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper2.add(powerUsedTF);
+		powerInfoPanel.add(wrapper2);
 
 		// Prepare power storage capacity label.
 		powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
-		powerStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity", formatter.format(powerStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
+		powerStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(powerStorageCapacityLabel);
+
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerStorageCapacityTF = new JTextField(formatter.format(powerStorageCapacityCache));
+		powerStorageCapacityTF.setEditable(false);
+		powerStorageCapacityTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper3.add(powerStorageCapacityTF);
+		powerInfoPanel.add(wrapper3);
 
 		// Prepare power stored label.
 		powerStoredCache = powerGrid.getStoredPower();
-		powerStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored", formatter.format(powerStoredCache)), JLabel.CENTER); //$NON-NLS-1$
+		powerStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(powerStoredLabel);
 
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerStoredTF = new JTextField(formatter.format(powerStoredCache));
+		powerStoredTF.setEditable(false);
+		powerStoredTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper4.add(powerStoredTF);
+		powerInfoPanel.add(wrapper4);
+
 		// 2015-05-08 Added eff_electric_label
-		double eff_electric = getAverageEfficiency();
-		eff_electric_Label = new JLabel(Msg.getString("TabPanelPowerGrid.solarPanelEfficiency", formatter2.format(eff_electric*100D)), JLabel.CENTER); //$NON-NLS-1$
-		powerInfoPanel.add(eff_electric_Label);
+		solarCellEfficiencyCache = getAverageEfficiency();
+		electricEfficiencyLabel = new JLabel(Msg.getString("TabPanelPowerGrid.solarPanelEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
+		electricEfficiencyLabel.setToolTipText("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
+				+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
+		powerInfoPanel.add(electricEfficiencyLabel);
+
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		solarCellEfficiencyTF = new JTextField(formatter2.format(solarCellEfficiencyCache*100D));
+		solarCellEfficiencyTF.setEditable(false);
+		solarCellEfficiencyTF.setPreferredSize(new Dimension(50, 24));//setColumns(20);
+		wrapper5.add(solarCellEfficiencyTF);
+		powerInfoPanel.add(wrapper5);
 
 		// 2015-05-08 Added degradation rate label.
 		double degradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.degradRate", formatter2.format(degradRate*100D)), JLabel.CENTER); //$NON-NLS-1$
+		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelPowerGrid.degradRate"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(degradRateLabel);
+
+		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		degradRateTF = new JTextField(formatter3.format(degradRate*100D));
+		degradRateTF.setEditable(false);
+		degradRateTF.setPreferredSize(new Dimension(50, 24));//setColumns(20);
+		wrapper6.add(degradRateTF);
+		powerInfoPanel.add(wrapper6);
 
 		// Create scroll panel for the outer table panel.
 		JScrollPane powerScrollPane = new JScrollPane();
@@ -208,7 +262,6 @@ extends TabPanel {
         searchable.setPopupTimeout(5000);
      	searchable.setCaseSensitive(false);
 
-
 	}
 
 	public double getAverageEfficiency() {
@@ -238,53 +291,39 @@ extends TabPanel {
 	 */
 	public void update() {
 
-		// Update power generated label.
+		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();
 		if (powerGeneratedCache != gen) {
 			powerGeneratedCache = gen;
-			powerGeneratedLabel.setText(
-				Msg.getString(
-					"TabPanelPowerGrid.totalPowerGenerated", //$NON-NLS-1$
-					formatter.format(powerGeneratedCache)
-				)
-			);
+			powerGeneratedTF.setText(formatter.format(powerGeneratedCache));
 		}
 
-		// Update power used label.
+		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 		if (powerUsedCache != req) {
 			powerUsedCache = req;
-			powerUsedLabel.setText(Msg.getString("TabPanelPowerGrid.totalPowerUsed", //$NON-NLS-1$
-					formatter.format(powerUsedCache)));
+			powerUsedTF.setText(formatter.format(powerUsedCache));
 		}
 
-		// Update power storage capacity label.
+		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredPowerCapacity();
 		if (powerStorageCapacityCache != cap) {
 			powerStorageCapacityCache = cap;
-			powerStorageCapacityLabel.setText(Msg.getString(
-				"TabPanelPowerGrid.powerStorageCapacity", //$NON-NLS-1$
-				formatter.format(powerStorageCapacityCache)
-			));
+			powerStorageCapacityTF.setText(formatter.format(powerStorageCapacityCache));
 		}
 
-		// Update power stored label.
+		// Update power stored TF.
 		double store = powerGrid.getStoredPower();
 		if (powerStoredCache != store ) {
 			powerStoredCache = store;
-			powerStoredLabel.setText(Msg.getString(
-				"TabPanelPowerGrid.totalPowerStored", //$NON-NLS-1$
-				formatter.format(powerStoredCache)
-			));
+			powerStoredTF.setText(formatter.format(powerStoredCache));
 		}
 
+		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
-		if (powerEffCache != eff) {
-			powerEffCache = eff;
-		eff_electric_Label.setText(
-				Msg.getString("TabPanelPowerGrid.solarPanelEfficiency",  //$NON-NLS-1$
-				formatter2.format(eff*100D)
-				));
+		if (solarCellEfficiencyCache != eff) {
+			solarCellEfficiencyCache = eff;
+			solarCellEfficiencyTF.setText(formatter2.format(eff*100D));
 		}
 		// Update power table.
 		powerTableModel.update();

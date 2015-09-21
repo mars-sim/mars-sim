@@ -80,10 +80,12 @@ extends TabPanel {
 		String mainDish = person.getFavorite().getFavoriteMainDish();
 		//JLabel mainDishLabel = new JLabel(mainDish, JLabel.RIGHT);
 		//infoPanel.add(mainDishLabel);
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField mainDishTF = new JTextField(WordUtils.capitalize(mainDish));
 		mainDishTF.setEditable(false);
-		mainDishTF.setColumns(20);
-		infoPanel.add(mainDishTF);
+		mainDishTF.setColumns(17);
+		wrapper1.add(mainDishTF);
+		infoPanel.add(wrapper1);
 
 		// Prepare side dish name label
 		JLabel sideDishNameLabel = new JLabel(Msg.getString("TabPanelFavorite.sideDish"), JLabel.RIGHT); //$NON-NLS-1$
@@ -93,10 +95,12 @@ extends TabPanel {
 		String sideDish = person.getFavorite().getFavoriteSideDish();
 		//JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
 		//infoPanel.add(sideDishLabel);
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField sideDishTF = new JTextField(WordUtils.capitalize(sideDish));
 		sideDishTF.setEditable(false);
-		sideDishTF.setColumns(20);
-		infoPanel.add(sideDishTF);
+		sideDishTF.setColumns(17);
+		wrapper2.add(sideDishTF);
+		infoPanel.add(wrapper2);
 
 		// Prepare dessert name label
 		JLabel dessertNameLabel = new JLabel(Msg.getString("TabPanelFavorite.dessert"), JLabel.RIGHT); //$NON-NLS-1$
@@ -106,10 +110,12 @@ extends TabPanel {
 		String dessert = person.getFavorite().getFavoriteDessert();
 		//JLabel dessertLabel = new JLabel(WordUtils.capitalize(dessert), JLabel.RIGHT);
 		//infoPanel.add(dessertLabel);
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField dessertTF = new JTextField(WordUtils.capitalize(dessert));
 		dessertTF.setEditable(false);
-		dessertTF.setColumns(20);
-		infoPanel.add(dessertTF);
+		dessertTF.setColumns(17);
+		wrapper3.add(dessertTF);
+		infoPanel.add(wrapper3);
 
 		// Prepare activity name label
 		JLabel activityNameLabel = new JLabel(Msg.getString("TabPanelFavorite.activity"), JLabel.RIGHT); //$NON-NLS-1$
@@ -117,13 +123,15 @@ extends TabPanel {
 
 		// Prepare activity label
 		String activity = person.getFavorite().getFavoriteActivity();
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField activityTF = new JTextField(WordUtils.capitalize(activity));
 		activityTF.setEditable(false);
-		activityTF.setColumns(20);
-		infoPanel.add(activityTF);
+		activityTF.setColumns(10);
+		wrapper4.add(activityTF);
+		infoPanel.add(wrapper4);
+
 		//JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
 		//infoPanel.add(activityLabel);
-
 
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

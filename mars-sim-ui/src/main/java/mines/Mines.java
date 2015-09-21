@@ -60,7 +60,7 @@ import test.TestUtils;
  * @author Matthias Mann
  */
 public class Mines extends Widget {
-    
+
     public static void main(String[] args) {
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
@@ -75,7 +75,7 @@ public class Mines extends Widget {
             GUI gui = new GUI(mines, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    Mines.class.getResource("mines.xml"), renderer);
+                    Mines.class.getResource("/twl/mines/mines.xml"), renderer);
             gui.applyTheme(theme);
 
             while(!Display.isCloseRequested() && !mines.quit) {
@@ -109,14 +109,14 @@ public class Mines extends Widget {
         fpsCounter = new FPSCounter();
         fpsCounter.setVisible(false);
         add(fpsCounter);
-        
+
         mineWidget = new MineWidget();
         add(mineWidget);
-        
+
         gameTimeLabel = new Label();
         gameTimeLabel.setTheme("gameTimeLabel");
         add(gameTimeLabel);
-        
+
         nameEditField = new EditField();
         nameEditField.setTheme("nameEditField");
         try {
@@ -124,9 +124,9 @@ public class Mines extends Widget {
         } catch(Exception ex) {
             // ignore
         }
-        
+
         highscores = new Highscores();
-        
+
         try {
             File folder = new File(new File(System.getProperty("user.home")), ".twl");
             folder.mkdirs();
@@ -135,14 +135,14 @@ public class Mines extends Widget {
         } catch(Exception ex) {
             getLogger().log(Level.WARNING, "Could not read highscore", ex);
         }
-        
+
         mineWidget.setGameTimeLabel(gameTimeLabel);
         mineWidget.setCallback(new Callback() {
             public void victory(int time) {
                 enterHighscore(time);
             }
         });
-        
+
         highscoresButton = new Button();
         highscoresButton.setTheme("highscoresButton");
         highscoresButton.addCallback(new Runnable() {
@@ -151,7 +151,7 @@ public class Mines extends Widget {
             }
         });
         add(highscoresButton);
-        
+
         restartButton = new Button();
         restartButton.setTheme("restartButton");
         restartButton.addCallback(new Runnable() {
@@ -168,33 +168,33 @@ public class Mines extends Widget {
         mineWidget.setPosition(
                 getInnerX() + (getInnerWidth()-mineWidget.getWidth())/2,
                 getInnerY() + (getInnerHeight()-mineWidget.getHeight())/2);
-        
+
         restartButton.adjustSize();
         restartButton.setPosition(mineWidget.getRight() - restartButton.getWidth(), mineWidget.getBottom());
-        
+
         gameTimeLabel.setSize(mineWidget.getWidth() - restartButton.getWidth(), gameTimeLabel.getPreferredHeight());
         gameTimeLabel.setPosition(mineWidget.getX(), mineWidget.getBottom());
-        
+
         highscoresButton.setSize(mineWidget.getWidth(), highscoresButton.getPreferredHeight());
         highscoresButton.setPosition(mineWidget.getX(), mineWidget.getY() - highscoresButton.getHeight());
-        
+
         // fpsCounter is bottom right
         fpsCounter.adjustSize();
         fpsCounter.setPosition(
                 getInnerWidth() - fpsCounter.getWidth(),
                 getInnerHeight() - fpsCounter.getHeight());
     }
-    
+
     public void startGame(int width, int height, int numMines) {
         MineFieldSize size = new MineFieldSize(width, height, numMines);
         mineField = new MineField(size);
         mineWidget.setMineField(mineField);
     }
-    
+
     void enterHighscore(final int time) {
         final Date date = new Date();
         final MineFieldSize size = mineField.getSize();
-        
+
         SimpleDialog dialog = new SimpleDialog();
         dialog.setTitle("Victory");
         dialog.setMessage(nameEditField);
@@ -206,7 +206,7 @@ public class Mines extends Widget {
         });
         dialog.showDialog(mineWidget);
     }
-    
+
     void addToHighscore(MineFieldSize size, int time, Date date) {
         Highscores.Entry entry = new Highscores.Entry(time, nameEditField.getText(), date);
         int pos = highscores.addEntry(size, entry);
@@ -219,49 +219,49 @@ public class Mines extends Widget {
         }
         showHighscores(size, pos);
     }
-    
+
     void showHighscores() {
         if(mineField != null) {
             showHighscores(mineField.getSize(), -1);
         }
     }
-    
+
     private void showHighscores(MineFieldSize size, int row) {
         Table table = new Table(new HighscoreTableModel(highscores.getEntries(size)));
         table.setTheme("resultTable");
         TableSingleSelectionModel selModel = new TableSingleSelectionModel();
         table.setSelectionManager(new TableRowSelectionManager(selModel));
-        
+
         ScrollPane pane = new ScrollPane(table);
         pane.setFixed(Fixed.HORIZONTAL);
-        
+
         SimpleDialog dialog = new SimpleDialog();
         dialog.setTitle(String.format("%dx%d %d mines", size.width, size.height, size.numMines));
         dialog.setMessage(pane);
         dialog.setTheme("highscoreDialog");
         dialog.showDialog(this);
-        
+
         if(row >= 0) {
             selModel.setSelection(row, row);
             table.scrollToRow(row);
         }
     }
-    
+
     @Action
     public void restart() {
         mineWidget.restart();
     }
-    
+
     @Action
     public void toggleFPS() {
         fpsCounter.setVisible(!fpsCounter.isVisible());
     }
-    
+
     @Action
     public void quit() {
         quit = true;
     }
-    
+
     private static Logger getLogger() {
         return Logger.getLogger(Mines.class.getName());
     }

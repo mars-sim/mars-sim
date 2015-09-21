@@ -54,7 +54,7 @@ public class GameUIDemo2 extends DialogLayout {
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
             Display.create();
-            Display.setTitle("TWL Game UI Demo");
+            Display.setTitle("TWL Game UI Demo 2");
             Display.setVSyncEnabled(true);
 
             LWJGLRenderer renderer = new LWJGLRenderer();
@@ -62,7 +62,7 @@ public class GameUIDemo2 extends DialogLayout {
             GUI gui = new GUI(gameUI, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    GameUIDemo2.class.getResource("gameui.xml"), renderer);
+                    GameUIDemo2.class.getResource("/twl/gameui/gameui.xml"), renderer);
             gui.applyTheme(theme);
 
             while(!Display.isCloseRequested() && !gameUI.quit) {
@@ -139,7 +139,7 @@ public class GameUIDemo2 extends DialogLayout {
                 .addGap("gameCtrlTop")
                 .addGroup(createParallelGroup(btnArmageddon, btnPause))
                 .addGap();
-        
+
         // create the groups for the status display (aligned bottom right)
         Group statusH = createSequentialGroup()
                 .addGap()

@@ -64,7 +64,7 @@ public class GameUIDemo extends Widget {
             GUI gui = new GUI(gameUI, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    GameUIDemo.class.getResource("gameui.xml"), renderer);
+                    GameUIDemo.class.getResource("/twl/gameui/gameui.xml"), renderer);
             gui.applyTheme(theme);
 
             while(!Display.isCloseRequested() && !gameUI.quit) {
@@ -91,7 +91,7 @@ public class GameUIDemo extends Widget {
 
     private final SimpleChangableListModel<String> digits;
     private final ArrayList<WheelWidget<String>> wheels;
-    
+
     public boolean quit;
 
     private static final String[] ACTION_NAMES = {
@@ -127,7 +127,7 @@ public class GameUIDemo extends Widget {
         lastSelectedRadialEntry = new Label();
         lastSelectedRadialEntry.setText("Right click on the background");
         add(lastSelectedRadialEntry);
-        
+
         digits = new SimpleChangableListModel<String>("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         wheels = new ArrayList<WheelWidget<String>>();
         for(int i=0 ; i<4 ; i++) {
@@ -142,7 +142,7 @@ public class GameUIDemo extends Widget {
     protected void layout() {
         int x = 10;
         int y = 40;
-        
+
         for(ToggleButton b : actionButtons) {
             b.setPosition(x, y);
             b.adjustSize();
@@ -169,7 +169,7 @@ public class GameUIDemo extends Widget {
         lastSelectedRadialEntry.setPosition(
                 getInnerWidth()/2 - lastSelectedRadialEntry.getWidth()/2,
                 getInnerBottom() - lastSelectedRadialEntry.getHeight());
-        
+
         int wheelsWidth = 0;
         for(WheelWidget<String> wheel : wheels) {
             wheel.adjustSize();

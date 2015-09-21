@@ -68,7 +68,7 @@ public class ChatDemo extends DesktopArea {
             GUI gui = new GUI(chat, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    ChatDemo.class.getResource("chat.xml"), renderer);
+                    ChatDemo.class.getResource("/twl/chat/chat.xml"), renderer);
             gui.applyTheme(theme);
 
             while(!Display.isCloseRequested() && !chat.quit) {

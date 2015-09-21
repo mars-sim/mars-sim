@@ -59,10 +59,10 @@ public class NodeDemo {
             GUI gui = new GUI(scrollPane, renderer);
 
             ThemeManager theme = ThemeManager.createThemeManager(
-                    NodeDemo.class.getResource("nodes.xml"), renderer);
+                    NodeDemo.class.getResource("/twl/nodes/nodes.xml"), renderer);
             gui.applyTheme(theme);
             gui.update();
-            
+
             Node nodeSource = nodeArea.addNode("Source");
             nodeSource.setPosition(50, 50);
             Pad nodeSourceColor = nodeSource.addPad("Color", false);

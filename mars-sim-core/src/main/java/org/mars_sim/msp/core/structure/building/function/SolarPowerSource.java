@@ -26,11 +26,16 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// Tentatively set to 0.14% per sol efficiency degradation as reported by NASA MER
-	public static double DEGRADATION_RATE_PER_SOL = .0014;
+	/** In terms of solar cell degradation, NASA MER has an observable degradation rate of 0.14% per sol
+	 *  on the solar cell (if starting from 100%).
+	 	Here we tentatively set to 0.04% per sol instead of 0.14%, since that in 10 earth years,
+	 	the efficiency will	drop down to 23.21% of the initial 100%
+	 	100*(1-.04/100)^(365*10) = 23.21% */
+	public static double DEGRADATION_RATE_PER_SOL = .0004; // assuming it is a constant through its mission
 
 	private double area;
 
+	/** The solar Panel is made of triple-junction solar cells with theoretical max eff of 68% */
 	private double efficiency_solar_panel = .35;
 
 	private Coordinates location ;
