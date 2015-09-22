@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="chat/|sourceviewer/demo/|test/|textarea/|sourceviewer/|gameui/|impl/build/transifex/|impl/org/controlsfx/autocompletion/|impl/org/controlsfx/behavior/|impl/org/controlsfx/i18n/|inventory/|keyevents/|login/|mines/|nodes/|impl/org/controlsfx/|impl/build/|de/matthiasmann/twl/demo/sourceviewer/demo/|bgtest/" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="chat/|sourceviewer/demo/|test/|textarea/|sourceviewer/|gameui/|impl/build/transifex/|impl/org/controlsfx/autocompletion/|impl/org/controlsfx/behavior/|impl/org/controlsfx/i18n/|inventory/|keyevents/|login/|mines/|nodes/|impl/org/controlsfx/|impl/build/|de/matthiasmann/twl/demo/sourceviewer/demo/|bgtest/|impl/org/" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
