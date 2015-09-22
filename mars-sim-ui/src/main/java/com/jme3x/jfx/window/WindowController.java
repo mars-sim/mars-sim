@@ -73,7 +73,6 @@ public class WindowController {
 	@FXML
 	public void initialize() {
 		assert FXMLUtils.checkClassInjection(this);
-
 	}
 
 	public void setWindow(final AbstractWindow abstractWindow) {
@@ -193,7 +192,7 @@ public class WindowController {
 
 	/**
 	 * use the externalizedproperty instead!
-	 * 
+	 *
 	 * @param externalized
 	 */
 	public void doNotCallMeExternalize(boolean externalized) {

@@ -87,8 +87,8 @@ public abstract class AbstractWindow extends AbstractHud {
 	protected Region doInit() {
 		try {
 			final FXMLLoader fxmlLoader = new FXMLLoader();
-			final URL location = Thread.currentThread().getContextClassLoader().getResource("com/jme3x/jfx/window/window.fxml");
-			final URL css = Thread.currentThread().getContextClassLoader().getResource("com/jme3x/jfx/window/window.css");
+			final URL location = getWindowRessource();
+			final URL css = getWindowCss();
 			fxmlLoader.setLocation(location);
 			fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 			this.outer = fxmlLoader.load(location.openStream());
@@ -121,8 +121,26 @@ public abstract class AbstractWindow extends AbstractHud {
 	protected abstract void afterInit();
 
 	/**
-	 * can be called from any Thread, if not jfx thread is async
+	 * Override for custom window arrangement
 	 * 
+	 * @return
+	 */
+	protected URL getWindowRessource() {
+		return Thread.currentThread().getContextClassLoader().getResource("com/jme3x/jfx/window/window.fxml");
+	}
+
+	/**
+	 * Override for custom style
+	 * 
+	 * @return
+	 */
+	protected URL getWindowCss() {
+		return Thread.currentThread().getContextClassLoader().getResource("com/jme3x/jfx/window/window.css");
+	}
+
+	/**
+	 * can be called from any Thread, if not jfx thread is async
+	 *
 	 * @param title
 	 */
 	public void setLayoutX(final double x) {
@@ -135,7 +153,7 @@ public abstract class AbstractWindow extends AbstractHud {
 
 	/**
 	 * can be called from any Thread, if not jfx thread is async
-	 * 
+	 *
 	 * @param title
 	 */
 	public void setLayoutY(final double y) {

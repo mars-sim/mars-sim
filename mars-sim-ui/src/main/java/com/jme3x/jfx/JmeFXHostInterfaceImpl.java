@@ -4,6 +4,9 @@
  */
 package com.jme3x.jfx;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +44,20 @@ public class JmeFXHostInterfaceImpl implements HostInterface {
 
 	@Override
 	public void setEmbeddedScene(final EmbeddedSceneInterface embeddedScene) {
-
 		this.jmeFxContainer.scenePeer = embeddedScene;
 		if (this.jmeFxContainer.scenePeer == null) {
 			return;
 		}
+
+		// 8_u60 and later fix
+		try {
+			Method scaler = embeddedScene.getClass().getMethod("setPixelScaleFactor", float.class);
+			scaler.setAccessible(true);
+			scaler.invoke(embeddedScene, 1f);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+
 		if (this.jmeFxContainer.pWidth > 0 && this.jmeFxContainer.pHeight > 0) {
 			this.jmeFxContainer.scenePeer.setSize(this.jmeFxContainer.pWidth, this.jmeFxContainer.pHeight);
 		}

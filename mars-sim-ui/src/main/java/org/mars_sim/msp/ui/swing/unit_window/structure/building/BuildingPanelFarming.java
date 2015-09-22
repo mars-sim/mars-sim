@@ -61,10 +61,10 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 import de.matthiasmann.twl.GUI;
+import de.matthiasmann.twl.demo.test.TestUtils;
 import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
 import de.matthiasmann.twl.theme.ThemeManager;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.InventoryDemo;
-import test.TestUtils;
 
 
 /**

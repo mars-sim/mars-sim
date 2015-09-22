@@ -67,7 +67,7 @@ public class GuiManager {
 	 * @param fullscreen
 	 * @param customMaterial
 	 *            allows to specify a own Material for the gui, requires the MaterialParamter Texture with type Texture, wich will contain the RenderTarget of jfx
-	 *
+	 * 
 	 */
 	public GuiManager(final Node guiParent, final AssetManager assetManager, final Application application, final boolean fullscreen, final ICursorDisplayProvider cursorDisplayProvider, final Material customMaterial) {
 		this(guiParent, assetManager, application, fullscreen, cursorDisplayProvider, customMaterial, true);
@@ -84,7 +84,7 @@ public class GuiManager {
 	 *            allows to specify a own Material for the gui, requires the MaterialParamter Texture with type Texture, wich will contain the RenderTarget of jfx
 	 * @param useRecommendedJFXSettings
 	 *            -> apply some default settings that are recommended
-	 *
+	 * 
 	 */
 	public GuiManager(final Node guiParent, final AssetManager assetManager, final Application application, final boolean fullscreen, final ICursorDisplayProvider cursorDisplayProvider, final Material customMaterial, boolean useRecommendedJFXSettings) {
 		this(guiParent, assetManager, application, fullscreen, cursorDisplayProvider, customMaterial, useRecommendedJFXSettings, false);
@@ -102,7 +102,7 @@ public class GuiManager {
 	 *            allows to specify a own Material for the gui, requires the MaterialParamter Texture with type Texture, wich will contain the RenderTarget of jfx
 	 * @param useRecommendedJFXSettings
 	 *            -> apply some default settings that are recommended
-	 *
+	 * 
 	 */
 	public GuiManager(final Node guiParent, final AssetManager assetManager, final Application application, final boolean fullscreen, final ICursorDisplayProvider cursorDisplayProvider, final Material customMaterial,
 			boolean useRecommendedJFXSettings, boolean resumeJMEFocusOnEventFail) {
@@ -363,7 +363,7 @@ public class GuiManager {
 	/**
 	 * used for maximized window and window movements to restrict certains areas, eg a custom taskbar order is up right down left <br>
 	 * not a copy!
-	 *
+	 * 
 	 * @return
 	 */
 	public float[] getWindowMargins() {
