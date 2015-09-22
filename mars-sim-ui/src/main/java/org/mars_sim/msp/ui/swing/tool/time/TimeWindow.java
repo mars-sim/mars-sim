@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.08 2015-02-24
+ * @version 3.08 2015-09-22
 
  * @author Scott Davis
  */
@@ -109,8 +109,6 @@ implements ClockListener {
 	private JSliderMW pulseSlider;
 
 	private JButton pauseButton;
-
-	private int sliderpos = 50;
 
 	private int solElapsedCache = 0;
 
@@ -261,12 +259,6 @@ implements ClockListener {
 
 		pulsespersecondPane.add(pauseButton, BorderLayout.SOUTH);
 
-		// create time ratio readout showing real / earth / mars time ratios currently set
-		try {
-			setTimeRatioFromSlider(sliderpos);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
 		String s = master.getTimeString(master.getTimeRatio());
@@ -278,14 +270,16 @@ implements ClockListener {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio() ) ); //$NON-NLS-1$
-				} else {
-					pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()) );
+					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
+				} 
+				else {
+					pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));
 				}
 			}
 		});
 
 		// Create pulse slider
+		int sliderpos = calculateSliderValue(master.getTimeRatio());
 		pulseSlider = new JSliderMW(1, 100, sliderpos);
 		pulseSlider.setMajorTickSpacing(10);
 		pulseSlider.setMinorTickSpacing(2);
@@ -294,19 +288,20 @@ implements ClockListener {
 			public void stateChanged(ChangeEvent e) {
 				try {
 					setTimeRatioFromSlider(pulseSlider.getValue());
-					if (pulseCurRatioLabel.getText().contains(":") )  //$NON-NLS-1$
-					{pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));}
-					else
-					{pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio() ) );} //$NON-NLS-1$
+					if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
+					    pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));
+					}
+					else {
+					    pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
+					} 
 				}
 				catch (Exception e2) {
 					logger.log(Level.SEVERE,e2.getMessage());
 				}
-
 			}
 		});
 		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
-
+		setTimeRatioSlider(master.getTimeRatio());
 
 		// Pack window
 		pack();
@@ -318,53 +313,116 @@ implements ClockListener {
 
 	/**
 	 * Sets the time ratio for the simulation based on the slider value.
+	 * @param sliderValue the slider value (1 to 100).
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
-		double slope;
-		double offset;
-		double timeRatio;
-
-		// sliderValue should be in the range 1..100 inclusive, if not it defaults to
-		// 1:15 real:sim ratio
-		if ((sliderValue > 0) && (sliderValue <= 100)) {
-			if (sliderValue >= (midslider + minslider)) {
-
-				// Creates exponential curve between ratioatmid and maxratio.
-				double a = ratioatmid;
-				double b = maxratio / ratioatmid;
-				double T = maxslider - midslider;
-				double expo = (sliderValue - minslider - midslider) / T;
-				timeRatio = a * Math.pow(b, expo);
-			}
-			else if (sliderValue >= minslider) {
-
-				// Creates exponential curve between 1 and ratioatmid.
-				double a = 1D;
-				double b = ratioatmid;
-				double T = midslider;
-				double expo = (sliderValue - minslider) / T;
-				timeRatio = a * Math.pow(b, expo);
-			}
-			else {
-				// generates ratios < 1
-				offset = minfracratio;
-				slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-				timeRatio = (sliderValue - minfracpos) * slope + offset;
-			}
-		}
-		else {
-			timeRatio = 15D;
-			throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
-		}
+		
+	    double timeRatio = calculateTimeRatioFromSlider(sliderValue);
 
 		master.setTimeRatio(timeRatio);
 	}
+	
+	/**
+	 * Calculates a time ratio given a slider value.
+	 * @param sliderValue the slider value from 1 to 100.
+	 * @return time ratio value (simulation time / real time).
+	 */
+	public static double calculateTimeRatioFromSlider(int sliderValue) {
+	    
+	    double slope;
+        double offset;
+        double timeRatio;
 
-	public void setTimeRatioSlider(int r) {
-		//moves the slider bar appropriately given the ratio
-		if (r>=pulseSlider.getMinimum() && r <= pulseSlider.getMaximum()) {
-			pulseSlider.setValue(r);
-		}
+        // sliderValue should be in the range 1..100 inclusive, if not it defaults to
+        // 1:15 real:sim ratio
+        if ((sliderValue > 0) && (sliderValue <= 100)) {
+            if (sliderValue >= (midslider + minslider)) {
+
+                // Creates exponential curve between ratioatmid and maxratio.
+                double a = ratioatmid;
+                double b = maxratio / ratioatmid;
+                double T = maxslider - midslider;
+                double expo = (sliderValue - minslider - midslider) / T;
+                timeRatio = a * Math.pow(b, expo);
+            }
+            else if (sliderValue >= minslider) {
+
+                // Creates exponential curve between 1 and ratioatmid.
+                double a = 1D;
+                double b = ratioatmid;
+                double T = midslider;
+                double expo = (sliderValue - minslider) / T;
+                timeRatio = a * Math.pow(b, expo);
+            }
+            else {
+                // generates ratios < 1
+                offset = minfracratio;
+                slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
+                timeRatio = (sliderValue - minfracpos) * slope + offset;
+            }
+        }
+        else {
+            timeRatio = 15D;
+            throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
+        }
+        
+        return timeRatio;
+	}
+
+	/**
+	 * Moves the slider bar appropriately given the time ratio.
+	 * @param timeRatio the time ratio (simulation time / real time).
+	 */
+	public void setTimeRatioSlider(double timeRatio) {
+		
+	    int sliderValue = calculateSliderValue(timeRatio);
+	    
+	    pulseSlider.setValue(sliderValue);
+	}
+	
+	/**
+	 * Calculates a slider value based on a time ratio.
+	 * Note: This method is the inverse of calculateTimeRatioFromSlider.
+	 * @param timeRatio time ratio (simulation time / real time). (.001 to 10800)
+	 * @return slider value (1 to 100).
+	 */
+	public static int calculateSliderValue(double timeRatio) {
+	    
+	    int sliderValue = 1;
+        
+        // Moves the slider bar appropriately given the time ratio.
+        if (timeRatio < minfracratio) {
+            sliderValue = 1;
+        }
+        else if (timeRatio > maxratio) {
+            sliderValue = 100;
+        }
+        else if ((timeRatio >= ratioatmid) && (timeRatio <= maxratio)) {
+            double a = ratioatmid;
+            double b = maxratio / ratioatmid;
+            double T = maxslider - midslider;
+            double temp1 = timeRatio / a;
+            double expo = Math.log(temp1) / Math.log(b);
+            double temp2 = (expo * T) + minslider + midslider;
+            sliderValue = (int) Math.round(temp2);
+        }
+        else if ((timeRatio >= 1D) && (timeRatio <= ratioatmid)) {
+            double a = 1D;
+            double b = ratioatmid;
+            double T = midslider;
+            double temp1 = timeRatio / a;
+            double expo = Math.log(temp1) / Math.log(b);
+            double temp2 = (expo * T) + minslider;
+            sliderValue = (int) Math.round(temp2);
+        }
+        else {
+            double offset = minfracratio;
+            double slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
+            double temp1 = ((timeRatio - offset) / slope) + minfracpos; 
+            sliderValue = (int) Math.round(temp1);
+        }
+        
+        return sliderValue;
 	}
 
 	public void setSeason() {

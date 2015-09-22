@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.08 2015-04-02
+ * @version 3.08 2015-09-22
  * @author Scott Davis
  */
 
@@ -125,6 +125,9 @@ public class MasterClock implements Serializable { // Runnable,
         //setupClockListenerTask();
 
         clockThreadTask = new ClockThreadTask();
+        
+        // Setting the initial time ratio.
+        setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
     }
 
     /**
@@ -313,16 +316,15 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public double getTimePulse() {
 
-        // Get time ratio from simulation configuration.
-        if (timeRatio == 0) setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
-
         double timePulse;
         if (timeRatio > 0D) {
             double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
             //System.out.print(" timePulseSeconds : " + timePulseSeconds);
         }
-        else timePulse = 1D;
+        else {
+            timePulse = 1D;
+        }
         //System.out.println(" timePulse : " + timePulse );
         return timePulse;
     }
