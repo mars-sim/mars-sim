@@ -328,7 +328,7 @@ public class MarsNode {
 
 		String title = l.getText();
 		PopOver popover = new PopOver();
-		popover.setDetachedTitle(title);
+		//popover.setDetachedTitle(title);
 		popover.setDetachable(true);
 		popover.show(l);
 

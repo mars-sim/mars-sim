@@ -21,7 +21,7 @@ public class MetaTaskUtil {
     private static List<MetaTask> metaTasks = null;
     private static List<MetaTask> workHourTasks = null;
     private static List<MetaTask> nonWorkHourTasks = null;
-    private static List<MetaTask> allHourTasks = null;
+    private static List<MetaTask> anyHourTasks = null;
 
     private static List<MetaTask> robotMetaTasks = null;
     /**
@@ -36,81 +36,27 @@ public class MetaTaskUtil {
 
         metaTasks = new ArrayList<MetaTask>();
 
+        // should initialize any-hour tasks first before other tasks
+        initAnyHourTasks();
         initWorkHourTasks();
         initNonWorkHourTasks();
-        initAllHourTasks();
 
         Set<MetaTask> s = new HashSet<>();
-
+        // TODO: NOT WORKING: fix the use of set to avoid duplicate tasks
+        // Using Set for adding below should prevent duplicate tasks when creating the task list
         s.addAll(workHourTasks);
         s.addAll(nonWorkHourTasks);
-        s.addAll(allHourTasks);
+        s.addAll(anyHourTasks);
 
         metaTasks.addAll(s);
 
-        //metaTasks = ListUtils.union(workHourTasks, nonWorkHourTasks);
-        //metaTasks = ListUtils.union(metaTasks, allHourTasks);
+        //System.out.println("done initializeMetaTasks()");
 
-/*
-        // Populate metaTasks list with all meta tasks.
-        metaTasks.add(new AssistScientificStudyResearcherMeta());
-        metaTasks.add(new CompileScientificStudyResultsMeta());
-        metaTasks.add(new ConnectWithEarthMeta());
-        metaTasks.add(new ConsolidateContainersMeta());
-        metaTasks.add(new ConstructBuildingMeta());
-        metaTasks.add(new CookMealMeta());
-        metaTasks.add(new DigLocalIceMeta());
-        metaTasks.add(new DigLocalRegolithMeta());
-        metaTasks.add(new EatMealMeta());
-        metaTasks.add(new InviteStudyCollaboratorMeta());
-        metaTasks.add(new LoadVehicleEVAMeta());
-        metaTasks.add(new LoadVehicleGarageMeta());
-        metaTasks.add(new MaintainGroundVehicleEVAMeta());
-        metaTasks.add(new MaintainGroundVehicleGarageMeta());
-        metaTasks.add(new MaintenanceEVAMeta());
-        metaTasks.add(new MaintenanceMeta());
-        metaTasks.add(new ManufactureConstructionMaterialsMeta());
-        metaTasks.add(new ManufactureGoodMeta());
-        metaTasks.add(new ObserveAstronomicalObjectsMeta());
-        metaTasks.add(new PeerReviewStudyPaperMeta());
-        metaTasks.add(new PerformLaboratoryExperimentMeta());
-        metaTasks.add(new PerformLaboratoryResearchMeta());
-        metaTasks.add(new PerformMathematicalModelingMeta());
-        metaTasks.add(new PrepareDessertMeta());
-        metaTasks.add(new PrescribeMedicationMeta());
-        metaTasks.add(new ProduceFoodMeta());
-        metaTasks.add(new ProposeScientificStudyMeta());
-		metaTasks.add(new ReadMeta());
-        metaTasks.add(new RelaxMeta());
-        metaTasks.add(new RepairEVAMalfunctionMeta());
-        metaTasks.add(new RepairMalfunctionMeta());
-        metaTasks.add(new RequestMedicalTreatmentMeta());
-        metaTasks.add(new RespondToStudyInvitationMeta());
-        metaTasks.add(new RestingMedicalRecoveryMeta());
-        metaTasks.add(new ReviewJobReassignmentMeta());
-        metaTasks.add(new ReturnLightUtilityVehicleMeta());
-        metaTasks.add(new SalvageBuildingMeta());
-        metaTasks.add(new SalvageGoodMeta());
-        metaTasks.add(new SelfTreatHealthProblemMeta());
-        metaTasks.add(new SleepMeta());
-        metaTasks.add(new StudyFieldSamplesMeta());
-        metaTasks.add(new TeachMeta());
-        metaTasks.add(new TendGreenhouseMeta());
-        metaTasks.add(new ToggleFuelPowerSourceMeta());
-        metaTasks.add(new ToggleResourceProcessMeta());
-        metaTasks.add(new TreatMedicalPatientMeta());
-        metaTasks.add(new UnloadVehicleEVAMeta());
-        metaTasks.add(new UnloadVehicleGarageMeta());
-        metaTasks.add(new WalkMeta());
-        metaTasks.add(new WorkoutMeta());
-        metaTasks.add(new WriteReportMeta());
-        metaTasks.add(new YogaMeta());
-*/
     }
 
 
     /**
-     * Lazy initialization of work hour metaTasks list.
+     * Lazy initialization of work-hour metaTasks list.
      */
     private static void initWorkHourTasks() {
 
@@ -126,8 +72,8 @@ public class MetaTaskUtil {
         tasks.add(new DigLocalIceMeta());
         tasks.add(new DigLocalRegolithMeta());
         tasks.add(new InviteStudyCollaboratorMeta());
-        tasks.add(new LoadVehicleEVAMeta());
-        tasks.add(new LoadVehicleGarageMeta());
+        //tasks.add(new LoadVehicleEVAMeta());
+        //tasks.add(new LoadVehicleGarageMeta());
         tasks.add(new MaintainGroundVehicleEVAMeta());
         tasks.add(new MaintainGroundVehicleGarageMeta());
         tasks.add(new MaintenanceEVAMeta());
@@ -143,7 +89,7 @@ public class MetaTaskUtil {
         tasks.add(new ProduceFoodMeta());
         tasks.add(new ProposeScientificStudyMeta());
         tasks.add(new RespondToStudyInvitationMeta());
-        tasks.add(new ReturnLightUtilityVehicleMeta());
+        //tasks.add(new ReturnLightUtilityVehicleMeta());
         tasks.add(new ReviewJobReassignmentMeta());
         tasks.add(new SalvageBuildingMeta());
         tasks.add(new SalvageGoodMeta());
@@ -157,18 +103,20 @@ public class MetaTaskUtil {
         tasks.add(new UnloadVehicleGarageMeta());
         tasks.add(new WriteReportMeta());
 
-        initAllHourTasks();
-
         Set<MetaTask> s = new HashSet<>();
-
+        // TODO: NOT WORKING: fix the use of set to avoid duplicate tasks
+        // Using Set for adding below should prevent duplicate tasks when creating the task list
         s.addAll(tasks);
-        s.addAll(allHourTasks);
+        s.addAll(anyHourTasks);
 
         workHourTasks.addAll(s);
+
+        //System.out.println("size of workHourTasks : " + workHourTasks.size());
+
     }
 
     /**
-     * Lazy initialization of work hour metaTasks list.
+     * Lazy initialization of non-work hour metaTasks list.
      */
     private static void initNonWorkHourTasks() {
 
@@ -179,36 +127,43 @@ public class MetaTaskUtil {
     	tasks.add(new ReadMeta());
     	tasks.add(new ConnectWithEarthMeta());
         tasks.add(new SleepMeta());
-        tasks.add(new WalkMeta());
         tasks.add(new WorkoutMeta());
         tasks.add(new YogaMeta());
 
-        initAllHourTasks();
-
         Set<MetaTask> s = new HashSet<>();
-
+        // TODO: NOT WORKING: fix the use of set to avoid duplicate tasks
+        // Using Set for adding below should prevent duplicate tasks when creating the task list
         s.addAll(tasks);
-        s.addAll(allHourTasks);
+        s.addAll(anyHourTasks);
 
         nonWorkHourTasks.addAll(s);
+
+        //System.out.println("size of nonWorkHourTasks : " + nonWorkHourTasks.size());
+
     }
 
 
     /**
-     * Lazy initialization of work hour metaTasks list.
+     * Lazy initialization of any-hour metaTasks list.
      */
-    private static void initAllHourTasks() {
+    private static void initAnyHourTasks() {
 
-        allHourTasks = new ArrayList<MetaTask>();
+        anyHourTasks = new ArrayList<MetaTask>();
 
-        allHourTasks.add(new EatMealMeta());
-        allHourTasks.add(new ObserveAstronomicalObjectsMeta());
-        allHourTasks.add(new RelaxMeta());
-        allHourTasks.add(new RepairEVAMalfunctionMeta());
-        allHourTasks.add(new RepairMalfunctionMeta());
-        allHourTasks.add(new RequestMedicalTreatmentMeta());
-        allHourTasks.add(new RestingMedicalRecoveryMeta());
-        allHourTasks.add(new SelfTreatHealthProblemMeta());
+        anyHourTasks.add(new EatMealMeta());
+        anyHourTasks.add(new LoadVehicleEVAMeta());
+        anyHourTasks.add(new LoadVehicleGarageMeta());
+        anyHourTasks.add(new ObserveAstronomicalObjectsMeta());
+        anyHourTasks.add(new RelaxMeta());
+        anyHourTasks.add(new RepairEVAMalfunctionMeta());
+        anyHourTasks.add(new RepairMalfunctionMeta());
+        anyHourTasks.add(new RequestMedicalTreatmentMeta());
+        anyHourTasks.add(new RestingMedicalRecoveryMeta());
+        anyHourTasks.add(new ReturnLightUtilityVehicleMeta());
+        anyHourTasks.add(new SelfTreatHealthProblemMeta());
+        anyHourTasks.add(new WalkMeta());
+
+        //System.out.println("size of anyHourTasks : " + anyHourTasks.size());
     }
 
 
@@ -252,6 +207,8 @@ public class MetaTaskUtil {
            initializeMetaTasks();
        }
 
+       //System.out.println("size of metaTasks : " + metaTasks.size());
+
        // Return copy of meta task list.
        return new ArrayList<MetaTask>(metaTasks);
    }
@@ -293,12 +250,12 @@ public class MetaTaskUtil {
    public static List<MetaTask> getAllWorkHourTasks() {
 
        // Lazy initialize all hour meta tasks list if necessary.
-       if (allHourTasks == null) {
-           initAllHourTasks();
+       if (anyHourTasks == null) {
+           initAnyHourTasks();
        }
 
        // Return copy of all hour meta task list.
-       return new ArrayList<MetaTask>(allHourTasks);
+       return new ArrayList<MetaTask>(anyHourTasks);
    }
 
     /**

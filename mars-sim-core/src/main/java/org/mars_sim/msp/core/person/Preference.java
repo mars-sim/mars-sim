@@ -46,10 +46,14 @@ import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
+//import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.time.MarsClock;
 
+
+/**
+ * The Preference class handles the task preferences of a person
+ */
 public class Preference implements Serializable {
 
 	/** default serial id. */
