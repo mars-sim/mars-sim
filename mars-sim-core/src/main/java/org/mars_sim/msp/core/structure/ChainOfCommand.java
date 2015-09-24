@@ -21,6 +21,10 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 
+/**
+ * The ChainOfCommand class creates and assigns a person a role type based on one's job type
+ * and the size of the settlement
+ */
 public class ChainOfCommand implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -36,18 +40,18 @@ public class ChainOfCommand implements Serializable {
     private boolean has7Divisions = false;
     private boolean has3Divisions = false;
 
-    private Map<RoleType, Integer> jobRole;
+    private Map<RoleType, Integer> roleType;
 
     private Settlement settlement;
 
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
-		jobRole = new ConcurrentHashMap<>();
-		initializeJobRole();
+		roleType = new ConcurrentHashMap<>();
+		initializeRoleType();
 
 	}
 
-	public void initializeJobRole() {
+	public void initializeRoleType() {
 
 	}
 
@@ -378,15 +382,15 @@ public class ChainOfCommand implements Serializable {
        	//System.out.println("safetySlot : "+ safetySlot);
     }
 */
-    public void addJobRoleMap(RoleType key) {
+    public void addRoleTypeMap(RoleType key) {
     	int value = getNumFilled(key);
-    	jobRole.put(key, value + 1);
+    	roleType.put(key, value + 1);
     }
 
-    public void releaseJobRoleMap(RoleType key) {
+    public void releaseRoleTypeMap(RoleType key) {
     	int value = getNumFilled(key);
     	if (value != 0)
-    		jobRole.put(key, value - 1);
+    		roleType.put(key, value - 1);
     	// Check if the job Role released is manager/commander/chief
     	reelect(key);
     }
@@ -412,8 +416,8 @@ public class ChainOfCommand implements Serializable {
 
     public int getNumFilled(RoleType key) {
     	int value = 0;
-    	if (jobRole.containsKey(key))
-    		value = jobRole.get(key);
+    	if (roleType.containsKey(key))
+    		value = roleType.get(key);
     	 return value;
     }
 /*

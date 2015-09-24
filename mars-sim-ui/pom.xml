@@ -10,6 +10,7 @@
 	<artifactId>mars-sim-ui</artifactId>
 	<version>3.08-SNAPSHOT</version>
 	<name>mars-sim-ui</name>
+
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
@@ -234,6 +235,11 @@
 		<artifactId>xpp3</artifactId>
 		<version>1.1.6</version>
    </dependency>
+	<dependency>
+		<groupId>eu.hansolo.enzo</groupId>
+		<artifactId>Enzo</artifactId>
+		<version>0.3.1</version>
+	</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

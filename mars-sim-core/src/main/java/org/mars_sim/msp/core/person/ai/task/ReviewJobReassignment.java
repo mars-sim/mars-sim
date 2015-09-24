@@ -77,6 +77,7 @@ implements Serializable {
             		|| roleType.equals(RoleType.COMMANDER)
         			|| roleType.equals(RoleType.SUB_COMMANDER) ) {
 
+                System.out.println("ReviewJobReassignment's roleType : " + roleType);
 
 	            // If person is in a settlement, try to find an office building.
 	            Building officeBuilding = getAvailableOffice(person);
@@ -99,29 +100,27 @@ implements Serializable {
                     Person tempPerson = i.next();
                     List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
                     int last = list.size() -1 ;
-                    String status = list.get(list.size()-1).getStatus();
+                    String status = list.get(last).getStatus();
 
                     if (status != null )
                     	if (status.equals("Pending")) {
-	                    	// Reviews user's rating
+	                        System.out.println("ReviewJobReassignment : start reviewing job reassignment\n");
+
+		                	// TODO in future
+	                        // 1. Reviews user's rating
 		                	int rating = list.get(last).getJobRating();
-		                	// what TODO ?
-	                    	// Reviews this person's preference
-		                	// what TODO ?
-	                    	// have conversation
-		                	// what TODO ?
+		                	//if (rating <=1) disapproved !
+	                    	// 2. Reviews this person's preference
+		                	// 3. May go to him/her to have a chat
+		                	// 4. Approve/disapprove the job change
 
-		                	//list.get(last).setAuthorizedBy(person.getName() + "--" + person.getRole().getType()); // or getRole().toString();
-		                	// TODO : added title of the approval authority
-		                	//if (clock == null)
-		                	//	clock = Simulation.instance().getMasterClock().getMarsClock();
-		                	//list.get(last).setTimeAuthorized(clock);
-		                	//list.get(last).setStatus("Approved");
+		                	String pendingJobStr = list.get(last).getJobType();
 
-		                	String selectedJobStr = list.get(last).getJobType();
 		                	// Updates the job
-		                	person.getMind().setJob(selectedJobStr, true, JobManager.USER, "Approved", person.getName() + "--" + person.getRole().getType());
-	                        //System.out.println("ReviewJobReassignment : done setting job");
+		                	String approvedBy =  person.getName() + "(" + person.getRole().getType() + ")";
+		                	person.getMind().reassignJob(pendingJobStr, true, JobManager.USER, "Approved", approvedBy);
+	                        System.out.println("ReviewJobReassignment : " + tempPerson + "'s job is just reassigned to "
+	                        		+ pendingJobStr + "\n");
 	                    }
 	                } // end of while
 	            } // end of roleType

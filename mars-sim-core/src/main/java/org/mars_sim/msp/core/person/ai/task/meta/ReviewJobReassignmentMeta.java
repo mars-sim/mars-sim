@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * Meta task for the WriteReport task.
+ * The Meta task for the ReviewJobReassignment task.
  */
 public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
@@ -65,8 +65,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
 	                //System.out.println("ReviewJobReassignmentMeta's little fatigue and stress");
 
-
-	                //System.out.println("ReviewJobReassignmentMeta's roleType : " + roleType);
+	                System.out.println("ReviewJobReassignmentMeta's roleType : " + roleType);
 
 		            	//result += 150D;
 	/*
@@ -90,8 +89,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
 	                    if (status != null)
 		                    if (status.equals("Pending")) {
-		                    	//System.out.println("ReviewJobReassignmentMeta status equals pending");
-		                    	result += 600D;
+		                    	System.out.println("ReviewJobReassignmentMeta status equals pending");
+		                    	result += 1200D;
 		                    	result = result + result * preference / 10D ;
 		                    }
 	                    //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result : " + result);

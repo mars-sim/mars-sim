@@ -11,19 +11,24 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
+/**
+ * The JobAssignment class represents the characteristics of a job type
+ */
 public class JobAssignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String initiator;
     private String jobType;
-    private MarsClock timeSubmitted;
+    private String timeSubmitted;
     private String authorizedBy;
     private MarsClock timeAuthorized;
     private String status; // "Pending" or "Approved"
     private int jobRating;
 
-	public JobAssignment(MarsClock timeSubmitted, String jobType, String initiator, String status, String authorizedBy) {
+
+	public JobAssignment(String timeSubmitted, String jobType, String initiator, String status, String authorizedBy) {
+		// 2015-09-23 Changed the first parameter of JobAssignment.java from MarsClock to String.
 		this.timeSubmitted = timeSubmitted;
 		this.jobType = jobType;
 		this.initiator = initiator;
@@ -36,7 +41,7 @@ public class JobAssignment implements Serializable {
 
 	}
 
-	public MarsClock getTimeSubmitted() {
+	public String getTimeSubmitted() {
 		return timeSubmitted;
 	}
 

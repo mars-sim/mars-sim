@@ -15,8 +15,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
 
+/**
+ * The JobHistory class stores a person's a list of job types/positions over time
+ */
 public class JobHistory implements Serializable  {
-
 
     private static final long serialVersionUID = 1L;
 
@@ -52,54 +54,105 @@ public class JobHistory implements Serializable  {
      * Saves the new job assignment for a person.
      */
     // 2015-03-30 Added saveJob()
+	// Called by assignJob() in Mind.java
     public void saveJob(Job newJob, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
-    	//if (job == null) System.out.println("saveJob() : job is null");
-    	//if (person.getGender() == null) System.out.println("saveJob() : person.getGender() is null");
+    	System.out.println("\n< " + person.getName() + " > ");
+    	System.out.println("JobHistory.java : starting saveJob() & calling addJob()");
     	String newJobStr = newJob.getName(person.getGender());
-    	processJob(newJobStr, initiator, status, approvedBy, addNewJobAssignment);
+    	addJob(newJobStr, initiator, status, approvedBy, addNewJobAssignment);
     }
 
+    /**
+     * Saves a pending new job assignment for a person.
+     */
+    // 2015-03-30 Added saveJob()
+    // 2015-09-23 Renamed saveJob() to savePendingJob()
+    // Called by TabPanelCareer's actionPerformed()
+    public void savePendingJob(String newJobStr, String initiator, String status, String approvedBy, boolean addAssignment) {
+    	System.out.println("\n< " + person.getName() + " > ");
+    	System.out.println("JobHistory.java : savePendingJob() : starting");
+    	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
+   		System.out.println("JobHistory.java : jobAssignmentList's size was " + jobAssignmentList.size());
 
-    public void processJob(String newJobStr, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
-    	//System.out.println("calling JobHistory's processJob()");
+  		//if (status.equals("Pending")) { // sanity check okay
+	   		int last = jobAssignmentList.size() - 1;
+			// Obtain last entry's lastJobStr
+			String lastJobStr = jobAssignmentList.get(last).getJobType();
+			System.out.println("JobHistory.java : pending newJobStr = " + newJobStr + "   lastJobStr = " + lastJobStr);
+        	System.out.println("JobHistory.java : status is Pending");
 
-    	if (jobAssignmentList.isEmpty()) {
-    		MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
-    		jobAssignmentList.add(new JobAssignment(startClock, newJobStr, initiator, status, approvedBy));
+        	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
+			jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+    		System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
+  		//}
+    }
+
+    /**
+     * Adds the new job to the job assignment list
+     */
+    //2015-09-23 Renamed processJob to addJob()
+    public void addJob(String newJobStr, String initiator, String status, String approvedBy, boolean addNewJobAssignment) {
+    	System.out.println("JobHistory.java : addJob() : starting");
+    	System.out.println("JobHistory.java : jobAssignmentList's size was " + jobAssignmentList.size());
+    	// at the start of sim OR for a pop <= 4 settlement in which approvedBy = "User"
+    	if (jobAssignmentList.isEmpty()
+    			|| approvedBy.equals(JobManager.USER)) {
+    	   	System.out.println("JobHistory.java : addJob() : jobAssignmentList was empty. Adding the first job");
+    		//MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
+        	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
+    		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+      		System.out.println("JobHistory.java : newJobStr = " + newJobStr);
+    		System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
     	}
 
+    	else if (approvedBy.equals(JobManager.USER)) {
+    	   	System.out.println("JobHistory.java : addJob() : the user approves the flexible job reassignment (for pop <= 4 only)");
+    		int last = jobAssignmentList.size() - 1;
+			// Obtain last entry's lastJobStr
+    		String lastJobStr = jobAssignmentList.get(last).getJobType();
+    		System.out.println("JobHistory.java : newJobStr = " + newJobStr + "   lastJobStr = " + lastJobStr);
+        	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
+    		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+      		System.out.println("JobHistory.java : newJobStr = " + newJobStr);
+    		System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
+    	}
     	else {
     		//System.out.println("JobHistory : jobAssignmentList.size() is currently " + jobAssignmentList.size());
     		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
     		String lastJobStr = jobAssignmentList.get(last).getJobType();
     		//System.out.println("JobHistory : lastJobStr was " + lastJobStr);
-        	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
-    		// Compare lastJobStr with newJobStr
-    		if (!lastJobStr.equals(newJobStr)) { // for sanity check
-        		//System.out.println("JobHistory : newJobStr was " + newJobStr);
-	        	if (addNewJobAssignment) // status.equals("Pending"))
-	        		jobAssignmentList.add(new JobAssignment(clock, newJobStr, initiator, status, approvedBy));
 
-	    		else if (status.equals("Approved")) {
-	    			String boss = person.getName() + "--" + person.getRole().getType();
-	        		jobAssignmentList.get(last).setAuthorizedBy(boss); // or getRole().toString();
+    		// Compare lastJobStr with newJobStr
+    		if (!lastJobStr.equals(newJobStr)) { // for sanity check only, no need to check but just in case
+        		System.out.println("JobHistory.java : newJobStr = " + newJobStr + "   lastJobStr = " + lastJobStr);
+
+        		if (approvedBy.equals(JobManager.SETTLEMENT)){ // based on the emergent need of the settlement
+            	   	System.out.println("JobHistory.java : addJob() : approving the job reassignment as dictated by settlement's need ");
+            		//MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
+                	if (clock == null)
+                		clock = Simulation.instance().getMasterClock().getMarsClock();
+            	   	jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+            		System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
+        		}
+
+        		else if (status.equals("Approved")) { // same as checking if addNewJobAssignment is false
+	            	System.out.println("JobHistory.java : status is approved");
+	    			//String boss = person.getName() + "--" + person.getRole().getType();
+	        		jobAssignmentList.get(last).setAuthorizedBy(approvedBy); // or getRole().toString();
 	        		//MarsClock clock = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	            	jobAssignmentList.get(last).setStatus("Approved");
+	            	if (clock == null)
+	            		clock = Simulation.instance().getMasterClock().getMarsClock();
 	            	jobAssignmentList.get(last).setTimeAuthorized(clock);
-	            	//System.out.println("JobHistory : Just approved by " + jobAssignmentList.get(last).getAuthorizedBy());
-	         	    //System.out.println("JobHistory : processJob() : new status is " + jobAssignmentList.get(last).getStatus());
+	            	System.out.println("JobHistory.java : Just approved by " + approvedBy);
+	            	//System.out.println("JobHistory : addJob() : new status is " + jobAssignmentList.get(last).getStatus());
+            		System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
 	    		}
         	}
     	}
     }
-    /**
-     * Saves the new job assignment for a person.
-     */
-    // 2015-03-30 Added saveJob()
-    public void saveJob(String newJobStr, String initiator, String status, String approvedBy, boolean addAssignment) {
-    	processJob(newJobStr, initiator, status, approvedBy, addAssignment);
-    }
-
 }

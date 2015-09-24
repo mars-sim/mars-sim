@@ -136,7 +136,7 @@ implements Serializable {
         	if (newJob != null) //System.out.println("timePassing() : newJob is null");
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
-	           		setJob(newJob, false, JobManager.SETTLEMENT, "Approved", "Settlement");
+	           		setJob(newJob, false, JobManager.SETTLEMENT, "Approved", JobManager.SETTLEMENT);
 	           	}
         	//System.out.println(person.getName() + "'s jobLock is false.");
         }
@@ -244,12 +244,17 @@ implements Serializable {
 
 
     /**
-     * Sets the person's job.
+     * Reassign the person's job.
      * @param newJob the new job
      * @param bypassingJobLock
      */
-    public void setJob(String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-
+    // 2015-09-23 Renamed to reassignedJob()
+    // Called by
+    // (1) ReviewJobReassignment's constructor or
+    // (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
+    public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+    	System.out.println("\n< " + person.getName() + " > ");
+	    System.out.println("Mind.java : reassignJob() : starting ");
     	Job newJob = null;
     	Iterator<Job> i = JobManager.getJobs().iterator();
 	    while (i.hasNext()) {
@@ -261,35 +266,70 @@ implements Serializable {
 		}
 
     	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
-
     }
 
 
-    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+    /**
+     * Sets the person's job.
+     * @param newJob the new job
+     * @param bypassingJobLock
+     */
+    // Called by
+    // (1) setRole() in Person.java (if a person has a Manager role type)
+    // (2) checkJob() in Mind.java
+    // (3) getInitialJob() in Mind.java
+    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+    	System.out.println("\n< " + person.getName() + " > ");
+    	System.out.println("Mind.java : setJob() : starting");
+    	// if (newJob == null) System.out.println("setJob() : newJob is null");
+    	// TODO : if jobLock is true, will it allow the job to be changed?
+    	String newJobStr = newJob.getName(person.getGender());
 
-    	//System.out.println("Mind.java : calling assignJob()");
+	    //System.out.println("Mind.java : setJob() : calling assignJob() ");
+    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+    }
+
+    /**
+     * Assigns a person a new job.
+     * @param newJob the new job
+     * @param bypassingJobLock
+     */
+    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
+    	System.out.println("Mind.java : assignJob() : starting");
     	String jobStr = null;
     	if (job == null)
     		jobStr = null;
     	else
     		jobStr = job.getName(person.getGender());
 
-    	//System.out.println("Mind.java : assignJob() : jobStr is " + jobStr);
-    	//System.out.println("Mind.java : assignJob() : job is " + job);
+    	//System.out.println("Mind.java : assignJob() : old jobStr was " + jobStr);
+    	//System.out.println("Mind.java : assignJob() : old job was " + job);
+       	System.out.println("Mind.java : assignJob() : bypassingJobLock = " + bypassingJobLock
+       			+ "  jobLock = " + jobLock);
 
     	// TODO : check if the initiator's role allows the job to be changed
     	if (!newJobStr.equals(jobStr)) {
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
-		        // 2015-03-30 Added saveJob()
+
+	            System.out.println("Mind.java : assignJob(): approvedBy = " + approvedBy);
+		        // 2015-09-23 Set up 4 approvedBy conditions
 		        if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
-		        	if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4)
-		        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
-		        		//System.out.println("Mind.java : assignJob() : <= 4, just calling JobHistory's saveJob() ");
+		        	System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's saveJob(), approved by Settlement");
+		        	person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
-		        else {// if (approvedBy.equals(a person)  {
+		        else if (approvedBy.equals(JobManager.USER)) {
+		        // if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
+	        		System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's saveJob(), approved by User");
+	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
+		        }
+		        else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
+	            	System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by Mission Control");
 	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
-	            	//System.out.println("Mind.java : assignJob() : just calling JobHistory's saveJob() ");
+		        }
+		        else { // if approvedBy = name of commander/subcommander/mayor/president
+	        		System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by a Senior Official");
+	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
 		        }
 
 		    	//System.out.println("just called JobHistory's saveJob()");
@@ -299,6 +339,9 @@ implements Serializable {
 		        jobLock = true;
 
 		        int population = 0;
+
+		        // Assign a new role type to the person and others in a settlement
+		        // immediately after the change of one's job type
 		        if (person.getSettlement() != null) {
 		        	ChainOfCommand cc = person.getSettlement().getChainOfCommand();
 		        	population = person.getSettlement().getAllAssociatedPeople().size();
@@ -319,22 +362,6 @@ implements Serializable {
     	    }
     	}
     }
-
-
-    /**
-     * Sets the person's job.
-     * @param newJob the new job
-     * @param bypassingJobLock
-     */
-    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-    	// if (newJob == null) System.out.println("setJob() : newJob is null");
-    	// TODO : if jobLock is true, will it allow the job to be changed?
-    	String newJobStr = newJob.getName(person.getGender());
-
-    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
-
-    }
-
 
     /**
      * Returns true if person has an active mission.

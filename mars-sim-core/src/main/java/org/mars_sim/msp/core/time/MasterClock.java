@@ -125,7 +125,7 @@ public class MasterClock implements Serializable { // Runnable,
         //setupClockListenerTask();
 
         clockThreadTask = new ClockThreadTask();
-        
+
         // Setting the initial time ratio.
         setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
     }
@@ -325,7 +325,7 @@ public class MasterClock implements Serializable { // Runnable,
         else {
             timePulse = 1D;
         }
-        //System.out.println(" timePulse : " + timePulse );
+        //System.out.println("  timePulse : " + timePulse );
         return timePulse;
     }
 
@@ -393,7 +393,7 @@ public class MasterClock implements Serializable { // Runnable,
 	            t2 = System.nanoTime();
 	            //dt = t2 - t1;
 	            sleepTime = PERIOD - t2 + t1 - overSleepTime;
-	            //System.out.println("sleep : " + sleepTime/1_000_000 + "ms");
+	            //System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
 	            if (sleepTime > 0 && keepRunning) {
 		            // Pause simulation to allow other threads to complete.

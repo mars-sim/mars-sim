@@ -293,6 +293,7 @@ public class MarsClock implements Serializable {
      *  @return formatted time stamp string
      */
     public String getDateTimeStamp() {
+    	// TODO: are the "two" whitespace intentional?
         return new StringBuilder(getDateString()).append("  ").append(getTimeString()).toString();
     }
 
@@ -301,7 +302,7 @@ public class MarsClock implements Serializable {
      *  @return formatted String
      */
     public static String getDateTimeStamp(MarsClock time) {
-        return new StringBuilder(getDateString(time)).append(" ").append(getMillisolString(time)).toString();
+        return new StringBuilder(getDateString(time)).append(" 0").append(getMillisolString(time)).toString();
     }
 
 

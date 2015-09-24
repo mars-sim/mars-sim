@@ -181,7 +181,7 @@ implements ActionListener {
 			JLabel rLabel = new JLabel("Rating : ");//, JLabel.CENTER);
 			ratingPanel.add(rLabel);
 			starRater = new StarRater(5, 0, 0);
-			starRater.setToolTipText("Click to submit rating to supervisor (once every 7 sols)");
+			starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
 
     		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 
@@ -192,7 +192,7 @@ implements ActionListener {
 	                	if (starRater.isEnabled()) {
 		                    //System.out.println(selection);
 		            		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		                	ratingLabel.setText("Rating Submitted on " + clock.getDateTimeStamp());
+		                	ratingLabel.setText("Rating submitted on " + MarsClock.getDateTimeStamp(clock));
 		                	ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			        		starRater.setRating(selection);
 			        		list.get(list.size()-1).setJobRating(selection);
@@ -309,77 +309,60 @@ implements ActionListener {
 				jobComboBox.setEnabled(false);
 				roleTF.setText("N/A");
 				starRater.disable();
+
 			} else {
-				if(clock == null)
+
+				if (clock == null)
 					clock = Simulation.instance().getMasterClock().getMarsClock();
 		        // check for the passing of each day
 		        int solElapsed = MarsClock.getSolOfYear(clock);
-		        if ( solElapsed != solCache && solElapsed > solRatingSubmitted + RATING_DAYS) {
-					starRater.setRating(0);
-		        	starRater.enable();
-		        	ratingLabel.setText("");
-		        	solCache = solElapsed;
-		        }
 
-		        int pop = 0;
-		        Settlement settlement = null;
-		        if (person.getAssociatedSettlement() != null)
-		        	settlement = person.getAssociatedSettlement();
-		        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-		        	settlement = (Settlement) person.getTopContainerUnit();
-		        }
-		        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-		        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
-		        	settlement = vehicle.getSettlement();
-		        }
+	        	// If the rating or job reassignment request is at least one day ago
+		        if (solElapsed != solCache) {
 
-		        pop = settlement.getAllAssociatedPeople().size();
+		        	if (solElapsed > solRatingSubmitted + RATING_DAYS) {
+						starRater.setRating(0);
+			        	starRater.enable();
+			        	ratingLabel.setText("");
+		        	}
 
-		        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
-		        	// If this request is at least one day ago
-			        if (solElapsed != solCache)
-			        	if (statusCache.equals("Pending")) {
+			        int pop = 0;
+			        Settlement settlement = null;
+			        if (person.getAssociatedSettlement() != null)
+			        	settlement = person.getAssociatedSettlement();
+			        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+			        	settlement = (Settlement) person.getTopContainerUnit();
+			        }
+			        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
+			        	settlement = vehicle.getSettlement();
+			        }
 
-				        	solCache = solElapsed;
-				        	System.out.println("change of day and statusCache was still pending ");
-				        	//String selectedJobStr = (String) jobComboBox.getSelectedItem();
-				        	//String jobStrCache = person.getMind().getJob().getName(person.getGender());
+			        pop = settlement.getAllAssociatedPeople().size();
 
-				        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
-				        	int last = jobAssignmentList.size()-1;
+			        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 
-				        	String status = jobAssignmentList.get(last).getStatus();
-				        	String selectedJobStr = jobAssignmentList.get(last).getJobType();
+			        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+			        	int last = jobAssignmentList.size()-1;
 
-				        	// Check if the chief or the commander has approved the job reassignment
-				        	// if the reassignment is not pending (such as null or approved), process with making the new job show up
-				        	if (status.equals("Approved")) {
+			        	String status = jobAssignmentList.get(last).getStatus();
+
+			        	if (status.equals("Pending")) {
+					    	System.out.println("\n< " + person.getName() + " > ");
+				        	System.out.println("status still pending");
+			        	}
+
+			        	else if (status.equals("Approved")) {
+
+			        		if (statusCache.equals("Pending")) {
+						    	System.out.println("\n< " + person.getName() + " > ");
 
 				        		statusCache = "Approved";
-				        		System.out.println("TabPanelCareer : just set statusCache to Approved.  selectedJobStr : " + selectedJobStr);
+					        	System.out.println("status is now approved");
 
-							    // Sets the job to the newly selected job
-							    //person.getMind().setJob(selectedJobStr, true, JobManager.USER);
-
+					        	String selectedJobStr = jobAssignmentList.get(last).getJobType();
 							    jobComboBox.setSelectedItem(selectedJobStr);
 							    System.out.println("TabPanelCareer : selectedJobStr is " + selectedJobStr);
-
-							    // TODO: Inform jobHistoryTableModel to update a person's job to selectedJob
-							    // as soon as the combobox selection is changed or wait for checking of "approval" ?
-	/*
-								Job selectedJob = null;
-								Iterator<Job> i = JobManager.getJobs().iterator();
-								while (i.hasNext()) {
-								    Job job = i.next();
-								    String n = job.getName(person.getGender());
-									if (selectedJobStr.equals(n))
-										// gets selectedJob by running through iterator to match it
-								        selectedJob = job;
-								}
-	*/
-
-								//System.out.println("Yes they are diff");
-								//jobCache = selectedJobStr;
 
 					        	jobComboBox.setEnabled(true);
 
@@ -388,40 +371,26 @@ implements ActionListener {
 
 								// updates the jobHistoryList in jobHistoryTableModel
 								jobHistoryTableModel.update();
-					        }
+
+								String roleNew = person.getRole().toString();
+								if (!roleCache.equals(roleNew)) {
+									System.out.println("TabPanelCareer : Old Role : " + roleCache + "   New Role : " + roleNew);
+									roleCache = roleNew;
+									roleTF.setText(roleCache);
+									System.out.println("TabPanelCareer : just set New Role in TextField");
+								}
+			        		}
 				        }
 			        }
+		        	solCache = solElapsed;
+			    } // end of if (solElapsed != solCache)
+			} // end of else if not dead)
 
-				String roleNew = person.getRole().toString();
-				if ( !roleCache.equals(roleNew)) {
-					System.out.println("old role : "+ roleCache + "    new role : "+ roleNew);
-					roleCache = roleNew;
-					roleTF.setText(roleCache);
-				}
-			}
-/*
-			else {
-				//jobCache = mind.getJob().getName(person.getGender());
-				//currentJob = mind.getJob().getName(person.getGender());
-
-				String selectedJobStr = (String) jobComboBox.getSelectedItem();
-
-				if (!jobCache.equals(selectedJobStr)) {
-				    jobComboBox.setSelectedItem(selectedJobStr);
-				    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
-				    // as soon as the combobox selection is changed or wait for checking of "approval" ?
-					jobHistoryTableModel.update();
-					jobCache = selectedJobStr;
-				}
-			}
-*/
-		}
-		else if (unit instanceof Robot) {
+		} else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getPhysicalCondition().isDead();
 			deathInfo = robot.getPhysicalCondition().getDeathDetails();
-
 		}
 
 	}
@@ -487,30 +456,25 @@ implements ActionListener {
 
 					// if the population is beyond 4
 			        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
+				    	System.out.println("\n< " + person.getName() + " > ");
+			        	System.out.println("TabPanelCareer : actionPerformed() : pop > 4");
 
 			        	if (clock == null)
 			        		clock = Simulation.instance().getMasterClock().getMarsClock();
 
 						errorLabel.setForeground(Color.BLUE);
-			        	errorLabel.setText("Reassignment to " + selectedJobStr
-			        			+  " submitted on " + clock.getDateTimeStamp());
+			        	errorLabel.setText("Job Reassignment submitted on " + MarsClock.getDateTimeStamp(clock));
 			        	errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-			        	// submit the new job assignment
-			        	//List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
-			        	//int size = jobAssignmentList.size();
-
 			        	JobHistory jh = person.getJobHistory();
-			        	//jh.getJobAssignmentList().add(new JobAssignment(null, selectedJobStr, JobManager.USER, "Pending", null));
+			        	System.out.println("TabPanelCareer : actionPerformed() : calling savePendingJob()");
+			        	jh.savePendingJob(selectedJobStr, JobManager.USER, "Pending", null, true);
 
-			        	jh.saveJob(selectedJobStr, JobManager.USER, "Pending", null, true);
-			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setStatus("Pending");
-
-			        	statusCache = "Pending";
+			        	//statusCache = "Pending";
 
 			        	// set the combobox selection back to its previous job type for the time being until the reassignment is approved
 			        	jobComboBox.setSelectedItem(jobCache);
-			        	//jobComboBox.setSelectedItem(selectedJobStr);
+
 			        	// disable the combobox so that user cannot submit job reassignment for a period of time
 						jobComboBox.setEnabled(false);
 
@@ -519,25 +483,12 @@ implements ActionListener {
 			        }
 
 			        else if (pop > 0 && pop <= UnitManager.POPULATION_WITH_COMMANDER){
+			        	System.out.println("TabPanelCareer : actionPerformed() : pop <= 4");
 						errorLabel.setForeground(Color.RED);
 						errorLabel.setText("");
 					    jobComboBox.setSelectedItem(selectedJobStr);
-					    // TODO: should we inform jobHistoryTableModel to update a person's job to selectedJob
-					    // as soon as the combobox selection is changed or wait for checking of "approval" ?
-					    // update to the new selected job
 
-/*
-					    Job selectedJob = null;
-						Iterator<Job> i = JobManager.getJobs().iterator();
-						while (i.hasNext()) {
-						    Job job = i.next();
-						    String n = job.getName(person.getGender());
-							if (selectedJobStr.equals(n))
-								// gets selectedJob by running through iterator to match it
-						        selectedJob = job;
-						}
-*/
-						person.getMind().setJob(selectedJobStr, true, JobManager.USER, "Approved", JobManager.SETTLEMENT);
+						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, "Approved", JobManager.USER);
 
 						List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
 
@@ -553,26 +504,6 @@ implements ActionListener {
 
 			        }
 				}
-/*
-				person = (Person) unit;
-				String jobStrCache = person.getMind().getJob().getName(person.getGender());
-				if (!selectedJobStr.equals(jobStrCache)) {
-					Job selectedJob = null;
-					Iterator<Job> i = JobManager.getJobs().iterator();
-					while (i.hasNext()) {
-					    Job job = i.next();
-					    String n = job.getName(person.getGender());
-						if (selectedJobStr.equals(n))
-							// gets selectedJob by running through iterator to match it
-					        selectedJob = job;
-					}
-					// update to the new selected job
-					person.getMind().setJob(selectedJob, true, JobManager.USER);
-					// updates the jobHistoryList in jobHistoryTableModel
-					jobHistoryTableModel.update();
-					System.out.println("Yes they are diff");
-				}
-*/
 			}
 
 
@@ -668,7 +599,7 @@ implements ActionListener {
 			int r = jobAssignmentList.size() - row - 1;
 			ja = jobAssignmentList.get(r);
 			//System.out.println(" r is " + r);
-			if (column == 0) return MarsClock.getDateTimeStamp(ja.getTimeSubmitted());
+			if (column == 0) return ja.getTimeSubmitted();   //MarsClock.getDateTimeStamp(ja.getTimeSubmitted());
 			else if (column == 1) return ja.getJobType();
 			else if (column == 2) return ja.getInitiator();
 			else if (column == 3) return ja.getStatus();
