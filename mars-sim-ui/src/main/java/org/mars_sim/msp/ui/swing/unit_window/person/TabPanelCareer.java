@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
@@ -71,7 +72,7 @@ implements ActionListener {
 
 	private String jobCache = "";
 	private String roleCache;
-	private String statusCache = "Approved";
+	private JobAssignmentType statusCache = JobAssignmentType.APPROVED;
 
 
 	private int solRatingSubmitted = 0;
@@ -181,7 +182,7 @@ implements ActionListener {
 			JLabel rLabel = new JLabel("Rating : ");//, JLabel.CENTER);
 			ratingPanel.add(rLabel);
 			starRater = new StarRater(5, 0, 0);
-			starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
+			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
 
     		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 
@@ -345,19 +346,19 @@ implements ActionListener {
 			        	List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
 			        	int last = jobAssignmentList.size()-1;
 
-			        	String status = jobAssignmentList.get(last).getStatus();
+			        	JobAssignmentType status = jobAssignmentList.get(last).getStatus();
 
-			        	if (status.equals("Pending")) {
+			        	if (status.equals(JobAssignmentType.PENDING)) {
 					    	System.out.println("\n< " + person.getName() + " > ");
 				        	System.out.println("status still pending");
 			        	}
 
-			        	else if (status.equals("Approved")) {
+			        	else if (status.equals(JobAssignmentType.APPROVED)) {
 
-			        		if (statusCache.equals("Pending")) {
+			        		if (statusCache.equals(JobAssignmentType.PENDING)) {
 						    	System.out.println("\n< " + person.getName() + " > ");
 
-				        		statusCache = "Approved";
+				        		statusCache = JobAssignmentType.APPROVED;
 					        	System.out.println("status is now approved");
 
 					        	String selectedJobStr = jobAssignmentList.get(last).getJobType();
@@ -456,8 +457,8 @@ implements ActionListener {
 
 					// if the population is beyond 4
 			        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
-				    	System.out.println("\n< " + person.getName() + " > ");
-			        	System.out.println("TabPanelCareer : actionPerformed() : pop > 4");
+				    	//System.out.println("\n< " + person.getName() + " > ");
+			        	//System.out.println("TabPanelCareer : actionPerformed() : pop > 4");
 
 			        	if (clock == null)
 			        		clock = Simulation.instance().getMasterClock().getMarsClock();
@@ -467,10 +468,10 @@ implements ActionListener {
 			        	errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 			        	JobHistory jh = person.getJobHistory();
-			        	System.out.println("TabPanelCareer : actionPerformed() : calling savePendingJob()");
-			        	jh.savePendingJob(selectedJobStr, JobManager.USER, "Pending", null, true);
+			        	//System.out.println("TabPanelCareer : actionPerformed() : calling savePendingJob()");
+			        	jh.savePendingJob(selectedJobStr, JobManager.USER, JobAssignmentType.PENDING, null, true);
 
-			        	//statusCache = "Pending";
+			        	//statusCache = JobAssignmentType.PENDING;
 
 			        	// set the combobox selection back to its previous job type for the time being until the reassignment is approved
 			        	jobComboBox.setSelectedItem(jobCache);
@@ -488,15 +489,16 @@ implements ActionListener {
 						errorLabel.setText("");
 					    jobComboBox.setSelectedItem(selectedJobStr);
 
-						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, "Approved", JobManager.USER);
+						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, JobAssignmentType.APPROVED, JobManager.USER);
 
-						List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+						//List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
 
 			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setAuthorizedBy("Settlement");
-			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setStatus("Approved");
-	                	if (clock == null)
-	                		clock = Simulation.instance().getMasterClock().getMarsClock();
-			        	jobAssignmentList.get(jobAssignmentList.size()-1).setTimeAuthorized(clock);
+			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setStatus(JobAssignmentType.APPROVED);
+	                	//if (clock == null)
+	                	//	clock = Simulation.instance().getMasterClock().getMarsClock();
+			        	//jobAssignmentList.get(jobAssignmentList.size()-1).setTimeAuthorized(clock);
+
 						// updates the jobHistoryList in jobHistoryTableModel
 						jobHistoryTableModel.update();
 						//System.out.println("Yes they are diff");

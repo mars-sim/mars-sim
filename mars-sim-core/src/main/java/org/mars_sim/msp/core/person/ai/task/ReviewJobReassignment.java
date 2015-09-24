@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -37,6 +39,8 @@ implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+
+	private static transient Logger logger = Logger.getLogger(ReviewJobReassignment.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -69,15 +73,18 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        	if (roleType == null)
-            	roleType = person.getRole().getType();
+        	//if (roleType == null)
+        	//NOTE: sometimes enum is null. sometimes it is NOT. why?
+            roleType = person.getRole().getType();
 
             if (roleType.equals(RoleType.PRESIDENT)
                 	|| roleType.equals(RoleType.MAYOR)
             		|| roleType.equals(RoleType.COMMANDER)
         			|| roleType.equals(RoleType.SUB_COMMANDER) ) {
 
-                System.out.println("ReviewJobReassignment's roleType : " + roleType);
+                //System.out.println("ReviewJobReassignment : "
+                //		+ person.getName() + " (" + roleType
+                //		+ ") is going to review job reassignment");
 
 	            // If person is in a settlement, try to find an office building.
 	            Building officeBuilding = getAvailableOffice(person);
@@ -100,11 +107,12 @@ implements Serializable {
                     Person tempPerson = i.next();
                     List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
                     int last = list.size() -1 ;
-                    String status = list.get(last).getStatus();
+                    JobAssignmentType status = list.get(last).getStatus();
 
-                    if (status != null )
-                    	if (status.equals("Pending")) {
-	                        System.out.println("ReviewJobReassignment : start reviewing job reassignment\n");
+                    if (status != null)
+                    	if (status.equals(JobAssignmentType.PENDING)) {
+	                        //System.out.println("ReviewJobReassignment : start reviewing job reassignment request from "
+	                        //		+ tempPerson.getName() + "\n");
 
 		                	// TODO in future
 	                        // 1. Reviews user's rating
@@ -118,9 +126,10 @@ implements Serializable {
 
 		                	// Updates the job
 		                	String approvedBy =  person.getName() + "(" + person.getRole().getType() + ")";
-		                	person.getMind().reassignJob(pendingJobStr, true, JobManager.USER, "Approved", approvedBy);
-	                        System.out.println("ReviewJobReassignment : " + tempPerson + "'s job is just reassigned to "
-	                        		+ pendingJobStr + "\n");
+		                	tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER, JobAssignmentType.APPROVED, approvedBy);
+		                	logger.info("ReviewJobReassignment : " + approvedBy + " just approved "
+		                			+ tempPerson + "'s job reassignment as "
+	                        		+ pendingJobStr);// + "\n");
 	                    }
 	                } // end of while
 	            } // end of roleType

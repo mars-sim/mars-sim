@@ -33,11 +33,13 @@ import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformMathematicalModelingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RelaxMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RequestMedicalTreatmentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RespondToStudyInvitationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageGoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
@@ -104,6 +106,7 @@ public class Preference implements Serializable {
 
 		int result = 0 ;
 
+		// Computes the adjustment from a person's natural attributes
         double a =  naturalAttributeManager.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE)/50D * 1.5;
         double t =  naturalAttributeManager.getAttribute(NaturalAttribute.TEACHING)/50D * 1.5;
         double l =  naturalAttributeManager.getAttribute(NaturalAttribute.LEADERSHIP)/50D * 1.5;
@@ -118,7 +121,10 @@ public class Preference implements Serializable {
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
 
-			result = RandomUtil.getRandomInt(-4, 4);
+			// add randomness
+			result = RandomUtil.getRandomInt(-3, 3);
+
+			// Note: the preference score on a metaTask is adjusted by a person's natural attributes
 
 			if (metaTask instanceof CompileScientificStudyResultsMeta
 				|| metaTask instanceof AssistScientificStudyResearcherMeta
@@ -128,7 +134,8 @@ public class Preference implements Serializable {
 				|| metaTask instanceof RespondToStudyInvitationMeta)
 				result += (int)a;
 
-			if (metaTask instanceof TeachMeta)
+			if (metaTask instanceof TeachMeta
+				|| metaTask instanceof ReadMeta)
 				result += (int)t;
 
 			if (metaTask instanceof LoadVehicleEVAMeta
@@ -146,19 +153,25 @@ public class Preference implements Serializable {
 				result += (int)sa;
 
 			if (metaTask instanceof ProposeScientificStudyMeta
-				|| metaTask instanceof InviteStudyCollaboratorMeta)
+				|| metaTask instanceof InviteStudyCollaboratorMeta
+				|| metaTask instanceof ReviewJobReassignmentMeta)
 				result += (int)l;
 
 			if (metaTask instanceof TreatMedicalPatientMeta)
 				result += (int)((se + se)/2D);
 
 			if (metaTask instanceof RequestMedicalTreatmentMeta)
+				// if a person is stress-resilient and relatively emotional stable,
+				// he will more likely endure pain and less likely ask to be medicated.
 				result -= (int)se;
+
 
 			if (metaTask instanceof RelaxMeta
 				|| metaTask instanceof SleepMeta
 				|| metaTask instanceof WorkoutMeta
 				|| metaTask instanceof YogaMeta)
+				// if a person has high spirituality score and thus have ways to deal with stress
+				// he will less likely require extra time to relax/sleep/workout/do yoga.
 				result -= (int)ss;
 
 			if (result > 8)
@@ -281,7 +294,7 @@ public class Preference implements Serializable {
 	}
 
     /**
-     * Performs the actions per frame
+     * Performs the action per frame
      * @param time amount of time passing (in millisols).
      */
 	// 2015-06-29 Added timePassing()

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -180,7 +181,7 @@ implements VehicleOperator, MissionMember, Serializable {
 			getRole().setNewRoleType(type);
 			Job job = JobManager.getJob("Manager");
             if (job != null) {
-                mind.setJob(job, true, JobManager.SETTLEMENT, "Approved", JobManager.SETTLEMENT);
+                mind.setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
             }
 		}
 		else

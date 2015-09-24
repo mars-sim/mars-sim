@@ -11,11 +11,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -36,6 +38,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
     public RoleType roleType;
 
+    public MarsClock clock;
+
     @Override
     public String getName() {
         return NAME;
@@ -50,10 +54,15 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
+        //System.out.println("ReviewJobReassignmentMeta : getProbability()");
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        	if (roleType == null)
-            	roleType = person.getRole().getType();
+        	//if (roleType == null)
+        	//NOTE: sometimes enum is null. sometimes it is NOT. why?
+            roleType = person.getRole().getType();
+
+            //System.out.println("ReviewJobReassignmentMeta " + person.getName() + " (" + roleType + ") checking in");
 
             if (roleType.equals(RoleType.PRESIDENT)
                 	|| roleType.equals(RoleType.MAYOR)
@@ -63,9 +72,10 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();
 	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-	                //System.out.println("ReviewJobReassignmentMeta's little fatigue and stress");
+	                //System.out.println("ReviewJobReassignmentMeta : fatigue and stress within limits");
 
-	                System.out.println("ReviewJobReassignmentMeta's roleType : " + roleType);
+	                //System.out.println("ReviewJobReassignmentMeta "
+	                //		+ person.getName() + " (" + roleType + ") : checking for any job reassignments");
 
 		            	//result += 150D;
 	/*
@@ -79,27 +89,59 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 		            	result += 100D;
 	*/
 
-	            	double preference = person.getPreference().getPreferenceScore(this);
 		       	    // Get highest person skill level.
 	        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
 	                    Person tempPerson = i.next();
-	                    List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
-	                    String status = list.get(list.size()-1).getStatus();
 
-	                    if (status != null)
-		                    if (status.equals("Pending")) {
-		                    	System.out.println("ReviewJobReassignmentMeta status equals pending");
-		                    	result += 1200D;
-		                    	result = result + result * preference / 10D ;
+	                    // commander and sub-commander should not approved his/her own job reassignment
+	                    if (roleType.equals(RoleType.SUB_COMMANDER)
+		                    && tempPerson.getRole().getType().equals(RoleType.SUB_COMMANDER))
+	                    	; // do nothing
+
+	                    else if (roleType.equals(RoleType.COMMANDER)
+			                    && tempPerson.getRole().getType().equals(RoleType.COMMANDER))
+		                    	; // do nothing
+
+	                    else {
+
+		                    List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
+		                    JobAssignmentType status = list.get(list.size()-1).getStatus();
+
+		                    if (status != null) {
+			                    if (status.equals(JobAssignmentType.PENDING)) {
+			    	                //System.out.println("ReviewJobReassignmentMeta : "
+			    	                //		+ person.getName() + " (" + roleType
+			    	                //		+ ") : found a pending job reassignment request");
+			                    	result += 500D;
+			                    	//result = result + result * preference / 10D ;
+			                    }
 		                    }
-	                    //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result : " + result);
-	    	            // Note: if an office space is not available, one can still write reports
+
+		                    // 2015-09-24 Added adjustment based on how many sol the request has since been submitted
+		                    if (clock == null)
+		    					clock = Simulation.instance().getMasterClock().getMarsClock();
+		                    // if the job assignment submitted date is > 1 sol
+		                    int sol = MarsClock.getTotalSol(clock);
+		                    int solRequest = list.get(list.size()-1).getSolSubmitted();
+		                    if (sol == solRequest+1)
+		                    	result += 1000D;
+		                    else if (sol == solRequest+2)
+		                    	result += 1500D;
+		                    else if (sol == solRequest+3)
+		                    	result += 2000D;
+		                    else if (sol > solRequest+3)
+		                    	result += 3000D;
+
+	                    }
 	                }
 
     	            // Get an available office space.
     	            Building building = ReviewJobReassignment.getAvailableOffice(person);
-    	            //result += 200D;
+    	            if (building != null)
+    	            	result += 200D;
+    	            // Note: if an office space is not available, one can still write reports
+
 
     	            if (building != null) {
     	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
@@ -111,17 +153,20 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
     	                result *= 1.5D;
     	            }
 
+			        // 2015-06-07 Added Preference modifier
+			        if (result > 0)
+			        	result += result / 8D * person.getPreference().getPreferenceScore(this);
+
 		            // Effort-driven task modifier.
 		            result *= person.getPerformanceRating();
 
-			        // 2015-06-07 Added Preference modifier
-			        //if (result > 0)
-			        //	result += result / 4D * person.getPreference().getPreferenceScore(this);
-			        //if (result < 0) result = 0;
+			        if (result < 0) result = 0;
+
+			        //if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
 	            }
             }
         }
-        //if (result > 0) System.out.println("ReviewJobReassignmentMeta's result is " + result);
+
         return result;
     }
 

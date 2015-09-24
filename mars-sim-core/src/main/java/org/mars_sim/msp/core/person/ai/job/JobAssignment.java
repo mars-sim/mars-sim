@@ -23,21 +23,21 @@ public class JobAssignment implements Serializable {
     private String timeSubmitted;
     private String authorizedBy;
     private MarsClock timeAuthorized;
-    private String status; // "Pending" or "Approved"
+    private JobAssignmentType status; // "Pending" or "Approved"
     private int jobRating;
+    private int sol;
 
 
-	public JobAssignment(String timeSubmitted, String jobType, String initiator, String status, String authorizedBy) {
+	public JobAssignment(String timeSubmitted, String jobType, String initiator, JobAssignmentType status, String authorizedBy) {
 		// 2015-09-23 Changed the first parameter of JobAssignment.java from MarsClock to String.
 		this.timeSubmitted = timeSubmitted;
 		this.jobType = jobType;
 		this.initiator = initiator;
 		this.status = status;
-		if (status.equals("Approved")) {
-			MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-			this.timeAuthorized = clock;
-		}
 		this.authorizedBy = authorizedBy;
+
+
+		//this.timeAuthorized = clock;
 
 	}
 
@@ -45,13 +45,22 @@ public class JobAssignment implements Serializable {
 		return timeSubmitted;
 	}
 
-	public MarsClock getTimeAuthorized() {
-		return timeAuthorized;
+	public int getSolSubmitted() {
+		return sol;
 	}
 
-	public void setTimeAuthorized(MarsClock time) {
-		this.timeAuthorized = time;
+	public void setSolSubmitted() {
+		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+		sol = MarsClock.getTotalSol(clock);
 	}
+
+	//public MarsClock getTimeAuthorized() {
+	//	return timeAuthorized;
+	//}
+
+	//public void setTimeAuthorized(MarsClock time) {
+	//	this.timeAuthorized = time;
+	//}
 
 	public String getJobType() {
 		return jobType;
@@ -69,11 +78,11 @@ public class JobAssignment implements Serializable {
 		authorizedBy = name;
 	}
 
-	public String getStatus() {
+	public JobAssignmentType getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(JobAssignmentType status) {
 		//System.out.println("setStatus : status is " + status);
 		this.status = status;
 	}

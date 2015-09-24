@@ -17,7 +17,7 @@ public class Role implements Serializable {
 
 	String name;
 	Person person;
-	RoleType type;
+	RoleType roleType;
 
 	public Role(Person person) { //, RoleType type) {
 		//this.type = type;
@@ -29,9 +29,13 @@ public class Role implements Serializable {
 	 * @return role type
 	 */
 	public RoleType getType() {
-		return type;
+		return roleType;
 	}
 
+	/**
+	 * Releases the old role type.
+	 * @param role type
+	 */
 	public void relinquishOldRoleType(RoleType oldType) {
 //		RoleType type = getType();
 		if (oldType != null) {
@@ -40,18 +44,18 @@ public class Role implements Serializable {
 	}
 
 	/**
-	 * Sets the type of role.
+	 * Sets new role type.
 	 * @param role type
 	 */
-	public void setNewRoleType(RoleType type) {
+	public void setNewRoleType(RoleType newType) {
+        RoleType oldType = getType();
 
-	    if (type != getType()) {
+	    if (newType != oldType) {
 //	        relinquishOldRoleType();
-	        RoleType oldType = getType();
 //	        System.out.println("New RoleType is "+ type);
-	        this.type = type;
-	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(type);
-	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, type);
+	        this.roleType = newType;
+	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
+	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 	        relinquishOldRoleType(oldType);
 	    }
 /*
@@ -77,7 +81,7 @@ public class Role implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return type.getName();
+		return roleType.getName();
 	}
 
 }

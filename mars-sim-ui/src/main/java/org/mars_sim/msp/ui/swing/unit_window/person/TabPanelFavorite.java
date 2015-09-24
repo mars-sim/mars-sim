@@ -17,7 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -126,7 +128,7 @@ extends TabPanel {
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField activityTF = new JTextField(WordUtils.capitalize(activity));
 		activityTF.setEditable(false);
-		activityTF.setColumns(10);
+		activityTF.setColumns(15);
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
 
@@ -151,6 +153,12 @@ extends TabPanel {
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
 		JTable table = new JTable(tableModel);
+
+		// 2015-09-24 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);

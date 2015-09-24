@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Manager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -109,7 +110,7 @@ implements Serializable {
     	if (job instanceof Manager)
     		jobLock = true;
 
-    	checkJob(); //"Approved", "Settlement");
+    	checkJob();
 
         // Take action as necessary.
         takeAction(time);
@@ -136,7 +137,7 @@ implements Serializable {
         	if (newJob != null) //System.out.println("timePassing() : newJob is null");
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
-	           		setJob(newJob, false, JobManager.SETTLEMENT, "Approved", JobManager.SETTLEMENT);
+	           		setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
 	           	}
         	//System.out.println(person.getName() + "'s jobLock is false.");
         }
@@ -145,7 +146,7 @@ implements Serializable {
     //  first called by UnitManager at the start of the sim
     public void getInitialJob(String assignedBy) {
     	Job newJob = JobManager.getNewJob(person);
-    	setJob(newJob, true, assignedBy, "Approved", assignedBy);
+    	setJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
     }
 
     /**
@@ -252,9 +253,9 @@ implements Serializable {
     // Called by
     // (1) ReviewJobReassignment's constructor or
     // (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
-    public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-    	System.out.println("\n< " + person.getName() + " > ");
-	    System.out.println("Mind.java : reassignJob() : starting ");
+    public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
+    	//System.out.println("\n< " + person.getName() + " > ");
+	    //System.out.println("Mind.java : reassignJob() : starting ");
     	Job newJob = null;
     	Iterator<Job> i = JobManager.getJobs().iterator();
 	    while (i.hasNext()) {
@@ -278,9 +279,9 @@ implements Serializable {
     // (1) setRole() in Person.java (if a person has a Manager role type)
     // (2) checkJob() in Mind.java
     // (3) getInitialJob() in Mind.java
-    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-    	System.out.println("\n< " + person.getName() + " > ");
-    	System.out.println("Mind.java : setJob() : starting");
+    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
+    	//System.out.println("\n< " + person.getName() + " > ");
+    	//System.out.println("Mind.java : setJob() : starting");
     	// if (newJob == null) System.out.println("setJob() : newJob is null");
     	// TODO : if jobLock is true, will it allow the job to be changed?
     	String newJobStr = newJob.getName(person.getGender());
@@ -294,8 +295,8 @@ implements Serializable {
      * @param newJob the new job
      * @param bypassingJobLock
      */
-    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, String status, String approvedBy) {
-    	System.out.println("Mind.java : assignJob() : starting");
+    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
+    	//System.out.println("Mind.java : assignJob() : starting");
     	String jobStr = null;
     	if (job == null)
     		jobStr = null;
@@ -304,31 +305,31 @@ implements Serializable {
 
     	//System.out.println("Mind.java : assignJob() : old jobStr was " + jobStr);
     	//System.out.println("Mind.java : assignJob() : old job was " + job);
-       	System.out.println("Mind.java : assignJob() : bypassingJobLock = " + bypassingJobLock
-       			+ "  jobLock = " + jobLock);
+       	//System.out.println("Mind.java : assignJob() : bypassingJobLock = " + bypassingJobLock
+       	//		+ "  jobLock = " + jobLock);
 
     	// TODO : check if the initiator's role allows the job to be changed
     	if (!newJobStr.equals(jobStr)) {
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 
-	            System.out.println("Mind.java : assignJob(): approvedBy = " + approvedBy);
+	            //System.out.println("Mind.java : assignJob(): approvedBy is " + approvedBy);
 		        // 2015-09-23 Set up 4 approvedBy conditions
 		        if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
-		        	System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's saveJob(), approved by Settlement");
+		        	//System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's saveJob(), approved by Settlement");
 		        	person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
 		        else if (approvedBy.equals(JobManager.USER)) {
 		        // if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
-	        		System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's saveJob(), approved by User");
+	        		//System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's saveJob(), approved by User");
 	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
 		        else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
-	            	System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by Mission Control");
+	            	//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by Mission Control");
 	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
 		        }
 		        else { // if approvedBy = name of commander/subcommander/mayor/president
-	        		System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by a Senior Official");
+	        		//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by a Senior Official");
 	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
 		        }
 
