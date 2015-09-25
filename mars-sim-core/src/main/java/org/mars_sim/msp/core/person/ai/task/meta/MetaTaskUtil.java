@@ -124,8 +124,9 @@ public class MetaTaskUtil {
 
     	List<MetaTask> tasks = new ArrayList<MetaTask>();
 
-    	tasks.add(new ReadMeta());
     	tasks.add(new ConnectWithEarthMeta());
+    	tasks.add(new HaveConversationMeta());
+    	tasks.add(new ReadMeta());
         tasks.add(new SleepMeta());
         tasks.add(new WorkoutMeta());
         tasks.add(new YogaMeta());

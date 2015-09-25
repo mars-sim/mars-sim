@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcher
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleGarageMeta;
@@ -99,6 +100,9 @@ public class Preference implements Serializable {
 
 	}
 
+	/*
+	 * Initialize the preference score on each particular task
+	 */
 	public void initializePreference() {
 
 		if (naturalAttributeManager == null)
@@ -117,6 +121,11 @@ public class Preference implements Serializable {
         double se =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRESS_RESILIENCE)
         			+ naturalAttributeManager.getAttribute(NaturalAttribute.EMOTIONAL_STABILITY))/100D * 1.5;
 
+        double ca = (naturalAttributeManager.getAttribute(NaturalAttribute.CONVERSATION)/50D
+    			+ naturalAttributeManager.getAttribute(NaturalAttribute.ATTRACTIVENESS)/200D) * 1.5;
+
+
+
 		Iterator<MetaTask> i = metaTaskList.iterator();
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
@@ -124,7 +133,7 @@ public class Preference implements Serializable {
 			// add randomness
 			result = RandomUtil.getRandomInt(-3, 3);
 
-			// Note: the preference score on a metaTask is adjusted by a person's natural attributes
+			// Note: the preference score on a metaTask is modified by a person's natural attributes
 
 			if (metaTask instanceof CompileScientificStudyResultsMeta
 				|| metaTask instanceof AssistScientificStudyResearcherMeta
@@ -169,10 +178,14 @@ public class Preference implements Serializable {
 			if (metaTask instanceof RelaxMeta
 				|| metaTask instanceof SleepMeta
 				|| metaTask instanceof WorkoutMeta
-				|| metaTask instanceof YogaMeta)
+				|| metaTask instanceof YogaMeta
+				|| metaTask instanceof HaveConversationMeta)
 				// if a person has high spirituality score and thus have ways to deal with stress
 				// he will less likely require extra time to relax/sleep/workout/do yoga.
 				result -= (int)ss;
+
+			if (metaTask instanceof HaveConversationMeta)
+				result += (int)ca;
 
 			if (result > 8)
 				result = 8;
