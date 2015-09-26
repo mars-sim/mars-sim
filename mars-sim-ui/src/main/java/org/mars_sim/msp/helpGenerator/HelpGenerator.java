@@ -415,7 +415,7 @@ public class HelpGenerator {
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
-			String life = resource.isLifeSupport() ? "(life support)" : "";
+			String life = resource.isLifeSupport() ? " (life support)" : "";
 			helpFileTableRow(
 				content,
 				new String[] {
@@ -437,11 +437,11 @@ public class HelpGenerator {
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
 			content = new StringBuffer()
-			.append("<h2>resource \"")
+			.append("<h2>Resource \"")
 			.append(name)
 			.append("\" ")
 			.append(resource.getPhase().getName())
-			.append("</h2>\n")
+			.append("\t</h2>\n")
 			.append("<br/>\n")
 			.append("<p>")
 			.append(getLinkResources("Back to resources overview"))
@@ -727,8 +727,14 @@ public class HelpGenerator {
 		logger.log(Level.INFO,"starting to generate help files");
 		//HelpGenerator.generateVehicleDescriptions();
 		HelpGenerator.generateResourceDescriptions();
+		logger.log(Level.INFO,"generateResourceDescriptions()");
 		HelpGenerator.generatePartsDescriptions();
+		logger.log(Level.INFO,"generatePartsDescriptions()");
 		HelpGenerator.generateProcessDescriptions();
+		//HelpGenerator.generateFoodProductionDescriptions();
+		//HelpGenerator.generateMealsDescriptions();
+		logger.log(Level.INFO,"generateProcessDescriptions()");
+
 		logger.log(
 			Level.INFO,
 			new StringBuffer()

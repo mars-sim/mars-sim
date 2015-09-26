@@ -88,9 +88,9 @@ public class MarsProjectFX extends Application  {
 	        generateHelp = argList.contains("-generateHelp");
 
 		    // this will generate html files for in-game help based on config xml files
-		    if (generateHelp) {
+		    //if (generateHelp) {
 		    	HelpGenerator.generateHtmlHelpFiles();
-		    }
+		    //}
 
 		    if (useGUI) {
 		    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
@@ -105,6 +105,8 @@ public class MarsProjectFX extends Application  {
 			    // Start the simulation.
 			    startSimulation();
 			}
+
+
 		}
     }
 
