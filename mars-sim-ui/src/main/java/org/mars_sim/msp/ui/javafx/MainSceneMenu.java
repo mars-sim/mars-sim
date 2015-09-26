@@ -34,9 +34,9 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.ui.jme3.jme3FX.MarsPanel;
+//import org.mars_sim.msp.ui.jme3.jme3FX.MarsPanel;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.MarsViewer;
+//import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -210,6 +210,7 @@ public class MainSceneMenu extends MenuBar  {
         menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
 
         // --- Menu Notification
+/*
         Menu menuNotification = new Menu("Notification");
 
         Menu newsPaneItem = new Menu("News Pane");
@@ -227,7 +228,6 @@ public class MainSceneMenu extends MenuBar  {
 
 		newsPaneItem.getItems().addAll(slideFromTop, slideFromBottom, showHideNewsPane);
 
-/*
         Menu messageTypeItem = new Menu("Message Type");
         CheckMenuItem medicalItem = new CheckMenuItem("Medical");
         CheckMenuItem malfunctionItem = new CheckMenuItem("Malfunction");
@@ -255,10 +255,9 @@ public class MainSceneMenu extends MenuBar  {
         oneItem.setToggleGroup(queueSizeToggleGroup);
         queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
 
-*/
 
         menuNotification.getItems().addAll(newsPaneItem); // , messageTypeItem,displayTimeItem,queueSizeItem);
-
+*/
 
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
@@ -271,7 +270,7 @@ public class MainSceneMenu extends MenuBar  {
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem5, userGuideItem);
 
-        super.getMenus().addAll(menuFile, menuTools, menuSettings, menuNotification, menuHelp);
+        super.getMenus().addAll(menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
 
 
         newItem.setOnAction(new EventHandler<ActionEvent>() {

@@ -180,6 +180,8 @@ public class MainMenu {
 
        // Starts a new stage for MainScene
 	   stage = new Stage();
+	   stage.setMinWidth(1024);
+	   stage.setMinHeight(400);
 	   stage.setTitle(Simulation.WINDOW_TITLE);
 	   //menuScene = new MenuScene(stage);
 	   //modtoolScene = new ModtoolScene(stage);

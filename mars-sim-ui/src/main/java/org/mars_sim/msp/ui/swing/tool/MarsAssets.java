@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 
 import javax.swing.JComponent;
 
-import org.mars_sim.msp.ui.jme3.jme3FX.HelloPicking;
+//import org.mars_sim.msp.ui.jme3.jme3FX.HelloPicking;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
