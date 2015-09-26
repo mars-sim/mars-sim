@@ -69,7 +69,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
 
         	Vehicle v = (Vehicle) person.getContainerUnit();
 
-            int people = v. getAffectedPeople().size();
+            int people = v.getAffectedPeople().size();
 
             // need to have at least two people to have a social conversation
             if (people >= 2) {
@@ -78,12 +78,12 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             }
         }
 
+        if (result > 0)
+        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        if (result < 0) result = 0;
+
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
-
-        if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
-        if (result < 0) result = 0;
 
         return result;
     }

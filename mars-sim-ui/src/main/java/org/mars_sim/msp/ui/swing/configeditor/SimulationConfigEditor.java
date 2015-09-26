@@ -73,7 +73,7 @@ public class SimulationConfigEditor {
 	 * @param config the simulation configuration.
 	 */
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
-        logger.info("SimulationConfigEditor's constructor is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("SimulationConfigEditor's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members.
 		this.config = config;

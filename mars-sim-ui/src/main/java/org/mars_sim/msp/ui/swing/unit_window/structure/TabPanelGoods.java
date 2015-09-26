@@ -41,6 +41,7 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private JTable goodsTable;
 	private GoodsTableModel goodsTableModel;
 
 	/**
@@ -87,7 +88,7 @@ extends TabPanel {
 		goodsTableModel = new GoodsTableModel(((Settlement) unit).getGoodsManager());
 
 		// Prepare goods table.
-		JTable goodsTable = new JTable(goodsTableModel);
+		goodsTable = new JTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setCellSelectionEnabled(false);
 		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
@@ -120,6 +121,7 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		TableStyle.setTableStyle(goodsTable);
 		goodsTableModel.update();
 	}
 

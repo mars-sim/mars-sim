@@ -37,7 +37,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 //import org.mars_sim.msp.ui.swing.tool.monitor.personTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-/** 
+/**
  * This is a tab panel for robots.
  */
 public class TabPanelBots
@@ -46,7 +46,6 @@ implements MouseListener, ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 
 	private JLabel robotNumLabel;
 	private JLabel robotCapLabel;
@@ -61,7 +60,7 @@ implements MouseListener, ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelBots(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelBots(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
@@ -75,24 +74,24 @@ implements MouseListener, ActionListener {
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelBots.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		topContentPanel.add(titleLabel);      
- 
-		
+		//topContentPanel.add(titleLabel);
+
+
 		// Create robot count panel
 		JPanel robotCountPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 		robotCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(robotCountPanel);
 
-	
+
 		// Create robot num label
 		robotNumCache = settlement.getCurrentNumOfRobots();
-		robotNumLabel = new JLabel(Msg.getString("TabPanelBots.robot", 
+		robotNumLabel = new JLabel(Msg.getString("TabPanelBots.robot",
 		        robotNumCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotNumLabel);
 
 		// Create robot capacity label
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = new JLabel(Msg.getString("TabPanelBots.robotCapacity", 
+		robotCapLabel = new JLabel(Msg.getString("TabPanelBots.robotCapacity",
 		        robotCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotCapLabel);
 
@@ -131,14 +130,14 @@ implements MouseListener, ActionListener {
 		// Update robot num
 		if (robotNumCache != settlement.getCurrentNumOfRobots()) {
 			robotNumCache = settlement.getCurrentNumOfRobots();
-			robotNumLabel.setText(Msg.getString("TabPanelBots.robot", 
+			robotNumLabel.setText(Msg.getString("TabPanelBots.robot",
 			        robotNumCache)); //$NON-NLS-1$
 		}
 
 		// Update robot capacity
 		if (robotCapacityCache != settlement.getRobotCapacity()) {
 			robotCapacityCache = settlement.getRobotCapacity();
-			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity", 
+			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity",
 			        robotCapacityCache)); //$NON-NLS-1$
 		}
 
@@ -146,7 +145,7 @@ implements MouseListener, ActionListener {
 		robotListModel.update();
 		robotScrollPanel.validate();
 	}
-	
+
 	/**
 	 * List model for settlement robot.
 	 */
@@ -154,26 +153,26 @@ implements MouseListener, ActionListener {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
-	    
+
 	    private Settlement settlement;
 	    private List<Robot> robotList;
-	    
+
 	    private RobotListModel(Settlement settlement) {
 	        this.settlement = settlement;
-	        
+
 	        robotList = new ArrayList<Robot>(settlement.getRobots());
 	        Collections.sort(robotList);
 	    }
-	    
+
         @Override
         public Robot getElementAt(int index) {
-            
+
             Robot result = null;
-            
+
             if ((index >= 0) && (index < robotList.size())) {
                 result = robotList.get(index);
             }
-            
+
             return result;
         }
 
@@ -181,29 +180,29 @@ implements MouseListener, ActionListener {
         public int getSize() {
             return robotList.size();
         }
-        
+
         /**
          * Update the robot list model.
          */
         public void update() {
-            
-            if (!robotList.containsAll(settlement.getRobots()) || 
+
+            if (!robotList.containsAll(settlement.getRobots()) ||
                     !settlement.getRobots().containsAll(robotList)) {
-                
+
                 List<Robot> oldRobotList = robotList;
-                
+
                 List<Robot> tempRobotList = new ArrayList<Robot>(settlement.getRobots());
                 Collections.sort(tempRobotList);
-                
+
                 robotList = tempRobotList;
                 fireContentsChanged(this, 0, getSize());
-                
+
                 oldRobotList.clear();
             }
         }
 	}
 
-	/** 
+	/**
 	 * Action event occurs.
 	 * @param event the action event
 	 */
@@ -212,7 +211,7 @@ implements MouseListener, ActionListener {
 		//desktop.addModel(new RobotTableModel((Settlement) unit, false));
 	}
 
-	/** 
+	/**
 	 * Mouse clicked event occurs.
 	 * @param event the mouse event
 	 */

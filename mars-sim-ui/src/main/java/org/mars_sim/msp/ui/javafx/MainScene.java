@@ -329,6 +329,7 @@ public class MainScene {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
+		/*
 		//rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
 		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 		rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
@@ -344,6 +345,7 @@ public class MainScene {
 				}
 			}
 		});
+		*/
 
 		// System.out.println("done running initializeScene()");
 
@@ -361,7 +363,7 @@ public class MainScene {
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
-		logger.info("MainScene's initializeTheme()");
+		//logger.info("MainScene's initializeTheme()");
 
 		// NOTE: it is mandatory to change the theme from 1 to 2 below at the start of the sim
 		// This avoids two display issues:
@@ -370,9 +372,9 @@ public class MainScene {
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
 		//rootStackPane.getStylesheets().clear();
-		theme = 2;
+		theme = 1;
 		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-		updateColor(Color.GREEN, Color.PALEGREEN);
+		updateStatusBarThemeColor(Color.GREEN, Color.PALEGREEN);
 		lookAndFeelTheme = "LightTabaco";
 
 		// SwingUtilities is needed for MacOSX compatibility
@@ -381,72 +383,73 @@ public class MainScene {
 			//swingNode.setContent(desktop);
 		});
 
-		logger.info("done with MainScene's initializeTheme()");
+		//logger.info("done with MainScene's initializeTheme()");
 	}
 
 	/*
 	 * Changes the theme skin of desktop
 	 */
-	public void changeTheme() {
-		logger.info("MainScene's changeTheme()");
+	public void changeTheme(int theme) {
+		this.theme = theme;
+		//logger.info("MainScene's changeTheme()");
 		if (theme == 1) {
 			rootStackPane.getStylesheets().clear();
-			theme = 2;
+			//theme = 2;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-			updateColor(Color.GREEN, Color.PALEGREEN);
+			updateStatusBarThemeColor(Color.GREEN, Color.PALEGREEN);
 			lookAndFeelTheme = "LightTabaco";
 		} else if (theme == 2) {
 			rootStackPane.getStylesheets().clear();
-			theme = 3;
+			//theme = 3;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-			updateColor(Color.ORANGERED, Color.YELLOW);
+			updateStatusBarThemeColor(Color.ORANGERED, Color.YELLOW);
 			lookAndFeelTheme = "Burdeos";
 		} else if (theme == 3) { // dark olive
 			rootStackPane.getStylesheets().clear();
-			theme = 4;
+			//theme = 4;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateColor(Color.LIGHTCYAN, Color.DARKOLIVEGREEN);
+			updateStatusBarThemeColor(Color.LIGHTCYAN, Color.DARKOLIVEGREEN);
 			lookAndFeelTheme = "DarkTabaco";
 		} else if (theme == 4) {
 			// rootStackPane.getStylesheets().clear();
-			theme = 5;
+			//theme = 5;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateColor(Color.BLANCHEDALMOND, Color.GREY);
+			updateStatusBarThemeColor(Color.BLANCHEDALMOND, Color.GREY);
 			lookAndFeelTheme = "DarkGrey";
 		} else if (theme == 5) { // + purple
 			// rootStackPane.getStylesheets().clear();
-			theme = 6;
+			//theme = 6;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateColor(Color.PALEGOLDENROD, Color.BLUEVIOLET);
+			updateStatusBarThemeColor(Color.PALEGOLDENROD, Color.BLUEVIOLET);
 			lookAndFeelTheme = "Night";
 		} else if (theme == 6) { // + skyblue
 			// rootStackPane.getStylesheets().clear();
-			theme = 7;
+			//theme = 7;
 			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-			updateColor(Color.CADETBLUE, Color.LIGHTBLUE);
+			updateStatusBarThemeColor(Color.CADETBLUE, Color.LIGHTBLUE);
 			lookAndFeelTheme = "Snow";
 		} else if (theme == 7) {
 			rootStackPane.getStylesheets().clear();
-			theme = 1;
+			//theme = 1;
 			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateColor(Color.ORANGE, Color.LIGHTSALMON);
+			updateStatusBarThemeColor(Color.ORANGE, Color.LIGHTSALMON);
 			lookAndFeelTheme = "nimrod";
 		}
 
-		logger.info("done with MainScene's changeTheme()");
+		//logger.info("done with MainScene's changeTheme()");
 	}
 
 	/*
 	 * Updates the colors of the texts and buttons on the status bar
 	 */
-	// 2015-08-29 Added updateColor()
-	public void updateColor(Color txtColor, Color btnColor) {
+	// 2015-08-29 Added updateStatusBarThemeColor()
+	public void updateStatusBarThemeColor(Color txtColor, Color btnColor) {
 		memUsedText.setFill(txtColor);
 		memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
@@ -670,7 +673,7 @@ public class MainScene {
 	 */
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
-		logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		// if (earthTimer != null)
 		// earthTimer.stop();
@@ -698,7 +701,7 @@ public class MainScene {
 	 * @param type
 	 */
 	public void loadSimulationProcess(int type) {
-		logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		String dir = null;
 		String title = null;
 		File fileLocn = null;
@@ -789,7 +792,7 @@ public class MainScene {
 	 * Create a new simulation.
 	 */
 	public void newSimulation() {
-		logger.info("MainScene's newSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's newSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
@@ -811,7 +814,7 @@ public class MainScene {
 	 * Performs the process of creating a new simulation.
 	 */
 	private void newSimulationProcess() {
-		logger.info("MainScene's newSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's newSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm on New");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
@@ -840,7 +843,7 @@ public class MainScene {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(int type) {
-		logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -861,7 +864,7 @@ public class MainScene {
 	 */
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
-		logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		File fileLocn = null;
 		String dir = null;
 		String title = null;
@@ -938,7 +941,7 @@ public class MainScene {
 	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves the main menu running
 	 */
 	private void endSim() {
-		logger.info("MainScene's endSim() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's endSim() is on " + Thread.currentThread().getName() + " Thread");
 		Simulation.instance().endSimulation();
 		Simulation.instance().getSimExecutor().shutdownNow();
 
@@ -957,7 +960,7 @@ public class MainScene {
 	 * Exits the current simulation and the main menu.
 	 */
 	public void exitSimulation() {
-		logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
 
 		logger.info("Exiting simulation");
@@ -986,7 +989,7 @@ public class MainScene {
 	 */
 	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(int choice) {
-		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
 		// String currentTheme =
 		// UIManager.getLookAndFeel().getClass().getName();
@@ -1066,7 +1069,7 @@ public class MainScene {
 			}
 		}
 
-		logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 	}
 
 	public MainSceneMenu getMainSceneMenu() {
@@ -1136,7 +1139,7 @@ public class MainScene {
 	 * Initiates the process of saving a simulation.
 	 */
 	public void saveOnExit() {
-		logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
 
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
@@ -1164,7 +1167,7 @@ public class MainScene {
 	//}
 
 	public void openInitialWindows() {
-		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		String OS = System.getProperty("os.name").toLowerCase();
 		//System.out.println("OS is " + OS);
 		if (OS.equals("mac os x")) {

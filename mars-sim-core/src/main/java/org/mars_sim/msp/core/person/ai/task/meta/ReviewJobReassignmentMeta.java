@@ -138,13 +138,9 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
     	            // Get an available office space.
     	            Building building = ReviewJobReassignment.getAvailableOffice(person);
-    	            if (building != null)
-    	            	result += 200D;
-    	            // Note: if an office space is not available, one can still write reports
-
-
     	            if (building != null) {
-    	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+    	            	result += 200D;
+     	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
     	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
     	            }
 

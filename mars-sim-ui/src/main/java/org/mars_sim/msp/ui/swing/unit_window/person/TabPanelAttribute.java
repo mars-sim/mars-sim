@@ -20,7 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -43,7 +45,10 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	private AttributeTableModel attributeTableModel;
+	private JTable attributeTable;
+
 	//private Person person;
 	//private Robot robot;
 
@@ -108,7 +113,7 @@ extends TabPanel {
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table
-		JTable attributeTable = new JTable(attributeTableModel);
+		attributeTable = new JTable(attributeTableModel);
 		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
@@ -120,6 +125,12 @@ extends TabPanel {
 		attributeTable.setAutoCreateRowSorter(true);
 		attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
+		// 2015-09-24 Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(attributeTable);
 	}
@@ -128,7 +139,9 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	@Override
-	public void update() {}
+	public void update() {
+		TableStyle.setTableStyle(attributeTable);
+	}
 
 	/**
 	 * Internal class used as model for the attribute table.

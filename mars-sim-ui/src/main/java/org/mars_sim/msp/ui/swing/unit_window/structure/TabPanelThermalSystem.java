@@ -59,6 +59,7 @@ extends TabPanel {
 	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
 
 	// Data cache
+
 	/** The total heat generated cache. */
 	// 2014-10-25  Changed names of variables to heatGenCapacityCache, heatGenCache
 	private double heatGenCache;
@@ -83,6 +84,9 @@ extends TabPanel {
 	//private JLabel thermalStorageCapacityLabel;
 	/** The total heat stored label. */
 	//private JLabel heatStoredLabel;
+
+	private JTable heatTable ;
+
 	/** Table model for heat info. */
 	private HeatTableModel heatTableModel;
 
@@ -181,7 +185,7 @@ extends TabPanel {
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
 		// Prepare thermal control table.
-		JTable heatTable = new JTable(heatTableModel);
+		heatTable = new JTable(heatTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 
 		heatTable.setCellSelectionEnabled(false);
@@ -258,6 +262,7 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+		TableStyle.setTableStyle(heatTable);
 		// NOT working ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
 		// SINCE thermalSystem is a singleton. heatMode always = null not helpful: HeatMode heatMode = building.getHeatMode();
 		// Check if the old heatGenCapacityCache is different from the latest .

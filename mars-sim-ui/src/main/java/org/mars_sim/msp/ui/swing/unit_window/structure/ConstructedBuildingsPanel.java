@@ -29,6 +29,7 @@ extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private JTable constructedTable;
 	private ConstructedBuildingTableModel constructedTableModel = null;
 
 	/**
@@ -67,7 +68,7 @@ extends JPanel {
 		constructedTableModel = new ConstructedBuildingTableModel(manager);
 
 		// Prepare constructed table.
-		JTable constructedTable = new JTable(constructedTableModel);
+		constructedTable = new JTable(constructedTableModel);
 		scrollPanel.setViewportView(constructedTable);
 		constructedTable.setCellSelectionEnabled(false);
 		constructedTable.getColumnModel().getColumn(0).setPreferredWidth(105);
@@ -93,6 +94,7 @@ extends JPanel {
 	 * Update the information on this panel.
 	 */
 	public void update() {
+		TableStyle.setTableStyle(constructedTable);
 		constructedTableModel.update();
 	}
 

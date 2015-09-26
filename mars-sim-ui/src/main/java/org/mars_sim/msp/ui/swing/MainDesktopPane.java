@@ -135,7 +135,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
-	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainWindow = mainWindow;
 
 		init();
@@ -146,7 +146,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
 		init();
@@ -154,7 +154,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
-	   	logger.info("MainDesktopPane's init() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's init() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer();
@@ -347,12 +347,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
-	   	logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's prepareToolWindows() is on " + Thread.currentThread().getName() + " Thread");
 
 		if (toolWindows != null)
 			toolWindows.clear();
 
-	   	logger.info("toolWindows.clear()");
+	   	//logger.info("toolWindows.clear()");
 
 		// Prepare navigator window
 		NavigatorWindow navWindow = new NavigatorWindow(this);
@@ -360,7 +360,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(navWindow);
 
-	   	logger.info("toolWindows.add(navWindow)");
+	   	//logger.info("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
@@ -368,7 +368,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(searchWindow);
 
-	   	logger.info("toolWindows.add(searchWindow)");
+	   	//logger.info("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
 		TimeWindow timeWindow = new TimeWindow(this);
@@ -376,7 +376,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(timeWindow);
 
-	   	logger.info("toolWindows.add(timeWindow)");
+	   	//logger.info("toolWindows.add(timeWindow)");
 
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
@@ -384,7 +384,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(monitorWindow);
 
-	   	logger.info("toolWindows.add(monitorWindow)");
+	   	//logger.info("toolWindows.add(monitorWindow)");
 
 		// Prepare settlement tool window
 		//SettlementWindow
@@ -398,7 +398,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//closeToolWindow(SettlementWindow.NAME);
 		setSettlementWindow(settlementWindow);
 
-	   	logger.info("toolWindows.add(settlementWindow)");
+	   	//logger.info("toolWindows.add(settlementWindow)");
 
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
@@ -406,7 +406,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(scienceWindow);
 
-	   	logger.info("toolWindows.add(scienceWindow)");
+	   	//logger.info("toolWindows.add(scienceWindow)");
 
 		// Prepare mission tool window
 		MissionWindow missionWindow = new MissionWindow(this);
@@ -414,7 +414,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(missionWindow);
 
-	   	logger.info("toolWindows.add(missionWindow)");
+	   	//logger.info("toolWindows.add(missionWindow)");
 
 		// Prepare resupply tool window
 		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
@@ -422,7 +422,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(resupplyWindow);
 
-	   	logger.info("toolWindows.add(resupplyWindow)");
+	   	//logger.info("toolWindows.add(resupplyWindow)");
 
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
@@ -430,7 +430,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
 
-	   	logger.info("toolWindows.add(guideWindow)");
+	   	//logger.info("toolWindows.add(guideWindow)");
 
 		// Prepare Mars Viewer window
 		//MarsViewer marsViewer = new MarsViewer(this);
@@ -438,7 +438,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//catch (PropertyVetoException e) { }
 		//toolWindows.add(marsViewer);
 
-	   	logger.info("MainDesktopPane's prepareToolWindows() is done ");
+	   	//logger.info("MainDesktopPane's prepareToolWindows() is done ");
 	}
 
 	/*
@@ -976,7 +976,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 
 	public void clearDesktop() {
-	   	logger.info("MainDesktopPane's clearDesktop() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's clearDesktop() is on " + Thread.currentThread().getName() + " Thread");
 		// Stop update thread.
 		updateThread.setRun(false);
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
@@ -1017,7 +1017,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * and tool windows, and reconstructs the tool windows.
 	 */
 	public void resetDesktop() {
-	   	logger.info("MainDesktopPane's resetDesktop() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's resetDesktop() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Prepare tool windows
 		prepareToolWindows();
@@ -1187,7 +1187,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
 			SwingUtilities.updateComponentTreeUI(toolWindow);
-//			toolWindow.pack();
+			//toolWindow.pack(); // why will it cause help window to stretch?
 		}
 	}
 
@@ -1217,7 +1217,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-	   	logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {

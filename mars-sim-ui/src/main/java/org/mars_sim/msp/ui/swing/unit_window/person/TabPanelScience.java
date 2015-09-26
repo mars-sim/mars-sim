@@ -23,9 +23,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -52,12 +54,15 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+
+	private JTable studyTable, achievementTable;
+
 	private JButton scienceToolButton;
-	private StudyTableModel studyTableModel;
-	private JTable studyTable;
-	private AchievementTableModel achievementTableModel;
-	private JTable achievementTable;
 	private JLabel totalAchievementLabel;
+
+	private StudyTableModel studyTableModel;
+	private AchievementTableModel achievementTableModel;
+
 
 	/**
 	 * Constructor.
@@ -169,6 +174,13 @@ extends TabPanel {
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setCellSelectionEnabled(false);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
+
+		// 2015-09-24 Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		achievementTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 		achievementScrollPane.setViewportView(achievementTable);
 
 		// 2015-06-08 Added sorting
@@ -181,6 +193,10 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+
+		TableStyle.setTableStyle(studyTable);
+		TableStyle.setTableStyle(achievementTable);
+
 		// Get selected study in table if any.
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = null;

@@ -952,8 +952,10 @@ public class UnitManager implements Serializable {
 		// compare their leadership scores
 		for (Person p : people) {
 			int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
-			int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+			int p_combined = 3 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+					+ 2 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY)
+					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
+					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc
 			if (p_leadership > cc_leadership) {
@@ -1018,13 +1020,13 @@ public class UnitManager implements Serializable {
 		if (pop >= POPULATION_WITH_SUB_COMMANDER)
 			cv.setRole(RoleType.SUB_COMMANDER);
 	}
-	
+
 	/**
 	 * Establish or reset the system of governance at a settlement.
 	 * @param settlement the settlement.
 	 */
 	public void establishSettlementGovernance(Settlement settlement) {
-	    
+
 	    int popSize = settlement.getAllAssociatedPeople().size();
 	    if (popSize >= POPULATION_WITH_MAYOR) {
             establishGovernment(settlement);
@@ -1060,7 +1062,7 @@ public class UnitManager implements Serializable {
 			int p_tradeSkill = 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 			p_leadership = p_leadership + p_tradeSkill;
 			int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+					+ 3 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
 					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc

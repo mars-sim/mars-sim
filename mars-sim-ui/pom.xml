@@ -151,6 +151,11 @@
 			<version>3.0.10</version>
 		</dependency>
 		<dependency>
+			<groupId>org.bushe</groupId>
+    		<artifactId>eventbus</artifactId>
+        	<version>1.4</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jme3</groupId>
 			<artifactId>jme3-plugins</artifactId>
 			<version>3.0.10</version>
@@ -235,11 +240,21 @@
 		<artifactId>xpp3</artifactId>
 		<version>1.1.6</version>
    </dependency>
-	<dependency>
-		<groupId>eu.hansolo.enzo</groupId>
-		<artifactId>Enzo</artifactId>
-		<version>0.3.1</version>
-	</dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-core</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pivot</groupId>
+			<artifactId>pivot-wtk-terra</artifactId>
+			<version>2.0.4</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

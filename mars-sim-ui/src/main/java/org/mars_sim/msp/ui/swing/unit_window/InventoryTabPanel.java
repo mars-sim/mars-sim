@@ -58,7 +58,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
-    private JTable equipmentTable;
+    private JTable equipmentTable, resourcesTable ;
 
     /**
      * Constructor
@@ -94,7 +94,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourceTableModel = new ResourceTableModel(inv);
 
         // Create resources table
-        JTable resourcesTable = new JTable(resourceTableModel);
+        resourcesTable = new JTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
         resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
@@ -145,6 +145,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public void update() {
         resourceTableModel.update();
         equipmentTableModel.update();
+		TableStyle.setTableStyle(resourcesTable);
+		TableStyle.setTableStyle(equipmentTable);
         equipmentTable.repaint();
     }
 

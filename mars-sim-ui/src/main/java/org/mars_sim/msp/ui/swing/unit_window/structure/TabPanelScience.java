@@ -55,11 +55,13 @@ extends TabPanel {
 
 	// Data members
 	private JButton scienceToolButton;
-	private StudyTableModel studyTableModel;
-	private JTable studyTable;
-	private AchievementTableModel achievementTableModel;
-	private JTable achievementTable;
 	private JLabel totalAchievementLabel;
+
+	private JTable achievementTable, studyTable;
+
+	private StudyTableModel studyTableModel;
+	private AchievementTableModel achievementTableModel;
+
 
 	/**
 	 * Constructor.
@@ -192,6 +194,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+		TableStyle.setTableStyle(studyTable);
+		TableStyle.setTableStyle(achievementTable);
+
 		// Get selected study in table if any.
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = null;

@@ -77,6 +77,8 @@ implements ActionListener {
 
 	private int solRatingSubmitted = 0;
 
+	private JTable table;
+
 	private JLabel jobLabel, roleLabel, errorLabel, ratingLabel;
 	private JTextField roleTF;
 
@@ -261,7 +263,7 @@ implements ActionListener {
 		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
-		JTable table = new JTable(jobHistoryTableModel);
+		table = new JTable(jobHistoryTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(50);
 		table.getColumnModel().getColumn(1).setPreferredWidth(50);
@@ -287,6 +289,8 @@ implements ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+
+		TableStyle.setTableStyle(table);
 
 	    Person person = null;
 	    Robot robot = null;

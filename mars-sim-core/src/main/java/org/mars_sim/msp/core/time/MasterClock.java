@@ -777,7 +777,7 @@ public class MasterClock implements Serializable { // Runnable,
      * Shuts down clock listener thread pool executor
      */
     public void endClockListenerExecutor() {
-    	clockListenerExecutor.shutdown();
+    	clockListenerExecutor.shutdownNow();
 /*
     	if ( clockListenerExecutor.isTerminating() )
 			try {

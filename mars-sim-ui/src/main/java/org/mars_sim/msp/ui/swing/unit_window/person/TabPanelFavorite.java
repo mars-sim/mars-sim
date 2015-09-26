@@ -43,6 +43,7 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private JTable table;
 	private PreferenceTableModel tableModel;
 
 	/**
@@ -152,11 +153,12 @@ extends TabPanel {
 
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
-		JTable table = new JTable(tableModel);
+		table = new JTable(tableModel);
 
 		// 2015-09-24 Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
@@ -182,6 +184,7 @@ extends TabPanel {
 	@Override
 	public void update() {
 		//tableModel.update();
+		TableStyle.setTableStyle(table);
 	}
 
 

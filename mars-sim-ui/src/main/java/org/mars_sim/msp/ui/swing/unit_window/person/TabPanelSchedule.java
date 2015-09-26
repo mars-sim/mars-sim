@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -74,6 +75,8 @@ extends TabPanel {
 	private Integer todayInteger;
 
 	private String shiftType, shiftCache = null;
+
+	private JTable table ;
 
 	private JCheckBox hideRepeatedTasksCheckBox;
 	private JCheckBox realTimeUpdateCheckBox;
@@ -267,12 +270,20 @@ extends TabPanel {
 		centerContentPanel.add(scrollPanel);
 
 		// Create schedule table
-		JTable table = new JTable(scheduleTableModel);
+		table = new JTable(scheduleTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(25);
 		table.getColumnModel().getColumn(1).setPreferredWidth(150);
 		table.setCellSelectionEnabled(false);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+
+		// 2015-09-24 Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+
+
+
 		scrollPanel.setViewportView(table);
 
 		// 2015-06-08 Added sorting
@@ -294,6 +305,8 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+
+		TableStyle.setTableStyle(table);
 
 		if (person != null) {
 			shiftType = person.getTaskSchedule().getShiftType();

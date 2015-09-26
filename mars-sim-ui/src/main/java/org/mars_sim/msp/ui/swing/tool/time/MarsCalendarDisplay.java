@@ -56,8 +56,10 @@ extends JComponent {
 		setMinimumSize(getPreferredSize());
 
 		baseColor = Color.orange;
-		midColor = new Color(210, 117, 101);
-		darkColor = new Color(140, 94, 74);
+		midColor = new Color(104, 114, 77); // 74, 140, 94
+		darkColor = new Color(73, 97, 0);
+		//midColor = new Color(210, 117, 101);
+		//darkColor = new Color(140, 94, 74);
 	}
 
 	/**
@@ -69,39 +71,47 @@ extends JComponent {
 			theme = MainScene.getTheme();
 
 			if (theme == 1) {
+				// green theme
 				baseColor = Color.orange;
-				midColor = new Color(210, 117, 101);
-				darkColor = new Color(140, 94, 74);
-			}
-			else if (theme == 2) {
-				baseColor = Color.green;
 				midColor = new Color(104, 114, 77); // 74, 140, 94
 				darkColor = new Color(73, 97, 0);
 			}
-			else if (theme == 3) {
+			else if (theme == 2) {
+				// red theme
 				baseColor = Color.red;
-				midColor = new Color(255, 102, 102);
-				darkColor = new Color(51, 25, 0);
+				midColor = new Color(255, 102, 102); // pink orange
+				darkColor = new Color(51, 25, 0); // dark brown
 			}
+			else if (theme == 3) {
+				//  brownish theme
+				baseColor = Color.orange;
+				midColor = new Color(210, 117, 101); // orange pink
+				darkColor = new Color(140, 94, 74); // greyish brown pink
+			}
+
 			else if (theme == 4) {
-				baseColor = Color.yellow;
-				midColor = new Color(152, 149, 92);
-				darkColor = new Color(138, 141, 74);
-			}
-			else if (theme == 5) {
+				// grey theme
 				baseColor = Color.gray;
 				midColor = Color.lightGray;
 				darkColor = Color.DARK_GRAY;
 			}
-			else if (theme == 6) {
+			else if (theme == 5) {
+				// purple theme
 				baseColor = Color.magenta;
 				midColor = new Color(112, 76, 103);
 				darkColor = new Color(51, 0, 51);
 			}
-			else if (theme == 7) {
+			else if (theme == 6) {
+				// blue theme
 				baseColor = Color.cyan;
 				midColor = new Color(99, 125, 150);
 				darkColor = new Color(101, 139, 210);
+			}
+			else if (theme == 7) {
+				// pale olive theme
+				baseColor = Color.orange;
+				midColor = new Color(152, 149, 92);
+				darkColor = new Color(138, 141, 74);
 			}
 		}
 

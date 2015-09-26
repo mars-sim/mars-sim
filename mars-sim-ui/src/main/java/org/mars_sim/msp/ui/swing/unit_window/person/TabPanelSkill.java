@@ -18,7 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -41,6 +43,8 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
 	//private Person person;
 	//private Robot robot;
@@ -104,12 +108,19 @@ extends TabPanel {
 		centerContentPanel.add(skillScrollPanel);
 
 		// Create skill table
-		JTable skillTable = new JTable(skillTableModel);
+		skillTable = new JTable(skillTableModel);
 		skillTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		skillTable.getColumnModel().getColumn(0).setPreferredWidth(50);
 		skillTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		skillTable.setCellSelectionEnabled(false);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+
+		// 2015-09-24 Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 		skillScrollPanel.setViewportView(skillTable);
 
 		// 2015-06-08 Added sorting
@@ -124,6 +135,7 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+		TableStyle.setTableStyle(skillTable);
 		skillTableModel.update();
 	}
 

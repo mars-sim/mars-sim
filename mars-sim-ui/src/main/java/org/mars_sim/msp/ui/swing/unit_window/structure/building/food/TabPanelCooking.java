@@ -67,8 +67,6 @@ extends TabPanel {
     private static final BuildingFunction PREPARE_DESSERT = BuildingFunction.PREPARING_DESSERT;
 
 	// Data Members
-private CookingTableModel cookingTableModel;
-
 	private int numRow = 0;
 	private int dayCache = 1;
 	//private MarsClock expirationCache = null;
@@ -80,6 +78,9 @@ private CookingTableModel cookingTableModel;
 	//private boolean sortAscending = true;
 	/** Sort column is defined. */
 	//private int sortedColumn = 0;
+
+    private JTable table;
+    private CookingTableModel cookingTableModel;
 
 	/** The number of available meals. */
 	private JLabel availableMealsLabel;
@@ -233,7 +234,7 @@ private CookingTableModel cookingTableModel;
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		JTable table = new JTable(cookingTableModel) {
+		table = new JTable(cookingTableModel) {
 
         public String getToolTipText(java.awt.event.MouseEvent e) {
             String personName = null;
@@ -287,7 +288,6 @@ private CookingTableModel cookingTableModel;
 		};
 
 
-
 		scrollPane.setViewportView(table);
 		table.setCellSelectionEnabled(false);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
@@ -309,93 +309,22 @@ private CookingTableModel cookingTableModel;
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 
-
 		repaint();
 	}
 
-	/**
-	 * Sets the style for the table
-	 * @param table
-	 */
-	// 2014-12-30 Added setTableStyle()
-	public void setTableStyle(JTable table) {
-
-		DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
-		headerRenderer.setOpaque(true); // need to be true for setBackground() to work
-		headerRenderer.setBackground(new Color(205, 133, 63));//Color.ORANGE);
-		headerRenderer.setForeground( Color.WHITE);
-		headerRenderer.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-
-		for (int i = 0; i < table.getModel().getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
-		}
-		MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.orange);
-		// set cell to have a light color border
-		table.setBorder(border);
-		table.setShowGrid(true);
-	    table.setShowVerticalLines(true);
-		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
-
-/*
-        final JTable ctable = table;
-	    SwingUtilities.invokeLater(new Runnable(){
-	        public void run()  {
-	        	ColumnResizer.adjustColumnPreferredWidths(ctable);
-	         } });
-		*/
-	}
-
-
-	/**
-	 * Delegates the rendering of the table cell header to add
-	 *  in an icon on the cells that can be sorted.
-	 *
-	// 2014-12-30 Added TableHeaderRenderer
-	class TableHeaderRenderer implements TableCellRenderer {
-		private TableCellRenderer defaultRenderer;
-
-		public TableHeaderRenderer(TableCellRenderer theRenderer) {
-			defaultRenderer = theRenderer;
-		}
-
-		 //Renderer the specified Table Header cell
-		public Component getTableCellRendererComponent(JTable table,
-				Object value,
-				boolean isSelected,
-				boolean hasFocus,
-				int row,
-				int column) {
-			Component theResult = defaultRenderer.getTableCellRendererComponent(
-					table, value, isSelected, hasFocus,
-					row, column);
-			if (theResult instanceof JLabel) {
-				JLabel cell = (JLabel)theResult;
-				cell.setOpaque(true);
-				MatteBorder border = new MatteBorder(1, 1, 0, 0, Color.white);
-				cell.setBorder(border);
-				//cell.setBackground(new Color(205, 133, 63));//Color.ORANGE);
-				//cell.setForeground( Color.WHITE);
-				//cell.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-
-			}
-			return theResult;
-		}
-	}
-*/
 
 	/**
 	 * Updates the info on this panel.
 	 */
-		// Called by TabPanel whenever the Cooking tab is opened
+	// Called by TabPanel whenever the Cooking tab is opened
 	public void update() {
 		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
+		TableStyle.setTableStyle(table);
 		cookingTableModel.update();
 
 		updateMeals();
 		updateDesserts();
-
 	}
 
 

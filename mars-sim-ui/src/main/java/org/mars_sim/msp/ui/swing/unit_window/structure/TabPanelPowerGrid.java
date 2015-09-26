@@ -61,6 +61,7 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data Members
+	private JTable powerTable ;
 	/** The total power generated label. */
 	private JLabel powerGeneratedLabel;
 	/** The total power used label. */
@@ -234,7 +235,7 @@ extends TabPanel {
 		powerTableModel = new PowerTableModel(settlement);
 
 		// Prepare power table.
-		JTable powerTable = new JTable(powerTableModel);
+		powerTable = new JTable(powerTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
 	    powerTable.setCellSelectionEnabled(false);
@@ -290,6 +291,8 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+
+		TableStyle.setTableStyle(powerTable);
 
 		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();

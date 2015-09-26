@@ -45,6 +45,7 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(
 	        Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
+
 	private JLabel fatigueLabel;
 	private JLabel hungerLabel;
 	private JLabel energyLabel;
@@ -53,6 +54,8 @@ extends TabPanel {
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
+
+	private JTable radiationTable, medicationTable, healthProblemTable;
 
 	// Data cache
 	private double fatigueCache;
@@ -162,7 +165,7 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		JTable radiationTable = new JTable(radiationTableModel);
+		radiationTable = new JTable(radiationTableModel);
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
@@ -193,7 +196,7 @@ extends TabPanel {
 		medicationTableModel = new MedicationTableModel(person);
 
 		// Prepare medication table.
-		JTable medicationTable = new JTable(medicationTableModel);
+		medicationTable = new JTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		medicationTable.setCellSelectionEnabled(false);
 		medicationScrollPanel.setViewportView(medicationTable);
@@ -222,7 +225,7 @@ extends TabPanel {
 		healthProblemTableModel = new HealthProblemTableModel(person);
 
 		// Create health problem table
-		JTable healthProblemTable = new JTable(healthProblemTableModel);
+		healthProblemTable = new JTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		healthProblemTable.setCellSelectionEnabled(false);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
@@ -240,6 +243,10 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+
+		TableStyle.setTableStyle(radiationTable);
+		TableStyle.setTableStyle(medicationTable);
+		TableStyle.setTableStyle(healthProblemTable);
 
 		Person person = (Person) unit;
 		PhysicalCondition condition = person.getPhysicalCondition();

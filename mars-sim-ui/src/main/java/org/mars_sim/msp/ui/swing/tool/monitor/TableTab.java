@@ -25,9 +25,11 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -135,7 +137,7 @@ extends MonitorTab {
 			if (theResult instanceof JLabel) {
 				// Must clear the icon if not sorted column. This is a renderer
 				// class used to render each column heading in turn.
-				JLabel cell = (JLabel)theResult;
+				JLabel cell = (JLabel) theResult;
 				Icon icon = null;
 				if (column == sortedColumn) {
 					if (sortAscending)
@@ -143,6 +145,8 @@ extends MonitorTab {
 					else
 						icon = descendingIcon;
 				}
+				//cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
+				//cell.setHorizontalAlignment(JLabel.CENTER); // not useful
 				cell.setIcon(icon);
 				cell.setOpaque(true);
 			}
@@ -221,6 +225,9 @@ extends MonitorTab {
                  * contents in wider than the cell
                  */
                 public String getToolTipText(MouseEvent e) {
+
+                	// TODO: create tooltip text for greenhouse crop
+
                     return getCellText(e);
                 };
             };
@@ -250,10 +257,10 @@ extends MonitorTab {
          	// Not the best way but no double click is provided on Header class
         	// Get the TableColumn header to display sorted column
 
+
            	theHeader = table.getTableHeader();
         	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
         	theHeader.setDefaultRenderer(theRenderer);
-
         	theHeader.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) {
         			// Find the column at this point

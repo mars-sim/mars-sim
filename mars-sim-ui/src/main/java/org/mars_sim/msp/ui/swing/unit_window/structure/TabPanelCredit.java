@@ -44,6 +44,8 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private JTable creditTable ;
+
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
@@ -86,7 +88,7 @@ extends TabPanel {
 		CreditTableModel creditTableModel = new CreditTableModel((Settlement) unit);
 
 		// Prepare credit table.
-		JTable creditTable = new JTable(creditTableModel);
+		creditTable = new JTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setCellSelectionEnabled(false);
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
@@ -114,7 +116,7 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-		// Do nothing.
+		TableStyle.setTableStyle(creditTable);
 	}
 
 	/**

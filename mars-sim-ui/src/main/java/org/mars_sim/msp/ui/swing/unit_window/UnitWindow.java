@@ -15,6 +15,7 @@ import java.util.Collection;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
@@ -23,6 +24,8 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -115,10 +118,10 @@ public abstract class UnitWindow extends JInternalFrame {
         centerPanel.setScrollSelectedTabOnWheel(true);
         centerPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
         centerPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
-        
+
         // Setting foreground color for tab text.
         centerPanel.setForeground(Color.DARK_GRAY);
-        
+
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);

@@ -39,6 +39,8 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
+import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 import com.jidesoft.plaf.LookAndFeelFactory;
@@ -272,6 +274,12 @@ implements TableModelListener, ActionListener {
     	if (monitorTab instanceof TableTab) {
     	    TableTab tableTab = (TableTab) monitorTab;
     	    table = tableTab.getTable();
+
+    	   	// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
+            TableStyle.setTableStyle(table);
+            JTable rowTable = new RowNumberTable(table);
+            TableStyle.setTableStyle(rowTable);
+
     	    //System.out.println("tab : " + tableTab + "\n    table : " + table);
     	}
     }

@@ -38,13 +38,13 @@ extends JEditorPane {
 	private int historyIndex;
 
 	public HTMLContentPane() {
-	   	logger.info("HTMLContentPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("HTMLContentPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		setEditable(false);
 	}
 
 	public void goToURL(URL url) {
 
-	   	logger.info("HTMLContentPane's starting goToURL()");
+	   	//logger.info("HTMLContentPane's starting goToURL()");
 
 		displayPage(url);
 		if (historyIndex < history.size() - 1) {
@@ -59,7 +59,7 @@ extends JEditorPane {
 			historyIndex = history.size() - 1;
 		}
 
-	   	logger.info("HTMLContentPane's goToURL() done");
+	   	//logger.info("HTMLContentPane's goToURL() done");
 	}
 
 	public URL forward() {
@@ -94,7 +94,7 @@ extends JEditorPane {
 
 	private void displayPage(URL pageURL) {
 
-	   	logger.info("HTMLContentPane's starting displayPage()");
+	   	//logger.info("HTMLContentPane's starting displayPage()");
 
 	    SwingUtilities.invokeLater(() -> {
 
@@ -110,6 +110,6 @@ extends JEditorPane {
 
 		});
 
-	   	logger.info("HTMLContentPane's displayPage() done");
+	   	//logger.info("HTMLContentPane's displayPage() done");
 	}
 }

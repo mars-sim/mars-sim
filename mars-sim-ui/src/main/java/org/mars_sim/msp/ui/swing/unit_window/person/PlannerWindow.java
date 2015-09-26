@@ -66,6 +66,7 @@ implements InternalFrameListener, ActionListener {
 	// Data members
 	private JTextField orbit, month, sol, millisols;
 	private JButton add;
+	private JTable table;
 
 	private Unit unit;
 	private JComboBoxMW<Object> comboBox;
@@ -155,7 +156,7 @@ implements InternalFrameListener, ActionListener {
 		scrollPanel.setBorder(new MarsPanelBorder());
 
 		// Create schedule table
-		JTable table = new JTable(PlannerTableModel);
+		table = new JTable(PlannerTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(25);
 		table.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -252,7 +253,7 @@ implements InternalFrameListener, ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		TableStyle.setTableStyle(table);
 		// Update if necessary.
 	}
 

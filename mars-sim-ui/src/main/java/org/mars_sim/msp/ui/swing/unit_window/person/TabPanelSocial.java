@@ -16,9 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -82,6 +84,13 @@ implements ListSelectionListener {
 		relationshipTable.setCellSelectionEnabled(true);
 		relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		relationshipTable.getSelectionModel().addListSelectionListener(this);
+
+		// 2015-09-24 Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 		relationshipScrollPanel.setViewportView(relationshipTable);
 
 		// 2015-06-08 Added sorting
@@ -96,6 +105,7 @@ implements ListSelectionListener {
 	 * Updates this panel.
 	 */
 	public void update() {
+		TableStyle.setTableStyle(relationshipTable);
 		relationshipTableModel.update();
 	}
 
@@ -149,7 +159,7 @@ implements ListSelectionListener {
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.toArray()[row];
+			if (column == 0) return knownPeople.toArray()[row]; // why  java.lang.ArrayIndexOutOfBoundsException ?
 			else if (column == 1) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);

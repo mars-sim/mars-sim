@@ -17,6 +17,8 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
+import com.jme3.app.SimpleApplication;
+
 import javax.swing.*;
 
 import java.io.File;
@@ -33,7 +35,7 @@ import java.util.logging.Logger;
  * MarsProject is the main class for the application. It creates both the simulation and
  * the user interface.
  */
-public class MarsProject {
+public class MarsProject extends SimpleApplication {
 
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProject.class.getName());
@@ -227,7 +229,7 @@ public class MarsProject {
      * Create a new simulation instance.
      */
     private void handleNewSimulation() {
-		logger.info("MarsProject's handleNewSimulation() is on "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProject's handleNewSimulation() is on "+Thread.currentThread().getName() + " Thread");
 
         try {
             SimulationConfig.loadConfig();
@@ -250,7 +252,7 @@ public class MarsProject {
      * Start the simulation instance.
      */
     public void startSimulation() {
-		logger.info("MarsProject's startSimulation() is on "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProject's startSimulation() is on "+Thread.currentThread().getName() + " Thread");
 
         // Start the simulation.
         Simulation.instance().start();
@@ -262,6 +264,9 @@ public class MarsProject {
      * @param args the command line arguments
      */
     public static void main(final String args[]) {
+
+    	Logger.getLogger("").setLevel(Level.FINE);
+
     	MarsProject.args = args;
 		//logger.info("MarsProject's main() is on "+Thread.currentThread().getName() + " Thread");
 
@@ -285,7 +290,20 @@ public class MarsProject {
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
         // starting the simulation
-        new MarsProject(args);
+        MarsProject mp = new MarsProject(args);
+        mp.start(com.jme3.system.JmeContext.Type.Headless);
 
     }
+
+	@Override
+	public void simpleInitApp() {
+		// TODO Auto-generated method stub
+	}
+
+
+    @Override
+    public void simpleUpdate(float tpf) {
+       /* Interact with game events in the main loop */
+    }
+
 }

@@ -120,7 +120,8 @@ implements Serializable {
 		                	//if (rating <=1) disapproved !
 	                    	// 2. Reviews this person's preference
 		                	// 3. May go to him/her to have a chat
-		                	// 4. Approve/disapprove the job change
+		                	// 4. modified by the affinity between them
+		                	// 5. Approve/disapprove the job change
 
 		                	String pendingJobStr = list.get(last).getJobType();
 

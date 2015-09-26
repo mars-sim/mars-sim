@@ -74,7 +74,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		// Use TableWindow constructor
 		super(NAME, desktop);
 
-	   	logger.info("GuideWindow's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("GuideWindow's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
@@ -98,7 +98,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		toolPanel.add(backButton);
 		toolPanel.add(forwardButton);
 
-	   	logger.info("GuideWindow's constructor: initialize buttons and toolPanel");
+	   	//logger.info("GuideWindow's constructor: initialize buttons and toolPanel");
 
 		htmlPane = new HTMLContentPane();
 		htmlPane.addHyperlinkListener(this);
@@ -107,7 +107,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		htmlPane.setBackground(Color.lightGray);
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
-	   	logger.info("GuideWindow's constructor: initialize htmlPane");
+	   	//logger.info("GuideWindow's constructor: initialize htmlPane");
 
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
 		scrollPane.setBorder(new MarsPanelBorder());
@@ -118,12 +118,12 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		mainPane.add(scrollPane);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 
-	   	logger.info("GuideWindow's constructor: initialize mainPane");
+	   	//logger.info("GuideWindow's constructor: initialize mainPane");
 
 		// We have to define a starting size
 		setSize(new Dimension(575, 475));
 
-	   	logger.info("GuideWindow's constructor: setSize");
+	   	//logger.info("GuideWindow's constructor: setSize");
 
 		// Allow the window to be resized by the user.
 		//setResizable(true);
@@ -133,7 +133,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		// Show the window
 		setVisible(true);
 
-	   	logger.info("GuideWindow's constructor: done!");
+	   	//logger.info("GuideWindow's constructor: done!");
 
 	}
 

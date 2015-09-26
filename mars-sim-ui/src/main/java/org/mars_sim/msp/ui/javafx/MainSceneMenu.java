@@ -167,20 +167,31 @@ public class MainSceneMenu extends MenuBar  {
         showFullScreenItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		showFullScreenItem.setSelected(false);
 
-		skinThemeItem = new MenuItem("Skin Theme");
-		skinThemeItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+		//skinThemeItem = new MenuItem("Skin Theme");
+		//skinThemeItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 		//skinThemeItem.setSelected(false);
 
-		//CheckMenuItem skin1 = new CheckMenuItem("Dark-Grey Skin");
-		//skin1.setSelected(true);
+        Menu skinThemeItem = new Menu("Skin Theme");
+        ToggleGroup skinThemeToggleGroup = new ToggleGroup();
 
-		//CheckMenuItem skin2 = new CheckMenuItem("Burgundy Skin");
-		//skin2.setSelected(false);
+        RadioMenuItem oneItem = new RadioMenuItem("Olive");
+        oneItem.setToggleGroup(skinThemeToggleGroup);
+        oneItem.setSelected(true);
+        RadioMenuItem twoItem = new RadioMenuItem("Burgundy");
+        twoItem.setToggleGroup(skinThemeToggleGroup);
+        RadioMenuItem threeItem = new RadioMenuItem("DarkTabaco");
+        threeItem.setToggleGroup(skinThemeToggleGroup);
+        RadioMenuItem fourItem = new RadioMenuItem("Grey");
+        fourItem.setToggleGroup(skinThemeToggleGroup);
+        RadioMenuItem fiveItem = new RadioMenuItem("Violet");
+        fiveItem.setToggleGroup(skinThemeToggleGroup);
+        RadioMenuItem sixItem = new RadioMenuItem("Snow");
+        sixItem.setToggleGroup(skinThemeToggleGroup);
+        RadioMenuItem sevenItem = new RadioMenuItem("Standard");
+        sevenItem.setToggleGroup(skinThemeToggleGroup);
 
-		//CheckMenuItem skin3 = new CheckMenuItem("Olive Skin");
-		//skin3.setSelected(false);
+        skinThemeItem.getItems().addAll(oneItem, twoItem, threeItem, fourItem, fiveItem, sixItem, sevenItem);
 
-		//skinThemeItem.getItems().addAll(skin1, skin2, skin3);
 
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
@@ -216,6 +227,7 @@ public class MainSceneMenu extends MenuBar  {
 
 		newsPaneItem.getItems().addAll(slideFromTop, slideFromBottom, showHideNewsPane);
 
+/*
         Menu messageTypeItem = new Menu("Message Type");
         CheckMenuItem medicalItem = new CheckMenuItem("Medical");
         CheckMenuItem malfunctionItem = new CheckMenuItem("Malfunction");
@@ -243,7 +255,10 @@ public class MainSceneMenu extends MenuBar  {
         oneItem.setToggleGroup(queueSizeToggleGroup);
         queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
 
-        menuNotification.getItems().addAll(newsPaneItem, messageTypeItem,displayTimeItem,queueSizeItem);
+*/
+
+        menuNotification.getItems().addAll(newsPaneItem); // , messageTypeItem,displayTimeItem,queueSizeItem);
+
 
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
@@ -443,8 +458,66 @@ public class MainSceneMenu extends MenuBar  {
             	}
         });
 
+/*
         skinThemeItem.setOnAction(e -> {
         	mainScene.changeTheme();
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+*/
+
+        oneItem.setOnAction(e -> {
+        	mainScene.changeTheme(1);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        twoItem.setOnAction(e -> {
+        	mainScene.changeTheme(2);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        threeItem.setOnAction(e -> {
+        	mainScene.changeTheme(3);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        fourItem.setOnAction(e -> {
+        	mainScene.changeTheme(4);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        fiveItem.setOnAction(e -> {
+        	mainScene.changeTheme(5);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        sixItem.setOnAction(e -> {
+        	mainScene.changeTheme(6);
+            SwingUtilities.invokeLater(() -> {
+            	mainScene.setLookAndFeel(1);
+            	mainScene.getSwingNode().setContent(desktop);
+            });
+        });
+
+        sevenItem.setOnAction(e -> {
+        	mainScene.changeTheme(7);
             SwingUtilities.invokeLater(() -> {
             	mainScene.setLookAndFeel(1);
             	mainScene.getSwingNode().setContent(desktop);

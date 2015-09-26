@@ -14,7 +14,9 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
@@ -24,6 +26,7 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 
 public class TableStyle {
 
+	//private static JTable table;
 	private static JTableHeader theHeader;
 	private static TableHeaderRenderer theRenderer;
 	private static Color border = Color.orange;
@@ -51,7 +54,11 @@ public class TableStyle {
 
     	int theme = MainScene.getTheme();
 
-    	String themeName = null;
+    	//if (theme == 1)
+    	//	theme = 7;
+    	//else
+    	//	theme = theme - 1;
+
     	Color back = null;
     	Color fore = null;
 
@@ -60,9 +67,11 @@ public class TableStyle {
 
     	Color grid = null;
 
+    	String themeName = null;
+
 		// 255 228 225	MistyRose1
 
-    	if (theme == 1) { // standard nimrod
+/*
     		hBack = new Color(205, 133, 63); // 205, 133, 63 mud orange
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
@@ -72,9 +81,11 @@ public class TableStyle {
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.orange;
     		themeName = "Standard Nimrod";
-    	}
-    	else if (theme == 2) { // LightTabaco + olive
-    		hBack = new Color(33, 66, 0); // 33, 66, 0 dark green
+
+*/
+
+    	if (theme == 1) { // LightTabaco + olive
+    		hBack = new Color(82, 71, 39); // 82, 71, 39 Pantone Coated brownish-green // 33, 66, 0 dark green
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255); // white
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4 dark brown orange
@@ -84,8 +95,8 @@ public class TableStyle {
     		border = Color.GRAY;
     		themeName = "LightTabaco";
     	}
-    	else if (theme == 3) { // Burdeos
-    		hBack = new Color(117, 0, 0); // 117, 0, 0 pale dark red
+    	else if (theme == 2) { // Burdeos
+    		hBack = new Color(187, 79, 81); // 187, 79, 81 Pantone Metallic Red, //117, 0, 0 pale dark red
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
@@ -95,8 +106,8 @@ public class TableStyle {
     		border = Color.RED;
     		themeName = "Burdeos";
     	}
-    	else if (theme == 4) { // DarkTabaco
-    		hBack = new Color(34, 23, 9); // 34, 23, 9 very very dark orange or use 9, 33, 34 very very dark cyan
+    	else if (theme == 3) { // DarkTabaco
+    		hBack = new Color(49, 38, 29); // 49, 38, 29 Pantone Coated Black // 34, 23, 9 very very dark orange or use 9, 33, 34 very very dark cyan
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
@@ -106,7 +117,7 @@ public class TableStyle {
     		border = Color.GRAY;
     		themeName = "DarkTabaco";
     	}
-    	else if (theme == 5) { // darkgrey + lime green
+    	else if (theme == 4) { // darkgrey + lime green
     		hBack = new Color(94, 106, 96); // 94, 106, 96 Very dark grayish lime green.
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
@@ -117,7 +128,7 @@ public class TableStyle {
     		border = Color.GREEN;
     		themeName = "DarkGrey";
     	}
-    	else if (theme == 6) { // night + purple
+    	else if (theme == 5) { // night + purple
     		hBack = new Color(87, 87, 211); // 87, 87, 211 light purple
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
@@ -128,8 +139,8 @@ public class TableStyle {
     		border = Color.DARK_GRAY;
     		themeName = "Night";
     	}
-    	else if (theme == 7) { // snow + skyblue
-    		hBack = new Color(147, 147, 147); // 147, 147, 147 mid grey
+    	else if (theme == 6) { // snow + skyblue
+    		hBack = new Color(100, 149, 237); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
@@ -140,6 +151,17 @@ public class TableStyle {
     		themeName = "Snow";
     	}
 
+    	else if (theme == 7) { // standard nimrod
+    		hBack = new Color(205, 133, 63); // 205, 133, 63 mud orange
+    		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
+    		back = new Color(255, 255, 255);
+    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		selBack = Color.GRAY;
+    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
+    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		border = Color.orange;
+    		themeName = "Standard Nimrod";
+    	}
 
     	// Get the TableColumn header to display sorted column
     	theHeader = table.getTableHeader();
@@ -156,6 +178,16 @@ public class TableStyle {
 
 		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 
+		// 2015-09-24 Align the content to the center of the cell
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//renderer.setHorizontalAlignment(JLabel.CENTER);
+		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+    	//for (int i = 0; i < table.getColumnCount(); ++i) {
+        //    table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        //}
+
+
 		table.setForeground(fore);
 		table.setBackground(back);
 
@@ -170,6 +202,8 @@ public class TableStyle {
 		table.setBorder(BorderFactory.createLineBorder(border, 1));
 
 		//MainScene.notifyThemeChange(themeName);
+
+
 	}
 
 }
@@ -203,6 +237,9 @@ class TableHeaderRenderer implements TableCellRenderer {
 			// Must clear the icon if not sorted column. This is a renderer
 			// class used to render each column heading in turn.
 			JLabel cell = (JLabel) theResult;
+
+			//cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
+			//cell.setHorizontalAlignment(JLabel.CENTER); // not useful
 
 			// 2014-12-17 Added
 			cell.setOpaque(true);
