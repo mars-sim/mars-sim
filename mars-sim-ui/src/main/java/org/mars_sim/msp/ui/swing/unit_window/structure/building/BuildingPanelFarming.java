@@ -60,11 +60,11 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
-import de.matthiasmann.twl.GUI;
-import de.matthiasmann.twl.demo.test.TestUtils;
-import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
-import de.matthiasmann.twl.theme.ThemeManager;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.InventoryDemo;
+//import de.matthiasmann.twl.GUI;
+//import de.matthiasmann.twl.demo.test.TestUtils;
+//import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
+//import de.matthiasmann.twl.theme.ThemeManager;
+//import org.mars_sim.msp.ui.swing.unit_window.structure.building.InventoryDemo;
 
 
 /**
@@ -412,6 +412,7 @@ implements Serializable, MouseListener {
 	 */
 	// 2015-09-19 openGrowingArea()()
     public void openGreenhouseOps() {
+/*
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
             Display.create();
@@ -445,6 +446,7 @@ implements Serializable, MouseListener {
             TestUtils.showErrMsg(ex);
         }
         Display.destroy();
+*/
     }
 
 	/**
