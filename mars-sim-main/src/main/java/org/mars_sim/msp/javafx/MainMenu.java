@@ -52,6 +52,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
+/*
+ * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
+ */
 public class MainMenu {
 
     /** default logger. */
@@ -67,11 +70,11 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-    //public String[] args;
 
-    //private double anchorX;
+    private double anchorX;
     //private double anchorY;
-    //private double anchorAngle;
+    private double anchorAngle;
+    private RotateTransition rt;
     //private boolean cleanUI = true;
 
     private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
@@ -124,7 +127,10 @@ public class MainMenu {
     	}
     }
 
-   void initAndShowGUI(Stage primaryStage) {
+    /*
+     * Sets up and shows the MainMenu and prepare the stage for MainScene
+     */
+	void initAndShowGUI(Stage primaryStage) {
 	   //Logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
 	   this.primaryStage = primaryStage;
@@ -153,17 +159,9 @@ public class MainMenu {
        Scene scene = new Scene(root);
        scene.getStylesheets().add( this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
 
-/*
-       scene.setOnMousePressed((event) -> {
-	        anchorX = event.getSceneX();
-	        //anchorY = event.getSceneY();
-            anchorAngle = parent.getRotate();
-       });
-       scene.setOnMouseDragged((event) -> {
-	   parent.setRotate(anchorAngle + anchorX -  event.getSceneX());
-	      	parent.setRotate(event.getSceneX());
-       });
-*/
+       // 2015-09-26 Added adjustRotation()
+       adjustRotation(scene, parent);
+
        //scene.setFill(Color.rgb(10, 10, 40));
        scene.setFill(Color.BLACK);
        scene.setCursor(Cursor.HAND);
@@ -355,7 +353,7 @@ public class MainMenu {
        globeComponents.getChildren().add(sun);
        globeComponents.getChildren().add(ambient);
 
-       RotateTransition rt = new RotateTransition(Duration.seconds(60), mars);
+       rt = new RotateTransition(Duration.seconds(60), mars);
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
        rt.setCycleCount(Animation.INDEFINITE);
@@ -373,5 +371,35 @@ public class MainMenu {
        return new Group(subScene);
    }
 
+   /*
+    * Adjusts Mars Globe's rotation rate according to how much the user's drags his mouse across the globe
+    */
+   // 2015-09-26 Added adjustRotation()
+   private void adjustRotation(Scene scene, Parent parent) {
+
+	   // 2015-09-26 Changes Mars Globe's rotation rate if a user drags his mouse across the globe
+	   scene.setOnMousePressed((event) -> {
+		   anchorX = event.getSceneX();
+		   //anchorY = event.getSceneY();
+		   anchorAngle = parent.getRotate();
+	   });
+
+	   scene.setOnMouseDragged((event) -> {
+		   //parent.setRotate(anchorAngle + anchorX - anchorX2);
+		   //parent.setRotate(event.getSceneX());
+		   double a = anchorAngle + anchorX - event.getSceneX();
+		   double rate;
+
+		   if (a < 0) { // left to right
+			   rate = -a/20D;
+		   }
+		   else { // right to left
+			   rate = 20D/a ;
+		   }
+
+		   rt.setRate(rate);
+
+	   });
+   }
 
 }
