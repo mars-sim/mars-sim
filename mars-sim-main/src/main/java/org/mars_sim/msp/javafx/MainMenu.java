@@ -88,9 +88,11 @@ public class MainMenu {
     private PhongMaterial material;
     private PointLight sun;
 
+    private Group root;
 	private Stage primaryStage;
 	private Stage stage;
-	public Scene scene;
+	public Scene mainMenuScene;
+
 	public MainMenu mainMenu;
 	public MainScene mainScene;
 	//public ModtoolScene modtoolScene;
@@ -155,25 +157,25 @@ public class MainMenu {
        switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        switcher.setScreen(MainMenu.screen1ID);
 
-       Group root = new Group();
+       root = new Group();
        Parent parent = createMarsGlobe();
        root.getChildren().addAll(parent, switcher);
-       Scene scene = new Scene(root);
-       scene.getStylesheets().add( this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
+       Scene mainMenuScene = new Scene(root);
+       mainMenuScene.getStylesheets().add( this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
 
        // 2015-09-26 Added adjustRotation()
-       adjustRotation(scene, parent);
+       adjustRotation(mainMenuScene, parent);
 
        //scene.setFill(Color.rgb(10, 10, 40));
-       scene.setFill(Color.BLACK);
-       scene.setCursor(Cursor.HAND);
+       mainMenuScene.setFill(Color.BLACK);
+       mainMenuScene.setCursor(Cursor.HAND);
        //primaryStage.initStyle(StageStyle.UNDECORATED);
        //primaryStage.initStyle (StageStyle.UTILITY);
        //primaryStage.getStyleClass().add("rootPane");
        primaryStage.centerOnScreen();
        primaryStage.setResizable(false);
 	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
-       primaryStage.setScene(scene);
+       primaryStage.setScene(mainMenuScene);
        primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
        //primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        primaryStage.show();
@@ -212,26 +214,32 @@ public class MainMenu {
 	   try {
 		   mainScene = new MainScene(stage);
 		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
-		   TimeUnit.SECONDS.sleep(2L);
-		   // The delay time for launching the JavaFX UI is based on the file size of the default.sim
+		   // TODO:
+		   //root.setCursor(Cursor.WAIT);
+		   TimeUnit.SECONDS.sleep(4L);
+		   // Note: java8u60 requires a longer time (than 8u45) such as 4 secs instead of 2 secs on some machines.
+		   // or else it will proceed to prepareStage() below prematurely and results in NullPointerException
+		   // as it tries to read people data before it was properly populated in UnitManager.
+
+		   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
 		   long delay_time = (long) (fileSize * 4000L);
 		   TimeUnit.MILLISECONDS.sleep(delay_time);
 		   prepareStage();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
    }
 
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
+			logger.info("Loading settlement data from the default saved simulation...");
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
+			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start();
 			fileSize = Simulation.instance().getFileSize();
 			//System.out.println("filesize is "+ fileSize);
 		}
 	}
-
 
 	   public void prepareStage() {
 		   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
@@ -294,7 +302,7 @@ public class MainMenu {
 		}
 	}
 
-   public void changeScene(int toscene) {
+   //public void changeScene(int toscene) {
 	   //switch (toscene) {
 		   	//case 1:
 		   		//scene = new MenuScene().createScene();
@@ -305,9 +313,9 @@ public class MainMenu {
 	   		//case 3:
 	   			//scene = modtoolScene.createScene(stage);
 	   		//	break;
-	   		stage.setScene(scene);
+	   		//stage.setScene(scene);
 	   //}
-   }
+   //}
 
    //public Scene getMainScene() {
    //	return mainScene;
@@ -408,11 +416,19 @@ public class MainMenu {
 	   });
    }
 
+   /*
+    * Sets the main menu controller at the start of the sim.
+    */
    // 2015-09-27 Added setController()
    public void setController(ControlledScreen myScreenController) {
-	   mainMenuController = (MainMenuController) myScreenController;
+	   if (mainMenuController == null)
+		   if (myScreenController instanceof MainMenuController )
+			   mainMenuController = (MainMenuController) myScreenController;
    }
 
+   /*
+    * Resets the rotational rate back to 500X
+    */
    // 2015-09-27 Added setDefaultRotation()
    public void setDefaultRotation() {
 	   rt.setRate(1.0);

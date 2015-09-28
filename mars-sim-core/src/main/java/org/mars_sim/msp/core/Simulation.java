@@ -773,7 +773,7 @@ implements ClockListener, Serializable {
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
     public void destroyOldSimulation() {
-    	logger.info("starting Simulation's destroyOldSimulation()");
+    	//logger.info("starting Simulation's destroyOldSimulation()");
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
@@ -829,7 +829,7 @@ implements ClockListener, Serializable {
             managerExecutor.shutdownNow();
             managerExecutor = null;
         }
-    	logger.info("Simulation's destroyOldSimulation() is done");
+    	//logger.info("Simulation's destroyOldSimulation() is done");
     }
 
 }
