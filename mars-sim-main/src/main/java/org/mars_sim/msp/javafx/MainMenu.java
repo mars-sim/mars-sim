@@ -49,6 +49,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
@@ -70,10 +72,8 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-
     private double anchorX;
-    //private double anchorY;
-    private double anchorAngle;
+    private double rate;
     private RotateTransition rt;
     //private boolean cleanUI = true;
 
@@ -97,6 +97,8 @@ public class MainMenu {
 	private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
+
+	public MainMenuController mainMenuController;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
     	this.marsProjectFX = marsProjectFX;
@@ -353,7 +355,7 @@ public class MainMenu {
        globeComponents.getChildren().add(sun);
        globeComponents.getChildren().add(ambient);
 
-       rt = new RotateTransition(Duration.seconds(60), mars);
+       rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), mars);
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
        rt.setCycleCount(Animation.INDEFINITE);
@@ -380,26 +382,39 @@ public class MainMenu {
 	   // 2015-09-26 Changes Mars Globe's rotation rate if a user drags his mouse across the globe
 	   scene.setOnMousePressed((event) -> {
 		   anchorX = event.getSceneX();
-		   //anchorY = event.getSceneY();
-		   anchorAngle = parent.getRotate();
 	   });
 
 	   scene.setOnMouseDragged((event) -> {
-		   //parent.setRotate(anchorAngle + anchorX - anchorX2);
-		   //parent.setRotate(event.getSceneX());
-		   double a = anchorAngle + anchorX - event.getSceneX();
-		   double rate;
+
+		   double a = anchorX - event.getSceneX();
+		   double rotationMultipler;
 
 		   if (a < 0) { // left to right
-			   rate = -a/20D;
+			   rate = Math.abs(a/100D);
 		   }
 		   else { // right to left
-			   rate = 20D/a ;
+			   rate = Math.abs(100D/a) ;
 		   }
 
-		   rt.setRate(rate);
+		   if (rate < 100) { // This prevents unrealistic and excessive rotation rate that creates spurious result (such as causing the direction of rotation to "flip"
+			   rt.setRate(rate);
+			   anchorX = 0;
+			   rotationMultipler = rate * 500D;
 
+			   //System.out.println("rate is " + rate + "   rotationMultipler is "+ rotationMultipler);
+
+			   mainMenuController.setRotation((int)rotationMultipler);
+		   }
 	   });
    }
 
+   // 2015-09-27 Added setController()
+   public void setController(ControlledScreen myScreenController) {
+	   mainMenuController = (MainMenuController) myScreenController;
+   }
+
+   // 2015-09-27 Added setDefaultRotation()
+   public void setDefaultRotation() {
+	   rt.setRate(1.0);
+   }
 }

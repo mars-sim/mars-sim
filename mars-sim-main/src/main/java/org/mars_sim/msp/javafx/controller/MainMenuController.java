@@ -10,8 +10,12 @@ import org.mars_sim.msp.javafx.ScreensSwitcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 
 public class MainMenuController implements Initializable, ControlledScreen {
+
+	@FXML
+	Label rotationRate;
 
     ScreensSwitcher switcher;
     /**
@@ -54,5 +58,15 @@ public class MainMenuController implements Initializable, ControlledScreen {
     @FXML
     private void exit(ActionEvent event){
     	switcher.exitDialog();
+    }
+
+    @FXML
+    private void setDefaultRotation(ActionEvent event) {
+    	rotationRate.setText("500X");
+    	switcher.getMainMenu().setDefaultRotation();
+    }
+
+    public void setRotation(int rate) {
+    	rotationRate.setText(rate + "X");
     }
 }

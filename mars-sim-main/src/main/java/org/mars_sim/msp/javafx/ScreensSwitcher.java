@@ -46,12 +46,13 @@ public class ScreensSwitcher extends StackPane {
         try {
             FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
             Parent loadScreen = (Parent) myLoader.load();
-            ControlledScreen myScreenControler = ((ControlledScreen) myLoader.getController());
-            myScreenControler.setScreenParent(this);
+            ControlledScreen myScreenController = ((ControlledScreen) myLoader.getController());
+            myScreenController.setScreenParent(this);
+            mainMenu.setController(myScreenController);
             addScreen(name, loadScreen);
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
             return false;
         }
     }

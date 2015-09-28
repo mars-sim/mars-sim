@@ -8,14 +8,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="640.0" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="640.0" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
   <children>
       <BorderPane layoutX="-1.0" prefHeight="640.0" prefWidth="640.0">
-         <bottom>
-            <HBox prefHeight="0.0" prefWidth="640.0" BorderPane.alignment="CENTER" />
-         </bottom>
          <left>
-			<VBox alignment="CENTER" prefHeight="0.0" prefWidth="0.0" spacing="0.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+			<VBox alignment="CENTER" prefHeight="567.0" prefWidth="25.0" spacing="0.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
 			<children>
 			</children>
 			</VBox>
@@ -75,25 +72,78 @@
                </BorderPane.margin>
           </VBox>
          </center>
+         <bottom>
+            <VBox prefHeight="62.0" prefWidth="640.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="23.0" prefWidth="640.0">
+                     <children>
+                        <Label text=" Rotational Speed :" textFill="#7f6106">
+							<font>
+								<Font name="Corbel Bold" size="18.0" />
+			                </font>
+		                     <effect>
+		                        <SepiaTone />
+		                     </effect>
+                           <HBox.margin>
+                              <Insets left="20.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label fx:id="rotationRate" text="500X" textFill="#7f6106">
+                        	<font>
+								<Font name="Constantia" size="18.0" />
+			                </font>
+		                     <effect>
+		                        <SepiaTone />
+		                     </effect>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <Button onAction="#setDefaultRotation" prefHeight="15.0" prefWidth="90.0" style="-fx-background-color: transparent;" text="Default : 500X" textFill="#976c0f">
+					<font>
+						<Font name="Constantia Italic" size="12.0" />
+	                </font>
+
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <VBox.margin>
+                        <Insets left="70.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+         </bottom>
          <top>
-            <Label alignment="CENTER_RIGHT" text="MARS SIMULATION PROJECT" textFill="#FFB03B" BorderPane.alignment="CENTER">
-               <font>
-                  <Font name="Aharoni Bold" size="36.0" />
-               </font>
-               <BorderPane.margin>
-                  <Insets top="20.0" />
-               </BorderPane.margin>
-               <effect>
-                  <Lighting>
-                     <bumpInput>
-                        <Shadow />
-                     </bumpInput>
-                     <light>
-                        <Light.Distant />
-                     </light>
-                  </Lighting>
-               </effect>
-            </Label>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="53.0" prefWidth="650.0" text="MARS SIMULATION PROJECT" textAlignment="CENTER" textFill="#FFB03B">
+                     <font>
+                        <Font name="Aharoni Bold" size="36.0" />
+                     </font>
+                     <effect>
+                        <Lighting>
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant />
+                           </light>
+                        </Lighting>
+                     </effect>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="650.0" text="V 3.08" textFill="#ffe53d">
+                     <font>
+                        <Font name="Constantia" size="14.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.09" />
+                     </effect>
+                  </Label>
+               </children>
+            </VBox>
          </top>
       </BorderPane>
   </children>

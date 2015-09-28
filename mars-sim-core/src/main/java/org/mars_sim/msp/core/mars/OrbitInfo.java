@@ -40,7 +40,7 @@ implements Serializable {
 	/** Mars tilt in radians. */
 	private static final double TILT = .4396D; // or 25.2 deg
 	/** Mars solar day in seconds. */
-	private static final double SOLAR_DAY = 88775.244D;
+	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
 
