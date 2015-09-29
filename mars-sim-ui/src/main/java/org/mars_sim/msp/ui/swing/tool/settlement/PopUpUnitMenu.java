@@ -284,7 +284,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 					f.setUndecorated(true);
 	                f.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                f.add(buildingPanel);
-					f.setSize(300, 335);  // undecorated: 300, 335; decorated: 310, 370
+					f.setSize(300, 350);  // undecorated: 300, 335; decorated: 310, 370
 					f.setLayout(new FlowLayout());
 
 					f.setVisible(true);

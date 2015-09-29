@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.DropShadowBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPanelCooking;
@@ -169,7 +170,7 @@ extends JPanel {
         setLayout(new BorderLayout(0, 0));
 
         // 2014-11-27 Added namePanel and buildingNameLabel
-        namePanel = new JPanel(new GridLayout(3,1,0,0));
+        namePanel = new JPanel(new GridLayout(2,1,0,0));
 		//setupDetailButton();
 
         //scrollPanel.setPreferredSize(new Dimension(200, 220));
@@ -195,7 +196,7 @@ extends JPanel {
 		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
 	    renameBtn.setBackground(Color.GRAY);
 	    renameBtn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				// if rename is done successfully, then update the building name
 				//boolean isRenamed =
 				renameBuilding();
@@ -244,16 +245,21 @@ extends JPanel {
 	    svgPanel.setMinimumSize(expectedDimension);
 		setPanelStyle(svgPanel);
 
+		JPanel borderPanel = new JPanel();
+		borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
+		borderPanel.setBackground(new Color(255,255,255,255));
+		borderPanel.add(svgPanel);
 
 	    Box box = new Box(BoxLayout.Y_AXIS);
 	    box.add(Box.createVerticalGlue());
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	        // 2014-11-05 Added setBorder()
-	    box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-	    box.add(svgPanel);
+	    //box.setBorder(BorderFactory.createLineBorder(Color.black, 2, true));
+	    box.add(borderPanel);
 	    box.add(Box.createVerticalGlue());
-		box.setOpaque(false);
-		box.setBackground(new Color(0,0,0,128));
+		//box.setOpaque(false);
+		//box.setBackground(new Color(0,0,0,128)); //
+		//box.setBackground(new Color(255,255,255,255));
 	    functionListPanel.add(box);
 
         // Prepare inhabitable panel if building has lifeSupport.

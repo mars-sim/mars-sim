@@ -27,9 +27,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Inventory;
@@ -106,6 +108,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.setAutoCreateRowSorter(true);
         resourcesTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
+		// 2015-09-28 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		resourcesTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		resourcesTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(resourcesTable);
 
@@ -129,6 +137,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         equipmentTable.getSelectionModel().addListSelectionListener(this);
         equipmentPanel.setViewportView(equipmentTable);
+
+
+		// 2015-09-28 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
+		renderer2.setHorizontalAlignment(SwingConstants.CENTER);
+		equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
+
 
 		// 2015-06-08 Added sorting
         equipmentTable.setAutoCreateRowSorter(true);

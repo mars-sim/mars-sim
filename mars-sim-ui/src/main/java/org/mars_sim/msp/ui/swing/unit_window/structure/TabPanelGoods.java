@@ -16,7 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
@@ -100,6 +102,11 @@ extends TabPanel {
 		goodsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		//goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
 		//goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
+
+		// 2015-09-28 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// 2015-06-08 Added sorting
 		goodsTable.setAutoCreateRowSorter(true);

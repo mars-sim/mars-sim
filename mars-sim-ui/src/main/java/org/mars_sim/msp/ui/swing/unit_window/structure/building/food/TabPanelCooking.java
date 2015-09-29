@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
@@ -165,7 +166,7 @@ extends TabPanel {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
-		JPanel topPanel = new JPanel(new GridLayout(3,1,0,0));
+		JPanel topPanel = new JPanel(new GridLayout(4,1,0,0));
 		topPanel.add(titleLabel);
 		cookingLabelPanel.add(topPanel, BorderLayout.NORTH);
 
@@ -179,6 +180,7 @@ extends TabPanel {
 		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		topPanel.add(cookCapacityLabel);
 
+		topPanel.add(new JLabel());
 
 		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));
 		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
@@ -188,7 +190,7 @@ extends TabPanel {
 		TitledBorder dessertBorder = BorderFactory.createTitledBorder(
 				null, "Desserts", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
-			      TitledBorder.DEFAULT_POSITION, null, java.awt.Color.darkGray);
+			      TitledBorder.DEFAULT_POSITION, new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
 		d.setBorder(dessertBorder);
 		//dessertBorder.setTitleColor(Color.orange);
 
@@ -206,7 +208,7 @@ extends TabPanel {
 		TitledBorder mealBorder = BorderFactory.createTitledBorder(
 				null, "Meals", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
-			      TitledBorder.DEFAULT_POSITION, null, java.awt.Color.darkGray);
+			      TitledBorder.DEFAULT_POSITION, new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
 		m.setBorder(mealBorder);
 		//mealBorder.setTitleColor(Color.orange);
 
@@ -252,32 +254,7 @@ extends TabPanel {
             	result.append(personName);
               	result.append("&emsp;&nbsp;Time :&emsp;");
             	result.append(time);
-				/*
-                    //meals = kitchen.get();
-                    //Crop crop = crops.get(rowIndex);
-                    ////double time;
-                    //double mass0, mass1;
-                    //double water;
-                    //String cropName, cat;
-                    //cropName = crop.getCropType().getName();
-                    //cat = crop.getCropType().getCropCategory();
-                	//mass0 = crop.getCropType().getEdibleBiomass();
-                	//water = 100 * crop.getCropType().getEdibleWaterContent();
-                	//mass1 = crop.getCropType().getInedibleBiomass();
-                	//time = crop.getCropType().getGrowingTime() /1000;
-                	result.append("&emsp;&nbsp;Crop Name:&emsp;");
-                	result.append(cropName);
-                	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;");
-                	result.append(cat);
-                	result.append("<br>&emsp;Edible Mass:&emsp;");
-                	result.append(mass0).append(" kg");
-                	result.append("<br>&nbsp;Inedible Mass:&emsp;");
-                	result.append(mass1).append(" kg");
-                	result.append("<br>&nbsp;Growing Days:&emsp;");
-                	result.append(time);
-                	result.append("<br>&nbsp;Water Content:&emsp;");
-                	result.append(water).append(" %");
-  */
+
 	            } catch (RuntimeException e1) {
 	                //catch null pointer exception if mouse is over an empty line
 	            }
@@ -299,8 +276,13 @@ extends TabPanel {
 		//resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		// 2014-12-30 Added setTableStyle()
-		//setTableStyle(table);
+
+		// 2015-09-28 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);

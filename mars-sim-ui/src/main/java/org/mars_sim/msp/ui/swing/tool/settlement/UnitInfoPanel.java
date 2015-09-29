@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * BuildingInfoPanel.java
+ * UnitInfoPanel.java
  * @version 3.07 2015-01-14
  * @author Manny Kung
  */
@@ -33,16 +33,16 @@ public class UnitInfoPanel extends JPanel {
     	setOpaque(false);
     	setBackground(new Color(51,25,0,150));
     }
-    
+
     @Override
 	protected void paintComponent(Graphics g) {
-    	
+
         int x = 20;
         int y = 20;
         int w = getWidth() - 40;
         int h = getHeight() - 40;
         int arc = 15;
-        
+
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -50,12 +50,12 @@ public class UnitInfoPanel extends JPanel {
         g2.fillRoundRect(x, y, w, h, arc, arc);
         g2.setStroke(new BasicStroke(3f));
         g2.setColor(Color.lightGray);
-        g2.drawRoundRect(x, y, w, h, arc, arc);  
+        g2.drawRoundRect(x, y, w, h, arc, arc);
         g2.dispose();
     }
 
     public void init(String unitName, String unitType, String unitDescription) {
-		
+
     	this.setOpaque(false);
         this.setLayout(new BorderLayout(20, 10));
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
@@ -65,22 +65,22 @@ public class UnitInfoPanel extends JPanel {
         mainPanel.setBackground(new Color(0,0,0,128));
         //setMinimumSize()
         this.add(mainPanel, BorderLayout.NORTH);
-        
+
         JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
         westPanel.setOpaque(false);
         westPanel.setBackground(new Color(0,0,0,128));
         //setMinimumSize()
         this.add(westPanel, BorderLayout.WEST);
-        
+
         JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
         eastPanel.setOpaque(false);
         eastPanel.setBackground(new Color(0,0,0,128));
         //setMinimumSize()
         this.add(eastPanel, BorderLayout.EAST);
-        
+
         // Creating the text Input
         JTextField tf1 = new JTextField("", 15);
-        
+
         tf1.setHorizontalAlignment(JTextField.CENTER);
         tf1.setOpaque(false);
         tf1.setFocusable(false);
@@ -91,12 +91,12 @@ public class UnitInfoPanel extends JPanel {
         tf1.setText(unitName);
         tf1.setForeground(Color.YELLOW); // orange font
         tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
-        
+
         mainPanel.add(tf1);
- 
+
         JTextArea ta = new JTextArea();//290, 300);
-        String type = "TYPE: "; 
-        String description = "DESCRIPTION: "; 
+        String type = "TYPE: ";
+        String description = "DESCRIPTION: ";
 
         ta.setLineWrap(true);
         ta.setFocusable(false);
@@ -110,12 +110,12 @@ public class UnitInfoPanel extends JPanel {
         ta.setFont( new Font( "Dialog", Font.PLAIN, 14 ) );
         ta.setOpaque(false);
         ta.setBackground(new Color(0, 0, 0, 0));
- 
+
         CustomScroll scr = new CustomScroll(ta);
         this.add(scr, BorderLayout.CENTER);
 
         this.setVisible(true);
 
     }
- 
+
 }

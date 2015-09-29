@@ -19,8 +19,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
@@ -105,6 +107,12 @@ extends TabPanel {
 		// 2015-06-08 Added sorting
 		creditTable.setAutoCreateRowSorter(true);
 		creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
+		// 2015-09-28 Align the preference score to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		creditTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
 
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(creditTable);

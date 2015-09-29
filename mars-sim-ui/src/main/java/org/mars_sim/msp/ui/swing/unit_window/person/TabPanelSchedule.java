@@ -139,28 +139,34 @@ extends TabPanel {
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(buttonPane);//, BorderLayout.NORTH);
 
-		shiftType = person.getTaskSchedule().getShiftType();
-		shiftCache = shiftType;
-		JLabel shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift"), JLabel.CENTER);
-		buttonPane.add(shiftLabel);
+        if (unit instanceof Person) {
+         	person = (Person) unit;
 
-		shiftTF = new JTextField(shiftCache);
-		shiftTF.setEditable(false);
-		shiftTF.setColumns(3);
-		buttonPane.add(shiftTF);
-		buttonPane.add(new JLabel("           "));
 
-		// Create the Storm Tracking button.
-		JButton button = new JButton("Open Planner");
-		button.setToolTipText("Click to Open Personal Planner");
-		button.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// Open storm tracking window.
-					openPlannerWindow();
-				}
-			});
-		buttonPane.add(button);
+    		shiftType = person.getTaskSchedule().getShiftType();
+    		shiftCache = shiftType;
+    		JLabel shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift"), JLabel.CENTER);
+    		buttonPane.add(shiftLabel);
+
+    		shiftTF = new JTextField(shiftCache);
+    		shiftTF.setEditable(false);
+    		shiftTF.setColumns(3);
+    		buttonPane.add(shiftTF);
+    		buttonPane.add(new JLabel("           "));
+/*
+    		// Create the future task planner button
+    		JButton button = new JButton("Open Planner");
+    		button.setToolTipText("Click to Open Personal Planner");
+    		button.addActionListener(
+    			new ActionListener() {
+    				public void actionPerformed(ActionEvent e) {
+    					// Open storm tracking window.
+    					openPlannerWindow();
+    				}
+    			});
+    		buttonPane.add(button);
+*/
+        }
 
 		Box box = Box.createHorizontalBox();
 		box.setBorder(new MarsPanelBorder());
@@ -281,8 +287,6 @@ extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-
-
 
 		scrollPanel.setViewportView(table);
 

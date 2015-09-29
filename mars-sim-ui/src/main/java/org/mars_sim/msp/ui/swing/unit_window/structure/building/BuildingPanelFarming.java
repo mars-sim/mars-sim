@@ -106,7 +106,7 @@ implements Serializable, MouseListener {
 	private JComboBoxMW<CropType> comboBox;
 	private List<CropType> cropCache;
 	private JList<CropType> list;
-	private JButton slotButton;
+	private JButton opsButton;
 
 	//private String cropInQueue;
 	private ListModel listModel;
@@ -133,11 +133,6 @@ implements Serializable, MouseListener {
 
 		// Set panel layout
 		setLayout(new BorderLayout());
-
-		init();
-	}
-
-	public void init() {
 
 		// Create label panel
 		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
@@ -168,16 +163,16 @@ implements Serializable, MouseListener {
 		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
 		labelPanel.add(radLabel);
 
-		// 2015-09-19 Added slotButtonPanel and slotButton
-		JPanel slotButtonPanel = new JPanel(new FlowLayout());
-		labelPanel.add(slotButtonPanel);
-        slotButton = new JButton("Ops Panel");
+		// 2015-09-19 Added opsPanel and opsButton
+		JPanel opsPanel = new JPanel(new FlowLayout());
+		labelPanel.add(opsPanel);
+        opsButton = new JButton("Ops Panel");
         //slotButton.setOpaque(false);
         //slotButton.setBackground(new Color(51,25,0,128));
         //slotButton.setForeground(Color.ORANGE);
         //slotButton.setEnabled(processComboBox.getItemCount() > 0);
-        slotButton.setToolTipText("Click to enter the greenhouse ops panel");
-        slotButton.addActionListener(new ActionListener() {
+        opsButton.setToolTipText("Click to enter the greenhouse ops panel");
+        opsButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		//try {
         			openGreenhouseOps();
@@ -187,7 +182,7 @@ implements Serializable, MouseListener {
         		//}
         	}
         });
-        slotButtonPanel.add(slotButton);
+        opsPanel.add(opsButton);
 
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
