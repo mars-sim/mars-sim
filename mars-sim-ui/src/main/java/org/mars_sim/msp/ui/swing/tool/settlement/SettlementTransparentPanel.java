@@ -442,7 +442,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 		buttonPane.add(rotateClockwiseButton);
 
-		JButton recenterButton = new JButton(" + ");//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
+		JButton recenterButton = new JButton("+");//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
 		recenterButton.setPreferredSize(new Dimension(20, 20));
 		recenterButton.setOpaque(false);
 		recenterButton.setForeground(Color.BLUE);

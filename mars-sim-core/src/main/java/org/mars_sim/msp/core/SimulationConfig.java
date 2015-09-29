@@ -73,7 +73,7 @@ public class SimulationConfig implements Serializable {
 	public static final String FOODPRODUCTION_FILE = "foodProduction";
 	public static final String MEAL_FILE = "meals";
 	public static final String ROBOT_FILE = "robots";
-	
+
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
@@ -117,7 +117,7 @@ public class SimulationConfig implements Serializable {
 	private MealConfig mealConfig;
 	// 2015-01-21 Added robotConfig
 	private RobotConfig robotConfig;
-	
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
@@ -237,7 +237,7 @@ public class SimulationConfig implements Serializable {
 	/**
 	 * Gets the person config subset.
 	 * @return person config
-	 */	
+	 */
 	public PersonConfig getPersonConfiguration() {
 		return personConfig;
 	}
@@ -245,11 +245,11 @@ public class SimulationConfig implements Serializable {
 	/**
 	 * Gets the robot config subset.
 	 * @return robot config
-	 */	
+	 */
 	public RobotConfig getRobotConfiguration() {
 		return robotConfig;
 	}
-	
+
 	/**
 	 * Gets the medical config subset.
 	 * @return medical config
@@ -330,7 +330,7 @@ public class SimulationConfig implements Serializable {
 		return manufactureConfig;
 	}
 
-	
+
 	/**
 	 * Gets the foodProduction config subset.
 	 * @return foodProduction config
@@ -340,7 +340,7 @@ public class SimulationConfig implements Serializable {
 		return foodProductionConfig;
 	}
 
-	
+
 	/**
 	 * Gets the meal config subset.
 	 * @return meal config
@@ -351,7 +351,7 @@ public class SimulationConfig implements Serializable {
 		return mealConfig;
 	}
 
-	
+
 	/**
 	 * Gets the construction config subset.
 	 * @return construction config
@@ -391,9 +391,9 @@ public class SimulationConfig implements Serializable {
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 			// 2015-01-21 Added robotConfig
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
-			
+
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
+			logger.log(Level.SEVERE,"Error reading the config files: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

@@ -708,6 +708,24 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="solid oxide fuel cell" mass="3">
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="5" max-number="2" />
+			<entity name="life support" probability="5" max-number="2" />
+			<entity name="farming" probability="5" max-number="2" />
+			<entity name="vehicle" probability="5" max-number="2" />
+			<entity name="power generation" probability="10" max-number="2" />
+			<entity name="settlement" probability="5" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="fuel cell stack" mass=".3">
+		<maintenance-entity-list>
+			<entity name="solid oxide fuel cell" probability="10" max-number="3" />
+		</maintenance-entity-list>
+	</part>
+
+
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

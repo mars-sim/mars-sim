@@ -3270,6 +3270,24 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		</outputs>
 	</process>
 
+		<!-- 2015-09-28 Added manufacturing solid oxide fuel cell. -->
+	<process name="solid oxide fuel cell manufacturing" tech="3" skill="4" work-time="1000" process-time="100"
+			power-required="3">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="plastic sheet" number="1" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="small transformer" number="1" />
+			<part name="steel pipe" number="2" />
+			<part name="microcontroller" number="1" />
+			<part name="fuel cell stack" number="3" />
+		</inputs>
+		<outputs>
+			<part name="solid oxide fuel cell" number="1" />
+		</outputs>
+	</process>
+
 	<!-- 2015-05-31 Added
 
 	1. work glove
@@ -3327,6 +3345,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
@@ -3355,6 +3374,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
@@ -3383,6 +3403,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
@@ -3397,6 +3418,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="lubricant bottle" number="1" />
 		<part-salvage name="small wheel" number="4" />
 		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->
