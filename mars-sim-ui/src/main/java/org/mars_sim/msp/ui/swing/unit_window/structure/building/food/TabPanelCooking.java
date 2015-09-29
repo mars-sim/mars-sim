@@ -171,13 +171,13 @@ extends TabPanel {
 
 		// Prepare cook number label
 
-		// Prepare cook capacity label
-		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
-		topPanel.add(cookCapacityLabel);
-
 		//numCooksCache = kitchen.getNumCooks();
 		numCooksLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache), JLabel.CENTER); //$NON-NLS-1$
 		topPanel.add(numCooksLabel);
+
+		// Prepare cook capacity label
+		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
+		topPanel.add(cookCapacityLabel);
 
 
 		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));

@@ -8,9 +8,11 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +26,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -72,22 +75,30 @@ implements ActionListener {
      */
     public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Location", null, "Location", unit, desktop);
+        super(Msg.getString("LocationTabPanel.title"),
+        		null,
+        		Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
-        // Initialize locationLabel.
-        locationLabel = new JLabel("");
+        // Initialize location header.
+		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePane);
+
+		JLabel titleLabel = new JLabel(Msg.getString("LocationTabPanel.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		titlePane.add(titleLabel);
 
         // Create location panel
         JPanel locationPanel = new JPanel(new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
-        locationPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+       //locationPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
 
         topContentPanel.add(locationPanel);
         //topContentPanel.setBackground(THEME_COLOR);
         //locationPanel.setBackground(THEME_COLOR);
 
         // Create location label panel
-        locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        locationLabelPanel = new JPanel(new GridLayout(3,1,0,0)); // new JPanel(new FlowLayout(FlowLayout.CENTER));
         //locationLabelPanel.setBackground(THEME_COLOR);
         locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
 
@@ -99,14 +110,43 @@ implements ActionListener {
         locationCoordsPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
         locationCoordsPanel.setLayout(new BorderLayout(0, 0));
 
+        // Initialize location cache
+        locationCache = new Coordinates(unit.getCoordinates());
+
+        // Prepare latitude label
+        latitudeLabel = new JLabel("Latitude : " + getLatitudeString());
+        latitudeLabel.setOpaque(false);
+        latitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
+        latitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
+
+        // Prepare longitude label
+        longitudeLabel = new JLabel("Longitude : " + getLongitudeString());
+        longitudeLabel.setOpaque(false);
+        longitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
+        longitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
+
+        JPanel gpsPane = new JPanel(new FlowLayout());
+        locationLabelPanel.add(gpsPane);
+
+        JLabel gpsLabel = new JLabel(Msg.getString("LocationTabPanel.gpslocator"), JLabel.CENTER); //$NON-NLS-1$
+        gpsPane.add(gpsLabel);
+
         // Create center map button
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setOpaque(false);
         //centerMapButton.setBackground(THEME_COLOR);
-        centerMapButton.setToolTipText("Locate in Mars Navigator (center map on location)");
-        locationLabelPanel.add(centerMapButton);
+        centerMapButton.setToolTipText("Locate the person or bot in a settlement or vehicle in Mars Navigator");
+
+		JPanel locatorPane = new JPanel(new FlowLayout());
+		locatorPane.add(centerMapButton);
+		gpsPane.add(locatorPane);
+
+
+/*
 
         // Create location button
         locationButton = new JButton();
@@ -116,27 +156,12 @@ implements ActionListener {
 
         containerPanel.add(locationButton);
 
-        // Initialize location cache
-        locationCache = new Coordinates(unit.getCoordinates());
 
-        // Prepare latitude label
-        latitudeLabel = new JLabel(getLatitudeString());
-        latitudeLabel.setOpaque(false);
-        latitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        latitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
-
-        // Prepare longitude label
-        longitudeLabel = new JLabel(getLongitudeString());
-        longitudeLabel.setOpaque(false);
-        longitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        longitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
 
         // 2014-11-11 Set up tpPanel for outside temperature and pressure
-        tpPanel.setOpaque(false);
-        BorderLayout tpLayout = new BorderLayout(0, 0);
-        tpPanel.setLayout(tpLayout);
+        //tpPanel.setOpaque(false);
+        //BorderLayout tpLayout = new BorderLayout(0, 0);
+        //tpPanel.setLayout(tpLayout);
         //tpPanel.setBackground(THEME_COLOR);
 
         //TitledBorder tpTitle;
@@ -144,7 +169,7 @@ implements ActionListener {
         //tpTitle.setTitleFont(new Font("Serif", Font.ITALIC, 9));
         //tpPanel.setBorder(tpTitle);
         //tpPanel.setBorder(BorderFactory.createEtchedBorder());
-/*
+
         // Prepare air pressure label
         airPressureLabel = new JLabel(getAirPressureString(getAirPressure()));
         airPressureLabel.setOpaque(false);
@@ -160,12 +185,12 @@ implements ActionListener {
         tpPanel.add(temperatureLabel, BorderLayout.NORTH);
 
         locationLabelPanel.add(outsideReadingPanel);
-*/
+
         // Add the location button or outsideReadingPanel depending on the situation.
         Unit container = unit.getContainerUnit();
         if (container != null) {
             locationButton.setText(container.getName());
-            addContainerPanel();
+            //addContainerPanel();
         }
         else {
          	// 2014-10-22 Called new method checkOutsideReading()
@@ -175,6 +200,8 @@ implements ActionListener {
 
         // initialize containerCache
         containerCache = unit.getContainerUnit();
+
+*/
     }
 /*
     // 2014-11-11 Modified temperature and pressure panel
@@ -304,9 +331,29 @@ implements ActionListener {
     	// does the coordinate (down to how many decimal) change?
         if (!locationCache.equals(unit.getCoordinates())) {
             locationCache.setCoords(unit.getCoordinates());
-            latitudeLabel.setText(getLatitudeString());
-            longitudeLabel.setText(getLongitudeString());
+            latitudeLabel.setText("Latitude : " + getLatitudeString());
+            longitudeLabel.setText("Longitude : " + getLongitudeString());
         }
+
+
+        // Update location button or location text label as necessary.
+        Unit container = unit.getContainerUnit();
+        //if (!containerCache.equals(container)) {
+        if (containerCache != container) {
+        	containerCache = container;
+        	// the unit's container has changed
+            //if (container != null) {
+            	//locationButton.setText(container.getName());
+            	//addContainerPanel();
+            //}
+            //else {
+         	// 2014-10-22 mkung: Called new method checkOutsideReading()
+        	//checkOutsideReading();
+        	//addOutsideReadingPanel();
+            //}
+        }
+        //else; // the unit's container has NOT changed
+
 /*
 		double p = getAirPressure();
         if (airPressureCache != p) {
@@ -319,30 +366,15 @@ implements ActionListener {
         	temperatureCache = t;
         	temperatureLabel.setText(getTemperatureString(temperatureCache));
         }
-*/
-        // Update location button or location text label as necessary.
-        Unit container = unit.getContainerUnit();
-        //if (!containerCache.equals(container)) {
-        if (containerCache != container) {
-        	containerCache = container;
-        	// the unit's container has changed
-            if (container != null) {
-            	locationButton.setText(container.getName());
-            	addContainerPanel();
-            }
-            else {
-         	// 2014-10-22 mkung: Called new method checkOutsideReading()
-        	//checkOutsideReading();
-        	//addOutsideReadingPanel();
-            }
-        }
-        else; // the unit's container has NOT changed
+
+   */
+
     }
 
     /**
      * Adds the location button to the location label panel if it isn't already on
      * there and removes the location text label if it's there.
-     */
+
     // 2014-11-11 Modified addContainerPanel()
     private void addContainerPanel() {
         try {
@@ -357,7 +389,7 @@ implements ActionListener {
             locationLabelPanel.add(containerPanel);
         }
     }
-
+*/
     /**
      * Adds the outsideReadingPanel if it isn't already on
      * there and removes the location button if it's there.

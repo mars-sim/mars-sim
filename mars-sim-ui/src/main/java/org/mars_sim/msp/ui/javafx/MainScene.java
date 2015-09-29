@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
@@ -125,6 +126,7 @@ public class MainScene {
 	private Stage stage;
 	private Scene scene;
 
+	private StackPane swingPane;
 	private Tab swingTab;
 	private Tab nodeTab;
 
@@ -250,7 +252,7 @@ public class MainScene {
 		// root.getChildren().add(bg1);
 
 		// Create group to hold swingNode1 which holds the swing desktop
-		StackPane swingPane = new StackPane();
+		swingPane = new StackPane();
 		swingNode = new SwingNode();
 		createSwingNode();
 		swingPane.getChildren().add(swingNode);
@@ -264,7 +266,7 @@ public class MainScene {
 
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
-		menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
+		//menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
 
 		// Create BorderPane
 		BorderPane borderPane = new BorderPane();
@@ -275,10 +277,17 @@ public class MainScene {
 
 		// 2015-05-26 Create fxDesktopPane
 		fxDesktopPane = marsNode.createFXDesktopPane();
+		fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+
+
+		//2015-09-27 for testing the use of fxml
+		marsNode.createMaterialDesignWindow();
+		marsNode.createSettlementWindow();
 
 		// 2015-05-26 Create the dndTabPane.
 		dndTabPane = new DndTabPane();
 		StackPane containerPane = new StackPane(dndTabPane);
+		containerPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
 
 		// We need to create the skin manually, could also be your custom skin.
 		DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
@@ -329,8 +338,9 @@ public class MainScene {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-		/*
 		//rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
+		/*
+		rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
 		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 		rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			@Override
@@ -372,11 +382,17 @@ public class MainScene {
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
 		//rootStackPane.getStylesheets().clear();
+
+		changeTheme(1);
+/*
 		theme = 1;
-		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+		//rootStackPane
+		swingPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+		menuBar.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+
 		updateStatusBarThemeColor(Color.GREEN, Color.PALEGREEN);
 		lookAndFeelTheme = "LightTabaco";
-
+*/
 		// SwingUtilities is needed for MacOSX compatibility
 		SwingUtilities.invokeLater(() -> {
 			setLookAndFeel(1);
@@ -391,54 +407,43 @@ public class MainScene {
 	 */
 	public void changeTheme(int theme) {
 		this.theme = theme;
+		swingPane.getStylesheets().clear();
+		menuBar.getStylesheets().clear();
+		String cssColor;
+
 		//logger.info("MainScene's changeTheme()");
 		if (theme == 1) {
-			rootStackPane.getStylesheets().clear();
-			//theme = 2;
-			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
+			cssColor = "/fxui/css/oliveskin.css";
+			updateThemeColor(Color.GREEN, Color.PALEGREEN, cssColor);
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.GREEN, Color.PALEGREEN);
 			lookAndFeelTheme = "LightTabaco";
 		} else if (theme == 2) {
-			rootStackPane.getStylesheets().clear();
-			//theme = 3;
-			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
+			cssColor = "/fxui/css/burgundyskin.css";
+			updateThemeColor(Color.ORANGERED, Color.YELLOW, cssColor);
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.ORANGERED, Color.YELLOW);
 			lookAndFeelTheme = "Burdeos";
 		} else if (theme == 3) { // dark olive
-			rootStackPane.getStylesheets().clear();
-			//theme = 4;
-			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
+			cssColor = "/fxui/css/mainskin.css";
+			updateThemeColor(Color.DARKGREY, Color.DARKOLIVEGREEN, cssColor);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.LIGHTCYAN, Color.DARKOLIVEGREEN);
 			lookAndFeelTheme = "DarkTabaco";
 		} else if (theme == 4) {
-			// rootStackPane.getStylesheets().clear();
-			//theme = 5;
-			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.BLANCHEDALMOND, Color.GREY);
+			cssColor = "/fxui/css/mainskin.css";
+			updateThemeColor(Color.GREY, Color.GREY, cssColor);
 			lookAndFeelTheme = "DarkGrey";
 		} else if (theme == 5) { // + purple
-			// rootStackPane.getStylesheets().clear();
-			//theme = 6;
-			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.PALEGOLDENROD, Color.BLUEVIOLET);
+			cssColor = "/fxui/css/mainskin.css";
+			updateThemeColor(Color.VIOLET, Color.BLUEVIOLET, cssColor);
 			lookAndFeelTheme = "Night";
 		} else if (theme == 6) { // + skyblue
-			// rootStackPane.getStylesheets().clear();
-			//theme = 7;
-			// rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
-			updateStatusBarThemeColor(Color.CADETBLUE, Color.LIGHTBLUE);
+			cssColor = "/fxui/css/mainskin.css";
+			updateThemeColor(Color.CADETBLUE, Color.LIGHTBLUE, cssColor);
 			lookAndFeelTheme = "Snow";
 		} else if (theme == 7) {
-			rootStackPane.getStylesheets().clear();
-			//theme = 1;
-			rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-			updateStatusBarThemeColor(Color.ORANGE, Color.LIGHTSALMON);
+			cssColor = "/fxui/css/mainskin.css";
+			updateThemeColor(Color.ORANGE, Color.LIGHTSALMON, cssColor);
 			lookAndFeelTheme = "nimrod";
 		}
 
@@ -446,15 +451,21 @@ public class MainScene {
 	}
 
 	/*
-	 * Updates the colors of the texts and buttons on the status bar
+	 * Updates the theme colors of statusBar, swingPane and menuBar
 	 */
-	// 2015-08-29 Added updateStatusBarThemeColor()
-	public void updateStatusBarThemeColor(Color txtColor, Color btnColor) {
+	// 2015-08-29 Added updateThemeColor()
+	public void updateThemeColor(Color txtColor, Color btnColor, String cssColor) {
+		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+
 		memUsedText.setFill(txtColor);
 		memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
 		systemCpuLoadText.setFill(txtColor);
 		processCpuLoadText.setFill(txtColor);
+
+		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+
 		memBtn.setTextFill(btnColor);
 		clkBtn.setTextFill(btnColor);
 		cpuBtn.setTextFill(btnColor);
@@ -1096,6 +1107,7 @@ public class MainScene {
 	public void openSwingTab() {
 		// splitPane.setDividerPositions(1.0f);
 		dndTabPane.getSelectionModel().select(swingTab);
+		//rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
 	}
 
 	public void openMarsNet() {
@@ -1190,6 +1202,10 @@ public class MainScene {
 
 	public Scene getScene() {
 		return scene;
+	}
+
+	public StackPane getRootStackPane() {
+		return rootStackPane;
 	}
 
 	public void destroy() {

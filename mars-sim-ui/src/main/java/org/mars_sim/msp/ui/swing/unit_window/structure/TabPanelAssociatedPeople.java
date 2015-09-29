@@ -71,11 +71,14 @@ implements MouseListener, ActionListener {
 
 		Settlement settlement = (Settlement) unit;
 
+		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePane);
+
 		// Create associated people label
-		JLabel label = new JLabel(Msg.getString("TabPanelAssociatedPeople.label"), JLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
-		label.setForeground(new Color(102, 51, 0)); // dark brown
-		topContentPanel.add(label);
+		JLabel heading = new JLabel(Msg.getString("TabPanelAssociatedPeople.heading"), JLabel.CENTER); //$NON-NLS-1$
+		heading.setFont(new Font("Serif", Font.BOLD, 16));
+		heading.setForeground(new Color(102, 51, 0)); // dark brown
+		titlePane.add(heading);
 
 		// Create label
 		JPanel associatedLabelPanel = new JPanel(new GridLayout(1, 2, 0, 0)); //new FlowLayout(FlowLayout.CENTER));
@@ -84,7 +87,7 @@ implements MouseListener, ActionListener {
 
 		// Create population num label
 		populationNumCache = settlement.getAllAssociatedPeople().size();
-		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population",
+		populationNumLabel = new JLabel(Msg.getString("TabPanelAssociatedPeople.population",
 		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
 		associatedLabelPanel.add(populationNumLabel);
 
@@ -125,7 +128,7 @@ implements MouseListener, ActionListener {
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
-			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population",
+			populationNumLabel.setText(Msg.getString("TabPanelAssociatedPeople.population",
 			        populationNumCache)); //$NON-NLS-1$
 		}
 

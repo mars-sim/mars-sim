@@ -1,0 +1,1561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JavaOne2010-S313389: Source Code Repository: ScubaDivingsrcscubadivingcaspian.css &mdash; Project Kenai</title>
+    <link href="https://asset-3.kenai.com/stylesheets/base_packaged.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />    <link href="https://asset-3.kenai.com/theme/stylesheets/colorAndMedia.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />
+    <link href="https://asset-1.kenai.com/theme/stylesheets/layout.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />
+
+    <!--[if IE 7]>
+    <link href="https://asset-2.kenai.com/stylesheets/ie7_packaged.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />    <![endif]-->
+    <!--[if IE 6]>
+    <link href="https://asset-1.kenai.com/stylesheets/iex60.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />    <![endif]-->
+    <link href="https://asset-2.kenai.com/stylesheets/print_packaged.css?20150925.bf86fa7" media="print" rel="stylesheet" type="text/css" />
+    <script src="https://asset-3.kenai.com/javascripts/head_packaged.js?20150925.bf86fa7" type="text/javascript"></script>
+        <script type="text/javascript">
+//<![CDATA[
+var page={"token":"Js04CL9Zk3filn7yunPHRxfPtHUOnOq2Mc2TkhIDht0="};
+//]]>
+</script>
+    <script type="text/javascript" charset="utf-8">
+      function debug(m){}
+    </script>
+    
+  <link href="https://asset-0.kenai.com/stylesheets/syntax/shCore.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />
+<link href="https://asset-0.kenai.com/stylesheets/syntax/shThemeDefault.css?20150925.bf86fa7" media="screen" rel="stylesheet" type="text/css" />
+
+
+  </head>
+  <body id="bg">
+    <div align="center">
+      <div id="container">
+        
+        <div id="headCurves"></div>
+        <div id="masthead">
+          <div class="topLeft"></div><div class="topRight"></div>
+          <div class="contentmast">
+            <div id="logo" onclick="document.location='/?clear=1'"></div>
+            <div class="controls">
+                <div class="links">
+          
+        <a href="/people/login?original_uri=%2Fprojects%2Fjavaone2010-s313389%2Fsources%2Fjavaone-repository%2Fcontent%2FScubaDiving%2Fsrc%2Fscubadiving%2Fcaspian.css" rel="nofollow">Login</a>
+    <span class="separator">|</span> <a href="/people/new">Join Now</a>
+    <span class="separator">|</span>
+    <a href="/projects/help/pages/SourceControl" target="_blank">Help</a>
+  </div>
+<form><input type="text" id="live-search" value="Jump to..." autocomplete="off" /></form>
+
+            </div>
+          </div>
+          <div class="bottomLeft"></div><div class="bottomRight"></div>
+        </div>
+        <div id="breadcrumbs"><a href="/">kenai.com</a><span>></span>
+  <a href="/projects">projects</a><span>&gt;</span><a href="/projects/javaone2010-s313389">javaone2010-s313389</a><span>&gt;</span><a href="/projects/javaone2010-s313389/sources">source code</a><span>&gt;</span><a href="/projects/javaone2010-s313389/sources/javaone-repository/show" class="current">Source Code Repository</a>
+</div>
+        <div id="main">
+          <div id="printSideColumn">
+            <div id="sideColumn" style="display:block">
+              <div id="hAccordion" class="hAccordion home">
+                <a href="/forums" id="hTab_0" title="Forums"></a>
+                <a href="/people" id="hTab_1" title="People"></a>
+                <a href="/projects" id="hTab_2" title="Projects"></a>
+                <a href="/mypage" id="hTab_3" title="My Page"></a>
+                <a href="/" id="hTab_4" title="Home"></a>
+              </div>
+              <div id="nav2">
+                
+  <div class="vAccordion">
+  
+    <button class="tab" id="sidebar_project_features"><div class="title">Project Features</div><div class="expCol">-</div></button>
+    <div class="bucket" style="">    
+      <ul>
+                  
+          <li><strong>
+	    
+              <a href="/projects/javaone2010-s313389/lists">Mailing List</a>
+            
+          </strong></li>
+          
+                  
+          <li><strong>
+	    
+              Downloads            
+          </strong></li>
+          <li class="vAccordion-detail"><a href="/projects/javaone2010-s313389/downloads">&raquo; Downloads</a></li>
+                  
+          <li><strong>
+	    
+              <a href="/projects/javaone2010-s313389/sources">Source Code Repository</a>
+            
+          </strong></li>
+          <li class="vAccordion-detail"><a href="/projects/javaone2010-s313389/sources/javaone-repository/show">&raquo; Source Code Repository</a></li>
+                  
+          <li><strong>
+	    
+              Project chat room            
+          </strong></li>
+          <li class="vAccordion-detail"><a href="/projects/help/pages/IMChat#Setting_Up_Your_Own_Chat_Client" target="_blank">&raquo; chat</a></li>
+                  
+          <li><strong>
+	    
+              Wiki            
+          </strong></li>
+          <li class="vAccordion-detail"><a href="/projects/javaone2010-s313389/pages/Home">&raquo; Wiki</a></li>
+                  
+          <li><strong>
+	    
+              WikiHomePage            
+          </strong></li>
+          <li class="vAccordion-detail"><a href="/projects/javaone2010-s313389/pages/Home" target="_blank">&raquo; WikiHomePage</a></li>
+              </ul>
+      </div>
+
+    <button class="tab" id="sidebar_project_about"><div class="title">About this Project</div><div class="expCol">-</div></button>
+    <div class="bucket" style="">
+  <div style="text-align:left; margin:5px;">
+    <a href="/projects/javaone2010-s313389">JavaOne2010-S313389</a>
+    
+    was started in
+    June 2010, is owned by
+    <a href="/people/53321-goutin"><span class="person -kenai-goutin">goutin</span></a>,
+    and has <a href="/projects/javaone2010-s313389/members">4 members</a>.
+  </div>
+  <ul>
+    
+      
+        <li><a href="/projects/javaone2010-s313389/watch"><span class="bullet">&raquo;</span> Join This Project</a></li>
+      
+    
+  </ul>
+  
+</div>
+</div>
+
+              </div>
+            </div>
+            
+      <div id='sideColumnShow' class='side_nav' title='hide side navigation'></div>
+    
+          </div>
+          <div id="pageContent" class="content">
+            <!--BEGIN CONTENT AREA-->
+            
+            
+
+
+
+
+
+ 
+ 
+
+
+
+<div class="contentPadding">
+  <h2 class="pageTitle">Source code<span class="secondaryTitle"> file content</span></h2>
+
+  <!-- Revision Navigation -->
+      <!--Source code navigation - 2 column layout -->
+    <div class="scmNavBlock">
+      <div class="twoColumns">
+        <div class="column">
+          
+            <span class="alignText">Revision:</span>
+            <span class="alignText">
+              <a href="/projects/javaone2010-s313389/sources/javaone-repository/revision/20">20</a>
+              
+                (of <a href="/projects/javaone2010-s313389/sources/javaone-repository/revision/20">20</a>)
+              
+            </span>
+          
+          <br/><br/>
+          <span class="alignText">v0.30 - 27.septembre.2010 - run ok at J1</span>
+        </div>
+        <div class="column">
+          <div align="right">
+            <a href="/projects/javaone2010-s313389/sources/javaone-repository/history?">&raquo; Project Revision History</a>
+            <br/><br/>
+            <div id="repository-url-overlay">
+  <a href="#" class="contextMenuAnchor" id="scm-url_90963">&raquo; Checkout URL</a><div style="display:none" id="scm-url_90963_content">
+	
+      <span class="quiet">Access the source code using the following URL:</span>
+      <br />https://svn.kenai.com/svn/javaone2010-s313389~javaone-repository
+      
+	
+    
+      <br /><br />
+      
+        <span class="quiet">
+          You must be <a href="/people/login">logged in</a>
+          to see SSH URLs.
+        </span>
+      
+    
+  </div>
+</div>
+
+          </div>
+        </div>
+      <div class="clear"></div>
+      </div>
+    </div>
+    <!--End source code navigation -->
+  
+
+  <!-- Title and back link -->
+  <h3 class="pathBreadcrumbs subSection scmTitle"><a href="/projects/javaone2010-s313389/sources/javaone-repository/show" title="Repository Contents">javaone-repository</a><span> / </span><a href="/projects/javaone2010-s313389/sources/javaone-repository/show/ScubaDiving" title="Go to ScubaDiving">ScubaDiving</a><span> / </span><a href="/projects/javaone2010-s313389/sources/javaone-repository/show/ScubaDiving/src" title="Go to ScubaDiving/src">src</a><span> / </span><a href="/projects/javaone2010-s313389/sources/javaone-repository/show/ScubaDiving/src/scubadiving" title="Go to ScubaDiving/src/scubadiving">scubadiving</a><span> / </span><a href="/projects/javaone2010-s313389/sources/javaone-repository/content/ScubaDiving/src/scubadiving/caspian.css" title="View Contents">caspian.css</a></h3>
+
+  <!-- Contents -->
+  
+    <div class="twoColumns">
+      <!-- first column-->
+      <div class="column">
+        <ul class="actions">
+          <li><a href="/projects/javaone2010-s313389/sources/javaone-repository/history?path%5B%5D=ScubaDiving&amp;path%5B%5D=src&amp;path%5B%5D=scubadiving&amp;path%5B%5D=caspian.css">&raquo; File Revision History</a> </li>
+          <li><a href="/projects/javaone2010-s313389/sources/javaone-repository/content/ScubaDiving/src/scubadiving/caspian.css?raw=true">&raquo; Get Raw File</a></li>
+        </ul>
+        <div class="clear"></div>
+      </div>
+      <!-- second column-->
+      <div class="column" align="right">
+        <form method="get" action="/projects/javaone2010-s313389/sources/javaone-repository/diff/ScubaDiving/src/scubadiving/caspian.css">
+          <input value="Get diffs" type="submit"> between
+          <input name="rev1" value="" type="text" size="6"> and
+          <input name="rev2" value="" type="text" size="6">
+        </form>        
+      </div>
+      <div class="clear"></div>
+    </div>
+  
+  
+    <!-- File info -->
+    <div style="margin:-6px 0 10px 5px;">Size: 41419 bytes, 1 line</div>
+    <!-- contents -->
+
+<pre name="code" class="css">/* 
+    Document   : caspian
+*/
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for core infrastructure bits. Ideally we could hide these        *
+ * somehow so as not to require people to know about the infrastructure stuff. *
+ *                                                                             *
+ ******************************************************************************/
+
+.scene {
+    /* The default font for all content, it in inherited by all nodes */
+    -fx-font: 12pt &quot;Amble Cn&quot;;
+
+    /* Our main color palette that the user should play with to change colors of controls */
+    -fx-accent: #0093ff;
+    -fx-base: #d0d0d0;
+    -fx-background: #f4f4f4;
+    -fx-control-inner-background: white;
+    -fx-focus-color: #0093ff;
+    -fx-dark-text-color: black;
+    -fx-mid-text-color: #292929;
+    -fx-light-text-color: white;
+
+    /* This is the color that is used in styling controls, it is based on the base color but is changed by pseudo-states
+       like hover and pressed to make it lighter or darker than the base color. */
+    -fx-color: -fx-base;
+
+    /* These two colors are used to change the &quot;color&quot; property when we change pseudo-states */
+    -fx-hover-base: ladder base stops (20%,derive(-fx-base,20%)) (35%,derive(-fx-base,30%)) (50%,derive(-fx-base,40%));
+    -fx-pressed-base: derive(-fx-base,-20%);
+
+    /* These are the basic palette of colors used in control skins */
+    -fx-box-border: ladder -fx-color stops (0.2,black) (0.3,derive(-fx-color,-30%));
+    /* These are the basic palette of colors used in control skins */
+    -fx-text-box-border: ladder -fx-background stops (0.1,black) (0.3,derive(-fx-background,-15%));
+
+    -fx-shadow-highlight-color: ladder -fx-background stops
+			(0,transparent)
+			(0.05,derive(-fx-background,40%))
+			(0.70,derive(-fx-background,60%))
+			(0.85,derive(-fx-background,100%))
+			(0.97,derive(-fx-background,100%))
+			(0.975,derive(-fx-background,-10%));
+    -fx-outer-border: linear (0%,0%) to (0%,100%) stops (0%,derive(-fx-color,-9%)) (100%,derive(-fx-color,-33%));
+    -fx-inner-border: linear (0%,0%) to (0%,100%) stops
+			(0,ladder color stops 
+                            (0.6,derive(-fx-color,80%))
+                            (0.82,white)
+                        )
+			(1,ladder -fx-color stops
+                            (0.1,derive(-fx-color,20%))
+                            (0.8,derive(-fx-color,-10%))
+			);
+    -fx-body-color: linear (0%,0%) to (0%,100%) stops (0,derive(-fx-color,34%)) (1,derive(-fx-color,-18%));
+    
+    -fx-text-base-color: ladder -fx-color stops (30%,-fx-light-text-color) (31%,-fx-dark-text-color) (59%,-fx-dark-text-color) (60%,-fx-mid-text-color);
+    -fx-text-background-color: ladder -fx-background stops (30%,-fx-light-text-color) (31%,-fx-dark-text-color) (59%,-fx-dark-text-color) (60%,-fx-mid-text-color);
+    -fx-text-inner-color: ladder -fx-control-inner-background stops (30%,-fx-light-text-color) (31%,-fx-dark-text-color) (59%,-fx-dark-text-color) (60%,-fx-mid-text-color);
+    -fx-mark-color: ladder -fx-color stops (0.3,white) (0.31,derive(-fx-color,-63%));
+    -fx-mark-highlight-color: ladder -fx-color stops (0.6,derive(-fx-color,80%)) (0.7,white);
+    -fx-selection-bar: linear (0%,0%) to (0%,100%) stops (0%,derive(-fx-background,-7%)) (100%,derive(-fx-background,-34%));
+    -fx-selection-bar-text: ladder -fx-background stops (50%,-fx-light-text-color) (51%,-fx-mid-text-color);
+
+    /* The default color for all text is picked as a nice readable color on the default background color */
+    -fx-text-fill: -fx-text-background-color;
+
+    /* These are needed for Popup */
+    -fx-background-color: inherit;
+    -fx-background-radius: inherit;
+    -fx-background-insets: inherit;
+    -fx-padding: inherit;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Label control                                            *
+ *                                                                             *
+ ******************************************************************************/
+
+.label:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Button control                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.button {
+    -fx-padding: 3 10 2 10;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+}
+
+.button:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.button:armed {
+    -fx-color: -fx-pressed-base;
+}
+
+.button:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 6.4, 5, 4, 3;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.button:strong {
+    -fx-base: -fx-accent
+}
+
+.button:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ToggleButton control                                     *
+ *                                                                             *
+ ******************************************************************************/
+
+.toggle-button {
+    -fx-padding: 3 10 2 10;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+}
+
+.toggle-button:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.toggle-button:armed {
+    -fx-color: -fx-pressed-base;
+}
+
+.toggle-button:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.toggle-button:selected {
+    -fx-text-fill: -fx-light-text-color;
+    -fx-background-color:
+        -fx-shadow-highlight-color,
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-90%)) (100%, derive(-fx-color,-60%)),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-60%)) (50%, derive(-fx-color,-35%)) (98%, derive(-fx-color,-30%)) (100%, derive(-fx-color,-50%)),
+        linear (0%,0%) to (100%,0%) stops (0%, rgba(0,0,0,0.3)) (10%, rgba(0,0,0,0)) (90%, rgba(0,0,0,0)) (100%, rgba(0,0,0,0.3));
+    -fx-background-insets: 0 0 -1 0, 0, 1, 1;
+}
+
+.toggle-button:selected:focused {
+    -fx-background-color:
+        -fx-focus-color,
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-90%)) (100%, derive(-fx-color,-60%)),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-60%)) (50%, derive(-fx-color,-35%)) (98%, derive(-fx-color,-30%)) (100%, derive(-fx-color,-50%)),
+        linear (0%,0%) to (100%,0%) stops (0%, rgba(0,0,0,0.3)) (10%, rgba(0,0,0,0)) (90%, rgba(0,0,0,0)) (100%, rgba(0,0,0,0.3));
+    -fx-background-insets: -1.4, 0, 1, 1;
+}
+
+.toggle-button:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the RadioButton control                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.radio-button:disabled {
+    -fx-opacity: .4
+}
+
+.radio-button *.label {
+   /* 3 pixels between bottom of radio button shape to -fx-baseline of text */
+   /* 5 pixels between right edge of button and left edge of text       */
+   -fx-padding: 0 0 0 5;
+   -fx-text-fill: -fx-text-background-color;
+}
+
+.radio-button *.radio  {
+   /* -fx-background terms are: shadow-highlight, border, -fx-inner-border, body */
+   -fx-padding: 4;
+   -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+   -fx-background-radius: 14, 14, 12, 10;
+   -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+}
+
+.radio-button:hover *.radio {
+    -fx-color: -fx-hover-base;
+}
+.radio-button:armed *.radio {
+    -fx-color: -fx-pressed-base;
+}
+
+.radio-button:focused *.radio {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 15, 14, 12, 10;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.radio-button *.dot {
+   -fx-background-radius: 10;
+   -fx-background-color: transparent;
+   -fx-background-insets: 0;
+   -fx-background-radius: 3;
+   -fx-padding: 3;
+}
+
+.radio-button:selected *.dot {
+   -fx-background-radius: 10, 8;
+   -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+   -fx-background-insets: 0 0 -1 0, 0;
+   -fx-background-radius: 3, 3;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the CheckBox control                                         *
+ *                                                                             *
+ ******************************************************************************/
+
+.check-box:disabled {
+    -fx-opacity: .4
+}
+
+.check-box *.label {
+   /* 3 pixels between bottom of radio button shape to -fx-baseline of text */
+   /* 5 pixels between right edge of button and left edge of text       */
+   -fx-padding: 0 0 0 5;
+   -fx-text-fill: -fx-text-background-color;
+}
+
+.check-box *.box {
+    -fx-padding: 3 3 3 3;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 2, 2, 1, 1;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+}
+
+.check-box:hover *.box {
+    -fx-color: -fx-hover-base;
+}
+
+.check-box:armed *.box {
+    -fx-color: -fx-pressed-base;
+}
+
+.check-box:focused *.box {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 3.4, 2, 1, 1;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.check-box *.mark {
+    -fx-background-color: transparent;
+    -fx-padding: 4 4 4 4;
+    -fx-scale-shape: false;
+}
+
+.check-box:undefined *.mark {
+    -fx-shape: &quot;M0,0H8V2H0Z&quot;;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+}
+
+.check-box:selected *.mark {
+    -fx-shape: &quot;M0,4H2L3,6L6,0H8L4,8H2Z&quot;;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+}
+
+.check-box:selected:undefined *.mark {
+    -fx-shape: &quot;M0,0H8V2H0Z&quot;;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+}
+
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Hyperlink control                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.hyperlink {
+    -fx-padding: 2;
+    -fx-cursor: hand;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+    -fx-border-style: none; /* TODO this should not be needed, once we fix the issue that all propertys should be set on every application of CSS */
+    -fx-text-fill: -fx-text-background-color;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+}
+
+.hyperlink:focused {
+    -fx-border-color: -fx-focus-color;
+    -fx-border-style: dotted;
+    -fx-border-width: 1px;
+}
+
+.hyperlink:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Menu/MenuItem control                                    *
+ *                                                                             *
+ ******************************************************************************/
+.menu-bar *.menu {
+    -fx-padding: 2 4 2 4;
+    -fx-icon-gutter: 0;
+    -fx-accelerator-gutter: 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-background-color;
+}
+
+.menu {
+    -fx-padding: 4 8 4 8;
+    -fx-background-color: transparent;
+}
+
+.menu-bar *.menu:focused:showing, .menu-bar *.menu:showing, .menu-bar *.menu:focused, .menu:focused:showing, .menu:showing, .menu:focused {
+    -fx-background-color:
+        linear (0%,0%) to (0%,100%) stops (0%,#098bec) (100%,#0c61b0);
+    -fx-text-fill: white
+}
+
+.popup-menu {
+    -fx-padding: 8 1 8 1;
+    -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+    -fx-background-insets: 0 0 0 0, 1 1 1 1, 2 2 2 2;
+    -fx-background-color:
+        derive(-fx-color,-40%),
+        derive(-fx-color,100%),
+        linear (0%,0%) to (0%,100%) stops (0%,derive(-fx-color,100%)) (12%,derive(-fx-color,50%)) (88%,derive(-fx-color,65%)) (100%,derive(-fx-color,23%));
+    /* Shadow rendered with image for performance */
+    -fx-border-image-source: url(&quot;menu-shadow.png&quot;);
+    -fx-border-image-slice: 10 18 18 10;
+    -fx-border-image-width: 10 18 18 10;
+    -fx-border-image-repeat: stretch;
+    -fx-border-image-insets: -5 -10 -10 -5;
+}
+
+.menu-item {
+    -fx-padding: 4 8 4 8;
+    -fx-background-color: transparent;
+}
+
+.menu-item:disabled *.box {
+    -fx-opacity: .4;
+}
+
+.menu-item:focused {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.menu-up-arrow {
+    -fx-padding: 8 5 0 5;
+    -fx-background-color: derive(-fx-color,-2%);
+    -fx-shape: &quot;M0 1 L1 1 L.5 0 Z&quot;;
+    -fx-effect: innershadow( two-pass-box , rgba(0,0,0,0.6) , 4, 0.0 , 0 , 1 );
+}
+
+.menu-down-arrow {
+    -fx-padding: 8 5 0 5;
+    -fx-background-color: derive(-fx-color,-2%);
+    -fx-shape: &quot;M0 0 L1 0 L.5 1 Z&quot;;
+    -fx-effect: innershadow( two-pass-box , rgba(0,0,0,0.6) , 4, 0.0 , 0 , 1 );
+}
+
+.menu-item-check {
+    -fx-padding: 5;
+    -fx-background-color: transparent;
+    -fx-shape: &quot;M0,5H2L4,8L8,0H10L5,10H3Z&quot;;
+    -fx-scale-shape: false;
+}
+
+.menu-item:selected *.menu-item-check {
+    -fx-background-color: -fx-mark-color;
+}
+
+.menu-item-radio {
+    -fx-padding: 5;
+    -fx-background-color: transparent;
+    -fx-shape: &quot;M7,3.5C7,5.433,5.433,7,3.5,7C1.567,7,0,5.433,0,3.5C0,1.567,1.63,0,3.5,0C5.433,0,7,1.567,7,3.5z&quot;;
+    -fx-scale-shape: false;
+}
+
+.menu-item:selected *.menu-item-radio {
+    -fx-background-color: -fx-mark-color;
+}
+
+.menu-item:hover:selected *.menu-item-check, .menu-item:focused:selected *.menu-item-check,.menu-item:hover:selected *.menu-item-radio, .menu-item:focused:selected *.menu-item-radio {
+    -fx-background-color: -fx-selection-bar-text;
+}
+
+/* for submenus */
+.menu-bar *.menu *.arrow {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-shape: null;
+}
+
+.menu *.arrow {
+    -fx-padding: 4;
+    -fx-background-color: -fx-mark-color;
+    -fx-shape: &quot;M0 0 L1 .5 L0 1 Z&quot;;
+}
+
+.menu:disabled *.arrow {
+    -fx-opacity: .4;
+}
+
+.menu:focused:showing *.arrow, .menu:hover:showing *.arrow, .menu:focused *.arrow, .menu:showing *.arrow {
+    -fx-background-color: white;
+}
+
+/* TODO RT-7542 replace this with &quot;.popup-menu *.separator&quot; once bug is fixed */
+*.separator {
+    -fx-padding: 0 5 0 5;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ChoiceBox control                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.choice-box {
+    -fx-padding: 2 6 3 6;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+}
+
+.choice-box:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.choice-box:showing {
+    -fx-color: -fx-pressed-base;
+}
+
+.choice-box:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 6.4, 4, 5, 3;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.choice-box:disabled {
+    -fx-opacity: .4;
+}
+
+.choice-box *.open-button {
+    -fx-background-color: null;
+    /* padding determines the position of the arrow;
+       TODO: really should be computed from a label baseline */
+    -fx-padding: 1 0 0 8;
+}
+
+.choice-box *.arrow {
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    /* padding determines the size of the arrow;
+       this should match the design size in the SVG */
+    -fx-padding: 2 3.5 2 3.5;
+    -fx-shape: &quot;M 0 0 h 7 l -3.5 4 z&quot;;
+}
+
+/* TODO RT-7542 replace this with &quot;.choice-box *.popup-menu&quot; once bug is fixed */
+#choice-box-popup-menu {
+    -fx-background-radius: 6, 5, 4;
+}
+#choice-box-menu-item {
+    -fx-accelerator-gutter: 0;
+}
+/* TODO RT-7542 replace this with &quot;.choice-box *.popup-menu *.menu-item&quot; once bug is fixed */
+#choice-box-menu-item *.menu-item-radio {
+    /* When we show RadioMenuItems in ChoiceBox, we replace the radio shape with
+       a check mark, which looks much better */
+    -fx-shape: &quot;M0,5H2L4,8L8,0H10L5,10H3Z&quot;;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Slider control                                           *
+ * TODO: add focused pseudoclass                                               *
+ *                                                                             *
+ ******************************************************************************/
+
+.slider *.thumb {
+    -fx-background-color:
+        derive(-fx-color,-36%),
+        derive(-fx-color,73%),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-19%)) (100%, derive(-fx-color,61%));
+    -fx-background-radius: 14, 13, 12;
+    -fx-background-insets: 0, 1, 2;
+    -fx-padding: 7;
+}
+
+.slider:focused *.thumb {
+    -fx-background-color:
+        -fx-focus-color,
+        derive(-fx-color,-36%),
+        derive(-fx-color,73%),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-19%)) (100%, derive(-fx-color,61%));
+    -fx-background-radius: 15.4, 14, 13, 12;
+    -fx-background-insets: -1.4, 0, 1, 2;
+    -fx-padding: 7;
+}
+
+.slider *.track {
+    -fx-background-color:
+        -fx-shadow-highlight-color,
+        derive(-fx-color,-22%),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-15.5%))  (30%, derive(-fx-color,34%)) (100%, derive(-fx-color,68%));
+    -fx-background-radius: 2.5, 2.5, 1.5;
+    -fx-background-insets: 1 0 -1 0, 0, 1;
+    -fx-padding: 2.5;
+}
+
+.slider:vertical *.track {
+    -fx-background-color:
+        -fx-shadow-highlight-color,
+        derive(-fx-color,-22%),
+        linear (0%,0%) to (100%,0%) stops (0%, derive(-fx-color,-15.5%))  (30%, derive(-fx-color,34%)) (100%, derive(-fx-color,68%));
+    -fx-background-radius: 2.5, 2.5, 1.5;
+    -fx-background-insets: 0 -1 0 1, 0, 1;
+    -fx-padding: 2.5;
+}
+
+.slider *.axis {
+    -fx-tick-mark-stroke: ladder -fx-background stops (40%,derive(-fx-background,30%)) (41%,derive(-fx-background,-30%));
+}
+
+.slider *.tick-mark {
+    -fx-font: 10pt &quot;Amble Cn&quot;;
+    -fx-text-fill: -fx-text-background-color;
+    /*font-size: 10pt;*/
+}
+
+.slider:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ScrollBar control                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.scroll-bar:horizontal {
+    -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (0%,100%) stops (5%, derive(-fx-color,30%)) (100%, derive(-fx-color,-17%));
+    -fx-background-insets: 0, 1;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (100%,0%) stops (5%, derive(-fx-color,30%)) (100%, derive(-fx-color,-17%));
+    -fx-background-insets: 0, 1;
+}
+
+.scroll-bar:horizontal *.thumb {
+    -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,95%)) (100%, derive(-fx-color,10%)),
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,38%)) (100%, derive(-fx-color,-16%));
+    -fx-background-radius: 6, 5, 4;
+    -fx-background-insets: 0, 1, 2;
+}
+
+.scroll-bar:vertical *.thumb {
+    -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (100%,0%) stops (0%, derive(-fx-color,95%)) (100%, derive(-fx-color,10%)),
+        linear (0%,0%) to (100%,0%) stops (0%, derive(-fx-color,38%)) (100%, derive(-fx-color,-16%));
+    -fx-background-radius: 6, 5, 4;
+    -fx-background-insets: 0, 1, 2;
+}
+.scroll-bar:horizontal *.track {
+     -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-color,-15%)) (20%, derive(-fx-color,2.2%)) (100%, derive(-fx-color,60%));
+    -fx-background-radius: 6, 5;
+    -fx-background-insets:  0, 1;
+}
+
+.scroll-bar:vertical *.track {
+     -fx-background-color:
+        -fx-box-border,
+        linear (0%,0%) to (100%,0%) stops (0%, derive(-fx-color,-15%)) (20%, derive(-fx-color,2.2%)) (100%, derive(-fx-color,60%));
+    -fx-background-radius: 6, 5;
+    -fx-background-insets:  0, 1;
+}
+
+/*
+ * We don't need horizontal and vertical versions for the increment and
+ * decrement buttons unlessthe -fx-padding is different on the different edges.
+ */
+.scroll-bar *.increment-button {
+    -fx-background-color: null;
+    -fx-padding: 3;
+}
+
+.scroll-bar *.decrement-button {
+    -fx-background-color: null;
+    -fx-padding: 3;
+}
+
+.scroll-bar:horizontal *.increment-arrow {
+    -fx-padding: 6 4 0 0;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-shape: &quot;M 4 0 L 0 -3 L 0 3 z&quot;
+}
+
+.scroll-bar:vertical *.increment-arrow {
+    -fx-padding: 4 6 0 0;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-shape: &quot;M -3 0 L 0 4 L 3 0 z&quot;
+}
+
+.scroll-bar:horizontal *.decrement-arrow {
+    -fx-padding: 6 4 0 0;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-shape: &quot;M 0 0 L 4 -3 L 4 3 z&quot;
+}
+
+.scroll-bar:vertical *.decrement-arrow {
+    -fx-padding: 4 6 0 0;
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-shape: &quot;M -3 0 L 0 -4 L 3 0 z&quot;
+}
+
+.scroll-bar:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ScrollView control                                       *
+ *                                                                             *
+ ******************************************************************************/
+
+.scroll-view {
+    -fx-padding: 1;
+    -fx-background-color: -fx-box-border,-fx-background;
+    -fx-background-insets: 0, 1;
+}
+
+/* TODO: focus highlight not final, needs to be updated */
+.scroll-view:focused {
+    -fx-padding: 1;
+    -fx-background-color: -fx-focus-color,-fx-box-border,-fx-background;
+    -fx-background-insets: -1.4, 0, 1;
+    -fx-background-radius: -1.4, 0, 0;
+}
+
+.scroll-view &gt; * {
+    -fx-base: yellow;
+    -fx-border-color: red !important;
+    -fx-background-color: yellow;
+}
+
+ScrollViewSkin &gt; * {
+    -fx-base: yellow;
+    -fx-border-color: red;
+    -fx-background-color: yellow;
+}
+.scroll-view &gt; * &gt; *.scroll-bar {
+    -fx-background-color: cyan;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.scroll-view &gt; * &gt; *.scroll-bar&quot; not matching */
+#scroll-view-scroll-bar:horizontal {
+    -fx-background-insets: 0, 1 0 0 0;
+    -fx-padding: 0 0 -1 -1;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.scroll-view &gt; * &gt; *.scroll-bar&quot; not matching */
+#scroll-view-scroll-bar:vertical {
+    -fx-background-insets: 0, 0 0 0 1;
+    -fx-padding: -1 -1 -1 0;
+}
+
+.corner {
+    -fx-background-color: -fx-box-border, derive(-fx-base,10%);
+    -fx-background-insets: 0, 1 0 0 1;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Separator control                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+/*.separator {*/
+    /*background-color: transparent;*/
+    /*padding: 1*/
+/*}*/
+
+.separator:horizontal *.line {
+    -fx-background-color: null;
+    -fx-border-color: derive(-fx-background,-20%);
+    -fx-border-style: dotted;
+    -fx-border-width: 1px;
+    -fx-padding: 1 0 0 0;
+}
+
+.separator:vertical *.line {
+    -fx-background-color: null;
+    -fx-border-color: derive(-fx-background,-20%);
+    -fx-border-style: dotted;
+    -fx-border-width: 1px;
+    -fx-padding: 0 1 0 0;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the TextBox control                                          *
+ *                                                                             *
+ ******************************************************************************/
+
+.text-box {
+    -fx-padding: 0;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+    -fx-highlight-fill: -fx-accent;
+    -fx-highlight-text-fill: white;
+}
+
+.text-box *.selection {
+    -fx-fill: red;
+}
+
+.text-box *.viewport {
+    -fx-padding: 3 5 3 5;
+}
+
+.text-box:focused {
+    -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 3.4, 2, 2;
+    -fx-background-insets: -0.4, 1, 2;
+}
+
+.text-box:disabled {
+    -fx-opacity: .4;
+    -fx-padding: 0;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+    -fx-highlight-fill: -fx-accent;
+    -fx-highlight-text-fill: red;
+}
+
+/* OPTION 1 Look like single line TextBox with special scrollbar */
+.text-box *.scroll-bar{
+    -fx-background-insets: 0, 0 0 0 1;
+    -fx-padding: 0 -1 0 0;
+    -fx-box-border: derive(-fx-base, -10%);
+    -fx-background-radius: 0 2 0 0, 0 2 0 0;
+}
+
+/* OPTION 2 - look like ScrollView and ListView - 3 styles below */
+/*.text-box:multiline {*/
+    /*-fx-background-color: -fx-box-border, -fx-control-inner-background;*/
+    /*-fx-background-insets: 0, 1;*/
+    /*-fx-background-radius: 0, 0;*/
+/*}*/
+/*.text-box:multiline:focused {*/
+    /*-fx-background-color: -fx-focus-color, -fx-box-border, -fx-control-inner-background;*/
+    /*-fx-background-insets: -1.4, 0, 1;*/
+    /*-fx-background-radius: 0, 0, 0;*/
+/*}*/
+/*.text-box *.scroll-bar{*/
+    /*-fx-background-insets: 0, 0 0 0 1;*/
+    /*-fx-padding: -1 -1 -1 0;*/
+/*}*/
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the PasswordBox control                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.password-box {
+    -fx-padding: 0;
+    -fx-echo-char: &quot;\u25cf&quot;;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.password-box *.viewport {
+    -fx-padding: 3 5 3 5;
+}
+
+.password-box:focused {
+    -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-radius: 3.4, 2, 2;
+    -fx-background-insets: -0.4, 1, 2;
+}
+
+.password-box:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ListView control including the ListCell                  *
+ *                                                                             *
+ ******************************************************************************/
+
+.list-view {
+    -fx-padding: 1;
+    -fx-background-color: -fx-box-border, -fx-control-inner-background;
+    -fx-background-insets: 0,1;
+}
+
+.list-view:focused {
+    -fx-padding: 1;
+    -fx-background-color: -fx-focus-color,-fx-box-border,-fx-control-inner-background;
+    -fx-background-insets: -1.4, 0, 1;
+    -fx-background-radius: -1.4, 0, 0;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.list-view &gt; * &gt; *.scroll-bar:vertical&quot; not matching */
+/*
+.list-view *.scroll-bar:vertical{
+    -fx-background-insets: 0, 0 0 0 1;
+    -fx-padding: -1 -1 -1 0;
+}
+*/
+/* dib */
+.list-view *.scroll-bar:vertical {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 0 0 3;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.list-view &gt; * &gt; *.scroll-bar:horizontal&quot; not matching */
+.list-view *.scroll-bar:horizontal{
+    -fx-background-insets: 0, 1 0 0 0;
+    -fx-padding: 0 0 -1 -1;
+}
+
+.list-cell {
+    -fx-cell-size: 24;
+    -fx-padding: 3;
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.list-cell:focused {
+    -fx-background-insets: 0, 1.4;
+    -fx-background-color: -fx-focus-color, -fx-control-inner-background;
+}
+
+.list-cell:odd {
+    -fx-background-color: derive(-fx-control-inner-background,-5%);
+}
+
+.list-cell:focused:odd {
+    -fx-background-insets: 0, 1.4;
+    -fx-background-color: -fx-focus-color, derive(-fx-control-inner-background,-5%);
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.list-view:horizontal *.list-cell:filled:selected {
+    -fx-background-color: linear (0%,0%) to (100%,0%) stops (0%,derive(-fx-accent,-7%)) (100%,derive(-fx-accent,-25%));
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the TreeView control including the TreeCell                  *
+ *                                                                             *
+ ******************************************************************************/
+
+.tree-view {
+    -fx-padding: 1;
+    -fx-background-color: -fx-box-border, -fx-control-inner-background;
+    -fx-background-insets: 0,1;
+}
+
+/* TODO: focus highlight not final, needs to be updated */
+.tree-view:focused {
+    -fx-padding: 1;
+    -fx-background-color: -fx-focus-color,-fx-box-border,-fx-control-inner-background;
+    -fx-background-insets: -1.4, 0, 1;
+    -fx-background-radius: -1.4, 0, 0;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.tree-view &gt; * &gt; *.scroll-bar:vertical&quot; not matching */
+.tree-view *.scroll-bar:vertical{
+    -fx-background-insets: 0, 0 0 0 1;
+    -fx-padding: -1 -1 -1 0;
+}
+
+/* TODO this is a workaround for RT-7512 css style &quot;.tree-view &gt; * &gt; *.scroll-bar:horizontal&quot; not matching */
+.tree-view *.scroll-bar:horizontal{
+    -fx-background-insets: 0, 1 0 0 0;
+    -fx-padding: 0 0 -1 -1;
+}
+
+.tree-cell {
+    -fx-cell-size: 24;
+    -fx-indent: 6;
+    -fx-padding: 3;
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.tree-cell *.label {
+    -fx-padding: 0 0 0 3;
+}
+
+.tree-cell:odd {
+    -fx-background-color: derive(-fx-control-inner-background,-5%);
+}
+
+.tree-cell:filled:selected {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.tree-disclosureNode {
+    -fx-background-color: -fx-mark-color;
+    -fx-padding: 4;
+    -fx-shape: &quot;M 0 -4 L 8 0 L 0 4 z&quot;;
+}
+
+.tree-cell:filled:selected *.tree-disclosureNode {
+    -fx-background-color: -fx-selection-bar-text;
+}
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the MenuButton control                                       *
+ *                                                                             *
+ ******************************************************************************/
+
+.menu-button {
+    -fx-padding: 0;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+}
+
+.menu-button *.label {
+    -fx-padding: 3 4 2 6;
+}
+
+.menu-button:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.menu-button:armed {
+    -fx-color: -fx-pressed-base;
+}
+
+.menu-button:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 6.4, 4, 5, 3;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.menu-button:disabled {
+    -fx-opacity: .4;
+}
+
+.menu-button:openvertically *.arrow {
+    -fx-padding: 2 3.5 2 3.5;
+    -fx-shape: &quot;M 0 0 h 7 l -3.5 4 z&quot;;
+}
+
+.menu-button *.arrow-button {
+    -fx-padding: 0 5 0 0;
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.menu-button *.arrow {
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    /* -fx-padding determines the size of the arrow;
+       this should match the design size in the SVG */
+    -fx-padding: 3.5 2 3.5 2;
+    -fx-shape: &quot;M 0 -3.5 v 7 l 4 -3.5 z&quot;;
+    /*-fx-scale-shape:false;*/
+}
+
+.menu-button:openvertically *.arrow {
+    -fx-padding: 2 3.5 2 3.5;
+    -fx-shape: &quot;M 0 0 h 7 l -3.5 4 z&quot;;
+}
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the SplitMenuButton control                                  *
+ *                                                                             *
+ ******************************************************************************/
+
+.split-menu-button {
+    -fx-padding: 0;
+    -fx-background-color: -fx-shadow-highlight-color;
+    -fx-background-radius: 5;
+    -fx-background-insets: 0 0 -1 0;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+}
+
+.split-menu-button *.label {
+    -fx-padding: 3 4 2 6;
+    -fx-background-color:  -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 5 0 0 5, 4 0 0 4, 3 0 0 3;
+    -fx-background-insets: 0, 1 0 1 1, 2 1 2 2;
+}
+
+.split-menu-button *.label:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.split-menu-button *.label:armed {
+    -fx-color: -fx-pressed-base;
+}
+
+.split-menu-button:focused {
+    -fx-background-color: -fx-focus-color;
+    -fx-background-radius: 6.4;
+    -fx-background-insets: -1.4;
+}
+
+.split-menu-button:disabled {
+    -fx-opacity: .4;
+}
+
+.split-menu-button *.arrow-button {
+    -fx-padding: 0 5 0 5;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-radius: 0 5 5 0, 0 4 4 0, 0 3 3 0;
+    -fx-background-insets: 0, 1, 2;
+}
+
+.split-menu-button *.arrow-button:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.split-menu-button *.arrow-button:armed {
+    -fx-color: -fx-pressed-base;
+}
+
+.split-menu-button *.arrow {
+    -fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
+    -fx-background-insets: 1 0 -1 0, 0;
+    /* -fx-padding determines the size of the arrow;
+       this should match the design size in the SVG */
+    -fx-padding: 3.5 2 3.5 2;
+    -fx-shape: &quot;M 0 -3.5 v 7 l 4 -3.5 z&quot;;
+}
+
+.split-menu-button:openvertically *.arrow {
+    -fx-padding: 2 3.5 2 3.5;
+    -fx-shape: &quot;M 0 0 h 7 l -3.5 4 z&quot;;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Tooltip control                                          *
+ *                                                                             *
+ ******************************************************************************/
+
+.tooltip {
+    -fx-background-color:
+        linear (0%,0%) to (0%,100%) stops (0%, #cec340) (100%, #a59c31),
+        linear (0%,0%) to (0%,100%) stops (0%, #fefefc) (100%, #e6dd71),
+        linear (0%,0%) to (0%,100%) stops (0%, #fef592) (100%, #e5d848);
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 0 0 13 0;
+    -fx-padding: 4 8 4 8;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+}
+
+.page-corner {
+    -fx-padding: 4.5;
+    -fx-background-color: linear (0%,0%) to (50%,50%) stops (0%, #fcf7b6) (100%, #a59c31);
+    -fx-shape: &quot;M0,0H9L0,9Z&quot;;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 4 , 0.0 , 0 , 0 );
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the Toolbar control                                          *
+ *                                                                             *
+ ******************************************************************************/
+
+.tool-bar:vertical {
+    -fx-padding: 2;
+    -fx-spacing: 2;
+}
+
+.tool-bar:horizontal {
+    -fx-padding: 2;
+    -fx-spacing: 2;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ProgressBar control                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.progress-bar {
+    -fx-padding: 1;
+    -fx-background-color:
+                -fx-shadow-highlight-color,
+                -fx-box-border,
+                linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-base,-20%)) (30%, derive(-fx-base,-6%)),
+                linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-base,-12%)) (30%, derive(-fx-base,40%));
+    -fx-background-insets: 1 0 -1 0, 0, 1, 2;
+    -fx-indeterminate-bar-length: 80;
+    -fx-indeterminate-bar-escape: true;
+    -fx-indeterminate-bar-flip: true;
+}
+
+.progress-bar *.bar {
+    -fx-padding: 5 0 5 0;
+    -fx-background-color: derive(-fx-accent,-20%), linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-accent,70%)) (100%, -fx-accent);
+    -fx-background-insets: 0, 1;
+}
+
+.progress-bar:indeterminate *.bar {
+    -fx-padding: 5 0 5 0;
+    -fx-background-color: linear (0%,0%) to (100%,0%) stops (0%, transparent) (100%, -fx-accent);
+    -fx-background-radius: 5;
+}
+
+.progress-bar:disabled {
+    -fx-opacity: .4;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CSS Styles for the ProgressIndicator control                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.progress-indicator {
+    -fx-font-size: 9pt;
+}
+
+.progress-indicator *.indicator {
+    -fx-padding: 1;
+    -fx-background-color: -fx-shadow-highlight-color, -fx-box-border, derive(-fx-base,80%);
+    -fx-background-insets: 1 0 -1 0, 0, 1;
+}
+
+.progress-indicator *.progress {
+    -fx-padding: 9;
+    -fx-background-color: linear (0%,0%) to (0%,100%) stops (0%, derive(-fx-accent,70%)) (100%, derive(-fx-accent,-60%)), -fx-accent;
+    -fx-background-insets: 0, 1;
+}
+
+.progress-indicator *.tick {
+    -fx-background-color: white;
+    -fx-padding: 5;
+    -fx-shape: &quot;M 0,5 L 2.5,5 L 3.7,7.5 L 7.5,0 L 10,0 L 5,10 L 2.5,10 Z&quot;;
+    -fx-scale-shape: false
+}
+
+.progress-indicator:indeterminate *.spinner {
+    -fx-padding: 10;
+    -fx-background-color: -fx-accent;
+}
+</pre>
+
+
+  
+</div>
+
+            <!--END CONTENT AREA-->
+          </div>
+        </div>
+        <div id="footer" style="position:relative">
+          <a href="/">Home</a> <span class="separator">|</span>
+          <a href="/mypage">My Page</a> <span class="separator">|</span>
+          <a href="/projects">Projects</a> <span class="separator">|</span>
+          <a href="/people">People</a> <span class="separator">|</span>
+          
+          <a href="mailto:site-admin@kenai.com">Contact Us</a> <span class="separator">|</span>
+          	    <a href="/people/new">Join Now</a> <span class="separator">|</span>
+                    <a href="/projects/help/pages/Home" target="_blank">Documentation</a>
+        </div>
+        <div id="footerCurves"></div>
+
+        <div style="padding-left:75px;">
+          <ul class="hList">
+             <li><a href="http://www.oracle.com" title="Oracle"><img alt="" src="https://asset-3.kenai.com/theme/images/logo_oracle_footer.gif?20150925.bf86fa7" /></a></li>
+             <li><a href="http://www.mysql.org" title="MySQL"><img alt="Mysql" class="reflect" src="https://asset-0.kenai.com/images/mysql.png?20150925.bf86fa7" /></a></li>
+             <li><a href="https://glassfish.java.net" title="GlassFish"><img alt="Glassfish" class="reflect" src="https://asset-1.kenai.com/images/glassfish.png?20150925.bf86fa7" /></a></li>
+             <li><a href="http://www.jruby.org" title="JRuby"><img alt="Jruby" class="reflect" src="https://asset-3.kenai.com/images/jruby.png?20150925.bf86fa7" /></a></li>
+             <li><a href="http://www.rubyonrails.org" title="Rails"><img alt="Rails" class="reflect" src="https://asset-3.kenai.com/images/rails.png?20150925.bf86fa7" /></a></li>
+             <li><a href="http://www.netbeans.org" title="Netbeans"><img alt="Nblogo" class="reflect" src="https://asset-1.kenai.com/images/nblogo.png?20150925.bf86fa7" /></a></li>
+          </ul>
+        </div>
+
+        <small class="finePrint">
+          <a href="/terms_of_use" title="Terms of Use">Terms of Use</a>;
+          <a href="http://www.oracle.com/us/legal/privacy/index.html">Privacy Policy</a>;<br />
+          &copy; 2014, Oracle Corporation and/or its affiliates<br />(<a href="/projects/help/pages/ReleaseNotes">revision 20150925.bf86fa7</a>)
+        </small>
+      </div>
+    </div>
+        <!-- popups that are anchored to specific elements -->
+    <div class="popupMenuShadow" id="contextMenuShadow"></div>
+    <div class="popupMenuContainer" id="contextMenu">
+      <div class="popupMenu inline">	
+        <div class="upArrow"></div>
+        <div class="header"></div>
+        <div class="contextMenuBody" id="contextMenuBody">&nbsp;</div>
+      </div>
+    </div> 
+    
+    <!-- large content loaded via ajax. Faded but not modal. -->
+    <div class="jqmWindow" id="jqm_large_overlay">
+      <div class="jqmHeader">
+        <div class="jqmTitle">&nbsp;</div>
+        <img alt="Close" class="jqmClose" src="https://asset-0.kenai.com/images/close.gif?20150925.bf86fa7" />
+      </div>
+      <div class="jqmTarget">
+        <img alt="loading" src="https://asset-2.kenai.com/images/activity.gif?20150925.bf86fa7" />
+      </div>
+      <div class="jqmFooter">
+      	<div class="jqmClose functionButtonContainer"><button class="functionButton" title="Done"> Done </button></div>
+      </div>
+    </div>
+    
+    <!-- confirmation dialogs with buttons. Faded and modal. -->
+    <div class="jqmWindow" id="jqm_dialog">
+      <div class="jqmHeader">
+        <div class="jqmTitle">Please Confirm</div>
+        <img alt="Close" class="jqmClose" src="https://asset-0.kenai.com/images/close.gif?20150925.bf86fa7" />
+      </div>
+      <div class="jqmTarget">&nbsp;</div>
+      <div class="jqmFooter">
+      	<div class="jqmClose functionButtonContainer"><button class="functionButton" id="jq_no_button" title="No" onclick="Modal.no()"> No </button></div>
+      	<div class="jqmClose functionButtonContainer"><button class="functionButton" id="jq_yes_button" title="Yes" onclick="Modal.yes();"> Yes </button></div>
+      </div>
+    </div>    
+
+    <div id="jq-ui-autocomplete-parent"></div>
+
+     <script src="https://asset-3.kenai.com/javascripts/s_code_remote_packaged.js?20150925.bf86fa7" type="text/javascript"></script>
+    
+  </body>
+  <script src="https://asset-0.kenai.com/javascripts/body_packaged.js?20150925.bf86fa7" type="text/javascript"></script>
+
+  
+  <script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shCore.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-1.kenai.com/javascripts/syntax/scripts/shLegacy.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushAS3.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-3.kenai.com/javascripts/syntax/scripts/shBrushBash.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushCpp.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-1.kenai.com/javascripts/syntax/scripts/shBrushCSharp.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushCss.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushDelphi.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushDiff.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushGroovy.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-1.kenai.com/javascripts/syntax/scripts/shBrushJava.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-3.kenai.com/javascripts/syntax/scripts/shBrushJavaFX.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushJScript.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushPerl.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-3.kenai.com/javascripts/syntax/scripts/shBrushPhp.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushPlain.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushPowerShell.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-1.kenai.com/javascripts/syntax/scripts/shBrushPython.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushRuby.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushScala.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushSql.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-2.kenai.com/javascripts/syntax/scripts/shBrushVb.js?20150925.bf86fa7" type="text/javascript"></script>
+<script src="https://asset-0.kenai.com/javascripts/syntax/scripts/shBrushXml.js?20150925.bf86fa7" type="text/javascript"></script>
+
+  <script language="JavaScript">
+      $(document).ready(function(){
+          initScmSyntaxHighlight();
+      });
+  </script>
+
+</html>

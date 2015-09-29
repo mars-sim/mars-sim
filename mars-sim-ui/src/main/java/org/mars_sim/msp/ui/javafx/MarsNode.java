@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -99,134 +100,63 @@ public class MarsNode {
 
 	}
 
-	public class JmeTask implements Runnable {
+	//2015-09-27 for testing the use of fxml
+	public void createMaterialDesignWindow() {
+		//Pane pane = createPane("black");
 
-		JPanel panel;
-		public JmeTask(JPanel panel) {
-			this.panel = panel;
-		}
+		Parent root = null;
+		try {
+			root = javafx.fxml.FXMLLoader.load(getClass().getResource("/materialdesign/MaterialFxTester.fxml")); //materialdesign/Materialfx-toggleswitch.fxml"));
+			//mainScene.getRootStackPane().getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+			//root.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
 
-		@Override
-		public void run() {
-	 		//JmeCanvas jmeCanvas = new JmeCanvas();
-	 		//panel.add(jmeCanvas.setupJME());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		//scene.getStylesheets().add(getClass().getResource("application/sample.css").toExternalForm());
+
+        //Scene scene = new Scene(root, 300, 275);
+
+        //Pane pane = new Pane();
+        //pane.getChildren();
+
+		// TODO: can use createFXInternalWindow(String title, StackPane pane, //Pane pane, //Parent parent,
+		//		double prefWidth, double prefHeight, boolean resizable)
+
+		FXInternalWindow fxInternalWindow = new FXInternalWindow("Material Design Showcase");
+		fxInternalWindow.setContent(root);
+		fxInternalWindow.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+		fxInternalWindow.setActive(true);
+		fxInternalWindow.setCloseable(false);
+		fxInternalWindow.setMinimizable(true);
+		fxInternalWindow.setPrefSize(1024, 640);
+		fxInternalWindow.setMinHeight(512);
+		fxInternalWindow.setMinWidth(1024);
+
+		windowManager.addWindow(fxInternalWindow);
 	}
 
 	public void createSettlementWindow() {
 		Pane pane = createPane("black");
+
+		// TODO: can use createFXInternalWindow(String title, StackPane pane, //Pane pane, //Parent parent,
+		//		double prefWidth, double prefHeight, boolean resizable)
+
 
 		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
 		fxInternalWindow.setContent(pane);
 		fxInternalWindow.setActive(true);
 		fxInternalWindow.setCloseable(false);
 		fxInternalWindow.setMinimizable(true);
-		fxInternalWindow.setPrefSize(185, 165);
-		fxInternalWindow.setMinHeight(165);
-		fxInternalWindow.setMinWidth(185);
+		fxInternalWindow.setPrefSize(210, 210);
+		fxInternalWindow.setMinHeight(210);
+		fxInternalWindow.setMinWidth(210);
 
 		windowManager.addWindow(fxInternalWindow);
 	}
 
-	public void createJMEWindow(Stage stage) {
-		this.scene = stage.getScene();
 
-		jmePane = new Pane();
-
-		//SwingNode swingNode = new SwingNode();
-
-        //SwingUtilities.invokeLater(() -> {
-    	//	swingNode.setContent(panel);
-        //});
-
-		Runnable jmeTask = new JmeTask(panel);
-
-        SwingUtilities.invokeLater(jmeTask);
-
-        SwingNode swingNode = new SwingNode();
-		swingNode.setContent(panel);
-
-
-		jmePane.getChildren().add(swingNode);
-
-		jmeWindow = new FXInternalWindow("Mars Viewer");
-		jmeWindow.setContent(jmePane);
-		jmeWindow.setActive(true);
-		jmeWindow.setCloseable(false);
-		jmeWindow.setMinimizable(true);
-		jmeWindow.setPrefSize(512, 512);
-		jmeWindow.setMinHeight(480);
-		jmeWindow.setMinWidth(480);
-
-		windowManager.addWindow(jmeWindow);
-	}
-
-    public void jmeCall() {
-
- 		//JmeCanvas jmeCanvas = new JmeCanvas();
- 		//JPanel panel = new JPanel(new BorderLayout(0, 0));
- 		//panel.add(jmeCanvas.setupJME());
-    }
-
-
-/*
- *
-	public void createJMEWindow(Stage stage) {
-		this.scene = stage.getScene();
-
-
-		JmeCanvas jmeCanvas = new JmeCanvas();
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.add(jmeCanvas.setupJME());
-
-		jmePane = new Pane();
-		//ChangeListener<Object> repoListener = new RepositionListener();
-
-		SwingNode swingNode = new SwingNode();
-
-        SwingUtilities.invokeLater(() -> {
-    		swingNode.setContent(panel);
-        });
-
-		jmePane.getChildren().add(swingNode);
-
-		jmeWindow = new FXInternalWindow("Mars Viewer");
-		jmeWindow.setContent(jmePane);
-		jmeWindow.setActive(true);
-		jmeWindow.setCloseable(false);
-		jmeWindow.setMinimizable(true);
-		jmeWindow.setPrefSize(512, 512);
-		jmeWindow.setMinHeight(480);
-		jmeWindow.setMinWidth(480);
-
-		//fxDesktopPane.widthProperty().addListener(repoListener);
-		//fxDesktopPane.heightProperty().addListener(repoListener);
-
-		//stage.xProperty().addListener(repoListener);
-		//stage.yProperty().addListener(repoListener);
-		//stage.getScene().xProperty().addListener(repoListener);
-		//stage.getScene().yProperty().addListener(repoListener);
-
-		//jmePane.widthProperty().addListener(repoListener);
-		//jmePane.heightProperty().addListener(repoListener);
-
-		windowManager.addWindow(jmeWindow);
-	}
-
-	private class RepositionListener implements ChangeListener<Object> {
-
-		@Override
-		public void changed(ObservableValue<? extends Object> arg0, Object arg1, Object arg2) {
-			int x = (int) (fxDesktopPane.getLayoutX() + jmePane.getLocalToParentTransform().getTx());
-			int y = (int) (fxDesktopPane.getLayoutY() + jmePane.getLocalToParentTransform().getTy());
-			//int y = (int) (stage.getX() + jmePane.getLocalToSceneTransform().getTx()); //+ scene.getX()
-			//int y = (int) (stage.getY() + jmePane.getLocalToSceneTransform().getTy()); // scene.getY()
-			int w = (int) jmePane.getWidth();
-			int h = (int) jmePane.getHeight();
-			EventBus.publish(new JmeRepositionEvent(x, y, w, h));
-		}
-	}
-*/
 	public FXDesktopPane createFXDesktopPane() {
 		fxDesktopPane = new FXDesktopPane();
 		fxDesktopPane.setWindowManager(windowManager);
@@ -598,6 +528,122 @@ public class MarsNode {
 	    dlg.showAndWait();
 	}
 	*/
+
+
+	public class JmeTask implements Runnable {
+
+		JPanel panel;
+		public JmeTask(JPanel panel) {
+			this.panel = panel;
+		}
+
+		@Override
+		public void run() {
+	 		//JmeCanvas jmeCanvas = new JmeCanvas();
+	 		//panel.add(jmeCanvas.setupJME());
+		}
+	}
+
+
+	public void createJMEWindow(Stage stage) {
+		this.scene = stage.getScene();
+
+		jmePane = new Pane();
+
+		//SwingNode swingNode = new SwingNode();
+
+        //SwingUtilities.invokeLater(() -> {
+    	//	swingNode.setContent(panel);
+        //});
+
+		Runnable jmeTask = new JmeTask(panel);
+
+        SwingUtilities.invokeLater(jmeTask);
+
+        SwingNode swingNode = new SwingNode();
+		swingNode.setContent(panel);
+
+
+		jmePane.getChildren().add(swingNode);
+
+		jmeWindow = new FXInternalWindow("Mars Viewer");
+		jmeWindow.setContent(jmePane);
+		jmeWindow.setActive(true);
+		jmeWindow.setCloseable(false);
+		jmeWindow.setMinimizable(true);
+		jmeWindow.setPrefSize(512, 512);
+		jmeWindow.setMinHeight(480);
+		jmeWindow.setMinWidth(480);
+
+		windowManager.addWindow(jmeWindow);
+	}
+
+    public void jmeCall() {
+
+ 		//JmeCanvas jmeCanvas = new JmeCanvas();
+ 		//JPanel panel = new JPanel(new BorderLayout(0, 0));
+ 		//panel.add(jmeCanvas.setupJME());
+    }
+
+
+/*
+ *
+	public void createJMEWindow(Stage stage) {
+		this.scene = stage.getScene();
+
+
+		JmeCanvas jmeCanvas = new JmeCanvas();
+		JPanel panel = new JPanel(new BorderLayout(0, 0));
+		panel.add(jmeCanvas.setupJME());
+
+		jmePane = new Pane();
+		//ChangeListener<Object> repoListener = new RepositionListener();
+
+		SwingNode swingNode = new SwingNode();
+
+        SwingUtilities.invokeLater(() -> {
+    		swingNode.setContent(panel);
+        });
+
+		jmePane.getChildren().add(swingNode);
+
+		jmeWindow = new FXInternalWindow("Mars Viewer");
+		jmeWindow.setContent(jmePane);
+		jmeWindow.setActive(true);
+		jmeWindow.setCloseable(false);
+		jmeWindow.setMinimizable(true);
+		jmeWindow.setPrefSize(512, 512);
+		jmeWindow.setMinHeight(480);
+		jmeWindow.setMinWidth(480);
+
+		//fxDesktopPane.widthProperty().addListener(repoListener);
+		//fxDesktopPane.heightProperty().addListener(repoListener);
+
+		//stage.xProperty().addListener(repoListener);
+		//stage.yProperty().addListener(repoListener);
+		//stage.getScene().xProperty().addListener(repoListener);
+		//stage.getScene().yProperty().addListener(repoListener);
+
+		//jmePane.widthProperty().addListener(repoListener);
+		//jmePane.heightProperty().addListener(repoListener);
+
+		windowManager.addWindow(jmeWindow);
+	}
+
+	private class RepositionListener implements ChangeListener<Object> {
+
+		@Override
+		public void changed(ObservableValue<? extends Object> arg0, Object arg1, Object arg2) {
+			int x = (int) (fxDesktopPane.getLayoutX() + jmePane.getLocalToParentTransform().getTx());
+			int y = (int) (fxDesktopPane.getLayoutY() + jmePane.getLocalToParentTransform().getTy());
+			//int y = (int) (stage.getX() + jmePane.getLocalToSceneTransform().getTx()); //+ scene.getX()
+			//int y = (int) (stage.getY() + jmePane.getLocalToSceneTransform().getTy()); // scene.getY()
+			int w = (int) jmePane.getWidth();
+			int h = (int) jmePane.getHeight();
+			EventBus.publish(new JmeRepositionEvent(x, y, w, h));
+		}
+	}
+*/
 
 }
 

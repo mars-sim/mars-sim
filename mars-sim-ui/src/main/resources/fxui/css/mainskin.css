@@ -6,6 +6,7 @@
  * @author Lars Næsbye Christensen
  */
 
+
 @font-face {
 	-fx-font-family: "Noto", Sans;
 	src: url("../fonts/notosans/NotoSans-Regular.ttf");
@@ -16,6 +17,7 @@
 	src: url("../fonts/jura/Jura-Regular.ttf");
 }
 
+
 .root {
 	-fx-base: rgb(50, 50, 50);
 	-fx-background: rgb(50, 50, 50);
@@ -25,18 +27,18 @@
 }
 
 .tab {
--fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
+	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
 
 .tool-bar:horizontal {
--fx-font-weight: normal;
--fx-font-family: "Noto";
--fx-font-size: 9pt;
--fx-background-color: transparent, transparent, transparent, transparent;
--fx-border-width: 1;
--fx-border-style: dotted;
--fx-padding: 4px 4px 4px 4px;
-    }
+	-fx-font-weight: normal;
+	-fx-font-family: "Noto";
+	-fx-font-size: 9pt;
+	-fx-background-color: transparent, transparent, transparent, transparent;
+	-fx-border-width: 1;
+	-fx-border-style: dotted;
+	-fx-padding: 4px 4px 4px 4px;
+}
 
 .button:hover{
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
@@ -61,16 +63,16 @@
 }
 
 .table-view {
--fx-table-cell-border-color:derive(-fx-base,+10%);
--fx-table-header-border-color:derive(-fx-base,+20%);
+	-fx-table-cell-border-color:derive(-fx-base,+10%);
+	-fx-table-header-border-color:derive(-fx-base,+20%);
 }
 
 .split-pane:horizontal > * > .split-pane-divider {
--fx-border-color: transparent -fx-base transparent -fx-base;
--fx-background-color: transparent, derive(-fx-base,20%);
--fx-background-insets: 0, 0 1 0 1;
+	-fx-border-color: transparent -fx-base transparent -fx-base;
+	-fx-background-color: transparent, derive(-fx-base,20%);
+	-fx-background-insets: 0, 0 1 0 1;
 }
 
 .separator {
--fx-text-fill: -fx-accent;
+	-fx-text-fill: -fx-accent;
 }

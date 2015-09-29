@@ -4,7 +4,7 @@
  * @version 3.07 2015-01-10
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.structure;
+package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -53,7 +53,6 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food production information.

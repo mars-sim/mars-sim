@@ -13,7 +13,7 @@
     -fx-text-fill: orange;
     -fx-opacity: 1;
 	-fx-base: rgb(50, 50, 50);
-	-fx-background: rgb(50, 50, 50);
+	-fx-background: rgb(140, 0, 26);
 	-fx-control-inner-background:  rgb(50, 50, 50);
 	-fx-accent: darkgoldenrod;
 }

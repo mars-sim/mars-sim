@@ -1,0 +1,78 @@
+/*******************************************************************************
+ *                                                                             *
+ * Root					 				                       				   *
+ *                                                                             *
+ ******************************************************************************/
+.root {
+	/* Swatch Colors - Blue*/
+	-swatch-100: #BBDEFB;
+	-swatch-200: #90CAF9;
+	-swatch-300: #64BEF6;
+	-swatch-400: #42A5F5;
+	-swatch-500: #2196F3;
+	-fx-text-base-color: rgb(100.0, 100.0, 100.0);
+	/* Text defaults */
+	-fx-font-family: 'Roboto Medium';
+	-fx-font-size: 14.0px;
+	-fx-disabled-opacity: 0.6;
+	-fx-text-fill: -fx-text-base-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Text, Text field & Text area                                                *
+ *                                                                             *
+ ******************************************************************************/
+.text {
+	-fx-font-smoothing-type: gray;
+	-fx-fill: -fx-text-base-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CheckBox -> Material ToggleSwitch                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.check-box>*.box{
+	-fx-background-color: rgb(200.0, 200.0, 200.0);
+	-fx-pref-height: 20;
+	-fx-pref-width: 40;
+	-fx-background-radius: 100; /* Full round corner */
+	-fx-background-insets: 2.5;
+	-fx-padding:0;
+}
+.check-box:selected>*.box{
+	-fx-background-color: derive(-swatch-500, 0.54);
+}
+
+.check-box:disabled>*.box{
+	-fx-background-color: derive(grey, 0.54);
+}
+
+
+.check-box >*.box>*.mark {
+	-fx-background-color: white;
+	-fx-padding:0;
+	-fx-background-insets: 0;
+	-fx-shape: "M 10.5,0 C 4.7010101,0 0,4.7010101 0,10.5 0,16.29899 4.7010101,21 10.5,21 16.29899,21 21,16.29899 21,10.5 21,4.7010101 16.29899,0 10.5,0 Z m 29.455078,10.6875 0,0.134766 0.08984,0 0,-0.134766 z";
+	-fx-effect: dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.15), 6.0, 0.7, 0.0,1.5);
+}
+
+.check-box:selected>*.box>*.mark {
+	-fx-background-color: -swatch-500;
+	-fx-shape: "M 10,5 c 5.79899,0 10.5,4.701 10.5,10.5 0,5.799 -4.70101,10.5 -10.5,10.5 -5.79899,0 -10.5,-4.701 -10.5,-10.5 0,-5.799 4.70101,-10.5 10.5,-10.5 z m -29.455078,10.6875 0,0.1348 -0.08984,0 0,-0.1348 z";
+}
+
+.check-box:indeterminate>*.box>*.mark {
+	-fx-background-color: white;
+	-fx-shape: "M 20 0 C 14.20101 0 9.5 4.701 9.5 10.5 C 9.5 16.299 14.20101 21 20 21 C 25.79899 21 30.5 16.299 30.5 10.5 C 30.5 4.701 25.79899 0 20 0 z M 0 10.6875 L 0 10.822266 L 0.08984375 10.822266 L 0.08984375 10.6875 L 0 10.6875 z M 40.066406 10.900391 A 0.080000006 0.050000001 0 0 0 40 10.949219 A 0.080000006 0.050000001 0 0 0 40.080078 11 A 0.080000006 0.050000001 0 0 0 40.160156 10.949219 A 0.080000006 0.050000001 0 0 0 40.080078 10.900391 A 0.080000006 0.050000001 0 0 0 40.066406 10.900391 z ";
+}
+
+.check-box:disabled>*.box>*.mark {
+	-fx-background-color: grey;
+}
+
+
+
+	

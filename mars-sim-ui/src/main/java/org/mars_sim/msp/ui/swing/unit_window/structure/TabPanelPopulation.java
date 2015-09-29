@@ -71,10 +71,13 @@ implements MouseListener, ActionListener {
 
 		Settlement settlement = (Settlement) unit;
 
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		topContentPanel.add(titleLabel);
+		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePane);
+
+		JLabel heading = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
+		heading.setFont(new Font("Serif", Font.BOLD, 16));
+		heading.setForeground(new Color(102, 51, 0)); // dark brown
+		titlePane.add(heading);
 
 
 		// Create population count panel

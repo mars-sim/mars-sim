@@ -71,14 +71,17 @@ implements MouseListener, ActionListener {
 
 		Settlement settlement = (Settlement) unit;
 
+		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePane);
+
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelBots.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		//topContentPanel.add(titleLabel);
+		titlePane.add(titleLabel);
 
 
 		// Create robot count panel
-		JPanel robotCountPanel = new JPanel(new GridLayout(3, 2, 0, 0));
+		JPanel robotCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		robotCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(robotCountPanel);
 
