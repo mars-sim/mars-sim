@@ -74,7 +74,9 @@ abstract class IntegerMapData implements MapData {
         BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
         DataInputStream indexReader = new DataInputStream(indexBuff);
         int index[] = new int[MAP_HEIGHT];
-        for (int x = 0; x < index.length; x++) index[x] = indexReader.readInt();
+        for (int x = 0; x < index.length; x++) {
+            index[x] = indexReader.readInt();
+        }
         indexReader.close();
         indexBuff.close();
        
