@@ -15,8 +15,8 @@
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
 
-		<part type="solid oxide fuel cell" number="10"/>
-		<part type="fuel cell stack" number="30"/>
+		<part type="solid oxide fuel cell" number="100"/>
+		<part type="fuel cell stack" number="10"/>
 		<part type="polycarbonate roofing" number="10"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="3"/>
@@ -119,8 +119,8 @@
 
 	<part-package name="package 2" >
 
-	    <part type="solid oxide fuel cell" number="20"/>
-		<part type="fuel cell stack" number="60"/>
+	    <part type="solid oxide fuel cell" number="200"/>
+		<part type="fuel cell stack" number="20"/>
 		<part type="polycarbonate roofing" number="20"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="6"/>
@@ -223,8 +223,8 @@
 	</part-package>
 
 	<part-package name="package 3">
-		<part type="solid oxide fuel cell" number="30"/>
-		<part type="fuel cell stack" number="90"/>
+		<part type="solid oxide fuel cell" number="300"/>
+		<part type="fuel cell stack" number="30"/>
 		<part type="polycarbonate roofing" number="30"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="9"/>
@@ -327,8 +327,8 @@
 	</part-package>
 
 	<part-package name="package 4">
-		<part type="solid oxide fuel cell" number="50"/>
-		<part type="fuel cell stack" number="150"/>
+		<part type="solid oxide fuel cell" number="500"/>
+		<part type="fuel cell stack" number="50"/>
 		<part type="polycarbonate roofing" number="50"/>
 		<!-- 2015-05-22 Added the following new parts -->
 		<part type="pathogen filtering system" number="12"/>

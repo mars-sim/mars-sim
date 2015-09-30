@@ -40,9 +40,15 @@ implements Serializable {
 	public double getAveragePower(Settlement settlement) {
 		return getMaxPower() / 3D;
 	}
-	
+
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower() * 3D;
+	}
+
+	@Override
+	public void removeFromSettlement() {
+		// TODO Auto-generated method stub
+
 	}
 }

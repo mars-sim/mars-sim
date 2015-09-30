@@ -66,4 +66,10 @@ implements Serializable {
 	public double getMaintenanceTime() {
 	    return getMaxPower() * 2D;
 	}
+
+	@Override
+	public void removeFromSettlement() {
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -41,43 +41,43 @@ import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 
 /**
  * Provides configuration information about settlement buildings.
- * Uses a DOM document to get the information. 
+ * Uses a DOM document to get the information.
  */
 public class BuildingConfig implements Serializable {
-    
+
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     //private static final Logger logger = Logger.getLogger(BuildingConfig.class.getName());
-	
-    //2014-11-27 Added description 
+
+    //2014-11-27 Added description
     private static final String DESCRIPTION = "description";
 
 	// Element and attribute names
 	private static final String BUILDING = "building";
-	//2014-10-27 Added nickName 	
-	//private static final String NICKNAME = "nickName";	
+	//2014-10-27 Added nickName
+	//private static final String NICKNAME = "nickName";
 	private static final String NAME = "name";
 	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String BASE_LEVEL = "base-level";
-	
+
 	private static final String WEAR_LIFETIME = "wear-lifetime";
-	private static final String MAINTENANCE_TIME = "maintenance-time";	
+	private static final String MAINTENANCE_TIME = "maintenance-time";
     private static final String ROOM_TEMPERATURE = "room-temperature";
-    
+
 	private static final String FUNCTIONS = "functions";
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String CAPACITY = "capacity";
 	private static final String LIVING_ACCOMMODATIONS = "living-accommodations";
-	
+
 	private static final String ROBOTIC_STATION = "robotic-station";
 	private static final String SLOTS = "slots";
-	
+
 	private static final String WASTE_DISPOSAL = "waste-disposal";
 	private static final String WASTE_SPECIALTY = "waste-specialty";
-	
+
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
@@ -91,19 +91,19 @@ public class BuildingConfig implements Serializable {
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
 	private static final String RESOURCE_PROCESSING = "resource-processing";
-	
+
 	private static final String POWER_REQUIRED = "power-required";
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 	private static final String POWER_DOWN_LEVEL = "power-down-level";
-	
+
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
 	private static final String RATE = "rate";
 	private static final String AMBIENT = "ambient";
 	private static final String STORAGE = "storage";
-	private static final String STOCK_CAPACITY = "stock-capacity";	
+	private static final String STOCK_CAPACITY = "stock-capacity";
 	private static final String RESOURCE_STORAGE = "resource-storage";
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String RESOURCE = "resource";
@@ -133,7 +133,7 @@ public class BuildingConfig implements Serializable {
 
 	//2014-11-23 Added food production
 	private static final String FOOD_PRODUCTION = "food-production";
-	
+
     private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
     private static final String EARTH_RETURN = "earth-return";
     private static final String CREW_CAPACITY = "crew-capacity";
@@ -143,7 +143,7 @@ public class BuildingConfig implements Serializable {
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String ADMINISTRATION = "administration";
-  
+
 	// 2014-10-17 Added heat source and heat related types
 	private static final String HEAT_REQUIRED = "heat-required";
 	private static final String BASE_HEAT = "base-heat";
@@ -155,8 +155,8 @@ public class BuildingConfig implements Serializable {
 	private static final String ELECTRIC_HEAT_SOURCE = "Electric Heat Source";
 	private static final String SOLAR_HEAT_SOURCE = "Solar Heat Source";
 	private static final String FUEL_HEAT_SOURCE = "Fuel Heat Source";
-    
-	
+
+
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
@@ -168,25 +168,25 @@ public class BuildingConfig implements Serializable {
 	private static final String FUEL_POWER_SOURCE = "Fuel Power Source";
     private static final String WIND_POWER_SOURCE = "Wind Power Source";
     private static final String AREOTHERMAL_POWER_SOURCE = "Areothermal Power Source";
-	
+
 	private Document buildingDoc;
 	private Set<String> buildingTypes;
-	
+
 	/**
 	 * Constructor
 	 * @param buildingDoc DOM document with building configuration
 	 */
 	public BuildingConfig(Document buildingDoc) {
-		this.buildingDoc = buildingDoc;	
+		this.buildingDoc = buildingDoc;
 	}
-	
+
 	/**
 	 * Gets a set of all building types.
 	 * @return set of building types.
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<String> getBuildingTypes() {
-	    
+
 	    if (buildingTypes == null) {
 	        buildingTypes = new HashSet<String>();
 	        Element root = buildingDoc.getRootElement();
@@ -195,10 +195,10 @@ public class BuildingConfig implements Serializable {
 	            buildingTypes.add(buildingElement.getAttributeValue(BUILDING_TYPE));
 	        }
 	    }
-	    
+
 	    return buildingTypes;
 	}
-	
+
 	/**
 	 * Gets a building DOM element for a particular building type.
 	 * @param buildingType the building type
@@ -208,23 +208,23 @@ public class BuildingConfig implements Serializable {
     @SuppressWarnings("unchecked")
 	private Element getBuildingElement(String buildingType) {
 		Element result = null;
-		
+
 		Element root = buildingDoc.getRootElement();
 		List<Element> buildingNodes = root.getChildren(BUILDING);
 		for (Element buildingElement : buildingNodes) {
 			String buidingType = buildingElement.getAttributeValue(BUILDING_TYPE);
-			if (buildingType.equalsIgnoreCase(buidingType)) { 
+			if (buildingType.equalsIgnoreCase(buidingType)) {
 				result = buildingElement;
 				break;
 			}
 		}
-		
+
 		if (result == null) throw new IllegalStateException("Building type: " + buildingType +
 			" could not be found in buildings.xml.");
-		
+
 		return result;
 	}
-    
+
     /**
      * Gets the building width.
      * @param buildingType the type of the building.
@@ -234,10 +234,10 @@ public class BuildingConfig implements Serializable {
     public double getWidth(String buildingType) {
         Element buildingElement = getBuildingElement(buildingType);
         double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-        	//logger.info("calling getWidth() : width is "+ width); 
+        	//logger.info("calling getWidth() : width is "+ width);
         return width;
     }
-    
+
     /**
      * Gets the building length.
      * @param buildingType the type of the building.
@@ -247,10 +247,10 @@ public class BuildingConfig implements Serializable {
     public double getLength(String buildingType) {
         Element buildingElement = getBuildingElement(buildingType);
         double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-        	//logger.info("calling getLength() : length is "+ length); 
+        	//logger.info("calling getLength() : length is "+ length);
         return length;
     }
-    
+
     /**
      * Gets the base level of the building.
      * @param buildingType the type of the building.
@@ -260,24 +260,24 @@ public class BuildingConfig implements Serializable {
         Element buildingElement = getBuildingElement(buildingType);
         return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
-	
+
     // 2015-03-12 Added getWearLifeTime()
     public int getWearLifeTime(String buildingType) {
         Element buildingElement = getBuildingElement(buildingType);
         return Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
-    }    
-    
+    }
+
     // 2015-03-12 Added getMaintenanceTime
     public int getMaintenanceTime(String buildingType) {
         Element buildingElement = getBuildingElement(buildingType);
         return Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
-    }   
-    
+    }
+
     // 2015-03-12 Added getRoomTemperature
     public double getRoomTemperature(String buildingType) {
         Element buildingElement = getBuildingElement(buildingType);
         return Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
-    }       
+    }
 	/**
 	 * Gets the description of the building.
 	 * @param buildingType the type of the building
@@ -294,7 +294,7 @@ public class BuildingConfig implements Serializable {
         str = str.replaceAll("\\t+", "").replaceAll("\\s+", " ").replaceAll("   ", " ").replaceAll("  ", " ");
         return str;
 	}
-	
+
 	/**
 	 * Gets the base heat requirement for the building.
 	 * @param buildingType the type of the building
@@ -306,7 +306,7 @@ public class BuildingConfig implements Serializable {
         Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
         return Double.parseDouble(heatElement.getAttributeValue(BASE_HEAT));
 	}
-	
+
 	/**
 	 * Gets the base heat-down heat requirement for the building.
 	 * @param buildingType the type of the building
@@ -318,8 +318,8 @@ public class BuildingConfig implements Serializable {
         Element heatElement = buildingElement.getChild(HEAT_REQUIRED);
         return Double.parseDouble(heatElement.getAttributeValue(BASE_POWER_DOWN_HEAT));
 	}
-	
-    
+
+
 	/**
 	 * Gets the base power requirement for the building.
 	 * @param buildingType the type of the building
@@ -331,7 +331,7 @@ public class BuildingConfig implements Serializable {
         Element powerElement = buildingElement.getChild(POWER_REQUIRED);
         return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 	}
-	
+
 	/**
 	 * Gets the base power-down power requirement for the building.
 	 * @param buildingType the type of the building
@@ -343,7 +343,7 @@ public class BuildingConfig implements Serializable {
         Element powerElement = buildingElement.getChild(POWER_REQUIRED);
         return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 	}
-	
+
 	/**
 	 * Checks if the building has life support.
 	 * @param buildingType the type of the building
@@ -353,7 +353,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasLifeSupport(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,LIFE_SUPPORT);
 	}
-	
+
 	/**
 	 * Gets the number of inhabitants the building's life support can handle.
 	 * @param buildingType the type of the building
@@ -363,7 +363,7 @@ public class BuildingConfig implements Serializable {
 	public int getLifeSupportCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,LIFE_SUPPORT,CAPACITY);
 	}
-	
+
 	/**
 	 * Gets the power required for life support.
 	 * @param buildingType the type of the building
@@ -373,7 +373,7 @@ public class BuildingConfig implements Serializable {
 	public double getLifeSupportPowerRequirement(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
 	}
-	
+
 
 	/**
 	 * Gets the heat required for life support.
@@ -384,8 +384,8 @@ public class BuildingConfig implements Serializable {
 	public double getLifeSupportHeatRequirement(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,LIFE_SUPPORT,HEAT_REQUIRED);
 	}
-	 
-	
+
+
 	/**
 	 * Checks if the building provides living accommodations.
 	 * @param buildingType the type of the building
@@ -395,7 +395,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasLivingAccommodations(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,LIVING_ACCOMMODATIONS);
 	}
-	
+
 	/**
 	 * Gets the number of beds in the building's living accommodations.
 	 * @param buildingType the type of the building.
@@ -405,17 +405,17 @@ public class BuildingConfig implements Serializable {
 	public int getLivingAccommodationBeds(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
 	}
-	
+
 	/**
 	 * Checks if the building provides robotic slots.
 	 * @param buildingType the type of the building
 	 * @return true if robotic slots
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public boolean hasRoboticStation(String buildingType) {		
+	public boolean hasRoboticStation(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,ROBOTIC_STATION);
 	}
-	
+
 	/**
 	 * Gets the number of slots in the building's robotic slots.
 	 * @param buildingType the type of the building.
@@ -425,7 +425,7 @@ public class BuildingConfig implements Serializable {
 	public int getRoboticStationSlots(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,ROBOTIC_STATION,SLOTS);
 	}
-	
+
 	/**
 	 * Checks if the building has a research lab.
 	 * @param buildingType the type of the building
@@ -435,7 +435,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasResearchLab(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,RESEARCH);
 	}
-	
+
 	/**
 	 * Gets the research tech level of the building.
 	 * @param buildingType the type of the building
@@ -445,17 +445,17 @@ public class BuildingConfig implements Serializable {
 	public int getResearchTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,RESEARCH,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets the number of researchers who can use the building's lab at once.
 	 * @param buildingType the type of the building
 	 * @return number of researchers
 	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */	
+	 */
 	public int getResearchCapacity(String buildingType) {
-		return getValueAsInteger(buildingType,FUNCTIONS,RESEARCH,CAPACITY);		
+		return getValueAsInteger(buildingType,FUNCTIONS,RESEARCH,CAPACITY);
 	}
-	
+
 	/**
 	 * Gets a list of research specialties for the building's lab.
 	 * @param buildingType the type of the building
@@ -477,8 +477,8 @@ public class BuildingConfig implements Serializable {
 	    }
 	    return result;
 	}
-	
-	
+
+
 	/**
 	 * Checks if the building has waste disposal
 	 * @param buildingType the type of the building
@@ -488,7 +488,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasWasteDisposal(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,WASTE_DISPOSAL);
 	}
-	
+
 	/**
 	 * Gets the waste disposal tech level of the building.
 	 * @param buildingType the type of the building
@@ -498,17 +498,17 @@ public class BuildingConfig implements Serializable {
 	public int getWasteDisposalTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,WASTE_DISPOSAL,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets the number of people who can use the building's waste disposal at once.
 	 * @param buildingType the type of the building
 	 * @return number of people
 	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */	
+	 */
 	public int getWasteDisposalCapacity(String buildingType) {
-		return getValueAsInteger(buildingType,FUNCTIONS,WASTE_DISPOSAL,CAPACITY);		
+		return getValueAsInteger(buildingType,FUNCTIONS,WASTE_DISPOSAL,CAPACITY);
 	}
-	
+
 	/**
 	 * Gets a list of waste specialties for the building's lab.
 	 * @param buildingType the type of the building
@@ -530,7 +530,7 @@ public class BuildingConfig implements Serializable {
 	    }
 	    return result;
 	}
-	
+
 	/**
 	 * Checks if the building has communication capabilities.
 	 * @param buildingType the type of the building
@@ -540,7 +540,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasCommunication(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,COMMUNICATION);
 	}
-	
+
 	/**
 	 * Checks if the building has EVA capabilities.
 	 * @param buildingType the type of the building
@@ -550,7 +550,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasEVA(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,EVA);
 	}
-	
+
 	/**
 	 * Gets the number of people who can use the building's airlock at once.
 	 * @param buildingType the type of the building
@@ -560,7 +560,7 @@ public class BuildingConfig implements Serializable {
 	public int getAirlockCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
 	}
-	
+
 	/**
 	 * Gets the relative X location of the airlock.
 	 * @param buildingType the type of the building.
@@ -569,7 +569,7 @@ public class BuildingConfig implements Serializable {
 	public double getAirlockXLoc(String buildingType) {
 	    return getValueAsDouble(buildingType, FUNCTIONS, EVA, X_LOCATION);
 	}
-	
+
 	/**
      * Gets the relative Y location of the airlock.
      * @param buildingType the type of the building.
@@ -578,7 +578,7 @@ public class BuildingConfig implements Serializable {
     public double getAirlockYLoc(String buildingType) {
         return getValueAsDouble(buildingType, FUNCTIONS, EVA, Y_LOCATION);
     }
-    
+
     /**
      * Gets the relative X location of the interior side of the airlock.
      * @param buildingType the type of the building.
@@ -587,7 +587,7 @@ public class BuildingConfig implements Serializable {
     public double getAirlockInteriorXLoc(String buildingType) {
         return getValueAsDouble(buildingType, FUNCTIONS, EVA, INTERIOR_X_LOCATION);
     }
-    
+
     /**
      * Gets the relative Y location of the interior side of the airlock.
      * @param buildingType the type of the building.
@@ -596,7 +596,7 @@ public class BuildingConfig implements Serializable {
     public double getAirlockInteriorYLoc(String buildingType) {
         return getValueAsDouble(buildingType, FUNCTIONS, EVA, INTERIOR_Y_LOCATION);
     }
-    
+
     /**
      * Gets the relative X location of the exterior side of the airlock.
      * @param buildingType the type of the building.
@@ -605,7 +605,7 @@ public class BuildingConfig implements Serializable {
     public double getAirlockExteriorXLoc(String buildingType) {
         return getValueAsDouble(buildingType, FUNCTIONS, EVA, EXTERIOR_X_LOCATION);
     }
-    
+
     /**
      * Gets the relative Y location of the exterior side of the airlock.
      * @param buildingType the type of the building.
@@ -614,7 +614,7 @@ public class BuildingConfig implements Serializable {
     public double getAirlockExteriorYLoc(String buildingType) {
         return getValueAsDouble(buildingType, FUNCTIONS, EVA, EXTERIOR_Y_LOCATION);
     }
-	
+
 	/**
 	 * Checks if the building has a recreation facility.
 	 * @param buildingType the type of the building
@@ -624,7 +624,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasRecreation(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,RECREATION);
 	}
-	
+
 	/**
 	 * Gets the population number supported by the building's recreation function.
 	 * @param buildingType the type of the building.
@@ -633,7 +633,7 @@ public class BuildingConfig implements Serializable {
 	public int getRecreationPopulationSupport(String buildingType) {
 	    return getValueAsInteger(buildingType, FUNCTIONS, RECREATION, POPULATION_SUPPORT);
 	}
-	
+
 	/**
 	 * Checks if the building has a dining facility.
 	 * @param buildingType the type of the building
@@ -643,7 +643,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasDining(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,DINING);
 	}
-	
+
 	/**
 	 * Gets the capacity for dining at the building.
 	 * @param buildingType the type of the building.
@@ -652,7 +652,7 @@ public class BuildingConfig implements Serializable {
 	public int getDiningCapacity(String buildingType) {
 	    return getValueAsInteger(buildingType, FUNCTIONS, DINING, CAPACITY);
 	}
-	
+
 	/**
 	 * Checks if the building has resource processing capability.
 	 * @param buildingType the type of the building
@@ -662,7 +662,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasResourceProcessing(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,RESOURCE_PROCESSING);
 	}
-	
+
 	/**
 	 * Gets the level of resource processing when the building is in power down mode.
 	 * @param buildingType the type of the building
@@ -672,10 +672,10 @@ public class BuildingConfig implements Serializable {
 	public double getResourceProcessingPowerDown(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,RESOURCE_PROCESSING,POWER_DOWN_LEVEL);
 	}
-	
-	
+
+
 	/**
-	 * Gets the building's resource processes. 
+	 * Gets the building's resource processes.
 	 * @param buildingType the type of the building.
 	 * @return a list of resource processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -687,21 +687,21 @@ public class BuildingConfig implements Serializable {
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
 		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
-		
+
 		for (Element processElement : resourceProcessNodes) {
-	
+
 			String defaultString = processElement.getAttributeValue(DEFAULT);
 			boolean defaultOn = true;
 			if (defaultString.equals("off")) defaultOn = false;
-            
+
             double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-			
-			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), 
+
+			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME),
                     powerRequired, defaultOn);
-			
+
 			// Get input resources.
 			List<Element> inputNodes = processElement.getChildren(INPUT);
-			
+
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
@@ -709,7 +709,7 @@ public class BuildingConfig implements Serializable {
 				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
 				process.addMaxInputResourceRate(resource, rate, ambient);
 			}
-			
+
 			// Get output resources.
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
@@ -719,13 +719,13 @@ public class BuildingConfig implements Serializable {
 				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
 				process.addMaxOutputResourceRate(resource, rate, ambient);
 			}
-			
+
 			resourceProcesses.add(process);
 		}
-		
+
 		return resourceProcesses;
 	}
-	
+
 	/**
 	 * Checks if building has storage capability.
 	 * @param buildingType the type of the building.
@@ -735,9 +735,9 @@ public class BuildingConfig implements Serializable {
 	public boolean hasStorage(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,STORAGE);
 	}
-	
+
 	/**
-	 * Gets a list of the building's resource capacities. 
+	 * Gets a list of the building's resource capacities.
 	 * @param buildingType the type of the building.
 	 * @return list of storage capacities
 	 * @throws Exception if building type cannot be found or XML parsing error.
@@ -748,7 +748,7 @@ public class BuildingConfig implements Serializable {
 		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
-		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);		
+		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 		for (Element resourceStorageElement : resourceStorageNodes) {
 			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
             AmountResource resource = AmountResource.findAmountResource(resourceName);
@@ -757,19 +757,19 @@ public class BuildingConfig implements Serializable {
 		}
 		return capacities;
 	}
-	
+
 	/**
 	 * Gets the stock capacity in a building with storage function.
 	 * @param buildingType the type of the building.
 	 * @return stock capacity.
-	 * @throws Exception if building type cannot be found or XML parsing error.	 
+	 * @throws Exception if building type cannot be found or XML parsing error.
     // 2015-03-07 Added getStockCapacity()
 	public double getStockCapacity(String buildingType) {
 		Element buildingElement = getBuildingElement(buildingType);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element storageElement = functionsElement.getChild(STORAGE);
 		// 2015-03-07 Added stockCapacity
-		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));	
+		double stockCapacity = Double.parseDouble(storageElement.getAttributeValue(STOCK_CAPACITY));
 		return stockCapacity;
 	}
 	*/
@@ -777,8 +777,8 @@ public class BuildingConfig implements Serializable {
 	public double getStockCapacity(String buildingType) {
 		return getValueAsDouble(buildingType, FUNCTIONS, STORAGE, STOCK_CAPACITY);
 	}
-   
-	
+
+
 	/**
 	 * Gets a map of the initial resources stored in this building.
 	 * @param buildingType the type of the building
@@ -794,7 +794,7 @@ public class BuildingConfig implements Serializable {
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
 		for (Element resourceInitialElement : resourceInitialNodes) {
 			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-			//System.out.println("getInitialStorage() : resourceName : " + resourceName); 
+			//System.out.println("getInitialStorage() : resourceName : " + resourceName);
             AmountResource resource = AmountResource.findAmountResource(resourceName);
 			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
 			//System.out.println("getInitialStorage() : amount : " + amount);
@@ -802,7 +802,7 @@ public class BuildingConfig implements Serializable {
 		}
 		return resourceMap;
 	}
-	
+
 	/**
 	 * Checks if building has power generation capability.
 	 * @param buildingType the type of the building
@@ -812,7 +812,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasThermalGeneration(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,THERMAL_GENERATION);
 	}
-	
+
 	/**
 	 * Gets a list of the building's heat sources.
 	 * @param buildingType the type of the building.
@@ -826,16 +826,16 @@ public class BuildingConfig implements Serializable {
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
 			//logger.info("getHeatSources() : just finished reading heat-generation");
-		List<Element> heatSourceNodes = thermalGenerationElement.getChildren(HEAT_SOURCE);	
+		List<Element> heatSourceNodes = thermalGenerationElement.getChildren(HEAT_SOURCE);
 			//logger.info("getHeatSources() : just finished reading heat-source");
 		for (Element heatSourceElement : heatSourceNodes) {
-			String type = heatSourceElement.getAttributeValue(TYPE);			
+			String type = heatSourceElement.getAttributeValue(TYPE);
 				//logger.info("getHeatSources() : finished reading type");
-			double heat = Double.parseDouble(heatSourceElement.getAttributeValue(CAPACITY));			
+			double heat = Double.parseDouble(heatSourceElement.getAttributeValue(CAPACITY));
 				//logger.info("getHeatSources() : finished reading capacity");
 			HeatSource heatSource = null;
 			if (type.equalsIgnoreCase(ELECTRIC_HEAT_SOURCE)) {
-				heatSource = new ElectricHeatSource(heat);	
+				heatSource = new ElectricHeatSource(heat);
 				//logger.info("getHeatSources() : just called ElectricHeatSource");
 			} else if (type.equalsIgnoreCase(SOLAR_HEAT_SOURCE)) {
 				heatSource = new SolarHeatSource(heat);
@@ -847,13 +847,13 @@ public class BuildingConfig implements Serializable {
 				    heatSource = new FuelHeatSource(heat ,toggleStafe, fuelType, consumptionSpeed);
 			} else throw new IllegalStateException("Heat source: " + type + " not a valid heat source.");
 				//logger.info("getHeatSources() : finished reading electric heat source and solar heat source");
-			heatSourceList.add(heatSource); 
+			heatSourceList.add(heatSource);
 				//logger.info("getHeatSources() : just added that heatSource");
 		}
 		return heatSourceList;
 	}
-    
-    
+
+
     /**
      * Checks if building has heat storage capability.
      * @param buildingType the type of the building
@@ -863,7 +863,7 @@ public class BuildingConfig implements Serializable {
     public boolean hasThermalStorage(String buildingType) {
     	return hasElements(buildingType,FUNCTIONS,THERMAL_STORAGE);
     }
-    
+
     /**
      * Gets the heat storage capacity of the building.
      * @param buildingType the type of the building.
@@ -873,9 +873,9 @@ public class BuildingConfig implements Serializable {
     public double getThermalStorageCapacity(String buildingType) {
     	return getValueAsDouble(buildingType,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
-	
 
-    
+
+
 	/**
 	 * Checks if building has heat generation capability.
 	 * @param buildingType the type of the building
@@ -885,7 +885,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasPowerGeneration(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,POWER_GENERATION);
 	}
-	
+
 
 	/**
 	 * Gets a list of the building's power sources.
@@ -905,7 +905,6 @@ public class BuildingConfig implements Serializable {
 			double power = Double.parseDouble(powerSourceElement.getAttributeValue(POWER));
 			PowerSource powerSource = null;
 			if (type.equalsIgnoreCase(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
-
 			else if (type.equalsIgnoreCase(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
             else if (type.equalsIgnoreCase(SOLAR_THERMAL_POWER_SOURCE)) powerSource = new SolarThermalPowerSource(power);
 			else if (type.equalsIgnoreCase(FUEL_POWER_SOURCE)) {
@@ -916,14 +915,14 @@ public class BuildingConfig implements Serializable {
 			}
             else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
             else if (type.equalsIgnoreCase(AREOTHERMAL_POWER_SOURCE)) powerSource = new AreothermalPowerSource(power);
-			else throw new IllegalStateException("Power source: " + type + " not a valid power source.");
-			powerSourceList.add(powerSource); 
+			else throw new IllegalStateException("Power source: " + type + " is not a valid power source.");
+			powerSourceList.add(powerSource);
 		}
 		return powerSourceList;
 
 	}
-    
-    
+
+
     /**
      * Checks if building has heat storage capability.
      * @param buildingType the type of the building
@@ -933,7 +932,7 @@ public class BuildingConfig implements Serializable {
     public boolean hasPowerStorage(String buildingType) {
     	return hasElements(buildingType,FUNCTIONS,POWER_STORAGE);
     }
-    
+
     /**
      * Gets the power storage capacity of the building.
      * @param buildingType the type of the building.
@@ -943,7 +942,7 @@ public class BuildingConfig implements Serializable {
     public double getPowerStorageCapacity(String buildingType) {
     	return getValueAsDouble(buildingType,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
-	
+
 	/**
 	 * Checks if building has medical care capability.
 	 * @param buildingType the type of the building.
@@ -953,7 +952,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasMedicalCare(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,MEDICAL_CARE);
 	}
-	
+
 	/**
 	 * Gets the tech level of the building's medical care.
 	 * @param buildingType the type of the building.
@@ -963,7 +962,7 @@ public class BuildingConfig implements Serializable {
 	public int getMedicalCareTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,MEDICAL_CARE,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets the number of beds in the building's medical care.
 	 * @param buildingType the type of the building.
@@ -973,7 +972,7 @@ public class BuildingConfig implements Serializable {
 	public int getMedicalCareBeds(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,MEDICAL_CARE,BEDS);
 	}
-	
+
 	/**
 	 * Checks if building has the farming function.
 	 * @param buildingType the type of the building.
@@ -983,7 +982,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasFarming(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,FARMING);
 	}
-	
+
 	/**
 	 * Gets the number of crops in the building.
 	 * @param buildingType the type of the building.
@@ -993,7 +992,7 @@ public class BuildingConfig implements Serializable {
 	public int getCropNum(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,FARMING,CROPS);
 	}
-	
+
 	/**
 	 * Gets the power required to grow a crop.
 	 * @param buildingType the type of the building.
@@ -1003,7 +1002,7 @@ public class BuildingConfig implements Serializable {
 	public double getPowerForGrowingCrop(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,POWER_GROWING_CROP);
 	}
-	
+
 	/**
 	 * Gets the power required to sustain a crop.
 	 * @param buildingType the type of the building.
@@ -1013,7 +1012,7 @@ public class BuildingConfig implements Serializable {
 	public double getPowerForSustainingCrop(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,POWER_SUSTAINING_CROP);
 	}
-	
+
 	/**
 	 * Gets the crop growing area in the building.
 	 * @param buildingType the type of the building.
@@ -1023,7 +1022,7 @@ public class BuildingConfig implements Serializable {
 	public double getCropGrowingArea(String buildingType) {
 		return getValueAsDouble(buildingType,FUNCTIONS,FARMING,GROWING_AREA);
 	}
-	
+
 	/**
 	 * Checks if the building has the exercise function.
 	 * @param buildingType the type of the building.
@@ -1033,7 +1032,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasExercise(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,EXERCISE);
 	}
-	
+
 	/**
 	 * Gets the capacity of the exercise facility in the building.
 	 * @param buildingType the type of the building.
@@ -1043,7 +1042,7 @@ public class BuildingConfig implements Serializable {
 	public int getExerciseCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,EXERCISE,CAPACITY);
 	}
-	
+
 	/**
 	 * Checks if the building has the ground vehicle maintenance function.
 	 * @param buildingType the type of the building.
@@ -1053,7 +1052,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasGroundVehicleMaintenance(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE);
 	}
-	
+
 	/**
 	 * Gets the vehicle capacity of the building.
 	 * @param buildingType the type of the building.
@@ -1063,7 +1062,7 @@ public class BuildingConfig implements Serializable {
 	public int getVehicleCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
 	}
-	
+
 	/**
 	 * Gets the number of parking locations in the building.
 	 * @param buildingType the type of the building.
@@ -1075,7 +1074,7 @@ public class BuildingConfig implements Serializable {
         Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
         return groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION).size();
 	}
-	
+
 	/**
 	 * Gets the relative location in the building of a parking location.
 	 * @param buildingType the type of the building.
@@ -1104,7 +1103,7 @@ public class BuildingConfig implements Serializable {
             return null;
         }
 	}
-	
+
 	/**
 	 * Checks if the building has the cooking function.
 	 * @param buildingType the type of the building.
@@ -1114,7 +1113,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasCooking(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,COOKING);
 	}
-	
+
 
 	/**
 	 * Checks if the building has the Food Production function.
@@ -1126,7 +1125,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasFoodProduction(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,FOOD_PRODUCTION);
 	}
-	
+
 	/**
 	 * Gets the tech level of the Food Production facility in the building.
 	 * @param buildingType the type of the building.
@@ -1137,7 +1136,7 @@ public class BuildingConfig implements Serializable {
 	public int getFoodProductionTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,FOOD_PRODUCTION,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets the concurrent process limit of the Food Production facility in the building.
 	 * @param buildingType the type of the building.
@@ -1148,7 +1147,7 @@ public class BuildingConfig implements Serializable {
 	public int getFoodProductionConcurrentProcesses(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,FOOD_PRODUCTION,CONCURRENT_PROCESSES);
 	}
-	
+
 	/**
 	 * Gets the capacity of the cooking facility in the building.
 	 * @param buildingType the type of the building.
@@ -1158,7 +1157,7 @@ public class BuildingConfig implements Serializable {
 	public int getCookCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,COOKING,CAPACITY);
 	}
-	
+
 	/**
 	 * Checks if the building has the manufacture function.
 	 * @param buildingType the type of the building.
@@ -1168,7 +1167,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasManufacture(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,MANUFACTURE);
 	}
-	
+
 	/**
 	 * Gets the tech level of the manufacture facility in the building.
 	 * @param buildingType the type of the building.
@@ -1178,7 +1177,7 @@ public class BuildingConfig implements Serializable {
 	public int getManufactureTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Checks if the building has an astronomical observation function.
 	 * @param buildingType the type of the building.
@@ -1188,7 +1187,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasAstronomicalObservation(String buildingType) {
 		return hasElements(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION);
 	}
-	
+
 	/**
 	 * Gets the tech level of the astronomy  facility in the building.
 	 * @param buildingType the type of the building.
@@ -1198,7 +1197,7 @@ public class BuildingConfig implements Serializable {
 	public int getAstronomicalObservationTechLevel(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
 	}
-	
+
 	/**
 	 * Gets capacity of the astronomy  facility in the building.
 	 * @param buildingType the type of the building.
@@ -1208,7 +1207,7 @@ public class BuildingConfig implements Serializable {
 	public int getAstronomicalObservationCapacity(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,CAPACITY);
 	}
-	
+
     /**
      * Gets the power required by the astronomical observation function.
      * @param buildingType the type of the building.
@@ -1218,7 +1217,7 @@ public class BuildingConfig implements Serializable {
     public double getAstronomicalObservationPowerRequirement(String buildingType) {
     	return getValueAsDouble(buildingType,FUNCTIONS,ASTRONOMICAL_OBSERVATION,POWER_REQUIRED);
     }
-	
+
 	/**
 	 * Gets the concurrent process limit of the manufacture facility in the building.
 	 * @param buildingType the type of the building.
@@ -1228,7 +1227,7 @@ public class BuildingConfig implements Serializable {
 	public int getManufactureConcurrentProcesses(String buildingType) {
 		return getValueAsInteger(buildingType,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
 	}
-	
+
 	/**
 	 * Checks if the building has the management function.
 	 * @param buildingType the type of the building.
@@ -1237,16 +1236,16 @@ public class BuildingConfig implements Serializable {
 	public boolean hasManagement(String buildingType) {
 	    return hasElements(buildingType, FUNCTIONS, MANAGEMENT);
 	}
-	
+
 	/**
-	 * Gets the management population support for a building. 
+	 * Gets the management population support for a building.
 	 * @param buildingType the type of the building.
 	 * @return population support
 	 */
 	public int getManagementPopulationSupport(String buildingType) {
 	    return getValueAsInteger(buildingType, FUNCTIONS, MANAGEMENT, POPULATION_SUPPORT);
 	}
-	
+
 	/**
 	 * Checks if the building has the administration function.
 	 * @param buildingType the type of the building.
@@ -1255,16 +1254,16 @@ public class BuildingConfig implements Serializable {
 	public boolean hasAdministration(String buildingType) {
 	    return hasElements(buildingType, FUNCTIONS, ADMINISTRATION);
 	}
-	
+
 	/**
-     * Gets the administration population support for a building. 
+     * Gets the administration population support for a building.
      * @param buildingType the type of the building.
      * @return population support
      */
     public int getAdministrationPopulationSupport(String buildingType) {
         return getValueAsInteger(buildingType, FUNCTIONS, ADMINISTRATION, POPULATION_SUPPORT);
     }
-	
+
 	/**
 	 * Checks if the building has an Earth return function.
 	 * @param buildingType the type of the building.
@@ -1273,7 +1272,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasEarthReturn(String buildingType) {
 	    return hasElements(buildingType, FUNCTIONS, EARTH_RETURN);
 	}
-	
+
 	/**
 	 * Gets the Earth return crew capacity of a building.
 	 * @param buildingType the type of the building.
@@ -1282,7 +1281,7 @@ public class BuildingConfig implements Serializable {
 	public int getEarthReturnCrewCapacity(String buildingType) {
 	    return getValueAsInteger(buildingType, FUNCTIONS, EARTH_RETURN, CREW_CAPACITY);
 	}
-	
+
 	/**
 	 * Checks if the building has a building connection function.
 	 * @param buildingType the type of the building.
@@ -1291,7 +1290,7 @@ public class BuildingConfig implements Serializable {
 	public boolean hasBuildingConnection(String buildingType) {
 	    return hasElements(buildingType, FUNCTIONS, BUILDING_CONNECTION);
 	}
-	
+
     /**
      * Gets a list of activity spots for the administration building function.
      * @param buildingType the type of the building.
@@ -1300,7 +1299,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getAdministrationActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, ADMINISTRATION);
     }
-	
+
 	/**
      * Gets a list of activity spots for the astronomical observation building function.
      * @param buildingType the type of the building.
@@ -1309,7 +1308,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getAstronomicalObservationActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, ASTRONOMICAL_OBSERVATION);
     }
-	
+
 	/**
 	 * Gets a list of activity spots for the communication building function.
 	 * @param buildingType the type of the building.
@@ -1318,7 +1317,7 @@ public class BuildingConfig implements Serializable {
 	public List<Point2D> getCommunicationActivitySpots(String buildingType) {
 	    return getActivitySpots(buildingType, COMMUNICATION);
 	}
-	
+
 	/**
      * Gets a list of activity spots for the cooking building function.
      * @param buildingType the type of the building.
@@ -1327,7 +1326,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getCookingActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, COOKING);
     }
-    
+
     /**
      * Gets a list of activity spots for the dining building function.
      * @param buildingType the type of the building.
@@ -1336,7 +1335,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getDiningActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, DINING);
     }
-    
+
     /**
      * Gets a list of activity spots for the exercise building function.
      * @param buildingType the type of the building.
@@ -1345,7 +1344,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getExerciseActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, EXERCISE);
     }
-    
+
     /**
      * Gets a list of activity spots for the farming building function.
      * @param buildingType the type of the building.
@@ -1354,7 +1353,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getFarmingActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, FARMING);
     }
-    
+
 	/**
      * Gets a list of activity spots for the Food Production building function.
      * @param buildingType the type of the building.
@@ -1364,7 +1363,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getFoodProductionActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, FOOD_PRODUCTION);
     }
-    
+
     /**
      * Gets a list of activity spots for the ground vehicle maintenance building function.
      * @param buildingType the type of the building.
@@ -1373,7 +1372,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getGroundVehicleMaintenanceActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, GROUND_VEHICLE_MAINTENANCE);
     }
-    
+
     /**
      * Gets a list of activity spots for the living accommodations building function.
      * @param buildingType the type of the building.
@@ -1382,7 +1381,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getLivingAccommodationsActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, LIVING_ACCOMMODATIONS);
     }
-    
+
     /**
      * Gets a list of activity spots for the management building function.
      * @param buildingType the type of the building.
@@ -1391,7 +1390,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getManagementActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, MANAGEMENT);
     }
-    
+
     /**
      * Gets a list of activity spots for the manufacture building function.
      * @param buildingType the type of the building.
@@ -1400,7 +1399,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getManufactureActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, MANUFACTURE);
     }
-    
+
     /**
      * Gets a list of activity spots for the medical care building function.
      * @param buildingType the type of the building.
@@ -1409,7 +1408,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getMedicalCareActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, MEDICAL_CARE);
     }
-    
+
     /**
      * Gets a list of activity spots for the recreation building function.
      * @param buildingType the type of the building.
@@ -1418,7 +1417,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getRecreationActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, RECREATION);
     }
-    
+
     /**
      * Gets a list of activity spots for the research building function.
      * @param buildingType the type of the building.
@@ -1427,7 +1426,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getResearchActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, RESEARCH);
     }
-    
+
     /**
      * Gets a list of activity spots for the waste disposal building function.
      * @param buildingType the type of the building.
@@ -1436,7 +1435,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getWasteDisposalActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, WASTE_DISPOSAL);
     }
-    
+
     /**
      * Gets a list of activity spots for the resource processing building function.
      * @param buildingType the type of the building.
@@ -1445,7 +1444,7 @@ public class BuildingConfig implements Serializable {
     public List<Point2D> getResourceProcessingActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, RESOURCE_PROCESSING);
     }
-	
+
     public List<Point2D> getRoboticStationActivitySpots(String buildingType) {
         return getActivitySpots(buildingType, ROBOTIC_STATION);
     }
@@ -1462,7 +1461,7 @@ public class BuildingConfig implements Serializable {
         List<?> activityElements = functionElement.getChildren(ACTIVITY);
         return (activityElements.size() > 0);
 	}
-	
+
 	/**
 	 * Gets a list of activity spots for a building's function.
 	 * @param buildingType the type of the building.
@@ -1472,7 +1471,7 @@ public class BuildingConfig implements Serializable {
 	@SuppressWarnings("unchecked")
 	private List<Point2D> getActivitySpots(String buildingType, String functionName) {
 	    List<Point2D> result = new ArrayList<Point2D>();
-	    
+
 	    if (hasActivitySpots(buildingType, functionName)) {
 	        Element buildingElement = getBuildingElement(buildingType);
 	        Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -1486,26 +1485,26 @@ public class BuildingConfig implements Serializable {
 	            result.add(new Point2D.Double(xLocation, yLocation));
 	        }
 	    }
-	    
+
 	    return result;
 	}
-	
-	private int getValueAsInteger(String buildingType, String child, 
+
+	private int getValueAsInteger(String buildingType, String child,
 			                      String subchild, String param){
 		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
 		return Integer.parseInt(element3.getAttributeValue(param));
 	}
-	
-	private double getValueAsDouble(String buildingType, String child, 
+
+	private double getValueAsDouble(String buildingType, String child,
             String subchild, String param) {
 		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
-	
+
     @SuppressWarnings("unchecked")
 	private boolean hasElements(String buildingType, String child, String children) {
 		Element element1 = getBuildingElement(buildingType);
@@ -1513,11 +1512,11 @@ public class BuildingConfig implements Serializable {
 		List<Element> elements = element2.getChildren(children);
 		return (elements.size() > 0);
 	}
-    
+
     /**
      * Prepare object for garbage collection.
      */
     public void destroy() {
-       buildingDoc = null; 
+       buildingDoc = null;
     }
 }

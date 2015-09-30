@@ -74,6 +74,8 @@ implements Serializable {
      */
 	public abstract double getMaintenanceTime();
 
+	// 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory
+	public abstract void removeFromSettlement();
 	/**
 	 * Prepare object for garbage collection.
 	 */

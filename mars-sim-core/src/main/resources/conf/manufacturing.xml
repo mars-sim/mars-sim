@@ -1238,18 +1238,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Rover tires are made with steel and steel wire. -->
-	<process name="rover wheel manufacturing" tech="4" skill="3" work-time="200" process-time="400"
-			power-required="10.0">
-		<inputs>
-			<part name="steel sheet" number="3" />
-			<part name="steel wire" number="55" />
-		</inputs>
-		<outputs>
-			<part name="rover wheel" number="2" />
-		</outputs>
-	</process>
-
 	<process name="gasket manufacturing" tech="4" skill="2" work-time="100" process-time="200"
 			power-required="1.0">
 		<inputs>
@@ -1658,6 +1646,102 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+
+	<process name="small vehicle frame manufacturing" tech="3" skill="3" work-time="250" process-time="250"
+			power-required="10.0">
+		<inputs>
+			<part name="steel ingot" number="50" />
+		</inputs>
+		<outputs>
+			<part name="small vehicle frame" number="1" />
+		</outputs>
+	</process>
+
+	<!-- Small wheels are made with steel and steel wire. -->
+	<process name="small wheel manufacturing" tech="2" skill="2" work-time="100" process-time="200"
+			power-required="5.0">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="steel wire" number="5" />
+		</inputs>
+		<outputs>
+			<part name="small wheel" number="2" />
+		</outputs>
+	</process>
+
+
+	<!-- Rover tires are made with steel and steel wire. -->
+	<process name="rover wheel manufacturing" tech="4" skill="3" work-time="200" process-time="400"
+			power-required="10.0">
+		<inputs>
+			<part name="steel sheet" number="3" />
+			<part name="steel wire" number="55" />
+		</inputs>
+		<outputs>
+			<part name="rover wheel" number="2" />
+		</outputs>
+	</process>
+
+
+	<process name="utility vehicle control panel manufacturing" tech="3" skill="3" work-time="200" process-time="200"
+			power-required="3.0">
+		<inputs>
+			<resource name="polyethylene" amount=".5" />
+			<resource name="polyester resin" amount="3.0" />
+			<resource name="styrene" amount="1.0" />
+			<part name="fiberglass" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="utility vehicle control panel" number="1" />
+		</outputs>
+	</process>
+
+	<process name="light utility vehicle assembly" tech="3" skill="3" work-time="1000" process-time="0"
+			power-required="0.0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+
+			<part name="large electric motor" number="2" />
+			<part name="rover battery" number="6" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="4" />
+			<part name="radio antenna" number="1" />
+		</inputs>
+		<outputs>
+			<vehicle name="light utility vehicle" number="1" />
+		</outputs>
+	</process>
+<!--
+	<process name="vehicle assembly remote controlled prospector"
+			tech="3" skill="3"
+			work-time="1000"
+			process-time="0"
+			power-required="0.0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+			<part name="large electric motor" number="1" />
+			<part name="rover battery" number="1" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="4" />
+			<part name="radio antenna" number="1" />
+			<part name="satellite dish" number="1" />
+		</inputs>
+		<outputs>
+			<vehicle name="remote controlled prospector" number="1" />
+		</outputs>
+	</process>-->
+
 	<process name="large vehicle frame manufacturing" tech="4" skill="4" work-time="500" process-time="500"
 			power-required="30.0">
 		<inputs>
@@ -1726,6 +1810,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="6" />
 			<part name="wire connector" number="6" />
 			<part name="timing belt" number="1" />
+			<part name="fuel cell stack" number="3" />
 		</inputs>
 		<outputs>
 			<part name="rover generator" number="1" />
@@ -1747,7 +1832,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="small electric motor manufacturing" tech="3" skill="3" work-time="200" process-time="200"
+	<process name="small electric motor manufacturing" tech="3" skill="3" work-time="800" process-time="200"
 			power-required="10.0">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -1762,7 +1847,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="large electric motor manufacturing" tech="4" skill="4" work-time="400" process-time="400"
+	<process name="large electric motor manufacturing" tech="4" skill="4" work-time="800" process-time="400"
 			power-required="20.0">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -1918,8 +2003,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="large electric motor" number="5" />
-			<part name="rover battery" number="6" />
+			<part name="large electric motor" number="3" />
+			<part name="rover battery" number="2" />
 			<part name="rover control panel" number="1" />
 			<part name="rover fuel tank" number="1" />
 			<part name="rover oxygen tank" number="1" />
@@ -1951,8 +2036,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
-			<part name="large electric motor" number="5" />
-			<part name="rover battery" number="6" />
+			<part name="large electric motor" number="4" />
+			<part name="rover battery" number="3" />
 			<part name="rover control panel" number="1" />
 			<part name="rover fuel tank" number="1" />
 			<part name="rover oxygen tank" number="1" />
@@ -1985,7 +2070,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="large electric motor" number="5" />
-			<part name="rover battery" number="6" />
+			<part name="rover battery" number="3" />
 			<part name="rover control panel" number="1" />
 			<part name="rover fuel tank" number="1" />
 			<part name="rover oxygen tank" number="1" />
@@ -2290,86 +2375,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="soil compactor" number="1" />
 		</outputs>
 	</process>
-
-	<process name="small vehicle frame manufacturing" tech="3" skill="3" work-time="250" process-time="250"
-			power-required="10.0">
-		<inputs>
-			<part name="steel ingot" number="50" />
-		</inputs>
-		<outputs>
-			<part name="small vehicle frame" number="1" />
-		</outputs>
-	</process>
-
-	<!-- Small wheels are made with steel and steel wire. -->
-	<process name="small wheel manufacturing" tech="2" skill="2" work-time="100" process-time="200"
-			power-required="5.0">
-		<inputs>
-			<part name="steel sheet" number="1" />
-			<part name="steel wire" number="5" />
-		</inputs>
-		<outputs>
-			<part name="small wheel" number="2" />
-		</outputs>
-	</process>
-
-	<process name="utility vehicle control panel manufacturing" tech="3" skill="3" work-time="200" process-time="200"
-			power-required="3.0">
-		<inputs>
-			<resource name="polyethylene" amount=".5" />
-			<resource name="polyester resin" amount="3.0" />
-			<resource name="styrene" amount="1.0" />
-			<part name="fiberglass" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="epoxy resin bottle" number="1" />
-		</inputs>
-		<outputs>
-			<part name="utility vehicle control panel" number="1" />
-		</outputs>
-	</process>
-
-	<process name="light utility vehicle assembly" tech="3" skill="3" work-time="1000" process-time="0"
-			power-required="0.0">
-		<inputs>
-			<part name="small vehicle frame" number="1" />
-			<part name="large electric motor" number="1" />
-			<part name="rover battery" number="1" />
-			<part name="utility vehicle control panel" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
-			<part name="radio antenna" number="1" />
-		</inputs>
-		<outputs>
-			<vehicle name="light utility vehicle" number="1" />
-		</outputs>
-	</process>
-<!--
-	<process name="vehicle assembly remote controlled prospector"
-			tech="3" skill="3"
-			work-time="1000"
-			process-time="0"
-			power-required="0.0">
-		<inputs>
-			<part name="small vehicle frame" number="1" />
-			<part name="large electric motor" number="1" />
-			<part name="rover battery" number="1" />
-			<part name="utility vehicle control panel" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
-			<part name="radio antenna" number="1" />
-			<part name="satellite dish" number="1" />
-		</inputs>
-		<outputs>
-			<vehicle name="remote controlled prospector" number="1" />
-		</outputs>
-	</process>-->
 
 	<process name="steel truss manufacturing" tech="2" skill="2" work-time="200" process-time="300"
 			power-required="10.0">
@@ -3271,20 +3276,19 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 	</process>
 
 		<!-- 2015-09-28 Added manufacturing solid oxide fuel cell. -->
-	<process name="solid oxide fuel cell manufacturing" tech="3" skill="4" work-time="1000" process-time="100"
+	<process name="fuel cell stack manufacturing" tech="3" skill="4" work-time="1000" process-time="100"
 			power-required="3">
 		<inputs>
 			<part name="steel sheet" number="1" />
 			<part name="plastic sheet" number="1" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
-			<part name="small transformer" number="1" />
 			<part name="steel pipe" number="2" />
 			<part name="microcontroller" number="1" />
-			<part name="fuel cell stack" number="3" />
+			<part name="solid oxide fuel cell" number="25" />
 		</inputs>
 		<outputs>
-			<part name="solid oxide fuel cell" number="1" />
+			<part name="fuel cell stack" number="1" />
 		</outputs>
 	</process>
 
@@ -3327,8 +3331,8 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="large electric motor" number="5" />
-		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="large electric motor" number="3" />
+		<part-salvage name="rover battery" number="2" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="rover fuel tank" number="1" />
 		<part-salvage name="rover oxygen tank" number="1" />
@@ -3345,7 +3349,6 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
-		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
@@ -3356,8 +3359,8 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="rover window" number="5" />
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
-		<part-salvage name="large electric motor" number="5" />
-		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="large electric motor" number="4" />
+		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="rover fuel tank" number="1" />
 		<part-salvage name="rover oxygen tank" number="1" />
@@ -3374,7 +3377,6 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
-		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
@@ -3386,7 +3388,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="winch" number="1" />
 		<part-salvage name="rover generator" number="1" />
 		<part-salvage name="large electric motor" number="5" />
-		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="rover battery" number="3" />
 		<part-salvage name="rover control panel" number="1" />
 		<part-salvage name="rover fuel tank" number="1" />
 		<part-salvage name="rover oxygen tank" number="1" />
@@ -3403,14 +3405,13 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
-		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
 		<part-salvage name="small vehicle frame" number="1" />
-		<part-salvage name="large electric motor" number="1" />
-		<part-salvage name="rover battery" number="1" />
+		<part-salvage name="large electric motor" number="2" />
+		<part-salvage name="rover battery" number="6" />
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
@@ -3418,7 +3419,6 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="lubricant bottle" number="1" />
 		<part-salvage name="small wheel" number="4" />
 		<part-salvage name="radio antenna" number="1" />
-		<part-salvage name="solid oxide fuel cell" number="2" />
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->
@@ -3438,5 +3438,6 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
 	</salvage>
+
 
 </manufacturing-processes>

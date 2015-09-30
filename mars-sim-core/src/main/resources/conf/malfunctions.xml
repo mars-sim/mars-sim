@@ -187,6 +187,7 @@
 			<part name="plastic tubing" number="1" probability="10" />
 			<part name="lubricant bottle" number="1" probability="30" />
 			<part name="timing belt" number="1" probability="30" />
+			<part name="fuel cell stack" number="3" probability="5"/>
 		</repair-parts-list>
 	</malfunction>
 
@@ -699,29 +700,22 @@
 	</malfunction>
 
 
-	<!-- 2015-09-28 Added Solid Oxide Fuel Cell failure. -->
-	<malfunction name="solid oxide fuel cell failure">
+	<!-- 2015-09-28 Added fuel cell stack failure. -->
+	<malfunction name="fuel cell stack failure">
 		<severity value="30" />
 		<probability value="1.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100" />
 		<entity-list>
-			<entity name="manufacturing" />
-			<entity name="life support" />
-			<entity name="farming" />
 			<entity name="vehicle" />
-			<entity name="power generation" />
-			<entity name="settlement" />
+			<entity name="methane power generator" />
 		</entity-list>
 		<repair-parts-list>
-		    <part name="steel sheet" number="1" probability="5"/>
-			<part name="plastic sheet" number="1" probability="5"/>
-			<part name="electrical wire" number="5" probability="5"/>
-			<part name="wire connector" number="5" probability="5"/>
-			<part name="small transformer" number="1" probability="5"/>
-			<part name="steel pipe" number="2" probability="5"/>
+			<part name="electrical wire" number="5" probability="10"/>
+			<part name="wire connector" number="5" probability="30"/>
+			<part name="steel pipe" number="2" probability="30"/>
 			<part name="microcontroller" number="1" probability="5"/>
-			<part name="fuel cell stack" number="3" probability="5"/>
+			<part name="solid oxide fuel cell" number="25" probability="5"/>
 		</repair-parts-list>
 	</malfunction>
 

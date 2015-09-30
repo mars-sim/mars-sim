@@ -46,9 +46,15 @@ extends PowerSource {
 
 		return getMaxPower() * (areothermalHeat / 100D);
 	}
-	
+
 	@Override
 	public double getMaintenanceTime() {
 	    return getMaxPower() * 1D;
+	}
+
+	@Override
+	public void removeFromSettlement() {
+		// TODO Auto-generated method stub
+
 	}
 }

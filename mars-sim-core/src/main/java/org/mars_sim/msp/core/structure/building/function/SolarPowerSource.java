@@ -90,4 +90,10 @@ implements Serializable {
 	public double getEfficiency() {
 		return efficiency_solar_panel;
 	}
+
+	@Override
+	public void removeFromSettlement() {
+		// TODO Auto-generated method stub
+
+	}
 }

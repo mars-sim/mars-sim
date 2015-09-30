@@ -273,4 +273,12 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	 // 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory
+	public void removeFromSettlement() {
+		Iterator<PowerSource> i = powerSources.iterator();
+		while (i.hasNext()) {
+			i.next().removeFromSettlement();
+		}
+	}
 }
