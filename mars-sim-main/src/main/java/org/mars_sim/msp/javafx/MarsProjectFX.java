@@ -89,7 +89,7 @@ public class MarsProjectFX extends Application  {
 
 		    // this will generate html files for in-game help based on config xml files
 		    //if (generateHelp) {
-		    	HelpGenerator.generateHtmlHelpFiles();
+		    //	HelpGenerator.generateHtmlHelpFiles();
 		    //}
 
 		    if (useGUI) {

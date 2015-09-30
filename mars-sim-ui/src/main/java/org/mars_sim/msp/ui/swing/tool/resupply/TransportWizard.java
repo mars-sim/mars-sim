@@ -267,6 +267,7 @@ public class TransportWizard {
 
         if (mainScene != null) {
 
+	    	mainScene.pauseSimulation();
         	Alert alert = new Alert(AlertType.CONFIRMATION);
    			//alert.initModality(Modality.APPLICATION_MODAL);
    			//alert.initModality(Modality.WINDOW_MODAL);

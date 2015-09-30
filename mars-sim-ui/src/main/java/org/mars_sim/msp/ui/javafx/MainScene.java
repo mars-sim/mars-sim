@@ -19,6 +19,8 @@ import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.text.DecimalFormat;
+
 import com.sun.management.OperatingSystemMXBean;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -143,6 +145,8 @@ public class MainScene {
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
+
+	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 
 	@SuppressWarnings("restriction")
 	private OperatingSystemMXBean osBean;
@@ -409,41 +413,48 @@ public class MainScene {
 		this.theme = theme;
 		swingPane.getStylesheets().clear();
 		menuBar.getStylesheets().clear();
+		statusBar.getStylesheets().clear();
 		String cssColor;
 
 		//logger.info("MainScene's changeTheme()");
-		if (theme == 1) {
+		if (theme == 1) { // olive green
 			cssColor = "/fxui/css/oliveskin.css";
-			updateThemeColor(Color.GREEN, Color.PALEGREEN, cssColor);
+			updateThemeColor(Color.GREEN, Color.PALEGREEN, cssColor); //DARKOLIVEGREEN
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			lookAndFeelTheme = "LightTabaco";
-		} else if (theme == 2) {
+
+		} else if (theme == 2) { // burgundy red
 			cssColor = "/fxui/css/burgundyskin.css";
 			updateThemeColor(Color.ORANGERED, Color.YELLOW, cssColor);
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			lookAndFeelTheme = "Burdeos";
-		} else if (theme == 3) { // dark olive
-			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.DARKGREY, Color.DARKOLIVEGREEN, cssColor);
+
+		} else if (theme == 3) { // dark chocolate
+			cssColor = "/fxui/css/darkTabaco.css";
+			updateThemeColor(Color.DARKGOLDENROD, Color.BROWN, cssColor);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			lookAndFeelTheme = "DarkTabaco";
-		} else if (theme == 4) {
-			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.GREY, Color.GREY, cssColor);
+
+		} else if (theme == 4) { // grey
+			cssColor = "/fxui/css/darkGrey.css";
+			updateThemeColor(Color.DARKSLATEGREY, Color.DARKGREY, cssColor);
 			lookAndFeelTheme = "DarkGrey";
+
 		} else if (theme == 5) { // + purple
-			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.VIOLET, Color.BLUEVIOLET, cssColor);
+			cssColor = "/fxui/css/nightViolet.css";
+			updateThemeColor(Color.DARKMAGENTA, Color.SLATEBLUE, cssColor);
 			lookAndFeelTheme = "Night";
+
 		} else if (theme == 6) { // + skyblue
-			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.CADETBLUE, Color.LIGHTBLUE, cssColor);
+			cssColor = "/fxui/css/snowBlue.css";
+			updateThemeColor(Color.DARKCYAN, Color.CADETBLUE, cssColor);
 			lookAndFeelTheme = "Snow";
-		} else if (theme == 7) {
+
+		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.ORANGE, Color.LIGHTSALMON, cssColor);
+			updateThemeColor(Color.CORAL, Color.ORANGE, cssColor);
 			lookAndFeelTheme = "nimrod";
 		}
 
@@ -477,7 +488,7 @@ public class MainScene {
 	 */
 	public void startEarthTimer() {
 		// Set up earth time text update
-		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeText()));
+		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateStatusBarText()));
 		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
 		// All the objects with animated properties would not be garbage collected.
 		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
@@ -485,6 +496,9 @@ public class MainScene {
 
 	}
 
+	/*
+	 * Creates the status bar for MainScene
+	 */
 	public StatusBar createStatusBar() {
 		//StatusBar statusBar = null;
 		if (statusBar == null) {
@@ -507,31 +521,31 @@ public class MainScene {
 
 		cpuBtn = new Button(" [CPU Load] ");
 		cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		cpuBtn.setTextFill(Color.ORANGE);
+		//cpuBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(cpuBtn);
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText = new Text(" Process : " + processCpuLoad + " % ");
-		processCpuLoadText.setFill(Color.GREY);
+		processCpuLoadText = new Text(" Process : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//processCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(processCpuLoadText);
 
 		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		systemCpuLoadText = new Text(" System : " + systemCpuLoad + " % ");
-		systemCpuLoadText.setFill(Color.GREY);
+		systemCpuLoadText = new Text(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
+		//systemCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(systemCpuLoadText);
 
 		memBtn = new Button(" [Memory] ");
 		memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		memBtn.setTextFill(Color.ORANGE);
+		//memBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(memBtn);
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memMaxText = new Text(" Designated : " + memMax + " MB ");
-		memMaxText.setFill(Color.GREY);
+		//memMaxText.setFill(Color.GREY);
 		statusBar.getRightItems().add(memMaxText);
 
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
@@ -540,7 +554,7 @@ public class MainScene {
 		memUsedText = new Text(" Used : " + memUsed + " MB ");
 		memUsedText.setId("mem-text");
 		// memUsedText.setStyle("-fx-text-inner-color: orange;");
-		memUsedText.setFill(Color.GREY);
+		//memUsedText.setFill(Color.GREY);
 		statusBar.getRightItems().add(memUsedText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -554,14 +568,14 @@ public class MainScene {
 		}
 
 		clkBtn = new Button(" [Clock] ");
-		clkBtn.setTextFill(Color.ORANGE);
+		//clkBtn.setTextFill(Color.ORANGE);
 		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
 
 		timeText = new Text(" Earth Time : " + timeStamp + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
 		timeText.setId("time-text");
-		timeText.setFill(Color.GREY);
+		//timeText.setFill(Color.GREY);
 		statusBar.getRightItems().add(timeText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -603,7 +617,10 @@ public class MainScene {
 	}
 */
 
-	public void updateTimeText() {
+	/*
+	 * Updates the cpu loads, memory usage and time text in the status bar
+	 */
+	public void updateStatusBarText() {
 
 		String t = null;
 		// try {
@@ -632,18 +649,17 @@ public class MainScene {
 		memUsed = memTotal - memFree;
 		// int mem = ( memUsedCache + memUsed ) /2;
 		if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-			memUsedText.setText(" Currently Used : " + memUsed + " MB ");
+			memUsedText.setText(" Used : " + memUsed + " MB ");
 			// memUsedText.setStyle("-fx-text-inner-color: orange;");
 		}
 		memUsedCache = memUsed;
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText.setText(" Process CPU Load : " + processCpuLoad + " % ");
+		processCpuLoadText.setText(" Process : " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
 
-
 		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		systemCpuLoadText.setText(" System CPU Load : " + systemCpuLoad + " % ");
+		systemCpuLoadText.setText(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
 		//systemCpuLoadText.setFill(Color.GREY);
 
 	}

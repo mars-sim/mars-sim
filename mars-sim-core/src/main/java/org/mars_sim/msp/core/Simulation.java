@@ -53,7 +53,7 @@ implements ClockListener, Serializable {
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 
     /** Build string. */
-    public final static String BUILD_VERSION = Msg.getString("Simulation.version.build"); //$NON-NLS-1$
+    public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
 
     /** Default save filename. */
     public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
@@ -81,7 +81,7 @@ implements ClockListener, Serializable {
     @SuppressWarnings("restriction")
     public final static String WINDOW_TITLE = Msg.getString(
             "Simulation.title", Simulation.VERSION
-            + " - Build " + Simulation.BUILD_VERSION
+            + " - Build " + Simulation.BUILD
             + " - Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
             + " - " + Runtime.getRuntime().availableProcessors() + " CPU thread(s)"
             ); //$NON-NLS-1$
@@ -493,7 +493,7 @@ implements ClockListener, Serializable {
         if (file == null) {
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
-                String autosaveFilename = new SystemDateTime().getDateTimeStr() + "_Build_" + BUILD_VERSION + DEFAULT_EXTENSION;
+                String autosaveFilename = new SystemDateTime().getDateTimeStr() + "_Build_" + BUILD + DEFAULT_EXTENSION;
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
                 logger.info("Autosaving into " + autosaveFilename);
             }

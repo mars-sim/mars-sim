@@ -227,7 +227,7 @@ public class MainWindow extends JComponent {
 	        timeLabel.setHorizontalAlignment(JLabel.CENTER);
 	        statusBar.addRightComponent(timeLabel, false);
 
-	        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+	        //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 
 	        bottomPane.add(statusBar, BorderLayout.SOUTH);
 

@@ -724,16 +724,17 @@ public class HelpGenerator {
 	 * generate html help files for use in the in-game help and tutorial browser.
 	 */
 	public static final void generateHtmlHelpFiles() {
-		logger.log(Level.INFO,"starting to generate help files");
-		//HelpGenerator.generateVehicleDescriptions();
+		logger.log(Level.INFO,"Starting to generate help files");
+		HelpGenerator.generateVehicleDescriptions();
+		logger.log(Level.INFO,"generateVehicleDescriptions() is done");
 		HelpGenerator.generateResourceDescriptions();
-		logger.log(Level.INFO,"generateResourceDescriptions()");
+		logger.log(Level.INFO,"generateResourceDescriptions() is done");
 		HelpGenerator.generatePartsDescriptions();
-		logger.log(Level.INFO,"generatePartsDescriptions()");
+		logger.log(Level.INFO,"generatePartsDescriptions() is done");
 		HelpGenerator.generateProcessDescriptions();
-		//HelpGenerator.generateFoodProductionDescriptions();
-		//HelpGenerator.generateMealsDescriptions();
-		logger.log(Level.INFO,"generateProcessDescriptions()");
+		//TODO: will create HelpGenerator.generateFoodProductionDescriptions();
+		//TODO: will create HelpGenerator.generateMealsDescriptions();
+		logger.log(Level.INFO,"generateProcessDescriptions() is done");
 
 		logger.log(
 			Level.INFO,

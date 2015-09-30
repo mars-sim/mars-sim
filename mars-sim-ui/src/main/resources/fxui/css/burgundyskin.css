@@ -25,7 +25,7 @@
 .menu-bar {
 	-fx-font-weight: bold;
 	-fx-font-family: "Segoe UI Light";
-	-fx-font-size: 12pt;
+	-fx-font-size: 10pt;
 	-fx-background-color:
 	    linear-gradient(from 0% 93% to 0% 100%, orange 0%, black 100%),
         orange,
@@ -38,7 +38,7 @@
 .menu-item {
 	-fx-font-weight: normal;
 	-fx-font-family: "Segoe UI Light";
-	-fx-font-size: 12pt;
+	-fx-font-size: 10pt;
 	-fx-background-color:
 	    linear-gradient(from 0% 93% to 0% 100%, orange 0%, black 100%),
         orange,

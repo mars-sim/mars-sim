@@ -51,10 +51,10 @@
 
 .button{
 	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #202020 0%, #ffa64d 100%),
+	    linear-gradient(from 0% 93% to 0% 100%, #202020 0%, #5a5361 100%),
         #202020,
         #3e3e3e,
-        radial-gradient(center 50% 50%, radius 100%, #3e3e3e, #ffa64d);
+        radial-gradient(center 50% 50%, radius 100%, #3e3e3e, #5a5361);
 
     -fx-text-fill: #FF8000;
     -fx-border-color: #663300;

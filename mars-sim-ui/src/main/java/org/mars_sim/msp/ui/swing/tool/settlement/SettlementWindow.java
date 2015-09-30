@@ -27,23 +27,23 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
-public class SettlementWindow 
+public class SettlementWindow
 extends ToolWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	
+
 	// default logger.
 	//private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
-	
+
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
-	
-	
+
+
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	/** Map panel. */
@@ -51,7 +51,7 @@ extends ToolWindow {
 
 	private MarsClock marsClock;
 	private javax.swing.Timer marsTimer = null;
-	
+
     private JStatusBar statusBar;
     private JLabel leftLabel;
     //private JLabel maxMemLabel;
@@ -65,7 +65,7 @@ extends ToolWindow {
     private String populationText;
 	private String marsTimeString;
 	private boolean isFX = false;
-    
+
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -73,10 +73,10 @@ extends ToolWindow {
 	public SettlementWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-		this.desktop = desktop;	
+		this.desktop = desktop;
 		if (desktop.getMainWindow() != null)
 			this.isFX = true;
-		
+
 		//SwingUtilities.invokeLater(new Runnable() {
         //    @Override
         //    public void run() {
@@ -92,19 +92,19 @@ extends ToolWindow {
 
 		//setMaximizable(true); // not compatible with day night map layer
 		setResizable(true);
-		
+
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		
+
 		// 2014-12-27 Added preferred size and initial location
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		setMaximizable(true);
 //		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
 		setLocation(600,600);
-		
+
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		setContentPane(mainPanel);
-		
-		mapPanel = new SettlementMapPanel(desktop, this); 
+
+		mapPanel = new SettlementMapPanel(desktop, this);
 		mainPanel.add(mapPanel, BorderLayout.CENTER);
 
 		// 2015-01-07 Added statusBar
@@ -116,18 +116,18 @@ extends ToolWindow {
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         statusBar.addRightComponent(timeLabel, false);
 
-        statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
-   
-        mainPanel.add(statusBar, BorderLayout.SOUTH);	   
+        //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+
+        mainPanel.add(statusBar, BorderLayout.SOUTH);
 
 		pack();
 		setVisible(true);
-		
+
 	}
-	
+
 	// 2015-02-05 Added showMarsTime()
 	public void showMarsTime() {
-		// 2015-01-07 Added Martian Time on status bar 
+		// 2015-01-07 Added Martian Time on status bar
 		int timeDelay = 900;
 		ActionListener timeListener = null;
 		if (timeListener == null) {
@@ -136,7 +136,7 @@ extends ToolWindow {
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			    	marsTimeString = marsClock.getDateTimeStamp();
-			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0 
+			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
 					timeLabel.setText("Martian Time : " + marsTimeString + " UMST");
 				    statusText = "" + MarsClock.getTotalSol(marsClock);
@@ -151,7 +151,7 @@ extends ToolWindow {
     		marsTimer.start();
     	}
 	}
-	
+
 	/**
 	 * Gets the settlement map panel.
 	 * @return the settlement map panel.
